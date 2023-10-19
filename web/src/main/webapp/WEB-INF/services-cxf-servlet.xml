@@ -63,7 +63,7 @@
       </bean>
     </jaxws:outFaultInterceptors>
     <jaxws:schemaLocations>
-      <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_3.2.xsd</jaxws:schemaLocation>
+      <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_3.3.xsd</jaxws:schemaLocation>
       <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_3.2_ext.xsd</jaxws:schemaLocation>
       <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_3.3_ext.xsd</jaxws:schemaLocation>
       <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_3.4_ext.xsd</jaxws:schemaLocation>
@@ -108,7 +108,7 @@
       </bean>
     </jaxws:outFaultInterceptors>
     <jaxws:schemaLocations>
-      <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_3.2.xsd</jaxws:schemaLocation>
+      <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_3.3.xsd</jaxws:schemaLocation>
       <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_3.2_ext.xsd</jaxws:schemaLocation>
       <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_3.4_ext.xsd</jaxws:schemaLocation>
       <jaxws:schemaLocation>classpath:/core_components/clinicalprocess_healthcond_certificate_types_3.2.xsd</jaxws:schemaLocation>

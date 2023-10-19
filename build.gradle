@@ -15,7 +15,7 @@ ext {
     intygHealthcondRehabilitationSchemasVersion = "1.1.3.1"
     ppSchemasVersion = "1.0.5.1"
     ppTermsSchemasVersion = "1.0.5.1"
-    rivtaClinicalprocessSchemasVersion = "4.0.5.1"
+    rivtaClinicalprocessSchemasVersion = "4.0.5.2"
     rivtaItintegrationMonitoringSchemasVersion = "1.0.0.5.1"
     schemasContractVersion = "2.1.8.1"
 

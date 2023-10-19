@@ -77,7 +77,7 @@
  specific language governing permissions and limitations
  under the License.-->
 <xs:schema targetNamespace="urn:riv:clinicalprocess:healthcond:certificate:CreateDraftCertificateResponder:3" elementFormDefault="qualified" attributeFormDefault="unqualified" version="3.3" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="urn:riv:clinicalprocess:healthcond:certificate:CreateDraftCertificateResponder:3" xmlns:core="urn:riv:clinicalprocess:healthcond:certificate:3" xmlns:types="urn:riv:clinicalprocess:healthcond:certificate:types:3" xmlns:m3="urn:riv:clinicalprocess:healthcond:certificate:3.3">
-  <xs:import schemaLocation="../../core_components/clinicalprocess_healthcond_certificate_3.2.xsd" namespace="urn:riv:clinicalprocess:healthcond:certificate:3"/>
+  <xs:import schemaLocation="../../core_components/clinicalprocess_healthcond_certificate_3.3.xsd" namespace="urn:riv:clinicalprocess:healthcond:certificate:3"/>
   <!--No new types in 3.3, so we still use 3.2-->
   <xs:import namespace="urn:riv:clinicalprocess:healthcond:certificate:types:3" schemaLocation="../../core_components/clinicalprocess_healthcond_certificate_types_3.2.xsd"/>
   <!--NEW IN 3.3-->
@@ -139,7 +139,7 @@
       <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
   </xs:complexType>
-</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>file:/Users/marced/code/inera/schemas/rivta/clinicalprocess-healthcond-certificate/schemas/core_components/clinicalprocess_healthcond_certificate_3.2.xsd</con:url><con:content><![CDATA[<xs:schema targetNamespace="urn:riv:clinicalprocess:healthcond:certificate:3" elementFormDefault="qualified" attributeFormDefault="unqualified" version="3.2" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:riv:clinicalprocess:healthcond:certificate:3" xmlns:types="urn:riv:clinicalprocess:healthcond:certificate:types:3" xmlns:m1="urn:riv:clinicalprocess:healthcond:certificate:3.2">
+</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>file:/Users/marced/code/inera/schemas/rivta/clinicalprocess-healthcond-certificate/schemas/core_components/clinicalprocess_healthcond_certificate_3.3.xsd</con:url><con:content><![CDATA[<xs:schema targetNamespace="urn:riv:clinicalprocess:healthcond:certificate:3" elementFormDefault="qualified" attributeFormDefault="unqualified" version="3.2" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:riv:clinicalprocess:healthcond:certificate:3" xmlns:types="urn:riv:clinicalprocess:healthcond:certificate:types:3" xmlns:m1="urn:riv:clinicalprocess:healthcond:certificate:3.2">
   <xs:import namespace="urn:riv:clinicalprocess:healthcond:certificate:types:3" schemaLocation="clinicalprocess_healthcond_certificate_types_3.2.xsd"/>
   <xs:import namespace="urn:riv:clinicalprocess:healthcond:certificate:3.2" schemaLocation="clinicalprocess_healthcond_certificate_3.2_ext.xsd"/>
   <xs:complexType name="Intyg">
@@ -954,7 +954,7 @@ in the FAQ [2].
   <xs:element name="kallaAdressuppgifter" type="types:KallaAdressuppgifterType"/>
 </xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>file:/Users/marced/code/inera/schemas/rivta/clinicalprocess-healthcond-certificate/schemas/core_components/clinicalprocess_healthcond_certificate_3.3_ext.xsd</con:url><con:content><![CDATA[<xs:schema targetNamespace="urn:riv:clinicalprocess:healthcond:certificate:3.3" elementFormDefault="qualified" attributeFormDefault="unqualified" version="3.3" xmlns:tns="urn:riv:clinicalprocess:healthcond:certificate:3.3" xmlns:core="urn:riv:clinicalprocess:healthcond:certificate:3" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <!--import the core schema-->
-  <xs:import namespace="urn:riv:clinicalprocess:healthcond:certificate:3" schemaLocation="clinicalprocess_healthcond_certificate_3.2.xsd"/>
+  <xs:import namespace="urn:riv:clinicalprocess:healthcond:certificate:3" schemaLocation="clinicalprocess_healthcond_certificate_3.3.xsd"/>
   <!--Added in version 3.3 for use in CreateDraftCertificate-->
   <xs:complexType name="Forifyllnad">
     <xs:sequence>
