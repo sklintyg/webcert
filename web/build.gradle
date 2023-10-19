@@ -181,6 +181,8 @@ dependencies {
     compile project(':intygstjanst-stub')
     compile project(':mail-stub')
 
+    implementation "org.jvnet.jaxb2_commons:jaxb2-basics-runtime:${jaxb2Version}"
+
     compile "se.inera.intyg.infra:pu-integration:${infraVersion}"
     compile "se.inera.intyg.infra:srs-integration:${infraVersion}"
     compile "se.inera.intyg.infra:loggtjanst-stub:${infraVersion}"

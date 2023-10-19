@@ -6,19 +6,18 @@ plugins {
 }
 
 ext {
-    commonVersion = System.properties['commonVersion'] ?: '3.19.1-SNAPSHOT'
-    infraVersion = System.properties['infraVersion'] ?: '3.19.1-SNAPSHOT'
+    commonVersion = System.properties['commonVersion'] ?: '3.20.0-SNAPSHOT'
+    infraVersion = System.properties['infraVersion'] ?: '3.20.0-SNAPSHOT'
     refDataVersion = System.properties['refDataVersion'] ?: '1.0-SNAPSHOT'
 
-    schemasContractVersion = "2.1.8"
-    intygHealthcondRehabilitationSchemasVersion = "1.1.3"
-
-    funktionstjansterGrpSchemasVersion = "1.0.6"
-    intygClinicalprocessSchemasVersion = "1.0.24"
-    ppSchemasVersion = "1.0.5"
-    ppTermsSchemasVersion = "1.0.5"
-    rivtaClinicalprocessSchemasVersion = "4.0.5"
-    rivtaItintegrationMonitoringSchemasVersion = "1.0.0.5"
+    funktionstjansterGrpSchemasVersion = "1.0.6.1"
+    intygClinicalprocessSchemasVersion = "1.0.24.1"
+    intygHealthcondRehabilitationSchemasVersion = "1.1.3.1"
+    ppSchemasVersion = "1.0.5.1"
+    ppTermsSchemasVersion = "1.0.5.1"
+    rivtaClinicalprocessSchemasVersion = "4.0.5.1"
+    rivtaItintegrationMonitoringSchemasVersion = "1.0.0.5.1"
+    schemasContractVersion = "2.1.8.1"
 
     autovalueVersion = "1.9"
     camelVersion = "3.18.2"
@@ -27,6 +26,8 @@ ext {
     geronimoJmsVersion = "1.1.1"
     jadiraUserTypeVersion = "6.0.1.GA"
     jakartaJwsApiVersion = "3.0.0"
+    javaxJwsApiVersion = "1.1"
+    jaxb2Version = "0.13.1"
     jexcelVersion = "1.0.9"
     jsonwebtokenVersion = "0.11.5"
     jwksVersion = "0.21.1"
@@ -80,6 +81,8 @@ allprojects {
     }
 
     dependencies {
+        implementation "javax.jws:javax.jws-api:${javaxJwsApiVersion}"
+
         compile "javax.annotation:javax.annotation-api"
         compile "jakarta.xml.bind:jakarta.xml.bind-api"
         compile "jakarta.xml.ws:jakarta.xml.ws-api"
