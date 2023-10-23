@@ -17,7 +17,7 @@ dependencies {
   compile "org.hibernate:hibernate-entitymanager"
 
   compile "com.h2database:h2"
-  compile "mysql:mysql-connector-java"
+  compile "com.mysql:mysql-connector-j"
 
   testCompile "org.springframework:spring-test"
   testCompile "org.hamcrest:hamcrest"

@@ -42,7 +42,7 @@ def liquibaseVersion = dependencyManagement.managedVersions['org.liquibase:liqui
 
 dependencies {
     compile "info.picocli:picocli:${picocliVersion}"
-    runtime "mysql:mysql-connector-java"
+    runtime "com.mysql:mysql-connector-j"
     runtime "org.liquibase:liquibase-core"
     runtime "org.liquibase.ext:liquibase-hibernate5:" + liquibaseVersion
     runtime project(':webcert-persistence')

@@ -1,8 +1,8 @@
 plugins {
-    id "se.inera.intyg.plugin.common" version "3.2.7" apply false
-    id "org.gretty" version "3.0.8" apply false
+    id "se.inera.intyg.plugin.common" version "3.2.9" apply false
+    id "org.gretty" version "3.0.9" apply false
     id "nebula.node" version "1.4.2" apply false
-    id "io.spring.dependency-management" version "1.0.13.RELEASE" apply false
+    id "io.spring.dependency-management" version "1.0.15.RELEASE" apply false
 }
 
 ext {
@@ -19,10 +19,10 @@ ext {
     rivtaItintegrationMonitoringSchemasVersion = "1.0.0.5.1"
     schemasContractVersion = "2.1.8.1"
 
-    autovalueVersion = "1.9"
-    camelVersion = "3.18.2"
-    commonsIoVersion = "2.11.0"
-    cxfVersion = "3.5.5"
+    autovalueVersion = "1.10.4"
+    camelVersion = "3.21.1"
+    commonsIoVersion = "2.14.0"
+    cxfVersion = "3.6.2"
     geronimoJmsVersion = "1.1.1"
     jadiraUserTypeVersion = "6.0.1.GA"
     jakartaJwsApiVersion = "3.0.0"
@@ -30,21 +30,21 @@ ext {
     jaxb2Version = "0.13.1"
     jexcelVersion = "1.0.9"
     jsonwebtokenVersion = "0.11.5"
-    jwksVersion = "0.21.1"
-    luceneAnalyzersCommonVersion = "8.11.2"
+    jwksVersion = "0.22.0"
+    luceneAnalyzersCommonVersion = "9.8.0"
     openWsVersion = "1.5.4"
     opensamlVersion = "2.6.4"
-    picocliVersion = "4.6.3"
-    shedlockSpringVersion = "4.42.0"
+    picocliVersion = "4.7.5"
+    shedlockSpringVersion = "4.46.0"
     stAntlr4Version = "4.3.4"
-    swaggerJaxrsVersion = "1.6.0"
+    swaggerJaxrsVersion = "1.6.11"
     vavrVersion = "0.10.4"
     xmlToolingVersion = "1.4.4"
 
     nodeJsVersion = "12.22.12"
     npmVersion = "6.14.16"
 
-    springbootMavenBomVersion = "2.7.6"
+    springbootMavenBomVersion = "2.7.17"
 }
 
 allprojects {
