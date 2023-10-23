@@ -81,8 +81,6 @@ allprojects {
     }
 
     dependencies {
-        //implementation("com.google.guava:guava") { version { require "[21.0, 32.0.1-jre["  } }
-
         implementation "javax.jws:javax.jws-api:${javaxJwsApiVersion}"
 
         compile "javax.annotation:javax.annotation-api"
