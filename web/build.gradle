@@ -233,7 +233,7 @@ dependencies {
     compile "org.springframework.session:spring-session-data-redis"
     compile "org.springframework.security:spring-security-web"
     compile "org.springframework.security:spring-security-taglibs"
-    compile "org.apache.lucene:lucene-analyzers-common:${luceneAnalyzersCommonVersion}"
+    implementation "org.apache.lucene:lucene-analysis-common:${luceneAnalyzersCommonVersion}"
     compile "org.opensaml:opensaml:${opensamlVersion}"
     compile "org.opensaml:openws:${openWsVersion}"
     compile "org.opensaml:xmltooling:${xmlToolingVersion}"
