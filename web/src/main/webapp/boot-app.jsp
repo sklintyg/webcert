@@ -56,6 +56,7 @@
   </div>
 
   <wc-missing-subscription-banner></wc-missing-subscription-banner>
+  <wc-origin-normal-warning></wc-origin-normal-warning>
 
   <wc-modal-user-survey app-label="'wc'"></wc-modal-user-survey>
 
