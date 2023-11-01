@@ -2,47 +2,66 @@ test {
     exclude '**/*IT*'
 }
 
-task camelTest(type: Test) {
+tasks.register('camelTest', Test) {
     outputs.upToDateWhen { false }
     include '**/*IT*'
 }
 
 camelTest.mustRunAfter test
 
-task copyResources(type: Copy) {
+tasks.register('copyResources', Copy) {
     from "${projectDir}/../web/src/main/resources/security"
     include "*.yaml"
-    into "${buildDir}/resources/test/security"
+    into "${project.layout.buildDirectory.get().asFile}/resources/test/security"
 }
 
 compileJava.dependsOn copyResources
 
 dependencies {
-    compile project(':webcert-common')
-    compile project(':webcert-persistence')
+    implementation project(':webcert-common')
+    implementation project(':webcert-persistence')
 
-    compile "se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:${rivtaClinicalprocessSchemasVersion}"
-    compile "se.inera.intyg.infra:pu-integration:${infraVersion}"
+    implementation "com.fasterxml.jackson.core:jackson-databind"
+    implementation "com.google.guava:guava:${guavaVersion}"
+    implementation ("com.helger:ph-schematron:${phSchematronVersion}") { exclude group: "com.helger", module: "ph-jaxb-pom" }
+    implementation "jakarta.persistence:jakarta.persistence-api"
+    implementation "jakarta.transaction:jakarta.transaction-api"
+    implementation "org.apache.camel:camel-core:${camelVersion}"
+    implementation "org.apache.camel:camel-jaxb:${camelVersion}"
+    implementation "org.apache.commons:commons-lang3"
+    implementation "org.slf4j:slf4j-api"
+    implementation "org.springframework:spring-context-support"
+    implementation "org.springframework:spring-jms"
+    implementation "org.springframework:spring-oxm"
+    implementation "org.springframework.data:spring-data-jpa"
+    implementation "se.inera.intyg.clinicalprocess.healthcond.certificate:intyg-clinicalprocess-healthcond-certificate-schemas:${intygClinicalprocessSchemasVersion}"
+    implementation "se.inera.intyg.common:common-support:${commonVersion}"
+    implementation "se.inera.intyg.common:fk7263:${commonVersion}"
+    implementation "se.inera.intyg.common:integration-util:${commonVersion}"
+    implementation "se.inera.intyg.infra:hsa-integration-api:${infraVersion}"
+    implementation "se.inera.intyg.infra:monitoring:${infraVersion}"
+    implementation "se.inera.intyg.infra:pu-integration:${infraVersion}"
+    implementation "se.inera.intyg.schemas:schemas-contract:${schemasContractVersion}"//
+    implementation "se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:${rivtaClinicalprocessSchemasVersion}"
 
-    compile "org.apache.camel:camel-activemq:${camelVersion}"
-    compile "org.apache.camel:camel-core:${camelVersion}"
-    compile "org.apache.camel:camel-cxf-spring-soap:${camelVersion}"
-    compile "org.apache.camel:camel-cxf-spring-transport:${camelVersion}"
-    compile "org.apache.camel:camel-jms:${camelVersion}"
-    compile "org.apache.camel:camel-jackson:${camelVersion}"
-    compile "org.apache.camel:camel-jaxb:${camelVersion}"
-    compile "org.apache.camel:camel-spring:${camelVersion}"
-    compile "org.springframework:spring-jms"
+    compileOnly "org.apache.geronimo.specs:geronimo-jms_1.1_spec:${geronimoJmsVersion}"
+    testCompileOnly "org.apache.geronimo.specs:geronimo-jms_1.1_spec:${geronimoJmsVersion}"
 
-    compile "net.javacrumbs.shedlock:shedlock-spring:${shedlockSpringVersion}"
+    testImplementation project(':notification-stub')
+    testImplementation "ch.qos.logback:logback-classic"
+    testImplementation "org.apache.camel:camel-test-spring-junit5:${camelVersion}"
+    testImplementation "org.awaitility:awaitility"
 
-    testCompile project(':notification-stub')
-
-    testCompile("se.inera.intyg.common:lisjp:${commonVersion}")
-
-    testCompile "org.awaitility:awaitility"
-    testCompile "org.apache.camel:camel-test-spring-junit5:${camelVersion}"
-    testCompile "org.springframework:spring-test"
-    testCompile "org.apache.activemq:activemq-spring"
-    testCompile "org.springframework.data:spring-data-redis"
+//    implementation "org.apache.camel:camel-activemq:${camelVersion}"
+//    implementation "org.apache.camel:camel-cxf-spring-soap:${camelVersion}"
+//    implementation "org.apache.camel:camel-cxf-spring-transport:${camelVersion}"
+//    implementation "org.apache.camel:camel-jms:${camelVersion}"
+//    implementation "org.apache.camel:camel-jackson:${camelVersion}"
+//    implementation "org.springframework.data:spring-data-commons"
+//    implementation "org.apache.camel:camel-spring:${camelVersion}"
+//    implementation "net.javacrumbs.shedlock:shedlock-spring:${shedlockSpringVersion}"
+//    testImplementation("se.inera.intyg.common:lisjp:${commonVersion}")
+//    testImplementation "org.springframework:spring-test"
+//    testImplementation "org.apache.activemq:activemq-spring"
+//    testImplementation "org.springframework.data:spring-data-redis"
 }

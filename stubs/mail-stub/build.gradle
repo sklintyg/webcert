@@ -1,9 +1,12 @@
 dependencies {
-  compile project(":webcert-common")
-  compile "org.aspectj:aspectjweaver"
+  implementation "com.google.guava:guava:${guavaVersion}"
+  implementation "com.sun.mail:jakarta.mail"
+  implementation "jakarta.ws.rs:jakarta.ws.rs-api"
+  implementation "org.aspectj:aspectjweaver"
+  implementation "org.slf4j:slf4j-api"
+  implementation "org.springframework:spring-context-support"
 
-  compile "com.sun.mail:jakarta.mail"
-
-  testCompile "org.hamcrest:hamcrest"
-  testCompile "org.hamcrest:hamcrest-library"
+//  implementation project(":webcert-common")
+//  testImplementation "org.hamcrest:hamcrest"
+//  testImplementation "org.hamcrest:hamcrest-library"
 }

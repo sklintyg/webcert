@@ -1,11 +1,11 @@
 dependencies {
-  compile project(':webcert-common')
+  implementation project(':webcert-common')
 
-  compile "org.springframework:spring-web"
-  compile "se.inera.intyg.infra:hsatk-integration:${infraVersion}"
-  compile "org.apache.httpcomponents:httpclient"
+  implementation "org.springframework:spring-web"
+  implementation "se.inera.intyg.infra:hsatk-integration:${infraVersion}"
+  implementation "org.apache.httpcomponents:httpclient"
 
-  testCompile "org.springframework:spring-test"
-  testCompile "org.hamcrest:hamcrest"
-  testCompile "org.hamcrest:hamcrest-library"
+  testImplementation "org.springframework:spring-test"
+  testImplementation "org.hamcrest:hamcrest"
+  testImplementation "org.hamcrest:hamcrest-library"
 }

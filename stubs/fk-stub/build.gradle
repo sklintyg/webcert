@@ -1,8 +1,17 @@
 dependencies {
-  compile project(":webcert-common")
+  implementation project(":webcert-common")
 
+  implementation "com.google.guava:guava:${guavaVersion}"
+  implementation "jakarta.ws.rs:jakarta.ws.rs-api"
   implementation "org.jvnet.jaxb2_commons:jaxb2-basics:${jaxb2Version}"
+  implementation "org.slf4j:slf4j-api"
+  implementation "org.springframework:spring-context"
+  implementation "se.inera.intyg.common:common-schemas:${commonVersion}"
+  implementation "se.inera.intyg.common:common-support:${commonVersion}"
+  implementation "se.inera.intyg.infra:monitoring:${infraVersion}"
+  implementation "se.riv.insuranceprocess.healthreporting:insuranceprocess-healthreporting-schemas:${rivtaInsuranceprocessSchemasVersion}"
 
-  testCompile "org.hamcrest:hamcrest"
-  testCompile "org.hamcrest:hamcrest-library"
+//  implementation project(":webcert-common")
+//  testImplementation "org.hamcrest:hamcrest"
+//  testImplementation "org.hamcrest:hamcrest-library"
 }

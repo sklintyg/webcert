@@ -1,89 +1,16 @@
-apply plugin: 'war'
+apply plugin: 'com.netflix.nebula.grunt'
 apply plugin: 'org.gretty'
-apply plugin: 'nebula.grunt'
 apply plugin: 'idea'
+apply plugin: 'war'
 
-
+def buildDirectory = project.layout.buildDirectory.get().asFile
 def webappOutputDir = 'build/apps/'
 def webappTestOutputDir = 'build/karma/'
 
-idea {
-    module {
-        excludeDirs += file('node_modules')
-        excludeDirs += file('src/main/webapp/bower_components')
-    }
-}
-
-grunt {
-    colors = System.properties['gruntColors'] ? System.properties['gruntColors'].toBoolean() : true
-}
-
-node {
-    version = "${nodeJsVersion}"
-    npmVersion = "${npmVersion}"
-    download = true
-    distBaseUrl = 'https://nodejs.org/dist/'
-    workDir = file("${rootProject.projectDir}/.gradle/nodejs")
-    npmWorkDir = file("${rootProject.projectDir}/.gradle/npm")
-}
-
-task jsTests(type: NodeTask, dependsOn: npm_install) {
-    inputs.dir("$projectDir/src/main/resources")
-    inputs.dir("$projectDir/src/main/webapp")
-    inputs.files(fileTree(projectDir).include('*.js'))
-    inputs.files(fileTree(projectDir).include('*.json'))
-    inputs.files(configurations.compile)
-    outputs.dir(webappTestOutputDir)
-
-    script = file('node_modules/grunt-cli/bin/grunt')
-    args = ['test', "--outputDir=${webappTestOutputDir}", '--run-coverage=' + (project.findProperty('codeCoverage') != null ? 'true' : '')]
-}
-
-test.dependsOn(jsTests)
-
-task jsInclude(type: NodeTask, dependsOn: npm_install) {
-    inputs.dir("$projectDir/src/main/resources")
-    inputs.dir("$projectDir/src/main/webapp")
-    inputs.files(fileTree(projectDir).include('*.js'))
-    inputs.files(fileTree(projectDir).include('*.json'))
-    inputs.files(configurations.compile)
-    outputs.dir(webappOutputDir)
-
-    script = file('node_modules/grunt-cli/bin/grunt')
-    args = ['default', "--outputDir=${webappOutputDir}"]
-}
-
-war.dependsOn(jsInclude)
-war.dependsOn createVersionPropertyFile
-
-task unzipBuildTools(type: Copy) {
-    into "$buildDir/build-tools/"
-    from {
-        def intygJar = project.rootProject.buildscript.configurations.classpath.find { it.name.contains("se.inera.intyg.plugin.common") }
-        zipTree(intygJar)
-    }
-}
-
-task jsCodeQuality(type: NodeTask, dependsOn: [npm_install, unzipBuildTools]) {
-    outputs.upToDateWhen { false }
-
-    script = file('node_modules/grunt-cli/bin/grunt')
-    args = ['lint']
-}
-
-checkstyleMain.dependsOn jsCodeQuality
-jsCodeQuality.onlyIf { project.hasProperty('codeQuality') }
-
-war {
-    from("${buildDir}/apps")
-
-    exclude '**/*.scss'
-    exclude '**/*.spec.js'
-    exclude '**/*.test.js'
-}
-
-test {
-    exclude '**/*IT*'
+ext {
+    generatedJavaDir = file("${buildDirectory}/generatedSource/java")
+    xsdBindings = file("src/main/resources/schemas/dss/bindings.xjb")
+    xsdDir = file("src/main/resources/schemas/dss")
 }
 
 gretty {
@@ -104,7 +31,7 @@ gretty {
     debugSuspend = false
     serverConfigFile = "tomcat-gretty.xml"
 
-    jvmArgs = ["-Dcatalina.base=${buildDir}/catalina.base",
+    jvmArgs = ["-Dcatalina.base=${buildDirectory}/catalina.base",
                "-Dspring.profiles.active=dev,caching-enabled,wc-security-test,ia-stub",
                "-Dlogback.file=${applicationDir}/config/logback-dev.xml",
                "-Djava.awt.headless=true",
@@ -120,36 +47,94 @@ gretty {
     extraResourceBase webappOutputDir
 }
 
-configurations {
-    // This is required to make the Schematron implementation pick up Saxon instead of Xalan.
-    runtime {
-        exclude group: 'xalan', module: 'xalan'
-    }
-
-    xsdgen
+node {
+    version = "${nodeJsVersion}"
+    npmVersion = "${npmVersion}"
+    download = true
+    distBaseUrl = 'https://nodejs.org/dist/'
+    workDir = file("${rootProject.projectDir}/.gradle/nodejs")
+    npmWorkDir = file("${rootProject.projectDir}/.gradle/npm")
 }
 
-if (project.hasProperty("codeQuality")) {
-    license {
-        exclude "**/dss/xsd/**/*.java"
-    }
-}
-
-ext.xsdDir = file("src/main/resources/schemas/dss")
-ext.generatedJavaDir = file("${buildDir}/generatedSource/java")
-ext.xsdBindings = file("src/main/resources/schemas/dss/bindings.xjb")
-
-sourceSets.main.java {
-    srcDir generatedJavaDir
+grunt {
+    colors = System.properties['gruntColors'] ? System.properties['gruntColors'].toBoolean() : true
 }
 
 idea {
     module {
+        excludeDirs += file('node_modules')
+        excludeDirs += file('src/main/webapp/bower_components')
         generatedSourceDirs.add(generatedJavaDir)
     }
 }
 
-task xsd2Java() {
+/*idea {
+    module {
+        generatedSourceDirs.add(generatedJavaDir)
+    }
+}*/
+
+configurations {
+    // This is required to make the Schematron implementation pick up Saxon instead of Xalan.
+    runtime { exclude group: 'xalan', module: 'xalan' }
+
+    xsdgen
+
+    testImplemetationClasspath.extendsFrom implementation
+}
+
+war {
+    from("${buildDirectory}/apps")
+    exclude '**/*.scss'
+    exclude '**/*.spec.js'
+    exclude '**/*.test.js'
+}
+
+test { exclude '**/*IT*' }
+
+tasks.register('jsTests', NodeTask) {
+    dependsOn npmInstall
+    inputs.dir("$projectDir/src/main/resources")
+    inputs.dir("$projectDir/src/main/webapp")
+    inputs.files(fileTree(projectDir).include('*.js'))
+    inputs.files(fileTree(projectDir).include('*.json'))
+    inputs.files(configurations.testImplemetationClasspath)
+    outputs.dir(webappTestOutputDir)
+
+    script = file('node_modules/grunt-cli/bin/grunt')
+    args = ['test', "--outputDir=${webappTestOutputDir}", '--run-coverage=' + (project.findProperty('codeCoverage') != null ? 'true' : '')]
+}
+
+tasks.register('jsInclude', NodeTask) {
+    dependsOn npmInstall
+    inputs.dir("$projectDir/src/main/resources")
+    inputs.dir("$projectDir/src/main/webapp")
+    inputs.files(fileTree(projectDir).include('*.js'))
+    inputs.files(fileTree(projectDir).include('*.json'))
+    inputs.files(configurations.testImplemetationClasspath)
+    outputs.dir(webappOutputDir)
+
+    script = file('node_modules/grunt-cli/bin/grunt')
+    args = ['default', "--outputDir=${webappOutputDir}"]
+}
+
+tasks.register('unzipBuildTools', Copy) {
+    into "${buildDirectory}/build-tools/"
+    from {
+        def intygJar = project.rootProject.buildscript.configurations.classpath.find { it.name.contains("se.inera.intyg.plugin.common") }
+        zipTree(intygJar)
+    }
+}
+
+tasks.register('jsCodeQuality', NodeTask) {
+    dependsOn npmInstall, unzipBuildTools
+    outputs.upToDateWhen { false }
+
+    script = file('node_modules/grunt-cli/bin/grunt')
+    args = ['lint']
+}
+
+tasks.register('xsd2Java') {
     doLast {
         mkdir generatedJavaDir.path
         ant.taskdef(
@@ -168,113 +153,131 @@ task xsd2Java() {
     }
 }
 
+checkstyleMain.dependsOn jsCodeQuality
 compileJava.dependsOn(xsd2Java)
+jsCodeQuality.onlyIf { project.hasProperty('codeQuality') }
+sourceSets.main.java { srcDir generatedJavaDir }
+test.dependsOn(jsTests)
+war.dependsOn(jsInclude)
+war.dependsOn createVersionPropertyFile
+
+publishing {
+    publications {
+        mavenWeb(MavenPublication) {
+            from components.web
+        }
+    }
+}
+
+if (project.hasProperty("codeQuality")) {
+    license {
+        exclude "**/dss/xsd/**/*.java"
+    }
+}
 
 dependencies {
-    compile project(':fmb-integration')
-    compile project(':pp-integration')
-    compile project(':tak-integration')
-    compile project(':kundportalen-integration')
-    compile project(':notification-sender')
-    compile project(':fk-stub')
-    compile project(':notification-stub')
-    compile project(':intygstjanst-stub')
-    compile project(':mail-stub')
+    implementation project(':fmb-integration')
+    implementation project(':pp-integration')
+    implementation project(':tak-integration')
+    implementation project(':kundportalen-integration')
+    implementation project(':notification-sender')
+    implementation project(':fk-stub')
+    implementation project(':notification-stub')
+    implementation project(':intygstjanst-stub')
+    implementation project(':mail-stub')
 
     implementation "org.jvnet.jaxb2_commons:jaxb2-basics-runtime:${jaxb2Version}"
 
-    compile "se.inera.intyg.infra:pu-integration:${infraVersion}"
-    compile "se.inera.intyg.infra:srs-integration:${infraVersion}"
-    compile "se.inera.intyg.infra:loggtjanst-stub:${infraVersion}"
-    compile "se.inera.intyg.infra:security-filter:${infraVersion}"
-    compile "se.inera.intyg.infra:security-siths:${infraVersion}"
-    compile "se.inera.intyg.infra:dynamiclink:${infraVersion}"
-    compile "se.inera.intyg.infra:grp-stub:${infraVersion}"
-    compile "se.inera.intyg.infra:postnummerservice-integration:${infraVersion}"
-    compile "se.inera.intyg.infra:xmldsig:${infraVersion}"
-    compile "se.inera.intyg.infra:monitoring:${infraVersion}"
-    compile "se.inera.intyg.infra:common-redis-cache-core:${infraVersion}"
-    compile "se.inera.intyg.infra:sjukfall-engine:${infraVersion}"
-    compile "se.inera.intyg.infra:ia-integration:${infraVersion}"
-    compile "se.inera.intyg.infra:intyginfo:${infraVersion}"
-    compile "se.inera.intyg.infra:integreradeenheter:${infraVersion}"
-    compile "se.inera.intyg.infra:testcertificate:${infraVersion}"
-    compile "se.inera.intyg.infra:certificate:${infraVersion}"
-    compile "se.inera.intyg.infra:message:${infraVersion}"
+    implementation "se.inera.intyg.infra:pu-integration:${infraVersion}"
+    implementation "se.inera.intyg.infra:srs-integration:${infraVersion}"
+    implementation "se.inera.intyg.infra:loggtjanst-stub:${infraVersion}"
+    implementation "se.inera.intyg.infra:security-filter:${infraVersion}"
+    implementation "se.inera.intyg.infra:security-siths:${infraVersion}"
+    implementation "se.inera.intyg.infra:dynamiclink:${infraVersion}"
+    implementation "se.inera.intyg.infra:grp-stub:${infraVersion}"
+    implementation "se.inera.intyg.infra:postnummerservice-integration:${infraVersion}"
+    implementation "se.inera.intyg.infra:xmldsig:${infraVersion}"
+    implementation "se.inera.intyg.infra:monitoring:${infraVersion}"
+    implementation "se.inera.intyg.infra:common-redis-cache-core:${infraVersion}"
+    implementation "se.inera.intyg.infra:sjukfall-engine:${infraVersion}"
+    implementation "se.inera.intyg.infra:ia-integration:${infraVersion}"
+    implementation "se.inera.intyg.infra:intyginfo:${infraVersion}"
+    implementation "se.inera.intyg.infra:integreradeenheter:${infraVersion}"
+    implementation "se.inera.intyg.infra:testcertificate:${infraVersion}"
+    implementation "se.inera.intyg.infra:certificate:${infraVersion}"
+    implementation "se.inera.intyg.infra:message:${infraVersion}"
 
-    compile "se.inera.intyg.common:ts-bas:${commonVersion}"
-    compile "se.inera.intyg.common:ts-diabetes:${commonVersion}"
-    compile "se.inera.intyg.common:tstrk1062:${commonVersion}"
-    compile "se.inera.intyg.common:luse:${commonVersion}"
-    compile "se.inera.intyg.common:lisjp:${commonVersion}"
-    compile "se.inera.intyg.common:luae_na:${commonVersion}"
-    compile "se.inera.intyg.common:luae_fs:${commonVersion}"
-    compile "se.inera.intyg.common:db:${commonVersion}"
-    compile "se.inera.intyg.common:doi:${commonVersion}"
-    compile "se.inera.intyg.common:af00213:${commonVersion}"
-    compile "se.inera.intyg.common:af00251:${commonVersion}"
-    compile "se.inera.intyg.common:ag114:${commonVersion}"
-    compile "se.inera.intyg.common:ag7804:${commonVersion}"
-    compile "se.inera.intyg.common:tstrk1009:${commonVersion}"
+    implementation "se.inera.intyg.common:ts-bas:${commonVersion}"
+    implementation "se.inera.intyg.common:ts-diabetes:${commonVersion}"
+    implementation "se.inera.intyg.common:tstrk1062:${commonVersion}"
+    implementation "se.inera.intyg.common:luse:${commonVersion}"
+    implementation "se.inera.intyg.common:lisjp:${commonVersion}"
+    implementation "se.inera.intyg.common:luae_na:${commonVersion}"
+    implementation "se.inera.intyg.common:luae_fs:${commonVersion}"
+    implementation "se.inera.intyg.common:db:${commonVersion}"
+    implementation "se.inera.intyg.common:doi:${commonVersion}"
+    implementation "se.inera.intyg.common:af00213:${commonVersion}"
+    implementation "se.inera.intyg.common:af00251:${commonVersion}"
+    implementation "se.inera.intyg.common:ag114:${commonVersion}"
+    implementation "se.inera.intyg.common:ag7804:${commonVersion}"
+    implementation "se.inera.intyg.common:tstrk1009:${commonVersion}"
 
-    compile "se.inera.intyg.infrastructure.directory.privatepractitioner.terms:intyg-infrastructure-directory-privatepractitioner-terms-schemas:${ppTermsSchemasVersion}"
-    compile "se.inera.intyg.clinicalprocess.healthcond.certificate:intyg-clinicalprocess-healthcond-certificate-schemas:${intygClinicalprocessSchemasVersion}"
-    compile "se.funktionstjanster.grp:funktionstjanster-grp-schemas:${funktionstjansterGrpSchemasVersion}"
-    compile "se.riv.itintegration.monitoring:itintegration-monitoring-schemas:${rivtaItintegrationMonitoringSchemasVersion}"
+    implementation "se.inera.intyg.infrastructure.directory.privatepractitioner.terms:intyg-infrastructure-directory-privatepractitioner-terms-schemas:${ppTermsSchemasVersion}"
+    implementation "se.inera.intyg.clinicalprocess.healthcond.certificate:intyg-clinicalprocess-healthcond-certificate-schemas:${intygClinicalprocessSchemasVersion}"
+    implementation "se.funktionstjanster.grp:funktionstjanster-grp-schemas:${funktionstjansterGrpSchemasVersion}"
+    implementation "se.riv.itintegration.monitoring:itintegration-monitoring-schemas:${rivtaItintegrationMonitoringSchemasVersion}"
 
-    compile "se.inera.intyg.schemas:schemas-contract:${schemasContractVersion}"
-    compile "se.inera.intyg.clinicalprocess.healthcond.rehabilitation:intyg-clinicalprocess-healthcond-rehabilitation-schemas:${intygHealthcondRehabilitationSchemasVersion}"
+    implementation "se.inera.intyg.schemas:schemas-contract:${schemasContractVersion}"
+    implementation "se.inera.intyg.clinicalprocess.healthcond.rehabilitation:intyg-clinicalprocess-healthcond-rehabilitation-schemas:${intygHealthcondRehabilitationSchemasVersion}"
 
-    compile "commons-codec:commons-codec"
-    compile "commons-io:commons-io:${commonsIoVersion}"
-    compile "org.jxls:jxls-jexcel:${jexcelVersion}"
-    compile "org.springframework:spring-web"
-    compile "org.springframework:spring-webmvc"
-    compile "org.springframework.session:spring-session-data-redis"
-    compile "org.springframework.security:spring-security-web"
-    compile "org.springframework.security:spring-security-taglibs"
+    implementation "commons-codec:commons-codec"
+    implementation "commons-io:commons-io:${commonsIoVersion}"
+    implementation "org.jxls:jxls-jexcel:${jexcelVersion}"
+    implementation "org.springframework:spring-web"
+    implementation "org.springframework:spring-webmvc"
+    implementation "org.springframework.session:spring-session-data-redis"
+    implementation "org.springframework.security:spring-security-web"
+    implementation "org.springframework.security:spring-security-taglibs"
     implementation "org.apache.lucene:lucene-analysis-common:${luceneAnalyzersCommonVersion}"
-    compile "org.opensaml:opensaml:${opensamlVersion}"
-    compile "org.opensaml:openws:${openWsVersion}"
-    compile "org.opensaml:xmltooling:${xmlToolingVersion}"
-    compile("io.swagger:swagger-jaxrs:${swaggerJaxrsVersion}") {
-        exclude(module: "jsr311-api")
-    }
+    implementation "org.opensaml:opensaml:${opensamlVersion}"
+    implementation "org.opensaml:openws:${openWsVersion}"
+    implementation "org.opensaml:xmltooling:${xmlToolingVersion}"
+    implementation("io.swagger:swagger-jaxrs:${swaggerJaxrsVersion}") { exclude(module: "jsr311-api") }
 
-    compile "org.springframework.ws:spring-xml"
+    implementation "org.springframework.ws:spring-xml"
 
-    compile "net.javacrumbs.shedlock:shedlock-spring:${shedlockSpringVersion}"
-    compile "net.javacrumbs.shedlock:shedlock-provider-redis-spring:${shedlockSpringVersion}"
+    implementation "net.javacrumbs.shedlock:shedlock-spring:${shedlockSpringVersion}"
+    implementation "net.javacrumbs.shedlock:shedlock-provider-redis-spring:${shedlockSpringVersion}"
 
-    compile "javax.servlet:javax.servlet-api"
+    implementation "javax.servlet:javax.servlet-api"
 
-    compile "io.jsonwebtoken:jjwt-impl:${jsonwebtokenVersion}"
-    compile "io.jsonwebtoken:jjwt-jackson:${jsonwebtokenVersion}"
+    implementation "io.jsonwebtoken:jjwt-impl:${jsonwebtokenVersion}"
+    implementation "io.jsonwebtoken:jjwt-jackson:${jsonwebtokenVersion}"
 
-    compile "com.auth0:jwks-rsa:${jwksVersion}"
-    compile "com.google.auto.value:auto-value:${autovalueVersion}"
+    implementation "com.auth0:jwks-rsa:${jwksVersion}"
+    implementation "com.google.auto.value:auto-value:${autovalueVersion}"
 
-    compile "org.apache.cxf:cxf-core:${cxfVersion}"
-    compile "org.apache.cxf:cxf-rt-frontend-jaxws:${cxfVersion}"
-    compile "org.apache.cxf:cxf-rt-frontend-jaxrs:${cxfVersion}"
-    compile "org.apache.cxf:cxf-rt-transports-http:${cxfVersion}"
+    implementation "org.apache.cxf:cxf-core:${cxfVersion}"
+    implementation "org.apache.cxf:cxf-rt-frontend-jaxws:${cxfVersion}"
+    implementation "org.apache.cxf:cxf-rt-frontend-jaxrs:${cxfVersion}"
+    implementation "org.apache.cxf:cxf-rt-transports-http:${cxfVersion}"
 
     compileOnly "org.apache.geronimo.specs:geronimo-jms_1.1_spec:${geronimoJmsVersion}"
 
-    testCompile "se.inera.intyg.clinicalprocess.healthcond.certificate:intyg-clinicalprocess-healthcond-certificate-schemas:${intygClinicalprocessSchemasVersion}"
-    testCompile "org.hamcrest:hamcrest"
-    testCompile "org.hamcrest:hamcrest-library"
-    testCompile "org.assertj:assertj-core"
-    testCompile "org.skyscreamer:jsonassert"
-    testCompile "org.springframework:spring-test"
-    testCompile "org.xmlunit:xmlunit-legacy"
-    testCompile "org.awaitility:awaitility"
-    testCompile "org.springframework.boot:spring-boot-test"
+    testImplementation "se.inera.intyg.clinicalprocess.healthcond.certificate:intyg-clinicalprocess-healthcond-certificate-schemas:${intygClinicalprocessSchemasVersion}"
+    testImplementation "org.hamcrest:hamcrest"
+    testImplementation "org.hamcrest:hamcrest-library"
+    testImplementation "org.assertj:assertj-core"
+    testImplementation "org.skyscreamer:jsonassert"
+    testImplementation "org.springframework:spring-test"
+    testImplementation "org.xmlunit:xmlunit-legacy"
+    testImplementation "org.awaitility:awaitility"
+    testImplementation "org.springframework.boot:spring-boot-test"
 
-    testCompile "io.rest-assured:rest-assured"
-    testCompile "io.rest-assured:json-schema-validator"
+    testImplementation "io.rest-assured:rest-assured"
+    testImplementation "io.rest-assured:json-schema-validator"
 
-    testCompile "org.antlr:ST4:${stAntlr4Version}"
+    testImplementation "org.antlr:ST4:${stAntlr4Version}"
     annotationProcessor "com.google.auto.value:auto-value:${autovalueVersion}"
 
     gretty "org.eclipse.jetty:apache-jstl"
@@ -282,5 +285,5 @@ dependencies {
 
     xsdgen "org.glassfish.jaxb:jaxb-xjc"
 
-    runtime "xerces:xercesImpl:2.10.0"
+    runtime "xerces:xercesImpl:2.12.2"
 }

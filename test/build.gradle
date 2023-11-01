@@ -1,4 +1,4 @@
-apply plugin: 'nebula.grunt'
+apply plugin: 'com.netflix.nebula.grunt'
 apply plugin: 'idea'
 
 idea {
@@ -20,7 +20,8 @@ node {
     npmWorkDir = file("${rootProject.projectDir}/.gradle/npm")
 }
 
-task protractorTests(type: NodeTask, dependsOn: npm_install) {
+tasks.register('protractorTests', NodeTask) {
+    dependsOn npm_install
     outputs.upToDateWhen { false }
     def environment = System.properties['protractor.env'] ?: "dev"
 
@@ -29,5 +30,5 @@ task protractorTests(type: NodeTask, dependsOn: npm_install) {
 }
 
 dependencies {
-    runtime project(':webcert-web')
+    runtimeOnly project(':webcert-web')
 }

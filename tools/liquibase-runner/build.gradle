@@ -24,26 +24,36 @@ startScripts {
     }
 }
 
-uploadArchives.enabled = true
+publishing {
+    publications {
+        mavenWeb(MavenPublication) {
+            from components.java
 
-artifacts {
-    archives distZip
+            def liquibaseRunner = "${rootProject.name}-liquibase-runner-${version}"
+            def liquibaseRunnerPath = "${project.layout.buildDirectory.get().asFile}/distributions/${liquibaseRunner}"
+            artifact "${liquibaseRunnerPath}.zip"
+            artifact "${liquibaseRunnerPath}.tar"
+
+            publishMavenWebPublicationToMavenLocal.dependsOn distTar
+            publishMavenWebPublicationToMavenLocal.dependsOn distZip
+        }
+    }
 }
 
-configurations.runtime {
+artifacts { archives distZip }
+sonarqube { skipProject = true }
+
+configurations.runtimeOnly {
+    setCanBeResolved(true)
     transitive = false
-}
-
-sonarqube {
-    skipProject = true
 }
 
 def liquibaseVersion = dependencyManagement.managedVersions['org.liquibase:liquibase-core']
 
 dependencies {
-    compile "info.picocli:picocli:${picocliVersion}"
-    runtime "com.mysql:mysql-connector-j"
-    runtime "org.liquibase:liquibase-core"
-    runtime "org.liquibase.ext:liquibase-hibernate5:" + liquibaseVersion
-    runtime project(':webcert-persistence')
+    implementation "info.picocli:picocli:${picocliVersion}"
+    runtimeOnly "com.mysql:mysql-connector-j"
+    runtimeOnly "org.liquibase:liquibase-core"
+    runtimeOnly "org.liquibase.ext:liquibase-hibernate5:" + liquibaseVersion
+    runtimeOnly project(':webcert-persistence')
 }
