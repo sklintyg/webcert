@@ -87,7 +87,7 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
             certificate.getModel()
         );
 
-        certificateToReturn.getMetadata().setCreated(certificate.getSkapad());
+        certificateToReturn.getMetadata().setCreated(certificate.getSenastSparadDatum());
         certificateToReturn.getMetadata().setVersion(certificate.getVersion());
         certificateToReturn.getMetadata().setForwarded(certificate.getVidarebefordrad());
         certificateToReturn.getMetadata().setReadyForSign(certificate.getKlartForSigneringDatum());
