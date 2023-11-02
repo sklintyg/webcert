@@ -35,7 +35,9 @@ import static se.inera.intyg.webcert.web.service.facade.impl.certificatefunction
 import static se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.GetCertificatesAvailableFunctionsImpl.REPLACE_DESCRIPTION;
 import static se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.GetCertificatesAvailableFunctionsImpl.REPLACE_DESCRIPTION_DISABLED;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -50,10 +52,14 @@ import se.inera.intyg.common.af00213.support.Af00213EntryPoint;
 import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
+import se.inera.intyg.common.luae_na.support.LuaenaEntryPoint;
+import se.inera.intyg.common.support.facade.builder.CertificateBuilder;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.Patient;
+import se.inera.intyg.common.support.facade.model.PersonId;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.common.support.facade.model.question.Question;
@@ -294,6 +300,38 @@ class GetCertificatesAvailableFunctionsImplTest {
         }
 
         @Test
+        void shallIncludeWarningWhenLuaenaIntegratedAndPatientOlderThanThirtyYearsAndTwoMonths() {
+            final var certificate = getUnsignedLuaenaForPatientOfAge(30, 3);
+            when(webCertUserService.getUser()).thenReturn(getUserWithOrigin("DJUPINTEGRATION"));
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.WARNING_LUAENA_INTEGRATED);
+        }
+
+        @Test
+        void shallExcludeWarningWhenLuaenaIntegratedAndPatientYoungerThanhirtyYearsAndTwoMonths() {
+            final var certificate = getUnsignedLuaenaForPatientOfAge(30, 1);
+            when(webCertUserService.getUser()).thenReturn(getUserWithOrigin("DJUPINTEGRATION"));
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.WARNING_LUAENA_INTEGRATED);
+        }
+
+        @Test
+        void shallExcludeWarningWhenLuaenaNonIntegratedAndPatientOlderThanThirtyYearsAndTwoMonths() {
+            final var certificate = getUnsignedLuaenaForPatientOfAge(31, 3);
+            when(webCertUserService.getUser()).thenReturn(getUserWithOrigin("ORIGIN"));
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.WARNING_LUAENA_INTEGRATED);
+        }
+
+        @Test
+        void shallExcludeWarningWhenLuaenaNonIntegratedAndPatientYoungerThanThirtyYearsAndTwoMonths() {
+            final var certificate = getUnsignedLuaenaForPatientOfAge(29, 3);
+            when(webCertUserService.getUser()).thenReturn(getUserWithOrigin("ORIGIN"));
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.WARNING_LUAENA_INTEGRATED);
+        }
+
+        @Test
         void shallIncludeCreateCertificateFromCandidate() {
             final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
             doReturn(
@@ -527,7 +565,7 @@ class GetCertificatesAvailableFunctionsImplTest {
                 Optional.of(
                     ResourceLinkDTO.create(ResourceLinkTypeDTO.SEND_CERTIFICATE, "", "", "", true)
                 ))
-                .when(sendCertificateFunction).get(eq(certificate));
+                .when(sendCertificateFunction).get(certificate);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.SEND_CERTIFICATE);
         }
@@ -1046,5 +1084,17 @@ class GetCertificatesAvailableFunctionsImplTest {
         user.setOrigin(origin);
         return user;
     }
-}
 
+    private Certificate getUnsignedLuaenaForPatientOfAge(int years, int months) {
+        final var paientBirthDate = LocalDate.now(ZoneId.systemDefault()).minusYears(years).minusMonths(months);
+        final var personId = PersonId.builder().id(paientBirthDate.toString().replace("-", "") + "-4321").build();
+        final var patient = Patient.builder().personId(personId).build();
+        return CertificateBuilder.create().metadata(CertificateMetadata.builder()
+            .id("certificateId")
+            .type(LuaenaEntryPoint.MODULE_ID)
+            .status(CertificateStatus.UNSIGNED)
+            .patient(patient)
+            .build()
+        ).build();
+    }
+}

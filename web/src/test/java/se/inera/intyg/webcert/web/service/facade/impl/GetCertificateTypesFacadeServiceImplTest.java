@@ -29,6 +29,8 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -81,14 +83,14 @@ class GetCertificateTypesFacadeServiceImplTest {
     private GetCertificateTypesFacadeServiceImpl serviceUnderTest;
 
     private static final String CERTIFICATE_TYPE = "id";
-    private static final Personnummer PATIENT_ID = Personnummer.createPersonnummer("19121212-1212").get();
+    private static final Personnummer PATIENT_ID = Personnummer.createPersonnummer("19121212-1212").orElseThrow();
 
     @Nested
     class CorrectCases {
 
         private List<CertificateTypeInfoDTO> types;
-        final private IntygModule module = createIntygModule();
-        final private IntygModule notAllowedModule = createIntygModule("notAllowed");
+        private final IntygModule module = createIntygModule();
+        private final IntygModule notAllowedModule = createIntygModule("notAllowed");
 
         @BeforeEach
         void setup() throws Exception {
@@ -186,8 +188,8 @@ class GetCertificateTypesFacadeServiceImplTest {
                     .listAllModules();
 
                 doAnswer(invocation -> {
-                    List<IntygModuleDTO> DTOs = invocation.getArgument(0);
-                    DTOs.forEach((DTO) -> DTO.addLink(new ActionLink(ActionLinkType.SKAPA_UTKAST)));
+                    List<IntygModuleDTO> dtos = invocation.getArgument(0);
+                    dtos.forEach((dto) -> dto.addLink(new ActionLink(ActionLinkType.SKAPA_UTKAST)));
                     return null;
                 })
                     .when(resourceLinkHelper)
@@ -224,6 +226,30 @@ class GetCertificateTypesFacadeServiceImplTest {
                 assertEquals(ResourceLinkTypeDTO.CREATE_CERTIFICATE, types.get(0).getLinks().get(0).getType());
                 assertEquals(ResourceLinkTypeDTO.CREATE_DODSBEVIS_CONFIRMATION, types.get(0).getLinks().get(1).getType());
                 assertFalse(types.get(0).getLinks().get(0).isEnabled());
+            }
+
+            @Test
+            void shallAddCreateConfirmationResourceLinkIfCertificateIsLuaenaAndPatientOlderThanThirtyYearsAndTwoMonths() {
+                final var module = createIntygModule("luae_na");
+                doReturn(List.of(module)).when(intygModuleRegistry).listAllModules();
+                when(authoritiesHelper.getIntygstyperForPrivilege(any(), any())).thenReturn(Set.of(module.getId()));
+
+                final var types = serviceUnderTest.get(getPatientId(3));
+                assertEquals(1, types.get(0).getLinks().stream()
+                    .filter(link -> link.getType().equals(ResourceLinkTypeDTO.CREATE_LUAENA_CONFIRMATION)).count());
+                assertTrue(types.get(0).getLinks().stream().filter(link ->
+                    link.getType() == ResourceLinkTypeDTO.CREATE_LUAENA_CONFIRMATION).findFirst().orElseThrow().isEnabled());
+            }
+
+            @Test
+            void shallNotAddCreateConfirmationResourceLinkIfCertificateIsLuaenaAndPatienYoungerThanThirtyYearsAndTwoMonths() {
+                final var module = createIntygModule("luae_na");
+                doReturn(List.of(module)).when(intygModuleRegistry).listAllModules();
+                when(authoritiesHelper.getIntygstyperForPrivilege(any(), any())).thenReturn(Set.of(module.getId()));
+
+                final var types = serviceUnderTest.get(getPatientId(1));
+                assertTrue(types.get(0).getLinks().stream()
+                    .noneMatch(link -> link.getType().equals(ResourceLinkTypeDTO.CREATE_LUAENA_CONFIRMATION)));
             }
 
             @Test
@@ -355,5 +381,11 @@ class GetCertificateTypesFacadeServiceImplTest {
         return new IntygModule("id", "label", "description", "detailedDescription", "issuerTypeId",
             "cssPath", "scriptPath", "dependencyDefinitionPath", "defaultRecipient",
             isDeprecated, showDeprecated);
+    }
+
+    private Personnummer getPatientId(int minusMonths) {
+        final var paientBirthDate = LocalDate.now(ZoneId.systemDefault()).minusYears(30).minusMonths(minusMonths);
+        final var patientId = paientBirthDate.toString().replace("-", "") + "4321";
+        return Personnummer.createPersonnummer(patientId).orElseThrow();
     }
 }
