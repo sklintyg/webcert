@@ -133,8 +133,8 @@ public class UtkastToCertificateConverterTest {
     class ValidateCommonMetadata {
 
         @Test
-        void shallIncludeCreatedDateTime() {
-            final var expectedCreated = draft.getSkapad();
+        void shallIncludeCreatedDateTimeAsTheLatestsSavedDateTime() {
+            final var expectedCreated = draft.getSenastSparadDatum();
 
             final var actualCertificate = utkastToCertificateConverter.convert(draft);
 
@@ -439,7 +439,8 @@ public class UtkastToCertificateConverterTest {
         draft.setEnhetsId("unitId");
         draft.setModel("draftJson");
         draft.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
-        draft.setSkapad(LocalDateTime.now());
+        draft.setSkapad(LocalDateTime.now().minusDays(1));
+        draft.setSenastSparadDatum(LocalDateTime.now());
         draft.setPatientPersonnummer(Personnummer.createPersonnummer("191212121212").orElseThrow());
         draft.setSkapadAv(new VardpersonReferens("personId", "personName"));
         return draft;

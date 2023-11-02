@@ -20,8 +20,6 @@ package se.inera.intyg.webcert.web.service.facade.util;
 
 import static se.inera.intyg.webcert.web.service.facade.util.CertificateStatusConverter.getStatus;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,7 +92,7 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
         );
 
         certificateToReturn.getMetadata().setCreated(
-            getSignedDate(certificate.getStatuses())
+            certificate.getUtlatande().getGrundData().getSigneringsdatum()
         );
         certificateToReturn.getMetadata().setVersion(DEFAULT_CERTIFICATE_VERSION);
         certificateToReturn.getMetadata().setForwarded(false);
@@ -160,12 +158,6 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
             .unitId(careUnitId != null ? careUnitId : unit.getEnhetsid())
             .unitName(careUnit != null ? careUnit.getUnitName() : unit.getEnhetsnamn())
             .build();
-    }
-
-    private LocalDateTime getSignedDate(List<Status> statuses) {
-        return statuses.stream()
-            .filter(status -> status.getType() == CertificateState.RECEIVED)
-            .findFirst().orElseThrow().getTimestamp();
     }
 
     private Certificate getCertificateToReturn(String certificateType, String certificateTypeVersion, String jsonModel) {
