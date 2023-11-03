@@ -36,7 +36,7 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 @Component
 public class UtkastToCertificateConverterImpl implements UtkastToCertificateConverter {
-
+    
     private static final Logger LOG = LoggerFactory.getLogger(UtkastToCertificateConverterImpl.class);
 
     private final IntygModuleRegistry moduleRegistry;

@@ -82,9 +82,8 @@ public class SendCertificateFunctionImpl implements SendCertificateFunction {
             || isSent(certificate)
             || isReplacementSigned(certificate)
             || isSendCertificateBlockedForCertificateVersion(
-                certificate.getMetadata().getType(),
-                certificate.getMetadata().isLatestMajorVersion()
-            )
+            certificate.getMetadata().getType(),
+            certificate.getMetadata().isLatestMajorVersion())
         ) {
             return Optional.empty();
         }

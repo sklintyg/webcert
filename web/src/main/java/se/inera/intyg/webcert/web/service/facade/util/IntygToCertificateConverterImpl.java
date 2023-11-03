@@ -99,7 +99,7 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
         certificateToReturn.getMetadata().setVersion(DEFAULT_CERTIFICATE_VERSION);
         certificateToReturn.getMetadata().setForwarded(false);
         certificateToReturn.getMetadata().setTestCertificate(certificate.isTestIntyg());
-
+        
         certificateToReturn.getMetadata().setLatestMajorVersion(
             intygTextsService.isLatestMajorVersion(certificateToReturn.getMetadata().getType(),
                 certificateToReturn.getMetadata().getTypeVersion())

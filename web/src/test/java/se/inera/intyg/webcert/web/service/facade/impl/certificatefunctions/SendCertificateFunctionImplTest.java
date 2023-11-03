@@ -564,6 +564,7 @@ class SendCertificateFunctionImplTest {
 
     @Nested
     class TsBlockedFunction {
+
         @Test
         void shouldReturnTrueIfTsBasAndNotLatestMajor() {
             final var response = sendCertificateFunction.isSendCertificateBlockedForCertificateVersion(TsBasEntryPoint.MODULE_ID, false);
@@ -580,14 +581,16 @@ class SendCertificateFunctionImplTest {
 
         @Test
         void shouldReturnTrueIfTsDiabetesAndNotLatestMajor() {
-            final var response = sendCertificateFunction.isSendCertificateBlockedForCertificateVersion(TsDiabetesEntryPoint.MODULE_ID, false);
+            final var response = sendCertificateFunction.isSendCertificateBlockedForCertificateVersion(TsDiabetesEntryPoint.MODULE_ID,
+                false);
 
             assertTrue(response);
         }
 
         @Test
         void shouldReturnFalseIfTsDiabetesAndLatestMajor() {
-            final var response = sendCertificateFunction.isSendCertificateBlockedForCertificateVersion(TsDiabetesEntryPoint.MODULE_ID, true);
+            final var response = sendCertificateFunction.isSendCertificateBlockedForCertificateVersion(TsDiabetesEntryPoint.MODULE_ID,
+                true);
 
             assertFalse(response);
         }
