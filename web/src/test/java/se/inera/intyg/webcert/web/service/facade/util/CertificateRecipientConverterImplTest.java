@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.service.facade.util;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -32,6 +33,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
+import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.SendCertificateFunction;
 import se.inera.intyg.webcert.web.service.receiver.CertificateReceiverService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygReceiver;
 
@@ -40,6 +43,10 @@ class CertificateRecipientConverterImplTest {
 
   @Mock
   CertificateReceiverService certificateReceiverService;
+  @Mock
+  SendCertificateFunction sendCertificateFunction;
+  @Mock
+  AuthoritiesHelper authoritiesHelper;
 
   @InjectMocks
   CertificateRecipientConverterImpl certificateRecipientConverter;
@@ -57,11 +64,17 @@ class CertificateRecipientConverterImplTest {
     void setup() {
       when(certificateReceiverService.listPossibleReceiversWithApprovedInfo(anyString(), anyString()))
           .thenReturn(Collections.emptyList());
+
+      when(sendCertificateFunction.isSendCertificateBlockedForCertificateVersion(anyString(), anyBoolean()))
+          .thenReturn(false);
+
+      when(authoritiesHelper.isFeatureActive(anyString(), anyString()))
+          .thenReturn(true);
     }
 
     @Test
     void shouldReturnNullIfNoRecipient() {
-      final var response = certificateRecipientConverter.get("type", "id", SENT);
+      final var response = certificateRecipientConverter.get("type", "id", SENT, true);
 
       assertNull(response);
     }
@@ -79,25 +92,31 @@ class CertificateRecipientConverterImplTest {
 
       when(certificateReceiverService.listPossibleReceiversWithApprovedInfo(anyString(), anyString()))
           .thenReturn(List.of(receiver));
+
+      when(sendCertificateFunction.isSendCertificateBlockedForCertificateVersion(anyString(), anyBoolean()))
+          .thenReturn(false);
+
+      when(authoritiesHelper.isFeatureActive(anyString(), anyString()))
+          .thenReturn(true);
     }
 
     @Test
     void shouldReturnId() {
-      final var response = certificateRecipientConverter.get("type", "id", SENT);
+      final var response = certificateRecipientConverter.get("type", "id", SENT, true);
 
       assertEquals(ID, response.getId());
     }
 
     @Test
     void shouldReturnName() {
-      final var response = certificateRecipientConverter.get("type", "id", SENT);
+      final var response = certificateRecipientConverter.get("type", "id", SENT, true);
 
       assertEquals(NAME, response.getName());
     }
 
     @Test
     void shouldReturnSent() {
-      final var response = certificateRecipientConverter.get("type", "id", SENT);
+      final var response = certificateRecipientConverter.get("type", "id", SENT, true);
 
       assertEquals(SENT, response.getSent());
     }
@@ -115,6 +134,12 @@ class CertificateRecipientConverterImplTest {
 
       when(certificateReceiverService.listPossibleReceiversWithApprovedInfo(anyString(), anyString()))
           .thenReturn(List.of(receiver1, receiver2));
+
+      when(sendCertificateFunction.isSendCertificateBlockedForCertificateVersion(anyString(), anyBoolean()))
+          .thenReturn(false);
+
+      when(authoritiesHelper.isFeatureActive(anyString(), anyString()))
+          .thenReturn(true);
     }
 
     @Test
@@ -122,7 +147,7 @@ class CertificateRecipientConverterImplTest {
       receiver1.setLocked(false);
       receiver2.setLocked(false);
 
-      final var response = certificateRecipientConverter.get("type", "id", SENT);
+      final var response = certificateRecipientConverter.get("type", "id", SENT, true);
       assertNull(response);
     }
 
@@ -131,7 +156,7 @@ class CertificateRecipientConverterImplTest {
       receiver1.setLocked(true);
       receiver2.setLocked(true);
 
-      final var response = certificateRecipientConverter.get("type", "id", SENT);
+      final var response = certificateRecipientConverter.get("type", "id", SENT, true);
       assertEquals(ID, response.getId());
     }
 
@@ -140,8 +165,73 @@ class CertificateRecipientConverterImplTest {
       receiver1.setLocked(false);
       receiver2.setLocked(true);
 
-      final var response = certificateRecipientConverter.get("type", "id", SENT);
+      final var response = certificateRecipientConverter.get("type", "id", SENT, true);
       assertEquals(ANOTHER_ID, response.getId());
+    }
+  }
+
+  @Nested
+  class FeatureActivation {
+    @BeforeEach
+    void setup() {
+      final var receiver = new IntygReceiver();
+      receiver.setId(ID);
+      receiver.setName(NAME);
+      receiver.setLocked(true);
+
+      when(certificateReceiverService.listPossibleReceiversWithApprovedInfo(anyString(), anyString()))
+          .thenReturn(List.of(receiver));
+    }
+
+    @Test
+    void shouldReturnNullIfFeatureIsNotActivated() {
+      final var response = certificateRecipientConverter.get("type", "id", LocalDateTime.now(), true);
+
+      assertNull(response);
+    }
+
+    @Test
+    void shouldReturnRecipientIfFeatureIsActivated() {
+      when(authoritiesHelper.isFeatureActive(anyString(), anyString()))
+          .thenReturn(true);
+
+      final var response = certificateRecipientConverter.get("type", "id", LocalDateTime.now(), true);
+
+      assertNotNull(response);
+    }
+  }
+
+  @Nested
+  class SendBlockedForVersionCheck {
+    @BeforeEach
+    void setup() {
+      final var receiver = new IntygReceiver();
+      receiver.setId(ID);
+      receiver.setName(NAME);
+      receiver.setLocked(true);
+
+      when(certificateReceiverService.listPossibleReceiversWithApprovedInfo(anyString(), anyString()))
+          .thenReturn(List.of(receiver));
+
+      when(authoritiesHelper.isFeatureActive(anyString(), anyString()))
+          .thenReturn(true);
+    }
+
+    @Test
+    void shouldReturnNullIfSendFunctionReturnsTsIsBlocked() {
+      when(sendCertificateFunction.isSendCertificateBlockedForCertificateVersion(anyString(), anyBoolean()))
+          .thenReturn(true);
+
+      final var response = certificateRecipientConverter.get("type", "id", LocalDateTime.now(), true);
+
+      assertNull(response);
+    }
+
+    @Test
+    void shouldReturnRecipientIfSendFunctionReturnsTsNotBlocked() {
+      final var response = certificateRecipientConverter.get("type", "id", LocalDateTime.now(), true);
+
+      assertNotNull(response);
     }
   }
 }

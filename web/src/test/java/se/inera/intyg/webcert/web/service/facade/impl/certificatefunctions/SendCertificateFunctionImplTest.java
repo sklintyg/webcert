@@ -563,6 +563,51 @@ class SendCertificateFunctionImplTest {
     }
 
     @Nested
+    class TsBlockedFunction {
+        @Test
+        void shouldReturnTrueIfTsBasAndNotLatestMajor() {
+            final var response = sendCertificateFunction.isSendCertificateBlockedForCertificateVersion(TsBasEntryPoint.MODULE_ID, false);
+
+            assertTrue(response);
+        }
+
+        @Test
+        void shouldReturnFalseIfTsBasAndLatestMajor() {
+            final var response = sendCertificateFunction.isSendCertificateBlockedForCertificateVersion(TsBasEntryPoint.MODULE_ID, true);
+
+            assertFalse(response);
+        }
+
+        @Test
+        void shouldReturnTrueIfTsDiabetesAndNotLatestMajor() {
+            final var response = sendCertificateFunction.isSendCertificateBlockedForCertificateVersion(TsDiabetesEntryPoint.MODULE_ID, false);
+
+            assertTrue(response);
+        }
+
+        @Test
+        void shouldReturnFalseIfTsDiabetesAndLatestMajor() {
+            final var response = sendCertificateFunction.isSendCertificateBlockedForCertificateVersion(TsDiabetesEntryPoint.MODULE_ID, true);
+
+            assertFalse(response);
+        }
+
+        @Test
+        void shouldReturnFalseIfNotTsAndLatestMajor() {
+            final var response = sendCertificateFunction.isSendCertificateBlockedForCertificateVersion(LisjpEntryPoint.MODULE_ID, true);
+
+            assertFalse(response);
+        }
+
+        @Test
+        void shouldReturnFalseIfNotTsAndNotLatestMajor() {
+            final var response = sendCertificateFunction.isSendCertificateBlockedForCertificateVersion(LisjpEntryPoint.MODULE_ID, false);
+
+            assertFalse(response);
+        }
+    }
+
+    @Nested
     class TsDiabetesV4 {
 
         private Certificate tsDiabetes = new Certificate();

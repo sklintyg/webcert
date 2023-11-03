@@ -94,11 +94,17 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
         certificateToReturn.getMetadata().setTestCertificate(certificate.isTestIntyg());
         certificateToReturn.getMetadata().setSent(certificate.getSkickadTillMottagareDatum() != null);
 
+        certificateToReturn.getMetadata().setLatestMajorVersion(
+            intygTextsService.isLatestMajorVersion(certificateToReturn.getMetadata().getType(),
+                certificateToReturn.getMetadata().getTypeVersion())
+        );
+
         certificateToReturn.getMetadata().setRecipient(
             certificateRecipientConverter.get(
                 certificate.getIntygsTyp(),
                 certificate.getIntygsId(),
-                certificate.getSkickadTillMottagareDatum())
+                certificate.getSkickadTillMottagareDatum(),
+                certificateToReturn.getMetadata().isLatestMajorVersion())
         );
 
         certificateToReturn.getMetadata().setSentTo(
@@ -129,11 +135,6 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
 
         certificateToReturn.getMetadata().setRelations(
             certificateRelationsConverter.convert(certificateToReturn.getMetadata().getId())
-        );
-
-        certificateToReturn.getMetadata().setLatestMajorVersion(
-            intygTextsService.isLatestMajorVersion(certificateToReturn.getMetadata().getType(),
-                certificateToReturn.getMetadata().getTypeVersion())
         );
 
         certificateToReturn.getMetadata().setResponsibleHospName(

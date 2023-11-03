@@ -25,4 +25,5 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 public interface SendCertificateFunction {
 
     Optional<ResourceLinkDTO> get(Certificate certificate);
+    boolean isSendCertificateBlockedForCertificateVersion(String type, boolean isLatestMajorVersion);
 }

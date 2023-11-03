@@ -164,7 +164,7 @@ public class IntygToCertificateConverterImplTest {
 
         @BeforeEach
         void setup() {
-            doReturn(RECIPIENT).when(certificateRecipientConverter).get(any(), any(), any());
+            doReturn(RECIPIENT).when(certificateRecipientConverter).get(any(), any(), any(), any());
         }
 
         @Test

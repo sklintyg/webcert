@@ -78,18 +78,24 @@ public class SendCertificateFunctionImpl implements SendCertificateFunction {
 
     @Override
     public Optional<ResourceLinkDTO> get(Certificate certificate) {
-        if (!allowedCertificateTypes.contains(certificate.getMetadata().getType()) || isSent(certificate) || isReplacementSigned(
-            certificate) || isWrongMajorVersion(certificate)) {
+        if (!allowedCertificateTypes.contains(certificate.getMetadata().getType())
+            || isSent(certificate)
+            || isReplacementSigned(certificate)
+            || isSendCertificateBlockedForCertificateVersion(
+                certificate.getMetadata().getType(),
+                certificate.getMetadata().isLatestMajorVersion()
+            )
+        ) {
             return Optional.empty();
         }
 
         return getResourceLinkDTO(certificate);
     }
 
-    private static boolean isWrongMajorVersion(Certificate certificate) {
-        return (certificate.getMetadata().getType().equals(TsBasEntryPoint.MODULE_ID)
-            || certificate.getMetadata().getType().equals(TsDiabetesEntryPoint.MODULE_ID)) && !certificate.getMetadata()
-            .isLatestMajorVersion();
+    @Override
+    public boolean isSendCertificateBlockedForCertificateVersion(String type, boolean isLatestMajorVersion) {
+        return (type.equals(TsBasEntryPoint.MODULE_ID)
+            || type.equals(TsDiabetesEntryPoint.MODULE_ID)) && !isLatestMajorVersion;
     }
 
     private Optional<ResourceLinkDTO> getResourceLinkDTO(Certificate certificate) {

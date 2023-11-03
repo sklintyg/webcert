@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doReturn;
@@ -377,7 +378,8 @@ public class UtkastToCertificateConverterTest {
                 .name("Name")
                 .id("Id")
                 .build();
-            when(certificateRecipientConverter.get(anyString(), anyString(), any()))
+
+            when(certificateRecipientConverter.get(anyString(), anyString(), any(), anyBoolean()))
                 .thenReturn(recipient);
 
             final var actualCertificate = utkastToCertificateConverter.convert(draft);
@@ -424,7 +426,7 @@ public class UtkastToCertificateConverterTest {
     @Test
     void shouldSetRecipient() {
         final var recipient = CertificateRecipient.builder().build();
-        when(certificateRecipientConverter.get(anyString(), anyString(), any()))
+        when(certificateRecipientConverter.get(anyString(), anyString(), any(), anyBoolean()))
             .thenReturn(recipient);
         final var actualCertificate = utkastToCertificateConverter.convert(draft);
 

@@ -100,11 +100,18 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
         certificateToReturn.getMetadata().setForwarded(false);
         certificateToReturn.getMetadata().setTestCertificate(certificate.isTestIntyg());
 
+        certificateToReturn.getMetadata().setLatestMajorVersion(
+            intygTextsService.isLatestMajorVersion(certificateToReturn.getMetadata().getType(),
+                certificateToReturn.getMetadata().getTypeVersion())
+        );
+
         certificateToReturn.getMetadata().setRecipient(
             certificateRecipientConverter.get(
                 certificate.getUtlatande().getTyp(),
                 certificate.getUtlatande().getId(),
-                sentStatus.map(Status::getTimestamp).orElse(null))
+                sentStatus.map(Status::getTimestamp).orElse(null),
+                certificateToReturn.getMetadata().isLatestMajorVersion()
+            )
         );
 
         certificateToReturn.getMetadata().setSent(sentStatus.isPresent());
@@ -136,11 +143,6 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
 
         certificateToReturn.getMetadata().setRelations(
             certificateRelationsConverter.convert(certificateToReturn.getMetadata().getId())
-        );
-
-        certificateToReturn.getMetadata().setLatestMajorVersion(
-            intygTextsService.isLatestMajorVersion(certificateToReturn.getMetadata().getType(),
-                certificateToReturn.getMetadata().getTypeVersion())
         );
 
         return certificateToReturn;
