@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions;
 
+import se.inera.intyg.common.luae_na.support.LuaenaEntryPoint;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
@@ -46,6 +47,15 @@ public class ResourceLinkFactory {
         return ResourceLinkDTO.create(
             ResourceLinkTypeDTO.CREATE_DODSBEVIS_CONFIRMATION,
             "Visa bekräftelsemodal för dödsbevis",
+            "Visa modal med ett bekräftelsemeddelande.",
+            enabled
+        );
+    }
+
+    public static ResourceLinkDTO confirmLuaena(boolean enabled) {
+        return ResourceLinkDTO.create(
+            ResourceLinkTypeDTO.CREATE_LUAENA_CONFIRMATION,
+            "Visa bekräftelsemodal för " + LuaenaEntryPoint.MODULE_NAME,
             "Visa modal med ett bekräftelsemeddelande.",
             enabled
         );
