@@ -18,16 +18,25 @@
  */
 package se.inera.intyg.webcert.web.web.controller.internalapi.dto;
 
+import java.util.List;
 import java.util.Objects;
 import se.inera.intyg.common.support.facade.model.Certificate;
 
 public class GetCertificateResponse {
 
     private Certificate certificate;
+    private List<ResourceLinkDTO> links;
 
     public static GetCertificateResponse create(Certificate certificate) {
         final var getCertificateResponse = new GetCertificateResponse();
         getCertificateResponse.setCertificate(certificate);
+        return getCertificateResponse;
+    }
+
+    public static GetCertificateResponse create(Certificate certificate, List<ResourceLinkDTO> links) {
+        final var getCertificateResponse = new GetCertificateResponse();
+        getCertificateResponse.setCertificate(certificate);
+        getCertificateResponse.setLinks(links);
         return getCertificateResponse;
     }
 
@@ -39,6 +48,14 @@ public class GetCertificateResponse {
         this.certificate = certificate;
     }
 
+    public List<ResourceLinkDTO> getLinks() {
+        return links;
+    }
+
+    public void setLinks(List<ResourceLinkDTO> links) {
+        this.links = links;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -47,19 +64,20 @@ public class GetCertificateResponse {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        GetCertificateResponse that = (GetCertificateResponse) o;
-        return Objects.equals(certificate, that.certificate);
+        final GetCertificateResponse that = (GetCertificateResponse) o;
+        return Objects.equals(certificate, that.certificate) && Objects.equals(links, that.links);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(certificate);
+        return Objects.hash(certificate, links);
     }
 
     @Override
     public String toString() {
         return "GetCertificateResponse{"
             + "certificate=" + certificate
+            + ", links=" + links
             + '}';
     }
 }
