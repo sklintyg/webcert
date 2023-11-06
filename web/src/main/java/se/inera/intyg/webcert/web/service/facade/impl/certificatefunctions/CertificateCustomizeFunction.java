@@ -19,6 +19,10 @@
 
 package se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions;
 
+import static se.inera.intyg.common.ag7804.converter.RespConstants.DIAGNOS_SVAR_JSON_ID_6;
+import static se.inera.intyg.common.ag7804.converter.RespConstants.ONSKAR_FORMEDLA_DIAGNOS_DELSVAR_JSON_ID_100;
+
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
@@ -26,6 +30,8 @@ import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateDataElement;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueBoolean;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.InformationDTO;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.InformationTypeDto;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.ResourceLinkTypeDTO;
 
@@ -36,9 +42,16 @@ public class CertificateCustomizeFunction {
         + "välja om du vill att din diagnos ska visas eller döljas. Ingen annan information kan döljas. ";
     private static final String RESOURCE_LINK_TITLE = "Vill du visa eller dölja diagnos?";
     private static final String RESOURCE_LINK_NAME = "Anpassa intyget";
-    private static final String RESOURCE_LINK_DESCRIPTION = "Information om diagnos kan vara viktig för din arbetsgivare."
+    private static final String INFORMATION_ALERT_TEXT = "Information om diagnos kan vara viktig för din arbetsgivare."
         + " Det kan underlätta anpassning av din arbetssituation. Det kan också göra att du snabbare kommer tillbaka till arbetet.";
     private static final String AVSTANGNING_SMITTSKYDD_QUESTION_ID = "AVSTANGNING_SMITTSKYDD_SVAR_ID_27";
+    private static final String OPTIONAL_FIELD_FORMEDLA_DIAGNOSER = ONSKAR_FORMEDLA_DIAGNOS_DELSVAR_JSON_ID_100;
+    private static final String OPTIONAL_FIELD_DIAGNOSER = DIAGNOS_SVAR_JSON_ID_6;
+    private static final String OPTIONAL_FIELD_DIAGNOSER_AND_FORMELDA_DIAGNOSER_ID =
+        "!" + OPTIONAL_FIELD_FORMEDLA_DIAGNOSER + " " + "!" + OPTIONAL_FIELD_FORMEDLA_DIAGNOSER;
+    private static final String SHOW_DIAGNOSIS = "Visa Diagnos";
+    private static final String HIDE_DIAGNOSIS = "Dölj Diagnos";
+    private static final String HIDE_DIAGNOSIS_ALERT_ID = "hideDiagnosisAlert";
 
     public Optional<ResourceLinkDTO> get(Certificate certificate) {
         if (certificateIsCorrectType(certificate) && questionAvstangningSmittskyddIsNullOrFalse(certificate.getData())) {
@@ -47,8 +60,25 @@ public class CertificateCustomizeFunction {
                     ResourceLinkTypeDTO.CUSTOMIZE_CERTIFICATE,
                     RESOURCE_LINK_TITLE,
                     RESOURCE_LINK_NAME,
-                    RESOURCE_LINK_DESCRIPTION,
-                    RESOURCE_LINK_BODY
+                    RESOURCE_LINK_BODY,
+                    List.of(
+                        InformationDTO.create(
+                            OPTIONAL_FIELD_DIAGNOSER,
+                            SHOW_DIAGNOSIS,
+                            InformationTypeDto.RADIO_BUTTON
+                        ),
+                        InformationDTO.create(
+                            OPTIONAL_FIELD_DIAGNOSER_AND_FORMELDA_DIAGNOSER_ID,
+                            HIDE_DIAGNOSIS,
+                            InformationTypeDto.RADIO_BUTTON
+                        ),
+                        InformationDTO.create(
+                            HIDE_DIAGNOSIS_ALERT_ID,
+                            INFORMATION_ALERT_TEXT,
+                            InformationTypeDto.ALERT,
+                            OPTIONAL_FIELD_DIAGNOSER_AND_FORMELDA_DIAGNOSER_ID
+                        )
+                    )
                 )
             );
         }

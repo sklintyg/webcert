@@ -19,16 +19,41 @@
 
 package se.inera.intyg.webcert.web.web.controller.internalapi.dto;
 
+import java.util.List;
 import java.util.Objects;
 
 
 public class ResourceLinkDTO {
 
     private ResourceLinkTypeDTO type;
+    private List<InformationDTO> information;
     private String name;
     private String description;
     private String body;
     private String title;
+
+    public static ResourceLinkDTO create(ResourceLinkTypeDTO type, String title, String name, String description, String body,
+        List<InformationDTO> information) {
+        final var resourceLink = new ResourceLinkDTO();
+        resourceLink.setType(type);
+        resourceLink.setTitle(title);
+        resourceLink.setName(name);
+        resourceLink.setDescription(description);
+        resourceLink.setBody(body);
+        resourceLink.setInformation(information);
+        return resourceLink;
+    }
+
+    public static ResourceLinkDTO create(ResourceLinkTypeDTO type, String title, String name, String body,
+        List<InformationDTO> information) {
+        final var resourceLink = new ResourceLinkDTO();
+        resourceLink.setType(type);
+        resourceLink.setTitle(title);
+        resourceLink.setName(name);
+        resourceLink.setBody(body);
+        resourceLink.setInformation(information);
+        return resourceLink;
+    }
 
     public static ResourceLinkDTO create(ResourceLinkTypeDTO type, String title, String name, String description, String body) {
         final var resourceLink = new ResourceLinkDTO();
@@ -38,6 +63,24 @@ public class ResourceLinkDTO {
         resourceLink.setDescription(description);
         resourceLink.setBody(body);
         return resourceLink;
+    }
+
+
+    public static ResourceLinkDTO create(ResourceLinkTypeDTO type, String title, String name, String body) {
+        final var resourceLink = new ResourceLinkDTO();
+        resourceLink.setType(type);
+        resourceLink.setTitle(title);
+        resourceLink.setName(name);
+        resourceLink.setBody(body);
+        return resourceLink;
+    }
+
+    public List<InformationDTO> getInformation() {
+        return information;
+    }
+
+    public void setInformation(List<InformationDTO> information) {
+        this.information = information;
     }
 
     public ResourceLinkTypeDTO getType() {
@@ -89,19 +132,21 @@ public class ResourceLinkDTO {
             return false;
         }
         final ResourceLinkDTO that = (ResourceLinkDTO) o;
-        return type == that.type && Objects.equals(name, that.name) && Objects.equals(description, that.description)
-            && Objects.equals(body, that.body) && Objects.equals(title, that.title);
+        return type == that.type && Objects.equals(information, that.information) && Objects.equals(name, that.name)
+            && Objects.equals(description, that.description) && Objects.equals(body, that.body) && Objects.equals(
+            title, that.title);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, name, description, body, title);
+        return Objects.hash(type, information, name, description, body, title);
     }
 
     @Override
     public String toString() {
         return "ResourceLinkDTO{"
             + "type=" + type
+            + ", information=" + information
             + ", name='" + name + '\''
             + ", description='" + description + '\''
             + ", body='" + body + '\''

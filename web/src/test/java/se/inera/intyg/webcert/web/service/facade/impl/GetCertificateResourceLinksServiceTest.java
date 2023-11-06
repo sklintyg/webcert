@@ -47,7 +47,7 @@ class GetCertificateResourceLinksServiceTest {
     @Test
     void shouldIncludeCertificateCustomizeResourceLink() {
         final var expectedResourceLink = ResourceLinkDTO.create(
-            ResourceLinkTypeDTO.CUSTOMIZE_CERTIFICATE, null, null, null, null);
+            ResourceLinkTypeDTO.CUSTOMIZE_CERTIFICATE, null, null, null);
         when(certificateCustomizeFunction.get(CERTIFICATE)).thenReturn(
             Optional.of(
                 expectedResourceLink

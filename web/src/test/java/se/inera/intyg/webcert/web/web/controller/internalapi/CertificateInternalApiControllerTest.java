@@ -45,7 +45,7 @@ class CertificateInternalApiControllerTest {
     private static final Certificate EXPECTED_CERTIFICATE = new Certificate();
     private static final List<ResourceLinkDTO> EXPECTED_RESOURCE_LINKS = List.of(
         ResourceLinkDTO.create(ResourceLinkTypeDTO.CUSTOMIZE_CERTIFICATE, null,
-            null, null, null)
+            null, null)
     );
     private static final String CERTIFICATE_ID = "certificateId";
     private static final boolean SHOULD_NOT_PDL_LOG = false;
