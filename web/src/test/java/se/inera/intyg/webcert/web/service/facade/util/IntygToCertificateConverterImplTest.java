@@ -73,6 +73,7 @@ public class IntygToCertificateConverterImplTest {
     public static final String CERTIFICATE_TYPE_VERSION = "certificateTypeVersion";
     public static final String CONTENT_JSON = "draftJson";
     public static final Personnummer PATIENT_PERSONNUMMER = Personnummer.createPersonnummer("191212121212").orElseThrow();
+    public static final LocalDateTime SIGNED_DATE_TIME = LocalDateTime.now().minusDays(1);
     public static final LocalDateTime RECEIVED_DATE_TIME = LocalDateTime.now();
     public static final boolean IS_TEST_INTYG = true;
     public static final String CARE_PROVIDER_ID = "CareProviderId";
@@ -168,8 +169,8 @@ public class IntygToCertificateConverterImplTest {
         }
 
         @Test
-        void shallIncludeCreatedDateTime() {
-            final var expectedCreated = RECEIVED_DATE_TIME;
+        void shallIncludeCreatedDateTimeAsTheSigningDateTime() {
+            final var expectedCreated = SIGNED_DATE_TIME;
 
             final var actualCertificate = intygToCertificateConverter.convert(intygContentHolder);
 
@@ -375,6 +376,7 @@ public class IntygToCertificateConverterImplTest {
         grundData.getSkapadAv().getVardenhet().setVardgivare(new Vardgivare());
         grundData.getSkapadAv().getVardenhet().getVardgivare().setVardgivarid(CARE_PROVIDER_ID);
         grundData.getSkapadAv().getVardenhet().getVardgivare().setVardgivarnamn(CARE_PROVIDER_NAME);
+        grundData.setSigneringsdatum(SIGNED_DATE_TIME);
 
         final var mockUtlatande = mock(Utlatande.class);
         doReturn(CERTIFICATE_ID)

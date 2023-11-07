@@ -18,12 +18,16 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
+import se.inera.intyg.common.luae_na.support.LuaenaEntryPoint;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
@@ -81,6 +85,9 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
         if (intygModule.getId().equals(DbModuleEntryPoint.MODULE_ID)) {
             intygModule.getLinks().add(ResourceLinkFactory.confirmDodsbevis(true));
         }
+        if (intygModule.getId().equals(LuaenaEntryPoint.MODULE_ID) && patientOlderThanThirtyYearsAndTwoMonths(patientId)) {
+            intygModule.getLinks().add(ResourceLinkFactory.confirmLuaena(true));
+        }
         missingRelatedCertificateConfirmation.get(intygModule.getId(), patientId)
             .ifPresent(resourceLinkDTO -> intygModule.getLinks().add(resourceLinkDTO));
         return intygModule;
@@ -134,5 +141,10 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
         resourceLinkHelper.decorateIntygModuleWithValidActionLinks(intygModuleDTOs, personnummer);
 
         return intygModuleDTOs;
+    }
+
+    private boolean patientOlderThanThirtyYearsAndTwoMonths(Personnummer patientId) {
+        final var birthDate = LocalDate.parse(patientId.getPersonnummer().substring(0, 8), DateTimeFormatter.ofPattern("yyyyMMdd"));
+        return LocalDate.now(ZoneId.systemDefault()).isAfter(birthDate.plusYears(30).plusMonths(2));
     }
 }

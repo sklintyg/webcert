@@ -24,6 +24,9 @@ import static se.inera.intyg.common.support.facade.model.CertificateStatus.SIGNE
 import static se.inera.intyg.common.support.facade.model.CertificateStatus.UNSIGNED;
 import static se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO.FMB;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -80,6 +83,12 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             + "Ett dödsbevis utfärdat på fel person får stora konsekvenser för den enskilde personen.\n"
             + "Kontrollera därför en extra gång att personuppgifterna stämmer.";
     private static final String DB_TYPE = "db";
+    private static final String LUAENA_TYPE = "luae_na";
+    private static final String LUAENA_WARNING = "Kontrollera att du använder dig av rätt läkarutlåtande";
+    private static final String LUAENA_WARNING_DESCRIPTION =
+        "Läkarutlåtande för aktivitetsersättning vid nedsatt arbetsförmåga är till för personer under 30 år.\n"
+            + "För personer över 30 år rekommenderar vi Läkarutlåtande för sjukersättning.\n"
+            + "Kontrollera en extra gång att du använder dig av rätt läkarutlåtande.";
     private final AuthoritiesHelper authoritiesHelper;
     private final WebCertUserService webCertUserService;
     private final UserService userService;
@@ -166,6 +175,18 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
      */
     private ArrayList<ResourceLinkDTO> getAvailableFunctionsForDraft(Certificate certificate) {
         final var resourceLinks = new ArrayList<ResourceLinkDTO>();
+
+        if (certificate.getMetadata().getType().equals(LUAENA_TYPE) && isDjupintegration()
+            && patientOlderThanThirtyYearsAndTwoMonths(certificate.getMetadata().getPatient().getPersonId().getId())) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.WARNING_LUAENA_INTEGRATED,
+                    LUAENA_WARNING,
+                    LUAENA_WARNING_DESCRIPTION,
+                    true
+                )
+            );
+        }
 
         if (certificate.getMetadata().getType().equals(DB_TYPE) && isDjupintegration()) {
             resourceLinks.add(
@@ -497,5 +518,10 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             );
         }
         return false;
+    }
+
+    private boolean patientOlderThanThirtyYearsAndTwoMonths(String patientId) {
+        final var birthDate = LocalDate.parse(patientId.substring(0, 8), DateTimeFormatter.ofPattern("yyyyMMdd"));
+        return LocalDate.now(ZoneId.systemDefault()).isAfter(birthDate.plusYears(30).plusMonths(2));
     }
 }

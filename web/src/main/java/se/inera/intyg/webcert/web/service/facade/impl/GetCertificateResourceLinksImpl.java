@@ -119,6 +119,11 @@ public class GetCertificateResourceLinksImpl implements GetCertificateResourceLi
                 draftAccessServiceHelper.isAllowToEditUtkast(accessEvaluationParameters)
         );
 
+        functions.put(ResourceLinkTypeDTO.WARNING_LUAENA_INTEGRATED,
+            (accessEvaluationParameters, certificate) ->
+                draftAccessServiceHelper.isAllowToEditUtkast(accessEvaluationParameters)
+        );
+
         functions.put(ResourceLinkTypeDTO.EDIT_CERTIFICATE,
             (accessEvaluationParameters, certificate) ->
                 draftAccessServiceHelper.isAllowToEditUtkast(accessEvaluationParameters)
