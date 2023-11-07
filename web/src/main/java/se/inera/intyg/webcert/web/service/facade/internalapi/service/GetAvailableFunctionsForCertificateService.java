@@ -19,26 +19,26 @@
 
 package se.inera.intyg.webcert.web.service.facade.internalapi.service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.CertificateCustomizeFunction;
+import se.inera.intyg.webcert.web.service.facade.internalapi.AvailableFunctions;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionDTO;
 
 @Service
 public class GetAvailableFunctionsForCertificateService {
 
-    private final CertificateCustomizeFunction certificateCustomizeFunction;
+    private final List<AvailableFunctions> availableFunctions;
 
-    public GetAvailableFunctionsForCertificateService(CertificateCustomizeFunction certificateCustomizeFunction) {
-        this.certificateCustomizeFunction = certificateCustomizeFunction;
+    public GetAvailableFunctionsForCertificateService(List<AvailableFunctions> availableFunctions) {
+        this.availableFunctions = availableFunctions;
     }
 
     public List<AvailableFunctionDTO> get(Certificate certificate) {
-        final var availableFunctions = new ArrayList<AvailableFunctionDTO>();
-        certificateCustomizeFunction.get(certificate)
-            .ifPresent(availableFunctions::add);
-        return availableFunctions;
+        return availableFunctions.stream()
+            .map(function -> function.get(certificate))
+            .flatMap(List::stream)
+            .collect(Collectors.toList());
     }
 }

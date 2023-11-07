@@ -23,14 +23,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
-import java.util.Optional;
+import java.util.Collections;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.CertificateCustomizeFunction;
+import se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.CertificateInfoSmittbararpenningFunction;
+import se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.CertificatePrintFunction;
 import se.inera.intyg.webcert.web.service.facade.internalapi.service.GetAvailableFunctionsForCertificateService;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionTypeDTO;
@@ -39,29 +41,56 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFuncti
 class GetAvailableFunctionsForCertificateServiceTest {
 
     @Mock
-    private CertificateCustomizeFunction certificateCustomizeFunction;
-    @InjectMocks
+    private CertificateInfoSmittbararpenningFunction certificateInfoSmittbararpenningFunction;
+    @Mock
+    private CertificatePrintFunction certificatePrintFunction;
     private GetAvailableFunctionsForCertificateService getAvailableFunctionsForCertificateService;
 
     private static final Certificate CERTIFICATE = new Certificate();
 
-    @Test
-    void shouldIncludeCertificateCustomizeResourceLink() {
-        final var expectedResourceLink = AvailableFunctionDTO.create(
-            AvailableFunctionTypeDTO.CUSTOMIZE_PRINT_CERTIFICATE, null, null, null);
-        when(certificateCustomizeFunction.get(CERTIFICATE)).thenReturn(
-            Optional.of(
-                expectedResourceLink
-            )
+    @BeforeEach
+    void setUp() {
+        getAvailableFunctionsForCertificateService = new GetAvailableFunctionsForCertificateService(
+            List.of(certificatePrintFunction, certificateInfoSmittbararpenningFunction)
         );
+    }
+
+    @Test
+    void shouldReturnListOfAvailableFunctions() {
+        final var expectedAvailableFunction = List.of(AvailableFunctionDTO.create(
+            AvailableFunctionTypeDTO.CUSTOMIZE_PRINT_CERTIFICATE, null, null, null));
+        when(certificatePrintFunction.get(CERTIFICATE))
+            .thenReturn(
+                expectedAvailableFunction
+            );
         final var result = getAvailableFunctionsForCertificateService.get(CERTIFICATE);
-        assertEquals(expectedResourceLink, result.get(0));
+        assertEquals(expectedAvailableFunction, result);
+    }
+
+    @Test
+    void shouldReturnListOfMultipleAvailableFunctions() {
+        final var expectedAvailableFunction = List.of(
+            AvailableFunctionDTO.create(
+                AvailableFunctionTypeDTO.CUSTOMIZE_PRINT_CERTIFICATE, null, null, null),
+            AvailableFunctionDTO.create(
+                AvailableFunctionTypeDTO.INFO, null, null, null)
+        );
+        when(certificatePrintFunction.get(CERTIFICATE))
+            .thenReturn(
+                List.of(expectedAvailableFunction.get(0))
+            );
+        when(certificateInfoSmittbararpenningFunction.get(CERTIFICATE))
+            .thenReturn(
+                List.of(expectedAvailableFunction.get(1))
+            );
+        final var result = getAvailableFunctionsForCertificateService.get(CERTIFICATE);
+        assertEquals(expectedAvailableFunction, result);
     }
 
     @Test
     void shouldNotIncludeCertificateCustomizeResourceLink() {
-        when(certificateCustomizeFunction.get(CERTIFICATE)).thenReturn(
-            Optional.empty()
+        when(certificatePrintFunction.get(CERTIFICATE)).thenReturn(
+            Collections.emptyList()
         );
         final var result = getAvailableFunctionsForCertificateService.get(CERTIFICATE);
         assertTrue(result.isEmpty());

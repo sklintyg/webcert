@@ -20,7 +20,6 @@
 package se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static se.inera.intyg.common.ag7804.converter.RespConstants.DIAGNOS_SVAR_JSON_ID_6;
 
 import java.util.List;
@@ -35,20 +34,21 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateDataElement;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueBoolean;
-import se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.CertificateCustomizeFunction;
+import se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.CertificatePrintFunction;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionTypeDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.InformationDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.InformationTypeDto;
 
 @ExtendWith(MockitoExtension.class)
-class CertificateCustomizeFunctionTest {
+class CertificatePrintFunctionTest {
 
     private static final String AVAILABLE_FUNCTION_BODY = "När du skriver ut ett läkarintyg du ska lämna till din arbetsgivare kan du "
         + "välja om du vill att din diagnos ska visas eller döljas. Ingen annan information kan döljas. ";
     private static final String AVAILABLE_FUNCTION_TITLE = "Vill du visa eller dölja diagnos?";
-    private static final String AVAILABLE_FUNCTION_NAME = "Anpassa intyget för utskrift";
-    private static final String INFORMATION_ALERT_TEXT = "Information om diagnos kan vara viktig för din arbetsgivare."
+    private static final String AVAILABLE_FUNCTION_CUSTOMIZE_NAME = "Anpassa intyget för utskrift";
+    private static final String AVAILABLE_FUNCTION_PRINT_NAME = "Intyget kan skrivas ut";
+    private static final String AVAILABLE_FUNCTION_DESCRIPTION = "Information om diagnos kan vara viktig för din arbetsgivare."
         + " Det kan underlätta anpassning av din arbetssituation. Det kan också göra att du snabbare kommer tillbaka till arbetet.";
     private static final String OPTIONAL_FIELD_DIAGNOSER_SHOW_ID = DIAGNOS_SVAR_JSON_ID_6;
     private static final String OPTIONAL_FIELD_DIAGNOSER_HIDE_ID = "!" + DIAGNOS_SVAR_JSON_ID_6;
@@ -72,58 +72,60 @@ class CertificateCustomizeFunctionTest {
         ),
         InformationDTO.create(
             HIDE_DIAGNOSIS_ALERT_ID,
-            INFORMATION_ALERT_TEXT,
-            InformationTypeDto.ALERT,
-            OPTIONAL_FIELD_DIAGNOSER_HIDE_ID
+            InformationTypeDto.ALERT
         )
     );
-    private static final AvailableFunctionDTO EXPECTED_AVAILABLE_FUNCTION = AvailableFunctionDTO.create(
+    private static final AvailableFunctionDTO EXPECTED_CUSTOMIZE_FUNCTION = AvailableFunctionDTO.create(
         AvailableFunctionTypeDTO.CUSTOMIZE_PRINT_CERTIFICATE,
         AVAILABLE_FUNCTION_TITLE,
-        AVAILABLE_FUNCTION_NAME,
+        AVAILABLE_FUNCTION_CUSTOMIZE_NAME,
         AVAILABLE_FUNCTION_BODY,
+        AVAILABLE_FUNCTION_DESCRIPTION,
         EXPECTED_INFORMATION
+    );
+    private static final AvailableFunctionDTO EXPECTED_PRINT_FUNCTION = AvailableFunctionDTO.create(
+        AvailableFunctionTypeDTO.PRINT_CERTIFICATE,
+        AVAILABLE_FUNCTION_PRINT_NAME
     );
 
     @InjectMocks
-    private CertificateCustomizeFunction certificateCustomizeFunction;
+    private CertificatePrintFunction certificatePrintFunction;
 
     @Test
-    void shouldReturnEmptyListIfCertificateTypeIsWrongType() {
+    void shouldOnlyReturnPrintCertificateIfTypeIsNotAg7804() {
         final var certificate = buildCertificate(new Certificate(), WRONG_TYPE, QUESTION_SMITTBARAR_PENNING, null);
-        final var result = certificateCustomizeFunction.get(certificate);
-        assertTrue(result.isEmpty());
+        final var result = certificatePrintFunction.get(certificate);
+        assertEquals(List.of(EXPECTED_PRINT_FUNCTION), result);
     }
 
     @Test
-    void shouldReturnEmptyListIfCertificateIsOfTypeAG7804AndSmittbararpenningIsTrue() {
+    void shouldOnlyReturnPrintCertificateIfTypeIsAg7804ButQuestionSmittbararpenningIsTrue() {
         final var certificate = buildCertificate(new Certificate(), CORRECT_TYPE, QUESTION_SMITTBARAR_PENNING, true);
-        final var result = certificateCustomizeFunction.get(certificate);
-        assertTrue(result.isEmpty());
+        final var result = certificatePrintFunction.get(certificate);
+        assertEquals(List.of(EXPECTED_PRINT_FUNCTION), result);
     }
 
     @Test
-    void shouldReturnEmptyListIfCertificateIsOfTypeAG7804AndSmittbararpenningQuestionIsMissing() {
-        final var certificate = buildCertificate(new Certificate(), CORRECT_TYPE, NOT_QUESTION_SMITTBARAR_PENNING, true);
-        final var result = certificateCustomizeFunction.get(certificate);
-        assertTrue(result.isEmpty());
+    void shouldOnlyReturnPrintCertificateIfTypeIsAg7804ButQuestionSmittbararpenningIsMissing() {
+        final var certificate = buildCertificate(new Certificate(), CORRECT_TYPE, NOT_QUESTION_SMITTBARAR_PENNING, false);
+        final var result = certificatePrintFunction.get(certificate);
+        assertEquals(List.of(EXPECTED_PRINT_FUNCTION), result);
     }
 
     @Test
-    void shouldReturnResourceLinkCustomizeCertificateIfCertificateIsOfTypeAG7804AndQuestionSmittskyddFalse() {
+    void shouldReturnPrintAndCustomizeCertificateIfTypeIsAg7804AndQuestionSmittbararpenningIsFalse() {
         final var certificate = buildCertificate(new Certificate(), CORRECT_TYPE, QUESTION_SMITTBARAR_PENNING, false);
-        final var result = certificateCustomizeFunction.get(certificate);
-        assertEquals(EXPECTED_AVAILABLE_FUNCTION, result.get());
+        final var result = certificatePrintFunction.get(certificate);
+        assertEquals(List.of(EXPECTED_CUSTOMIZE_FUNCTION, EXPECTED_PRINT_FUNCTION), result);
     }
 
     @Test
-    void shouldReturnResourceLinkCustomizeCertificateIfCertificateIsOfTypeAG7804AndQuestionSmittskyddNull() {
+    void shouldReturnPrintAndCustomizeCertificateIfTypeIsAg7804AndQuestionSmittbararpenningIsNull() {
         final var certificate = buildCertificate(new Certificate(), CORRECT_TYPE, QUESTION_SMITTBARAR_PENNING, null);
-        final var result = certificateCustomizeFunction.get(certificate);
-        assertEquals(EXPECTED_AVAILABLE_FUNCTION, result.get());
+        final var result = certificatePrintFunction.get(certificate);
+        assertEquals(List.of(EXPECTED_CUSTOMIZE_FUNCTION, EXPECTED_PRINT_FUNCTION), result);
     }
-
-
+    
     private static Certificate buildCertificate(Certificate certificate, String type, String questionId,
         Boolean selected) {
         certificate.setMetadata(

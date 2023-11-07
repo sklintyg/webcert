@@ -28,6 +28,13 @@ public class InformationDTO {
     private InformationTypeDto type;
     private String enabled;
 
+    public static InformationDTO create(String id, InformationTypeDto type) {
+        final var informationType = new InformationDTO();
+        informationType.setId(id);
+        informationType.setType(type);
+        return informationType;
+    }
+
     public static InformationDTO create(String id, String text, InformationTypeDto type) {
         final var informationType = new InformationDTO();
         informationType.setId(id);

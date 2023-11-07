@@ -17,8 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.web.controller.internalapi.dto;
+package se.inera.intyg.webcert.web.service.facade.internalapi;
 
-public enum AvailableFunctionTypeDTO {
-    CUSTOMIZE_PRINT_CERTIFICATE, PRINT_CERTIFICATE, INFO
+import java.util.List;
+import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionDTO;
+
+public interface AvailableFunctions {
+
+    List<AvailableFunctionDTO> get(Certificate certificate);
 }
