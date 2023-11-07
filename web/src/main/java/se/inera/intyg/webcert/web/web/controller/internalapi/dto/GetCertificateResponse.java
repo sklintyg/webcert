@@ -25,7 +25,7 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 public class GetCertificateResponse {
 
     private Certificate certificate;
-    private List<ResourceLinkDTO> links;
+    private List<AvailableFunctionDTO> availableFunctions;
 
     public static GetCertificateResponse create(Certificate certificate) {
         final var getCertificateResponse = new GetCertificateResponse();
@@ -33,10 +33,10 @@ public class GetCertificateResponse {
         return getCertificateResponse;
     }
 
-    public static GetCertificateResponse create(Certificate certificate, List<ResourceLinkDTO> links) {
+    public static GetCertificateResponse create(Certificate certificate, List<AvailableFunctionDTO> links) {
         final var getCertificateResponse = new GetCertificateResponse();
         getCertificateResponse.setCertificate(certificate);
-        getCertificateResponse.setLinks(links);
+        getCertificateResponse.setAvailableFunctions(links);
         return getCertificateResponse;
     }
 
@@ -48,12 +48,12 @@ public class GetCertificateResponse {
         this.certificate = certificate;
     }
 
-    public List<ResourceLinkDTO> getLinks() {
-        return links;
+    public List<AvailableFunctionDTO> getAvailableFunctions() {
+        return availableFunctions;
     }
 
-    public void setLinks(List<ResourceLinkDTO> links) {
-        this.links = links;
+    public void setAvailableFunctions(List<AvailableFunctionDTO> availableFunctions) {
+        this.availableFunctions = availableFunctions;
     }
 
     @Override
@@ -65,19 +65,19 @@ public class GetCertificateResponse {
             return false;
         }
         final GetCertificateResponse that = (GetCertificateResponse) o;
-        return Objects.equals(certificate, that.certificate) && Objects.equals(links, that.links);
+        return Objects.equals(certificate, that.certificate) && Objects.equals(availableFunctions, that.availableFunctions);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(certificate, links);
+        return Objects.hash(certificate, availableFunctions);
     }
 
     @Override
     public String toString() {
         return "GetCertificateResponse{"
             + "certificate=" + certificate
-            + ", links=" + links
+            + ", availableFunctions=" + availableFunctions
             + '}';
     }
 }

@@ -30,30 +30,31 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.CertificateCustomizeFunction;
-import se.inera.intyg.webcert.web.web.controller.internalapi.dto.ResourceLinkDTO;
-import se.inera.intyg.webcert.web.web.controller.internalapi.dto.ResourceLinkTypeDTO;
+import se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.CertificateCustomizeFunction;
+import se.inera.intyg.webcert.web.service.facade.internalapi.service.GetAvailableFunctionsForCertificateService;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionDTO;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionTypeDTO;
 
 @ExtendWith(MockitoExtension.class)
-class GetCertificateResourceLinksServiceTest {
+class GetAvailableFunctionsForCertificateServiceTest {
 
     @Mock
     private CertificateCustomizeFunction certificateCustomizeFunction;
     @InjectMocks
-    private GetCertificateResourceLinksService getCertificateResourceLinksService;
+    private GetAvailableFunctionsForCertificateService getAvailableFunctionsForCertificateService;
 
     private static final Certificate CERTIFICATE = new Certificate();
 
     @Test
     void shouldIncludeCertificateCustomizeResourceLink() {
-        final var expectedResourceLink = ResourceLinkDTO.create(
-            ResourceLinkTypeDTO.CUSTOMIZE_CERTIFICATE, null, null, null);
+        final var expectedResourceLink = AvailableFunctionDTO.create(
+            AvailableFunctionTypeDTO.CUSTOMIZE_PRINT_CERTIFICATE, null, null, null);
         when(certificateCustomizeFunction.get(CERTIFICATE)).thenReturn(
             Optional.of(
                 expectedResourceLink
             )
         );
-        final var result = getCertificateResourceLinksService.get(CERTIFICATE);
+        final var result = getAvailableFunctionsForCertificateService.get(CERTIFICATE);
         assertEquals(expectedResourceLink, result.get(0));
     }
 
@@ -62,7 +63,7 @@ class GetCertificateResourceLinksServiceTest {
         when(certificateCustomizeFunction.get(CERTIFICATE)).thenReturn(
             Optional.empty()
         );
-        final var result = getCertificateResourceLinksService.get(CERTIFICATE);
+        final var result = getAvailableFunctionsForCertificateService.get(CERTIFICATE);
         assertTrue(result.isEmpty());
     }
 }

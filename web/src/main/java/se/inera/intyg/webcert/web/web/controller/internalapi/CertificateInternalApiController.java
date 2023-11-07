@@ -28,7 +28,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
-import se.inera.intyg.webcert.web.service.facade.impl.GetCertificateResourceLinksService;
+import se.inera.intyg.webcert.web.service.facade.internalapi.service.GetAvailableFunctionsForCertificateService;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetCertificateResponse;
 
 @Path("/certificate")
@@ -36,15 +36,15 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetCertificateR
 public class CertificateInternalApiController {
 
     private final GetCertificateFacadeService getCertificateFacadeService;
-    private final GetCertificateResourceLinksService getCertificateResourceLinksService;
+    private final GetAvailableFunctionsForCertificateService getAvailableFunctionsForCertificateService;
     private static final String UTF_8_CHARSET = ";charset=utf-8";
     private static final boolean SHOULD_NOT_PDL_LOG = false;
     private static final boolean SHOULD_NOT_VALIDATE_ACCESS = false;
 
     public CertificateInternalApiController(GetCertificateFacadeService getCertificateFacadeService,
-        GetCertificateResourceLinksService getCertificateResourceLinksService) {
+        GetAvailableFunctionsForCertificateService getAvailableFunctionsForCertificateService) {
         this.getCertificateFacadeService = getCertificateFacadeService;
-        this.getCertificateResourceLinksService = getCertificateResourceLinksService;
+        this.getAvailableFunctionsForCertificateService = getAvailableFunctionsForCertificateService;
     }
 
     @GET
@@ -54,10 +54,10 @@ public class CertificateInternalApiController {
     @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public GetCertificateResponse getCertificate(@PathParam("certificateId") String certificateId) {
         final var certificate = getCertificateFacadeService.getCertificate(certificateId, SHOULD_NOT_PDL_LOG, SHOULD_NOT_VALIDATE_ACCESS);
-        final var resourceLinks = getCertificateResourceLinksService.get(certificate);
+        final var availableFunction = getAvailableFunctionsForCertificateService.get(certificate);
         return GetCertificateResponse.create(
             certificate,
-            resourceLinks
+            availableFunction
         );
     }
 }

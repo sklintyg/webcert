@@ -22,7 +22,6 @@ package se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static se.inera.intyg.common.ag7804.converter.RespConstants.DIAGNOS_SVAR_JSON_ID_6;
-import static se.inera.intyg.common.ag7804.converter.RespConstants.ONSKAR_FORMEDLA_DIAGNOS_DELSVAR_JSON_ID_100;
 
 import java.util.List;
 import java.util.Map;
@@ -36,40 +35,38 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateDataElement;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueBoolean;
+import se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.CertificateCustomizeFunction;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionDTO;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionTypeDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.InformationDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.InformationTypeDto;
-import se.inera.intyg.webcert.web.web.controller.internalapi.dto.ResourceLinkDTO;
-import se.inera.intyg.webcert.web.web.controller.internalapi.dto.ResourceLinkTypeDTO;
 
 @ExtendWith(MockitoExtension.class)
 class CertificateCustomizeFunctionTest {
 
+    private static final String AVAILABLE_FUNCTION_BODY = "När du skriver ut ett läkarintyg du ska lämna till din arbetsgivare kan du "
+        + "välja om du vill att din diagnos ska visas eller döljas. Ingen annan information kan döljas. ";
+    private static final String AVAILABLE_FUNCTION_TITLE = "Vill du visa eller dölja diagnos?";
+    private static final String AVAILABLE_FUNCTION_NAME = "Anpassa intyget för utskrift";
     private static final String INFORMATION_ALERT_TEXT = "Information om diagnos kan vara viktig för din arbetsgivare."
         + " Det kan underlätta anpassning av din arbetssituation. Det kan också göra att du snabbare kommer tillbaka till arbetet.";
-    private static final String RESOURCE_LINK_BODY = "När du skriver ut ett läkarintyg du ska lämna till din arbetsgivare kan du "
-        + "välja om du vill att din diagnos ska visas eller döljas. Ingen annan information kan döljas. ";
-    private static final String RESOURCE_LINK_TITLE = "Vill du visa eller dölja diagnos?";
-    private static final String RESOURCE_LINK_NAME = "Anpassa intyget";
-
+    private static final String OPTIONAL_FIELD_DIAGNOSER_SHOW_ID = DIAGNOS_SVAR_JSON_ID_6;
+    private static final String OPTIONAL_FIELD_DIAGNOSER_HIDE_ID = "!" + DIAGNOS_SVAR_JSON_ID_6;
+    private static final String SHOW_DIAGNOSIS = "Visa Diagnos";
+    private static final String HIDE_DIAGNOSIS = "Dölj Diagnos";
+    private static final String HIDE_DIAGNOSIS_ALERT_ID = "hideDiagnosisAlert";
     private static final String CORRECT_TYPE = Ag7804EntryPoint.MODULE_ID;
     private static final String WRONG_TYPE = Fk7263EntryPoint.MODULE_ID;
     private static final String QUESTION_SMITTBARAR_PENNING = "AVSTANGNING_SMITTSKYDD_SVAR_ID_27";
     private static final String NOT_QUESTION_SMITTBARAR_PENNING = "NOT_AVSTANGNING_SMITTSKYDD_SVAR_ID_27";
-    private static final String OPTIONAL_FIELD_FORMEDLA_DIAGNOSER = ONSKAR_FORMEDLA_DIAGNOS_DELSVAR_JSON_ID_100;
-    private static final String OPTIONAL_FIELD_DIAGNOSER = DIAGNOS_SVAR_JSON_ID_6;
-    private static final String OPTIONAL_FIELD_DIAGNOSER_AND_FORMELDA_DIAGNOSER_ID =
-        "!" + OPTIONAL_FIELD_FORMEDLA_DIAGNOSER + " " + "!" + OPTIONAL_FIELD_FORMEDLA_DIAGNOSER;
-    private static final String SHOW_DIAGNOSIS = "Visa Diagnos";
-    private static final String HIDE_DIAGNOSIS = "Dölj Diagnos";
-    private static final String HIDE_DIAGNOSIS_ALERT_ID = "hideDiagnosisAlert";
     private static final List<InformationDTO> EXPECTED_INFORMATION = List.of(
         InformationDTO.create(
-            OPTIONAL_FIELD_DIAGNOSER,
+            OPTIONAL_FIELD_DIAGNOSER_SHOW_ID,
             SHOW_DIAGNOSIS,
             InformationTypeDto.RADIO_BUTTON
         ),
         InformationDTO.create(
-            OPTIONAL_FIELD_DIAGNOSER_AND_FORMELDA_DIAGNOSER_ID,
+            OPTIONAL_FIELD_DIAGNOSER_HIDE_ID,
             HIDE_DIAGNOSIS,
             InformationTypeDto.RADIO_BUTTON
         ),
@@ -77,14 +74,14 @@ class CertificateCustomizeFunctionTest {
             HIDE_DIAGNOSIS_ALERT_ID,
             INFORMATION_ALERT_TEXT,
             InformationTypeDto.ALERT,
-            OPTIONAL_FIELD_DIAGNOSER_AND_FORMELDA_DIAGNOSER_ID
+            OPTIONAL_FIELD_DIAGNOSER_HIDE_ID
         )
     );
-    private static final ResourceLinkDTO EXPECTED_RESOURCE_LINK = ResourceLinkDTO.create(
-        ResourceLinkTypeDTO.CUSTOMIZE_CERTIFICATE,
-        RESOURCE_LINK_TITLE,
-        RESOURCE_LINK_NAME,
-        RESOURCE_LINK_BODY,
+    private static final AvailableFunctionDTO EXPECTED_AVAILABLE_FUNCTION = AvailableFunctionDTO.create(
+        AvailableFunctionTypeDTO.CUSTOMIZE_PRINT_CERTIFICATE,
+        AVAILABLE_FUNCTION_TITLE,
+        AVAILABLE_FUNCTION_NAME,
+        AVAILABLE_FUNCTION_BODY,
         EXPECTED_INFORMATION
     );
 
@@ -116,14 +113,14 @@ class CertificateCustomizeFunctionTest {
     void shouldReturnResourceLinkCustomizeCertificateIfCertificateIsOfTypeAG7804AndQuestionSmittskyddFalse() {
         final var certificate = buildCertificate(new Certificate(), CORRECT_TYPE, QUESTION_SMITTBARAR_PENNING, false);
         final var result = certificateCustomizeFunction.get(certificate);
-        assertEquals(EXPECTED_RESOURCE_LINK, result.get());
+        assertEquals(EXPECTED_AVAILABLE_FUNCTION, result.get());
     }
 
     @Test
     void shouldReturnResourceLinkCustomizeCertificateIfCertificateIsOfTypeAG7804AndQuestionSmittskyddNull() {
         final var certificate = buildCertificate(new Certificate(), CORRECT_TYPE, QUESTION_SMITTBARAR_PENNING, null);
         final var result = certificateCustomizeFunction.get(certificate);
-        assertEquals(EXPECTED_RESOURCE_LINK, result.get());
+        assertEquals(EXPECTED_AVAILABLE_FUNCTION, result.get());
     }
 
 

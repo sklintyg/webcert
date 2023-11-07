@@ -23,56 +23,34 @@ import java.util.List;
 import java.util.Objects;
 
 
-public class ResourceLinkDTO {
+public class AvailableFunctionDTO {
 
-    private ResourceLinkTypeDTO type;
+    private AvailableFunctionTypeDTO type;
     private List<InformationDTO> information;
     private String name;
     private String description;
     private String body;
     private String title;
 
-    public static ResourceLinkDTO create(ResourceLinkTypeDTO type, String title, String name, String description, String body,
+    public static AvailableFunctionDTO create(AvailableFunctionTypeDTO type, String title, String name, String body,
         List<InformationDTO> information) {
-        final var resourceLink = new ResourceLinkDTO();
-        resourceLink.setType(type);
-        resourceLink.setTitle(title);
-        resourceLink.setName(name);
-        resourceLink.setDescription(description);
-        resourceLink.setBody(body);
-        resourceLink.setInformation(information);
-        return resourceLink;
-    }
-
-    public static ResourceLinkDTO create(ResourceLinkTypeDTO type, String title, String name, String body,
-        List<InformationDTO> information) {
-        final var resourceLink = new ResourceLinkDTO();
-        resourceLink.setType(type);
-        resourceLink.setTitle(title);
-        resourceLink.setName(name);
-        resourceLink.setBody(body);
-        resourceLink.setInformation(information);
-        return resourceLink;
-    }
-
-    public static ResourceLinkDTO create(ResourceLinkTypeDTO type, String title, String name, String description, String body) {
-        final var resourceLink = new ResourceLinkDTO();
-        resourceLink.setType(type);
-        resourceLink.setTitle(title);
-        resourceLink.setName(name);
-        resourceLink.setDescription(description);
-        resourceLink.setBody(body);
-        return resourceLink;
+        final var availableFunction = new AvailableFunctionDTO();
+        availableFunction.setType(type);
+        availableFunction.setTitle(title);
+        availableFunction.setName(name);
+        availableFunction.setBody(body);
+        availableFunction.setInformation(information);
+        return availableFunction;
     }
 
 
-    public static ResourceLinkDTO create(ResourceLinkTypeDTO type, String title, String name, String body) {
-        final var resourceLink = new ResourceLinkDTO();
-        resourceLink.setType(type);
-        resourceLink.setTitle(title);
-        resourceLink.setName(name);
-        resourceLink.setBody(body);
-        return resourceLink;
+    public static AvailableFunctionDTO create(AvailableFunctionTypeDTO type, String title, String name, String body) {
+        final var availableFunction = new AvailableFunctionDTO();
+        availableFunction.setType(type);
+        availableFunction.setTitle(title);
+        availableFunction.setName(name);
+        availableFunction.setBody(body);
+        return availableFunction;
     }
 
     public List<InformationDTO> getInformation() {
@@ -83,7 +61,7 @@ public class ResourceLinkDTO {
         this.information = information;
     }
 
-    public ResourceLinkTypeDTO getType() {
+    public AvailableFunctionTypeDTO getType() {
         return type;
     }
 
@@ -103,7 +81,7 @@ public class ResourceLinkDTO {
         return title;
     }
 
-    public void setType(ResourceLinkTypeDTO type) {
+    public void setType(AvailableFunctionTypeDTO type) {
         this.type = type;
     }
 
@@ -131,7 +109,7 @@ public class ResourceLinkDTO {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        final ResourceLinkDTO that = (ResourceLinkDTO) o;
+        final AvailableFunctionDTO that = (AvailableFunctionDTO) o;
         return type == that.type && Objects.equals(information, that.information) && Objects.equals(name, that.name)
             && Objects.equals(description, that.description) && Objects.equals(body, that.body) && Objects.equals(
             title, that.title);
@@ -144,7 +122,7 @@ public class ResourceLinkDTO {
 
     @Override
     public String toString() {
-        return "ResourceLinkDTO{"
+        return "AvailableFunctionDTO{"
             + "type=" + type
             + ", information=" + information
             + ", name='" + name + '\''

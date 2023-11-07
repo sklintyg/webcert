@@ -17,29 +17,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.service.facade.impl;
+package se.inera.intyg.webcert.web.service.facade.internalapi.service;
 
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.CertificateCustomizeFunction;
-import se.inera.intyg.webcert.web.web.controller.internalapi.dto.ResourceLinkDTO;
+import se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.CertificateCustomizeFunction;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionDTO;
 
 @Service
-public class GetCertificateResourceLinksService {
+public class GetAvailableFunctionsForCertificateService {
 
     private final CertificateCustomizeFunction certificateCustomizeFunction;
 
-    public GetCertificateResourceLinksService(CertificateCustomizeFunction certificateCustomizeFunction) {
+    public GetAvailableFunctionsForCertificateService(CertificateCustomizeFunction certificateCustomizeFunction) {
         this.certificateCustomizeFunction = certificateCustomizeFunction;
     }
 
-    public List<ResourceLinkDTO> get(Certificate certificate) {
-        final var resourceLinks = new ArrayList<ResourceLinkDTO>();
+    public List<AvailableFunctionDTO> get(Certificate certificate) {
+        final var availableFunctions = new ArrayList<AvailableFunctionDTO>();
         certificateCustomizeFunction.get(certificate)
-            .ifPresent(resourceLinks::add);
-
-        return resourceLinks;
+            .ifPresent(availableFunctions::add);
+        return availableFunctions;
     }
 }

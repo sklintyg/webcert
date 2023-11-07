@@ -19,6 +19,6 @@
 
 package se.inera.intyg.webcert.web.web.controller.internalapi.dto;
 
-public enum ResourceLinkTypeDTO {
-    CUSTOMIZE_CERTIFICATE
+public enum AvailableFunctionTypeDTO {
+    CUSTOMIZE_PRINT_CERTIFICATE
 }

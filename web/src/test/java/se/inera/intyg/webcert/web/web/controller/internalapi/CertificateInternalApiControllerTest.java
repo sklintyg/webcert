@@ -35,23 +35,23 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
-import se.inera.intyg.webcert.web.service.facade.impl.GetCertificateResourceLinksService;
-import se.inera.intyg.webcert.web.web.controller.internalapi.dto.ResourceLinkDTO;
-import se.inera.intyg.webcert.web.web.controller.internalapi.dto.ResourceLinkTypeDTO;
+import se.inera.intyg.webcert.web.service.facade.internalapi.service.GetAvailableFunctionsForCertificateService;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionDTO;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionTypeDTO;
 
 @ExtendWith(MockitoExtension.class)
 class CertificateInternalApiControllerTest {
 
     private static final Certificate EXPECTED_CERTIFICATE = new Certificate();
-    private static final List<ResourceLinkDTO> EXPECTED_RESOURCE_LINKS = List.of(
-        ResourceLinkDTO.create(ResourceLinkTypeDTO.CUSTOMIZE_CERTIFICATE, null,
+    private static final List<AvailableFunctionDTO> EXPECTED_AVAILABLE_FUNCTIONS = List.of(
+        AvailableFunctionDTO.create(AvailableFunctionTypeDTO.CUSTOMIZE_PRINT_CERTIFICATE, null,
             null, null)
     );
     private static final String CERTIFICATE_ID = "certificateId";
     private static final boolean SHOULD_NOT_PDL_LOG = false;
     private static final boolean SHOULD_NOT_VALIDATE_ACCESS = false;
     @Mock
-    private GetCertificateResourceLinksService getCertificateResourceLinksService;
+    private GetAvailableFunctionsForCertificateService getAvailableFunctionsForCertificateService;
 
     @Mock
     private GetCertificateFacadeService getCertificateFacadeService;
@@ -63,8 +63,8 @@ class CertificateInternalApiControllerTest {
     void setUp() {
         doReturn(EXPECTED_CERTIFICATE)
             .when(getCertificateFacadeService).getCertificate(CERTIFICATE_ID, SHOULD_NOT_PDL_LOG, SHOULD_NOT_VALIDATE_ACCESS);
-        doReturn(EXPECTED_RESOURCE_LINKS)
-            .when(getCertificateResourceLinksService).get(EXPECTED_CERTIFICATE);
+        doReturn(EXPECTED_AVAILABLE_FUNCTIONS)
+            .when(getAvailableFunctionsForCertificateService).get(EXPECTED_CERTIFICATE);
     }
 
     @Test
@@ -76,7 +76,7 @@ class CertificateInternalApiControllerTest {
     @Test
     void shallReturnResourceLinks() {
         final var actualCertificateResponse = certificateInternalApiController.getCertificate(CERTIFICATE_ID);
-        assertEquals(EXPECTED_RESOURCE_LINKS, actualCertificateResponse.getLinks());
+        assertEquals(EXPECTED_AVAILABLE_FUNCTIONS, actualCertificateResponse.getAvailableFunctions());
     }
 
     @Test
