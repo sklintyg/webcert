@@ -26,7 +26,6 @@ public class InformationDTO {
     private String id;
     private String text;
     private InformationTypeDto type;
-    private String enabled;
 
     public static InformationDTO create(String id, InformationTypeDto type) {
         final var informationType = new InformationDTO();
@@ -40,15 +39,6 @@ public class InformationDTO {
         informationType.setId(id);
         informationType.setText(text);
         informationType.setType(type);
-        return informationType;
-    }
-
-    public static InformationDTO create(String id, String text, InformationTypeDto type, String enabled) {
-        final var informationType = new InformationDTO();
-        informationType.setId(id);
-        informationType.setText(text);
-        informationType.setType(type);
-        informationType.setEnabled(enabled);
         return informationType;
     }
 
@@ -76,13 +66,6 @@ public class InformationDTO {
         this.type = type;
     }
 
-    public String getEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(String enabled) {
-        this.enabled = enabled;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -93,13 +76,12 @@ public class InformationDTO {
             return false;
         }
         final InformationDTO that = (InformationDTO) o;
-        return Objects.equals(id, that.id) && Objects.equals(text, that.text) && type == that.type
-            && Objects.equals(enabled, that.enabled);
+        return Objects.equals(id, that.id) && Objects.equals(text, that.text) && type == that.type;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, text, type, enabled);
+        return Objects.hash(id, text, type);
     }
 
     @Override
@@ -108,7 +90,6 @@ public class InformationDTO {
             + "id='" + id + '\''
             + ", text='" + text + '\''
             + ", type=" + type
-            + ", enabled=" + enabled
             + '}';
     }
 }
