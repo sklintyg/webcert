@@ -56,7 +56,7 @@ public class CertificateInfoSmittbararpenningFunction implements AvailableFuncti
 
     private boolean questionSmittbararpenningIsTrue(Certificate certificate) {
         final var value = (CertificateDataValueBoolean) certificate.getData().get(AVSTANGNING_SMITTSKYDD_QUESTION_ID).getValue();
-        return value != null && value.getSelected();
+        return value != null && value.getSelected() != null && value.getSelected();
     }
 
     private boolean certificateIsAg7804(Certificate certificate) {

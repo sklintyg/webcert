@@ -129,4 +129,24 @@ class CertificateInfoSmittbararpenningFunctionTest {
         final var availableFunction = certificateInfoSmittbararpenningFunction.get(CERTIFICATE);
         assertFalse(availableFunction.contains(EXPECTED_SMITTSKYDD_FUNCTION));
     }
+
+    @Test
+    void shouldNotReturnAvailableFunctionInfoIfCertificateIsAG7804WithSmittbararpenningNull() {
+        CERTIFICATE.setMetadata(
+            CertificateMetadata.builder()
+                .type(Ag7804EntryPoint.MODULE_ID)
+                .build()
+        );
+        CERTIFICATE.setData(
+            Map.of(AVSTANGNING_SMITTSKYDD_QUESTION_ID,
+                CertificateDataElement.builder()
+                    .value(
+                        CertificateDataValueBoolean.builder()
+                            .build()
+                    )
+                    .build())
+        );
+        final var availableFunction = certificateInfoSmittbararpenningFunction.get(CERTIFICATE);
+        assertFalse(availableFunction.contains(EXPECTED_SMITTSKYDD_FUNCTION));
+    }
 }
