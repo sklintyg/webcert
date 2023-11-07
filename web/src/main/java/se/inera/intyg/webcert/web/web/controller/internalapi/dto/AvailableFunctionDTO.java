@@ -32,17 +32,6 @@ public class AvailableFunctionDTO {
     private String body;
     private String title;
 
-    public static AvailableFunctionDTO create(AvailableFunctionTypeDTO type, String title, String name, String body,
-        List<InformationDTO> information) {
-        final var availableFunction = new AvailableFunctionDTO();
-        availableFunction.setType(type);
-        availableFunction.setTitle(title);
-        availableFunction.setName(name);
-        availableFunction.setBody(body);
-        availableFunction.setInformation(information);
-        return availableFunction;
-    }
-
     public static AvailableFunctionDTO create(AvailableFunctionTypeDTO type, String title, String name, String body, String description,
         List<InformationDTO> information) {
         final var availableFunction = new AvailableFunctionDTO();
@@ -68,12 +57,6 @@ public class AvailableFunctionDTO {
         final var availableFunction = new AvailableFunctionDTO();
         availableFunction.setType(type);
         availableFunction.setName(name);
-        return availableFunction;
-    }
-
-    public static AvailableFunctionDTO create(AvailableFunctionTypeDTO type) {
-        final var availableFunction = new AvailableFunctionDTO();
-        availableFunction.setType(type);
         return availableFunction;
     }
 
