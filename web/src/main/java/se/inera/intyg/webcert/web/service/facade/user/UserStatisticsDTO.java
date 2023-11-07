@@ -31,7 +31,8 @@ public class UserStatisticsDTO {
 
     private Map<String, UnitStatisticsDTO> unitStatistics;
 
-    public UserStatisticsDTO(){}
+    public UserStatisticsDTO() {
+    }
 
     public long getNbrOfDraftsOnSelectedUnit() {
         return nbrOfDraftsOnSelectedUnit;

@@ -12,16 +12,10 @@ dependencies {
   implementation "org.hibernate:hibernate-hikaricp"
   implementation "org.jadira.usertype:usertype.core:${jadiraUserTypeVersion}"
   implementation "org.liquibase:liquibase-core"
+  implementation "com.mysql:mysql-connector-j"
   implementation "org.springframework.data:spring-data-jpa"
   implementation "se.inera.intyg.schemas:schemas-contract:${schemasContractVersion}"
   implementation "se.inera.intyg.common:common-support:${commonVersion}"
 
   testImplementation "org.springframework:spring-test"
-
-  //implementation "org.springframework:spring-orm"
-//  implementation "org.hibernate:hibernate-core"
-//  implementation "org.hibernate:hibernate-entitymanager"
-//  implementation "com.mysql:mysql-connector-j"
-//  testImplementation "org.hamcrest:hamcrest"
-//  testImplementation "org.hamcrest:hamcrest-library"
 }

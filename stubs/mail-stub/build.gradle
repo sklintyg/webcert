@@ -5,8 +5,4 @@ dependencies {
   implementation "org.aspectj:aspectjweaver"
   implementation "org.slf4j:slf4j-api"
   implementation "org.springframework:spring-context-support"
-
-//  implementation project(":webcert-common")
-//  testImplementation "org.hamcrest:hamcrest"
-//  testImplementation "org.hamcrest:hamcrest-library"
 }

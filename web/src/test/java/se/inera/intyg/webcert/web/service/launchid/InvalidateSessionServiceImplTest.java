@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.launchid;
 
-
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -44,7 +43,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.InvalidateRequest;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 @ExtendWith(MockitoExtension.class)
-public class InvalidateSessionServiceImplTest {
+class InvalidateSessionServiceImplTest {
 
     private static final String LAUNCH_ID = "97f279ba-7d2b-4b0a-8665-7adde08f26f4";
     private static final String LAUNCH_ID_WRONG = "97f279ba-7d2b-4b0a-8665-7adde08f26f5";
@@ -66,7 +65,7 @@ public class InvalidateSessionServiceImplTest {
     }
 
     @Test
-    public void sessionShouldBeRemovedWhenValuesMatch() {
+    void sessionShouldBeRemovedWhenValuesMatch() {
         WebCertUser userWithCorrectValues = createUserWithMatchingLaunchIdAndHsaId();
         Session session = createSession(ENCODED_SESSION_ID, userWithCorrectValues);
 
@@ -78,7 +77,7 @@ public class InvalidateSessionServiceImplTest {
     }
 
     @Test
-    public void sessionShouldNotBeRemovedWhenHsaIdDoesNotMatch() {
+    void sessionShouldNotBeRemovedWhenHsaIdDoesNotMatch() {
         WebCertUser userWithWrongHsaId = createUserWithMatchingLaunchIdButWrongHsaId();
 
         Session session = createSession(ENCODED_SESSION_ID, userWithWrongHsaId);
@@ -91,7 +90,7 @@ public class InvalidateSessionServiceImplTest {
     }
 
     @Test
-    public void sessionShouldNotBeRemovedWhenLaunchIdIsNotPresentInRedis() {
+    void sessionShouldNotBeRemovedWhenLaunchIdIsNotPresentInRedis() {
         WebCertUser userWithWrongHsaId = createUserWithMatchingLaunchIdButWrongHsaId();
         Session session = createSession(ENCODED_SESSION_ID, userWithWrongHsaId);
 
@@ -104,7 +103,7 @@ public class InvalidateSessionServiceImplTest {
     }
 
     @Test
-    public void sessionShouldNotBeRemovedWhenSessionIsNotPresentInRedis() {
+    void sessionShouldNotBeRemovedWhenSessionIsNotPresentInRedis() {
         WebCertUser userWithWrongHsaId = createUserWithMatchingLaunchIdButWrongHsaId();
         Session session = createSession(ENCODED_SESSION_ID, userWithWrongHsaId);
 
@@ -156,6 +155,4 @@ public class InvalidateSessionServiceImplTest {
         session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
         return session;
     }
-
-
 }

@@ -18,13 +18,11 @@
  */
 package se.inera.intyg.webcert.web.service.intyg.util;
 
-import static com.itextpdf.kernel.pdf.PdfName.Collection;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static se.inera.intyg.webcert.web.service.intyg.util.IntygVerificationHelper.verifyIsNotSent;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import org.junit.Test;
@@ -38,7 +36,6 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.intyg.IntygServiceImpl.IntygOperation;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IntygVerificationHelperTest {
@@ -72,13 +69,13 @@ public class IntygVerificationHelperTest {
     }
 
     @Test
-    public void testVerifyIsNotSentEmptyList(){
+    public void testVerifyIsNotSentEmptyList() {
         CertificateResponse certificate = mock(CertificateResponse.class);
         verifyIsNotSent(certificate, IntygOperation.SEND);
     }
 
     @Test(expected = WebCertServiceException.class)
-    public void testVerifyIsSentFilledList(){
+    public void testVerifyIsSentFilledList() {
         CertificateResponse certificate = mock(CertificateResponse.class);
         Utlatande myUtlatande = mock(Utlatande.class);
         CertificateMetaData metaData = mock(CertificateMetaData.class);

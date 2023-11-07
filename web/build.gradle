@@ -45,6 +45,11 @@ gretty {
     ]
 
     extraResourceBase webappOutputDir
+
+    dependencies {
+        implementation "org.eclipse.jetty:apache-jstl"
+        implementation "se.inera.intyg.refdata:refdata:${refDataVersion}"
+    }
 }
 
 node {
@@ -67,12 +72,6 @@ idea {
         generatedSourceDirs.add(generatedJavaDir)
     }
 }
-
-/*idea {
-    module {
-        generatedSourceDirs.add(generatedJavaDir)
-    }
-}*/
 
 configurations {
     // This is required to make the Schematron implementation pick up Saxon instead of Xalan.
@@ -185,12 +184,14 @@ dependencies {
     implementation project(':notification-stub')
     implementation project(':intygstjanst-stub')
     implementation project(':mail-stub')
-
-    implementation "org.jvnet.jaxb2_commons:jaxb2-basics-runtime:${jaxb2Version}"
+    implementation project(':webcert-common')
+    implementation project(':webcert-persistence')
 
     implementation "se.inera.intyg.infra:pu-integration:${infraVersion}"
     implementation "se.inera.intyg.infra:srs-integration:${infraVersion}"
     implementation "se.inera.intyg.infra:loggtjanst-stub:${infraVersion}"
+    implementation "se.inera.intyg.infra:security-authorities:${infraVersion}"
+    implementation "se.inera.intyg.infra:security-common:${infraVersion}"
     implementation "se.inera.intyg.infra:security-filter:${infraVersion}"
     implementation "se.inera.intyg.infra:security-siths:${infraVersion}"
     implementation "se.inera.intyg.infra:dynamiclink:${infraVersion}"
@@ -206,6 +207,11 @@ dependencies {
     implementation "se.inera.intyg.infra:testcertificate:${infraVersion}"
     implementation "se.inera.intyg.infra:certificate:${infraVersion}"
     implementation "se.inera.intyg.infra:message:${infraVersion}"
+    implementation "se.inera.intyg.infra:log-messages:${infraVersion}"
+    implementation "se.inera.intyg.infra:driftbanner-dto:${infraVersion}"
+    implementation "se.inera.intyg.infra:hsatk-integration:${infraVersion}"
+    implementation "se.inera.intyg.infra:hsa-integration-api:${infraVersion}"
+    implementation "se.inera.intyg.infra:privatepractitioner:${infraVersion}"
 
     implementation "se.inera.intyg.common:ts-bas:${commonVersion}"
     implementation "se.inera.intyg.common:ts-diabetes:${commonVersion}"
@@ -221,69 +227,88 @@ dependencies {
     implementation "se.inera.intyg.common:ag114:${commonVersion}"
     implementation "se.inera.intyg.common:ag7804:${commonVersion}"
     implementation "se.inera.intyg.common:tstrk1009:${commonVersion}"
+    implementation "se.inera.intyg.common:fk7263:${commonVersion}"
+    implementation "se.inera.intyg.common:integration-util:${commonVersion}"
+    implementation "se.inera.intyg.common:logging-util:${commonVersion}"
+    implementation "se.inera.intyg.common:fk-parent:${commonVersion}"
+    implementation "se.inera.intyg.common:common-schemas:${commonVersion}"
+    implementation "se.inera.intyg.common:common-services:${commonVersion}"
+    implementation "se.inera.intyg.common:common-support:${commonVersion}"
 
-    implementation "se.inera.intyg.infrastructure.directory.privatepractitioner.terms:intyg-infrastructure-directory-privatepractitioner-terms-schemas:${ppTermsSchemasVersion}"
-    implementation "se.inera.intyg.clinicalprocess.healthcond.certificate:intyg-clinicalprocess-healthcond-certificate-schemas:${intygClinicalprocessSchemasVersion}"
     implementation "se.funktionstjanster.grp:funktionstjanster-grp-schemas:${funktionstjansterGrpSchemasVersion}"
-    implementation "se.riv.itintegration.monitoring:itintegration-monitoring-schemas:${rivtaItintegrationMonitoringSchemasVersion}"
-
-    implementation "se.inera.intyg.schemas:schemas-contract:${schemasContractVersion}"
+    implementation "se.inera.intyg.clinicalprocess.healthcond.certificate:intyg-clinicalprocess-healthcond-certificate-schemas:${intygClinicalprocessSchemasVersion}"
     implementation "se.inera.intyg.clinicalprocess.healthcond.rehabilitation:intyg-clinicalprocess-healthcond-rehabilitation-schemas:${intygHealthcondRehabilitationSchemasVersion}"
+    implementation "se.inera.intyg.clinicalprocess.healthcond.srs:intyg-clinicalprocess-healthcond-srs-schemas:${srsSchemasVersion}"
+    implementation "se.inera.intyg.infrastructure.directory.privatepractitioner:intyg-infrastructure-directory-privatepractitioner-schemas:${ppSchemasVersion}"
+    implementation "se.inera.intyg.infrastructure.directory.privatepractitioner.terms:intyg-infrastructure-directory-privatepractitioner-terms-schemas:${ppTermsSchemasVersion}"
+    implementation "se.inera.intyg.schemas:schemas-contract:${schemasContractVersion}"
+    implementation "se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:${rivtaClinicalprocessSchemasVersion}"
+    implementation "se.riv.insuranceprocess.healthreporting:insuranceprocess-healthreporting-schemas:${rivtaInsuranceprocessSchemasVersion}"
+    implementation "se.riv.itintegration.monitoring:itintegration-monitoring-schemas:${rivtaItintegrationMonitoringSchemasVersion}"
+    implementation "se.riv.strategicresourcemanagement.persons.person:strategicresourcemanagement-persons-person-schemas:${rivtaGetPersonsPersonSchemasVersion}"
 
+    implementation "ch.qos.logback:logback-classic"
+    implementation "com.auth0:jwks-rsa:${jwksVersion}"
+    implementation "com.google.guava:guava:${guavaVersion}"
+    implementation "com.sun.mail:jakarta.mail"
     implementation "commons-codec:commons-codec"
     implementation "commons-io:commons-io:${commonsIoVersion}"
-    implementation "org.jxls:jxls-jexcel:${jexcelVersion}"
-    implementation "org.springframework:spring-web"
-    implementation "org.springframework:spring-webmvc"
-    implementation "org.springframework.session:spring-session-data-redis"
-    implementation "org.springframework.security:spring-security-web"
-    implementation "org.springframework.security:spring-security-taglibs"
+    implementation "io.jsonwebtoken:jjwt-impl:${jsonwebtokenVersion}"
+    implementation "io.jsonwebtoken:jjwt-jackson:${jsonwebtokenVersion}"
+    implementation "io.prometheus:simpleclient_servlet"
+    implementation("io.swagger:swagger-jaxrs:${swaggerJaxrsVersion}") { exclude(module: "jsr311-api") }
+    implementation "io.vavr:vavr:${vavrVersion}"
+    implementation "jakarta.persistence:jakarta.persistence-api"
+    implementation "jakarta.servlet:jakarta.servlet-api"
+    implementation "net.javacrumbs.shedlock:shedlock-spring:${shedlockSpringVersion}"
+    implementation "net.javacrumbs.shedlock:shedlock-provider-redis-spring:${shedlockSpringVersion}"
+    implementation "org.apache.activemq:activemq-spring"
+    implementation "org.apache.cxf:cxf-core:${cxfVersion}"
+    implementation "org.apache.cxf:cxf-rt-frontend-jaxrs:${cxfVersion}"
+    implementation "org.apache.cxf:cxf-rt-frontend-jaxws:${cxfVersion}"
+    implementation "org.apache.cxf:cxf-rt-transports-http:${cxfVersion}"
+    implementation "org.apache.httpcomponents:httpclient"
     implementation "org.apache.lucene:lucene-analysis-common:${luceneAnalyzersCommonVersion}"
+    implementation "org.hibernate:hibernate-core"
+    implementation "org.jvnet.jaxb2_commons:jaxb2-basics-runtime:${jaxb2Version}"
+    implementation "org.jxls:jxls-jexcel:${jexcelVersion}"
     implementation "org.opensaml:opensaml:${opensamlVersion}"
     implementation "org.opensaml:openws:${openWsVersion}"
     implementation "org.opensaml:xmltooling:${xmlToolingVersion}"
-    implementation("io.swagger:swagger-jaxrs:${swaggerJaxrsVersion}") { exclude(module: "jsr311-api") }
-
+    implementation "org.springframework.data:spring-data-jpa"
+    implementation "org.springframework.security.extensions:spring-security-saml2-core:${springSecuritySaml2CoreVersion}"
+    implementation "org.springframework.security:spring-security-web"
+    implementation "org.springframework.security:spring-security-taglibs"
+    implementation "org.springframework.session:spring-session-data-redis"
+    implementation "org.springframework:spring-jms"
+    implementation "org.springframework:spring-orm"
+    implementation "org.springframework:spring-web"
+    implementation "org.springframework:spring-webmvc"
     implementation "org.springframework.ws:spring-xml"
 
-    implementation "net.javacrumbs.shedlock:shedlock-spring:${shedlockSpringVersion}"
-    implementation "net.javacrumbs.shedlock:shedlock-provider-redis-spring:${shedlockSpringVersion}"
-
-    implementation "javax.servlet:javax.servlet-api"
-
-    implementation "io.jsonwebtoken:jjwt-impl:${jsonwebtokenVersion}"
-    implementation "io.jsonwebtoken:jjwt-jackson:${jsonwebtokenVersion}"
-
-    implementation "com.auth0:jwks-rsa:${jwksVersion}"
-    implementation "com.google.auto.value:auto-value:${autovalueVersion}"
-
-    implementation "org.apache.cxf:cxf-core:${cxfVersion}"
-    implementation "org.apache.cxf:cxf-rt-frontend-jaxws:${cxfVersion}"
-    implementation "org.apache.cxf:cxf-rt-frontend-jaxrs:${cxfVersion}"
-    implementation "org.apache.cxf:cxf-rt-transports-http:${cxfVersion}"
-
     compileOnly "org.apache.geronimo.specs:geronimo-jms_1.1_spec:${geronimoJmsVersion}"
-
-    testImplementation "se.inera.intyg.clinicalprocess.healthcond.certificate:intyg-clinicalprocess-healthcond-certificate-schemas:${intygClinicalprocessSchemasVersion}"
-    testImplementation "org.hamcrest:hamcrest"
-    testImplementation "org.hamcrest:hamcrest-library"
-    testImplementation "org.assertj:assertj-core"
-    testImplementation "org.skyscreamer:jsonassert"
-    testImplementation "org.springframework:spring-test"
-    testImplementation "org.xmlunit:xmlunit-legacy"
-    testImplementation "org.awaitility:awaitility"
-    testImplementation "org.springframework.boot:spring-boot-test"
-
-    testImplementation "io.rest-assured:rest-assured"
-    testImplementation "io.rest-assured:json-schema-validator"
-
-    testImplementation "org.antlr:ST4:${stAntlr4Version}"
+    compileOnly "com.google.auto.value:auto-value:${autovalueVersion}"
+    compileOnly "com.google.auto.value:auto-value-annotations:${autovalueVersion}"
     annotationProcessor "com.google.auto.value:auto-value:${autovalueVersion}"
 
-    gretty "org.eclipse.jetty:apache-jstl"
-    gretty "se.inera.intyg.refdata:refdata:${refDataVersion}"
+    runtimeOnly "xerces:xercesImpl:${xercesVersion}"
+
+    testImplementation ("com.helger:ph-schematron:${phSchematronVersion}") { exclude group: "com.helger", module: "ph-jaxb-pom" }
+    testImplementation "io.rest-assured:json-schema-validator"
+    testImplementation "io.rest-assured:rest-assured"
+    testImplementation "org.antlr:ST4:${stAntlr4Version}"
+    testImplementation "org.assertj:assertj-core"
+    testImplementation "org.awaitility:awaitility"
+    testImplementation "org.hamcrest:hamcrest"
+    testImplementation "org.hamcrest:hamcrest-library"
+    testImplementation "org.skyscreamer:jsonassert"
+    testImplementation "org.springframework.boot:spring-boot-test"
+    testImplementation "org.springframework:spring-test"
+    testImplementation "org.xmlunit:xmlunit-legacy"
+    testImplementation "se.inera.intyg.clinicalprocess.healthcond.certificate:intyg-clinicalprocess-healthcond-certificate-schemas:${intygClinicalprocessSchemasVersion}"
+    testImplementation "se.inera.intyg.common:sos_parent:${commonVersion}"
+    testImplementation "se.inera.intyg.common:ts-parent:${commonVersion}"
+    testImplementation "se.inera.intyg.common:ag-parent:${commonVersion}"
 
     xsdgen "org.glassfish.jaxb:jaxb-xjc"
-
-    runtime "xerces:xercesImpl:2.12.2"
 }

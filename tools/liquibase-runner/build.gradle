@@ -5,7 +5,7 @@ applicationDefaultJvmArgs = ["-Dfile.encoding=utf8", "-Dliquibase.headless=true"
 
 startScripts {
     doLast {
-        def persistenceDependency = configurations.runtime.filter { it.name.startsWith("webcert-persistence") }.singleFile.name
+        def persistenceDependency = configurations.runtimeOnly.filter { it.name.startsWith("webcert-persistence") }.singleFile.name
 
         def originalScript = unixScript.text
         unixScript.text = unixScript.text.replaceAll(/\s\s"\$@"\n/, '  --driver=com.mysql.cj.jdbc.Driver --classpath=lib/'

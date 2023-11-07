@@ -1,11 +1,14 @@
 dependencies {
-    implementation project(":webcert-common")
+    implementation "com.fasterxml.jackson.core:jackson-databind"
+    implementation "jakarta.ws.rs:jakarta.ws.rs-api"
     implementation "org.apache.commons:commons-lang3"
+    implementation "org.apache.cxf:cxf-core:${cxfVersion}"
     implementation "org.springframework.data:spring-data-redis"
-    implementation "it.ozimov:embedded-redis:0.7.2"
+    implementation "se.inera.intyg.common:integration-util:${commonVersion}"
+    implementation "se.inera.intyg.common:common-support:${commonVersion}"
+    implementation "se.inera.intyg.infra:common-redis-cache-core:${infraVersion}"
+    implementation "se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:${rivtaClinicalprocessSchemasVersion}"
 
-    testImplementation "javax.servlet:javax.servlet-api"
+    testImplementation "it.ozimov:embedded-redis:${embeddedRedisVersion}"
     testImplementation "org.springframework:spring-test"
-    testImplementation "org.hamcrest:hamcrest"
-    testImplementation "org.hamcrest:hamcrest-library"
 }

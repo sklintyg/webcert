@@ -1,13 +1,13 @@
 dependencies {
-  implementation project(':webcert-common')
-
-  implementation "se.inera.intyg.infrastructure.directory.privatepractitioner:intyg-infrastructure-directory-privatepractitioner-schemas:${ppSchemasVersion}"
-
-  implementation "se.inera.intyg.common:integration-util:${commonVersion}"
-
+  implementation "com.fasterxml.jackson.core:jackson-databind"
+  implementation "com.google.guava:guava:${guavaVersion}"
+  implementation "jakarta.ws.rs:jakarta.ws.rs-api"
+  implementation "org.slf4j:slf4j-api"
+  implementation "org.springframework:spring-web"
   implementation "se.inera.intyg.infra:privatepractitioner:${infraVersion}"
+  implementation "se.inera.intyg.infrastructure.directory.privatepractitioner:intyg-infrastructure-directory-privatepractitioner-schemas:${ppSchemasVersion}"
+  implementation "se.inera.intyg.schemas:schemas-contract:${schemasContractVersion}"
 
   testImplementation "org.springframework:spring-test"
-  testImplementation "org.hamcrest:hamcrest"
-  testImplementation "org.hamcrest:hamcrest-library"
+  testImplementation "se.inera.intyg.common:integration-util:${commonVersion}"
 }

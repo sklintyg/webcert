@@ -11,10 +11,4 @@ dependencies {
   implementation "org.apache.commons:commons-lang3"
   implementation "org.springframework.data:spring-data-jpa"
   implementation "org.springframework:spring-web"
-
-//implementation "net.javacrumbs.shedlock:shedlock-provider-redis-spring:${shedlockSpringVersion}"
-//  testImplementation "org.springframework:spring-test"
-//  testImplementation "org.hamcrest:hamcrest"
-//  testImplementation "org.hamcrest:hamcrest-library"
-//  testImplementation "org.assertj:assertj-core"
 }

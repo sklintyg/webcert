@@ -5,12 +5,4 @@ dependencies {
     implementation "se.inera.intyg.infra:log-messages:${infraVersion}"
     implementation "se.inera.intyg.schemas:schemas-contract:${schemasContractVersion}"
     implementation "se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:${rivtaClinicalprocessSchemasVersion}"
-
-//    implementation "se.inera.intyg.infra:monitoring:${infraVersion}"
-//    implementation "se.inera.intyg.infra:security-siths:${infraVersion}"
-//    implementation "se.inera.intyg.common:fk7263:${commonVersion}"
-//    implementation "se.inera.intyg.common:ts-parent:${commonVersion}"
-//    implementation "se.inera.intyg.common:fk-parent:${commonVersion}"
-//    implementation "se.inera.intyg.clinicalprocess.healthcond.rehabilitation:intyg-clinicalprocess-healthcond-rehabilitation-schemas:${intygHealthcondRehabilitationSchemasVersion}"
-//    implementation "commons-io:commons-io:${commonsIoVersion}"
 }
