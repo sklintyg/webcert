@@ -62,12 +62,12 @@ public class CertificateCustomizeFunction {
                         InformationDTO.create(
                             OPTIONAL_FIELD_DIAGNOSER_SHOW_ID,
                             SHOW_DIAGNOSIS_TEXT,
-                            InformationTypeDto.RADIO_BUTTON
+                            InformationTypeDto.OPTIONS
                         ),
                         InformationDTO.create(
                             OPTIONAL_FIELD_DIAGNOSER_HIDE_ID,
                             HIDE_DIAGNOSIS_TEXT,
-                            InformationTypeDto.RADIO_BUTTON
+                            InformationTypeDto.OPTIONS
                         ),
                         InformationDTO.create(
                             HIDE_DIAGNOSIS_ALERT_ID,

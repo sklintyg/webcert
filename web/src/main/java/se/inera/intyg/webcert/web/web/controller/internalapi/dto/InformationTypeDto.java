@@ -20,5 +20,5 @@
 package se.inera.intyg.webcert.web.web.controller.internalapi.dto;
 
 public enum InformationTypeDto {
-    RADIO_BUTTON, ALERT
+    OPTIONS, ALERT
 }
