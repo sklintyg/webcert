@@ -18,16 +18,25 @@
  */
 package se.inera.intyg.webcert.web.web.controller.internalapi.dto;
 
+import java.util.List;
 import java.util.Objects;
 import se.inera.intyg.common.support.facade.model.Certificate;
 
 public class GetCertificateResponse {
 
     private Certificate certificate;
+    private List<AvailableFunctionDTO> availableFunctions;
 
     public static GetCertificateResponse create(Certificate certificate) {
         final var getCertificateResponse = new GetCertificateResponse();
         getCertificateResponse.setCertificate(certificate);
+        return getCertificateResponse;
+    }
+
+    public static GetCertificateResponse create(Certificate certificate, List<AvailableFunctionDTO> links) {
+        final var getCertificateResponse = new GetCertificateResponse();
+        getCertificateResponse.setCertificate(certificate);
+        getCertificateResponse.setAvailableFunctions(links);
         return getCertificateResponse;
     }
 
@@ -39,6 +48,14 @@ public class GetCertificateResponse {
         this.certificate = certificate;
     }
 
+    public List<AvailableFunctionDTO> getAvailableFunctions() {
+        return availableFunctions;
+    }
+
+    public void setAvailableFunctions(List<AvailableFunctionDTO> availableFunctions) {
+        this.availableFunctions = availableFunctions;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -47,19 +64,20 @@ public class GetCertificateResponse {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        GetCertificateResponse that = (GetCertificateResponse) o;
-        return Objects.equals(certificate, that.certificate);
+        final GetCertificateResponse that = (GetCertificateResponse) o;
+        return Objects.equals(certificate, that.certificate) && Objects.equals(availableFunctions, that.availableFunctions);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(certificate);
+        return Objects.hash(certificate, availableFunctions);
     }
 
     @Override
     public String toString() {
         return "GetCertificateResponse{"
             + "certificate=" + certificate
+            + ", availableFunctions=" + availableFunctions
             + '}';
     }
 }
