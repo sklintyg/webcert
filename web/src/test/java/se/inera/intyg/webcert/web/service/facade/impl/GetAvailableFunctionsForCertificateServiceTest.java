@@ -31,7 +31,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.CertificateInfoSmittbararpenningFunction;
 import se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.CertificatePrintFunction;
 import se.inera.intyg.webcert.web.service.facade.internalapi.service.GetAvailableFunctionsForCertificateService;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionDTO;
@@ -41,8 +40,6 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFuncti
 class GetAvailableFunctionsForCertificateServiceTest {
 
     @Mock
-    private CertificateInfoSmittbararpenningFunction certificateInfoSmittbararpenningFunction;
-    @Mock
     private CertificatePrintFunction certificatePrintFunction;
     private GetAvailableFunctionsForCertificateService getAvailableFunctionsForCertificateService;
 
@@ -51,7 +48,7 @@ class GetAvailableFunctionsForCertificateServiceTest {
     @BeforeEach
     void setUp() {
         getAvailableFunctionsForCertificateService = new GetAvailableFunctionsForCertificateService(
-            List.of(certificatePrintFunction, certificateInfoSmittbararpenningFunction)
+            List.of(certificatePrintFunction)
         );
     }
 
@@ -62,26 +59,6 @@ class GetAvailableFunctionsForCertificateServiceTest {
         when(certificatePrintFunction.get(CERTIFICATE))
             .thenReturn(
                 expectedAvailableFunction
-            );
-        final var result = getAvailableFunctionsForCertificateService.get(CERTIFICATE);
-        assertEquals(expectedAvailableFunction, result);
-    }
-
-    @Test
-    void shouldReturnListOfMultipleAvailableFunctions() {
-        final var expectedAvailableFunction = List.of(
-            AvailableFunctionDTO.create(
-                AvailableFunctionTypeDTO.CUSTOMIZE_PRINT_CERTIFICATE, null, null, null),
-            AvailableFunctionDTO.create(
-                AvailableFunctionTypeDTO.INFO, null, null, null)
-        );
-        when(certificatePrintFunction.get(CERTIFICATE))
-            .thenReturn(
-                List.of(expectedAvailableFunction.get(0))
-            );
-        when(certificateInfoSmittbararpenningFunction.get(CERTIFICATE))
-            .thenReturn(
-                List.of(expectedAvailableFunction.get(1))
             );
         final var result = getAvailableFunctionsForCertificateService.get(CERTIFICATE);
         assertEquals(expectedAvailableFunction, result);
