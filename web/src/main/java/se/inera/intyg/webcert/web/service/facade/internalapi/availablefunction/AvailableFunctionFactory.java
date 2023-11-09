@@ -27,10 +27,8 @@ import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefun
 import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionConstants.AVSTANGNING_SMITTSKYDD_INFO_BODY;
 import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionConstants.AVSTANGNING_SMITTSKYDD_INFO_NAME;
 import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionConstants.AVSTANGNING_SMITTSKYDD_INFO_TITLE;
-import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionConstants.HIDE_DIAGNOSIS_ALERT_ID;
 import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionConstants.HIDE_DIAGNOSIS_TEXT;
 import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionConstants.OPTIONAL_FIELD_DIAGNOSER_HIDE_ID;
-import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionConstants.OPTIONAL_FIELD_DIAGNOSER_SHOW_ID;
 import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionConstants.SEND_CERTIFICATE_BODY;
 import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionConstants.SEND_CERTIFICATE_NAME;
 import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionConstants.SEND_CERTIFICATE_TITLE;
@@ -66,7 +64,6 @@ public final class AvailableFunctionFactory {
             AVAILABLE_FUNCTION_CUSTOMIZE_DESCRIPTION,
             List.of(
                 InformationDTO.create(
-                    OPTIONAL_FIELD_DIAGNOSER_SHOW_ID,
                     SHOW_DIAGNOSIS_TEXT,
                     InformationTypeDto.OPTIONS
                 ),
@@ -74,10 +71,6 @@ public final class AvailableFunctionFactory {
                     OPTIONAL_FIELD_DIAGNOSER_HIDE_ID,
                     HIDE_DIAGNOSIS_TEXT,
                     InformationTypeDto.OPTIONS
-                ),
-                InformationDTO.create(
-                    HIDE_DIAGNOSIS_ALERT_ID,
-                    InformationTypeDto.ALERT
                 )
             )
         );
