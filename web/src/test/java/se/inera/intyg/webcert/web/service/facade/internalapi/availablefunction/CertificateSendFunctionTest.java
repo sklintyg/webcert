@@ -31,8 +31,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.CertificateRelationType;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRecipient;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionTypeDTO;
@@ -44,7 +47,7 @@ class CertificateSendFunctionTest {
 
     @Mock
     private AuthoritiesHelper authoritiesHelper;
-    
+
     @InjectMocks
     private CertificateSendFunction certificateSendFunction;
 
@@ -56,7 +59,7 @@ class CertificateSendFunctionTest {
             doReturn(true)
                 .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_SKICKA_INTYG, TYPE);
 
-            final var response = certificateSendFunction.get(getCertificate(true));
+            final var response = certificateSendFunction.get(getCertificate());
 
             assertEquals(1, response.size());
             assertEquals(AvailableFunctionTypeDTO.SEND_CERTIFICATE, response.get(0).getType());
@@ -64,7 +67,7 @@ class CertificateSendFunctionTest {
 
         @Test
         void shouldReturnEmptyIfFeatureIsInactive() {
-            final var response = certificateSendFunction.get(getCertificate(true));
+            final var response = certificateSendFunction.get(getCertificate());
 
             assertEquals(Collections.emptyList(), response);
         }
@@ -84,7 +87,7 @@ class CertificateSendFunctionTest {
 
             @Test
             void shouldReturnFunctionIfLatestVersion() {
-                final var response = certificateSendFunction.get(getCertificate(true));
+                final var response = certificateSendFunction.get(getCertificateWithLatestMajorVersion(true));
 
                 assertEquals(1, response.size());
                 assertEquals(AvailableFunctionTypeDTO.SEND_CERTIFICATE, response.get(0).getType());
@@ -92,7 +95,7 @@ class CertificateSendFunctionTest {
 
             @Test
             void shouldReturnFunctionIfOlderVersion() {
-                final var response = certificateSendFunction.get(getCertificate(false));
+                final var response = certificateSendFunction.get(getCertificateWithLatestMajorVersion(false));
 
                 assertEquals(1, response.size());
                 assertEquals(AvailableFunctionTypeDTO.SEND_CERTIFICATE, response.get(0).getType());
@@ -104,7 +107,7 @@ class CertificateSendFunctionTest {
 
             @Test
             void shouldReturnFunctionIfLatestVersion() {
-                final var response = certificateSendFunction.get(getCertificate(true));
+                final var response = certificateSendFunction.get(getCertificateWithLatestMajorVersion(true));
 
                 assertEquals(1, response.size());
                 assertEquals(AvailableFunctionTypeDTO.SEND_CERTIFICATE, response.get(0).getType());
@@ -115,7 +118,7 @@ class CertificateSendFunctionTest {
                 doReturn(true)
                     .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_INACTIVATE_PREVIOUS_MAJOR_VERSION, TYPE);
 
-                final var response = certificateSendFunction.get(getCertificate(false));
+                final var response = certificateSendFunction.get(getCertificateWithLatestMajorVersion(false));
 
                 assertEquals(Collections.emptyList(), response);
             }
@@ -133,14 +136,14 @@ class CertificateSendFunctionTest {
 
         @Test
         void shouldReturnEmptyIfSent() {
-            final var response = certificateSendFunction.get(getCertificate(true, true));
+            final var response = certificateSendFunction.get(getCertificateWithSent(true));
 
             assertEquals(Collections.emptyList(), response);
         }
 
         @Test
         void shouldReturnFunctionIfNotSent() {
-            final var response = certificateSendFunction.get(getCertificate(true, false));
+            final var response = certificateSendFunction.get(getCertificateWithSent(false));
 
             assertEquals(1, response.size());
             assertEquals(AvailableFunctionTypeDTO.SEND_CERTIFICATE, response.get(0).getType());
@@ -158,29 +161,78 @@ class CertificateSendFunctionTest {
 
         @Test
         void shouldReturnEmptyIfNoRecipient() {
-            final var response = certificateSendFunction.get(getCertificate(true, false, false));
+            final var response = certificateSendFunction.get(getCertificateWithRecipient(false));
 
             assertEquals(Collections.emptyList(), response);
         }
 
         @Test
         void shouldReturnFunctionIfRecipient() {
-            final var response = certificateSendFunction.get(getCertificate(true, false, true));
+            final var response = certificateSendFunction.get(getCertificateWithRecipient(true));
 
             assertEquals(1, response.size());
             assertEquals(AvailableFunctionTypeDTO.SEND_CERTIFICATE, response.get(0).getType());
         }
     }
 
-    private static Certificate getCertificate(boolean isLatestMajorVersion) {
-        return getCertificate(isLatestMajorVersion, false, true);
+    @Nested
+    class TestChildRelation {
+
+        @BeforeEach
+        void setup() {
+            doReturn(true)
+                .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_SKICKA_INTYG, TYPE);
+        }
+
+        @Test
+        void shouldReturnEmptyIfReplaced() {
+            final var response = certificateSendFunction.get(getCertificateWithRelation(CertificateRelationType.REPLACED));
+
+            assertEquals(Collections.emptyList(), response);
+        }
+
+        @Test
+        void shouldReturnEmptyIfComplemented() {
+            final var response = certificateSendFunction.get(getCertificateWithRelation(CertificateRelationType.COMPLEMENTED));
+
+            assertEquals(Collections.emptyList(), response);
+        }
+
+        @Test
+        void shouldReturnFunctionIfCopied() {
+            final var response = certificateSendFunction.get(getCertificateWithRelation(CertificateRelationType.COPIED));
+
+            assertEquals(1, response.size());
+            assertEquals(AvailableFunctionTypeDTO.SEND_CERTIFICATE, response.get(0).getType());
+        }
     }
 
-    private static Certificate getCertificate(boolean isLatestMajorVersion, boolean sent) {
-        return getCertificate(isLatestMajorVersion, sent, true);
+    private static Certificate getCertificate() {
+        return getCertificate(true, false, true, null);
     }
 
-    private static Certificate getCertificate(boolean isLatestMajorVersion, boolean sent, boolean hasRecipient) {
+    private static Certificate getCertificateWithLatestMajorVersion(boolean isLatestMajorVersion) {
+        return getCertificate(isLatestMajorVersion, false, true, null);
+    }
+
+    private static Certificate getCertificateWithSent(boolean sent) {
+        return getCertificate(true, sent, true, null);
+    }
+
+    private static Certificate getCertificateWithRecipient(boolean hasRecipient) {
+        return getCertificate(true, false, hasRecipient, null);
+    }
+
+    private static Certificate getCertificateWithRelation(CertificateRelationType relationType) {
+        return getCertificate(true, false, true, relationType);
+    }
+
+    private static Certificate getCertificate(boolean isLatestMajorVersion,
+        boolean sent,
+        boolean hasRecipient,
+        CertificateRelationType relationType) {
+        CertificateRelation[] relationChildren = {CertificateRelation.builder().type(relationType).build()};
+
         final var certificateMetadata = CertificateMetadata.builder()
             .type(TYPE)
             .latestMajorVersion(isLatestMajorVersion)
@@ -190,6 +242,8 @@ class CertificateSendFunctionTest {
                     .id("ID")
                     .name("NAME")
                     .build() : null
+            )
+            .relations(relationType != null ? CertificateRelations.builder().children(relationChildren).build() : null
             )
             .build();
 
