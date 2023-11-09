@@ -31,7 +31,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionFactory;
 import se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.CertificatePrintFunction;
+import se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.CertificateSendFunction;
 import se.inera.intyg.webcert.web.service.facade.internalapi.service.GetAvailableFunctionsForCertificateService;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionTypeDTO;
@@ -41,6 +43,8 @@ class GetAvailableFunctionsForCertificateServiceTest {
 
     @Mock
     private CertificatePrintFunction certificatePrintFunction;
+    @Mock
+    private CertificateSendFunction certificateSendFunction;
     private GetAvailableFunctionsForCertificateService getAvailableFunctionsForCertificateService;
 
     private static final Certificate CERTIFICATE = new Certificate();
@@ -48,28 +52,40 @@ class GetAvailableFunctionsForCertificateServiceTest {
     @BeforeEach
     void setUp() {
         getAvailableFunctionsForCertificateService = new GetAvailableFunctionsForCertificateService(
-            List.of(certificatePrintFunction)
+            List.of(certificatePrintFunction, certificateSendFunction)
         );
     }
 
     @Test
     void shouldReturnListOfAvailableFunctions() {
-        final var expectedAvailableFunction = List.of(AvailableFunctionDTO.create(
+        final var expectedAvailableFunctionPrint = List.of(AvailableFunctionDTO.create(
             AvailableFunctionTypeDTO.CUSTOMIZE_PRINT_CERTIFICATE, null, null, null));
+        final var expectedSendFunction = List.of(AvailableFunctionFactory.send());
         when(certificatePrintFunction.get(CERTIFICATE))
             .thenReturn(
-                expectedAvailableFunction
+                expectedAvailableFunctionPrint
             );
+        when(certificateSendFunction.get(CERTIFICATE))
+            .thenReturn(
+                expectedSendFunction
+            );
+
         final var result = getAvailableFunctionsForCertificateService.get(CERTIFICATE);
-        assertEquals(expectedAvailableFunction, result);
+
+        assertEquals(List.of(expectedAvailableFunctionPrint.get(0), expectedSendFunction.get(0)), result);
     }
 
     @Test
-    void shouldNotIncludeCertificateCustomizeResourceLink() {
+    void shouldNotIncludeAnyFunctionsIfReturnIsEmpty() {
         when(certificatePrintFunction.get(CERTIFICATE)).thenReturn(
             Collections.emptyList()
         );
+        when(certificateSendFunction.get(CERTIFICATE)).thenReturn(
+            Collections.emptyList()
+        );
+
         final var result = getAvailableFunctionsForCertificateService.get(CERTIFICATE);
+        
         assertTrue(result.isEmpty());
     }
 }
