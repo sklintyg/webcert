@@ -33,7 +33,7 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFuncti
 @Component
 public class CertificatePrintFunction implements AvailableFunctions {
 
-    private static final String AVSTANGNING_SMITTSKYDD_QUESTION_ID = "AVSTANGNING_SMITTSKYDD_SVAR_ID_27";
+    private static final String AVSTANGNING_SMITTSKYDD_QUESTION_ID = "27";
 
     @Override
     public List<AvailableFunctionDTO> get(Certificate certificate) {
