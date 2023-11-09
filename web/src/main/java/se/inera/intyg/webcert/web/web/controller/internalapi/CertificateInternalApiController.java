@@ -22,14 +22,19 @@ package se.inera.intyg.webcert.web.web.controller.internalapi;
 import io.swagger.annotations.Api;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import org.springframework.web.bind.annotation.RequestBody;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.internalapi.service.GetAvailableFunctionsForCertificateService;
+import se.inera.intyg.webcert.web.service.facade.internalapi.service.GetCertificatePdfService;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetCertificateResponse;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfRequestDTO;
 
 @Path("/certificate")
 @Api(value = "/internalapi/certificate", produces = MediaType.APPLICATION_JSON)
@@ -37,14 +42,18 @@ public class CertificateInternalApiController {
 
     private final GetCertificateFacadeService getCertificateFacadeService;
     private final GetAvailableFunctionsForCertificateService getAvailableFunctionsForCertificateService;
+    private final GetCertificatePdfService getCertificatePdfService;
+
     private static final String UTF_8_CHARSET = ";charset=utf-8";
     private static final boolean SHOULD_NOT_PDL_LOG = false;
     private static final boolean SHOULD_NOT_VALIDATE_ACCESS = false;
 
     public CertificateInternalApiController(GetCertificateFacadeService getCertificateFacadeService,
-        GetAvailableFunctionsForCertificateService getAvailableFunctionsForCertificateService) {
+        GetAvailableFunctionsForCertificateService getAvailableFunctionsForCertificateService,
+        GetCertificatePdfService getCertificatePdfService) {
         this.getCertificateFacadeService = getCertificateFacadeService;
         this.getAvailableFunctionsForCertificateService = getAvailableFunctionsForCertificateService;
+        this.getCertificatePdfService = getCertificatePdfService;
     }
 
     @GET
@@ -58,6 +67,19 @@ public class CertificateInternalApiController {
         return GetCertificateResponse.create(
             certificate,
             availableFunction
+        );
+    }
+
+    @POST
+    @Path("/{certificateId}/pdf")
+    @PrometheusTimeMethod
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    public CertificatePdfResponseDTO getPdfData(@RequestBody CertificatePdfRequestDTO request,
+        @PathParam("certificateId") String certificateId) {
+        return getCertificatePdfService.get(
+            request.getCustomizationId(),
+            certificateId
         );
     }
 }
