@@ -24,8 +24,8 @@ import java.util.Objects;
 
 public class CertificatePdfResponseDTO {
 
-    String filename;
-    byte[] pdfData;
+    private String filename;
+    private byte[] pdfData;
 
     public static CertificatePdfResponseDTO create(String filename, byte[] pdfData) {
         final var printCertificateResponse = new CertificatePdfResponseDTO();
