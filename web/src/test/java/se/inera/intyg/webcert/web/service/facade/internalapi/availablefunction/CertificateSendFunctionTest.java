@@ -32,6 +32,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRecipient;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionTypeDTO;
@@ -146,15 +147,50 @@ class CertificateSendFunctionTest {
         }
     }
 
+    @Nested
+    class TestCertificateRecipient {
+
+        @BeforeEach
+        void setup() {
+            doReturn(true)
+                .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_SKICKA_INTYG, TYPE);
+        }
+
+        @Test
+        void shouldReturnEmptyIfNoRecipient() {
+            final var response = certificateSendFunction.get(getCertificate(true, false, false));
+
+            assertEquals(Collections.emptyList(), response);
+        }
+
+        @Test
+        void shouldReturnFunctionIfRecipient() {
+            final var response = certificateSendFunction.get(getCertificate(true, false, true));
+
+            assertEquals(1, response.size());
+            assertEquals(AvailableFunctionTypeDTO.SEND_CERTIFICATE, response.get(0).getType());
+        }
+    }
+
     private static Certificate getCertificate(boolean isLatestMajorVersion) {
-        return getCertificate(isLatestMajorVersion, false);
+        return getCertificate(isLatestMajorVersion, false, true);
     }
 
     private static Certificate getCertificate(boolean isLatestMajorVersion, boolean sent) {
+        return getCertificate(isLatestMajorVersion, sent, true);
+    }
+
+    private static Certificate getCertificate(boolean isLatestMajorVersion, boolean sent, boolean hasRecipient) {
         final var certificateMetadata = CertificateMetadata.builder()
             .type(TYPE)
             .latestMajorVersion(isLatestMajorVersion)
             .sent(sent)
+            .recipient(
+                hasRecipient ? CertificateRecipient.builder()
+                    .id("ID")
+                    .name("NAME")
+                    .build() : null
+            )
             .build();
 
         final var certificate = new Certificate();

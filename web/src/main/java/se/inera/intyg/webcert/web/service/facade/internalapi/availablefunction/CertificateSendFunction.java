@@ -50,10 +50,12 @@ public class CertificateSendFunction implements AvailableFunctions {
         final var type = certificate.getMetadata().getType();
         final var latestMajorVersion = certificate.getMetadata().isLatestMajorVersion();
         final var isCertificateSent = certificate.getMetadata().isSent();
-        
+        final var recipient = certificate.getMetadata().getRecipient();
+
         return isSendFeatureActive(type)
             && isVersionAbleToSend(latestMajorVersion, type)
-            && !isCertificateSent;
+            && !isCertificateSent
+            && recipient != null;
     }
 
     private boolean isVersionAbleToSend(boolean latestMajorVersion, String type) {
