@@ -31,6 +31,9 @@ import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefun
 import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionConstants.HIDE_DIAGNOSIS_TEXT;
 import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionConstants.OPTIONAL_FIELD_DIAGNOSER_HIDE_ID;
 import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionConstants.OPTIONAL_FIELD_DIAGNOSER_SHOW_ID;
+import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionConstants.SEND_CERTIFICATE_BODY;
+import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionConstants.SEND_CERTIFICATE_NAME;
+import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionConstants.SEND_CERTIFICATE_TITLE;
 import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionConstants.SHOW_DIAGNOSIS_TEXT;
 
 import java.util.List;
@@ -84,6 +87,15 @@ public final class AvailableFunctionFactory {
         return AvailableFunctionDTO.create(
             AvailableFunctionTypeDTO.PRINT_CERTIFICATE,
             AVAILABLE_FUNCTION_PRINT_NAME
+        );
+    }
+
+    public static AvailableFunctionDTO send() {
+        return AvailableFunctionDTO.create(
+            AvailableFunctionTypeDTO.SEND_CERTIFICATE,
+            SEND_CERTIFICATE_TITLE,
+            SEND_CERTIFICATE_NAME,
+            SEND_CERTIFICATE_BODY
         );
     }
 }

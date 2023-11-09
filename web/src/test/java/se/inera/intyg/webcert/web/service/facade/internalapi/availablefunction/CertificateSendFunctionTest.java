@@ -1,0 +1,201 @@
+/*
+ * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.doReturn;
+
+import java.util.Collections;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRecipient;
+import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionTypeDTO;
+
+@ExtendWith(MockitoExtension.class)
+class CertificateSendFunctionTest {
+
+    private static final String TYPE = "type";
+
+    @Mock
+    private AuthoritiesHelper authoritiesHelper;
+    
+    @InjectMocks
+    private CertificateSendFunction certificateSendFunction;
+
+    @Nested
+    class TestFeatureSend {
+
+        @Test
+        void shouldReturnFunctionIfFeatureIsActive() {
+            doReturn(true)
+                .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_SKICKA_INTYG, TYPE);
+
+            final var response = certificateSendFunction.get(getCertificate(true));
+
+            assertEquals(1, response.size());
+            assertEquals(AvailableFunctionTypeDTO.SEND_CERTIFICATE, response.get(0).getType());
+        }
+
+        @Test
+        void shouldReturnEmptyIfFeatureIsInactive() {
+            final var response = certificateSendFunction.get(getCertificate(true));
+
+            assertEquals(Collections.emptyList(), response);
+        }
+    }
+
+    @Nested
+    class TestFeatureInactiveOlderMajorVersions {
+
+        @BeforeEach
+        void setup() {
+            doReturn(true)
+                .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_SKICKA_INTYG, TYPE);
+        }
+
+        @Nested
+        class FeatureInactive {
+
+            @Test
+            void shouldReturnFunctionIfLatestVersion() {
+                final var response = certificateSendFunction.get(getCertificate(true));
+
+                assertEquals(1, response.size());
+                assertEquals(AvailableFunctionTypeDTO.SEND_CERTIFICATE, response.get(0).getType());
+            }
+
+            @Test
+            void shouldReturnFunctionIfOlderVersion() {
+                final var response = certificateSendFunction.get(getCertificate(false));
+
+                assertEquals(1, response.size());
+                assertEquals(AvailableFunctionTypeDTO.SEND_CERTIFICATE, response.get(0).getType());
+            }
+        }
+
+        @Nested
+        class FeatureActive {
+
+            @Test
+            void shouldReturnFunctionIfLatestVersion() {
+                final var response = certificateSendFunction.get(getCertificate(true));
+
+                assertEquals(1, response.size());
+                assertEquals(AvailableFunctionTypeDTO.SEND_CERTIFICATE, response.get(0).getType());
+            }
+
+            @Test
+            void shouldReturnEmptyIfOlderVersion() {
+                doReturn(true)
+                    .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_INACTIVATE_PREVIOUS_MAJOR_VERSION, TYPE);
+
+                final var response = certificateSendFunction.get(getCertificate(false));
+
+                assertEquals(Collections.emptyList(), response);
+            }
+        }
+    }
+
+    @Nested
+    class TestCertificateSent {
+
+        @BeforeEach
+        void setup() {
+            doReturn(true)
+                .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_SKICKA_INTYG, TYPE);
+        }
+
+        @Test
+        void shouldReturnEmptyIfSent() {
+            final var response = certificateSendFunction.get(getCertificate(true, true));
+
+            assertEquals(Collections.emptyList(), response);
+        }
+
+        @Test
+        void shouldReturnFunctionIfNotSent() {
+            final var response = certificateSendFunction.get(getCertificate(true, false));
+
+            assertEquals(1, response.size());
+            assertEquals(AvailableFunctionTypeDTO.SEND_CERTIFICATE, response.get(0).getType());
+        }
+    }
+
+    @Nested
+    class TestCertificateRecipient {
+
+        @BeforeEach
+        void setup() {
+            doReturn(true)
+                .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_SKICKA_INTYG, TYPE);
+        }
+
+        @Test
+        void shouldReturnEmptyIfNoRecipient() {
+            final var response = certificateSendFunction.get(getCertificate(true, false, false));
+
+            assertEquals(Collections.emptyList(), response);
+        }
+
+        @Test
+        void shouldReturnFunctionIfRecipient() {
+            final var response = certificateSendFunction.get(getCertificate(true, false, true));
+
+            assertEquals(1, response.size());
+            assertEquals(AvailableFunctionTypeDTO.SEND_CERTIFICATE, response.get(0).getType());
+        }
+    }
+
+    private static Certificate getCertificate(boolean isLatestMajorVersion) {
+        return getCertificate(isLatestMajorVersion, false, true);
+    }
+
+    private static Certificate getCertificate(boolean isLatestMajorVersion, boolean sent) {
+        return getCertificate(isLatestMajorVersion, sent, true);
+    }
+
+    private static Certificate getCertificate(boolean isLatestMajorVersion, boolean sent, boolean hasRecipient) {
+        final var certificateMetadata = CertificateMetadata.builder()
+            .type(TYPE)
+            .latestMajorVersion(isLatestMajorVersion)
+            .sent(sent)
+            .recipient(
+                hasRecipient ? CertificateRecipient.builder()
+                    .id("ID")
+                    .name("NAME")
+                    .build() : null
+            )
+            .build();
+
+        final var certificate = new Certificate();
+        certificate.setMetadata(certificateMetadata);
+
+        return certificate;
+    }
+}

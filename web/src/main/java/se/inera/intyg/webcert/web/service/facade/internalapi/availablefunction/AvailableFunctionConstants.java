@@ -45,4 +45,8 @@ public final class AvailableFunctionConstants {
     public static final String HIDE_DIAGNOSIS_ALERT_ID = "hideDiagnosisAlert";
     public static final String OPTIONAL_FIELD_DIAGNOSER_SHOW_ID = DIAGNOS_SVAR_JSON_ID_6;
     public static final String SHOW_DIAGNOSIS_TEXT = "Visa Diagnos";
+    public static final String SEND_CERTIFICATE_NAME = "Skicka intyg";
+    public static final String SEND_CERTIFICATE_TITLE = "Skicka intyg";
+    public static final String SEND_CERTIFICATE_BODY = "Från den här sidan kan du välja att skicka ditt intyg digitalt till mottagaren. "
+        + "Endast mottagare som kan ta emot digitala intyg visas nedan.";
 }
