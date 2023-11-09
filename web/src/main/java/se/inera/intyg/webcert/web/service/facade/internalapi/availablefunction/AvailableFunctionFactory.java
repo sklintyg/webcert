@@ -31,6 +31,8 @@ import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefun
 import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionConstants.HIDE_DIAGNOSIS_TEXT;
 import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionConstants.OPTIONAL_FIELD_DIAGNOSER_HIDE_ID;
 import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionConstants.OPTIONAL_FIELD_DIAGNOSER_SHOW_ID;
+import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionConstants.SEND_CERTIFICATE_BODY;
+import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionConstants.SEND_CERTIFICATE_NAME;
 import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionConstants.SHOW_DIAGNOSIS_TEXT;
 
 import java.util.List;
@@ -90,7 +92,9 @@ public final class AvailableFunctionFactory {
     public static AvailableFunctionDTO send() {
         return AvailableFunctionDTO.create(
             AvailableFunctionTypeDTO.SEND_CERTIFICATE,
-            "Skicka intyg"
+            SEND_CERTIFICATE_NAME,
+            SEND_CERTIFICATE_NAME,
+            SEND_CERTIFICATE_BODY
         );
     }
 }

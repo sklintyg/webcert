@@ -39,13 +39,30 @@ public class CertificateSendFunction implements AvailableFunctions {
     public List<AvailableFunctionDTO> get(Certificate certificate) {
         final var availableFunctions = new ArrayList<AvailableFunctionDTO>();
         final var type = certificate.getMetadata().getType();
+        final var latestMajorVersion = certificate.getMetadata().isLatestMajorVersion();
+        final var isCertificateSent = certificate.getMetadata().isSent();
 
-        if (authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_SKICKA_INTYG, type)
-            && authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_INACTIVATE_PREVIOUS_MAJOR_VERSION, type)) {
+        if (isSendFeatureActive(type) && isVersionAbleToSend(latestMajorVersion, type) && !isCertificateSent) {
             availableFunctions.add(AvailableFunctionFactory.send());
         }
 
         return availableFunctions;
+    }
+
+    private boolean isVersionAbleToSend(boolean latestMajorVersion, String type) {
+        if (latestMajorVersion) {
+            return true;
+        }
+
+        return !isFeatureInactiveOlderVersionsActive(type);
+    }
+
+    private boolean isFeatureInactiveOlderVersionsActive(String type) {
+        return authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_INACTIVATE_PREVIOUS_MAJOR_VERSION, type);
+    }
+
+    private boolean isSendFeatureActive(String type) {
+        return authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_SKICKA_INTYG, type);
     }
 
 }
