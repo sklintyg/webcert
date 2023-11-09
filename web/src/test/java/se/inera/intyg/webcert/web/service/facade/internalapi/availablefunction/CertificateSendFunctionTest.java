@@ -40,13 +40,13 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFuncti
 @ExtendWith(MockitoExtension.class)
 class CertificateSendFunctionTest {
 
-    public static final String TYPE = "type";
-
-    @InjectMocks
-    private CertificateSendFunction certificateSendFunction;
+    private static final String TYPE = "type";
 
     @Mock
     private AuthoritiesHelper authoritiesHelper;
+    
+    @InjectMocks
+    private CertificateSendFunction certificateSendFunction;
 
     @Nested
     class TestFeatureSend {
