@@ -38,15 +38,22 @@ public class CertificateSendFunction implements AvailableFunctions {
     @Override
     public List<AvailableFunctionDTO> get(Certificate certificate) {
         final var availableFunctions = new ArrayList<AvailableFunctionDTO>();
-        final var type = certificate.getMetadata().getType();
-        final var latestMajorVersion = certificate.getMetadata().isLatestMajorVersion();
-        final var isCertificateSent = certificate.getMetadata().isSent();
 
-        if (isSendFeatureActive(type) && isVersionAbleToSend(latestMajorVersion, type) && !isCertificateSent) {
+        if (isSendFunctionActive(certificate)) {
             availableFunctions.add(AvailableFunctionFactory.send());
         }
 
         return availableFunctions;
+    }
+
+    private boolean isSendFunctionActive(Certificate certificate) {
+        final var type = certificate.getMetadata().getType();
+        final var latestMajorVersion = certificate.getMetadata().isLatestMajorVersion();
+        final var isCertificateSent = certificate.getMetadata().isSent();
+        
+        return isSendFeatureActive(type)
+            && isVersionAbleToSend(latestMajorVersion, type)
+            && !isCertificateSent;
     }
 
     private boolean isVersionAbleToSend(boolean latestMajorVersion, String type) {
