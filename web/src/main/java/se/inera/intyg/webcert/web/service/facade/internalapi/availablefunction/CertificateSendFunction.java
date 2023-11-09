@@ -20,8 +20,11 @@
 package se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.CertificateRelationType;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.service.facade.internalapi.AvailableFunctions;
@@ -51,11 +54,24 @@ public class CertificateSendFunction implements AvailableFunctions {
         final var latestMajorVersion = certificate.getMetadata().isLatestMajorVersion();
         final var isCertificateSent = certificate.getMetadata().isSent();
         final var recipient = certificate.getMetadata().getRecipient();
+        final var relations = certificate.getMetadata().getRelations();
 
         return isSendFeatureActive(type)
             && isVersionAbleToSend(latestMajorVersion, type)
             && !isCertificateSent
-            && recipient != null;
+            && recipient != null
+            && isNotReplacedOrComplemented(relations);
+    }
+
+    private static boolean isNotReplacedOrComplemented(CertificateRelations relations) {
+        if (relations == null || relations.getChildren() == null) {
+            return true;
+        }
+
+        return Arrays.stream(relations.getChildren()).noneMatch(
+            child -> child.getType() == CertificateRelationType.COMPLEMENTED
+                || child.getType() == CertificateRelationType.REPLACED
+        );
     }
 
     private boolean isVersionAbleToSend(boolean latestMajorVersion, String type) {
