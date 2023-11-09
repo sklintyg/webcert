@@ -86,4 +86,11 @@ public final class AvailableFunctionFactory {
             AVAILABLE_FUNCTION_PRINT_NAME
         );
     }
+
+    public static AvailableFunctionDTO send() {
+        return AvailableFunctionDTO.create(
+            AvailableFunctionTypeDTO.SEND_CERTIFICATE,
+            "Skicka intyg"
+        );
+    }
 }
