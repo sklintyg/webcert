@@ -38,8 +38,10 @@ public class CertificateSendFunction implements AvailableFunctions {
     @Override
     public List<AvailableFunctionDTO> get(Certificate certificate) {
         final var availableFunctions = new ArrayList<AvailableFunctionDTO>();
+        final var type = certificate.getMetadata().getType();
 
-        if (authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_SKICKA_INTYG, certificate.getMetadata().getType())) {
+        if (authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_SKICKA_INTYG, type)
+            && authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_INACTIVATE_PREVIOUS_MAJOR_VERSION, type)) {
             availableFunctions.add(AvailableFunctionFactory.send());
         }
 

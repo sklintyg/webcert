@@ -20,15 +20,13 @@
 package se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doReturn;
 
 import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -59,41 +57,56 @@ class CertificateSendFunctionTest {
         certificate.setMetadata(metadata);
     }
 
-    @Test
-    void shouldReturnAvailableFunctionSendIfFeatureIsActive() {
-        when(authoritiesHelper.isFeatureActive(anyString(), anyString()))
-            .thenReturn(true);
+    @Nested
+    class TestFeatureSend {
 
-        final var response = certificateSendFunction.get(certificate);
+        @Test
+        void shouldReturnAvailableFunctionSendIfFeatureIsActive() {
+            doReturn(true)
+                .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_SKICKA_INTYG, TYPE);
 
-        assertEquals(1, response.size());
-        assertEquals(AvailableFunctionTypeDTO.SEND_CERTIFICATE, response.get(0).getType());
+            doReturn(true)
+                .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_INACTIVATE_PREVIOUS_MAJOR_VERSION, TYPE);
+
+            final var response = certificateSendFunction.get(certificate);
+
+            assertEquals(1, response.size());
+            assertEquals(AvailableFunctionTypeDTO.SEND_CERTIFICATE, response.get(0).getType());
+        }
+
+        @Test
+        void shouldReturnEmptyIfFeatureIsInactive() {
+            final var response = certificateSendFunction.get(certificate);
+
+            assertEquals(Collections.emptyList(), response);
+        }
     }
 
-    @Test
-    void shouldSendCertificateTypeInIsFeatureActive() {
-        final var captor = ArgumentCaptor.forClass(String.class);
+    @Nested
+    class TestFeatureInactiveOlderMajorVersions {
 
-        certificateSendFunction.get(certificate);
-        verify(authoritiesHelper).isFeatureActive(anyString(), captor.capture());
+        @BeforeEach
+        void setup() {
+            doReturn(true)
+                .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_SKICKA_INTYG, TYPE);
+        }
 
-        assertEquals(TYPE, captor.getValue());
-    }
+        @Test
+        void shouldReturnEmptyIfFeatureIsInactive() {
+            final var response = certificateSendFunction.get(certificate);
 
-    @Test
-    void shouldSendFeatureConstantInIsFeatureActive() {
-        final var captor = ArgumentCaptor.forClass(String.class);
+            assertEquals(Collections.emptyList(), response);
+        }
 
-        certificateSendFunction.get(certificate);
-        verify(authoritiesHelper).isFeatureActive(captor.capture(), anyString());
+        @Test
+        void shouldReturnAvailableFunctionSendIfFeatureIsActive() {
+            doReturn(true)
+                .when(authoritiesHelper).isFeatureActive(AuthoritiesConstants.FEATURE_INACTIVATE_PREVIOUS_MAJOR_VERSION, TYPE);
 
-        assertEquals(AuthoritiesConstants.FEATURE_SKICKA_INTYG, captor.getValue());
-    }
+            final var response = certificateSendFunction.get(certificate);
 
-    @Test
-    void shouldReturnEmptyAvailableFunctionsIfFeatureIsInactive() {
-        final var response = certificateSendFunction.get(certificate);
-
-        assertEquals(Collections.emptyList(), response);
+            assertEquals(1, response.size());
+            assertEquals(AvailableFunctionTypeDTO.SEND_CERTIFICATE, response.get(0).getType());
+        }
     }
 }
