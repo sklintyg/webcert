@@ -22,13 +22,13 @@ package se.inera.intyg.webcert.web.web.controller.internalapi.dto;
 import java.util.Arrays;
 import java.util.Objects;
 
-public class PrintCertificateResponseDTO {
+public class CertificatePdfResponseDTO {
 
     String filename;
     byte[] pdfData;
 
-    public static PrintCertificateResponseDTO create(String filename, byte[] pdfData) {
-        final var printCertificateResponse = new PrintCertificateResponseDTO();
+    public static CertificatePdfResponseDTO create(String filename, byte[] pdfData) {
+        final var printCertificateResponse = new CertificatePdfResponseDTO();
         printCertificateResponse.setFilename(filename);
         printCertificateResponse.setPdfData(pdfData);
         return printCertificateResponse;
@@ -58,7 +58,7 @@ public class PrintCertificateResponseDTO {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        final PrintCertificateResponseDTO that = (PrintCertificateResponseDTO) o;
+        final CertificatePdfResponseDTO that = (CertificatePdfResponseDTO) o;
         return Objects.equals(filename, that.filename) && Arrays.equals(pdfData, that.pdfData);
     }
 

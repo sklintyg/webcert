@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.facade.internalapi.service;
 
+import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,56 +29,75 @@ import se.inera.intyg.infra.intyginfo.dto.ItIntygInfo;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.integration.ITIntegrationService;
-import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
-import se.inera.intyg.webcert.web.service.facade.CertificateTextVersionFacadeService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
-import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetUtkastResponse;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.RequiredFieldsForCertificatePdf;
 
 @Service
-public class GetUtkastFacadeService {
+public class GetRequiredFieldsForCertificatePdfService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetUtkastFacadeService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetRequiredFieldsForCertificatePdfService.class);
     private static final String INTYGSMOTTAGARE = "intygsmottagare";
-
     private final UtkastService utkastService;
-
     private final IntygService intygService;
-
-    private final DraftAccessServiceHelper draftAccessServiceHelper;
-
     private final ITIntegrationService itIntegrationService;
+    private static final boolean SHOULD_NOT_PDL_LOG = false;
+    private static final boolean SHOULD_NOT_VALIDATE_ACCESS = false;
 
-    private final CertificateTextVersionFacadeService certificateTextVersionFacadeService;
 
     @Autowired
-    public GetUtkastFacadeService(UtkastService utkastService,
-        IntygService intygService,
-        DraftAccessServiceHelper draftAccessServiceHelper, ITIntegrationService itIntegrationService,
-        CertificateTextVersionFacadeService certificateTextVersionFacadeService) {
+    public GetRequiredFieldsForCertificatePdfService(UtkastService utkastService,
+        IntygService intygService, ITIntegrationService itIntegrationService) {
         this.utkastService = utkastService;
         this.intygService = intygService;
-        this.draftAccessServiceHelper = draftAccessServiceHelper;
         this.itIntegrationService = itIntegrationService;
-        this.certificateTextVersionFacadeService = certificateTextVersionFacadeService;
     }
 
-    public GetUtkastResponse get(String certificateId, boolean pdlLog, boolean validateAccess) {
-        final var utkast = getCertificateFromWebcert(certificateId, pdlLog, validateAccess);
-        if (utkast == null) {
-            LOG.debug("Retrieving Intyg '{}' from IntygService with pdlLog argument as '{}'", certificateId, pdlLog);
-            final var intygContentHolder = intygService.fetchIntygData(certificateId, null, pdlLog, validateAccess);
-            return GetUtkastResponse.create(intygContentHolder);
+    public RequiredFieldsForCertificatePdf get(String certificateId) {
+        final var draft = getCertificateFromWebcert(certificateId, SHOULD_NOT_PDL_LOG);
+        if (draft == null) {
+            LOG.debug("Retrieving Intyg '{}' from IntygService with pdlLog argument as '{}' and validateAccess as '{}'", certificateId,
+                SHOULD_NOT_PDL_LOG, SHOULD_NOT_VALIDATE_ACCESS);
+            final var intygContentHolder = intygService.fetchIntygData(
+                certificateId,
+                null,
+                SHOULD_NOT_PDL_LOG,
+                SHOULD_NOT_VALIDATE_ACCESS
+            );
+            return createRequiredFieldsFromIntygContentHolder(intygContentHolder);
         }
 
-        if (isSignedButNotSent(utkast)) {
+        if (isSignedButNotSent(draft)) {
             LOG.debug("Retrieve certificate info for '{}' from Intygstjansten", certificateId);
             final var certificateInfo = itIntegrationService.getCertificateInfo(certificateId);
-            utkast.setSkickadTillMottagareDatum(certificateInfo.getSentToRecipient());
-            utkast.setSkickadTillMottagare(getRecipient(certificateInfo));
+            draft.setSkickadTillMottagareDatum(certificateInfo.getSentToRecipient());
+            draft.setSkickadTillMottagare(getRecipient(certificateInfo));
         }
-        return GetUtkastResponse.create(utkast);
+
+        return createRequiredFieldsFromDraft(draft);
+    }
+
+    private static RequiredFieldsForCertificatePdf createRequiredFieldsFromDraft(Utkast draft) {
+        return RequiredFieldsForCertificatePdf.create(
+            draft.getIntygTypeVersion(),
+            draft.getIntygsTyp(),
+            draft.getModel(),
+            IntygConverterUtil.buildStatusesFromUtkast(draft),
+            draft.getStatus()
+        );
+    }
+
+    private static RequiredFieldsForCertificatePdf createRequiredFieldsFromIntygContentHolder(IntygContentHolder intygContentHolder) {
+        return RequiredFieldsForCertificatePdf.create(
+            Objects.requireNonNull(intygContentHolder.getUtlatande()).getTextVersion(),
+            intygContentHolder.getUtlatande().getTyp(),
+            intygContentHolder.getContents(),
+            intygContentHolder.getStatuses(),
+            UtkastStatus.SIGNED
+        );
     }
 
     private boolean isSignedButNotSent(Utkast utkast) {
@@ -92,14 +112,10 @@ public class GetUtkastFacadeService {
             .orElse(null);
     }
 
-    private Utkast getCertificateFromWebcert(String certificateId, boolean pdlLog, boolean validateAccess) {
+    private Utkast getCertificateFromWebcert(String certificateId, boolean pdlLog) {
         try {
             LOG.debug("Retrieving Utkast '{}' from UtkastService with pdlLog argument as '{}'", certificateId, pdlLog);
-            final var utkast = utkastService.getDraft(certificateId, pdlLog);
-            if (validateAccess) {
-                draftAccessServiceHelper.validateAllowToReadUtkast(utkast);
-            }
-            return certificateTextVersionFacadeService.upgradeToLatestMinorTextVersion(utkast);
+            return utkastService.getDraft(certificateId, pdlLog);
         } catch (WebCertServiceException ex) {
             if (ex.getErrorCode().equals(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND)) {
                 LOG.debug("Utkast with id '{}' doesn't exist in Webcert", certificateId);

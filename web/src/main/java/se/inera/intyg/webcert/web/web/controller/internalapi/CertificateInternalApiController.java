@@ -28,15 +28,13 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
-import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
-import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.internalapi.service.GetAvailableFunctionsForCertificateService;
-import se.inera.intyg.webcert.web.service.facade.internalapi.service.GetCertificatePrintService;
+import se.inera.intyg.webcert.web.service.facade.internalapi.service.GetCertificatePdfService;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetCertificateResponse;
-import se.inera.intyg.webcert.web.web.controller.internalapi.dto.PrintCertificateRequestDTO;
-import se.inera.intyg.webcert.web.web.controller.internalapi.dto.PrintCertificateResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfRequestDTO;
 
 @Path("/certificate")
 @Api(value = "/internalapi/certificate", produces = MediaType.APPLICATION_JSON)
@@ -44,7 +42,7 @@ public class CertificateInternalApiController {
 
     private final GetCertificateFacadeService getCertificateFacadeService;
     private final GetAvailableFunctionsForCertificateService getAvailableFunctionsForCertificateService;
-    private final GetCertificatePrintService getCertificatePrintService;
+    private final GetCertificatePdfService getCertificatePdfService;
 
     private static final String UTF_8_CHARSET = ";charset=utf-8";
     private static final boolean SHOULD_NOT_PDL_LOG = false;
@@ -52,10 +50,10 @@ public class CertificateInternalApiController {
 
     public CertificateInternalApiController(GetCertificateFacadeService getCertificateFacadeService,
         GetAvailableFunctionsForCertificateService getAvailableFunctionsForCertificateService,
-        GetCertificatePrintService getCertificatePrintService) {
+        GetCertificatePdfService getCertificatePdfService) {
         this.getCertificateFacadeService = getCertificateFacadeService;
         this.getAvailableFunctionsForCertificateService = getAvailableFunctionsForCertificateService;
-        this.getCertificatePrintService = getCertificatePrintService;
+        this.getCertificatePdfService = getCertificatePdfService;
     }
 
     @GET
@@ -73,23 +71,15 @@ public class CertificateInternalApiController {
     }
 
     @POST
-    @Path("/pdf/{certificateId}")
+    @Path("/{certificateId}/pdf")
     @PrometheusTimeMethod
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public PrintCertificateResponseDTO getPdfData(@RequestBody PrintCertificateRequestDTO request,
-        @PathParam("certificateId") String certificateId)
-        throws ModuleNotFoundException, ModuleException {
-        final var certificate = getCertificateFacadeService.getCertificate(certificateId, SHOULD_NOT_PDL_LOG, SHOULD_NOT_VALIDATE_ACCESS);
-        final var pdf = getCertificatePrintService.get(
+    public CertificatePdfResponseDTO getPdfData(@RequestBody CertificatePdfRequestDTO request,
+        @PathParam("certificateId") String certificateId) {
+        return getCertificatePdfService.get(
             request.getCustomizationId(),
-            certificate,
-            SHOULD_NOT_PDL_LOG,
-            SHOULD_NOT_VALIDATE_ACCESS
-        );
-        return PrintCertificateResponseDTO.create(
-            pdf.getFilename(),
-            pdf.getPdfData()
+            certificateId
         );
     }
 }

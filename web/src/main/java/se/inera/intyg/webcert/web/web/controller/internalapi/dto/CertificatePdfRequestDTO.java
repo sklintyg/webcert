@@ -21,14 +21,14 @@ package se.inera.intyg.webcert.web.web.controller.internalapi.dto;
 
 import java.util.Objects;
 
-public class PrintCertificateRequestDTO {
+public class CertificatePdfRequestDTO {
 
     private String customizationId;
 
-    public PrintCertificateRequestDTO() {
+    public CertificatePdfRequestDTO() {
     }
 
-    public PrintCertificateRequestDTO(String customizationId) {
+    public CertificatePdfRequestDTO(String customizationId) {
         this.customizationId = customizationId;
     }
 
@@ -44,7 +44,7 @@ public class PrintCertificateRequestDTO {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        final PrintCertificateRequestDTO that = (PrintCertificateRequestDTO) o;
+        final CertificatePdfRequestDTO that = (CertificatePdfRequestDTO) o;
         return Objects.equals(customizationId, that.customizationId);
     }
 

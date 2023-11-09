@@ -21,8 +21,6 @@ package se.inera.intyg.webcert.web.service.facade.internalapi.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -42,6 +40,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
+import se.inera.intyg.common.support.model.CertificateState;
+import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.infra.intyginfo.dto.IntygInfoEvent;
 import se.inera.intyg.infra.intyginfo.dto.IntygInfoEvent.Source;
@@ -53,15 +54,21 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.integration.ITIntegrationService;
-import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
-import se.inera.intyg.webcert.web.service.facade.CertificateTextVersionFacadeService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
 @ExtendWith(MockitoExtension.class)
-class GetUtkastFacadeServiceTest {
+class GetRequiredFieldsForCertificatePdfServiceTest {
 
+    private static final String CERTIFICATE_ID = "certificateId";
+    private static final String CERTIFICATE_TYPE = "certificateType";
+    private static final String CERTIFICATE_TYPE_VERSION = "certificateTypeVersion";
+    private static final String DRAFT_JSON = "draftJson";
+    private static final String INTERNAL_JSON_MODEL = "internalJsonModel";
+    private static final String EXPECTED_TYPE_VERSION_FK7263 = "1.0";
+    private static final String EXPECTED_TYPE_FK_7263 = "fk7263";
+    private static final List<Status> EXPECTED_STATUSES = List.of(new Status(CertificateState.RECEIVED, "target", LocalDateTime.now()));
     @Mock
     private UtkastService utkastService;
 
@@ -69,16 +76,10 @@ class GetUtkastFacadeServiceTest {
     private IntygService intygService;
 
     @Mock
-    private DraftAccessServiceHelper draftAccessServiceHelper;
-
-    @Mock
     private ITIntegrationService itIntegrationService;
 
-    @Mock
-    private CertificateTextVersionFacadeService certificateTextVersionFacadeService;
-
     @InjectMocks
-    private GetUtkastFacadeService getUtkastFacadeService;
+    private GetRequiredFieldsForCertificatePdfService getRequiredFieldsForCertificatePdfService;
 
     @Nested
     class UtkastInWebcert {
@@ -89,21 +90,30 @@ class GetUtkastFacadeServiceTest {
         void setupMocks() {
             doReturn(draft)
                 .when(utkastService).getDraft(eq(draft.getIntygsId()), anyBoolean());
-
-            doReturn(draft)
-                .when(certificateTextVersionFacadeService).upgradeToLatestMinorTextVersion(draft);
         }
 
         @Test
-        void shallReturnUtkast() {
-            final var result = getUtkastFacadeService.get(draft.getIntygsId(), false, true);
-            assertNotNull(result.getDraft());
+        void shallReturnTypeVersionFromUtkast() {
+            final var result = getRequiredFieldsForCertificatePdfService.get(draft.getIntygsId());
+            assertEquals(draft.getIntygTypeVersion(), result.getCertificateTypeVersion());
         }
 
         @Test
-        void shallCheckReadAccess() {
-            getUtkastFacadeService.get(draft.getIntygsId(), false, true);
-            verify(draftAccessServiceHelper).validateAllowToReadUtkast(draft);
+        void shallReturnTypeFromUtkast() {
+            final var result = getRequiredFieldsForCertificatePdfService.get(draft.getIntygsId());
+            assertEquals(draft.getIntygsTyp(), result.getCertificateType());
+        }
+
+        @Test
+        void shallReturnInternalJsonModelFromUtkast() {
+            final var result = getRequiredFieldsForCertificatePdfService.get(draft.getIntygsId());
+            assertEquals(draft.getModel(), result.getInternalJsonModel());
+        }
+
+        @Test
+        void shallReturnStatusesFromUtkast() {
+            final var result = getRequiredFieldsForCertificatePdfService.get(draft.getIntygsId());
+            assertEquals(CertificateState.SENT, result.getStatuses().get(0).getType());
         }
 
         @Nested
@@ -129,10 +139,8 @@ class GetUtkastFacadeServiceTest {
                 final var expectedSentDateTime = LocalDateTime.now();
                 itIntygInfo.setSentToRecipient(expectedSentDateTime);
 
-                final var result = getUtkastFacadeService.get(draft.getIntygsId(), false, true);
-
-                assertNotNull(result.getDraft());
-                assertEquals(expectedSentDateTime, result.getDraft().getSkickadTillMottagareDatum());
+                final var result = getRequiredFieldsForCertificatePdfService.get(draft.getIntygsId());
+                assertEquals(expectedSentDateTime, result.getStatuses().get(0).getTimestamp());
             }
 
             @Test
@@ -143,33 +151,28 @@ class GetUtkastFacadeServiceTest {
                 intygInfoEvent.addData("intygsmottagare", expectedReceiver);
                 itIntygInfo.setEvents(List.of(intygInfoEvent));
 
-                final var result = getUtkastFacadeService.get(draft.getIntygsId(), false, true);
-
-                assertNotNull(result.getDraft());
-                assertEquals(expectedReceiver, result.getDraft().getSkickadTillMottagare());
+                final var result = getRequiredFieldsForCertificatePdfService.get(draft.getIntygsId());
+                assertEquals(expectedReceiver, result.getStatuses().get(0).getTarget());
             }
 
             @Test
             void shallLeaveSentDateTimeAsNullIfNotSentFromMinaIntyg() {
-                final var result = getUtkastFacadeService.get(draft.getIntygsId(), false, true);
 
-                assertNotNull(result.getDraft());
-                assertNull(result.getDraft().getSkickadTillMottagareDatum(), "Sent datetime should be null if not sent");
+                final var result = getRequiredFieldsForCertificatePdfService.get(draft.getIntygsId());
+                assertTrue(result.getStatuses().isEmpty(), "Sent datetime should be null if not sent");
             }
 
             @Test
             void shallLeaveSentToReceiverAsNullIfNotSentFromMinaIntyg() {
-                final var result = getUtkastFacadeService.get(draft.getIntygsId(), false, true);
-
-                assertNotNull(result.getDraft());
-                assertNull(result.getDraft().getSkickadTillMottagare(), "Receiver should be null if not sent!");
+                final var result = getRequiredFieldsForCertificatePdfService.get(draft.getIntygsId());
+                assertTrue(result.getStatuses().isEmpty(), "Sent datetime should be null if not sent");
             }
         }
 
         @Test
         void shallNotGetUtkastStatusFromITIfSent() {
             draft.setStatus(UtkastStatus.SIGNED);
-            getUtkastFacadeService.get(draft.getIntygsId(), false, true);
+            getRequiredFieldsForCertificatePdfService.get(draft.getIntygsId());
             verify(itIntegrationService, never())
                 .getCertificateInfo(draft.getIntygsId());
         }
@@ -178,7 +181,7 @@ class GetUtkastFacadeServiceTest {
         void shallNotGetUtkastStatusFromITIfDraftIncomplete() {
             draft.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
             draft.setSkickadTillMottagareDatum(null);
-            getUtkastFacadeService.get(draft.getIntygsId(), false, true);
+            getRequiredFieldsForCertificatePdfService.get(draft.getIntygsId());
             verify(itIntegrationService, never())
                 .getCertificateInfo(draft.getIntygsId());
         }
@@ -187,7 +190,7 @@ class GetUtkastFacadeServiceTest {
         void shallNotGetUtkastStatusFromITIfDraftComplete() {
             draft.setStatus(UtkastStatus.DRAFT_COMPLETE);
             draft.setSkickadTillMottagareDatum(null);
-            getUtkastFacadeService.get(draft.getIntygsId(), false, true);
+            getRequiredFieldsForCertificatePdfService.get(draft.getIntygsId());
             verify(itIntegrationService, never())
                 .getCertificateInfo(draft.getIntygsId());
         }
@@ -196,7 +199,7 @@ class GetUtkastFacadeServiceTest {
         void shallNotGetUtkastStatusFromITIfDraftLocked() {
             draft.setStatus(UtkastStatus.DRAFT_LOCKED);
             draft.setSkickadTillMottagareDatum(null);
-            getUtkastFacadeService.get(draft.getIntygsId(), false, true);
+            getRequiredFieldsForCertificatePdfService.get(draft.getIntygsId());
             verify(itIntegrationService, never())
                 .getCertificateInfo(draft.getIntygsId());
         }
@@ -205,28 +208,20 @@ class GetUtkastFacadeServiceTest {
         class ValidatePdlLogging {
 
             @Test
-            void shallPdlLogIfRequired() {
+            void shallNotPdlLog() {
                 final var actualPdlLogValue = ArgumentCaptor.forClass(Boolean.class);
-                getUtkastFacadeService.get(draft.getIntygsId(), true, true);
+                getRequiredFieldsForCertificatePdfService.get(draft.getIntygsId());
                 verify(utkastService).getDraft(anyString(), actualPdlLogValue.capture());
-                assertTrue(actualPdlLogValue.getValue(), "Expect true because pdl logging is required");
-            }
-
-            @Test
-            void shallNotPdlLogIfRequired() {
-                final var actualPdlLogValue = ArgumentCaptor.forClass(Boolean.class);
-                getUtkastFacadeService.get(draft.getIntygsId(), false, true);
-                verify(utkastService).getDraft(anyString(), actualPdlLogValue.capture());
-                assertFalse(actualPdlLogValue.getValue(), "Expect false because no pdl logging is required");
+                assertFalse(actualPdlLogValue.getValue());
             }
         }
 
         private Utkast createDraft() {
             final var draft = new Utkast();
-            draft.setIntygsId("certificateId");
-            draft.setIntygsTyp("certificateType");
-            draft.setIntygTypeVersion("certificateTypeVersion");
-            draft.setModel("draftJson");
+            draft.setIntygsId(CERTIFICATE_ID);
+            draft.setIntygsTyp(CERTIFICATE_TYPE);
+            draft.setIntygTypeVersion(CERTIFICATE_TYPE_VERSION);
+            draft.setModel(DRAFT_JSON);
             draft.setStatus(UtkastStatus.SIGNED);
             draft.setSkickadTillMottagareDatum(LocalDateTime.now());
             draft.setSkapad(LocalDateTime.now());
@@ -239,14 +234,16 @@ class GetUtkastFacadeServiceTest {
     @Nested
     class UtkastMissingInWebcert {
 
-        private static final String CERTIFICATE_ID = "certificateId";
         private final IntygContentHolder intygContentHolder = IntygContentHolder.builder()
             .setRevoked(false)
             .setDeceased(false)
+            .setUtlatande(new Fk7263Utlatande())
             .setSekretessmarkering(false)
+            .setContents(INTERNAL_JSON_MODEL)
             .setPatientNameChangedInPU(false)
             .setPatientAddressChangedInPU(false)
             .setTestIntyg(false)
+            .setStatuses(EXPECTED_STATUSES)
             .build();
 
         @BeforeEach
@@ -259,48 +256,56 @@ class GetUtkastFacadeServiceTest {
         }
 
         @Test
-        void shallReturnUtkast() {
-            final var result = getUtkastFacadeService.get(CERTIFICATE_ID, false, true);
-            assertNotNull(result.getIntygContentHolder(), "Certificate should not be null!");
+        void shallReturnTypeVersionFromUtkast() {
+            final var result = getRequiredFieldsForCertificatePdfService.get(CERTIFICATE_ID);
+            assertEquals(EXPECTED_TYPE_VERSION_FK7263, result.getCertificateTypeVersion());
+        }
+
+        @Test
+        void shallReturnTypeFromUtkast() {
+            final var result = getRequiredFieldsForCertificatePdfService.get(CERTIFICATE_ID);
+            assertEquals(EXPECTED_TYPE_FK_7263, result.getCertificateType());
+        }
+
+        @Test
+        void shallReturnInternalJsonModelFromUtkast() {
+            final var result = getRequiredFieldsForCertificatePdfService.get(CERTIFICATE_ID);
+            assertEquals(INTERNAL_JSON_MODEL, result.getInternalJsonModel());
+        }
+
+        @Test
+        void shallReturnStatusesFromUtkast() {
+            final var result = getRequiredFieldsForCertificatePdfService.get(CERTIFICATE_ID);
+            assertEquals(CertificateState.RECEIVED, result.getStatuses().get(0).getType());
+        }
+
+        @Test
+        void shallSetUtkastStatusToSigned() {
+            final var result = getRequiredFieldsForCertificatePdfService.get(CERTIFICATE_ID);
+            assertEquals(UtkastStatus.SIGNED, result.getStatus());
         }
 
         @Nested
         class ValidatePdlLogging {
 
             @Test
-            void shallPdlLogIfRequired() {
+            void shallNotPdlLog() {
                 final var actualPdlLogValue = ArgumentCaptor.forClass(Boolean.class);
-                getUtkastFacadeService.get(CERTIFICATE_ID, true, true);
+                getRequiredFieldsForCertificatePdfService.get(CERTIFICATE_ID);
                 verify(intygService).fetchIntygData(anyString(), eq(null), actualPdlLogValue.capture(), anyBoolean());
-                assertTrue(actualPdlLogValue.getValue(), "Expect true because pdl logging is required");
-            }
-
-            @Test
-            void shallNotPdlLogIfRequired() {
-                final var actualPdlLogValue = ArgumentCaptor.forClass(Boolean.class);
-                getUtkastFacadeService.get(CERTIFICATE_ID, false, true);
-                verify(intygService).fetchIntygData(anyString(), eq(null), actualPdlLogValue.capture(), anyBoolean());
-                assertFalse(actualPdlLogValue.getValue(), "Expect false because no pdl logging is required");
+                assertFalse(actualPdlLogValue.getValue());
             }
         }
 
         @Nested
-        class ValidateAccess {
+        class ValidateAccessLogging {
 
             @Test
-            void shallValidateAccessIfRequired() {
-                final var actualValidateAccess = ArgumentCaptor.forClass(Boolean.class);
-                getUtkastFacadeService.get(CERTIFICATE_ID, true, true);
-                verify(intygService).fetchIntygData(anyString(), eq(null), anyBoolean(), actualValidateAccess.capture());
-                assertTrue(actualValidateAccess.getValue(), "Expect true because validate access is required");
-            }
-
-            @Test
-            void shallNotValidateAccessWhenNotRequired() {
-                final var actualValidateAccess = ArgumentCaptor.forClass(Boolean.class);
-                getUtkastFacadeService.get(CERTIFICATE_ID, true, false);
-                verify(intygService).fetchIntygData(anyString(), eq(null), anyBoolean(), actualValidateAccess.capture());
-                assertFalse(actualValidateAccess.getValue(), "Expect false because no access validation is required");
+            void shallNotValidateAccess() {
+                final var actualValidateAccessLogging = ArgumentCaptor.forClass(Boolean.class);
+                getRequiredFieldsForCertificatePdfService.get(CERTIFICATE_ID);
+                verify(intygService).fetchIntygData(anyString(), eq(null), anyBoolean(), actualValidateAccessLogging.capture());
+                assertFalse(actualValidateAccessLogging.getValue());
             }
         }
     }

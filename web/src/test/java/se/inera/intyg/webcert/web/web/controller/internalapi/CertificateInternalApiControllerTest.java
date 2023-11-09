@@ -20,10 +20,8 @@
 package se.inera.intyg.webcert.web.web.controller.internalapi;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
@@ -37,15 +35,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
-import se.inera.intyg.common.support.modules.support.api.dto.PdfResponse;
-import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.internalapi.service.GetAvailableFunctionsForCertificateService;
-import se.inera.intyg.webcert.web.service.facade.internalapi.service.GetCertificatePrintService;
+import se.inera.intyg.webcert.web.service.facade.internalapi.service.GetCertificatePdfService;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionTypeDTO;
-import se.inera.intyg.webcert.web.web.controller.internalapi.dto.PrintCertificateRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfRequestDTO;
 
 @ExtendWith(MockitoExtension.class)
 class CertificateInternalApiControllerTest {
@@ -57,33 +53,31 @@ class CertificateInternalApiControllerTest {
     );
     private static final byte[] EXPECTED_PDF_DATA = new byte[0];
     private static final String EXPECTED_FILENAME = "filename";
-    private static final PdfResponse EXPECTED_PDL_RESPONSE = new PdfResponse(EXPECTED_PDF_DATA, EXPECTED_FILENAME);
+    private static final CertificatePdfResponseDTO EXPECTED_PDL_RESPONSE = CertificatePdfResponseDTO.create(
+        EXPECTED_FILENAME,
+        EXPECTED_PDF_DATA
+    );
     private static final String CERTIFICATE_ID = "certificateId";
-    private static final String CUSTOMIZED_ID = "customizedId";
     private static final boolean SHOULD_NOT_PDL_LOG = false;
     private static final boolean SHOULD_NOT_VALIDATE_ACCESS = false;
     @Mock
     private GetAvailableFunctionsForCertificateService getAvailableFunctionsForCertificateService;
 
     @Mock
-    private GetCertificatePrintService getCertificatePrintService;
+    private GetCertificatePdfService getCertificatePdfService;
     @Mock
     private GetCertificateFacadeService getCertificateFacadeService;
 
     @InjectMocks
     private CertificateInternalApiController certificateInternalApiController;
 
-    @BeforeEach
-    void setUp() {
-        doReturn(EXPECTED_CERTIFICATE)
-            .when(getCertificateFacadeService).getCertificate(CERTIFICATE_ID, SHOULD_NOT_PDL_LOG, SHOULD_NOT_VALIDATE_ACCESS);
-    }
-
     @Nested
     class GetCertificate {
 
         @BeforeEach
         void setUp() {
+            doReturn(EXPECTED_CERTIFICATE)
+                .when(getCertificateFacadeService).getCertificate(CERTIFICATE_ID, SHOULD_NOT_PDL_LOG, SHOULD_NOT_VALIDATE_ACCESS);
             doReturn(EXPECTED_AVAILABLE_FUNCTIONS)
                 .when(getAvailableFunctionsForCertificateService).get(EXPECTED_CERTIFICATE);
         }
@@ -129,75 +123,25 @@ class CertificateInternalApiControllerTest {
     @Nested
     class GetPdfData {
 
-        private final PrintCertificateRequestDTO printCertificateRequest = new PrintCertificateRequestDTO();
+        private final CertificatePdfRequestDTO printCertificateRequest = new CertificatePdfRequestDTO();
 
         @BeforeEach
-        void setUp() throws ModuleNotFoundException, ModuleException {
+        void setUp() {
             doReturn(EXPECTED_PDL_RESPONSE)
-                .when(getCertificatePrintService)
-                .get(printCertificateRequest.getCustomizationId(), EXPECTED_CERTIFICATE, SHOULD_NOT_PDL_LOG, SHOULD_NOT_VALIDATE_ACCESS);
+                .when(getCertificatePdfService)
+                .get(printCertificateRequest.getCustomizationId(), CERTIFICATE_ID);
         }
 
         @Test
-        void shallReturnPrintCertificateResponseWithFileName() throws ModuleNotFoundException, ModuleException {
+        void shallReturnPrintCertificateResponseWithFileName() {
             final var actualPrintCertificateResponse = certificateInternalApiController.getPdfData(printCertificateRequest, CERTIFICATE_ID);
             assertEquals(EXPECTED_FILENAME, actualPrintCertificateResponse.getFilename());
         }
 
         @Test
-        void shallReturnPrintCertificateResponseWithPdfData() throws ModuleNotFoundException, ModuleException {
+        void shallReturnPrintCertificateResponseWithPdfData() {
             final var actualPrintCertificateResponse = certificateInternalApiController.getPdfData(printCertificateRequest, CERTIFICATE_ID);
             assertEquals(EXPECTED_PDF_DATA, actualPrintCertificateResponse.getPdfData());
-        }
-
-        @Test
-        void shallNotPdlLogWhenRetrievingCertificate() throws ModuleNotFoundException, ModuleException {
-            final var booleanArgumentCaptor = ArgumentCaptor.forClass(Boolean.class);
-            certificateInternalApiController.getPdfData(printCertificateRequest, CERTIFICATE_ID);
-            verify(getCertificateFacadeService).getCertificate(
-                anyString(),
-                booleanArgumentCaptor.capture(),
-                anyBoolean()
-            );
-            assertEquals(SHOULD_NOT_PDL_LOG, booleanArgumentCaptor.getValue());
-        }
-
-        @Test
-        void shallNotValidateAccessWhenRetrievingCertificate() throws ModuleNotFoundException, ModuleException {
-            final var booleanArgumentCaptor = ArgumentCaptor.forClass(Boolean.class);
-            certificateInternalApiController.getPdfData(printCertificateRequest, CERTIFICATE_ID);
-            verify(getCertificateFacadeService).getCertificate(
-                anyString(),
-                anyBoolean(),
-                booleanArgumentCaptor.capture()
-            );
-            assertEquals(SHOULD_NOT_VALIDATE_ACCESS, booleanArgumentCaptor.getValue());
-        }
-
-        @Test
-        void shallNotPdlLogWhenRetrievingPdfData() throws ModuleNotFoundException, ModuleException {
-            final var booleanArgumentCaptor = ArgumentCaptor.forClass(Boolean.class);
-            certificateInternalApiController.getPdfData(printCertificateRequest, CERTIFICATE_ID);
-            verify(getCertificatePrintService).get(
-                any(),
-                eq(EXPECTED_CERTIFICATE),
-                booleanArgumentCaptor.capture(),
-                anyBoolean()
-            );
-            assertEquals(SHOULD_NOT_PDL_LOG, booleanArgumentCaptor.getValue());
-        }
-
-        @Test
-        void shallNotValidateAccessWhenRetrievingPdfData() throws ModuleNotFoundException, ModuleException {
-            final var booleanArgumentCaptor = ArgumentCaptor.forClass(Boolean.class);
-            certificateInternalApiController.getPdfData(printCertificateRequest, CERTIFICATE_ID);
-            verify(getCertificatePrintService).get(
-                any(),
-                eq(EXPECTED_CERTIFICATE),
-                anyBoolean(),
-                booleanArgumentCaptor.capture()
-            );
-            assertEquals(SHOULD_NOT_VALIDATE_ACCESS, booleanArgumentCaptor.getValue());
         }
     }
 }
