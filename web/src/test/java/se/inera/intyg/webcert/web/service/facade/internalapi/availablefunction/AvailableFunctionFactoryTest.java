@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionConstants.AVAILABLE_FUNCTION_CUSTOMIZE_BODY;
 import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionConstants.AVAILABLE_FUNCTION_CUSTOMIZE_DESCRIPTION;
 import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionConstants.AVAILABLE_FUNCTION_CUSTOMIZE_NAME;
@@ -35,34 +36,74 @@ import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefun
 import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionConstants.SHOW_DIAGNOSIS_TEXT;
 
 import java.util.List;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionTypeDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.InformationDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.InformationTypeDto;
 
-public final class AvailableFunctionFactory {
+class AvailableFunctionFactoryTest {
 
-    private AvailableFunctionFactory() {
-        throw new IllegalStateException("Utility class!");
+    @Nested
+    class AvstangningSmittskyd {
+
+        private final AvailableFunctionDTO avstangningSmittskydd = AvailableFunctionFactory.avstangningSmittskydd();
+
+        @Test
+        void shouldContainType() {
+            assertEquals(AvailableFunctionTypeDTO.INFO, avstangningSmittskydd.getType());
+        }
+
+        @Test
+        void shouldContainTitle() {
+            assertEquals(AVSTANGNING_SMITTSKYDD_INFO_TITLE, avstangningSmittskydd.getTitle());
+        }
+
+        @Test
+        void shouldContainName() {
+            assertEquals(AVSTANGNING_SMITTSKYDD_INFO_NAME, avstangningSmittskydd.getName());
+        }
+
+        @Test
+        void shouldContainBody() {
+            assertEquals(AVSTANGNING_SMITTSKYDD_INFO_BODY, avstangningSmittskydd.getBody());
+        }
     }
 
-    public static AvailableFunctionDTO avstangningSmittskydd() {
-        return AvailableFunctionDTO.create(
-            AvailableFunctionTypeDTO.INFO,
-            AVSTANGNING_SMITTSKYDD_INFO_TITLE,
-            AVSTANGNING_SMITTSKYDD_INFO_NAME,
-            AVSTANGNING_SMITTSKYDD_INFO_BODY
-        );
-    }
+    @Nested
+    class CustomizePrint {
 
-    public static AvailableFunctionDTO customizePrint() {
-        return AvailableFunctionDTO.create(
-            AvailableFunctionTypeDTO.CUSTOMIZE_PRINT_CERTIFICATE,
-            AVAILABLE_FUNCTION_CUSTOMIZE_TITLE,
-            AVAILABLE_FUNCTION_CUSTOMIZE_NAME,
-            AVAILABLE_FUNCTION_CUSTOMIZE_BODY,
-            AVAILABLE_FUNCTION_CUSTOMIZE_DESCRIPTION,
-            List.of(
+        private final AvailableFunctionDTO customizePrint = AvailableFunctionFactory.customizePrint();
+
+        @Test
+        void shouldContainType() {
+            assertEquals(AvailableFunctionTypeDTO.CUSTOMIZE_PRINT_CERTIFICATE, customizePrint.getType());
+        }
+
+        @Test
+        void shouldContainTitle() {
+            assertEquals(AVAILABLE_FUNCTION_CUSTOMIZE_TITLE, customizePrint.getTitle());
+        }
+
+        @Test
+        void shouldContainName() {
+            assertEquals(AVAILABLE_FUNCTION_CUSTOMIZE_NAME, customizePrint.getName());
+        }
+
+        @Test
+        void shouldContainBody() {
+            assertEquals(AVAILABLE_FUNCTION_CUSTOMIZE_BODY, customizePrint.getBody());
+        }
+
+        @Test
+        void shouldContainDescription() {
+            assertEquals(AVAILABLE_FUNCTION_CUSTOMIZE_DESCRIPTION, customizePrint.getDescription());
+        }
+
+        @Test
+        void shouldContainListOfInformation() {
+            final var expectedResult = List.of(
                 InformationDTO.create(
                     SHOW_DIAGNOSIS_TEXT,
                     InformationTypeDto.OPTIONS
@@ -72,23 +113,50 @@ public final class AvailableFunctionFactory {
                     HIDE_DIAGNOSIS_TEXT,
                     InformationTypeDto.OPTIONS
                 )
-            )
-        );
+            );
+            assertEquals(expectedResult, customizePrint.getInformation());
+        }
     }
 
-    public static AvailableFunctionDTO print() {
-        return AvailableFunctionDTO.create(
-            AvailableFunctionTypeDTO.PRINT_CERTIFICATE,
-            AVAILABLE_FUNCTION_PRINT_NAME
-        );
+    @Nested
+    class Print {
+
+        private final AvailableFunctionDTO print = AvailableFunctionFactory.print();
+
+        @Test
+        void shouldContainType() {
+            assertEquals(AvailableFunctionTypeDTO.PRINT_CERTIFICATE, print.getType());
+        }
+
+        @Test
+        void shouldContainName() {
+            assertEquals(AVAILABLE_FUNCTION_PRINT_NAME, print.getName());
+        }
     }
 
-    public static AvailableFunctionDTO send() {
-        return AvailableFunctionDTO.create(
-            AvailableFunctionTypeDTO.SEND_CERTIFICATE,
-            SEND_CERTIFICATE_TITLE,
-            SEND_CERTIFICATE_NAME,
-            SEND_CERTIFICATE_BODY
-        );
+    @Nested
+    class Senc {
+
+        private final AvailableFunctionDTO send = AvailableFunctionFactory.send();
+
+        @Test
+        void shouldContainType() {
+            assertEquals(AvailableFunctionTypeDTO.SEND_CERTIFICATE, send.getType());
+        }
+
+        @Test
+        void shouldContainTitle() {
+            assertEquals(SEND_CERTIFICATE_TITLE, send.getTitle());
+        }
+
+        @Test
+        void shouldContainName() {
+            assertEquals(SEND_CERTIFICATE_NAME, send.getName());
+        }
+
+        @Test
+        void shouldContainBody() {
+            assertEquals(SEND_CERTIFICATE_BODY, send.getBody());
+        }
     }
 }
