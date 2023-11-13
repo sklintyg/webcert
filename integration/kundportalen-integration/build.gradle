@@ -1,5 +1,10 @@
 dependencies {
-    compile project(":webcert-common")
+    implementation "com.fasterxml.jackson.core:jackson-annotations"
+    implementation "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider"
+    implementation "jakarta.ws.rs:jakarta.ws.rs-api"
+    implementation "org.apache.cxf:cxf-rt-frontend-jaxrs:${cxfVersion}"
+    implementation "org.springframework:spring-context-support"
+    implementation "org.springframework:spring-web"
 
-    testCompile "org.springframework:spring-test"
+    testImplementation "org.springframework:spring-test"
 }

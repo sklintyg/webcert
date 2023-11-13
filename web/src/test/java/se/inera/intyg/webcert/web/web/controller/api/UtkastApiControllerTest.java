@@ -62,7 +62,7 @@ import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygResponse;
-import se.riv.infrastructure.directory.v1.PersonInformationType;
+import se.riv.infrastructure.directory.employee.v2.PersonInformationType;
 
 import javax.ws.rs.core.Response;
 import javax.xml.ws.WebServiceException;

@@ -1,13 +1,14 @@
 dependencies {
-  compile project(':webcert-persistence')
+  implementation project(':webcert-persistence')
 
-  compile "org.springframework:spring-web"
-  compile "io.vavr:vavr:${vavrVersion}"
-  compile "net.javacrumbs.shedlock:shedlock-spring:${shedlockSpringVersion}"
-  compile "net.javacrumbs.shedlock:shedlock-provider-redis-spring:${shedlockSpringVersion}"
-
-  testCompile "org.springframework:spring-test"
-  testCompile "org.hamcrest:hamcrest"
-  testCompile "org.hamcrest:hamcrest-library"
-  testCompile "org.assertj:assertj-core"
+  implementation "com.fasterxml.jackson.core:jackson-annotations"
+  implementation "com.fasterxml.jackson.core:jackson-databind"
+  implementation "com.google.guava:guava:${guavaVersion}"
+  implementation "io.vavr:vavr:${vavrVersion}"
+  implementation 'jakarta.persistence:jakarta.persistence-api'
+  implementation "jakarta.ws.rs:jakarta.ws.rs-api"
+  implementation "net.javacrumbs.shedlock:shedlock-spring:${shedlockSpringVersion}"
+  implementation "org.apache.commons:commons-lang3"
+  implementation "org.springframework.data:spring-data-jpa"
+  implementation "org.springframework:spring-web"
 }

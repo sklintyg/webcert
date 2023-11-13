@@ -109,7 +109,7 @@ public class StubRestApi {
     @Path("/latency/{millis}")
     public Response setStubMode(@PathParam("millis") Long millis) {
         try {
-            if (millis < 0L || millis > Long.MAX_VALUE) {
+            if (millis < 0L) {
                 throw new IllegalArgumentException();
             }
             StubModeSingleton.setLatency(millis);

@@ -1,14 +1,14 @@
 dependencies {
-    compile project(":webcert-common")
-    // compile "net.openhft:chronicle-map:3.13.0"
-    compile "org.apache.commons:commons-lang3"
-    compile "org.springframework.data:spring-data-redis"
-    compile "it.ozimov:embedded-redis:0.7.2"
+    implementation "com.fasterxml.jackson.core:jackson-databind"
+    implementation "jakarta.ws.rs:jakarta.ws.rs-api"
+    implementation "org.apache.commons:commons-lang3"
+    implementation "org.apache.cxf:cxf-core:${cxfVersion}"
+    implementation "org.springframework.data:spring-data-redis"
+    implementation "se.inera.intyg.common:integration-util:${commonVersion}"
+    implementation "se.inera.intyg.common:common-support:${commonVersion}"
+    implementation "se.inera.intyg.infra:common-redis-cache-core:${infraVersion}"
+    implementation "se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:${rivtaClinicalprocessSchemasVersion}"
 
-
-    testCompile "javax.servlet:javax.servlet-api"
-    testCompile "org.springframework:spring-test"
-    testCompile "org.hamcrest:hamcrest"
-    testCompile "org.hamcrest:hamcrest-library"
-
+    testImplementation "it.ozimov:embedded-redis:${embeddedRedisVersion}"
+    testImplementation "org.springframework:spring-test"
 }

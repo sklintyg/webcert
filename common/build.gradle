@@ -1,15 +1,8 @@
 dependencies {
-    compile "se.inera.intyg.infra:log-messages:${infraVersion}"
-    compile "se.inera.intyg.infra:monitoring:${infraVersion}"
-    compile "se.inera.intyg.infra:security-siths:${infraVersion}"
-    compile "se.inera.intyg.common:fk7263:${commonVersion}"
-    compile "se.inera.intyg.common:ts-parent:${commonVersion}"
-    compile "se.inera.intyg.common:fk-parent:${commonVersion}"
-
-    compile "se.inera.intyg.clinicalprocess.healthcond.rehabilitation:intyg-clinicalprocess-healthcond-rehabilitation-schemas:${intygHealthcondRehabilitationSchemasVersion}"
-
-    compile "org.springframework.security:spring-security-config"
-
-    compile "commons-io:commons-io:${commonsIoVersion}"
-
+    implementation "com.fasterxml.jackson.core:jackson-databind"
+    implementation "org.springframework.security:spring-security-config"
+    implementation "se.inera.intyg.common:common-support:${commonVersion}"
+    implementation "se.inera.intyg.infra:log-messages:${infraVersion}"
+    implementation "se.inera.intyg.schemas:schemas-contract:${schemasContractVersion}"
+    implementation "se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:${rivtaClinicalprocessSchemasVersion}"
 }

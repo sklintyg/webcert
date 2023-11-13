@@ -19,7 +19,7 @@
 package se.inera.intyg.webcert.integration.fmb.model;
 
 import static com.google.common.collect.MoreCollectors.toOptional;
-import static org.apache.commons.lang.StringUtils.equalsIgnoreCase;
+import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 
 import java.util.Optional;
 import java.util.stream.Stream;

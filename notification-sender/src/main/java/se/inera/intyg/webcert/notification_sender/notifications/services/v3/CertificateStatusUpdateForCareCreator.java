@@ -41,7 +41,6 @@ import se.inera.intyg.common.support.modules.support.api.notification.Notificati
 import se.inera.intyg.infra.integration.hsatk.model.PersonInformation;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
-import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationPatientEnricher;
 import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationTypeConverter;
 import se.inera.intyg.webcert.notification_sender.notifications.util.NotificationRedeliveryUtil;

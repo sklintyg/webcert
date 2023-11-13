@@ -27,7 +27,7 @@ import java.util.List;
 import javax.xml.ws.WebServiceException;
 import org.apache.camel.Body;
 import org.apache.camel.Header;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

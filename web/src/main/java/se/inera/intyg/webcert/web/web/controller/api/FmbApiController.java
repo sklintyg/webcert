@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.web.web.controller.api;
 
 import static java.util.Objects.isNull;
-import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 import java.util.List;
 import java.util.Optional;
@@ -118,7 +117,7 @@ public class FmbApiController extends AbstractApiController {
             validationErrors.add("Missing periods");
         }
 
-        if (isNotEmpty(validationErrors)) {
+        if (!validationErrors.isEmpty()) {
             return Response.status(Response.Status.BAD_REQUEST).entity(String.join(",", validationErrors)).build();
         }
 

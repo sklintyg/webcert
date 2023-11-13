@@ -18,8 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.monitoring;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 
 import ch.qos.logback.classic.Level;
@@ -112,10 +111,8 @@ public class MonitoringLogServiceImplTest {
         verify(mockAppender).doAppend(captorLoggingEvent.capture());
         final LoggingEvent loggingEvent = captorLoggingEvent.getValue();
 
-        // Verify log
-        assertThat(loggingEvent.getLevel(), equalTo(logLevel));
-        assertThat(loggingEvent.getFormattedMessage(),
-            equalTo(logMessage));
+        assertEquals(logLevel, loggingEvent.getLevel());
+        assertEquals(logMessage, loggingEvent.getFormattedMessage());
     }
 
     @Test
