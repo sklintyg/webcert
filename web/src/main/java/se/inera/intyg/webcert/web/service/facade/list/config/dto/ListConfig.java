@@ -35,7 +35,8 @@ public class ListConfig {
     private TableHeading[] tableHeadings;
     private boolean shouldUpdateConfigAfterListSearch;
 
-    public ListConfig(){}
+    public ListConfig() {
+    }
 
     public ListConfig(List<ListFilterConfig> filters, String title, String description, String emptyListText,
                       String secondaryTitle, List<Integer> pageSizes, TableHeading[] tableHeadings,

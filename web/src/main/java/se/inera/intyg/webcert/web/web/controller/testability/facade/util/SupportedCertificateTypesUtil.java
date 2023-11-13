@@ -154,7 +154,7 @@ public class SupportedCertificateTypesUtil {
                 TsDiabetesEntryPoint.KV_UTLATANDETYP_INTYG_CODE,
                 TsDiabetesEntryPoint.MODULE_ID,
                 TsDiabetesEntryPoint.MODULE_NAME,
-                Arrays.asList("2.6", "2.8", "3.0", "4.0", "4.1"),
+                Arrays.asList("2.6", "2.8", "3.0", "4.0", "4.1", "4.2"),
                 Arrays.asList(CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
                 Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL, CreateCertificateFillType.MAXIMAL)
             )

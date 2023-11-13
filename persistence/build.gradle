@@ -4,22 +4,18 @@ sourceSets.main.output.resourcesDir = sourceSets.main.output.getClassesDirs().ge
 jar.duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
 dependencies {
-  compile project(':webcert-common')
+  implementation project(':webcert-common')
 
-  compile "org.springframework:spring-orm"
+  implementation "com.google.guava:guava:${guavaVersion}"
+  implementation "com.h2database:h2"
+  implementation "commons-io:commons-io:${commonsIoVersion}"
+  implementation "org.hibernate:hibernate-hikaricp"
+  implementation "org.jadira.usertype:usertype.core:${jadiraUserTypeVersion}"
+  implementation "org.liquibase:liquibase-core"
+  implementation "com.mysql:mysql-connector-j"
+  implementation "org.springframework.data:spring-data-jpa"
+  implementation "se.inera.intyg.schemas:schemas-contract:${schemasContractVersion}"
+  implementation "se.inera.intyg.common:common-support:${commonVersion}"
 
-  compile "org.springframework.data:spring-data-jpa"
-  compile "org.liquibase:liquibase-core"
-  compile "org.jadira.usertype:usertype.core:${jadiraUserTypeVersion}"
-
-  compile "org.hibernate:hibernate-core"
-  compile "org.hibernate:hibernate-hikaricp"
-  compile "org.hibernate:hibernate-entitymanager"
-
-  compile "com.h2database:h2"
-  compile "com.mysql:mysql-connector-j"
-
-  testCompile "org.springframework:spring-test"
-  testCompile "org.hamcrest:hamcrest"
-  testCompile "org.hamcrest:hamcrest-library"
+  testImplementation "org.springframework:spring-test"
 }

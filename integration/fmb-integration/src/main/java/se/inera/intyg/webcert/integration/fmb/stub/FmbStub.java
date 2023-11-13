@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -45,7 +46,7 @@ public class FmbStub {
 
     private static final Logger LOG = LoggerFactory.getLogger(FmbStub.class);
 
-    private ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
 
     @GET
     @Path("typfall")
@@ -85,7 +86,8 @@ public class FmbStub {
             attributes.setTypfallsmening("Akut bronkit nedsätter normalt inte arbetsförmågan. Om patienten har långvarig svår hosta "
                 + "kan det möjligen påverka allmäntillståndet genom att patienten blir trött. Sjukskrivning enbart i undantagsfall "
                 + "vid tydligt nedsatt allmäntillstånd i upp till 2 veckor. Röstkrävande yrken kan behöva längre sjukskrivning.");
-            attributes.getOptionalFmbtillstand().orElse(null).setDiagnoskod(Arrays.asList(getDiagnoskod("J22"), getDiagnoskod("J20")));
+            Objects.requireNonNull(attributes.getOptionalFmbtillstand().orElse(null))
+                .setDiagnoskod(Arrays.asList(getDiagnoskod("J22"), getDiagnoskod("J20")));
             data.add(copy);
         } catch (IOException e) {
             LOG.error("Failed to insert hard coded FMB typfall info", e);
@@ -99,21 +101,21 @@ public class FmbStub {
             final FmdxData copy = copy(fmdxData, FmdxData.class);
             final Attributes attributes = copy.getAttributes();
             attributes.setDiagnoskod(Arrays.asList(getDiagnoskod("J22"), getDiagnoskod("J20")));
-            attributes.getOptionalAktivitetsbegransning().orElse(null).setBeskrivning("Akut bronkit påverkar inte "
-                + "funktionstillståndet, bortsett från irriterande hosta i normalfallet. "
+            Objects.requireNonNull(attributes.getOptionalAktivitetsbegransning().orElse(null)).setBeskrivning(
+                "Akut bronkit påverkar inte funktionstillståndet, bortsett från irriterande hosta i normalfallet. "
                 + "Bakteriell sekundärinfektion kan påverka allmäntillståndet genom att patienten blir trött.");
-            attributes.getOptionalFunktionsnedsattning().orElse(null).setBeskrivning("Tillståndet är vanligtvis "
+            Objects.requireNonNull(attributes.getOptionalFunktionsnedsattning().orElse(null)).setBeskrivning("Tillståndet är vanligtvis "
                 + "kortvarigt och varar några dagar till några veckor. "
                 + "Ibland får patienten hosta under flera månader vilket är ett uttryck för en sekundärinfektion.");
-            attributes.getOptionalForsakringsmedicinskinformation().orElse(null).setMarkup("Återkommande akuta bronkiter hos rökare bör "
-                + "medföra rökstopp. Bihåleinflammationer efter viroser kan ligga bakom "
+            Objects.requireNonNull(attributes.getOptionalForsakringsmedicinskinformation().orElse(null)).setMarkup(
+                "Återkommande akuta bronkiter hos rökare bör medföra rökstopp. Bihåleinflammationer efter viroser kan ligga bakom "
                 + "återkommande akuta bronkiter. Långvarig bronkit kan bero på twar eller infektion med "
                 + "mykoplasma pneumoni. "
                 + "\n\nHos patienter med samtidig annan luftvägs- eller lungsjukdom som exempelvis astma eller "
                 + "kol kan symtomen "
                 + "vid akut bronkit bli mer uttalade och funktionsnedsättningen bli mer långdragen.");
-            attributes.getOptionalSymtomprognosbehandling().orElse(null).setMarkup("Akut bronkit orsakas vanligen av luftvägsinflammation "
-                + "och epitelskada (skador på hud och slemhinnor i kroppen) "
+            Objects.requireNonNull(attributes.getOptionalSymtomprognosbehandling().orElse(null)).setMarkup(
+                "Akut bronkit orsakas vanligen av luftvägsinflammation och epitelskada (skador på hud och slemhinnor i kroppen) "
                 + "efter vanlig virusförkylning. Akut bronkit kan ge hosta under flera månader och är ofta "
                 + "tecken på inflammation "
                 + "i bronkerna. Symtom är akut påkommande torr eller slemmig hosta.");

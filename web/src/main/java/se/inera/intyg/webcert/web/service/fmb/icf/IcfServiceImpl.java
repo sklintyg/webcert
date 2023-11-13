@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.web.service.fmb.icf;
 
 import static com.google.common.collect.MoreCollectors.toOptional;
-import static org.apache.commons.collections4.ListUtils.emptyIfNull;
 
 import com.google.common.base.Preconditions;
 import io.vavr.Tuple;
@@ -28,6 +27,7 @@ import io.vavr.Tuple3;
 import io.vavr.collection.HashSet;
 import io.vavr.collection.List;
 import io.vavr.collection.Map;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
@@ -138,12 +138,12 @@ public class IcfServiceImpl extends FmbBaseService implements IcfService {
 
         final List<Tuple3<String, IcfKod, String>> koder = icfKoderList.flatMap(diagnos -> {
             final List<Tuple3<String, IcfKod, String>> tempList =
-                List.ofAll(emptyIfNull(diagnos._2.getIcfKoder()))
+                List.ofAll(emptyIfNull(diagnos))
                     .filter(IcfCentralKod.class::isInstance)
                     .map(kod -> Tuple.of(diagnos._1, kod, central));
 
             return tempList.appendAll(
-                List.ofAll(emptyIfNull(diagnos._2.getIcfKoder()))
+                List.ofAll(emptyIfNull(diagnos))
                     .filter(IcfKompletterandeKod.class::isInstance)
                     .map(kod -> Tuple.of(diagnos._1, kod, kompletterande)));
         });
@@ -332,4 +332,8 @@ public class IcfServiceImpl extends FmbBaseService implements IcfService {
         };
     }
 
+    private java.util.List<IcfKod> emptyIfNull(Tuple2<String, IcfKoder> diagnos) {
+        return diagnos != null && diagnos._2 != null && diagnos._2.getIcfKoder() != null
+            ? diagnos._2.getIcfKoder() : Collections.emptyList();
+    }
 }

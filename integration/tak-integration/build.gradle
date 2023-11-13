@@ -1,11 +1,15 @@
 dependencies {
-  compile project(':webcert-common')
+  implementation "com.fasterxml.jackson.core:jackson-annotations"
+  implementation "com.fasterxml.jackson.core:jackson-databind"
+  implementation "jakarta.ws.rs:jakarta.ws.rs-api"
+  implementation "org.springframework:spring-context-support"
+  implementation "org.springframework:spring-web"
+  implementation "se.inera.intyg.common:common-support:${commonVersion}"
+  implementation "se.inera.intyg.common:fk7263:${commonVersion}"
+  implementation "se.inera.intyg.infra:hsa-integration-api:${infraVersion}"
+  implementation "se.inera.intyg.infra:hsatk-integration:${infraVersion}"
+  implementation "se.inera.intyg.infra:security-authorities:${infraVersion}"
+  implementation "se.inera.intyg.infra:security-common:${infraVersion}"
 
-  compile "org.springframework:spring-web"
-  compile "se.inera.intyg.infra:hsatk-integration:${infraVersion}"
-  compile "org.apache.httpcomponents:httpclient"
-
-  testCompile "org.springframework:spring-test"
-  testCompile "org.hamcrest:hamcrest"
-  testCompile "org.hamcrest:hamcrest-library"
+  testImplementation "org.springframework:spring-test"
 }

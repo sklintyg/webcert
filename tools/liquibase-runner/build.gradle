@@ -5,7 +5,7 @@ applicationDefaultJvmArgs = ["-Dfile.encoding=utf8", "-Dliquibase.headless=true"
 
 startScripts {
     doLast {
-        def persistenceDependency = configurations.runtime.filter { it.name.startsWith("webcert-persistence") }.singleFile.name
+        def persistenceDependency = configurations.runtimeOnly.filter { it.name.startsWith("webcert-persistence") }.singleFile.name
 
         def originalScript = unixScript.text
         unixScript.text = unixScript.text.replaceAll(/\s\s"\$@"\n/, '  --driver=com.mysql.cj.jdbc.Driver --classpath=lib/'
@@ -24,26 +24,20 @@ startScripts {
     }
 }
 
-uploadArchives.enabled = true
+artifacts { archives distZip }
+sonar { skipProject = true }
 
-artifacts {
-    archives distZip
-}
-
-configurations.runtime {
+configurations.runtimeOnly {
+    setCanBeResolved(true)
     transitive = false
-}
-
-sonarqube {
-    skipProject = true
 }
 
 def liquibaseVersion = dependencyManagement.managedVersions['org.liquibase:liquibase-core']
 
 dependencies {
-    compile "info.picocli:picocli:${picocliVersion}"
-    runtime "com.mysql:mysql-connector-j"
-    runtime "org.liquibase:liquibase-core"
-    runtime "org.liquibase.ext:liquibase-hibernate5:" + liquibaseVersion
-    runtime project(':webcert-persistence')
+    implementation "info.picocli:picocli:${picocliVersion}"
+    runtimeOnly "com.mysql:mysql-connector-j"
+    runtimeOnly "org.liquibase:liquibase-core"
+    runtimeOnly "org.liquibase.ext:liquibase-hibernate5:" + liquibaseVersion
+    runtimeOnly project(':webcert-persistence')
 }
