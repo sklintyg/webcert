@@ -24,24 +24,8 @@ startScripts {
     }
 }
 
-publishing {
-    publications {
-        mavenWeb(MavenPublication) {
-            from components.java
-
-            def liquibaseRunner = "${rootProject.name}-liquibase-runner-${version}"
-            def liquibaseRunnerPath = "${project.layout.buildDirectory.get().asFile}/distributions/${liquibaseRunner}"
-            artifact "${liquibaseRunnerPath}.zip"
-            artifact "${liquibaseRunnerPath}.tar"
-
-            publishMavenWebPublicationToMavenLocal.dependsOn distTar
-            publishMavenWebPublicationToMavenLocal.dependsOn distZip
-        }
-    }
-}
-
 artifacts { archives distZip }
-sonarqube { skipProject = true }
+sonar { skipProject = true }
 
 configurations.runtimeOnly {
     setCanBeResolved(true)

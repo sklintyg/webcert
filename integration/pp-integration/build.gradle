@@ -2,7 +2,6 @@ dependencies {
   implementation "com.fasterxml.jackson.core:jackson-databind"
   implementation "com.google.guava:guava:${guavaVersion}"
   implementation "jakarta.ws.rs:jakarta.ws.rs-api"
-  implementation "org.slf4j:slf4j-api"
   implementation "org.springframework:spring-web"
   implementation "se.inera.intyg.infra:privatepractitioner:${infraVersion}"
   implementation "se.inera.intyg.infrastructure.directory.privatepractitioner:intyg-infrastructure-directory-privatepractitioner-schemas:${ppSchemasVersion}"

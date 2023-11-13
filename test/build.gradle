@@ -21,7 +21,7 @@ node {
 }
 
 tasks.register('protractorTests', NodeTask) {
-    dependsOn npm_install
+    dependsOn npmInstall
     outputs.upToDateWhen { false }
     def environment = System.properties['protractor.env'] ?: "dev"
 

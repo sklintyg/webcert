@@ -31,7 +31,6 @@ dependencies {
     implementation "org.apache.camel:camel-jaxb:${camelVersion}"
     implementation "org.apache.camel:camel-jms:${camelVersion}"
     implementation "org.apache.commons:commons-lang3"
-    implementation "org.slf4j:slf4j-api"
     implementation "org.springframework:spring-context-support"
     implementation "org.springframework:spring-jms"
     implementation "org.springframework:spring-oxm"
@@ -56,7 +55,6 @@ dependencies {
     testCompileOnly "org.apache.geronimo.specs:geronimo-jms_1.1_spec:${geronimoJmsVersion}"
 
     testImplementation project(':notification-stub')
-    testImplementation "ch.qos.logback:logback-classic"
     testImplementation "org.apache.activemq:activemq-spring"
     testImplementation "org.apache.camel:camel-test-spring-junit5:${camelVersion}"
     testImplementation "org.awaitility:awaitility"

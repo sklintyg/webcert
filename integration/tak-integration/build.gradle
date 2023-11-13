@@ -2,7 +2,6 @@ dependencies {
   implementation "com.fasterxml.jackson.core:jackson-annotations"
   implementation "com.fasterxml.jackson.core:jackson-databind"
   implementation "jakarta.ws.rs:jakarta.ws.rs-api"
-  implementation "org.slf4j:slf4j-api"
   implementation "org.springframework:spring-context-support"
   implementation "org.springframework:spring-web"
   implementation "se.inera.intyg.common:common-support:${commonVersion}"

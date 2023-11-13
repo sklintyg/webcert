@@ -1,3 +1,8 @@
+import se.inera.intyg.IntygPluginKt
+
+import java.nio.file.Files
+import java.nio.file.Paths
+
 plugins {
     id "se.inera.intyg.plugin.common" version "3.2.10-SNAPSHOT" apply false
     id "io.spring.dependency-management" version "1.1.3" apply false
@@ -32,8 +37,7 @@ ext {
     geronimoJmsVersion = "1.1.1"
     guavaVersion = "32.1.3-jre"
     jadiraUserTypeVersion = "6.0.1.GA"
-    jakartaJwsApiVersion = "3.0.0"
-    javaxJwsApiVersion = "1.1"
+    jakartaJwsApiVersion = "2.1.0" // version 3.0.0 -> warning: "class file for javax.jws.soap.SOAPBinding$ParameterStyle not found"
     jaxb2Version = "0.13.1"
     jexcelVersion = "1.0.9"
     jsonwebtokenVersion = "0.11.5"
@@ -60,7 +64,6 @@ ext {
 allprojects {
     apply plugin: 'se.inera.intyg.plugin.common'
     apply plugin: "io.spring.dependency-management"
-    apply plugin: 'maven-publish'
     apply plugin: 'java-library'
     apply plugin: 'idea'
 
@@ -76,12 +79,12 @@ allprojects {
     }
 
     dependencies {
-        implementation "com.sun.xml.messaging.saaj:saaj-impl"
-        implementation "javax.annotation:javax.annotation-api"
-        implementation "javax.jws:javax.jws-api:${javaxJwsApiVersion}"
+        implementation "ch.qos.logback:logback-classic"
+        implementation "jakarta.annotation:jakarta.annotation-api"
         implementation "jakarta.jws:jakarta.jws-api:${jakartaJwsApiVersion}"
-        implementation "jakarta.xml.bind:jakarta.xml.bind-api"
         implementation "jakarta.xml.ws:jakarta.xml.ws-api"
+
+        runtimeOnly "com.sun.xml.messaging.saaj:saaj-impl"
 
         testImplementation "junit:junit"
         testImplementation "org.glassfish.jaxb:jaxb-runtime"
@@ -95,12 +98,22 @@ allprojects {
         testRuntimeOnly "org.junit.vintage:junit-vintage-engine"
     }
 
-    tasks.register('install') {
-        description("Publishes artifact to local maven repository.")
-        dependsOn(publishMavenWebPublicationToMavenLocal)
-    }
-
     tasks.register('createVersionPropertyFile', VersionPropertyFileTask)
+
+    if (project.hasProperty('codeQuality')) {
+        tasks.register('spotbugsIncludesAndExcludes') {
+            dependsOn ":unzipBuildTools"
+            spotbugsMain {
+                includeFilter.set(rootProject.layout.buildDirectory.file("/build-tools/spotbugs/spotbugsIncludeFilter.xml").get().asFile)
+                excludeFilter.set(rootProject.layout.buildDirectory.file("/build-tools/spotbugs/spotbugsExcludeFilter.xml").get().asFile)
+            }
+        }
+
+        spotbugsMain.dependsOn('spotbugsIncludesAndExcludes')
+        spotbugsMain.dependsOn(':unzipBuildTools')
+        spotbugsTest.enabled(false)
+        dependencies { spotbugsSlf4j "org.slf4j:slf4j-simple" }
+    }
 
     compileJava.options.encoding = 'UTF-8'
     compileJava.dependsOn processResources
@@ -119,35 +132,39 @@ allprojects {
         }
     }
 
-    if (!project.name.contains("-web") && !project.name.contains("-liquibase-runner")) {
-        publishing {
-            publications {
-                mavenWeb(org.gradle.api.publish.maven.MavenPublication) {
-                    from components.java
-                }
-            }
-        }
-    }
-
     idea {
         module {
             downloadJavadoc = true
         }
     }
-
-    clean {
-        setDelete(fileTree(project.layout.buildDirectory.get().asFile) {
-            exclude("/tmp/.cache/expanded/expanded.lock")
-        })
-    }
-
-    if (project.hasProperty('codeQuality')) {
-        dependencies { spotbugsSlf4j "org.slf4j:slf4j-simple" }
-    }
 }
-
-tasks.register('tagRelease', TagReleaseTask)
 
 subprojects.collect {subproject -> subproject.name }.each { subprojectName ->
     dependencies { testReportAggregation project(":${subprojectName}") }
 }
+
+tasks.register('tagRelease', TagReleaseTask)
+
+tasks.register('unzipBuildTools', Copy) {
+    into "${rootProject.layout.buildDirectory.get().asFile}/build-tools/"
+    from { zipTree(project.rootProject.buildscript.configurations.classpath.find { it.name.contains("se.inera.intyg.plugin.common") })
+            .matching { include "/spotbugs/**", "/git_hooks/**" }
+    }
+}
+
+tasks.register("applyGitHooks", Copy) {
+    dependsOn("unzipBuildTools")
+    def repository = IntygPluginKt.findGitRepository(project.rootProject.projectDir)
+    def commitMsg = rootProject.layout.buildDirectory.file("/build-tools/git_hooks/commit-msg").get().asFile
+    def preCommit = rootProject.layout.buildDirectory.file("/build-tools/git_hooks/pre-commit").get().asFile
+    def toDir = Paths.get(repository.directory.path, "hooks")
+
+    if (!Files.exists(toDir)) {
+        Files.createDirectory(toDir)
+    }
+
+    IntygPluginKt.copyFile(commitMsg, toDir)
+    IntygPluginKt.copyFile(preCommit, toDir)
+}
+
+applyGitHooks.dependsOn(unzipBuildTools)

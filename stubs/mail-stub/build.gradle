@@ -3,6 +3,5 @@ dependencies {
   implementation "com.sun.mail:jakarta.mail"
   implementation "jakarta.ws.rs:jakarta.ws.rs-api"
   implementation "org.aspectj:aspectjweaver"
-  implementation "org.slf4j:slf4j-api"
   implementation "org.springframework:spring-context-support"
 }
