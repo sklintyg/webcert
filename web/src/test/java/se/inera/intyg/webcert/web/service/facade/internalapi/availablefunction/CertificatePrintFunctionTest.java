@@ -47,7 +47,7 @@ class CertificatePrintFunctionTest {
 
     private static final String CORRECT_TYPE = Ag7804EntryPoint.MODULE_ID;
     private static final String WRONG_TYPE = Fk7263EntryPoint.MODULE_ID;
-    private static final String QUESTION_SMITTBARAR_PENNING = "AVSTANGNING_SMITTSKYDD_SVAR_ID_27";
+    private static final String QUESTION_SMITTBARAR_PENNING = "27";
     private static final String NOT_QUESTION_SMITTBARAR_PENNING = "NOT_AVSTANGNING_SMITTSKYDD_SVAR_ID_27";
     private static final AvailableFunctionDTO EXPECTED_CUSTOMIZE_FUNCTION = AvailableFunctionFactory.customizePrint();
     private static final AvailableFunctionDTO EXPECTED_PRINT_FUNCTION = AvailableFunctionFactory.print();

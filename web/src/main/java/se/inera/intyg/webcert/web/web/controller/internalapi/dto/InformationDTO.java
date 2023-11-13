@@ -27,9 +27,9 @@ public class InformationDTO {
     private String text;
     private InformationTypeDto type;
 
-    public static InformationDTO create(String id, InformationTypeDto type) {
+    public static InformationDTO create(String text, InformationTypeDto type) {
         final var informationType = new InformationDTO();
-        informationType.setId(id);
+        informationType.setText(text);
         informationType.setType(type);
         return informationType;
     }

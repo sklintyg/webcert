@@ -37,7 +37,7 @@ public class CertificatePrintFunction implements AvailableFunctions {
 
     private final AuthoritiesHelper authoritiesHelper;
 
-    private static final String AVSTANGNING_SMITTSKYDD_QUESTION_ID = "AVSTANGNING_SMITTSKYDD_SVAR_ID_27";
+    private static final String AVSTANGNING_SMITTSKYDD_QUESTION_ID = "27";
 
     public CertificatePrintFunction(AuthoritiesHelper authoritiesHelper) {
         this.authoritiesHelper = authoritiesHelper;
