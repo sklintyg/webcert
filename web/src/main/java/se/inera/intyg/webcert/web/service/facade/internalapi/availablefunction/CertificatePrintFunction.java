@@ -27,26 +27,36 @@ import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateDataElement;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueBoolean;
+import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.service.facade.internalapi.AvailableFunctions;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionDTO;
 
 @Component
 public class CertificatePrintFunction implements AvailableFunctions {
 
+    private final AuthoritiesHelper authoritiesHelper;
+
     private static final String AVSTANGNING_SMITTSKYDD_QUESTION_ID = "AVSTANGNING_SMITTSKYDD_SVAR_ID_27";
+
+    public CertificatePrintFunction(AuthoritiesHelper authoritiesHelper) {
+        this.authoritiesHelper = authoritiesHelper;
+    }
 
     @Override
     public List<AvailableFunctionDTO> get(Certificate certificate) {
         final var availableFunctions = new ArrayList<AvailableFunctionDTO>();
-        if (certificateIsAg7804(certificate) && certificate.getData().containsKey(AVSTANGNING_SMITTSKYDD_QUESTION_ID)
-            && questionAvstangningSmittskyddIsNullOrFalse(certificate.getData())) {
-            availableFunctions.add(AvailableFunctionFactory.customizePrint());
-        } else {
+        if (authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_UTSKRIFT, certificate.getMetadata().getType())) {
             if (certificateIsAg7804(certificate) && certificate.getData().containsKey(AVSTANGNING_SMITTSKYDD_QUESTION_ID)
-                && questionSmittbararpenningIsTrue(certificate)) {
-                availableFunctions.add(AvailableFunctionFactory.avstangningSmittskydd());
+                && questionAvstangningSmittskyddIsNullOrFalse(certificate.getData())) {
+                availableFunctions.add(AvailableFunctionFactory.customizePrint());
+            } else {
+                if (certificateIsAg7804(certificate) && certificate.getData().containsKey(AVSTANGNING_SMITTSKYDD_QUESTION_ID)
+                    && questionSmittbararpenningIsTrue(certificate)) {
+                    availableFunctions.add(AvailableFunctionFactory.avstangningSmittskydd());
+                }
+                availableFunctions.add(AvailableFunctionFactory.print());
             }
-            availableFunctions.add(AvailableFunctionFactory.print());
         }
         return availableFunctions;
     }
