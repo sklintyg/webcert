@@ -153,17 +153,14 @@ tasks.register('unzipBuildTools', Copy) {
     }
 }
 
-tasks.register("applyGitHooks", Copy) {
-    dependsOn("unzipBuildTools")
+tasks.register('applyGitHooks', Copy) {
     def repository = IntygPluginKt.findGitRepository(project.rootProject.projectDir)
-    def commitMsg = rootProject.layout.buildDirectory.file("/build-tools/git_hooks/commit-msg").get().asFile
-    def preCommit = rootProject.layout.buildDirectory.file("/build-tools/git_hooks/pre-commit").get().asFile
+    def gitHooksDir = "${rootProject.layout.buildDirectory.get().asFile}/build-tools/git_hooks"
+    def commitMsg = file("${gitHooksDir}/commit-msg")
+    def preCommit = file("${gitHooksDir}/pre-commit")
     def toDir = Paths.get(repository.directory.path, "hooks")
 
-    if (!Files.exists(toDir)) {
-        Files.createDirectory(toDir)
-    }
-
+    if (!Files.exists(toDir)) { Files.createDirectory(toDir) }
     IntygPluginKt.copyFile(commitMsg, toDir)
     IntygPluginKt.copyFile(preCommit, toDir)
 }
