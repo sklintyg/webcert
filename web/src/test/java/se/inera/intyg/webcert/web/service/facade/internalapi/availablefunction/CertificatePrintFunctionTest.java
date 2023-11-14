@@ -20,19 +20,29 @@
 package se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateDataElement;
+import se.inera.intyg.common.support.facade.model.CertificateRelationType;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueBoolean;
+import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionDTO;
 
 @ExtendWith(MockitoExtension.class)
@@ -46,50 +56,98 @@ class CertificatePrintFunctionTest {
     private static final AvailableFunctionDTO EXPECTED_PRINT_FUNCTION = AvailableFunctionFactory.print();
     private static final AvailableFunctionDTO EXPECTED_SMITTBARAR_PENNING_FUNCTION = AvailableFunctionFactory.avstangningSmittskydd();
 
+    @Mock
+    AuthoritiesHelper authoritiesHelper;
+
     @InjectMocks
     private CertificatePrintFunction certificatePrintFunction;
 
-    @Test
-    void shouldOnlyReturnPrintCertificateIfTypeIsNotAg7804() {
-        final var certificate = buildCertificate(new Certificate(), WRONG_TYPE, QUESTION_SMITTBARAR_PENNING, null);
-        final var result = certificatePrintFunction.get(certificate);
-        assertEquals(List.of(EXPECTED_PRINT_FUNCTION), result);
+    @Nested
+    class ActiveFeature {
+
+        @BeforeEach
+        void setup() {
+            when(authoritiesHelper.isFeatureActive(anyString(), anyString()))
+                .thenReturn(true);
+        }
+
+        @Test
+        void shouldOnlyReturnPrintCertificateIfTypeIsNotAg7804() {
+            final var certificate = buildCertificate(new Certificate(), WRONG_TYPE, QUESTION_SMITTBARAR_PENNING, null);
+            final var result = certificatePrintFunction.get(certificate);
+            assertEquals(List.of(EXPECTED_PRINT_FUNCTION), result);
+        }
+
+        @Test
+        void shoulReturnPrintCertificateAndSmittbarareInfoIfTypeIsAg7804ButQuestionSmittbararpenningIsTrue() {
+            final var certificate = buildCertificate(new Certificate(), CORRECT_TYPE, QUESTION_SMITTBARAR_PENNING, true);
+            final var result = certificatePrintFunction.get(certificate);
+            assertEquals(List.of(EXPECTED_PRINT_FUNCTION, EXPECTED_SMITTBARAR_PENNING_FUNCTION), result);
+        }
+
+        @Test
+        void shouldOnlyReturnPrintCertificateIfTypeIsAg7804ButQuestionSmittbararpenningIsMissing() {
+            final var certificate = buildCertificate(new Certificate(), CORRECT_TYPE, NOT_QUESTION_SMITTBARAR_PENNING, false);
+            final var result = certificatePrintFunction.get(certificate);
+            assertEquals(List.of(EXPECTED_PRINT_FUNCTION), result);
+        }
+
+        @Test
+        void shouldReturnCustomizePrintCertificateIfTypeIsAg7804AndQuestionSmittbararpenningIsFalse() {
+            final var certificate = buildCertificate(new Certificate(), CORRECT_TYPE, QUESTION_SMITTBARAR_PENNING, false);
+            final var result = certificatePrintFunction.get(certificate);
+            assertEquals(List.of(EXPECTED_CUSTOMIZE_FUNCTION), result);
+        }
+
+        @Test
+        void shouldReturnCustomizePrintCertificateIfTypeIsAg7804AndQuestionSmittbararpenningIsNull() {
+            final var certificate = buildCertificate(new Certificate(), CORRECT_TYPE, QUESTION_SMITTBARAR_PENNING, null);
+            final var result = certificatePrintFunction.get(certificate);
+            assertEquals(List.of(EXPECTED_CUSTOMIZE_FUNCTION), result);
+        }
+
+        @Test
+        void shouldReturnEmptyCertificateIsReplaced() {
+            final var certificate = buildCertificateWithRelation(new Certificate(), CertificateRelationType.REPLACED);
+            final var result = certificatePrintFunction.get(certificate);
+            assertEquals(Collections.emptyList(), result);
+        }
+
+        @Test
+        void shouldReturnEmptyCertificateIsComplemented() {
+            final var certificate = buildCertificateWithRelation(new Certificate(), CertificateRelationType.COMPLEMENTED);
+            final var result = certificatePrintFunction.get(certificate);
+            assertEquals(Collections.emptyList(), result);
+        }
     }
 
     @Test
-    void shoulReturnPrintCertificateAndSmittbarareInfoIfTypeIsAg7804ButQuestionSmittbararpenningIsTrue() {
-        final var certificate = buildCertificate(new Certificate(), CORRECT_TYPE, QUESTION_SMITTBARAR_PENNING, true);
-        final var result = certificatePrintFunction.get(certificate);
-        assertEquals(List.of(EXPECTED_SMITTBARAR_PENNING_FUNCTION, EXPECTED_PRINT_FUNCTION), result);
-    }
-
-    @Test
-    void shouldOnlyReturnPrintCertificateIfTypeIsAg7804ButQuestionSmittbararpenningIsMissing() {
-        final var certificate = buildCertificate(new Certificate(), CORRECT_TYPE, NOT_QUESTION_SMITTBARAR_PENNING, false);
-        final var result = certificatePrintFunction.get(certificate);
-        assertEquals(List.of(EXPECTED_PRINT_FUNCTION), result);
-    }
-
-    @Test
-    void shouldReturnCustomizePrintCertificateIfTypeIsAg7804AndQuestionSmittbararpenningIsFalse() {
-        final var certificate = buildCertificate(new Certificate(), CORRECT_TYPE, QUESTION_SMITTBARAR_PENNING, false);
-        final var result = certificatePrintFunction.get(certificate);
-        assertEquals(List.of(EXPECTED_CUSTOMIZE_FUNCTION), result);
-    }
-
-    @Test
-    void shouldReturnCustomizePrintCertificateIfTypeIsAg7804AndQuestionSmittbararpenningIsNull() {
+    void shouldReturnEmptyIfFeatureIsInactive() {
         final var certificate = buildCertificate(new Certificate(), CORRECT_TYPE, QUESTION_SMITTBARAR_PENNING, null);
         final var result = certificatePrintFunction.get(certificate);
-        assertEquals(List.of(EXPECTED_CUSTOMIZE_FUNCTION), result);
+        assertEquals(Collections.emptyList(), result);
+    }
+
+    private static Certificate buildCertificateWithRelation(Certificate certificate, CertificateRelationType type) {
+        CertificateRelation[] relationChildren = {CertificateRelation.builder().type(type).build()};
+        final var relations = CertificateRelations.builder()
+            .children(relationChildren)
+            .build();
+        return buildCertificate(certificate, CORRECT_TYPE, QUESTION_SMITTBARAR_PENNING, true, relations);
+    }
+
+    private static Certificate buildCertificate(Certificate certificate, String type, String questionId,
+        Boolean selected) {
+        return buildCertificate(certificate, type, questionId, selected, null);
     }
 
 
     private static Certificate buildCertificate(Certificate certificate, String type, String questionId,
-        Boolean selected) {
+        Boolean selected, CertificateRelations certificateRelations) {
         certificate.setMetadata(
             CertificateMetadata.builder()
                 .type(type)
+                .relations(certificateRelations)
                 .build()
         );
         certificate.setData(
