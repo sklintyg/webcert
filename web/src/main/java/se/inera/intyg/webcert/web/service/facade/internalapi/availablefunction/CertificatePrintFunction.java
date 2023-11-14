@@ -19,13 +19,19 @@
 
 package se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction;
 
+import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionUtils.getQuestionValue;
+import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionUtils.hasQuestion;
+import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionUtils.isBooleanValueNullOrFalse;
+import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionUtils.isBooleanValueTrue;
+import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionUtils.isCertificateOfType;
+import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionUtils.isReplacedOrComplemented;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
 import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.common.support.facade.model.CertificateDataElement;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueBoolean;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -35,9 +41,9 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFuncti
 @Component
 public class CertificatePrintFunction implements AvailableFunctions {
 
-    private final AuthoritiesHelper authoritiesHelper;
-
     private static final String AVSTANGNING_SMITTSKYDD_QUESTION_ID = "27";
+
+    private final AuthoritiesHelper authoritiesHelper;
 
     public CertificatePrintFunction(AuthoritiesHelper authoritiesHelper) {
         this.authoritiesHelper = authoritiesHelper;
@@ -46,32 +52,42 @@ public class CertificatePrintFunction implements AvailableFunctions {
     @Override
     public List<AvailableFunctionDTO> get(Certificate certificate) {
         final var availableFunctions = new ArrayList<AvailableFunctionDTO>();
-        if (authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_UTSKRIFT, certificate.getMetadata().getType())) {
-            if (certificateIsAg7804(certificate) && certificate.getData().containsKey(AVSTANGNING_SMITTSKYDD_QUESTION_ID)
-                && questionAvstangningSmittskyddIsNullOrFalse(certificate.getData())) {
-                availableFunctions.add(AvailableFunctionFactory.customizePrint());
-            } else {
-                if (certificateIsAg7804(certificate) && certificate.getData().containsKey(AVSTANGNING_SMITTSKYDD_QUESTION_ID)
-                    && questionSmittbararpenningIsTrue(certificate)) {
-                    availableFunctions.add(AvailableFunctionFactory.avstangningSmittskydd());
-                }
-                availableFunctions.add(AvailableFunctionFactory.print());
-            }
+
+        if (!isPrintFeatureActive(certificate)
+            || isReplacedOrComplemented(certificate.getMetadata().getRelations())) {
+            return Collections.emptyList();
         }
+
+        if (isCustomizedPrintAvailable(certificate)) {
+            availableFunctions.add(AvailableFunctionFactory.customizePrint());
+        } else {
+            availableFunctions.add(AvailableFunctionFactory.print());
+        }
+
+        if (isCustomizedPrintInfoAvailable(certificate)) {
+            availableFunctions.add(AvailableFunctionFactory.avstangningSmittskydd());
+        }
+
         return availableFunctions;
     }
 
-    private boolean questionAvstangningSmittskyddIsNullOrFalse(Map<String, CertificateDataElement> data) {
-        final var value = (CertificateDataValueBoolean) data.get(AVSTANGNING_SMITTSKYDD_QUESTION_ID).getValue();
-        return value.getSelected() == null || !value.getSelected();
+    private static CertificateDataValueBoolean getQuestionAvstagningSmittskyddValue(Certificate certificate) {
+        return (CertificateDataValueBoolean) getQuestionValue(certificate, AVSTANGNING_SMITTSKYDD_QUESTION_ID);
     }
 
-    private boolean questionSmittbararpenningIsTrue(Certificate certificate) {
-        final var value = (CertificateDataValueBoolean) certificate.getData().get(AVSTANGNING_SMITTSKYDD_QUESTION_ID).getValue();
-        return value != null && value.getSelected() != null && value.getSelected();
+    private static boolean isCustomizedPrintAvailable(Certificate certificate) {
+        return isCertificateOfType(certificate, Ag7804EntryPoint.MODULE_ID)
+            && hasQuestion(certificate, AVSTANGNING_SMITTSKYDD_QUESTION_ID)
+            && isBooleanValueNullOrFalse(getQuestionAvstagningSmittskyddValue(certificate));
     }
 
-    private static boolean certificateIsAg7804(Certificate certificate) {
-        return certificate.getMetadata().getType().equals(Ag7804EntryPoint.MODULE_ID);
+    private static boolean isCustomizedPrintInfoAvailable(Certificate certificate) {
+        return isCertificateOfType(certificate, Ag7804EntryPoint.MODULE_ID)
+            && hasQuestion(certificate, AVSTANGNING_SMITTSKYDD_QUESTION_ID)
+            && isBooleanValueTrue(getQuestionAvstagningSmittskyddValue(certificate));
+    }
+
+    private boolean isPrintFeatureActive(Certificate certificate) {
+        return authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_UTSKRIFT, certificate.getMetadata().getType());
     }
 }

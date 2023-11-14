@@ -37,7 +37,10 @@ import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateDataElement;
+import se.inera.intyg.common.support.facade.model.CertificateRelationType;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueBoolean;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionDTO;
@@ -79,7 +82,7 @@ class CertificatePrintFunctionTest {
         void shoulReturnPrintCertificateAndSmittbarareInfoIfTypeIsAg7804ButQuestionSmittbararpenningIsTrue() {
             final var certificate = buildCertificate(new Certificate(), CORRECT_TYPE, QUESTION_SMITTBARAR_PENNING, true);
             final var result = certificatePrintFunction.get(certificate);
-            assertEquals(List.of(EXPECTED_SMITTBARAR_PENNING_FUNCTION, EXPECTED_PRINT_FUNCTION), result);
+            assertEquals(List.of(EXPECTED_PRINT_FUNCTION, EXPECTED_SMITTBARAR_PENNING_FUNCTION), result);
         }
 
         @Test
@@ -102,21 +105,49 @@ class CertificatePrintFunctionTest {
             final var result = certificatePrintFunction.get(certificate);
             assertEquals(List.of(EXPECTED_CUSTOMIZE_FUNCTION), result);
         }
+
+        @Test
+        void shouldReturnEmptyCertificateIsReplaced() {
+            final var certificate = buildCertificateWithRelation(new Certificate(), CertificateRelationType.REPLACED);
+            final var result = certificatePrintFunction.get(certificate);
+            assertEquals(Collections.emptyList(), result);
+        }
+
+        @Test
+        void shouldReturnEmptyCertificateIsComplemented() {
+            final var certificate = buildCertificateWithRelation(new Certificate(), CertificateRelationType.COMPLEMENTED);
+            final var result = certificatePrintFunction.get(certificate);
+            assertEquals(Collections.emptyList(), result);
+        }
     }
 
     @Test
-    void shouldReturnEmptyArrayIfFeatureIsInactive() {
+    void shouldReturnEmptyIfFeatureIsInactive() {
         final var certificate = buildCertificate(new Certificate(), CORRECT_TYPE, QUESTION_SMITTBARAR_PENNING, null);
         final var result = certificatePrintFunction.get(certificate);
         assertEquals(Collections.emptyList(), result);
     }
 
+    private static Certificate buildCertificateWithRelation(Certificate certificate, CertificateRelationType type) {
+        CertificateRelation[] relationChildren = {CertificateRelation.builder().type(type).build()};
+        final var relations = CertificateRelations.builder()
+            .children(relationChildren)
+            .build();
+        return buildCertificate(certificate, CORRECT_TYPE, QUESTION_SMITTBARAR_PENNING, true, relations);
+    }
 
     private static Certificate buildCertificate(Certificate certificate, String type, String questionId,
         Boolean selected) {
+        return buildCertificate(certificate, type, questionId, selected, null);
+    }
+
+
+    private static Certificate buildCertificate(Certificate certificate, String type, String questionId,
+        Boolean selected, CertificateRelations certificateRelations) {
         certificate.setMetadata(
             CertificateMetadata.builder()
                 .type(type)
+                .relations(certificateRelations)
                 .build()
         );
         certificate.setData(
