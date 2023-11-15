@@ -80,7 +80,7 @@ class GetCertificatePdfServiceTest {
 
     @Test
     void shouldReturnPdfResponse() throws ModuleNotFoundException, ModuleException {
-        when(moduleRegistry.getModuleApi(CERTIFICATE_TYPE_VERSION, CERTIFICATE_TYPE))
+        when(moduleRegistry.getModuleApi(CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION))
             .thenReturn(moduleApi);
         when(getRequiredFieldsForCertificatePdfService.get(CERTIFICATE_ID))
             .thenReturn(REQUIRED_FIELDS_FOR_CERTIFICATE_PDF);
@@ -105,21 +105,21 @@ class GetCertificatePdfServiceTest {
         @Test
         void shouldUseTypeVersionFromRequiredFields() throws ModuleNotFoundException {
             when(moduleRegistry.getModuleApi(moduleRegistryArgumentCaptor.capture(),
-                eq(CERTIFICATE_TYPE)))
-                .thenReturn(moduleApi);
-            getCertificatePdfService.get(null, CERTIFICATE_ID);
-
-            assertEquals(CERTIFICATE_TYPE_VERSION, moduleRegistryArgumentCaptor.getValue());
-        }
-
-        @Test
-        void shouldUseTypeFromRequiredFields() throws ModuleNotFoundException {
-            when(moduleRegistry.getModuleApi(eq(CERTIFICATE_TYPE_VERSION),
-                moduleRegistryArgumentCaptor.capture()))
+                eq(CERTIFICATE_TYPE_VERSION)))
                 .thenReturn(moduleApi);
             getCertificatePdfService.get(null, CERTIFICATE_ID);
 
             assertEquals(CERTIFICATE_TYPE, moduleRegistryArgumentCaptor.getValue());
+        }
+
+        @Test
+        void shouldUseTypeFromRequiredFields() throws ModuleNotFoundException {
+            when(moduleRegistry.getModuleApi(eq(CERTIFICATE_TYPE),
+                moduleRegistryArgumentCaptor.capture()))
+                .thenReturn(moduleApi);
+            getCertificatePdfService.get(null, CERTIFICATE_ID);
+
+            assertEquals(CERTIFICATE_TYPE_VERSION, moduleRegistryArgumentCaptor.getValue());
         }
     }
 
@@ -130,7 +130,7 @@ class GetCertificatePdfServiceTest {
 
         @Test
         void shouldUseProvidedCertificateId() throws ModuleNotFoundException, ModuleException {
-            when(moduleRegistry.getModuleApi(CERTIFICATE_TYPE_VERSION, CERTIFICATE_TYPE))
+            when(moduleRegistry.getModuleApi(CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION))
                 .thenReturn(moduleApi);
             when(getRequiredFieldsForCertificatePdfService.get(stringArgumentCaptor.capture()))
                 .thenReturn(REQUIRED_FIELDS_FOR_CERTIFICATE_PDF);
@@ -146,7 +146,7 @@ class GetCertificatePdfServiceTest {
 
         @BeforeEach
         void setUp() throws ModuleNotFoundException {
-            when(moduleRegistry.getModuleApi(CERTIFICATE_TYPE_VERSION, CERTIFICATE_TYPE))
+            when(moduleRegistry.getModuleApi(CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION))
                 .thenReturn(moduleApi);
             when(getRequiredFieldsForCertificatePdfService.get(CERTIFICATE_ID))
                 .thenReturn(REQUIRED_FIELDS_FOR_CERTIFICATE_PDF);
