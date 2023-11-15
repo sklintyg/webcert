@@ -50,8 +50,8 @@ public class GetCertificatePdfService {
         final var requiredFieldsForCertificatePdf = getRequiredFieldsForCertificatePdfService.get(certificateId);
 
         final var moduleApi = getModuleApi(
-            requiredFieldsForCertificatePdf.getCertificateTypeVersion(),
-            requiredFieldsForCertificatePdf.getCertificateType()
+            requiredFieldsForCertificatePdf.getCertificateType(),
+            requiredFieldsForCertificatePdf.getCertificateTypeVersion()
         );
 
         final var pdfResponse = getPdfResponse(
@@ -68,11 +68,11 @@ public class GetCertificatePdfService {
         );
     }
 
-    private ModuleApi getModuleApi(String certificateTypeVersion, String certificateType) {
+    private ModuleApi getModuleApi(String certificateType, String certificateTypeVersion) {
         try {
             return moduleRegistry.getModuleApi(
-                certificateTypeVersion,
-                certificateType
+                certificateType,
+                certificateTypeVersion
             );
         } catch (ModuleNotFoundException exception) {
             throw new IllegalStateException(
