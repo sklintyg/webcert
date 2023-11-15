@@ -52,9 +52,7 @@ class GetCertificatePdfServiceTest {
 
     private static final String CERTIFICATE_TYPE_VERSION = "certificateTypeVersion";
     private static final String CERTIFICATE_TYPE = "certificateType";
-    private static final String DRAFT_MODEL = "model";
     private static final String CERTIFICATE_ID = "certificateId";
-    private static final String INTYG_CONTENT_HOLDER_MODEL = "intygContentHolderModel";
     private static final String WRONG_CUSTOMIZAITON_ID = "wrongCustomizaitonId";
     private static final String CUSTOMIZE_ID = "!diagnoser";
     private static final String INTERNAL_JSON_MODEL = "internalJsonModel";
