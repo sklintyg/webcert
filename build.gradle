@@ -127,7 +127,6 @@ allprojects {
         maven { url "https://nexus.drift.inera.se/repository/it-public/" }
         mavenCentral {
             content {
-                // this repository contains everything BUT artifacts with group starting with "se.inera"
                 excludeGroupByRegex "se\\.inera.*"
             }
         }
@@ -148,21 +147,24 @@ tasks.register('tagRelease', TagReleaseTask)
 
 tasks.register('unzipBuildTools', Copy) {
     into "${rootProject.layout.buildDirectory.get().asFile}/build-tools/"
-    from { zipTree(project.rootProject.buildscript.configurations.classpath.find { it.name.contains("se.inera.intyg.plugin.common") })
+    from { zipTree(rootProject.buildscript.configurations.classpath.find { it.name.contains("se.inera.intyg.plugin.common") })
             .matching { include "/spotbugs/**", "/git_hooks/**" }
     }
 }
 
-tasks.register('applyGitHooks', Copy) {
-    def repository = IntygPluginKt.findGitRepository(project.rootProject.projectDir)
-    def gitHooksDir = "${rootProject.layout.buildDirectory.get().asFile}/build-tools/git_hooks"
-    def commitMsg = file("${gitHooksDir}/commit-msg")
-    def preCommit = file("${gitHooksDir}/pre-commit")
-    def toDir = Paths.get(repository.directory.path, "hooks")
+tasks.register('applyGitHooks') {
+    dependsOn unzipBuildTools
+    doLast {
+        def repository = IntygPluginKt.findGitRepository(project.rootProject.projectDir)
+        def gitHooksDir = "${rootProject.layout.buildDirectory.get().asFile}/build-tools/git_hooks"
+        def commitMsg = file("${gitHooksDir}/commit-msg")
+        def preCommit = file("${gitHooksDir}/pre-commit")
+        def toDir = Paths.get(repository.directory.path, "hooks")
 
-    if (!Files.exists(toDir)) { Files.createDirectory(toDir) }
-    IntygPluginKt.copyFile(commitMsg, toDir)
-    IntygPluginKt.copyFile(preCommit, toDir)
+        if (!Files.exists(toDir)) { Files.createDirectory(toDir) }
+        IntygPluginKt.copyFile(commitMsg, toDir)
+        IntygPluginKt.copyFile(preCommit, toDir)
+    }
 }
 
-applyGitHooks.dependsOn(unzipBuildTools)
+createVersionPropertyFile.dependsOn(applyGitHooks)
