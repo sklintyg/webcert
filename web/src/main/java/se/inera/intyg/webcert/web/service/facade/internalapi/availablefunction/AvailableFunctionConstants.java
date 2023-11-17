@@ -30,7 +30,7 @@ public final class AvailableFunctionConstants {
     public static final String AVSTANGNING_SMITTSKYDD_INFO_TITLE = "Avstängning enligt smittskyddslagen";
     public static final String AVSTANGNING_SMITTSKYDD_INFO_NAME = "Presentera informationsruta";
     public static final String AVSTANGNING_SMITTSKYDD_INFO_BODY = "I intyg som gäller avstängning enligt smittskyddslagen kan"
-        + " du inte dölja din diagnos. När du klickar på 'Skriv ut intyg' hämtas hela intyget.";
+        + " du inte dölja din diagnos. När du klickar på 'Skriv ut' hämtas hela intyget.";
     public static final String AVAILABLE_FUNCTION_CUSTOMIZE_BODY =
         "När du skriver ut ett läkarintyg du ska lämna till din arbetsgivare kan du "
             + "välja om du vill att din diagnos ska visas eller döljas. Ingen annan information kan döljas. ";
