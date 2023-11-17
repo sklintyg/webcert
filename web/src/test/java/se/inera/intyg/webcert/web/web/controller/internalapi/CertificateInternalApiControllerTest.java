@@ -35,13 +35,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.CertificateText;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.internalapi.service.GetAvailableFunctionsForCertificateService;
 import se.inera.intyg.webcert.web.service.facade.internalapi.service.GetCertificatePdfService;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionTypeDTO;
-import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfResponseDTO;
 
 @ExtendWith(MockitoExtension.class)
 class CertificateInternalApiControllerTest {
@@ -50,6 +51,9 @@ class CertificateInternalApiControllerTest {
     private static final List<AvailableFunctionDTO> EXPECTED_AVAILABLE_FUNCTIONS = List.of(
         AvailableFunctionDTO.create(AvailableFunctionTypeDTO.CUSTOMIZE_PRINT_CERTIFICATE, null,
             null, null)
+    );
+    private static final List<CertificateText> EXPECTED_TEXTS = List.of(
+        CertificateText.builder().build()
     );
     private static final byte[] EXPECTED_PDF_DATA = new byte[0];
     private static final String EXPECTED_FILENAME = "filename";
@@ -89,9 +93,15 @@ class CertificateInternalApiControllerTest {
         }
 
         @Test
-        void shallReturnResourceLinks() {
+        void shallReturnAvailableFunctions() {
             final var actualCertificateResponse = certificateInternalApiController.getCertificate(CERTIFICATE_ID);
             assertEquals(EXPECTED_AVAILABLE_FUNCTIONS, actualCertificateResponse.getAvailableFunctions());
+        }
+
+        @Test
+        void shallReturnCertificateTexts() {
+            final var actualCertificateResponse = certificateInternalApiController.getCertificate(CERTIFICATE_ID);
+            assertEquals(EXPECTED_TEXTS, actualCertificateResponse.getTexts());
         }
 
         @Test
