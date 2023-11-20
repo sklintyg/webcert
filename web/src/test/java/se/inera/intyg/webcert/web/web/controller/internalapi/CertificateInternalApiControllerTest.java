@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,9 +37,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateText;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.internalapi.service.GetAvailableFunctionsForCertificateService;
 import se.inera.intyg.webcert.web.service.facade.internalapi.service.GetCertificatePdfService;
+import se.inera.intyg.webcert.web.service.facade.internalapi.service.GetTextsForCertificateService;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionTypeDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfRequestDTO;
@@ -64,11 +67,15 @@ class CertificateInternalApiControllerTest {
     private static final String CERTIFICATE_ID = "certificateId";
     private static final boolean SHOULD_NOT_PDL_LOG = false;
     private static final boolean SHOULD_NOT_VALIDATE_ACCESS = false;
+    private static final String TYPE = "TYPE";
+    private static final String TYPE_VERSION = "TYPE_VERSION";
     @Mock
     private GetAvailableFunctionsForCertificateService getAvailableFunctionsForCertificateService;
 
     @Mock
     private GetCertificatePdfService getCertificatePdfService;
+    @Mock
+    private GetTextsForCertificateService getTextsForCertificateService;
     @Mock
     private GetCertificateFacadeService getCertificateFacadeService;
 
@@ -80,6 +87,11 @@ class CertificateInternalApiControllerTest {
 
         @BeforeEach
         void setUp() {
+            EXPECTED_CERTIFICATE.setMetadata(CertificateMetadata.builder()
+                .type(TYPE)
+                .typeVersion(TYPE_VERSION)
+                .build()
+            );
             doReturn(EXPECTED_CERTIFICATE)
                 .when(getCertificateFacadeService).getCertificate(CERTIFICATE_ID, SHOULD_NOT_PDL_LOG, SHOULD_NOT_VALIDATE_ACCESS);
             doReturn(EXPECTED_AVAILABLE_FUNCTIONS)
@@ -100,7 +112,11 @@ class CertificateInternalApiControllerTest {
 
         @Test
         void shallReturnCertificateTexts() {
+            when(getTextsForCertificateService.get(TYPE, TYPE_VERSION))
+                .thenReturn(EXPECTED_TEXTS);
+
             final var actualCertificateResponse = certificateInternalApiController.getCertificate(CERTIFICATE_ID);
+
             assertEquals(EXPECTED_TEXTS, actualCertificateResponse.getTexts());
         }
 
