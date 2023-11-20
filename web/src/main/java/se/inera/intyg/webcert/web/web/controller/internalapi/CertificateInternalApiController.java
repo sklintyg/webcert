@@ -32,9 +32,10 @@ import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.internalapi.service.GetAvailableFunctionsForCertificateService;
 import se.inera.intyg.webcert.web.service.facade.internalapi.service.GetCertificatePdfService;
+import se.inera.intyg.webcert.web.service.facade.internalapi.service.GetTextsForCertificateService;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetCertificateResponse;
-import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfRequestDTO;
 
 @Path("/certificate")
 @Api(value = "/internalapi/certificate", produces = MediaType.APPLICATION_JSON)
@@ -43,6 +44,7 @@ public class CertificateInternalApiController {
     private final GetCertificateFacadeService getCertificateFacadeService;
     private final GetAvailableFunctionsForCertificateService getAvailableFunctionsForCertificateService;
     private final GetCertificatePdfService getCertificatePdfService;
+    private final GetTextsForCertificateService getTextsForCertificateService;
 
     private static final String UTF_8_CHARSET = ";charset=utf-8";
     private static final boolean SHOULD_NOT_PDL_LOG = false;
@@ -50,10 +52,12 @@ public class CertificateInternalApiController {
 
     public CertificateInternalApiController(GetCertificateFacadeService getCertificateFacadeService,
         GetAvailableFunctionsForCertificateService getAvailableFunctionsForCertificateService,
-        GetCertificatePdfService getCertificatePdfService) {
+        GetCertificatePdfService getCertificatePdfService,
+        GetTextsForCertificateService getTextsForCertificateService) {
         this.getCertificateFacadeService = getCertificateFacadeService;
         this.getAvailableFunctionsForCertificateService = getAvailableFunctionsForCertificateService;
         this.getCertificatePdfService = getCertificatePdfService;
+        this.getTextsForCertificateService = getTextsForCertificateService;
     }
 
     @GET
@@ -64,9 +68,15 @@ public class CertificateInternalApiController {
     public GetCertificateResponse getCertificate(@PathParam("certificateId") String certificateId) {
         final var certificate = getCertificateFacadeService.getCertificate(certificateId, SHOULD_NOT_PDL_LOG, SHOULD_NOT_VALIDATE_ACCESS);
         final var availableFunction = getAvailableFunctionsForCertificateService.get(certificate);
+        final var texts = getTextsForCertificateService.get(
+            certificate.getMetadata().getType(),
+            certificate.getMetadata().getTypeVersion()
+        );
+
         return GetCertificateResponse.create(
             certificate,
-            availableFunction
+            availableFunction,
+            texts
         );
     }
 

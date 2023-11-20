@@ -21,11 +21,13 @@ package se.inera.intyg.webcert.web.web.controller.internalapi.dto;
 import java.util.List;
 import java.util.Objects;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.CertificateText;
 
 public class GetCertificateResponse {
 
     private Certificate certificate;
     private List<AvailableFunctionDTO> availableFunctions;
+    private List<CertificateText> texts;
 
     public static GetCertificateResponse create(Certificate certificate) {
         final var getCertificateResponse = new GetCertificateResponse();
@@ -37,6 +39,14 @@ public class GetCertificateResponse {
         final var getCertificateResponse = new GetCertificateResponse();
         getCertificateResponse.setCertificate(certificate);
         getCertificateResponse.setAvailableFunctions(links);
+        return getCertificateResponse;
+    }
+
+    public static GetCertificateResponse create(Certificate certificate, List<AvailableFunctionDTO> links, List<CertificateText> texts) {
+        final var getCertificateResponse = new GetCertificateResponse();
+        getCertificateResponse.setCertificate(certificate);
+        getCertificateResponse.setAvailableFunctions(links);
+        getCertificateResponse.setTexts(texts);
         return getCertificateResponse;
     }
 
@@ -56,6 +66,14 @@ public class GetCertificateResponse {
         this.availableFunctions = availableFunctions;
     }
 
+    public List<CertificateText> getTexts() {
+        return texts;
+    }
+
+    public void setTexts(List<CertificateText> texts) {
+        this.texts = texts;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -65,7 +83,8 @@ public class GetCertificateResponse {
             return false;
         }
         final GetCertificateResponse that = (GetCertificateResponse) o;
-        return Objects.equals(certificate, that.certificate) && Objects.equals(availableFunctions, that.availableFunctions);
+        return Objects.equals(certificate, that.certificate) && Objects.equals(availableFunctions, that.availableFunctions)
+            && Objects.equals(texts, that.texts);
     }
 
     @Override
@@ -78,6 +97,7 @@ public class GetCertificateResponse {
         return "GetCertificateResponse{"
             + "certificate=" + certificate
             + ", availableFunctions=" + availableFunctions
+            + ", texts=" + texts
             + '}';
     }
 }
