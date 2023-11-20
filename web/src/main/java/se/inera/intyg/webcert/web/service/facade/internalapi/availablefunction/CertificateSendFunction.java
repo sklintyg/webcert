@@ -44,7 +44,7 @@ public class CertificateSendFunction implements AvailableFunctions {
         final var availableFunctions = new ArrayList<AvailableFunctionDTO>();
 
         if (isSendFunctionActive(certificate)) {
-            availableFunctions.add(AvailableFunctionFactory.send(certificate.getMetadata().isSent()));
+            availableFunctions.add(AvailableFunctionFactory.send(!certificate.getMetadata().isSent()));
         }
 
         return availableFunctions;
