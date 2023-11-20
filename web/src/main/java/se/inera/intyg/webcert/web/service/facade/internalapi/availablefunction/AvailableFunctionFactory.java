@@ -34,6 +34,7 @@ import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefun
 import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionConstants.SEND_CERTIFICATE_TITLE;
 import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionConstants.SHOW_DIAGNOSIS_TEXT;
 
+import java.util.Collections;
 import java.util.List;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionTypeDTO;
@@ -72,7 +73,8 @@ public final class AvailableFunctionFactory {
                     HIDE_DIAGNOSIS_TEXT,
                     InformationTypeDto.OPTIONS
                 )
-            )
+            ),
+            true
         );
     }
 
@@ -83,12 +85,15 @@ public final class AvailableFunctionFactory {
         );
     }
 
-    public static AvailableFunctionDTO send() {
+    public static AvailableFunctionDTO send(boolean enabled) {
         return AvailableFunctionDTO.create(
             AvailableFunctionTypeDTO.SEND_CERTIFICATE,
             SEND_CERTIFICATE_TITLE,
             SEND_CERTIFICATE_NAME,
-            SEND_CERTIFICATE_BODY
+            SEND_CERTIFICATE_BODY,
+            "",
+            Collections.emptyList(),
+            enabled
         );
     }
 }
