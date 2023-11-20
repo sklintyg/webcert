@@ -66,6 +66,6 @@ class GetTextsForCertificateServiceTest {
         when(intygModuleRegistry.getModuleApi(anyString(), anyString()))
             .thenThrow(new ModuleNotFoundException());
 
-        assertThrows(IllegalStateException.class, () -> getTextsForCertificateService.get(TYPE, TYPE_VERSION));
+        assertThrows(RuntimeException.class, () -> getTextsForCertificateService.get(TYPE, TYPE_VERSION));
     }
 }

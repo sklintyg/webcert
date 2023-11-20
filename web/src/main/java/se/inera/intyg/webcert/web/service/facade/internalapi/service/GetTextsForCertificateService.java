@@ -19,7 +19,6 @@
 
 package se.inera.intyg.webcert.web.service.facade.internalapi.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.CertificateText;
@@ -36,13 +35,11 @@ public class GetTextsForCertificateService {
     }
 
     public List<CertificateText> get(String type, String typeVersion) {
-        List<CertificateText> texts = new ArrayList<>();
         try {
-            texts.add(intygModuleRegistry.getModuleApi(type, typeVersion).getPreambleForCitizens());
+            final var moduleApi = intygModuleRegistry.getModuleApi(type, typeVersion);
+            return List.of(moduleApi.getPreambleForCitizens());
         } catch (ModuleNotFoundException e) {
-            throw new IllegalStateException(e);
+            throw new RuntimeException(e);
         }
-
-        return texts;
     }
 }
