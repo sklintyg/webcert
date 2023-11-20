@@ -31,9 +31,10 @@ public class AvailableFunctionDTO {
     private String description;
     private String body;
     private String title;
+    private boolean enabled;
 
     public static AvailableFunctionDTO create(AvailableFunctionTypeDTO type, String title, String name, String body, String description,
-        List<InformationDTO> information) {
+        List<InformationDTO> information, boolean enabled) {
         final var availableFunction = new AvailableFunctionDTO();
         availableFunction.setType(type);
         availableFunction.setTitle(title);
@@ -41,6 +42,7 @@ public class AvailableFunctionDTO {
         availableFunction.setBody(body);
         availableFunction.setInformation(information);
         availableFunction.setDescription(description);
+        availableFunction.setEnabled(enabled);
         return availableFunction;
     }
 
@@ -108,6 +110,14 @@ public class AvailableFunctionDTO {
         this.title = title;
     }
 
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -119,12 +129,12 @@ public class AvailableFunctionDTO {
         final AvailableFunctionDTO that = (AvailableFunctionDTO) o;
         return type == that.type && Objects.equals(information, that.information) && Objects.equals(name, that.name)
             && Objects.equals(description, that.description) && Objects.equals(body, that.body) && Objects.equals(
-            title, that.title);
+            title, that.title) && Objects.equals(enabled, that.enabled);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, information, name, description, body, title);
+        return Objects.hash(type, information, name, description, body, title, enabled);
     }
 
     @Override
@@ -136,6 +146,7 @@ public class AvailableFunctionDTO {
             + ", description='" + description + '\''
             + ", body='" + body + '\''
             + ", title='" + title + '\''
+            + ", enabled='" + enabled + '\''
             + '}';
     }
 }

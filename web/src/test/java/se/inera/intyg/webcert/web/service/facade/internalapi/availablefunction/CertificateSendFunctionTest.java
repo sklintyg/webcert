@@ -20,6 +20,8 @@
 package se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 
 import java.util.Collections;
@@ -135,17 +137,18 @@ class CertificateSendFunctionTest {
         }
 
         @Test
-        void shouldReturnEmptyIfSent() {
+        void shouldReturnDisabledFunctionIfSent() {
             final var response = certificateSendFunction.get(getCertificateWithSent(true));
 
-            assertEquals(Collections.emptyList(), response);
+            assertFalse(response.get(0).isEnabled());
+            assertEquals(AvailableFunctionTypeDTO.SEND_CERTIFICATE, response.get(0).getType());
         }
 
         @Test
-        void shouldReturnFunctionIfNotSent() {
+        void shouldReturnFunctionEnabledIfNotSent() {
             final var response = certificateSendFunction.get(getCertificateWithSent(false));
 
-            assertEquals(1, response.size());
+            assertTrue(response.get(0).isEnabled());
             assertEquals(AvailableFunctionTypeDTO.SEND_CERTIFICATE, response.get(0).getType());
         }
     }

@@ -20,6 +20,8 @@
 package se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionConstants.AVAILABLE_FUNCTION_CUSTOMIZE_BODY;
 import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionConstants.AVAILABLE_FUNCTION_CUSTOMIZE_DESCRIPTION;
 import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionConstants.AVAILABLE_FUNCTION_CUSTOMIZE_NAME;
@@ -135,28 +137,39 @@ class AvailableFunctionFactoryTest {
     }
 
     @Nested
-    class Senc {
+    class Send {
 
-        private final AvailableFunctionDTO send = AvailableFunctionFactory.send();
+        private final AvailableFunctionDTO sendEnabled = AvailableFunctionFactory.send(true);
+        private final AvailableFunctionDTO sendDisabled = AvailableFunctionFactory.send(false);
 
         @Test
         void shouldContainType() {
-            assertEquals(AvailableFunctionTypeDTO.SEND_CERTIFICATE, send.getType());
+            assertEquals(AvailableFunctionTypeDTO.SEND_CERTIFICATE, sendEnabled.getType());
         }
 
         @Test
         void shouldContainTitle() {
-            assertEquals(SEND_CERTIFICATE_TITLE, send.getTitle());
+            assertEquals(SEND_CERTIFICATE_TITLE, sendEnabled.getTitle());
         }
 
         @Test
         void shouldContainName() {
-            assertEquals(SEND_CERTIFICATE_NAME, send.getName());
+            assertEquals(SEND_CERTIFICATE_NAME, sendEnabled.getName());
         }
 
         @Test
         void shouldContainBody() {
-            assertEquals(SEND_CERTIFICATE_BODY, send.getBody());
+            assertEquals(SEND_CERTIFICATE_BODY, sendEnabled.getBody());
+        }
+
+        @Test
+        void shouldContainEnabled() {
+            assertTrue(sendEnabled.isEnabled());
+        }
+
+        @Test
+        void shouldContainDisabled() {
+            assertFalse(sendDisabled.isEnabled());
         }
     }
 }
