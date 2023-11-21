@@ -22,6 +22,7 @@ package se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction;
 import java.util.Arrays;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;
+import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValue;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueBoolean;
@@ -37,10 +38,10 @@ public class AvailableFunctionUtils {
             return false;
         }
 
-        return Arrays.stream(relations.getChildren()).anyMatch(
-            child -> child.getType() == CertificateRelationType.COMPLEMENTED
-                || child.getType() == CertificateRelationType.REPLACED
-        );
+        final var typesToFilter = Arrays.asList(CertificateRelationType.COMPLEMENTED, CertificateRelationType.REPLACED);
+        return Arrays.stream(relations.getChildren())
+            .filter(child -> typesToFilter.contains(child.getType()))
+            .anyMatch(child -> CertificateStatus.SIGNED.equals(child.getStatus()));
     }
 
     public static boolean isCertificateOfType(Certificate certificate, String type) {
