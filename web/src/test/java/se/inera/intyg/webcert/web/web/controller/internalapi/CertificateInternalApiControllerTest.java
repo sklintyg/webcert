@@ -53,7 +53,7 @@ class CertificateInternalApiControllerTest {
     private static final Certificate EXPECTED_CERTIFICATE = new Certificate();
     private static final List<AvailableFunctionDTO> EXPECTED_AVAILABLE_FUNCTIONS = List.of(
         AvailableFunctionDTO.create(AvailableFunctionTypeDTO.CUSTOMIZE_PRINT_CERTIFICATE, null,
-            null, null)
+            null, null, true)
     );
     private static final List<CertificateText> EXPECTED_TEXTS = List.of(
         CertificateText.builder().build()

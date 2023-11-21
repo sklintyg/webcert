@@ -52,9 +52,9 @@ class CertificatePrintFunctionTest {
     private static final String WRONG_TYPE = Fk7263EntryPoint.MODULE_ID;
     private static final String QUESTION_SMITTBARAR_PENNING = "27";
     private static final String NOT_QUESTION_SMITTBARAR_PENNING = "NOT_AVSTANGNING_SMITTSKYDD_SVAR_ID_27";
-    private static final AvailableFunctionDTO EXPECTED_CUSTOMIZE_FUNCTION = AvailableFunctionFactory.customizePrint();
-    private static final AvailableFunctionDTO EXPECTED_PRINT_FUNCTION = AvailableFunctionFactory.print();
-    private static final AvailableFunctionDTO EXPECTED_SMITTBARAR_PENNING_FUNCTION = AvailableFunctionFactory.avstangningSmittskydd();
+    private static final AvailableFunctionDTO EXPECTED_CUSTOMIZE_FUNCTION = AvailableFunctionFactory.customizePrint(true);
+    private static final AvailableFunctionDTO EXPECTED_PRINT_FUNCTION = AvailableFunctionFactory.print(true);
+    private static final AvailableFunctionDTO EXPECTED_SMITTBARAR_PENNING_FUNCTION = AvailableFunctionFactory.avstangningSmittskydd(true);
 
     @Mock
     AuthoritiesHelper authoritiesHelper;

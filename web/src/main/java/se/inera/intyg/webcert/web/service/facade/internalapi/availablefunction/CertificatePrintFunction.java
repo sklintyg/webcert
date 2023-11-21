@@ -59,13 +59,13 @@ public class CertificatePrintFunction implements AvailableFunctions {
         }
 
         if (isCustomizedPrintAvailable(certificate)) {
-            availableFunctions.add(AvailableFunctionFactory.customizePrint());
+            availableFunctions.add(AvailableFunctionFactory.customizePrint(true));
         } else {
-            availableFunctions.add(AvailableFunctionFactory.print());
+            availableFunctions.add(AvailableFunctionFactory.print(true));
         }
 
         if (isCustomizedPrintInfoAvailable(certificate)) {
-            availableFunctions.add(AvailableFunctionFactory.avstangningSmittskydd());
+            availableFunctions.add(AvailableFunctionFactory.avstangningSmittskydd(true));
         }
 
         return availableFunctions;

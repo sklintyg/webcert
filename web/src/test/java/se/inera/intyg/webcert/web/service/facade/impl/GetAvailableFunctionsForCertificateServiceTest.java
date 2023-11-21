@@ -55,7 +55,7 @@ class GetAvailableFunctionsForCertificateServiceTest {
     @Test
     void shouldReturnListOfAvailableFunctions() {
         final var expectedAvailableFunction = List.of(AvailableFunctionDTO.create(
-            AvailableFunctionTypeDTO.CUSTOMIZE_PRINT_CERTIFICATE, null, null, null));
+            AvailableFunctionTypeDTO.CUSTOMIZE_PRINT_CERTIFICATE, null, null, null, true));
         when(certificatePrintFunction.get(CERTIFICATE))
             .thenReturn(
                 expectedAvailableFunction
