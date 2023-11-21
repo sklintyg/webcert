@@ -47,16 +47,16 @@ public final class AvailableFunctionFactory {
         throw new IllegalStateException("Utility class!");
     }
 
-    public static AvailableFunctionDTO avstangningSmittskydd() {
+    public static AvailableFunctionDTO avstangningSmittskydd(boolean enabled) {
         return AvailableFunctionDTO.create(
             AvailableFunctionTypeDTO.INFO,
             AVSTANGNING_SMITTSKYDD_INFO_TITLE,
             AVSTANGNING_SMITTSKYDD_INFO_NAME,
-            AVSTANGNING_SMITTSKYDD_INFO_BODY
-        );
+            AVSTANGNING_SMITTSKYDD_INFO_BODY,
+            enabled);
     }
 
-    public static AvailableFunctionDTO customizePrint() {
+    public static AvailableFunctionDTO customizePrint(boolean enabled) {
         return AvailableFunctionDTO.create(
             AvailableFunctionTypeDTO.CUSTOMIZE_PRINT_CERTIFICATE,
             AVAILABLE_FUNCTION_CUSTOMIZE_TITLE,
@@ -74,15 +74,15 @@ public final class AvailableFunctionFactory {
                     InformationTypeDto.OPTIONS
                 )
             ),
-            true
+            enabled
         );
     }
 
-    public static AvailableFunctionDTO print() {
+    public static AvailableFunctionDTO print(boolean enabled) {
         return AvailableFunctionDTO.create(
             AvailableFunctionTypeDTO.PRINT_CERTIFICATE,
-            AVAILABLE_FUNCTION_PRINT_NAME
-        );
+            AVAILABLE_FUNCTION_PRINT_NAME,
+            enabled);
     }
 
     public static AvailableFunctionDTO send(boolean enabled) {

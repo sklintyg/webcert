@@ -46,19 +46,21 @@ public class AvailableFunctionDTO {
         return availableFunction;
     }
 
-    public static AvailableFunctionDTO create(AvailableFunctionTypeDTO type, String title, String name, String body) {
+    public static AvailableFunctionDTO create(AvailableFunctionTypeDTO type, String title, String name, String body, boolean enabled) {
         final var availableFunction = new AvailableFunctionDTO();
         availableFunction.setType(type);
         availableFunction.setTitle(title);
         availableFunction.setName(name);
         availableFunction.setBody(body);
+        availableFunction.setEnabled(enabled);
         return availableFunction;
     }
 
-    public static AvailableFunctionDTO create(AvailableFunctionTypeDTO type, String name) {
+    public static AvailableFunctionDTO create(AvailableFunctionTypeDTO type, String name, boolean enabled) {
         final var availableFunction = new AvailableFunctionDTO();
         availableFunction.setType(type);
         availableFunction.setName(name);
+        availableFunction.setEnabled(enabled);
         return availableFunction;
     }
 

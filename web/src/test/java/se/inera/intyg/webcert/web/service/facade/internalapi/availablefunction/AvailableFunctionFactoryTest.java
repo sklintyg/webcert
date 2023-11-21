@@ -50,7 +50,7 @@ class AvailableFunctionFactoryTest {
     @Nested
     class AvstangningSmittskyd {
 
-        private final AvailableFunctionDTO avstangningSmittskydd = AvailableFunctionFactory.avstangningSmittskydd();
+        private final AvailableFunctionDTO avstangningSmittskydd = AvailableFunctionFactory.avstangningSmittskydd(true);
 
         @Test
         void shouldContainType() {
@@ -71,12 +71,17 @@ class AvailableFunctionFactoryTest {
         void shouldContainBody() {
             assertEquals(AVSTANGNING_SMITTSKYDD_INFO_BODY, avstangningSmittskydd.getBody());
         }
+
+        @Test
+        void shouldContainEnabled() {
+            assertTrue(avstangningSmittskydd.isEnabled());
+        }
     }
 
     @Nested
     class CustomizePrint {
 
-        private final AvailableFunctionDTO customizePrint = AvailableFunctionFactory.customizePrint();
+        private final AvailableFunctionDTO customizePrint = AvailableFunctionFactory.customizePrint(true);
 
         @Test
         void shouldContainType() {
@@ -118,12 +123,17 @@ class AvailableFunctionFactoryTest {
             );
             assertEquals(expectedResult, customizePrint.getInformation());
         }
+
+        @Test
+        void shouldContainEnabled() {
+            assertTrue(customizePrint.isEnabled());
+        }
     }
 
     @Nested
     class Print {
 
-        private final AvailableFunctionDTO print = AvailableFunctionFactory.print();
+        private final AvailableFunctionDTO print = AvailableFunctionFactory.print(true);
 
         @Test
         void shouldContainType() {
@@ -133,6 +143,11 @@ class AvailableFunctionFactoryTest {
         @Test
         void shouldContainName() {
             assertEquals(AVAILABLE_FUNCTION_PRINT_NAME, print.getName());
+        }
+
+        @Test
+        void shouldContainEnabled() {
+            assertTrue(print.isEnabled());
         }
     }
 
