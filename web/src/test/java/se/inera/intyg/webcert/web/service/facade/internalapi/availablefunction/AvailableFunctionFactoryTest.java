@@ -50,6 +50,7 @@ class AvailableFunctionFactoryTest {
     @Nested
     class AvstangningSmittskyd {
 
+
         private final AvailableFunctionDTO avstangningSmittskydd = AvailableFunctionFactory.avstangningSmittskydd(true);
 
         @Test
