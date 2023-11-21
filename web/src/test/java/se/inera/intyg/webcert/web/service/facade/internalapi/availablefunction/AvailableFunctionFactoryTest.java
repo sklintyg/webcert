@@ -72,7 +72,6 @@ class AvailableFunctionFactoryTest {
             assertEquals(AVSTANGNING_SMITTSKYDD_INFO_BODY, avstangningSmittskydd.getBody());
         }
 
-
         @Test
         void shouldContainEnabled() {
             assertTrue(avstangningSmittskydd.isEnabled());
