@@ -34,6 +34,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;
+import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRecipient;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
@@ -234,7 +235,12 @@ class CertificateSendFunctionTest {
         boolean sent,
         boolean hasRecipient,
         CertificateRelationType relationType) {
-        CertificateRelation[] relationChildren = {CertificateRelation.builder().type(relationType).build()};
+        CertificateRelation[] relationChildren = {
+            CertificateRelation.builder()
+                .type(relationType)
+                .status(CertificateStatus.SIGNED)
+                .build()
+        };
 
         final var certificateMetadata = CertificateMetadata.builder()
             .type(TYPE)

@@ -38,6 +38,7 @@ import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateDataElement;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;
+import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
@@ -129,7 +130,12 @@ class CertificatePrintFunctionTest {
     }
 
     private static Certificate buildCertificateWithRelation(Certificate certificate, CertificateRelationType type) {
-        CertificateRelation[] relationChildren = {CertificateRelation.builder().type(type).build()};
+        CertificateRelation[] relationChildren = {
+            CertificateRelation.builder()
+                .type(type)
+                .status(CertificateStatus.SIGNED)
+                .build()
+        };
         final var relations = CertificateRelations.builder()
             .children(relationChildren)
             .build();
