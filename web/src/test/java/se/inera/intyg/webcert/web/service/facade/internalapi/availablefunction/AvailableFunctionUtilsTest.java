@@ -31,6 +31,7 @@ import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateDataElement;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;
+import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
@@ -58,8 +59,13 @@ class AvailableFunctionUtilsTest {
         }
 
         @Test
-        void shouldReturnTrueIfRelationsHasComplementedChild() {
-            CertificateRelation[] children = {CertificateRelation.builder().type(CertificateRelationType.COMPLEMENTED).build()};
+        void shouldReturnTrueIfRelationsHasComplementedChildThatIsSigned() {
+            CertificateRelation[] children = {
+                CertificateRelation.builder()
+                    .type(CertificateRelationType.COMPLEMENTED)
+                    .status(CertificateStatus.SIGNED)
+                    .build()
+            };
             final var response = AvailableFunctionUtils.isReplacedOrComplemented(
                 CertificateRelations.builder().children(children).build()
             );
@@ -68,13 +74,138 @@ class AvailableFunctionUtilsTest {
         }
 
         @Test
-        void shouldReturnTrueIfRelationsHasReplacedChild() {
-            CertificateRelation[] children = {CertificateRelation.builder().type(CertificateRelationType.REPLACED).build()};
+        void shouldReturnFalseIfRelationsHasComplementedChildThatIsUnsigned() {
+            CertificateRelation[] children = {
+                CertificateRelation.builder()
+                    .type(CertificateRelationType.COMPLEMENTED)
+                    .status(CertificateStatus.UNSIGNED)
+                    .build()
+            };
+            final var response = AvailableFunctionUtils.isReplacedOrComplemented(
+                CertificateRelations.builder().children(children).build()
+            );
+
+            assertFalse(response);
+        }
+
+        @Test
+        void shouldReturnFalseIfRelationsHasComplementedChildThatIsLocked() {
+            CertificateRelation[] children = {
+                CertificateRelation.builder()
+                    .type(CertificateRelationType.COMPLEMENTED)
+                    .status(CertificateStatus.LOCKED)
+                    .build()
+            };
+            final var response = AvailableFunctionUtils.isReplacedOrComplemented(
+                CertificateRelations.builder().children(children).build()
+            );
+
+            assertFalse(response);
+        }
+
+        @Test
+        void shouldReturnFalseIfRelationsHasComplementedChildThatIsLockedRevoked() {
+            CertificateRelation[] children = {
+                CertificateRelation.builder()
+                    .type(CertificateRelationType.COMPLEMENTED)
+                    .status(CertificateStatus.LOCKED_REVOKED)
+                    .build()
+            };
+            final var response = AvailableFunctionUtils.isReplacedOrComplemented(
+                CertificateRelations.builder().children(children).build()
+            );
+
+            assertFalse(response);
+        }
+
+        @Test
+        void shouldReturnFalseIfRelationsHasComplementedChildThatIsRevoked() {
+            CertificateRelation[] children = {
+                CertificateRelation.builder()
+                    .type(CertificateRelationType.COMPLEMENTED)
+                    .status(CertificateStatus.REVOKED)
+                    .build()
+            };
+            final var response = AvailableFunctionUtils.isReplacedOrComplemented(
+                CertificateRelations.builder().children(children).build()
+            );
+
+            assertFalse(response);
+        }
+
+        @Test
+        void shouldReturnTrueIfRelationsHasReplacedChildThatIsSigned() {
+            CertificateRelation[] children = {
+                CertificateRelation.builder()
+                    .type(CertificateRelationType.REPLACED)
+                    .status(CertificateStatus.SIGNED)
+                    .build()
+            };
             final var response = AvailableFunctionUtils.isReplacedOrComplemented(
                 CertificateRelations.builder().children(children).build()
             );
 
             assertTrue(response);
+        }
+
+        @Test
+        void shouldReturnFalseIfRelationsHasReplacedChildThatIsUnsigned() {
+            CertificateRelation[] children = {
+                CertificateRelation.builder()
+                    .type(CertificateRelationType.REPLACED)
+                    .status(CertificateStatus.UNSIGNED)
+                    .build()
+            };
+            final var response = AvailableFunctionUtils.isReplacedOrComplemented(
+                CertificateRelations.builder().children(children).build()
+            );
+
+            assertFalse(response);
+        }
+
+        @Test
+        void shouldReturnFalseIfRelationsHasReplacedChildThatIsLocked() {
+            CertificateRelation[] children = {
+                CertificateRelation.builder()
+                    .type(CertificateRelationType.REPLACED)
+                    .status(CertificateStatus.LOCKED)
+                    .build()
+            };
+            final var response = AvailableFunctionUtils.isReplacedOrComplemented(
+                CertificateRelations.builder().children(children).build()
+            );
+
+            assertFalse(response);
+        }
+
+        @Test
+        void shouldReturnFalseIfRelationsHasReplacedChildThatIsLockedRevoked() {
+            CertificateRelation[] children = {
+                CertificateRelation.builder()
+                    .type(CertificateRelationType.REPLACED)
+                    .status(CertificateStatus.LOCKED_REVOKED)
+                    .build()
+            };
+            final var response = AvailableFunctionUtils.isReplacedOrComplemented(
+                CertificateRelations.builder().children(children).build()
+            );
+
+            assertFalse(response);
+        }
+
+        @Test
+        void shouldReturnFalseIfRelationsHasReplacedChildThatIsRevoked() {
+            CertificateRelation[] children = {
+                CertificateRelation.builder()
+                    .type(CertificateRelationType.REPLACED)
+                    .status(CertificateStatus.REVOKED)
+                    .build()
+            };
+            final var response = AvailableFunctionUtils.isReplacedOrComplemented(
+                CertificateRelations.builder().children(children).build()
+            );
+
+            assertFalse(response);
         }
 
         @Test
