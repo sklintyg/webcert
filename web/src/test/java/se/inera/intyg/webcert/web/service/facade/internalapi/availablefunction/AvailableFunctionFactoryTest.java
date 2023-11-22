@@ -54,7 +54,7 @@ class AvailableFunctionFactoryTest {
 
         @Test
         void shouldContainType() {
-            assertEquals(AvailableFunctionTypeDTO.INFO, avstangningSmittskydd.getType());
+            assertEquals(AvailableFunctionTypeDTO.ATTENTION, avstangningSmittskydd.getType());
         }
 
         @Test

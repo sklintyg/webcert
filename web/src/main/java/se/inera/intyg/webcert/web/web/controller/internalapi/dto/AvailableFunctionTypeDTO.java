@@ -20,5 +20,5 @@
 package se.inera.intyg.webcert.web.web.controller.internalapi.dto;
 
 public enum AvailableFunctionTypeDTO {
-    CUSTOMIZE_PRINT_CERTIFICATE, PRINT_CERTIFICATE, INFO, SEND_CERTIFICATE
+    CUSTOMIZE_PRINT_CERTIFICATE, PRINT_CERTIFICATE, ATTENTION, SEND_CERTIFICATE
 }
