@@ -49,7 +49,7 @@ public final class AvailableFunctionFactory {
 
     public static AvailableFunctionDTO avstangningSmittskydd(boolean enabled) {
         return AvailableFunctionDTO.create(
-            AvailableFunctionTypeDTO.INFO,
+            AvailableFunctionTypeDTO.ATTENTION,
             AVSTANGNING_SMITTSKYDD_INFO_TITLE,
             AVSTANGNING_SMITTSKYDD_INFO_NAME,
             AVSTANGNING_SMITTSKYDD_INFO_BODY,
