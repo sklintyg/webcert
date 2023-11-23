@@ -38,7 +38,7 @@ public class GetCertificatePdfService {
     private final IntygModuleRegistry moduleRegistry;
 
     private static final String DONT_DISPLAY_DIAGNOSIS_ID = "!diagnoser";
-    private static final List<String> OPTIONAL_FIELDS = List.of(DONT_DISPLAY_DIAGNOSIS_ID, "!onskarFormedlaDiagnoser");
+    private static final List<String> OPTIONAL_FIELDS = List.of(DONT_DISPLAY_DIAGNOSIS_ID, "!onskarFormedlaDiagnos");
 
     public GetCertificatePdfService(GetRequiredFieldsForCertificatePdfService getRequiredFieldsForCertificatePdfService,
         IntygModuleRegistry moduleRegistry) {
