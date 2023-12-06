@@ -26,8 +26,6 @@ import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefun
 import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionUtils.isCertificateOfType;
 import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionUtils.isReplacedOrComplemented;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -93,7 +91,7 @@ public class CertificatePrintFunction implements AvailableFunctions {
     }
 
     private static String getFileName(Certificate certificate) {
-        final var typeName = certificate.getMetadata().getName()
+        return certificate.getMetadata().getName()
             .replace("å", "a")
             .replace("ä", "a")
             .replace("ö", "o")
@@ -101,9 +99,5 @@ public class CertificatePrintFunction implements AvailableFunctions {
             .replace("–", "")
             .replace("__", "_")
             .toLowerCase();
-
-        final var timestamp = LocalDateTime.now().format((DateTimeFormatter.ofPattern("yy-MM-dd_HHmm")));
-
-        return typeName + "_" + timestamp;
     }
 }
