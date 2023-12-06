@@ -23,6 +23,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -53,8 +55,11 @@ class CertificatePrintFunctionTest {
     private static final String WRONG_TYPE = Fk7263EntryPoint.MODULE_ID;
     private static final String QUESTION_SMITTBARAR_PENNING = "27";
     private static final String NOT_QUESTION_SMITTBARAR_PENNING = "NOT_AVSTANGNING_SMITTSKYDD_SVAR_ID_27";
-    private static final AvailableFunctionDTO EXPECTED_CUSTOMIZE_FUNCTION = AvailableFunctionFactory.customizePrint(true);
-    private static final AvailableFunctionDTO EXPECTED_PRINT_FUNCTION = AvailableFunctionFactory.print(true);
+    public static final String FILE_NAME =
+        "lakarintyg_for_sjukpenning_" + LocalDateTime.now().format((DateTimeFormatter.ofPattern("yy-MM-dd_HHmm")));
+    public static final String NAME = "Läkarintyg för sjukpenning";
+    private static final AvailableFunctionDTO EXPECTED_CUSTOMIZE_FUNCTION = AvailableFunctionFactory.customizePrint(true, FILE_NAME);
+    private static final AvailableFunctionDTO EXPECTED_PRINT_FUNCTION = AvailableFunctionFactory.print(true, FILE_NAME);
     private static final AvailableFunctionDTO EXPECTED_SMITTBARAR_PENNING_FUNCTION = AvailableFunctionFactory.avstangningSmittskydd(true);
 
     @Mock
@@ -153,6 +158,7 @@ class CertificatePrintFunctionTest {
         certificate.setMetadata(
             CertificateMetadata.builder()
                 .type(type)
+                .name(NAME)
                 .relations(certificateRelations)
                 .build()
         );
