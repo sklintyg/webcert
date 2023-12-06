@@ -56,7 +56,7 @@ public final class AvailableFunctionFactory {
             enabled);
     }
 
-    public static AvailableFunctionDTO customizePrint(boolean enabled) {
+    public static AvailableFunctionDTO customizePrint(boolean enabled, String fileName) {
         return AvailableFunctionDTO.create(
             AvailableFunctionTypeDTO.CUSTOMIZE_PRINT_CERTIFICATE,
             AVAILABLE_FUNCTION_CUSTOMIZE_TITLE,
@@ -64,6 +64,10 @@ public final class AvailableFunctionFactory {
             AVAILABLE_FUNCTION_CUSTOMIZE_BODY,
             AVAILABLE_FUNCTION_CUSTOMIZE_DESCRIPTION,
             List.of(
+                InformationDTO.create(
+                    fileName,
+                    InformationTypeDto.FILENAME
+                ),
                 InformationDTO.create(
                     SHOW_DIAGNOSIS_TEXT,
                     InformationTypeDto.OPTIONS
@@ -78,11 +82,21 @@ public final class AvailableFunctionFactory {
         );
     }
 
-    public static AvailableFunctionDTO print(boolean enabled) {
+    public static AvailableFunctionDTO print(boolean enabled, String fileName) {
         return AvailableFunctionDTO.create(
             AvailableFunctionTypeDTO.PRINT_CERTIFICATE,
+            "",
             AVAILABLE_FUNCTION_PRINT_NAME,
-            enabled);
+            "",
+            "",
+            List.of(
+                InformationDTO.create(
+                    fileName,
+                    InformationTypeDto.FILENAME
+                )
+            ),
+            enabled
+        );
     }
 
     public static AvailableFunctionDTO send(boolean enabled) {

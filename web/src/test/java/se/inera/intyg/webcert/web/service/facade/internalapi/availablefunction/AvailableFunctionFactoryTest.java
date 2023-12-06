@@ -47,6 +47,8 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.InformationType
 
 class AvailableFunctionFactoryTest {
 
+    public static final String FILE_NAME = "fileName";
+
     @Nested
     class AvstangningSmittskyd {
 
@@ -81,7 +83,7 @@ class AvailableFunctionFactoryTest {
     @Nested
     class CustomizePrint {
 
-        private final AvailableFunctionDTO customizePrint = AvailableFunctionFactory.customizePrint(true);
+        private final AvailableFunctionDTO customizePrint = AvailableFunctionFactory.customizePrint(true, FILE_NAME);
 
         @Test
         void shouldContainType() {
@@ -112,6 +114,11 @@ class AvailableFunctionFactoryTest {
         void shouldContainListOfInformation() {
             final var expectedResult = List.of(
                 InformationDTO.create(
+                    FILE_NAME,
+                    InformationTypeDto.FILENAME
+
+                ),
+                InformationDTO.create(
                     SHOW_DIAGNOSIS_TEXT,
                     InformationTypeDto.OPTIONS
                 ),
@@ -133,7 +140,7 @@ class AvailableFunctionFactoryTest {
     @Nested
     class Print {
 
-        private final AvailableFunctionDTO print = AvailableFunctionFactory.print(true);
+        private final AvailableFunctionDTO print = AvailableFunctionFactory.print(true, FILE_NAME);
 
         @Test
         void shouldContainType() {
@@ -148,6 +155,17 @@ class AvailableFunctionFactoryTest {
         @Test
         void shouldContainEnabled() {
             assertTrue(print.isEnabled());
+        }
+
+        @Test
+        void shouldContainListOfInformation() {
+            final var expectedResult = List.of(
+                InformationDTO.create(
+                    FILE_NAME,
+                    InformationTypeDto.FILENAME
+                )
+            );
+            assertEquals(expectedResult, print.getInformation());
         }
     }
 

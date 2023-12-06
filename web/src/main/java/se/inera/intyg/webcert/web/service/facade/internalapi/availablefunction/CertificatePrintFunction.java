@@ -26,6 +26,8 @@ import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefun
 import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionUtils.isCertificateOfType;
 import static se.inera.intyg.webcert.web.service.facade.internalapi.availablefunction.AvailableFunctionUtils.isReplacedOrComplemented;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -52,16 +54,15 @@ public class CertificatePrintFunction implements AvailableFunctions {
     @Override
     public List<AvailableFunctionDTO> get(Certificate certificate) {
         final var availableFunctions = new ArrayList<AvailableFunctionDTO>();
-
         if (!isPrintFeatureActive(certificate)
             || isReplacedOrComplemented(certificate.getMetadata().getRelations())) {
             return Collections.emptyList();
         }
 
         if (isCustomizedPrintAvailable(certificate)) {
-            availableFunctions.add(AvailableFunctionFactory.customizePrint(true));
+            availableFunctions.add(AvailableFunctionFactory.customizePrint(true, getFileName(certificate)));
         } else {
-            availableFunctions.add(AvailableFunctionFactory.print(true));
+            availableFunctions.add(AvailableFunctionFactory.print(true, getFileName(certificate)));
         }
 
         if (isCustomizedPrintInfoAvailable(certificate)) {
@@ -89,5 +90,20 @@ public class CertificatePrintFunction implements AvailableFunctions {
 
     private boolean isPrintFeatureActive(Certificate certificate) {
         return authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_UTSKRIFT, certificate.getMetadata().getType());
+    }
+
+    private static String getFileName(Certificate certificate) {
+        final var typeName = certificate.getMetadata().getName()
+            .replace("å", "a")
+            .replace("ä", "a")
+            .replace("ö", "o")
+            .replace(" ", "_")
+            .replace("–", "")
+            .replace("__", "_")
+            .toLowerCase();
+
+        final var timestamp = LocalDateTime.now().format((DateTimeFormatter.ofPattern("yy-MM-dd_HHmm")));
+
+        return typeName + "_" + timestamp;
     }
 }
