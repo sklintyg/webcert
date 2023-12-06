@@ -23,9 +23,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -81,6 +83,7 @@ public class IntygToCertificateConverterImplTest {
     public static final String CARE_UNIT_ID = "CareUnitId";
     public static final String CARE_UNIT_NAME = "CareUnitName";
     public static final String UNIT_ID = "unitId";
+    private static final String UNIT_NAME = "UNIT_NAME";
     public static final String PERSON_ID = "PersonId";
     public static final String PERSON_NAME = "Doctor Alpha";
     public static final String PERSON_ID_FROM_JSON = "PersonId - json";
@@ -144,13 +147,38 @@ public class IntygToCertificateConverterImplTest {
                 CERTIFICATE_TYPE,
                 CERTIFICATE_TYPE_VERSION
             );
+    }
 
-        doReturn(getHealthCareUnit())
-            .when(hsatkOrganizationService).getHealthCareUnit(any(String.class));
+    @Test
+    void shouldSetUnitInfoFromDraftIfHsaExceptionForGetUnit() {
+        when(hsatkOrganizationService.getUnit(anyString(), any()))
+            .thenThrow(new IllegalStateException());
+        when(hsatkOrganizationService.getHealthCareUnit(anyString()))
+            .thenReturn(getHealthCareUnit());
 
-        doReturn(getUnit())
-            .when(hsatkOrganizationService).getUnit(any(String.class), nullable(String.class));
+        final var response = intygToCertificateConverter.convert(intygContentHolder);
 
+        assertEquals(response.getMetadata().getUnit().getUnitId(),
+            intygContentHolder.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getEnhetsid()
+        );
+        assertEquals(response.getMetadata().getUnit().getUnitName(),
+            intygContentHolder.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getEnhetsnamn()
+        );
+    }
+
+    @Test
+    void shouldSetUnitInfoFromDraftIfHsaExceptionForGetHealthCareUnit() {
+        when(hsatkOrganizationService.getHealthCareUnit(anyString()))
+            .thenThrow(new IllegalStateException());
+
+        final var response = intygToCertificateConverter.convert(intygContentHolder);
+
+        assertEquals(response.getMetadata().getUnit().getUnitId(),
+            intygContentHolder.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getEnhetsid()
+        );
+        assertEquals(response.getMetadata().getUnit().getUnitName(),
+            intygContentHolder.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getEnhetsnamn()
+        );
     }
 
     @Test
@@ -166,6 +194,12 @@ public class IntygToCertificateConverterImplTest {
         @BeforeEach
         void setup() {
             doReturn(RECIPIENT).when(certificateRecipientConverter).get(any(), any(), any());
+
+            doReturn(getHealthCareUnit())
+                .when(hsatkOrganizationService).getHealthCareUnit(any(String.class));
+
+            doReturn(getUnit())
+                .when(hsatkOrganizationService).getUnit(any(String.class), nullable(String.class));
         }
 
         @Test
@@ -252,6 +286,15 @@ public class IntygToCertificateConverterImplTest {
     @Nested
     class ValidateUnit {
 
+        @BeforeEach
+        void setup() {
+            doReturn(getHealthCareUnit())
+                .when(hsatkOrganizationService).getHealthCareUnit(any(String.class));
+
+            doReturn(getUnit())
+                .when(hsatkOrganizationService).getUnit(any(String.class), nullable(String.class));
+        }
+
         @Test
         void shallContainCompleteUnitData() {
             final var actualCertificate = intygToCertificateConverter.convert(intygContentHolder);
@@ -270,6 +313,15 @@ public class IntygToCertificateConverterImplTest {
 
     @Nested
     class ValidateCareProvider {
+
+        @BeforeEach
+        void setup() {
+            doReturn(getHealthCareUnit())
+                .when(hsatkOrganizationService).getHealthCareUnit(any(String.class));
+
+            doReturn(getUnit())
+                .when(hsatkOrganizationService).getUnit(any(String.class), nullable(String.class));
+        }
 
         @Test
         void shallIncludeCareProviderId() {
@@ -293,6 +345,15 @@ public class IntygToCertificateConverterImplTest {
     @Nested
     class ValidateCareUnit {
 
+        @BeforeEach
+        void setup() {
+            doReturn(getHealthCareUnit())
+                .when(hsatkOrganizationService).getHealthCareUnit(any(String.class));
+
+            doReturn(getUnit())
+                .when(hsatkOrganizationService).getUnit(any(String.class), nullable(String.class));
+        }
+
         @Test
         void shallIncludeCareUnitId() {
             final var actualCertificate = intygToCertificateConverter.convert(intygContentHolder);
@@ -308,6 +369,15 @@ public class IntygToCertificateConverterImplTest {
 
     @Nested
     class ValidateIssuedBy {
+
+        @BeforeEach
+        void setup() {
+            doReturn(getHealthCareUnit())
+                .when(hsatkOrganizationService).getHealthCareUnit(any(String.class));
+
+            doReturn(getUnit())
+                .when(hsatkOrganizationService).getUnit(any(String.class), nullable(String.class));
+        }
 
         @Test
         void shallIncludePersonId() {
@@ -344,6 +414,15 @@ public class IntygToCertificateConverterImplTest {
     @Nested
     class ValidateStatus {
 
+        @BeforeEach
+        void setup() {
+            doReturn(getHealthCareUnit())
+                .when(hsatkOrganizationService).getHealthCareUnit(any(String.class));
+
+            doReturn(getUnit())
+                .when(hsatkOrganizationService).getUnit(any(String.class), nullable(String.class));
+        }
+
         @Test
         void shallIncludeStatusSigned() {
             final var expectedStatus = CertificateStatus.SIGNED;
@@ -376,6 +455,7 @@ public class IntygToCertificateConverterImplTest {
         grundData.getSkapadAv().getVardenhet().setVardgivare(new Vardgivare());
         grundData.getSkapadAv().getVardenhet().getVardgivare().setVardgivarid(CARE_PROVIDER_ID);
         grundData.getSkapadAv().getVardenhet().getVardgivare().setVardgivarnamn(CARE_PROVIDER_NAME);
+        grundData.getSkapadAv().getVardenhet().setEnhetsnamn(UNIT_NAME);
         grundData.setSigneringsdatum(SIGNED_DATE_TIME);
 
         final var mockUtlatande = mock(Utlatande.class);
@@ -412,8 +492,8 @@ public class IntygToCertificateConverterImplTest {
                     .typeVersion("certificateTypeVersion")
                     .unit(
                         Unit.builder()
-                            .unitId("unitId")
-                            .unitName("unitName")
+                            .unitId(UNIT_ID)
+                            .unitName(UNIT_NAME)
                             .address("address")
                             .zipCode("zipCode")
                             .city("city")

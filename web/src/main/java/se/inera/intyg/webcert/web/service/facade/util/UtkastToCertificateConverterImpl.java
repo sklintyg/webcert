@@ -151,12 +151,22 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
     }
 
     private Unit getCareUnit(Utkast certificate) {
-        final var careUnitId = hsatkOrganizationService.getHealthCareUnit(certificate.getEnhetsId()).getHealthCareUnitHsaId();
-        final var careUnit = careUnitId != null ? hsatkOrganizationService.getUnit(careUnitId, null) : null;
-        return Unit.builder()
-            .unitId(careUnitId != null ? careUnitId : certificate.getEnhetsId())
-            .unitName(careUnit != null ? careUnit.getUnitName() : certificate.getEnhetsNamn())
-            .build();
+        try {
+            final var careUnitId = hsatkOrganizationService.getHealthCareUnit(certificate.getEnhetsId()).getHealthCareUnitHsaId();
+            final var careUnit = careUnitId != null ? hsatkOrganizationService.getUnit(careUnitId, null) : null;
+
+            return Unit.builder()
+                .unitId(careUnitId != null ? careUnitId : certificate.getEnhetsId())
+                .unitName(careUnit != null ? careUnit.getUnitName() : certificate.getEnhetsNamn())
+                .build();
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+
+            return Unit.builder()
+                .unitId(certificate.getEnhetsId())
+                .unitName(certificate.getEnhetsNamn())
+                .build();
+        }
     }
 
     private Certificate getCertificateToReturn(String certificateType, String certificateTypeVersion, String jsonModel) {
