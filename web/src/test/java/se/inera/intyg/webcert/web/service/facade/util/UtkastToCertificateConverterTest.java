@@ -102,6 +102,30 @@ public class UtkastToCertificateConverterTest {
     private static final String PERSON_ID_FROM_JSON = "PersonId - json";
     private static final String PERSON_NAME_FROM_JSON = "Doctor Alpha - json";
 
+    @Test
+    void shouldSetUnitInfoFromDraftIfHsaExceptionForGetUnit() {
+        when(hsatkOrganizationService.getUnit(anyString(), anyString()))
+            .thenThrow(new IllegalStateException());
+        when(hsatkOrganizationService.getHealthCareUnit(anyString()))
+            .thenReturn(getHealthCareUnit());
+
+        final var response = utkastToCertificateConverter.convert(draft);
+
+        assertEquals(response.getMetadata().getUnit().getUnitId(), draft.getEnhetsId());
+        assertEquals(response.getMetadata().getUnit().getUnitName(), draft.getEnhetsNamn());
+    }
+
+    @Test
+    void shouldSetUnitInfoFromDraftIfHsaExceptionForGetHealthCareUnit() {
+        when(hsatkOrganizationService.getHealthCareUnit(anyString()))
+            .thenThrow(new IllegalStateException());
+
+        final var response = utkastToCertificateConverter.convert(draft);
+
+        assertEquals(response.getMetadata().getUnit().getUnitId(), draft.getEnhetsId());
+        assertEquals(response.getMetadata().getUnit().getUnitName(), draft.getEnhetsNamn());
+    }
+
     @BeforeEach
     void setupMocks() throws Exception {
         final var moduleApi = mock(ModuleApi.class);
@@ -121,16 +145,19 @@ public class UtkastToCertificateConverterTest {
                 draft.getIntygsTyp(),
                 draft.getIntygTypeVersion()
             );
-
-        doReturn(getHealthCareUnit())
-            .when(hsatkOrganizationService).getHealthCareUnit(any(String.class));
-
-        doReturn(getUnit())
-            .when(hsatkOrganizationService).getUnit(any(String.class), nullable(String.class));
     }
 
     @Nested
     class ValidateCommonMetadata {
+
+        @BeforeEach
+        void setup() {
+            doReturn(getHealthCareUnit())
+                .when(hsatkOrganizationService).getHealthCareUnit(any(String.class));
+
+            doReturn(getUnit())
+                .when(hsatkOrganizationService).getUnit(any(String.class), nullable(String.class));
+        }
 
         @Test
         void shallIncludeCreatedDateTimeAsTheLatestsSavedDateTime() {
@@ -194,6 +221,15 @@ public class UtkastToCertificateConverterTest {
     @Nested
     class ValidateUnit {
 
+        @BeforeEach
+        void setup() {
+            doReturn(getHealthCareUnit())
+                .when(hsatkOrganizationService).getHealthCareUnit(any(String.class));
+
+            doReturn(getUnit())
+                .when(hsatkOrganizationService).getUnit(any(String.class), nullable(String.class));
+        }
+
         @Test
         void shallContainCompleteUnitData() {
             final var actualCertificate = utkastToCertificateConverter.convert(draft);
@@ -212,6 +248,15 @@ public class UtkastToCertificateConverterTest {
 
     @Nested
     class ValidateCareProvider {
+
+        @BeforeEach
+        void setup() {
+            doReturn(getHealthCareUnit())
+                .when(hsatkOrganizationService).getHealthCareUnit(any(String.class));
+
+            doReturn(getUnit())
+                .when(hsatkOrganizationService).getUnit(any(String.class), nullable(String.class));
+        }
 
         @Test
         void shallIncludeCareProviderId() {
@@ -237,6 +282,15 @@ public class UtkastToCertificateConverterTest {
     @Nested
     class ValidateCareUnit {
 
+        @BeforeEach
+        void setup() {
+            doReturn(getHealthCareUnit())
+                .when(hsatkOrganizationService).getHealthCareUnit(any(String.class));
+
+            doReturn(getUnit())
+                .when(hsatkOrganizationService).getUnit(any(String.class), nullable(String.class));
+        }
+
         @Test
         void shallIncludeCareUnitId() {
             final var actualCertificate = utkastToCertificateConverter.convert(draft);
@@ -252,6 +306,15 @@ public class UtkastToCertificateConverterTest {
 
     @Nested
     class ValidateIssuedBy {
+
+        @BeforeEach
+        void setup() {
+            doReturn(getHealthCareUnit())
+                .when(hsatkOrganizationService).getHealthCareUnit(any(String.class));
+
+            doReturn(getUnit())
+                .when(hsatkOrganizationService).getUnit(any(String.class), nullable(String.class));
+        }
 
         @Test
         void shallIncludePersonId() {
@@ -289,6 +352,15 @@ public class UtkastToCertificateConverterTest {
 
     @Nested
     class ValidateStatus {
+
+        @BeforeEach
+        void setup() {
+            doReturn(getHealthCareUnit())
+                .when(hsatkOrganizationService).getHealthCareUnit(any(String.class));
+
+            doReturn(getUnit())
+                .when(hsatkOrganizationService).getUnit(any(String.class), nullable(String.class));
+        }
 
         @Test
         void shallIncludeStatusUnsigned() {
@@ -346,6 +418,15 @@ public class UtkastToCertificateConverterTest {
     class ValidateSent {
 
         @BeforeEach
+        void setup() {
+            doReturn(getHealthCareUnit())
+                .when(hsatkOrganizationService).getHealthCareUnit(any(String.class));
+
+            doReturn(getUnit())
+                .when(hsatkOrganizationService).getUnit(any(String.class), nullable(String.class));
+        }
+
+        @BeforeEach
         void setUp() {
             draft.setStatus(UtkastStatus.SIGNED);
         }
@@ -388,6 +469,15 @@ public class UtkastToCertificateConverterTest {
 
     @Nested
     class ValidateResponsibleHospName {
+
+        @BeforeEach
+        void setup() {
+            doReturn(getHealthCareUnit())
+                .when(hsatkOrganizationService).getHealthCareUnit(any(String.class));
+
+            doReturn(getUnit())
+                .when(hsatkOrganizationService).getUnit(any(String.class), nullable(String.class));
+        }
 
         @Test
         public void shallNotSetResponsibleHospNameWhenNoAuthenticationContext() {
@@ -437,6 +527,7 @@ public class UtkastToCertificateConverterTest {
         draft.setIntygsTyp("certificateType");
         draft.setIntygTypeVersion("certificateTypeVersion");
         draft.setEnhetsId("unitId");
+        draft.setEnhetsNamn("unitName");
         draft.setModel("draftJson");
         draft.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
         draft.setSkapad(LocalDateTime.now().minusDays(1));

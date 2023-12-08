@@ -152,12 +152,23 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
     }
 
     private Unit getCareUnit(Vardenhet unit) {
-        final var careUnitId = hsatkOrganizationService.getHealthCareUnit(unit.getEnhetsid()).getHealthCareUnitHsaId();
-        final var careUnit = careUnitId != null ? hsatkOrganizationService.getUnit(careUnitId, null) : null;
-        return Unit.builder()
-            .unitId(careUnitId != null ? careUnitId : unit.getEnhetsid())
-            .unitName(careUnit != null ? careUnit.getUnitName() : unit.getEnhetsnamn())
-            .build();
+        try {
+            final var careUnitId = hsatkOrganizationService.getHealthCareUnit(unit.getEnhetsid()).getHealthCareUnitHsaId();
+            final var careUnit = careUnitId != null ? hsatkOrganizationService.getUnit(careUnitId, null) : null;
+
+            return Unit.builder()
+                .unitId(careUnitId != null ? careUnitId : unit.getEnhetsid())
+                .unitName(careUnit != null ? careUnit.getUnitName() : unit.getEnhetsnamn())
+                .build();
+
+        } catch (Exception e) {
+            LOG.warn("Could not get unit from hsa", e);
+
+            return Unit.builder()
+                .unitId(unit.getEnhetsid())
+                .unitName(unit.getEnhetsnamn())
+                .build();
+        }
     }
 
     private Certificate getCertificateToReturn(String certificateType, String certificateTypeVersion, String jsonModel) {
