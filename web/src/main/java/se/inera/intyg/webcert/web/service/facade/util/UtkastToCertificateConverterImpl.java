@@ -160,7 +160,7 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
                 .unitName(careUnit != null ? careUnit.getUnitName() : certificate.getEnhetsNamn())
                 .build();
         } catch (Exception e) {
-            LOG.error(e.getMessage());
+            LOG.warn("Could not get unit from hsa", e);
 
             return Unit.builder()
                 .unitId(certificate.getEnhetsId())

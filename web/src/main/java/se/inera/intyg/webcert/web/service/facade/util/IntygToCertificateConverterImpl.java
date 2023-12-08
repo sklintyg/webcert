@@ -162,7 +162,7 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
                 .build();
 
         } catch (Exception e) {
-            LOG.error(e.getMessage());
+            LOG.warn("Could not get unit from hsa", e);
 
             return Unit.builder()
                 .unitId(unit.getEnhetsid())
