@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -74,7 +74,8 @@ public class DiagnosServiceImpl implements DiagnosService {
     private static final String KSH97P_CODE_REGEXP = "^([A-Z]\\d{2}\\-{0,1}\\d{0,1}[P]{0,1}|F438A)$";
 
     // CHECKSTYLE:OFF LineLength
-    private static final Pattern SCHEMATRON_DIAGNOSIS_PATTERN = Pattern.compile("^([A-EG-Ya-eg-y][0-9]{2}[A-Za-z0-9-]*|[Zz][0-689][0-9][A-Za-z0-9-]*|[Zz]7[0-24-9][A-Za-z0-9-]*|[Zz]73[A-Za-z0-9-]+|[Ff][0-9]{2}[A-Za-z0-9-]+)$");
+    private static final Pattern SCHEMATRON_DIAGNOSIS_PATTERN = Pattern.compile(
+        "^([A-EG-Ya-eg-y][0-9]{2}[A-Za-z0-9-]*|[Zz][0-689][0-9][A-Za-z0-9-]*|[Zz]7[0-24-9][A-Za-z0-9-]*|[Zz]73[A-Za-z0-9-]+|[Ff][0-9]{2}[A-Za-z0-9-]+)$");
     // CHECKSTYLE:ON LineLength
 
     private static final String COMMA = ",";
@@ -97,9 +98,9 @@ public class DiagnosServiceImpl implements DiagnosService {
     @PostConstruct
     public void initDiagnosRepository() {
         this.icd10seDiagnosRepo = createDiagnosRepo(icd10seCodeFilesStr, Diagnoskodverk.ICD_10_SE.getCodeSystemName(),
-                StandardCharsets.UTF_8);
+            StandardCharsets.UTF_8);
         this.ksh97pDiagnosRepo = createDiagnosRepo(ksh97pCodeFilesStr, Diagnoskodverk.KSH_97_P.getCodeSystemName(),
-                StandardCharsets.ISO_8859_1);
+            StandardCharsets.ISO_8859_1);
     }
 
     private DiagnosRepository createDiagnosRepo(String codeFilesStr, String repoName, Charset fileEncoding) {

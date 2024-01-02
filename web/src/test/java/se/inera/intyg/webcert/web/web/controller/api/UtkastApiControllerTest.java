@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -339,9 +339,12 @@ public class UtkastApiControllerTest {
 
         //Then
         assertEquals(3, queryIntygResponse.getResults().size());
-        assertEquals(utkast3.getPatientPersonnummer().getPersonnummer(), queryIntygResponse.getResults().get(0).getPatientId().getPersonnummer());
-        assertEquals(utkast2.getPatientPersonnummer().getPersonnummer(), queryIntygResponse.getResults().get(1).getPatientId().getPersonnummer());
-        assertEquals(utkast1.getPatientPersonnummer().getPersonnummer(), queryIntygResponse.getResults().get(2).getPatientId().getPersonnummer());
+        assertEquals(utkast3.getPatientPersonnummer().getPersonnummer(),
+            queryIntygResponse.getResults().get(0).getPatientId().getPersonnummer());
+        assertEquals(utkast2.getPatientPersonnummer().getPersonnummer(),
+            queryIntygResponse.getResults().get(1).getPatientId().getPersonnummer());
+        assertEquals(utkast1.getPatientPersonnummer().getPersonnummer(),
+            queryIntygResponse.getResults().get(2).getPatientId().getPersonnummer());
     }
 
     @Test

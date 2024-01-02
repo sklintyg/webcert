@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -49,9 +49,9 @@ public class ListConfigController {
 
     @Autowired
     public ListConfigController(ListDraftsConfigFacadeServiceImpl draftListConfigFacadeService,
-                                ListSignedCertificatesConfigFacadeServiceImpl listSignedCertificatesConfigFacadeService,
-                                ListPreviousCertificatesConfigFacadeServiceImpl listPreviousCertificatesConfigFacadeService,
-                                ListQuestionsConfigFacadeServiceImpl listQuestionsConfigFacadeService) {
+        ListSignedCertificatesConfigFacadeServiceImpl listSignedCertificatesConfigFacadeService,
+        ListPreviousCertificatesConfigFacadeServiceImpl listPreviousCertificatesConfigFacadeService,
+        ListQuestionsConfigFacadeServiceImpl listQuestionsConfigFacadeService) {
         this.draftListConfigFacadeService = draftListConfigFacadeService;
         this.listSignedCertificatesConfigFacadeService = listSignedCertificatesConfigFacadeService;
         this.listPreviousCertificatesConfigFacadeService = listPreviousCertificatesConfigFacadeService;

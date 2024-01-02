@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -65,17 +65,18 @@ class GetStaffInfoFacadeServiceImplTest {
     @BeforeEach
     public void setup() {
         doReturn(user)
-                .when(webCertUserService)
-                .getUser();
+            .when(webCertUserService)
+            .getUser();
     }
 
     @Nested
     class IsLoggedInUserDoctor {
+
         @Test
         public void shouldReturnTrueIfUserIsDoctor() {
             doReturn(true)
-                    .when(user)
-                    .isLakare();
+                .when(user)
+                .isLakare();
 
             final var result = getStaffInfoFacadeService.isLoggedInUserDoctor();
 
@@ -85,8 +86,8 @@ class GetStaffInfoFacadeServiceImplTest {
         @Test
         public void shouldReturnTrueIfUserIsPrivateDoctor() {
             doReturn(true)
-                    .when(user)
-                    .isPrivatLakare();
+                .when(user)
+                .isPrivatLakare();
 
             final var result = getStaffInfoFacadeService.isLoggedInUserDoctor();
 
@@ -103,11 +104,12 @@ class GetStaffInfoFacadeServiceImplTest {
 
     @Nested
     class GetLoggedInStaffHsaId {
+
         @Test
         public void shouldReturnHsaIdOfLoggedInStaff() {
             doReturn("HSA_ID")
-                    .when(user)
-                    .getHsaId();
+                .when(user)
+                .getHsaId();
 
             final var result = getStaffInfoFacadeService.getLoggedInStaffHsaId();
 
@@ -117,19 +119,20 @@ class GetStaffInfoFacadeServiceImplTest {
 
     @Nested
     class GetStaffListInfo {
+
         @BeforeEach
         public void setup() {
             doReturn("UNIT_ID")
-                    .when(unit)
-                    .getId();
+                .when(unit)
+                .getId();
 
             doReturn(unit)
-                    .when(user)
-                    .getValdVardenhet();
+                .when(user)
+                .getValdVardenhet();
 
             doReturn("HSA_ID")
-                    .when(user)
-                    .getHsaId();
+                .when(user)
+                .getHsaId();
         }
 
         @Test
@@ -157,8 +160,8 @@ class GetStaffInfoFacadeServiceImplTest {
         public void shouldNotAddUserToListIfItExistsAndIsDoctorOrDentist() {
             doReturn(true).when(user).isLakare();
             doReturn(List.of(new Lakare("HSA_ID", "NAME")))
-                    .when(utkastService)
-                    .getLakareWithDraftsByEnhet(any());
+                .when(utkastService)
+                .getLakareWithDraftsByEnhet(any());
 
             final var result = getStaffInfoFacadeService.get();
 
@@ -168,8 +171,8 @@ class GetStaffInfoFacadeServiceImplTest {
         @Test
         public void shouldConvertLakareHsaId() {
             doReturn(List.of(new Lakare("HSA_ID", "NAME")))
-                    .when(utkastService)
-                    .getLakareWithDraftsByEnhet(any());
+                .when(utkastService)
+                .getLakareWithDraftsByEnhet(any());
 
             final var result = getStaffInfoFacadeService.get();
 
@@ -179,8 +182,8 @@ class GetStaffInfoFacadeServiceImplTest {
         @Test
         public void shouldConvertLakareName() {
             doReturn(List.of(new Lakare("HSA_ID", "NAME")))
-                    .when(utkastService)
-                    .getLakareWithDraftsByEnhet(any());
+                .when(utkastService)
+                .getLakareWithDraftsByEnhet(any());
 
             final var result = getStaffInfoFacadeService.get();
 
@@ -190,6 +193,7 @@ class GetStaffInfoFacadeServiceImplTest {
 
     @Nested
     class TestGetStaffInfoForQuestions {
+
         private final String UNIT_ID = "UNIT_ID";
         private final String LOGGED_IN_STAFF_ID = "HSA_ID";
         private final String STAFF_ID = "STAFF_ID";
@@ -198,15 +202,15 @@ class GetStaffInfoFacadeServiceImplTest {
         @BeforeEach
         void beforeEach() {
             doReturn(LOGGED_IN_STAFF_ID)
-                    .when(user)
-                    .getHsaId();
+                .when(user)
+                .getHsaId();
         }
 
         void setup(String id, String name) {
             final var list = List.of(new Lakare(id, name));
             doReturn(new ArrayList<>(list))
-                    .when(arendeService)
-                    .listSignedByForUnits(any());
+                .when(arendeService)
+                .listSignedByForUnits(any());
         }
 
         @Test

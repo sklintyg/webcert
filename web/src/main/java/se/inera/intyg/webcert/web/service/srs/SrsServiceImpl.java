@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -81,11 +81,11 @@ public class SrsServiceImpl implements SrsService {
     //CHECKSTYLE:OFF ParameterNumber
     @Override
     public SrsResponse getSrs(WebCertUser user, String certificateId, String personalIdentificationNumber, String diagnosisCode,
-                              boolean performRiskPrediction, boolean addMeasures, boolean addStatistics,
-                              List<SrsQuestionResponse> answers, Integer daysIntoSickLeave) throws InvalidPersonNummerException {
+        boolean performRiskPrediction, boolean addMeasures, boolean addStatistics,
+        List<SrsQuestionResponse> answers, Integer daysIntoSickLeave) throws InvalidPersonNummerException {
         LOG.debug("getSrs(user: [not logged], certificateId: {}, personalIdentificationNumber: [not logged], diagnosisCode: {},"
-                        + "performRiskPrediction: {}, addMeasures: {}, addStatistics: {}, answers: [not logged], daysIntoSickLeave: {})",
-                certificateId, diagnosisCode, performRiskPrediction, addMeasures, addStatistics, daysIntoSickLeave);
+                + "performRiskPrediction: {}, addMeasures: {}, addStatistics: {}, answers: [not logged], daysIntoSickLeave: {})",
+            certificateId, diagnosisCode, performRiskPrediction, addMeasures, addStatistics, daysIntoSickLeave);
 
         if (user == null) {
             throw new IllegalArgumentException("Missing user object");
@@ -141,7 +141,7 @@ public class SrsServiceImpl implements SrsService {
 
     @Override
     public ResultCodeEnum setConsent(String personalIdentificationNumber, String careUnitHsaId, boolean consent)
-            throws InvalidPersonNummerException {
+        throws InvalidPersonNummerException {
         LOG.debug("setConsent(personalIdentityNumber: [not logged], careUnitHsaId: {}, consent: {})", careUnitHsaId, consent);
         Personnummer p = createPnr(personalIdentificationNumber);
         return srsInfraService.setConsent(careUnitHsaId, p, consent);
@@ -149,14 +149,14 @@ public class SrsServiceImpl implements SrsService {
 
     @Override
     public ResultCodeEnum setOwnOpinion(String personalIdentificationNumber, String careGiverHsaId, String careUnitHsaId,
-                                        String certificateId, String diagnosisCode, String opinion) {
+        String certificateId, String diagnosisCode, String opinion) {
         LOG.debug("setOwnOpinion(personalIdentityNumber: [not logged], careGiverHsaId: {}, careUnitHsaId: {}, "
-                + "certificateId: {}, diagnosisCode: {})", careGiverHsaId, careUnitHsaId, certificateId, diagnosisCode);
+            + "certificateId: {}, diagnosisCode: {})", careGiverHsaId, careUnitHsaId, certificateId, diagnosisCode);
         if (!EnumUtils.isValidEnum(EgenBedomningRiskType.class, opinion)) {
             throw new IllegalArgumentException("Incorrect value for own opinion: " + opinion);
         }
         ResultCodeEnum result = srsInfraService.setOwnOpinion(careGiverHsaId, careUnitHsaId, certificateId, diagnosisCode,
-                        EgenBedomningRiskType.fromValue(opinion));
+            EgenBedomningRiskType.fromValue(opinion));
         if (result != ResultCodeEnum.ERROR) {
             // send PDL log event
             logService.logSetOwnOpinion(personalIdentificationNumber, certificateId);
@@ -180,6 +180,7 @@ public class SrsServiceImpl implements SrsService {
 
     /**
      * Uses IntygModuleFacade for LISJP/FK7804 to decode the internal model of the LISJP certificate/draft.
+     *
      * @param model model of the certificate/draft
      * @return A LisjpUtlatandeV1 filled with info from the model of the certificate/draft
      * @throws ConverterException if the model is not a lisjp model
@@ -194,6 +195,7 @@ public class SrsServiceImpl implements SrsService {
 
     /**
      * Uses a LISJP/FK7804 utlatande to gather certificate information for SRS.
+     *
      * @param lisjpUtlatandeV1 a LISJP/FK7804 utlatande
      * @return An object holding certificate info to be used by SRS
      * @throws ConverterException if the utlatande is null
@@ -210,20 +212,21 @@ public class SrsServiceImpl implements SrsService {
             srsCert.setMainDiagnosisCode(lisjpUtlatandeV1.getDiagnoser().get(0).getDiagnosKod());
         }
         LOG.debug("SrsCertificate(id:{}, mainDiagCode:{}, signedDate:{})",
-                srsCert.getCertificateId(), srsCert.getMainDiagnosisCode(), srsCert.getSignedDate());
+            srsCert.getCertificateId(), srsCert.getMainDiagnosisCode(), srsCert.getSignedDate());
         return srsCert;
     }
 
     /**
      * Looks for a FRLNG relation in an utlatande.
+     *
      * @param utlatande the utlatande to look in
      * @return the parent (relation target) certificate id if found, else null
      */
     private String getExtensionCertificateIdFromUtlatande(LisjpUtlatandeV1 utlatande) {
         String parentCertificateId = null;
         if (utlatande != null && utlatande.getGrundData() != null && utlatande.getGrundData().getRelation() != null
-                && utlatande.getGrundData().getRelation().getRelationKod() == RelationKod.FRLANG
-                && StringUtils.isNotBlank(utlatande.getGrundData().getRelation().getRelationIntygsId())) {
+            && utlatande.getGrundData().getRelation().getRelationKod() == RelationKod.FRLANG
+            && StringUtils.isNotBlank(utlatande.getGrundData().getRelation().getRelationIntygsId())) {
             parentCertificateId = utlatande.getGrundData().getRelation().getRelationIntygsId();
         }
         return parentCertificateId;
@@ -232,8 +235,6 @@ public class SrsServiceImpl implements SrsService {
     /**
      * Use certificate service to look for a certificate.
      * Uses fetchIntygWithRelations that will PDL log the access to certificates in the extension chain.
-     * @param certificateId
-     * @return
      */
     private IntygContentHolder getCertificate(String certificateId) {
         return intygService.fetchIntygDataWithRelations(certificateId, LisjpEntryPoint.MODULE_ID);
@@ -242,6 +243,7 @@ public class SrsServiceImpl implements SrsService {
     /**
      * Checks first in Webcert draft repo and then in the certificate service to find.
      * the given certificate and returns the model.
+     *
      * @param certificateId the certificate to look for
      * @return the model of the draft or intyg, or null if no certificate was found
      */
@@ -257,6 +259,7 @@ public class SrsServiceImpl implements SrsService {
      * Returns a chain of a certificate and its' directly linked parent relations of type extension (FRLANG).
      * E.g. certificateId --extends--> certificateId2 --extends--> certificateId3 --extends---> nothing yields a chain of three
      * certificates.
+     *
      * @param certificateId the certificate id of the starting certificate/draft
      * @return the extension chain as described above
      */
@@ -300,17 +303,17 @@ public class SrsServiceImpl implements SrsService {
         });
         if (!Strings.isNullOrEmpty(response.getAtgarderDiagnosisCode())) {
             DiagnosResponse diagnosResponse = diagnosService
-                    .getDiagnosisByCode(response.getAtgarderDiagnosisCode(), Diagnoskodverk.ICD_10_SE);
+                .getDiagnosisByCode(response.getAtgarderDiagnosisCode(), Diagnoskodverk.ICD_10_SE);
             if (diagnosResponse.getResultat() == DiagnosResponseType.OK && diagnosResponse.getDiagnoser() != null
-                    && !diagnosResponse.getDiagnoser().isEmpty()) {
+                && !diagnosResponse.getDiagnoser().isEmpty()) {
                 response.setAtgarderDiagnosisDescription(diagnosResponse.getDiagnoser().get(0).getBeskrivning());
             }
         }
         if (!Strings.isNullOrEmpty(response.getStatistikDiagnosisCode())) {
             DiagnosResponse diagnosResponse = diagnosService
-                    .getDiagnosisByCode(response.getStatistikDiagnosisCode(), Diagnoskodverk.ICD_10_SE);
+                .getDiagnosisByCode(response.getStatistikDiagnosisCode(), Diagnoskodverk.ICD_10_SE);
             if (diagnosResponse.getResultat() == DiagnosResponseType.OK && diagnosResponse.getDiagnoser() != null
-                    && !diagnosResponse.getDiagnoser().isEmpty()) {
+                && !diagnosResponse.getDiagnoser().isEmpty()) {
                 response.setStatistikDiagnosisDescription(diagnosResponse.getDiagnoser().get(0).getBeskrivning());
             }
         }
@@ -319,6 +322,7 @@ public class SrsServiceImpl implements SrsService {
     /**
      * Uses incoming parameters to constructs a response data filter to control which parts should be included in the response from
      * the SRS service (UtdataFilter).
+     *
      * @param addPrediction true if predictions should be added to the response from SRS
      * @param addMeasures true if measures should be added to the response from SRS
      * @param addStatistics true if statistics should be added to the response from SRS
@@ -334,13 +338,14 @@ public class SrsServiceImpl implements SrsService {
 
     /**
      * Creates a Personnummer object suitable for communicating with SRS.
+     *
      * @param personId A personal identification number as a string on form YYYYMMDDNNNN
      * @return The personal identification number wrapped in a Personnummer object
      * @throws InvalidPersonNummerException If the format is incorrect
      */
     private Personnummer createPnr(String personId) throws InvalidPersonNummerException {
         return Personnummer.createPersonnummer(personId)
-                .orElseThrow(() -> new InvalidPersonNummerException("Could not parse personnummer: " + personId));
+            .orElseThrow(() -> new InvalidPersonNummerException("Could not parse personnummer: " + personId));
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -17,7 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package se.inera.intyg.webcert.notification_sender.notifications.monitoring;
-
 
 
 import static org.junit.Assert.assertEquals;
@@ -59,7 +58,7 @@ public class MonitoringLogServiceImplTest {
     private final static String ERROR_MESSAGE = "ERROR_MESSAGE";
     private final static int DELIVERY_ATTEMPT = 14;
     private final static LocalDateTime NEXT_REDELIEVERY_TIME = LocalDateTime.of(
-        2021, 2, 21, 16, 1, 23,123456789
+        2021, 2, 21, 16, 1, 23, 123456789
     );
 
     @Before
@@ -101,7 +100,7 @@ public class MonitoringLogServiceImplTest {
             + "eventType: '" + EVENT_TYPE + "', "
             + "errorCode: '" + ERROR_CODE + "', "
             + "errorMessage: '" + ERROR_MESSAGE + "']. "
-            + "Redelivery has been scheduled for '"+ NEXT_REDELIEVERY_TIME + "'."
+            + "Redelivery has been scheduled for '" + NEXT_REDELIEVERY_TIME + "'."
         );
     }
 
@@ -113,7 +112,7 @@ public class MonitoringLogServiceImplTest {
             + "delivery attempt '" + DELIVERY_ATTEMPT + "' for event ["
             + "certificateId: '" + CERTIFICATE_ID + "', "
             + "correlationId: '" + CORRELATION_ID + "', "
-            + "logicalAddress: '"+ LOGICAL_ADDRESS + "', "
+            + "logicalAddress: '" + LOGICAL_ADDRESS + "', "
             + "eventId: '" + EVENT_ID + "', "
             + "eventType: '" + EVENT_TYPE + "', "
             + "errorCode: '" + ERROR_CODE + "', "

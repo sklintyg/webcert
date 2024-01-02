@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class CertificateListItem {
+
     private final Map<String, Object> values;
 
     public CertificateListItem() {

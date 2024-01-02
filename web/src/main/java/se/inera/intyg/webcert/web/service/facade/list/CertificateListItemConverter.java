@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -25,6 +25,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 
 public interface CertificateListItemConverter {
+
     CertificateListItem convert(ListIntygEntry listIntygEntry, ListType listType);
 
     CertificateListItem convert(CertificateListEntry entry);

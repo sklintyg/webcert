@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -142,7 +142,7 @@ public class NotificationResultSuccessServiceTest {
         notificationResultSuccessService.process(notificationResultMessage);
 
         verify(monitoringLogService).logStatusUpdateForCareStatusSuccess(any(Long.class), any(String.class), any(String.class),
-            any(String.class),any(String.class), captureAttemptedDeliveries.capture());
+            any(String.class), any(String.class), captureAttemptedDeliveries.capture());
 
         assertEquals(1, captureAttemptedDeliveries.getValue().intValue());
     }

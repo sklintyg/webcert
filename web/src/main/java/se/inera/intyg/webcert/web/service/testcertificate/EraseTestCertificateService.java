@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -39,9 +39,9 @@ public class EraseTestCertificateService {
     @Autowired
     private HandelseRepository handelseRepository;
 
-    @Transactional (propagation = Propagation.REQUIRES_NEW)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void eraseTestCertificates(List<String> testCertificateIds) {
-        for (var testCertificateId: testCertificateIds) {
+        for (var testCertificateId : testCertificateIds) {
             utkastRepository.deleteById(testCertificateId);
 
             final var reference = referensRepository.findByIntygId(testCertificateId);

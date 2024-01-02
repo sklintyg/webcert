@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -72,7 +72,7 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 public class DssSignatureServiceTest {
 
     public static final String IDP_URL = "https://idpurl.se/samlv2/idp/metadata";
-    
+
     @Mock
     DssMetadataService dssMetadataService;
 

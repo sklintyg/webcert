@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -44,13 +44,14 @@ public class ListConfigControllerTest {
 
     @Nested
     class ListDraftsConfig {
+
         final ListConfig config = new ListConfig();
 
         @BeforeEach
         void setup() {
             doReturn(config)
-                    .when(listDraftsConfigFacadeService)
-                    .get();
+                .when(listDraftsConfigFacadeService)
+                .get();
         }
 
         @Test
@@ -62,13 +63,14 @@ public class ListConfigControllerTest {
 
     @Nested
     class ListSignedCertificatesConfig {
+
         final ListConfig config = new ListConfig();
 
         @BeforeEach
         void setup() {
             doReturn(config)
-                    .when(listSignedCertificatesConfigFacadeService)
-                    .get();
+                .when(listSignedCertificatesConfigFacadeService)
+                .get();
         }
 
         @Test

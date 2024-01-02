@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -266,8 +266,8 @@ abstract public class LockedDraftAccessTest extends AccessTest {
 
         assertAllowToCopyOnSameCareProviderWhenUtkastSameVGExists(
             accessService.allowToCopy(
-            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
-        ));
+                AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+            ));
     }
 
     abstract protected void assertAllowToCopyOnSameCareProviderWhenUtkastSameVGExists(AccessResult actualValue);
@@ -296,8 +296,8 @@ abstract public class LockedDraftAccessTest extends AccessTest {
 
         assertAllowToCopyOnDifferentCareProviderWhenIntygSameVGExists(
             accessService.allowToCopy(
-            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
-        ));
+                AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+            ));
     }
 
     abstract protected void assertAllowToCopyOnDifferentCareProviderWhenIntygSameVGExists(AccessResult actualValue);
@@ -326,8 +326,8 @@ abstract public class LockedDraftAccessTest extends AccessTest {
 
         assertAllowToCopyOnSameCareProviderWhenIntygExists(
             accessService.allowToCopy(
-            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
-        ));
+                AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+            ));
     }
 
     abstract protected void assertAllowToCopyOnSameCareProviderWhenIntygExists(AccessResult actualValue);
@@ -481,8 +481,8 @@ abstract public class LockedDraftAccessTest extends AccessTest {
 
         assertAllowToDeleteUtkastOnSekretessPatientOnSameUnit(
             accessService.allowToInvalidate(
-            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
-        ));
+                AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+            ));
     }
 
     abstract protected void assertAllowToDeleteUtkastOnSekretessPatientOnSameUnit(AccessResult actualValue);
@@ -493,8 +493,8 @@ abstract public class LockedDraftAccessTest extends AccessTest {
 
         assertAllowToDeleteUtkastOnSekretessPatientOnDifferentUnit(
             accessService.allowToInvalidate(
-            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
-        ));
+                AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+            ));
     }
 
     abstract protected void assertAllowToDeleteUtkastOnSekretessPatientOnDifferentUnit(AccessResult actualValue);
@@ -505,8 +505,8 @@ abstract public class LockedDraftAccessTest extends AccessTest {
 
         assertAllowToDeleteUtkastOnDeceasedPatientOnDifferentUnit(
             accessService.allowToInvalidate(
-            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
-        ));
+                AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+            ));
     }
 
     abstract protected void assertAllowToDeleteUtkastOnDeceasedPatientOnDifferentUnit(AccessResult actualValue);
@@ -517,8 +517,8 @@ abstract public class LockedDraftAccessTest extends AccessTest {
 
         assertAllowToDeleteUtkastOnInactiveUnitOnDifferentUnit(
             accessService.allowToInvalidate(
-            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
-        ));
+                AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+            ));
     }
 
     abstract protected void assertAllowToDeleteUtkastOnInactiveUnitOnDifferentUnit(AccessResult actualValue);
@@ -529,8 +529,8 @@ abstract public class LockedDraftAccessTest extends AccessTest {
 
         assertAllowToDeleteUtkastOnRenewFalseOnDifferentUnit(
             accessService.allowToInvalidate(
-            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
-        ));
+                AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+            ));
     }
 
     abstract protected void assertAllowToDeleteUtkastOnRenewFalseOnDifferentUnit(AccessResult actualValue);
@@ -541,8 +541,8 @@ abstract public class LockedDraftAccessTest extends AccessTest {
 
         assertAllowToDeleteUtkastNoConditionsDifferentUnit(
             accessService.allowToInvalidate(
-            AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
-        ));
+                AccessEvaluationParameters.create(intygsTyp, intygsTypVersion, vardenhet, PERSONNUMMER, false)
+            ));
     }
 
     abstract protected void assertAllowToDeleteUtkastNoConditionsDifferentUnit(AccessResult actualValue);

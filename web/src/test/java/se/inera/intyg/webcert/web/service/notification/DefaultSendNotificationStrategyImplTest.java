@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -39,6 +39,7 @@ import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistr
 
 @RunWith(MockitoJUnitRunner.class)
 public class DefaultSendNotificationStrategyImplTest {
+
     @Mock
     private IntegreradeEnheterRegistry integreradeEnheterRegistry;
 

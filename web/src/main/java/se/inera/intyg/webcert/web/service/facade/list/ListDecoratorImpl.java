@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -47,6 +47,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class ListDecoratorImpl implements ListDecorator {
+
     private final IntygDraftDecorator intygDraftDecorator;
     private final HsatkEmployeeService hsaEmployeeService;
     private final PatientDetailsResolver patientDetailsResolver;
@@ -57,8 +58,8 @@ public class ListDecoratorImpl implements ListDecorator {
 
 
     public ListDecoratorImpl(IntygDraftDecorator intygDraftDecorator, HsatkEmployeeService hsaEmployeeService,
-                             PatientDetailsResolver patientDetailsResolver, WebCertUserService webCertUserService,
-                             ResourceLinkHelper resourceLinkHelper, DraftAccessServiceHelper draftAccessServiceHelper) {
+        PatientDetailsResolver patientDetailsResolver, WebCertUserService webCertUserService,
+        ResourceLinkHelper resourceLinkHelper, DraftAccessServiceHelper draftAccessServiceHelper) {
         this.intygDraftDecorator = intygDraftDecorator;
         this.hsaEmployeeService = hsaEmployeeService;
         this.patientDetailsResolver = patientDetailsResolver;
@@ -94,13 +95,13 @@ public class ListDecoratorImpl implements ListDecorator {
 
     private void decorateWithForwardLink(ListIntygEntry entry) {
         final var isForwardingAllowed = draftAccessServiceHelper.isAllowedToForwardUtkast(
-                AccessEvaluationParameters.create(
-                        entry.getIntygType(),
-                        entry.getIntygTypeVersion(),
-                        UtkastUtil.getCareUnit(entry.getVardgivarId(), entry.getVardenhetId()),
-                        entry.getPatientId(),
-                        entry.isTestIntyg()
-                )
+            AccessEvaluationParameters.create(
+                entry.getIntygType(),
+                entry.getIntygTypeVersion(),
+                UtkastUtil.getCareUnit(entry.getVardgivarId(), entry.getVardenhetId()),
+                entry.getPatientId(),
+                entry.isTestIntyg()
+            )
         );
 
         if (isForwardingAllowed) {
@@ -130,17 +131,17 @@ public class ListDecoratorImpl implements ListDecorator {
     private String getNameByHsaId(String hsaId) {
         try {
             return hsaEmployeeService.getEmployee(null, hsaId)
-                    .stream()
-                    .filter(this::isMiddleAndLastNameDefined)
-                    .map(this::getName)
-                    .findFirst()
-                    .orElseThrow(
-                            () -> new WebCertServiceException(
-                                    WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "No name was found in HSA")
-                    );
+                .stream()
+                .filter(this::isMiddleAndLastNameDefined)
+                .map(this::getName)
+                .findFirst()
+                .orElseThrow(
+                    () -> new WebCertServiceException(
+                        WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "No name was found in HSA")
+                );
         } catch (WebServiceException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM,
-                    "Could not communicate with HSA. Cause: " + e.getMessage());
+                "Could not communicate with HSA. Cause: " + e.getMessage());
         }
     }
 
@@ -154,7 +155,7 @@ public class ListDecoratorImpl implements ListDecorator {
 
     private String getName(PersonInformation personInformation) {
         return !isFirstNameDefined(personInformation) ? personInformation.getMiddleAndSurName()
-                : personInformation.getGivenName() + " " + personInformation.getMiddleAndSurName();
+            : personInformation.getGivenName() + " " + personInformation.getMiddleAndSurName();
 
     }
 
@@ -171,22 +172,22 @@ public class ListDecoratorImpl implements ListDecorator {
 
     private Map<Personnummer, PatientDetailsResolverResponse> getPatientStatusMap(List<ListIntygEntry> listIntygEntries) {
         return patientDetailsResolver.getPersonStatusesForList(
-                listIntygEntries.stream()
-                        .map(ListIntygEntry::getPatientId)
-                        .collect(Collectors.toList())
+            listIntygEntries.stream()
+                .map(ListIntygEntry::getPatientId)
+                .collect(Collectors.toList())
         );
     }
 
     private List<ListIntygEntry> filterEntriesForProtectedPatients(
-            WebCertUser user, List<ListIntygEntry> listIntygEntries, Map<Personnummer,
-            PatientDetailsResolverResponse> patientStatusMap) {
+        WebCertUser user, List<ListIntygEntry> listIntygEntries, Map<Personnummer,
+        PatientDetailsResolverResponse> patientStatusMap) {
         listIntygEntries = listIntygEntries.stream()
-                .filter(
-                        entry -> this.isStaffAllowedToViewProtectedPatients(
-                                entry.getPatientId(), entry.getIntygType(), user, patientStatusMap
-                        )
+            .filter(
+                entry -> this.isStaffAllowedToViewProtectedPatients(
+                    entry.getPatientId(), entry.getIntygType(), user, patientStatusMap
                 )
-                .collect(Collectors.toList());
+            )
+            .collect(Collectors.toList());
         return listIntygEntries;
     }
 
@@ -197,14 +198,14 @@ public class ListDecoratorImpl implements ListDecorator {
     }
 
     private boolean isStaffAllowedToViewProtectedPatients(Personnummer patientId, String intygsTyp, WebCertUser user,
-                                                          Map<Personnummer, PatientDetailsResolverResponse> sekretessStatusMap) {
+        Map<Personnummer, PatientDetailsResolverResponse> sekretessStatusMap) {
         final var status = sekretessStatusMap.get(patientId).isProtectedPerson();
         if (status == SekretessStatus.UNDEFINED) {
             return false;
         } else {
             return status == SekretessStatus.FALSE || authoritiesValidator.given(user, intygsTyp)
-                    .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
-                    .isVerified();
+                .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
+                .isVerified();
         }
     }
 }

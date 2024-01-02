@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.service.facade.impl;
 
 public class ChangeUnitException extends Exception {
+
     ChangeUnitException(String message) {
         super(message);
     }

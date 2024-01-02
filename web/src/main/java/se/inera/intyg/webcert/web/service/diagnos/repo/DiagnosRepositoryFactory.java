@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -82,7 +82,7 @@ public class DiagnosRepositoryFactory {
     }
 
     public void populateRepoFromDiagnosisCodeFile(String fileUrl, DiagnosRepositoryImpl diagnosRepository,
-                                                  Charset fileEncoding) {
+        Charset fileEncoding) {
 
         if (Strings.nullToEmpty(fileUrl).trim().isEmpty()) {
             return;
@@ -105,7 +105,7 @@ public class DiagnosRepositoryFactory {
             IndexWriterConfig idxWriterConfig = new IndexWriterConfig(new StandardAnalyzer());
             try (IndexWriter idxWriter = new IndexWriter(diagnosRepository.getLuceneIndex(), idxWriterConfig);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream(),
-                        fileEncoding))) {
+                    fileEncoding))) {
                 while (reader.ready()) {
                     String line = reader.readLine();
                     if (line != null) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -42,7 +42,7 @@ public interface ITIntegrationService {
      * Get information about a certificate from intygstjänsten.
      *
      * @param certificateId Id of certificate
-     * @return  Info about the certificate. If the certificate doesn't exist the ItIntygInfo is empty.
+     * @return Info about the certificate. If the certificate doesn't exist the ItIntygInfo is empty.
      */
     ItIntygInfo getCertificateInfo(String certificateId);
 

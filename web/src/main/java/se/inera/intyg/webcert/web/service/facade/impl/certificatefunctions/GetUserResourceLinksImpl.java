@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -145,14 +145,14 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
 
         if (hasNormalOriginWarning(user)) {
             resourceLinks.add(
-                    ResourceLinkDTO.create(
-                            ResourceLinkTypeDTO.WARNING_NORMAL_ORIGIN,
-                            "Felaktig inloggningsmetod",
-                            "",
-                            "",
-                            true
-                    )
-             );
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.WARNING_NORMAL_ORIGIN,
+                    "Felaktig inloggningsmetod",
+                    "",
+                    "",
+                    true
+                )
+            );
         }
 
         if (shouldWarnForMissingSubscription(user)) {

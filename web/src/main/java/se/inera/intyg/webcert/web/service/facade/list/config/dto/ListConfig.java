@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -39,8 +39,8 @@ public class ListConfig {
     }
 
     public ListConfig(List<ListFilterConfig> filters, String title, String description, String emptyListText,
-                      String secondaryTitle, List<Integer> pageSizes, TableHeading[] tableHeadings,
-                      boolean shouldUpdateConfigAfterListSearch) {
+        String secondaryTitle, List<Integer> pageSizes, TableHeading[] tableHeadings,
+        boolean shouldUpdateConfigAfterListSearch) {
         this.filters = filters;
         this.title = title;
         this.description = description;

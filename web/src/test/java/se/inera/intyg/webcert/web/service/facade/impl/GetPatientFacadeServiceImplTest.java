@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -32,6 +32,7 @@ import se.inera.intyg.webcert.web.service.facade.patient.InvalidPatientIdExcepti
 import se.inera.intyg.webcert.web.service.facade.patient.PatientNoNameException;
 import se.inera.intyg.webcert.web.service.facade.patient.PatientSearchErrorException;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -116,7 +117,8 @@ public class GetPatientFacadeServiceImplTest {
     }
 
     @Test
-    void shallSetFullNameForPatientWithoutMiddleName() throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
+    void shallSetFullNameForPatientWithoutMiddleName()
+        throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
         setupPatientWithoutMiddleName();
 
         final var patient = getPatientFacadeService.getPatient(PATIENT_ID);
@@ -213,7 +215,8 @@ public class GetPatientFacadeServiceImplTest {
 
     @Test
     void shallThrowExceptionIfPatientHasNoFirstName() {
-        final var patient = new Person(Personnummer.createPersonnummer("191212121212").get(), false, false, null, "name", "name", "", "", "");
+        final var patient = new Person(Personnummer.createPersonnummer("191212121212").get(), false, false, null, "name", "name", "", "",
+            "");
         doReturn(PersonSvar.found(patient)).when(puService).getPerson(any());
         assertThrows(PatientNoNameException.class, () -> getPatientFacadeService.getPatient(PATIENT_ID));
     }
@@ -231,7 +234,8 @@ public class GetPatientFacadeServiceImplTest {
     }
 
     private PersonSvar createPersonSvar(boolean protectedPerson, boolean testIndicated, boolean deceased, boolean includeMiddleName) {
-        Person person = new Person(Personnummer.createPersonnummer(PATIENT_ID).get(), protectedPerson, deceased, FIRSTNAME, includeMiddleName ? MIDDLENAME : null, LASTNAME, "", "", "", testIndicated);
+        Person person = new Person(Personnummer.createPersonnummer(PATIENT_ID).get(), protectedPerson, deceased, FIRSTNAME,
+            includeMiddleName ? MIDDLENAME : null, LASTNAME, "", "", "", testIndicated);
         return PersonSvar.found(person);
     }
 

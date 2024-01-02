@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -150,7 +150,7 @@ public class UtkastBootstrapBean {
         final var signDate = utlatande.getGrundData().getSigneringsdatum();
         final var createdBy = utlatande.getGrundData().getSkapadAv().getPersonId();
         final var sentDate = utlatande.getGrundData().getSigneringsdatum().plusMinutes(2);
-        final var signature = new Signatur(signDate, createdBy, certificateId,"intygData","intygHash", "signatur", SignaturTyp.LEGACY);
+        final var signature = new Signatur(signDate, createdBy, certificateId, "intygData", "intygHash", "signatur", SignaturTyp.LEGACY);
         draft.setSignatur(signature);
         draft.setSkickadTillMottagare("FKASSA");
         draft.setSkickadTillMottagareDatum(sentDate);

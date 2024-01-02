@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -50,7 +50,8 @@ class ListSignedCertificatesConfigFacadeServiceImplTest {
     @BeforeEach
     public void setup() {
         ListTestHelper.setupUser(webCertUserService, AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
-                LuseEntryPoint.MODULE_ID, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);    }
+            LuseEntryPoint.MODULE_ID, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+    }
 
     @Test
     public void shouldSetSecondaryTitle() {
@@ -90,6 +91,7 @@ class ListSignedCertificatesConfigFacadeServiceImplTest {
 
     @Nested
     public class Signed {
+
         ListFilterDateRangeConfig filter;
         ListConfig config;
 
@@ -127,6 +129,7 @@ class ListSignedCertificatesConfigFacadeServiceImplTest {
 
     @Nested
     public class PatientId {
+
         ListFilterPersonIdConfig filter;
         ListConfig config;
 
@@ -153,12 +156,13 @@ class ListSignedCertificatesConfigFacadeServiceImplTest {
 
         @Test
         public void shouldSetPlaceholder() {
-            assertTrue( filter.getPlaceholder().length() > 0);
+            assertTrue(filter.getPlaceholder().length() > 0);
         }
     }
 
     @Nested
     public class OrderBy {
+
         ListFilterOrderConfig filter;
         ListConfig config;
 
@@ -191,6 +195,7 @@ class ListSignedCertificatesConfigFacadeServiceImplTest {
 
     @Nested
     public class PageSize {
+
         ListFilterPageSizeConfig filter;
         ListConfig config;
 
@@ -223,6 +228,7 @@ class ListSignedCertificatesConfigFacadeServiceImplTest {
 
     @Nested
     public class Ascending {
+
         ListFilterBooleanConfig filter;
         ListConfig config;
 

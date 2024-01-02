@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -66,6 +66,7 @@ class CertificateListItemConverterImplTest {
 
     @Nested
     class ListDrafts {
+
         @BeforeEach
         public void setup() {
             when(resourceLinkListHelper.get(any(ListIntygEntry.class), any(CertificateListItemStatus.class))).thenReturn(LINKS);
@@ -215,8 +216,10 @@ class CertificateListItemConverterImplTest {
 
     @Nested
     class Forwarded {
+
         private final ListType LIST_TYPE = ListType.DRAFTS;
-        final List<ResourceLinkDTO> LINKS_WITH_FORWARDED = List.of(ResourceLinkFactory.read(), CertificateForwardFunction.createResourceLink());
+        final List<ResourceLinkDTO> LINKS_WITH_FORWARDED = List.of(ResourceLinkFactory.read(),
+            CertificateForwardFunction.createResourceLink());
 
         @BeforeEach
         public void setup() {
@@ -226,7 +229,8 @@ class CertificateListItemConverterImplTest {
             unit.setNamn(UNIT_NAME);
             careProvider.setNamn(CARE_PROVIDER_NAME);
 
-            when(resourceLinkListHelper.get(any(ListIntygEntry.class), any(CertificateListItemStatus.class))).thenReturn(LINKS_WITH_FORWARDED);
+            when(resourceLinkListHelper.get(any(ListIntygEntry.class), any(CertificateListItemStatus.class))).thenReturn(
+                LINKS_WITH_FORWARDED);
             when(hsaOrganizationsService.getVardenhet(anyString())).thenReturn(unit);
             when(hsaOrganizationsService.getVardgivareInfo(anyString())).thenReturn(careProvider);
         }
@@ -292,8 +296,8 @@ class CertificateListItemConverterImplTest {
             certificateRelation = mock(WebcertCertificateRelation.class);
 
             doReturn(frontendRelations)
-                    .when(relations)
-                    .getLatestChildRelations();
+                .when(relations)
+                .getLatestChildRelations();
         }
 
         @Nested
@@ -304,8 +308,8 @@ class CertificateListItemConverterImplTest {
                 final var entry = ListTestHelper.createListIntygEntry("SIGNED", false, false);
                 entry.setRelations(relations);
                 doReturn(certificateRelation)
-                        .when(frontendRelations)
-                        .getComplementedByUtkast();
+                    .when(frontendRelations)
+                    .getComplementedByUtkast();
 
                 final var result = certificateListItemConverter.convert(entry, LIST_TYPE);
 
@@ -317,8 +321,8 @@ class CertificateListItemConverterImplTest {
                 final var entry = ListTestHelper.createListIntygEntry("SIGNED", false, false);
                 entry.setRelations(relations);
                 doReturn(certificateRelation)
-                        .when(frontendRelations)
-                        .getComplementedByIntyg();
+                    .when(frontendRelations)
+                    .getComplementedByIntyg();
 
                 final var result = certificateListItemConverter.convert(entry, LIST_TYPE);
 
@@ -330,12 +334,12 @@ class CertificateListItemConverterImplTest {
                 final var entry = ListTestHelper.createListIntygEntry("SIGNED", false, false);
                 entry.setRelations(relations);
                 doReturn(certificateRelation)
-                        .when(frontendRelations)
-                        .getComplementedByIntyg();
+                    .when(frontendRelations)
+                    .getComplementedByIntyg();
 
                 doReturn(true)
-                        .when(certificateRelation)
-                        .isMakulerat();
+                    .when(certificateRelation)
+                    .isMakulerat();
 
                 final var result = certificateListItemConverter.convert(entry, LIST_TYPE);
 
@@ -361,8 +365,8 @@ class CertificateListItemConverterImplTest {
                 final var entry = ListTestHelper.createListIntygEntry("SENT", false, false);
                 entry.setRelations(relations);
                 doReturn(certificateRelation)
-                        .when(frontendRelations)
-                        .getReplacedByIntyg();
+                    .when(frontendRelations)
+                    .getReplacedByIntyg();
 
                 final var result = certificateListItemConverter.convert(entry, LIST_TYPE);
 
@@ -374,12 +378,12 @@ class CertificateListItemConverterImplTest {
                 final var entry = ListTestHelper.createListIntygEntry("SENT", false, false);
                 entry.setRelations(relations);
                 doReturn(certificateRelation)
-                        .when(frontendRelations)
-                        .getComplementedByIntyg();
+                    .when(frontendRelations)
+                    .getComplementedByIntyg();
 
                 doReturn(true)
-                        .when(certificateRelation)
-                        .isMakulerat();
+                    .when(certificateRelation)
+                    .isMakulerat();
 
                 final var result = certificateListItemConverter.convert(entry, LIST_TYPE);
 
@@ -389,6 +393,7 @@ class CertificateListItemConverterImplTest {
 
         @Nested
         class Revoked {
+
             @Test
             void shouldTranslateCancelledIntoRevokedStatus() {
                 final var entry = ListTestHelper.createListIntygEntry("CANCELLED", false, false);
@@ -606,7 +611,7 @@ class CertificateListItemConverterImplTest {
 
         @Test
         public void shouldSetPatientIsNotDeceased() {
-            final var entry = ListTestHelper.createQuestionListEntry( false, PATIENT_ID);
+            final var entry = ListTestHelper.createQuestionListEntry(false, PATIENT_ID);
             final var result = certificateListItemConverter.convert(entry);
             final var patientListInfo = (PatientListInfo) result.getValue(ListColumnType.PATIENT_ID);
 

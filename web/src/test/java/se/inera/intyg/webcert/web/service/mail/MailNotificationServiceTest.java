@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -67,7 +67,7 @@ public class MailNotificationServiceTest {
     @PostConstruct
     public void setupTestlandVardgivare() throws IOException {
         CareProviderStub careProvider = new CustomObjectMapper().readValue(new ClassPathResource(
-                "MailNotificationServiceTest/landstinget-testland.json").getFile(), CareProviderStub.class);
+            "MailNotificationServiceTest/landstinget-testland.json").getFile(), CareProviderStub.class);
         hsaStub.addCareProvider(careProvider);
     }
 

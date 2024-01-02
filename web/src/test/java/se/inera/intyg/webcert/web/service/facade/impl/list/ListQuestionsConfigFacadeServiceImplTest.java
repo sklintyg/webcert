@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -115,7 +115,8 @@ class ListQuestionsConfigFacadeServiceImplTest {
 
         when(getStaffInfoFacadeService.getLoggedInStaffHsaId()).thenReturn(DEFAULT_HSA_ID);
         when(getStaffInfoFacadeService.isLoggedInUserDoctor()).thenReturn(true);
-        when(getStaffInfoFacadeService.get(any())).thenReturn(List.of(new StaffListInfo(HSA_ID, STAFF_NAME), new StaffListInfo(DEFAULT_HSA_ID, DEFAULT_HSA_NAME)));
+        when(getStaffInfoFacadeService.get(any())).thenReturn(
+            List.of(new StaffListInfo(HSA_ID, STAFF_NAME), new StaffListInfo(DEFAULT_HSA_ID, DEFAULT_HSA_NAME)));
     }
 
     @Nested
@@ -124,7 +125,7 @@ class ListQuestionsConfigFacadeServiceImplTest {
         @BeforeEach
         void setupUser() {
             ListTestHelper.setupUser(webCertUserService, AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
-                    LuseEntryPoint.MODULE_ID, unit, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+                LuseEntryPoint.MODULE_ID, unit, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
         }
 
         @Test
@@ -171,6 +172,7 @@ class ListQuestionsConfigFacadeServiceImplTest {
 
         @Nested
         public class TestSent {
+
             ListFilterDateRangeConfig filter;
             ListConfig config;
 
@@ -208,6 +210,7 @@ class ListQuestionsConfigFacadeServiceImplTest {
 
         @Nested
         public class TestForwarded {
+
             ListFilterSelectConfig filter;
             ListConfig config;
 
@@ -245,6 +248,7 @@ class ListQuestionsConfigFacadeServiceImplTest {
 
         @Nested
         public class TestQuestionStatus {
+
             ListFilterSelectConfig filter;
             ListConfig config;
 
@@ -282,6 +286,7 @@ class ListQuestionsConfigFacadeServiceImplTest {
 
         @Nested
         public class TestSender {
+
             ListFilterSelectConfig filter;
             ListConfig config;
 
@@ -319,6 +324,7 @@ class ListQuestionsConfigFacadeServiceImplTest {
 
         @Nested
         public class TestUnit {
+
             ListFilterSelectConfig filter;
             ListConfig config;
 
@@ -381,6 +387,7 @@ class ListQuestionsConfigFacadeServiceImplTest {
 
         @Nested
         public class TestPatientId {
+
             ListFilterPersonIdConfig filter;
             ListConfig config;
 
@@ -413,6 +420,7 @@ class ListQuestionsConfigFacadeServiceImplTest {
 
         @Nested
         public class TestOrderBy {
+
             ListFilterOrderConfig filter;
             ListConfig config;
 
@@ -445,6 +453,7 @@ class ListQuestionsConfigFacadeServiceImplTest {
 
         @Nested
         public class TestPageSize {
+
             ListFilterPageSizeConfig filter;
             ListConfig config;
 
@@ -477,6 +486,7 @@ class ListQuestionsConfigFacadeServiceImplTest {
 
         @Nested
         public class TestAscending {
+
             ListFilterBooleanConfig filter;
             ListConfig config;
 
@@ -509,6 +519,7 @@ class ListQuestionsConfigFacadeServiceImplTest {
 
         @Nested
         public class TestEmptyUnitId {
+
             @Test
             public void shouldReturnCorrectSecondaryTitle() {
                 final var config = listQuestionsConfigFacadeService.get("");
@@ -533,6 +544,7 @@ class ListQuestionsConfigFacadeServiceImplTest {
 
         @Nested
         public class TestColumnOrder {
+
             @Test
             public void shouldHaveQuestionActionInCorrectPlace() {
                 final var config = listQuestionsConfigFacadeService.get("");
@@ -585,6 +597,7 @@ class ListQuestionsConfigFacadeServiceImplTest {
 
     @Nested
     public class TestSignedBy {
+
         ListFilterSelectConfig filter;
         ListConfig config;
 
@@ -652,13 +665,14 @@ class ListQuestionsConfigFacadeServiceImplTest {
 
     @Nested
     class TestsForPrivatePractitioner {
+
         ListFilterSelectConfig filter;
         ListConfig config;
 
         @BeforeEach
         void setupUser() {
             ListTestHelper.setupUser(webCertUserService, true, AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
-                    LuseEntryPoint.MODULE_ID, unit, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+                LuseEntryPoint.MODULE_ID, unit, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
 
             config = listQuestionsConfigFacadeService.get(UNIT_ID);
             filter = (ListFilterSelectConfig) getFilterById(config, "UNIT");

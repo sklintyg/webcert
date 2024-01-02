@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -98,7 +98,7 @@ public class NotificationMessageFactoryImpl implements NotificationMessageFactor
             fragaSvar, skickadeFragor, mottagnaFragor, version, reference, amne, sistaSvarsDatum);
     }
     // CHECKSTYLE:ON ParameterNumber
-    
+
     @Override
     public NotificationMessage createNotificationMessage(Handelse event, String draftJson)
         throws ModuleNotFoundException, IOException, ModuleException {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -35,6 +35,7 @@ import java.util.List;
 public interface SrsService {
 
     //CHECKSTYLE:OFF ParameterNumber
+
     /**
      * Returns recommended measures (SW: åtgärder), sick leave statistics and calculate risk predictions based
      * on diagnosis, personal data, regional data and answers to questions.
@@ -50,10 +51,10 @@ public interface SrsService {
      * @param user The webcert user
      * @param certificateId The id of the certificate (SW: intygId) connected to the prediction
      * @param personalIdentificationNumber A Swedish personal identification number (SW: personnummer) on form YYYYMMDDNNNN identifying
-     *                                     the subject of the risk prediction
+     * the subject of the risk prediction
      * @param diagnosisCode The main diagnosis of the current certificate
      * @param performRiskPrediction true to perform a new risk prediction and add to the response, any historic predictions
-     *                              on the same person and diagnosis are always in the response.
+     * on the same person and diagnosis are always in the response.
      * @param addMeasures true to include a recommended measurements in the response
      * @param addStatistics true to include sick leave statistics in the response
      * @param answers A list of answers to questions used as input for the risk prediction
@@ -63,19 +64,20 @@ public interface SrsService {
      * @throws IllegalArgumentException If other input parameters are found to be incorrect
      */
     SrsResponse getSrs(WebCertUser user,
-                       String certificateId,
-                       String personalIdentificationNumber,
-                       String diagnosisCode,
-                       boolean performRiskPrediction,
-                       boolean addMeasures,
-                       boolean addStatistics,
-                       List<SrsQuestionResponse> answers,
-                       Integer daysIntoSickLeave)
-            throws InvalidPersonNummerException, IllegalArgumentException;
+        String certificateId,
+        String personalIdentificationNumber,
+        String diagnosisCode,
+        boolean performRiskPrediction,
+        boolean addMeasures,
+        boolean addStatistics,
+        List<SrsQuestionResponse> answers,
+        Integer daysIntoSickLeave)
+        throws InvalidPersonNummerException, IllegalArgumentException;
     //CHECKSTYLE:ON ParameterNumber
 
     /**
      * Returns questions to be used as input when performing risk predictions for a given diagnosis.
+     *
      * @param diagnosisCode A diagnosis code (ICD-10)
      * @param modelVersion Wanted prediction model version
      * @return A list of questions used for predicting the given diagnosis
@@ -89,7 +91,7 @@ public interface SrsService {
      * or NONE if the person yet haven't answered regarding consent for SRS on the given care unit
      *
      * @param personalIdentityNumber A Swedish personal identification number (SW: personnummer) of the
-     *                               consenting person on form YYYYMMDDNNNN
+     * consenting person on form YYYYMMDDNNNN
      * @param careUnitHsaId HSA-Id of the care unit
      * @return The consent status
      * @throws InvalidPersonNummerException If the personal identification number was incorrect
@@ -100,19 +102,20 @@ public interface SrsService {
      * Sets the consent status for SRS for a given person at a given care unit.
      *
      * @param personalIdentificationNumber A Swedish personal identification number (SW: personnummer) of the
-     *                                     prediction subject person on form YYYYMMDDNNNN
+     * prediction subject person on form YYYYMMDDNNNN
      * @param careUnitHsaId HSA-Id of the care unit
      * @param consent true if the person consents, false if the person actively declines the consent
      * @return Result of the update operation
      * @throws InvalidPersonNummerException If the personal identification number was incorrect
      */
     ResultCodeEnum setConsent(String personalIdentificationNumber, String careUnitHsaId, boolean consent)
-            throws InvalidPersonNummerException;
+        throws InvalidPersonNummerException;
 
     /**
      * Sets the practitioners opinion regarding a certain risk prediction.
+     *
      * @param personalIdentificationNumber A Swedish personal identification number (SW: personnummer) of the
-     *                                     prediction subject person on form YYYYMMDDNNNN
+     * prediction subject person on form YYYYMMDDNNNN
      * @param careGiverHsaId HSA-id of the care giver where the practitioner currently works, we don't store the actual practitioner
      * @param careUnitHsaId HSA-Id of the care unit where the practitioner currently works
      * @param certificateId The id of the active certificate when the opinion was given
@@ -122,10 +125,11 @@ public interface SrsService {
      * @throws IllegalArgumentException If an incorrect opinion value was given
      */
     ResultCodeEnum setOwnOpinion(String personalIdentificationNumber, String careGiverHsaId, String careUnitHsaId,
-                                 String certificateId, String diagnosisCode, String opinion) throws IllegalArgumentException;
+        String certificateId, String diagnosisCode, String opinion) throws IllegalArgumentException;
 
     /**
      * Returns a list of all the diagnoses that has SRS support.
+     *
      * @param modelVersion Prediction model version
      * @return A list of diagnosis codes
      */
@@ -133,6 +137,7 @@ public interface SrsService {
 
     /**
      * Gets non personalized SRS information for a given diagnosis code.
+     *
      * @param diagnosisCode the diagnos code (ICD-10)
      * @return SRS information for the given diagnosis
      */

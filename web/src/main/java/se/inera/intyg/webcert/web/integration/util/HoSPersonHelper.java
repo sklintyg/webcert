@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -79,14 +79,14 @@ public final class HoSPersonHelper {
     public static Vardenhet createVardenhetFromIntygUser(String enhetId, IntygUser user) {
 
         AbstractVardenhet enhet = HoSPersonHelper.findVardenhetEllerMottagning(user, enhetId)
-                .orElseThrow(() -> new IllegalStateException("User '" + user.getHsaId() + "' has no MIU for care unit '" + enhetId + "'"));
+            .orElseThrow(() -> new IllegalStateException("User '" + user.getHsaId() + "' has no MIU for care unit '" + enhetId + "'"));
 
         if (enhet instanceof se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet) {
             se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet hsaVardenhet =
-                    (se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet) enhet;
+                (se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet) enhet;
             Vardgivare hsaVardgivare = HoSPersonHelper
-                    .findVardgivare(user, hsaVardenhet.getVardgivareHsaId())
-                    .orElseThrow(() -> new IllegalStateException("Unable to find parent vårdgivare for vardenhet '" + enhetId + "'"));
+                .findVardgivare(user, hsaVardenhet.getVardgivareHsaId())
+                .orElseThrow(() -> new IllegalStateException("Unable to find parent vårdgivare for vardenhet '" + enhetId + "'"));
 
             Vardenhet vardenhet = new Vardenhet();
             vardenhet.setEnhetsnamn(hsaVardenhet.getNamn());
@@ -108,8 +108,8 @@ public final class HoSPersonHelper {
         if (enhet instanceof Mottagning) {
             Mottagning m = (Mottagning) enhet;
             Vardgivare hsaVardgivare = HoSPersonHelper
-                    .findVardgivareForMottagning(user, m.getId())
-                    .orElseThrow(() -> new IllegalStateException("Unable to find parent vårdgivare for mottagning '" + enhetId + "'"));
+                .findVardgivareForMottagning(user, m.getId())
+                .orElseThrow(() -> new IllegalStateException("Unable to find parent vårdgivare for mottagning '" + enhetId + "'"));
 
             Vardenhet vardenhet = new Vardenhet();
             vardenhet.setEnhetsnamn(m.getNamn());

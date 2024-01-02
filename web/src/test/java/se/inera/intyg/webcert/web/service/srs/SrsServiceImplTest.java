@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -95,23 +95,24 @@ public class SrsServiceImplTest {
             grundData.setRelation(parentRelation);
         }
         return LisjpUtlatandeV1.builder()
-                .setId(certificateId)
-                .setDiagnoser(Arrays.asList(se.inera.intyg.common.fkparent.model.internal.Diagnos.create(diagnosis, "TEST", "TEST", "TEST")))
-                .setGrundData(grundData)
-                .setTextVersion("1.1")
-                .build();
+            .setId(certificateId)
+            .setDiagnoser(Arrays.asList(se.inera.intyg.common.fkparent.model.internal.Diagnos.create(diagnosis, "TEST", "TEST", "TEST")))
+            .setGrundData(grundData)
+            .setTextVersion("1.1")
+            .build();
     }
 
-    private static IntygContentHolder buildIntygContentHolder(String certificateId, String diagnosisCode, String extendsCertificateId, boolean signed) {
+    private static IntygContentHolder buildIntygContentHolder(String certificateId, String diagnosisCode, String extendsCertificateId,
+        boolean signed) {
         IntygContentHolder certHolder = IntygContentHolder.builder()
-                .setContents("DUMMY-MODEL-" + certificateId)
-                .setRevoked(false)
-                .setDeceased(false)
-                .setSekretessmarkering(false)
-                .setPatientAddressChangedInPU(false)
-                .setPatientNameChangedInPU(false)
-                .setTestIntyg(false) // It's a kind of testintyg but we want to unit test as if it was a real one
-                .build();
+            .setContents("DUMMY-MODEL-" + certificateId)
+            .setRevoked(false)
+            .setDeceased(false)
+            .setSekretessmarkering(false)
+            .setPatientAddressChangedInPU(false)
+            .setPatientNameChangedInPU(false)
+            .setTestIntyg(false) // It's a kind of testintyg but we want to unit test as if it was a real one
+            .build();
         return certHolder;
     }
 
@@ -139,78 +140,78 @@ public class SrsServiceImplTest {
     @Before
     public void init() throws Exception {
         SrsResponse srsResponse = new SrsResponse(
-                asList(SrsRecommendation.create("please observe", "text")),
-                asList(SrsRecommendation.create("recommended measure", "text")),
-                asList(SrsRecommendation.create("extension measure", "text")),
-                asList(SrsRecommendation.create("rehab measure", "text")),
-                asList(new SrsPrediction("intyg-id-123", "F438", null,
-                    "OK", 1, "desc",
-                    0.68, 0.54,
-                    asList(SrsQuestionResponse.create("question1", "answer1")),
-                    "KORREKT", LocalDateTime.now(), 15, "2.2")
-                ),
-                "F438A","OK",
-                "F43","OK",
-                asList(13432, 37494, 50517, 62952, 71240)
+            asList(SrsRecommendation.create("please observe", "text")),
+            asList(SrsRecommendation.create("recommended measure", "text")),
+            asList(SrsRecommendation.create("extension measure", "text")),
+            asList(SrsRecommendation.create("rehab measure", "text")),
+            asList(new SrsPrediction("intyg-id-123", "F438", null,
+                "OK", 1, "desc",
+                0.68, 0.54,
+                asList(SrsQuestionResponse.create("question1", "answer1")),
+                "KORREKT", LocalDateTime.now(), 15, "2.2")
+            ),
+            "F438A", "OK",
+            "F43", "OK",
+            asList(13432, 37494, 50517, 62952, 71240)
         );
         // Initialize descriptions to null when returned from infra mock, they are decorated in SrsService.getSrs
         srsResponse.setStatistikDiagnosisDescription(null);
         srsResponse.setAtgarderDiagnosisDescription(null);
 
         SrsResponse srsResponseWithoutPrediction = new SrsResponse(
-                asList(SrsRecommendation.create("please observe", "text")),
-                asList(SrsRecommendation.create("recommended measure", "text")),
-                asList(SrsRecommendation.create("extension measure", "text")),
-                asList(SrsRecommendation.create("rehab measure", "text")),
-                asList(new SrsPrediction("certId", "F438", null,
-                    "OK", 1, "desc",
-                    null, 0.54, null,null,
-                    LocalDateTime.now(), null, "2.2")
-                ),
-                "F438A","OK",
-                "F43", "OK",
-                asList(13432, 37494, 50517, 62952, 71240));
+            asList(SrsRecommendation.create("please observe", "text")),
+            asList(SrsRecommendation.create("recommended measure", "text")),
+            asList(SrsRecommendation.create("extension measure", "text")),
+            asList(SrsRecommendation.create("rehab measure", "text")),
+            asList(new SrsPrediction("certId", "F438", null,
+                "OK", 1, "desc",
+                null, 0.54, null, null,
+                LocalDateTime.now(), null, "2.2")
+            ),
+            "F438A", "OK",
+            "F43", "OK",
+            asList(13432, 37494, 50517, 62952, 71240));
 
         // Initilize mock responses
         // full SRS response with prediction
         when(srsInfraService.getSrs(any(WebCertUser.class), any(Personnummer.class), anyList(),
-                refEq(buildUtdataFilter(true, true, true)), anyList(), anyInt()))
-                .thenReturn(srsResponse);
+            refEq(buildUtdataFilter(true, true, true)), anyList(), anyInt()))
+            .thenReturn(srsResponse);
         // SRS response without prediction
         when(srsInfraService.getSrs(any(WebCertUser.class), any(Personnummer.class), anyList(),
-                refEq(buildUtdataFilter(false, true, true)), anyList(), anyInt()))
-                .thenReturn(srsResponseWithoutPrediction);
+            refEq(buildUtdataFilter(false, true, true)), anyList(), anyInt()))
+            .thenReturn(srsResponseWithoutPrediction);
 
         when(diagnosService.getDiagnosisByCode(eq("F438A"), eq(Diagnoskodverk.ICD_10_SE)))
-                .thenReturn(DiagnosResponse.ok(asList(DIAGNOSIS_F438A), false));
+            .thenReturn(DiagnosResponse.ok(asList(DIAGNOSIS_F438A), false));
 
         when(diagnosService.getDiagnosisByCode(eq("F438"), eq(Diagnoskodverk.ICD_10_SE)))
-                .thenReturn(DiagnosResponse.ok(asList(DIAGNOSIS_F438), false));
+            .thenReturn(DiagnosResponse.ok(asList(DIAGNOSIS_F438), false));
 
         when(diagnosService.getDiagnosisByCode(eq("F43"), eq(Diagnoskodverk.ICD_10_SE)))
-                .thenReturn(DiagnosResponse.ok(asList(DIAGNOSIS_F43), false));
+            .thenReturn(DiagnosResponse.ok(asList(DIAGNOSIS_F43), false));
 
         when(intygService.fetchIntygDataWithRelations(eq("intyg-id-123"), eq(LisjpEntryPoint.MODULE_ID)))
-                .thenReturn(buildIntygContentHolder("intyg-id-123", "F438A", "parent-intyg-id-1", false));
+            .thenReturn(buildIntygContentHolder("intyg-id-123", "F438A", "parent-intyg-id-1", false));
 
         when(intygService.fetchIntygDataWithRelations(eq("parent-intyg-id-1"), eq(LisjpEntryPoint.MODULE_ID)))
-                .thenReturn(buildIntygContentHolder("parent-intyg-id-1", "F438A", "parent-intyg-id2", true));
+            .thenReturn(buildIntygContentHolder("parent-intyg-id-1", "F438A", "parent-intyg-id2", true));
 
         when(intygService.fetchIntygDataWithRelations(eq("parent-intyg-id-2"), eq(LisjpEntryPoint.MODULE_ID)))
-                .thenReturn(buildIntygContentHolder("parent-intyg-id-2", "F438A", null, true));
+            .thenReturn(buildIntygContentHolder("parent-intyg-id-2", "F438A", null, true));
 
         when(intygService.fetchIntygDataWithRelations(eq("parent-intyg-id-3"), eq(LisjpEntryPoint.MODULE_ID)))
             .thenReturn(buildIntygContentHolder("parent-intyg-id-3", "F438A", null, true));
 
         // Match dummy models to generate different utlatande
         when(intygModuleFacade.getUtlatandeFromInternalModel(eq(LisjpEntryPoint.MODULE_ID), eq("DUMMY-MODEL-intyg-id-123")))
-                .thenReturn(buildUtlatande("intyg-id-123", "F438A", "parent-intyg-id-1"));
+            .thenReturn(buildUtlatande("intyg-id-123", "F438A", "parent-intyg-id-1"));
 
         when(intygModuleFacade.getUtlatandeFromInternalModel(eq(LisjpEntryPoint.MODULE_ID), eq("DUMMY-MODEL-parent-intyg-id-1")))
-                .thenReturn(buildUtlatande("parent-intyg-id-1", "F438A", "parent-intyg-id-2"));
+            .thenReturn(buildUtlatande("parent-intyg-id-1", "F438A", "parent-intyg-id-2"));
 
         when(intygModuleFacade.getUtlatandeFromInternalModel(eq(LisjpEntryPoint.MODULE_ID), eq("DUMMY-MODEL-parent-intyg-id-2")))
-                .thenReturn(buildUtlatande("parent-intyg-id-2", "F438A", "parent-intyg-id-3"));
+            .thenReturn(buildUtlatande("parent-intyg-id-2", "F438A", "parent-intyg-id-3"));
 
         when(intygModuleFacade.getUtlatandeFromInternalModel(eq(LisjpEntryPoint.MODULE_ID), eq("DUMMY-MODEL-parent-intyg-id-3")))
             .thenReturn(buildUtlatande("parent-intyg-id-3", "F438A", null));
@@ -218,7 +219,7 @@ public class SrsServiceImplTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void getSrsMissingPersonalIdentityNumberShouldThrowException() throws Exception{
+    public void getSrsMissingPersonalIdentityNumberShouldThrowException() throws Exception {
         srsServiceUnderTest.getSrs(user, "intyg-id-123", "", "F438A",
             true, true, true, new ArrayList<SrsQuestionResponse>(), null);
     }

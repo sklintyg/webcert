@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -62,7 +62,7 @@ class ListSortHelperImplTest {
         item2.addValue(ListColumnType.SAVED, LocalDateTime.now().plusDays(1));
 
         final var result = listSortHelper.sort(
-                new ArrayList<CertificateListItem>(List.of(item1, item2)), "", false);
+            new ArrayList<CertificateListItem>(List.of(item1, item2)), "", false);
         assertEquals(2, result.size());
         assertEquals(item1, result.get(1));
         assertEquals(item2, result.get(0));
@@ -73,7 +73,7 @@ class ListSortHelperImplTest {
         final var item1 = ListTestHelper.createCertificateListItemWithPersonId("191212121212");
         final var item2 = ListTestHelper.createCertificateListItemWithPersonId("201212121212");
         final var result = listSortHelper.sort(
-                new ArrayList<CertificateListItem>(List.of(item1, item2)), "PATIENT_ID", true);
+            new ArrayList<CertificateListItem>(List.of(item1, item2)), "PATIENT_ID", true);
         assertEquals(2, result.size());
         assertEquals(item1, result.get(0));
         assertEquals(item2, result.get(1));
@@ -84,7 +84,7 @@ class ListSortHelperImplTest {
         final var item1 = ListTestHelper.createCertificateListItemWithPersonId("191212121212");
         final var item2 = ListTestHelper.createCertificateListItemWithPersonId("201212121212");
         final var result = listSortHelper.sort(
-                new ArrayList<CertificateListItem>(List.of(item1, item2)), "PATIENT_ID", false);
+            new ArrayList<CertificateListItem>(List.of(item1, item2)), "PATIENT_ID", false);
         assertEquals(2, result.size());
         assertEquals(item1, result.get(1));
         assertEquals(item2, result.get(0));
@@ -95,7 +95,7 @@ class ListSortHelperImplTest {
         final var item1 = ListTestHelper.createCertificateListItemWithSavedBy("AAAA");
         final var item2 = ListTestHelper.createCertificateListItemWithSavedBy("BBBB");
         final var result = listSortHelper.sort(
-                new ArrayList<CertificateListItem>(List.of(item1, item2)), "SAVED_BY", true);
+            new ArrayList<CertificateListItem>(List.of(item1, item2)), "SAVED_BY", true);
         assertEquals(2, result.size());
         assertEquals(item1, result.get(0));
         assertEquals(item2, result.get(1));
@@ -106,7 +106,7 @@ class ListSortHelperImplTest {
         final var item1 = ListTestHelper.createCertificateListItemWithSavedBy("AAAA");
         final var item2 = ListTestHelper.createCertificateListItemWithSavedBy("BBBB");
         final var result = listSortHelper.sort(
-                new ArrayList<CertificateListItem>(List.of(item1, item2)), "SAVED_BY", false);
+            new ArrayList<CertificateListItem>(List.of(item1, item2)), "SAVED_BY", false);
         assertEquals(2, result.size());
         assertEquals(item1, result.get(1));
         assertEquals(item2, result.get(0));
@@ -117,7 +117,7 @@ class ListSortHelperImplTest {
         final var item1 = ListTestHelper.createCertificateListItemWithSaved(LocalDateTime.now());
         final var item2 = ListTestHelper.createCertificateListItemWithSaved(LocalDateTime.now().plusDays(5));
         final var result = listSortHelper.sort(
-                new ArrayList<CertificateListItem>(List.of(item1, item2)), "SAVED", true);
+            new ArrayList<CertificateListItem>(List.of(item1, item2)), "SAVED", true);
         assertEquals(2, result.size());
         assertEquals(item1, result.get(0));
         assertEquals(item2, result.get(1));
@@ -128,7 +128,7 @@ class ListSortHelperImplTest {
         final var item1 = ListTestHelper.createCertificateListItemWithSaved(LocalDateTime.now());
         final var item2 = ListTestHelper.createCertificateListItemWithSaved(LocalDateTime.now().plusDays(5));
         final var result = listSortHelper.sort(
-                new ArrayList<CertificateListItem>(List.of(item1, item2)), "SAVED", false);
+            new ArrayList<CertificateListItem>(List.of(item1, item2)), "SAVED", false);
         assertEquals(2, result.size());
         assertEquals(item1, result.get(1));
         assertEquals(item2, result.get(0));
@@ -140,7 +140,7 @@ class ListSortHelperImplTest {
         final var item2 = ListTestHelper.createCertificateListItemWithForwarded(false);
         final var item3 = ListTestHelper.createCertificateListItemWithForwarded(true);
         final var result = listSortHelper.sort(
-                new ArrayList<CertificateListItem>(List.of(item1, item2, item3)), "FORWARDED", true);
+            new ArrayList<CertificateListItem>(List.of(item1, item2, item3)), "FORWARDED", true);
         assertEquals(3, result.size());
         assertEquals(item1, result.get(1));
         assertEquals(item2, result.get(0));
@@ -153,7 +153,7 @@ class ListSortHelperImplTest {
         final var item2 = ListTestHelper.createCertificateListItemWithForwarded(false);
         final var item3 = ListTestHelper.createCertificateListItemWithForwarded(true);
         final var result = listSortHelper.sort(
-                new ArrayList<CertificateListItem>(List.of(item1, item2, item3)), "FORWARDED", false);
+            new ArrayList<CertificateListItem>(List.of(item1, item2, item3)), "FORWARDED", false);
         assertEquals(3, result.size());
         assertEquals(item1, result.get(0));
         assertEquals(item2, result.get(2));
@@ -165,7 +165,7 @@ class ListSortHelperImplTest {
         final var item1 = ListTestHelper.createCertificateListItemWithCertificateTypeName("LISJP");
         final var item2 = ListTestHelper.createCertificateListItemWithCertificateTypeName("AG7804");
         final var result = listSortHelper.sort(
-                new ArrayList<CertificateListItem>(List.of(item1, item2)), "CERTIFICATE_TYPE_NAME", true);
+            new ArrayList<CertificateListItem>(List.of(item1, item2)), "CERTIFICATE_TYPE_NAME", true);
         assertEquals(2, result.size());
         assertEquals(item1, result.get(1));
         assertEquals(item2, result.get(0));
@@ -176,7 +176,7 @@ class ListSortHelperImplTest {
         final var item1 = ListTestHelper.createCertificateListItemWithCertificateTypeName("LISJP");
         final var item2 = ListTestHelper.createCertificateListItemWithCertificateTypeName("AG7804");
         final var result = listSortHelper.sort(
-                new ArrayList<CertificateListItem>(List.of(item1, item2)), "CERTIFICATE_TYPE_NAME", false);
+            new ArrayList<CertificateListItem>(List.of(item1, item2)), "CERTIFICATE_TYPE_NAME", false);
         assertEquals(2, result.size());
         assertEquals(item1, result.get(0));
         assertEquals(item2, result.get(1));
@@ -187,7 +187,7 @@ class ListSortHelperImplTest {
         final var item1 = ListTestHelper.createCertificateListItemWithStatus("STATUS1");
         final var item2 = ListTestHelper.createCertificateListItemWithStatus("STATUS0");
         final var result = listSortHelper.sort(
-                new ArrayList<CertificateListItem>(List.of(item1, item2)), "STATUS", true);
+            new ArrayList<CertificateListItem>(List.of(item1, item2)), "STATUS", true);
         assertEquals(2, result.size());
         assertEquals(item1, result.get(1));
         assertEquals(item2, result.get(0));
@@ -198,7 +198,7 @@ class ListSortHelperImplTest {
         final var item1 = ListTestHelper.createCertificateListItemWithStatus("STATUS1");
         final var item2 = ListTestHelper.createCertificateListItemWithStatus("STATUS0");
         final var result = listSortHelper.sort(
-                new ArrayList<CertificateListItem>(List.of(item1, item2)), "STATUS", false);
+            new ArrayList<CertificateListItem>(List.of(item1, item2)), "STATUS", false);
         assertEquals(2, result.size());
         assertEquals(item1, result.get(0));
         assertEquals(item2, result.get(1));

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -73,7 +73,7 @@ class UserStatisticsServiceImplTest {
     void setUpUser() {
         user = mock(WebCertUser.class);
 
-       doReturn(user)
+        doReturn(user)
             .when(webCertUserService)
             .getUser();
     }
@@ -83,12 +83,12 @@ class UserStatisticsServiceImplTest {
         unit.setId(SELECTED_UNIT_ID);
 
         doReturn(unit)
-                .when(user)
-                .getValdVardenhet();
+            .when(user)
+            .getValdVardenhet();
 
         doReturn(List.of(SELECTED_UNIT_ID))
-                .when(user)
-                .getIdsOfSelectedVardenhet();
+            .when(user)
+            .getIdsOfSelectedVardenhet();
 
         doReturn(List.of(SELECTED_UNIT_ID, NOT_SELECTED_UNIT_ID, SUB_UNIT_TO_SELECTED)).when(user).getIdsOfAllVardenheter();
     }
@@ -107,6 +107,7 @@ class UserStatisticsServiceImplTest {
 
     @Nested
     class ErrorHandling {
+
         @Test
         void shouldReturnNullIfUserIsNull() {
             final var result = userStatisticsService.getUserStatistics();
@@ -143,8 +144,8 @@ class UserStatisticsServiceImplTest {
             setUpUnit();
 
             doReturn(new HashSet<String>())
-                    .when(authoritiesHelper)
-                    .getIntygstyperForPrivilege(any(), any());
+                .when(authoritiesHelper)
+                .getIntygstyperForPrivilege(any(), any());
 
             map.put(SELECTED_UNIT_ID, expectedValue);
         }
@@ -170,6 +171,7 @@ class UserStatisticsServiceImplTest {
 
         @Nested
         class CareProviderStatistics {
+
             final Map<String, Long> draftsMap = new HashMap<String, Long>();
             final Map<String, Long> questionsMap = new HashMap<String, Long>();
 
@@ -183,8 +185,8 @@ class UserStatisticsServiceImplTest {
             @BeforeEach
             void setup() {
                 doReturn(List.of(getCareProvider()))
-                        .when(user)
-                        .getVardgivare();
+                    .when(user)
+                    .getVardgivare();
 
                 draftsMap.put(SELECTED_UNIT_ID, expectedDraftsSelected);
                 draftsMap.put(NOT_SELECTED_UNIT_ID, expectedDraftsNotSelected);
@@ -208,6 +210,7 @@ class UserStatisticsServiceImplTest {
 
             @Nested
             class CareUnit {
+
                 @Test
                 void shouldAddDrafts() {
                     final var result = userStatisticsService.getUserStatistics();
@@ -239,6 +242,7 @@ class UserStatisticsServiceImplTest {
 
             @Nested
             class SubUnit {
+
                 @Test
                 void shouldAddDrafts() {
                     final var result = userStatisticsService.getUserStatistics();

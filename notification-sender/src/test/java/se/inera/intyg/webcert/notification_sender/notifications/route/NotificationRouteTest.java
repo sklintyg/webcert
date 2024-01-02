@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -135,7 +135,7 @@ public class NotificationRouteTest {
 
     @Test
     public void testRoutingForCreateEvent() throws JsonProcessingException, InterruptedException {
-        setExpectedMessageCount(0,0, 1, 1, 1, 0, 0);
+        setExpectedMessageCount(0, 0, 1, 1, 1, 0, 0);
         addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, SKAPAT);
         sendMessagesToNotificationRoute(messagesToSend);
         verifyMessageCount();
@@ -143,7 +143,7 @@ public class NotificationRouteTest {
 
     @Test
     public void testRoutingForChangeEvent() throws JsonProcessingException, InterruptedException {
-        setExpectedMessageCount(1,1, 1, 1, 1, 0, 0);
+        setExpectedMessageCount(1, 1, 1, 1, 1, 0, 0);
         addMessageToSend(1, CERTIFICATE_ID_1, LisjpEntryPoint.MODULE_ID, ANDRAT);
         sendMessagesToNotificationRoute(messagesToSend);
         verifyMessageCount();
@@ -291,7 +291,7 @@ public class NotificationRouteTest {
 
     @Test
     public void testRoutingForFk7263() throws JsonProcessingException, InterruptedException {
-        setExpectedMessageCount(0, 0,5, 5, 5, 0, 0);
+        setExpectedMessageCount(0, 0, 5, 5, 5, 0, 0);
         setEndpointReassertPeriod();
 
         addMessageToSend(1, CERTIFICATE_ID_1, Fk7263EntryPoint.MODULE_ID, SKAPAT);
@@ -365,7 +365,7 @@ public class NotificationRouteTest {
     private Map<String, Object> getMessageHeaders(String certificateType, HandelsekodEnum eventCode) {
         Map<String, Object> headers = new HashMap<>();
         headers.put(NotificationRouteHeaders.INTYGS_TYP, certificateType);
-        headers.put(NotificationRouteHeaders.INTYG_TYPE_VERSION,  VERSION_1_2);
+        headers.put(NotificationRouteHeaders.INTYG_TYPE_VERSION, VERSION_1_2);
         headers.put(NotificationRouteHeaders.HANDELSE, eventCode.name());
         headers.put(NotificationRouteHeaders.CORRELATION_ID, UUID.randomUUID().toString());
         return headers;

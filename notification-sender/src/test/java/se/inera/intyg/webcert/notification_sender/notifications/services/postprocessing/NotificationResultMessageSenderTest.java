@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -134,9 +134,9 @@ public class NotificationResultMessageSenderTest {
 
         doThrow(RuntimeException.class).when(jmsTemplate).send(any(MessageCreator.class));
 
-        final var isSuccess= notificationResultMessageSender.sendResultMessage(notificationResultMessage);
-            verify(jmsTemplate).send(any(MessageCreator.class));
-            assertFalse(isSuccess);
+        final var isSuccess = notificationResultMessageSender.sendResultMessage(notificationResultMessage);
+        verify(jmsTemplate).send(any(MessageCreator.class));
+        assertFalse(isSuccess);
     }
 
     private NotificationResultMessage createNotificationResultMessage() {

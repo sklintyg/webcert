@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -208,10 +208,10 @@ public class JsLogApiController extends AbstractApiController {
                 break;
             case SRS_MEASURES_DISPLAYED:
                 monitoringService.logSrsMeasuresDisplayed(
-                        request.getInfo().get(USER_CLIENT_CONTEXT),
-                        request.getInfo().get(INTYG_ID),
-                        request.getInfo().get(CAREGIVER_ID),
-                        request.getInfo().get(CARE_UNIT_ID));
+                    request.getInfo().get(USER_CLIENT_CONTEXT),
+                    request.getInfo().get(INTYG_ID),
+                    request.getInfo().get(CAREGIVER_ID),
+                    request.getInfo().get(CARE_UNIT_ID));
                 break;
             default:
                 return status(BAD_REQUEST).build();

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -64,7 +64,7 @@ public class NotificationRedeliveryStrategyStandardTest {
 
         assertEquals(11, timeValue1);
         assertEquals(22, timeValue2);
-        assertEquals(33,timeValue3);
+        assertEquals(33, timeValue3);
         assertEquals(44, timeValue4);
     }
 
@@ -79,7 +79,7 @@ public class NotificationRedeliveryStrategyStandardTest {
 
         assertEquals(ChronoUnit.SECONDS, timeUnit1);
         assertEquals(ChronoUnit.MINUTES, timeUnit2);
-        assertEquals(ChronoUnit.HOURS,timeUnit3);
+        assertEquals(ChronoUnit.HOURS, timeUnit3);
         assertEquals(ChronoUnit.DAYS, timeUnit4);
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -38,110 +38,111 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.IntygReceiver;
 @ExtendWith(MockitoExtension.class)
 class CertificateRecipientConverterImplTest {
 
-  @Mock
-  CertificateReceiverService certificateReceiverService;
+    @Mock
+    CertificateReceiverService certificateReceiverService;
 
-  @InjectMocks
-  CertificateRecipientConverterImpl certificateRecipientConverter;
+    @InjectMocks
+    CertificateRecipientConverterImpl certificateRecipientConverter;
 
-  private static final String ID = "RecipientId";
-  private static final String ANOTHER_ID = "AnotherRecipientId";
-  private static final String NAME = "RecipientName";
-  private static final LocalDateTime SENT = LocalDateTime.now();
+    private static final String ID = "RecipientId";
+    private static final String ANOTHER_ID = "AnotherRecipientId";
+    private static final String NAME = "RecipientName";
+    private static final LocalDateTime SENT = LocalDateTime.now();
 
 
-  @Nested
-  class NoRecipient {
+    @Nested
+    class NoRecipient {
 
-    @BeforeEach
-    void setup() {
-      when(certificateReceiverService.listPossibleReceiversWithApprovedInfo(anyString(), anyString()))
-          .thenReturn(Collections.emptyList());
+        @BeforeEach
+        void setup() {
+            when(certificateReceiverService.listPossibleReceiversWithApprovedInfo(anyString(), anyString()))
+                .thenReturn(Collections.emptyList());
+        }
+
+        @Test
+        void shouldReturnNullIfNoRecipient() {
+            final var response = certificateRecipientConverter.get("type", "id", SENT);
+
+            assertNull(response);
+        }
     }
 
-    @Test
-    void shouldReturnNullIfNoRecipient() {
-      final var response = certificateRecipientConverter.get("type", "id", SENT);
+    @Nested
+    class HasRecipient {
 
-      assertNull(response);
-    }
-  }
+        @BeforeEach
+        void setup() {
+            final var receiver = new IntygReceiver();
+            receiver.setId(ID);
+            receiver.setName(NAME);
+            receiver.setLocked(true);
 
-  @Nested
-  class HasRecipient {
+            when(certificateReceiverService.listPossibleReceiversWithApprovedInfo(anyString(), anyString()))
+                .thenReturn(List.of(receiver));
+        }
 
-    @BeforeEach
-    void setup() {
-      final var receiver = new IntygReceiver();
-      receiver.setId(ID);
-      receiver.setName(NAME);
-      receiver.setLocked(true);
+        @Test
+        void shouldReturnId() {
+            final var response = certificateRecipientConverter.get("type", "id", SENT);
 
-      when(certificateReceiverService.listPossibleReceiversWithApprovedInfo(anyString(), anyString()))
-          .thenReturn(List.of(receiver));
-    }
+            assertEquals(ID, response.getId());
+        }
 
-    @Test
-    void shouldReturnId() {
-      final var response = certificateRecipientConverter.get("type", "id", SENT);
+        @Test
+        void shouldReturnName() {
+            final var response = certificateRecipientConverter.get("type", "id", SENT);
 
-      assertEquals(ID, response.getId());
-    }
+            assertEquals(NAME, response.getName());
+        }
 
-    @Test
-    void shouldReturnName() {
-      final var response = certificateRecipientConverter.get("type", "id", SENT);
+        @Test
+        void shouldReturnSent() {
+            final var response = certificateRecipientConverter.get("type", "id", SENT);
 
-      assertEquals(NAME, response.getName());
-    }
-
-    @Test
-    void shouldReturnSent() {
-      final var response = certificateRecipientConverter.get("type", "id", SENT);
-
-      assertEquals(SENT, response.getSent());
-    }
-  }
-
-  @Nested
-  class FilterMainRecipientOnLockStatus  {
-    final IntygReceiver receiver1 = new IntygReceiver();
-    final IntygReceiver receiver2 = new IntygReceiver();
-
-    @BeforeEach
-    void setup() {
-      receiver1.setId(ID);
-      receiver2.setId(ANOTHER_ID);
-
-      when(certificateReceiverService.listPossibleReceiversWithApprovedInfo(anyString(), anyString()))
-          .thenReturn(List.of(receiver1, receiver2));
+            assertEquals(SENT, response.getSent());
+        }
     }
 
-    @Test
-    void shouldReturnNullIfOnlyUnlockedReceivers() {
-      receiver1.setLocked(false);
-      receiver2.setLocked(false);
+    @Nested
+    class FilterMainRecipientOnLockStatus {
 
-      final var response = certificateRecipientConverter.get("type", "id", SENT);
-      assertNull(response);
+        final IntygReceiver receiver1 = new IntygReceiver();
+        final IntygReceiver receiver2 = new IntygReceiver();
+
+        @BeforeEach
+        void setup() {
+            receiver1.setId(ID);
+            receiver2.setId(ANOTHER_ID);
+
+            when(certificateReceiverService.listPossibleReceiversWithApprovedInfo(anyString(), anyString()))
+                .thenReturn(List.of(receiver1, receiver2));
+        }
+
+        @Test
+        void shouldReturnNullIfOnlyUnlockedReceivers() {
+            receiver1.setLocked(false);
+            receiver2.setLocked(false);
+
+            final var response = certificateRecipientConverter.get("type", "id", SENT);
+            assertNull(response);
+        }
+
+        @Test
+        void shouldReturnFirstLockedReceiverIfAllLocked() {
+            receiver1.setLocked(true);
+            receiver2.setLocked(true);
+
+            final var response = certificateRecipientConverter.get("type", "id", SENT);
+            assertEquals(ID, response.getId());
+        }
+
+        @Test
+        void shouldReturnFirstLockedReceiverIfMixed() {
+            receiver1.setLocked(false);
+            receiver2.setLocked(true);
+
+            final var response = certificateRecipientConverter.get("type", "id", SENT);
+            assertEquals(ANOTHER_ID, response.getId());
+        }
     }
-
-    @Test
-    void shouldReturnFirstLockedReceiverIfAllLocked() {
-      receiver1.setLocked(true);
-      receiver2.setLocked(true);
-
-      final var response = certificateRecipientConverter.get("type", "id", SENT);
-      assertEquals(ID, response.getId());
-    }
-
-    @Test
-    void shouldReturnFirstLockedReceiverIfMixed() {
-      receiver1.setLocked(false);
-      receiver2.setLocked(true);
-
-      final var response = certificateRecipientConverter.get("type", "id", SENT);
-      assertEquals(ANOTHER_ID, response.getId());
-    }
-  }
 }

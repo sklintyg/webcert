@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -48,21 +48,22 @@ public class PatientControllerTest {
 
     private Patient createPatient() {
         return Patient.builder()
-                .personId(
-                        PersonId.builder()
-                                .id(PATIENT_ID)
-                                .build()
-                )
-                .build();
+            .personId(
+                PersonId.builder()
+                    .id(PATIENT_ID)
+                    .build()
+            )
+            .build();
     }
 
     @Nested
     class GetPatient {
+
         void setup() {
             try {
                 doReturn(null)
-                        .when(getPatientFacadeService)
-                        .getPatient(anyString());
+                    .when(getPatientFacadeService)
+                    .getPatient(anyString());
             } catch (InvalidPatientIdException | PatientSearchErrorException | PatientNoNameException e) {
                 e.printStackTrace();
             }
@@ -80,8 +81,8 @@ public class PatientControllerTest {
 
         void setup(Exception e) throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
             doThrow(e)
-                    .when(getPatientFacadeService)
-                    .getPatient(anyString());
+                .when(getPatientFacadeService)
+                .getPatient(anyString());
         }
 
         @Test
@@ -108,21 +109,24 @@ public class PatientControllerTest {
         }
 
         @Test
-        void shallSetStatusToErrorIfExceptionIsThrown() throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
+        void shallSetStatusToErrorIfExceptionIsThrown()
+            throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
             setup(new PatientSearchErrorException());
             final var response = (PatientResponseDTO) patientController.getPatient(PATIENT_ID).getEntity();
             assertEquals(response.getStatus(), PatientResponseStatusDTO.ERROR);
         }
 
         @Test
-        void shallSetStatusToInvalidPatientIdIfExceptionIsThrown() throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
+        void shallSetStatusToInvalidPatientIdIfExceptionIsThrown()
+            throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
             setup(new InvalidPatientIdException());
             final var response = (PatientResponseDTO) patientController.getPatient(PATIENT_ID).getEntity();
             assertEquals(response.getStatus(), PatientResponseStatusDTO.INVALID_PATIENT_ID);
         }
 
         @Test
-        void shallSetStatusNoNameIfExceptionIsThrown() throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
+        void shallSetStatusNoNameIfExceptionIsThrown()
+            throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
             setup(new PatientNoNameException());
             final var response = (PatientResponseDTO) patientController.getPatient(PATIENT_ID).getEntity();
             assertEquals(response.getStatus(), PatientResponseStatusDTO.NO_NAME);

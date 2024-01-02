@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -42,7 +42,7 @@ public class ListDraftsConfigFacadeServiceImpl implements ListConfigFacadeServic
 
     @Autowired
     public ListDraftsConfigFacadeServiceImpl(GetStaffInfoFacadeService getStaffInfoFacadeService,
-                                             WebCertUserService webCertUserService) {
+        WebCertUserService webCertUserService) {
         this.getStaffInfoFacadeService = getStaffInfoFacadeService;
         this.webCertUserService = webCertUserService;
     }
@@ -72,15 +72,15 @@ public class ListDraftsConfigFacadeServiceImpl implements ListConfigFacadeServic
     }
 
     public TableHeading[] getTableHeadings() {
-        return new TableHeading[] {
-                TableHeadingFactory.text(ListColumnType.CERTIFICATE_TYPE_NAME),
-                TableHeadingFactory.text(ListColumnType.STATUS, getStatusDescription()),
-                TableHeadingFactory.date(ListColumnType.SAVED, false),
-                TableHeadingFactory.patientInfo(ListColumnType.PATIENT_ID),
-                TableHeadingFactory.text(ListColumnType.SAVED_BY),
-                TableHeadingFactory.forwarded(ListColumnType.FORWARDED, "Visar om utkastet är vidarebefordrat."),
-                TableHeadingFactory.forwardButton(ListColumnType.FORWARD_CERTIFICATE),
-                TableHeadingFactory.openButton(ListColumnType.OPEN_CERTIFICATE)
+        return new TableHeading[]{
+            TableHeadingFactory.text(ListColumnType.CERTIFICATE_TYPE_NAME),
+            TableHeadingFactory.text(ListColumnType.STATUS, getStatusDescription()),
+            TableHeadingFactory.date(ListColumnType.SAVED, false),
+            TableHeadingFactory.patientInfo(ListColumnType.PATIENT_ID),
+            TableHeadingFactory.text(ListColumnType.SAVED_BY),
+            TableHeadingFactory.forwarded(ListColumnType.FORWARDED, "Visar om utkastet är vidarebefordrat."),
+            TableHeadingFactory.forwardButton(ListColumnType.FORWARD_CERTIFICATE),
+            TableHeadingFactory.openButton(ListColumnType.OPEN_CERTIFICATE)
         };
     }
 
@@ -105,8 +105,8 @@ public class ListDraftsConfigFacadeServiceImpl implements ListConfigFacadeServic
 
     private String getStatusDescription() {
         return "<p>Visar utkastets status:<ul>"
-                + "<li>Utkast, uppgifter saknas = utkastet är sparat, men obligatoriska uppgifter saknas."
-                + "</li><li>Utkast, kan signeras = utkastet är komplett, sparat och kan signeras.</li>"
-                + "<li>Utkast, låst = Utkastet är låst.</li></ul></p>";
+            + "<li>Utkast, uppgifter saknas = utkastet är sparat, men obligatoriska uppgifter saknas."
+            + "</li><li>Utkast, kan signeras = utkastet är komplett, sparat och kan signeras.</li>"
+            + "<li>Utkast, låst = Utkastet är låst.</li></ul></p>";
     }
 }

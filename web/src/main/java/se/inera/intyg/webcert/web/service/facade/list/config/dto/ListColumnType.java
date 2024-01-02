@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,7 +22,7 @@ public enum ListColumnType {
     PATIENT_ID("Patient", "Patientens personnummer."),
     SAVED_BY("Sparat av", "Person som senast sparade utkastet."),
     SAVED_SIGNED_BY("Sparat/signerat av",
-            "Person som senast sparade utkastet/intyget alternativt person som signerade intyget."),
+        "Person som senast sparade utkastet/intyget alternativt person som signerade intyget."),
     SAVED("Senast sparat", "Datum och klockslag då utkastet senast sparades."),
     CERTIFICATE_ID("", ""),
     OPEN_CERTIFICATE("", ""),

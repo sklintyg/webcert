@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -895,7 +895,8 @@ public abstract class CertificateAccessTest extends AccessTest {
     public void isAllowToAnswerComplementWhenMissingSubscription() {
         setupMocksForMissingSubscription();
 
-        assertAllowToAnswerComplementWhenMissingSubscription(accessService.allowToAnswerComplementQuestion(accessEvaluationParameters, true));
+        assertAllowToAnswerComplementWhenMissingSubscription(
+            accessService.allowToAnswerComplementQuestion(accessEvaluationParameters, true));
     }
 
     abstract protected void assertAllowToAnswerComplementWhenMissingSubscription(AccessResult actualValue);
@@ -1011,7 +1012,8 @@ public abstract class CertificateAccessTest extends AccessTest {
     public void isAllowToAnswerQuestionWhenMissingSubscription() {
         setupMocksForMissingSubscription();
 
-        assertAllowToAnswerQuestionWhenMissingSubscription(accessService.allowToAnswerComplementQuestion(accessEvaluationParameters, false));
+        assertAllowToAnswerQuestionWhenMissingSubscription(
+            accessService.allowToAnswerComplementQuestion(accessEvaluationParameters, false));
     }
 
     abstract protected void assertAllowToAnswerQuestionWhenMissingSubscription(AccessResult actualValue);

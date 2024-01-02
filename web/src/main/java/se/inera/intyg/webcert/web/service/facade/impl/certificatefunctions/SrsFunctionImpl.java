@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -39,7 +39,7 @@ public class SrsFunctionImpl implements SrsFunction {
     @Override
     public Optional<ResourceLinkDTO> getSRSMinimizedView(Certificate certificate, WebCertUser user) {
         return isSignedCertificate(certificate) && isSRSActive(certificate, user)
-                ? Optional.of(getSRSRecommendationsResourceLink(true)) : Optional.empty();
+            ? Optional.of(getSRSRecommendationsResourceLink(true)) : Optional.empty();
     }
 
     private ResourceLinkDTO getResourceLink(boolean enabled) {
@@ -53,10 +53,10 @@ public class SrsFunctionImpl implements SrsFunction {
 
     private ResourceLinkDTO getSRSRecommendationsResourceLink(boolean enabled) {
         return ResourceLinkDTO.create(
-                ResourceLinkTypeDTO.SRS_MINIMIZED_VIEW,
-                "Risk och råd",
-                "Risk och råd",
-                enabled
+            ResourceLinkTypeDTO.SRS_MINIMIZED_VIEW,
+            "Risk och råd",
+            "Risk och råd",
+            enabled
         );
     }
 

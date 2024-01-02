@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -835,7 +835,8 @@ public class NotificationServiceImplTest {
 
         final var notifications = Collections.EMPTY_LIST;
 
-        doReturn(notifications).when(handelseRepository).findByPersonnummerAndEnhetsIdInAndTimestampBetween(patientId.getPersonnummer(), unitIds, from, to);
+        doReturn(notifications).when(handelseRepository)
+            .findByPersonnummerAndEnhetsIdInAndTimestampBetween(patientId.getPersonnummer(), unitIds, from, to);
 
         final var actualNotifications = notificationService.findNotifications(request);
 
@@ -851,7 +852,8 @@ public class NotificationServiceImplTest {
 
         final var notifications = Collections.EMPTY_LIST;
 
-        doReturn(notifications).when(handelseRepository).findByPersonnummerAndEnhetsIdInAndTimestampAfter(patientId.getPersonnummer(), unitIds, from);
+        doReturn(notifications).when(handelseRepository)
+            .findByPersonnummerAndEnhetsIdInAndTimestampAfter(patientId.getPersonnummer(), unitIds, from);
 
         final var actualNotifications = notificationService.findNotifications(request);
 
@@ -867,7 +869,8 @@ public class NotificationServiceImplTest {
 
         final var notifications = Collections.EMPTY_LIST;
 
-        doReturn(notifications).when(handelseRepository).findByPersonnummerAndEnhetsIdInAndTimestampBefore(patientId.getPersonnummer(), unitIds, to);
+        doReturn(notifications).when(handelseRepository)
+            .findByPersonnummerAndEnhetsIdInAndTimestampBefore(patientId.getPersonnummer(), unitIds, to);
 
         final var actualNotifications = notificationService.findNotifications(request);
 
@@ -901,7 +904,8 @@ public class NotificationServiceImplTest {
 
         final var notifications = Collections.EMPTY_LIST;
 
-        doReturn(notifications).when(handelseRepository).findByPersonnummerAndVardgivarIdAndTimestampBetween(patientId.getPersonnummer(), careProviderId, from, to);
+        doReturn(notifications).when(handelseRepository)
+            .findByPersonnummerAndVardgivarIdAndTimestampBetween(patientId.getPersonnummer(), careProviderId, from, to);
 
         final var actualNotifications = notificationService.findNotifications(request);
 
@@ -918,7 +922,8 @@ public class NotificationServiceImplTest {
 
         final var notifications = Collections.EMPTY_LIST;
 
-        doReturn(notifications).when(handelseRepository).findByPersonnummerAndVardgivarIdAndTimestampAfter(patientId.getPersonnummer(), careProviderId, from);
+        doReturn(notifications).when(handelseRepository)
+            .findByPersonnummerAndVardgivarIdAndTimestampAfter(patientId.getPersonnummer(), careProviderId, from);
 
         final var actualNotifications = notificationService.findNotifications(request);
 
@@ -935,7 +940,8 @@ public class NotificationServiceImplTest {
 
         final var notifications = Collections.EMPTY_LIST;
 
-        doReturn(notifications).when(handelseRepository).findByPersonnummerAndVardgivarIdAndTimestampBefore(patientId.getPersonnummer(), careProviderId, to);
+        doReturn(notifications).when(handelseRepository)
+            .findByPersonnummerAndVardgivarIdAndTimestampBefore(patientId.getPersonnummer(), careProviderId, to);
 
         final var actualNotifications = notificationService.findNotifications(request);
 

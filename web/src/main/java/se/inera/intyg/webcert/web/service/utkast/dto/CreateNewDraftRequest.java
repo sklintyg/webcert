@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -51,6 +51,7 @@ public class CreateNewDraftRequest {
         Patient patient) {
         this(intygId, intygType, intygTypeVersion, status, hosPerson, patient, null, Optional.empty());
     }
+
     // CHECKSTYLE:OFF ParameterNumber
     public CreateNewDraftRequest(String intygId, String intygType, String intygTypeVersion, UtkastStatus status, HoSPersonal hosPerson,
         Patient patient, String referens, Optional<Forifyllnad> forifyllnad) {

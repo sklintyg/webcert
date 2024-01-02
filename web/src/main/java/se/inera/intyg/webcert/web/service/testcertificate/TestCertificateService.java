@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -48,14 +48,14 @@ public class TestCertificateService {
     @Autowired
     private MonitoringLogService monitoringLogService;
 
-    @Transactional (readOnly = true)
+    @Transactional(readOnly = true)
     public TestCertificateEraseResult eraseTestCertificates(LocalDateTime from, LocalDateTime to) {
         final var erasedTestCertificateIds = new HashSet<String>();
         final var failedTestCertificateIds = new HashSet<String>();
 
         final var certificateIds = getTestCertificateToErase(from, to);
 
-        for (var certificateId: certificateIds) {
+        for (var certificateId : certificateIds) {
             if (skipIfAlreadyErasedDueToRelation(certificateId, erasedTestCertificateIds)) {
                 continue;
             }
@@ -91,7 +91,7 @@ public class TestCertificateService {
     }
 
     private void collectLogInformation(List<String> idsToErase, Map<String, String> unitMap, Map<String, String> userMap) {
-        for (var idToErase: idsToErase) {
+        for (var idToErase : idsToErase) {
             final var certificateToErase = utkastRepository.getOne(idToErase);
             unitMap.put(certificateToErase.getIntygsId(), certificateToErase.getEnhetsId());
             userMap.put(certificateToErase.getIntygsId(), certificateToErase.getSkapadAv().getHsaId());
@@ -99,14 +99,14 @@ public class TestCertificateService {
     }
 
     private void logErasedCertificates(List<String> idsToLog, Map<String, String> unitMap, Map<String, String> userMap) {
-        for (var idToLog: idsToLog) {
+        for (var idToLog : idsToLog) {
             monitoringLogService.logTestCertificateErased(idToLog, unitMap.get(idToLog), userMap.get(idToLog));
         }
     }
 
     private void collectCertificateIdsToErase(String certificateId, List<String> idsToErase) {
         final var parentRelations = utkastRepository.findParentRelation(certificateId);
-        for (var parentRelation: parentRelations) {
+        for (var parentRelation : parentRelations) {
             final var parentRelationId = parentRelation.getIntygsId();
             if (!idsToErase.contains(parentRelationId)) {
                 idsToErase.add(parentRelationId);
@@ -115,7 +115,7 @@ public class TestCertificateService {
         }
 
         final var childrenRelations = utkastRepository.findChildRelations(certificateId);
-        for (var childRelation: childrenRelations) {
+        for (var childRelation : childrenRelations) {
             final var childRelationId = childRelation.getIntygsId();
             if (!idsToErase.contains(childRelationId)) {
                 idsToErase.add(childRelationId);
@@ -130,7 +130,7 @@ public class TestCertificateService {
         } else if (to != null) {
             return utkastRepository.findTestCertificatesByCreatedBefore(to);
         } else if (from != null) {
-            return  utkastRepository.findTestCertificatesByCreatedAfter(from);
+            return utkastRepository.findTestCertificatesByCreatedAfter(from);
         } else {
             return utkastRepository.findTestCertificates();
         }

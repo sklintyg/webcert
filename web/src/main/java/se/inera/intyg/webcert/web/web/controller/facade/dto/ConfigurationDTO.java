@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,11 +30,11 @@ public class ConfigurationDTO {
     private String cgiFunktionstjansterIdpUrl;
 
     public ConfigurationDTO(
-            String version,
-            List<Banner> banners,
-            String ppHost,
-            String sakerhetstjanstIdpUrl,
-            String cgiFunktionstjansterIdpUrl) {
+        String version,
+        List<Banner> banners,
+        String ppHost,
+        String sakerhetstjanstIdpUrl,
+        String cgiFunktionstjansterIdpUrl) {
         this.version = version;
         this.banners = banners;
         this.ppHost = ppHost;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -89,8 +89,8 @@ public class DssSignMessageService {
         String[] packages = {"se.inera.intyg.webcert.dss.xsd"};
         marshaller.setPackagesToScan(packages);
         marshaller.setMarshallerProperties(Map.of(
-                javax.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT, false,
-                javax.xml.bind.Marshaller.JAXB_ENCODING, "UTF-8")
+            javax.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT, false,
+            javax.xml.bind.Marshaller.JAXB_ENCODING, "UTF-8")
         );
     }
 

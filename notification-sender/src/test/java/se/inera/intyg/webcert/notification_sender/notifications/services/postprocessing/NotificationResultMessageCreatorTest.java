@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -242,7 +242,7 @@ public class NotificationResultMessageCreatorTest {
         assertTrue(captureStatusUpdateXml.getValue().contains(EVENT_ENUM.name()));
         assertTrue(captureStatusUpdateXml.getValue().contains(PATIENT_ID));
         assertTrue(captureStatusUpdateXml.getValue().contains(USER_ID));
-}
+    }
 
     @Test
     public void redeliveryMessageXmlShouldHaveCorrectDataWhenUnsignedCertificate() throws JsonProcessingException {

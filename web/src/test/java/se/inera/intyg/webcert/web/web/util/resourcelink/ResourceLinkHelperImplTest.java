@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -332,7 +332,8 @@ public class ResourceLinkHelperImplTest {
         doReturn(false).when(certificateAccessServiceHelper).isAllowToCreateQuestion(any(AccessEvaluationParameters.class));
         doReturn(false).when(certificateAccessServiceHelper).isAllowToReadQuestions(any(AccessEvaluationParameters.class));
         doReturn(false).when(certificateAccessServiceHelper).isAllowToAnswerAdminQuestion(any(AccessEvaluationParameters.class));
-        doReturn(false).when(certificateAccessServiceHelper).isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), anyBoolean());
+        doReturn(false).when(certificateAccessServiceHelper)
+            .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), anyBoolean());
         doReturn(false).when(certificateAccessServiceHelper).isAllowToSetComplementAsHandled(any(AccessEvaluationParameters.class));
         doReturn(false).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
         doReturn(false).when(certificateAccessServiceHelper).isAllowToForwardQuestions(any(AccessEvaluationParameters.class));

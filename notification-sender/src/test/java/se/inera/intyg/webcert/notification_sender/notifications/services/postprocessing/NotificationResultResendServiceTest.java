@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -157,7 +157,8 @@ public class NotificationResultResendServiceTest {
         doReturn(notificationRedeliveryStrategy).when(notificationRedeliveryStrategyFactory)
             .getResendStrategy(any(NotificationRedeliveryStrategyEnum.class));
         doReturn(1).when(notificationRedeliveryStrategy).getNextTimeValue(notificationRedelivery.getAttemptedDeliveries() + 1);
-        doReturn(ChronoUnit.MINUTES).when(notificationRedeliveryStrategy).getNextTimeUnit(notificationRedelivery.getAttemptedDeliveries() + 1);
+        doReturn(ChronoUnit.MINUTES).when(notificationRedeliveryStrategy)
+            .getNextTimeUnit(notificationRedelivery.getAttemptedDeliveries() + 1);
         doReturn(valueToNotHitMaxDeliveries).when(notificationRedeliveryStrategy).getMaxDeliveries();
         doAnswer(i -> i.getArgument(0)).when(notificationRedeliveryRepository).save(any(NotificationRedelivery.class));
 

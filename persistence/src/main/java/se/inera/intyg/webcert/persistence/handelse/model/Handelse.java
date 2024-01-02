@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -38,7 +38,7 @@ import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 
 @Entity
 @Table(name = "HANDELSE")
-@SecondaryTable(name = "HANDELSE_METADATA",  pkJoinColumns = @PrimaryKeyJoinColumn(name = "HANDELSE_ID"))
+@SecondaryTable(name = "HANDELSE_METADATA", pkJoinColumns = @PrimaryKeyJoinColumn(name = "HANDELSE_ID"))
 public class Handelse {
 
     @Id
@@ -81,7 +81,8 @@ public class Handelse {
     private HandelseMetaData handelseMetaData = new HandelseMetaData();
 
 
-    public Handelse() { }
+    public Handelse() {
+    }
 
 
     public Long getId() {
@@ -175,9 +176,11 @@ public class Handelse {
     public NotificationDeliveryStatusEnum getDeliveryStatus() {
         return handelseMetaData.getDeliveryStatus();
     }
+
     public void setDeliveryStatus(NotificationDeliveryStatusEnum deliveryStatus) {
         this.handelseMetaData.setDeliveryStatus(deliveryStatus);
     }
+
     public String getCertificateType() {
         return this.handelseMetaData.getCertificateType();
     }

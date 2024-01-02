@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -32,7 +32,7 @@ public class ListPreviousCertificatesConfigFacadeServiceImpl implements ListConf
     private static final String TITLE = "Tidigare intyg";
     private static final String OPEN_CERTIFICATE_TOOLTIP = "Öppnar intyget/utkastet.";
     private static final String RENEW_BUTTON_TOOLTIP =
-            "Skapar ett nytt intygsutkast för förlängning av sjukskrivning, där en del information från detta intyg följer med.";
+        "Skapar ett nytt intygsutkast för förlängning av sjukskrivning, där en del information från detta intyg följer med.";
     private static final String EMPTY_LIST_TEXT = "Det finns inga tidigare intyg för patienten.";
 
     @Override
@@ -53,13 +53,13 @@ public class ListPreviousCertificatesConfigFacadeServiceImpl implements ListConf
     }
 
     public TableHeading[] getTableHeadings() {
-        return new TableHeading[] {
-                TableHeadingFactory.text(ListColumnType.CERTIFICATE_TYPE_NAME),
-                TableHeadingFactory.text(ListColumnType.STATUS, getStatusDescription()),
-                TableHeadingFactory.date(ListColumnType.SAVED),
-                TableHeadingFactory.text(ListColumnType.SAVED_SIGNED_BY),
-                TableHeadingFactory.renewButton(ListColumnType.RENEW_CERTIFICATE),
-                TableHeadingFactory.openButton(ListColumnType.CERTIFICATE_ID)
+        return new TableHeading[]{
+            TableHeadingFactory.text(ListColumnType.CERTIFICATE_TYPE_NAME),
+            TableHeadingFactory.text(ListColumnType.STATUS, getStatusDescription()),
+            TableHeadingFactory.date(ListColumnType.SAVED),
+            TableHeadingFactory.text(ListColumnType.SAVED_SIGNED_BY),
+            TableHeadingFactory.renewButton(ListColumnType.RENEW_CERTIFICATE),
+            TableHeadingFactory.openButton(ListColumnType.CERTIFICATE_ID)
         };
     }
 
@@ -71,14 +71,15 @@ public class ListPreviousCertificatesConfigFacadeServiceImpl implements ListConf
         filters.add(ListFilterConfigFactory.pageSize());
         return filters;
     }
+
     private String getStatusDescription() {
         return "Visar utkastets/intygets status:<ul><li>"
-                + "Utkast, uppgifter saknas = Utkastet är sparat, men obligatoriska uppgifter saknas.</li>"
-                + "<li>Utkast, kan signeras = Utkastet är komplett, sparat och kan signeras.</li>"
-                + "<li>Utkast, låst = Utkastet är låst.</li><li>Signerat = Intyget är signerat.</li>"
-                + "<li>Skickat = Intyget är skickat till mottagaren.</li>"
-                + "<li>Makulerat = Intyget är makulerat.</li><li>Ersatt = Intyget är ersatt.</li>"
-                + "<li>Kompletterat = Intyget är kompletterat.</li></ul>";
+            + "Utkast, uppgifter saknas = Utkastet är sparat, men obligatoriska uppgifter saknas.</li>"
+            + "<li>Utkast, kan signeras = Utkastet är komplett, sparat och kan signeras.</li>"
+            + "<li>Utkast, låst = Utkastet är låst.</li><li>Signerat = Intyget är signerat.</li>"
+            + "<li>Skickat = Intyget är skickat till mottagaren.</li>"
+            + "<li>Makulerat = Intyget är makulerat.</li><li>Ersatt = Intyget är ersatt.</li>"
+            + "<li>Kompletterat = Intyget är kompletterat.</li></ul>";
 
     }
 }

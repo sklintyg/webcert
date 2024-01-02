@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -61,7 +61,8 @@ public class SubscriptionRestServiceImplTest {
     private SubscriptionRestServiceImpl subscriptionRestService;
 
     private static final ParameterizedTypeReference<List<OrganizationResponse>> LIST_ORGANIZATION_RESPONSE
-        = new ParameterizedTypeReference<>() { };
+        = new ParameterizedTypeReference<>() {
+    };
 
     private static final List<String> ELEG_SERVICE_CODES = List.of("Webcert e-leg");
     private static final List<String> SITHS_SERVICE_CODES = List.of("Webcert integrerad-direktanslutning", "Webcert som Agent", "Webcert",
@@ -77,7 +78,6 @@ public class SubscriptionRestServiceImplTest {
         ReflectionTestUtils.setField(subscriptionRestService, SubscriptionRestServiceImpl.class, "sithsServiceCodes",
             SITHS_SERVICE_CODES, List.class);
     }
-
 
     // TESTS FOR SITHS USER
 
@@ -129,7 +129,7 @@ public class SubscriptionRestServiceImplTest {
         assertTrue(response.containsAll(expectedHsaIds));
     }
 
-    @Test (expected = NullPointerException.class)
+    @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerExceptionWhenResponseBodyIsNullForSithsUser() {
         final var orgNoHsaIdMap = createOrgNoHsaIdMap(2);
 
@@ -139,7 +139,7 @@ public class SubscriptionRestServiceImplTest {
         subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, SITHS);
     }
 
-    @Test (expected = RestClientException.class)
+    @Test(expected = RestClientException.class)
     public void shouldThrowRestClientExceptionReturnNoHsaIdsWhenServiceCallFailureForSithsUser() {
         final var orgNoHsaIdMap = createOrgNoHsaIdMap(2);
 
@@ -213,7 +213,6 @@ public class SubscriptionRestServiceImplTest {
         assertTrue(Objects.requireNonNull(captureHttpEntity.getValue().getHeaders().get("Accept")).contains("application/json"));
     }
 
-
     // TESTS FOR ELEG USER
 
     @Test
@@ -282,7 +281,6 @@ public class SubscriptionRestServiceImplTest {
         assertTrue(Objects.requireNonNull(captureHttpEntity.getValue().getHeaders().get("Content-Type")).contains("application/json"));
         assertTrue(Objects.requireNonNull(captureHttpEntity.getValue().getHeaders().get("Accept")).contains("application/json"));
     }
-
 
     // TESTS FOR UNREGISTERED ELEG USER
 

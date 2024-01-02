@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -72,7 +72,7 @@ public class NotificationResultFailedServiceTest {
     private static final String CERTIFICATE_ID = "CERTIFICATE_ID";
     private static final HandelsekodEnum EVENT_ENUM = HandelsekodEnum.SKAPAT;
 
-    private static final NotificationResultTypeEnum RESULT_TYPE_ENUM= ERROR;
+    private static final NotificationResultTypeEnum RESULT_TYPE_ENUM = ERROR;
     private static final NotificationErrorTypeEnum RESULT_ERROR_TYPE_ENUM = VALIDATION_ERROR;
     private static final String RESULT_TEXT = "VALIDATION_ERROR_TEXT";
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -57,7 +57,7 @@ public class DiagnosRepositoryTest {
     public void setup() {
         List<String> fileList = Arrays.asList(FILE_1, FILE_2, FILE_3);
         DiagnosRepositoryImpl repoImpl = (DiagnosRepositoryImpl) factory.createAndInitDiagnosRepository(fileList,
-                StandardCharsets.UTF_8);
+            StandardCharsets.UTF_8);
         assertEquals(35665, repoImpl.nbrOfDiagosis());
         this.repo = repoImpl;
     }

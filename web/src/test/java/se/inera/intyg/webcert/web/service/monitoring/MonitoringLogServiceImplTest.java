@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -553,7 +553,7 @@ public class MonitoringLogServiceImplTest {
     @Test
     public void shouldLogSubscriptionServiceCallFailure() {
         final var hsaIds = Collections.singleton(HSA_ID);
-        logService.logSubscriptionServiceCallFailure(hsaIds,"exceptionMessage");
+        logService.logSubscriptionServiceCallFailure(hsaIds, "exceptionMessage");
         verifyLog(Level.INFO,
             "SUBSCRIPTION_SERVICE_CALL_FAILURE Subscription service call failure for id's '[HSA_ID]', with exceptionMessage "
                 + "'exceptionMessage'");

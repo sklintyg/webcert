@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -45,7 +45,8 @@ public class IntygDraftDecorator {
 
     /**
      * Decorates the {@link ListIntygEntry} with the display name of the certificate type.
-     * @param listIntygEntries  {@link List} of {@link ListIntygEntry} to decorate.
+     *
+     * @param listIntygEntries {@link List} of {@link ListIntygEntry} to decorate.
      */
     public void decorateWithCertificateTypeName(List<ListIntygEntry> listIntygEntries) {
         listIntygEntries.stream().forEach(listIntygEntry -> addCertificateTypeName(listIntygEntry));
@@ -63,7 +64,8 @@ public class IntygDraftDecorator {
 
     /**
      * Decorates the {@link ListIntygEntry} with the display name of the certificate status.
-     * @param listIntygEntries  {@link List} of {@link ListIntygEntry} to decorate.
+     *
+     * @param listIntygEntries {@link List} of {@link ListIntygEntry} to decorate.
      */
     public void decorateWithCertificateStatusName(List<ListIntygEntry> listIntygEntries) {
         listIntygEntries.stream().forEach(listIntygEntry -> addCertificateStatusName(listIntygEntry));

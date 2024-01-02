@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -23,5 +23,6 @@ import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItem;
 import java.util.List;
 
 public interface ListSortHelper {
+
     List<CertificateListItem> sort(List<CertificateListItem> list, String order, boolean ascending);
 }

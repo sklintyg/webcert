@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -198,14 +198,14 @@ public class CertificateReceiverServiceImpl implements CertificateReceiverServic
             }
 
             return response.getReceiverList().stream().map(rcpt -> IntygReceiver.IntygReceiverBuilder.anIntygReceiver()
-                .withId(rcpt.getReceiverId())
-                .withName(rcpt.getReceiverName())
-                .withReceiverType(rcpt.getReceiverType().name())
-                .withApprovalStatus(
-                    rcpt.getReceiverType() == CertificateReceiverTypeType.HUVUDMOTTAGARE ? IntygReceiver.ApprovalStatus.YES
-                        : IntygReceiver.ApprovalStatus.UNDEFINED)
-                .withLocked(rcpt.getReceiverType() == CertificateReceiverTypeType.HUVUDMOTTAGARE)
-                .build())
+                    .withId(rcpt.getReceiverId())
+                    .withName(rcpt.getReceiverName())
+                    .withReceiverType(rcpt.getReceiverType().name())
+                    .withApprovalStatus(
+                        rcpt.getReceiverType() == CertificateReceiverTypeType.HUVUDMOTTAGARE ? IntygReceiver.ApprovalStatus.YES
+                            : IntygReceiver.ApprovalStatus.UNDEFINED)
+                    .withLocked(rcpt.getReceiverType() == CertificateReceiverTypeType.HUVUDMOTTAGARE)
+                    .build())
                 .collect(Collectors.toList());
         } catch (WebServiceException e) {
             LOG.warn("Caught WebServiceException fetching approved or possible receivers, only returning Huvudmottagare.");

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -250,7 +250,6 @@ public class UtkastModuleApiControllerTest {
         setupUser(intygsTyp, false, UserOriginType.NORMAL.name(),
             Arrays.asList(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG), Arrays.asList(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST));
 
-
         when(utkastService.getDraft(CERTIFICATE_ID, intygsTyp)).thenReturn(buildUtkast(intygsTyp, intygsId));
         when(certificateRelationService.getRelations(eq(intygsId))).thenReturn(new Relations());
 
@@ -494,13 +493,15 @@ public class UtkastModuleApiControllerTest {
         Response response = moduleApiController.getDraft(intygsTyp, intygsId, request);
 
         verify(utkastService).getDraft(intygsId, intygsTyp);
-        verify(utkastCandidateService).getCandidateMetaData(any(ModuleApi.class), anyString(), anyString(), any(Patient.class), anyBoolean());
+        verify(utkastCandidateService).getCandidateMetaData(any(ModuleApi.class), anyString(), anyString(), any(Patient.class),
+            anyBoolean());
 
         DraftHolder draftHolder = (DraftHolder) response.getEntity();
         assertEquals(intygsIdCandidate, draftHolder.getCandidateMetaData().getIntygId());
         assertEquals(intygsTypCandidate, draftHolder.getCandidateMetaData().getIntygType());
         assertEquals(INTYG_TYPE_VERSION, draftHolder.getCandidateMetaData().getIntygTypeVersion());
     }
+
     @Test
     public void verifyCandidateMetaDataNotRequestedWhenHavingRelations() throws Exception {
         String intygsId = CERTIFICATE_ID;
@@ -520,7 +521,6 @@ public class UtkastModuleApiControllerTest {
         Response response = moduleApiController.getDraft(intygsTyp, intygsId, request);
 
         verify(utkastService).getDraft(intygsId, intygsTyp);
-
 
         DraftHolder draftHolder = (DraftHolder) response.getEntity();
         assertNull(draftHolder.getCandidateMetaData());
@@ -546,7 +546,8 @@ public class UtkastModuleApiControllerTest {
         Response response = moduleApiController.getDraft(intygsTyp, intygsId, request);
 
         verify(utkastService).getDraft(intygsId, intygsTyp);
-        verify(utkastCandidateService).getCandidateMetaData(any(ModuleApi.class), anyString(), anyString(), any(Patient.class), anyBoolean());
+        verify(utkastCandidateService).getCandidateMetaData(any(ModuleApi.class), anyString(), anyString(), any(Patient.class),
+            anyBoolean());
 
         DraftHolder draftHolder = (DraftHolder) response.getEntity();
         assertNull(draftHolder.getCandidateMetaData());

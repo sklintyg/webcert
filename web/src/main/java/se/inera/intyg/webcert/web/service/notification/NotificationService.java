@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -108,8 +108,9 @@ public interface NotificationService {
 
     /**
      * Returns all notifications matching the request.
-     * @param request   {@link IntygWithNotificationsRequest}
-     * @return  a list of all matching notifications.
+     *
+     * @param request {@link IntygWithNotificationsRequest}
+     * @return a list of all matching notifications.
      */
     List<Handelse> findNotifications(IntygWithNotificationsRequest request);
 }

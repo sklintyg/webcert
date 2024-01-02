@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -74,9 +74,9 @@ public class ArendeResource {
     public Response getStalldaFragor(@PathParam("intygsId") String intygsId) {
         List<Arende> byIntygsId = arendeRepository.findByIntygsId(intygsId);
         return Response.ok(byIntygsId.stream()
-            .filter(a -> a.getStatus() == Status.PENDING_EXTERNAL_ACTION)
-            .map(a -> a.getMeddelandeId())
-            .collect(Collectors.toList()))
+                .filter(a -> a.getStatus() == Status.PENDING_EXTERNAL_ACTION)
+                .map(a -> a.getMeddelandeId())
+                .collect(Collectors.toList()))
             .build();
     }
 
@@ -91,9 +91,9 @@ public class ArendeResource {
     public Response getVantarPaSvarFranOss(@PathParam("intygsId") String intygsId) {
         List<Arende> byIntygsId = arendeRepository.findByIntygsId(intygsId);
         return Response.ok(byIntygsId.stream()
-            .filter(a -> a.getStatus() == Status.PENDING_INTERNAL_ACTION)
-            .map(a -> new SimpleArende(a.getMeddelandeId(), a.getRubrik()))
-            .collect(Collectors.toList()))
+                .filter(a -> a.getStatus() == Status.PENDING_INTERNAL_ACTION)
+                .map(a -> new SimpleArende(a.getMeddelandeId(), a.getRubrik()))
+                .collect(Collectors.toList()))
             .build();
     }
 

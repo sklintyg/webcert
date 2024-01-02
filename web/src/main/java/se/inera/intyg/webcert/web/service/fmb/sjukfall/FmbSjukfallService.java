@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -34,9 +34,9 @@ public interface FmbSjukfallService {
      * is withing the starting date (2020-01-15) and MAX_GAP (e.g. 5 days). Total time in days will include the sjukfall, but make sure
      * that any overlapping periods are excluded.
      *
-     * @param personnummer  Patient´s social security numberr
-     * @param periods   List of periods to consider when calculating total time in days.
-     * @return  Total time in days.
+     * @param personnummer Patient´s social security numberr
+     * @param periods List of periods to consider when calculating total time in days.
+     * @return Total time in days.
      */
     int totalSjukskrivningstidForPatientAndCareUnit(Personnummer personnummer, List<Period> periods);
 }

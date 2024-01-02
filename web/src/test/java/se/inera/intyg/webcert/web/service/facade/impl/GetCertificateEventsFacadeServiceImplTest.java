@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -767,6 +767,7 @@ class GetCertificateEventsFacadeServiceImplTest {
     }
 
     private static class EventTypes implements ArgumentsProvider {
+
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
@@ -786,6 +787,7 @@ class GetCertificateEventsFacadeServiceImplTest {
     }
 
     private static class EventTypesNotToDecorate implements ArgumentsProvider {
+
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
@@ -801,6 +803,7 @@ class GetCertificateEventsFacadeServiceImplTest {
     }
 
     private static class EventTypesToFilterOut implements ArgumentsProvider {
+
         @Override
         public Stream<Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
@@ -817,6 +820,7 @@ class GetCertificateEventsFacadeServiceImplTest {
     }
 
     private static class ParentStatuses implements ArgumentsProvider {
+
         @Override
         public Stream<Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
@@ -829,6 +833,7 @@ class GetCertificateEventsFacadeServiceImplTest {
     }
 
     private static class ParentRevokedStatuses implements ArgumentsProvider {
+
         @Override
         public Stream<Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
@@ -839,6 +844,7 @@ class GetCertificateEventsFacadeServiceImplTest {
     }
 
     private static class ChildStatuses implements ArgumentsProvider {
+
         @Override
         public Stream<Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
@@ -848,6 +854,7 @@ class GetCertificateEventsFacadeServiceImplTest {
     }
 
     private static class ChildRevokedStatuses implements ArgumentsProvider {
+
         @Override
         public Stream<Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
@@ -857,6 +864,7 @@ class GetCertificateEventsFacadeServiceImplTest {
     }
 
     private static class ChildStatusesForReplacedByDraftEvent implements ArgumentsProvider {
+
         @Override
         public Stream<Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
@@ -868,6 +876,7 @@ class GetCertificateEventsFacadeServiceImplTest {
     }
 
     private static class ChildRevokedStatusesForReplacedByDraftEvent implements ArgumentsProvider {
+
         @Override
         public Stream<Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
@@ -877,6 +886,7 @@ class GetCertificateEventsFacadeServiceImplTest {
     }
 
     private static class ChildStatusesForCopiedByEvent implements ArgumentsProvider {
+
         @Override
         public Stream<Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
@@ -889,6 +899,7 @@ class GetCertificateEventsFacadeServiceImplTest {
     }
 
     private static class ChildRevokedStatusesForCopiedByEvent implements ArgumentsProvider {
+
         @Override
         public Stream<Arguments> provideArguments(ExtensionContext context) {
             return Stream.of(
