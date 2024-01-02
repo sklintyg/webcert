@@ -18,6 +18,18 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl.list;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -36,18 +48,14 @@ import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.Resou
 import se.inera.intyg.webcert.web.service.facade.list.CertificateListItemConverterImpl;
 import se.inera.intyg.webcert.web.service.facade.list.ResourceLinkListHelper;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColumnType;
-import se.inera.intyg.webcert.web.service.facade.list.dto.*;
+import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItemStatus;
+import se.inera.intyg.webcert.web.service.facade.list.dto.ForwardedListInfo;
+import se.inera.intyg.webcert.web.service.facade.list.dto.ListType;
+import se.inera.intyg.webcert.web.service.facade.list.dto.PatientListInfo;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
-
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CertificateListItemConverterImplTest {
@@ -218,7 +226,7 @@ class CertificateListItemConverterImplTest {
     class Forwarded {
 
         private final ListType LIST_TYPE = ListType.DRAFTS;
-        final List<ResourceLinkDTO> LINKS_WITH_FORWARDED = List.of(ResourceLinkFactory.read(),
+        private final List<ResourceLinkDTO> LINKS_WITH_FORWARDED = List.of(ResourceLinkFactory.read(),
             CertificateForwardFunction.createResourceLink());
 
         @BeforeEach
