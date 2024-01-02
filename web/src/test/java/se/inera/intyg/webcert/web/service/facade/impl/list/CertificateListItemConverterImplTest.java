@@ -226,7 +226,7 @@ class CertificateListItemConverterImplTest {
     class Forwarded {
 
         private final ListType LIST_TYPE = ListType.DRAFTS;
-        private final List<ResourceLinkDTO> LINKS_WITH_FORWARDED = List.of(ResourceLinkFactory.read(),
+        final List<ResourceLinkDTO> linksWithForwarded = List.of(ResourceLinkFactory.read(),
             CertificateForwardFunction.createResourceLink());
 
         @BeforeEach
@@ -238,7 +238,7 @@ class CertificateListItemConverterImplTest {
             careProvider.setNamn(CARE_PROVIDER_NAME);
 
             when(resourceLinkListHelper.get(any(ListIntygEntry.class), any(CertificateListItemStatus.class))).thenReturn(
-                LINKS_WITH_FORWARDED);
+                linksWithForwarded);
             when(hsaOrganizationsService.getVardenhet(anyString())).thenReturn(unit);
             when(hsaOrganizationsService.getVardgivareInfo(anyString())).thenReturn(careProvider);
         }
