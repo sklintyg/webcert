@@ -24,6 +24,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -39,6 +40,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
+import se.inera.intyg.webcert.web.service.diagnos.IcdCodeConverter;
 import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
 
 /**
@@ -54,6 +56,8 @@ public class DiagnosRepositoryFactory {
     private static final char SPACE = ' ';
 
     private static final Logger LOG = LoggerFactory.getLogger(DiagnosRepositoryFactory.class);
+    @Autowired
+    private IcdCodeConverter icdCodeConverter;
 
     @Autowired
     private ResourceLoader resourceLoader;
@@ -109,7 +113,7 @@ public class DiagnosRepositoryFactory {
                 while (reader.ready()) {
                     String line = reader.readLine();
                     if (line != null) {
-                        Diagnos diagnos = createDiagnosFromString(line, count == 0);
+                        Diagnos diagnos = createDiagnosFromString(line, count == 0, fileEncoding);
                         if (diagnos != null) {
                             Document doc = new Document();
                             doc.add(new StringField(DiagnosRepository.CODE, diagnos.getKod(), Field.Store.YES));
@@ -129,10 +133,14 @@ public class DiagnosRepositoryFactory {
         }
     }
 
-    public Diagnos createDiagnosFromString(String line, boolean firstLineInFile) {
+    public Diagnos createDiagnosFromString(String line, boolean firstLineInFile, Charset fileEncoding) {
 
         if (Strings.nullToEmpty(line).trim().isEmpty()) {
             return null;
+        }
+
+        if (fileEncoding.equals(StandardCharsets.UTF_8)) {
+            return icdCodeConverter.convert(line);
         }
 
         String cleanedLine = removeUnwantedCharacters(line, firstLineInFile);

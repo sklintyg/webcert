@@ -53,8 +53,7 @@ public class DiagnosRepositoryFactoryTest {
     private static final String REALLY_MESSY_LINE = "  A050   Matförgiftning orsakad av stafylokocker  ";
     private static final String LINE_WITH_BOM = "\uFEFFA050   Matförgiftning orsakad av stafylokocker  ";
 
-    private static final String FILE_1 = "classpath:/DiagnosService/icd10se/digit3.txt";
-    private static final String FILE_2 = "classpath:/DiagnosService/icd10se/digit4.txt";
+    private static final String FILE_1 = "classpath:/DiagnosService/icd10se/icd-10-se.tsv";
     private static final String FILE_3 = "classpath:/DiagnosService/KSH97P_SFAM_TESTKODER.ANS";
 
     @Autowired
@@ -67,11 +66,11 @@ public class DiagnosRepositoryFactoryTest {
 
     @Test
     public void testCreateRepository() {
-        List<String> fileList = Arrays.asList(FILE_1, FILE_2);
+        List<String> fileList = Arrays.asList(FILE_1);
         DiagnosRepositoryImpl repository = (DiagnosRepositoryImpl) factory.createAndInitDiagnosRepository(fileList,
             StandardCharsets.UTF_8);
         assertNotNull(repository);
-        assertEquals(11699, repository.nbrOfDiagosis());
+        assertEquals(38628, repository.nbrOfDiagosis());
     }
 
     @Test
@@ -86,25 +85,25 @@ public class DiagnosRepositoryFactoryTest {
     @Test
     public void testCreateDiagnosFromString() {
 
-        Diagnos res = factory.createDiagnosFromString(LINE_1, false);
+        Diagnos res = factory.createDiagnosFromString(LINE_1, false, StandardCharsets.ISO_8859_1);
 
         assertNotNull(res);
         assertEquals(LINE_1_KOD, res.getKod());
         assertEquals(LINE_1_BESK, res.getBeskrivning());
 
-        res = factory.createDiagnosFromString(LINE_2, false);
+        res = factory.createDiagnosFromString(LINE_2, false, StandardCharsets.ISO_8859_1);
 
         assertNotNull(res);
         assertEquals(LINE_2_KOD, res.getKod());
         assertEquals(LINE_2_BESK, res.getBeskrivning());
 
-        res = factory.createDiagnosFromString(LINE_3, false);
+        res = factory.createDiagnosFromString(LINE_3, false, StandardCharsets.ISO_8859_1);
 
         assertNotNull(res);
         assertEquals(LINE_3_KOD, res.getKod());
         assertEquals(LINE_3_BESK, res.getBeskrivning());
 
-        res = factory.createDiagnosFromString(LINE_4, false);
+        res = factory.createDiagnosFromString(LINE_4, false, StandardCharsets.ISO_8859_1);
 
         assertNotNull(res);
         assertEquals(LINE_4_KOD, res.getKod());
@@ -113,22 +112,22 @@ public class DiagnosRepositoryFactoryTest {
     }
 
     @Test
-    public void testWithNullsAndEmpty() {
+    public void testWithStandardCharsetAndEmpty() {
 
-        Diagnos res = factory.createDiagnosFromString(null, false);
+        Diagnos res = factory.createDiagnosFromString(null, false, StandardCharsets.ISO_8859_1);
         assertNull(res);
 
-        res = factory.createDiagnosFromString("", false);
+        res = factory.createDiagnosFromString("", false, StandardCharsets.ISO_8859_1);
         assertNull(res);
 
-        res = factory.createDiagnosFromString("  ", false);
+        res = factory.createDiagnosFromString("  ", false, StandardCharsets.ISO_8859_1);
         assertNull(res);
     }
 
     @Test
     public void testWithMessyString() {
 
-        Diagnos res = factory.createDiagnosFromString(REALLY_MESSY_LINE, false);
+        Diagnos res = factory.createDiagnosFromString(REALLY_MESSY_LINE, false, StandardCharsets.ISO_8859_1);
         assertNotNull(res);
         assertEquals("A050", res.getKod());
         assertEquals("Matförgiftning orsakad av stafylokocker", res.getBeskrivning());
@@ -138,11 +137,22 @@ public class DiagnosRepositoryFactoryTest {
     @Test
     public void testRemoveBOMFromString() {
 
-        Diagnos res = factory.createDiagnosFromString(LINE_WITH_BOM, true);
+        Diagnos res = factory.createDiagnosFromString(LINE_WITH_BOM, true, StandardCharsets.ISO_8859_1);
         assertNotNull(res);
         assertEquals("A050", res.getKod());
         assertEquals("Matförgiftning orsakad av stafylokocker", res.getBeskrivning());
 
     }
 
+    @Test
+    public void testGetDiagnosisFromIcdCodeConverter() {
+        final var tsvContent = "\"A02.2\"\t\"1997-01-01\"\t\"A02\"\t\"Lokaliserade salmonellainfektioner"
+            + "\"\t\"\"\t\"\"\t\"Renal tubulo-interstitiell sjukdom orsakad av salmonella (N16.0*)\"\t\"\""
+            + "\t\"\"\t\"\"\t\"\"\t\"\"\t\"Etiologisk kod (†)\"\t\"\"\t\"\"\t\"Subkategorikod, fyrställig (fem tecken med punkt)\"";
+
+        Diagnos res = factory.createDiagnosFromString(tsvContent, true, StandardCharsets.UTF_8);
+        assertNotNull(res);
+        assertEquals("A022", res.getKod());
+        assertEquals("Lokaliserade salmonellainfektioner", res.getBeskrivning());
+    }
 }
