@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.service.facade.list.config;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListConfig;
 
 public interface ListVariableConfigFacadeService {
+
     ListConfig get(String unitId);
 
     ListConfig update(ListConfig config, String unitId);

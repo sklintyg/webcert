@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -61,9 +61,11 @@ class ListDraftsConfigFacadeServiceImplTest {
     public void setup() {
         when(getStaffInfoFacadeService.getLoggedInStaffHsaId()).thenReturn(DEFAULT_HSA_ID);
         when(getStaffInfoFacadeService.isLoggedInUserDoctor()).thenReturn(true);
-        when(getStaffInfoFacadeService.get()).thenReturn(List.of(new StaffListInfo(HSA_ID, STAFF_NAME), new StaffListInfo(DEFAULT_HSA_ID, DEFAULT_HSA_NAME)));
+        when(getStaffInfoFacadeService.get()).thenReturn(
+            List.of(new StaffListInfo(HSA_ID, STAFF_NAME), new StaffListInfo(DEFAULT_HSA_ID, DEFAULT_HSA_NAME)));
         ListTestHelper.setupUser(webCertUserService, AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
-                LuseEntryPoint.MODULE_ID, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);    }
+            LuseEntryPoint.MODULE_ID, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+    }
 
     @Test
     public void shouldSetSecondaryTitle() {
@@ -103,6 +105,7 @@ class ListDraftsConfigFacadeServiceImplTest {
 
     @Nested
     public class SavedBy {
+
         ListFilterSelectConfig filter;
         ListConfig config;
 
@@ -158,6 +161,7 @@ class ListDraftsConfigFacadeServiceImplTest {
 
     @Nested
     public class Saved {
+
         ListFilterDateRangeConfig filter;
         ListConfig config;
 
@@ -195,6 +199,7 @@ class ListDraftsConfigFacadeServiceImplTest {
 
     @Nested
     public class Forwarded {
+
         ListFilterSelectConfig filter;
         ListConfig config;
 
@@ -232,6 +237,7 @@ class ListDraftsConfigFacadeServiceImplTest {
 
     @Nested
     public class Status {
+
         ListFilterSelectConfig filter;
         ListConfig config;
 
@@ -269,6 +275,7 @@ class ListDraftsConfigFacadeServiceImplTest {
 
     @Nested
     public class PatientId {
+
         ListFilterPersonIdConfig filter;
         ListConfig config;
 
@@ -295,12 +302,13 @@ class ListDraftsConfigFacadeServiceImplTest {
 
         @Test
         public void shouldSetPlaceholder() {
-            assertTrue( filter.getPlaceholder().length() > 0);
+            assertTrue(filter.getPlaceholder().length() > 0);
         }
     }
 
     @Nested
     public class OrderBy {
+
         ListFilterOrderConfig filter;
         ListConfig config;
 
@@ -333,6 +341,7 @@ class ListDraftsConfigFacadeServiceImplTest {
 
     @Nested
     public class PageSize {
+
         ListFilterPageSizeConfig filter;
         ListConfig config;
 
@@ -365,6 +374,7 @@ class ListDraftsConfigFacadeServiceImplTest {
 
     @Nested
     public class Ascending {
+
         ListFilterBooleanConfig filter;
         ListConfig config;
 

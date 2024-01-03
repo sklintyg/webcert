@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,4 +22,5 @@ import org.springframework.context.annotation.ImportResource;
 
 @ImportResource(locations = "classpath:certificates/unit-test-certificate-sender-config.xml")
 public class CertificateCamelTestConfig {
+
 }

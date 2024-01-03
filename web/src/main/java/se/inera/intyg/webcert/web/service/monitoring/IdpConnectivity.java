@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,10 +19,13 @@
 package se.inera.intyg.webcert.web.service.monitoring;
 
 public class IdpConnectivity {
+
     public String url;
     public boolean connected;
 
-    public IdpConnectivity() { }
+    public IdpConnectivity() {
+    }
+
     public IdpConnectivity(String url, boolean connected) {
         this.url = url;
         this.connected = connected;

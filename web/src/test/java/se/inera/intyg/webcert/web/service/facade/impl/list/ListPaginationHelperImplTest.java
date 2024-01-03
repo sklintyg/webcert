@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -100,7 +100,7 @@ class ListPaginationHelperImplTest {
 
     private List<CertificateListItem> createList(int listItems) {
         final var list = new ArrayList<CertificateListItem>();
-        for(int i = 0; i < listItems; i++) {
+        for (int i = 0; i < listItems; i++) {
             list.add(new CertificateListItem());
         }
         return list;

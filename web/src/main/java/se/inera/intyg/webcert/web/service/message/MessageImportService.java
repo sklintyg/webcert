@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -25,8 +25,9 @@ public interface MessageImportService {
 
     /**
      * Check a certificate if import is needed.
+     *
      * @param certificateId Id of the certificate to check
-     * @return  True if import is needed.
+     * @return True if import is needed.
      */
     boolean isImportNeeded(String certificateId);
 

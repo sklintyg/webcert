@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -27,26 +27,26 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.IntygReceiver;
 @Service
 public class CertificateRecipientConverterImpl implements CertificateRecipientConverter {
 
-  private final CertificateReceiverService certificateReceiverService;
+    private final CertificateReceiverService certificateReceiverService;
 
-  public CertificateRecipientConverterImpl(CertificateReceiverService certificateReceiverService) {
-    this.certificateReceiverService = certificateReceiverService;
-  }
+    public CertificateRecipientConverterImpl(CertificateReceiverService certificateReceiverService) {
+        this.certificateReceiverService = certificateReceiverService;
+    }
 
-  @Override
-  public CertificateRecipient get(String type, String certificateId, LocalDateTime sent) {
-    final var recipients = certificateReceiverService.listPossibleReceiversWithApprovedInfo(type, certificateId);
+    @Override
+    public CertificateRecipient get(String type, String certificateId, LocalDateTime sent) {
+        final var recipients = certificateReceiverService.listPossibleReceiversWithApprovedInfo(type, certificateId);
 
-    return recipients
-        .stream()
-        .filter(IntygReceiver::isLocked)
-        .findFirst()
-        .map(recipient -> CertificateRecipient
-            .builder()
-            .id(recipient.getId())
-            .name(recipient.getName())
-            .sent(sent)
-            .build())
-        .orElse(null);
-  }
+        return recipients
+            .stream()
+            .filter(IntygReceiver::isLocked)
+            .findFirst()
+            .map(recipient -> CertificateRecipient
+                .builder()
+                .id(recipient.getId())
+                .name(recipient.getName())
+                .sent(sent)
+                .build())
+            .orElse(null);
+    }
 }

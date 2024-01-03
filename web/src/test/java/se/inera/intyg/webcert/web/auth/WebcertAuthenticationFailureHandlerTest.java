@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -72,7 +72,7 @@ class WebcertAuthenticationFailureHandlerTest {
 
     private static final BadCredentialsException BAD_CREDENTIALS = new BadCredentialsException("Bad credentials exception");
     private static final HsaServiceException HSA_SERVICE = new HsaServiceException("Hsa service exception", new Exception());
-    private static final RememberMeAuthenticationException OTHER_AUTH_EXCEPTION = new  RememberMeAuthenticationException("Other exception");
+    private static final RememberMeAuthenticationException OTHER_AUTH_EXCEPTION = new RememberMeAuthenticationException("Other exception");
     private static final MissingMedarbetaruppdragException MISSING_ASSIGNMENT =
         new MissingMedarbetaruppdragException("Missing assignment exception");
     private static final MissingSubscriptionException MISSING_SUBSCRIPTION =

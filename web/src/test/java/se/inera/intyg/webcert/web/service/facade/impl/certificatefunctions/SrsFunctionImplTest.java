@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,17 +39,20 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @ExtendWith(MockitoExtension.class)
 class SrsFunctionImplTest {
+
     @InjectMocks
     private SrsFunctionImpl srsFunction;
 
     @Nested
     class SrsFunctionTest {
+
         Certificate certificate;
         WebCertUser user = new WebCertUser();
         Map<String, Feature> features = new HashMap<>();
 
         @Nested
         class TestDraft {
+
             @BeforeEach
             void setup() {
                 certificate = new Certificate();
@@ -59,7 +63,8 @@ class SrsFunctionImplTest {
                 certificate.setMetadata(metadata);
             }
 
-            @Nested class SrsFullView {
+            @Nested
+            class SrsFullView {
 
                 @Test
                 void shouldReturnResourceLinkIfFeatureIsActivated() {
@@ -88,6 +93,7 @@ class SrsFunctionImplTest {
 
             @Nested
             class SrsMinimizedView {
+
                 @Test
                 void shouldNotReturnResourceLinkForDraft() {
                     updateUserFeatures(getFeature(true, "lisjp"));
@@ -142,6 +148,7 @@ class SrsFunctionImplTest {
 
             @Nested
             class SrsMinimizedView {
+
                 @Test
                 void shouldReturnResourceLinkIfSigned() {
                     setup(CertificateStatus.SIGNED);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -122,10 +122,10 @@ public class FmbApiController extends AbstractApiController {
         }
 
         return Response.ok(fmbDiagnosInformationService.validateSjukskrivningtidForPatient(
-            MaximalSjukskrivningstidRequest.of(
-                Icd10KoderRequest.of(icd10Kod1, icd10Kod2, icd10Kod3),
-                optionalPersonnummer.get(),
-                periods)))
+                MaximalSjukskrivningstidRequest.of(
+                    Icd10KoderRequest.of(icd10Kod1, icd10Kod2, icd10Kod3),
+                    optionalPersonnummer.get(),
+                    periods)))
             .build();
     }
     // CHECKSTYLE:ON LineLength

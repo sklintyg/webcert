@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -92,7 +92,7 @@ public class RegisterApprovedReceiversProcessor {
         }
     }
 
-    private List<ReceiverApprovalStatus> transformMessageBodyToReceiverList(@Body String jsonBody) throws  TemporaryException {
+    private List<ReceiverApprovalStatus> transformMessageBodyToReceiverList(@Body String jsonBody) throws TemporaryException {
         try {
             return objectMapper.readValue(jsonBody, new TypeReference<>() {
             });

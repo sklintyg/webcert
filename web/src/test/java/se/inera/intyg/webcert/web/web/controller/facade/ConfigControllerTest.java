@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -67,8 +67,8 @@ public class ConfigControllerTest {
             final var links = Map.of("Test", new DynamicLink());
 
             doReturn(links)
-                    .when(dynamicLinkService)
-                    .getAllAsMap();
+                .when(dynamicLinkService)
+                .getAllAsMap();
 
             final var response = (Map<String, DynamicLink>) configController.getDynamicLinks();
             assertTrue(response.containsKey("Test"));
@@ -81,8 +81,8 @@ public class ConfigControllerTest {
             final var banners = List.of(banner);
 
             doReturn(banners)
-                    .when(iaBannerService)
-                    .getCurrentBanners();
+                .when(iaBannerService)
+                .getCurrentBanners();
 
             final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
             assertEquals(response.getBanners().size(), 1);
@@ -95,8 +95,8 @@ public class ConfigControllerTest {
             final var banners = List.of(banner);
 
             doReturn(banners)
-                    .when(iaBannerService)
-                    .getCurrentBanners();
+                .when(iaBannerService)
+                .getCurrentBanners();
 
             final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
             assertEquals(response.getBanners().size(), 0);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -68,8 +68,8 @@ public class ResourceLinkFacadeTestHelper {
 
     public static ResourceLinkDTO get(List<ResourceLinkDTO> resourceLinks, ResourceLinkTypeDTO type) {
         return resourceLinks.stream()
-                .filter(resourceLinkDTO -> resourceLinkDTO.getType().equals(type))
-                .findFirst()
-                .orElse(null);
+            .filter(resourceLinkDTO -> resourceLinkDTO.getType().equals(type))
+            .findFirst()
+            .orElse(null);
     }
 }

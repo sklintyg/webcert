@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,5 +22,6 @@ import se.inera.intyg.common.support.facade.model.user.User;
 import se.inera.intyg.webcert.web.service.facade.impl.ChangeUnitException;
 
 public interface ChangeUnitService {
+
     User change(String unitId) throws ChangeUnitException;
 }

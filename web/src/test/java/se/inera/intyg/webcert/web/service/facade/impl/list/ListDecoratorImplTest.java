@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -64,67 +64,69 @@ class ListDecoratorImplTest {
 
     @Nested
     class CertificateTypeName {
+
         final List<ListIntygEntry> list = new ArrayList<ListIntygEntry>(
-                List.of(ListTestHelper.createListIntygEntry("STATUS", true, true))
+            List.of(ListTestHelper.createListIntygEntry("STATUS", true, true))
         );
 
         @Test
         public void shouldDecorateWithCertificateTypeName() {
-             listDecorator.decorateWithCertificateTypeName(list);
+            listDecorator.decorateWithCertificateTypeName(list);
             assertEquals(1, list.size());
         }
     }
 
     @Nested
     class StaffName {
+
         public void setupStaffWithOnlyLastName() {
             when(hsaEmployeeService.getEmployee(any(), anyString()))
-                    .thenAnswer(
-                            invocation -> {
-                                PersonInformation personInformation = new PersonInformation();
-                                personInformation.setMiddleAndSurName("EXAMPLE_NAME");
-                                personInformation.setPersonHsaId(invocation.getArgument(1));
-                                List<PersonInformation> personInformationList = new ArrayList<>();
-                                personInformationList.add(personInformation);
-                                return personInformationList;
-                            }
-                    );
+                .thenAnswer(
+                    invocation -> {
+                        PersonInformation personInformation = new PersonInformation();
+                        personInformation.setMiddleAndSurName("EXAMPLE_NAME");
+                        personInformation.setPersonHsaId(invocation.getArgument(1));
+                        List<PersonInformation> personInformationList = new ArrayList<>();
+                        personInformationList.add(personInformation);
+                        return personInformationList;
+                    }
+                );
         }
 
         public void setupStaffWithCompleteName() {
             when(hsaEmployeeService.getEmployee(any(), anyString()))
-                    .thenAnswer(
-                            invocation -> {
-                                PersonInformation personInformation = new PersonInformation();
-                                personInformation.setGivenName("FIRST");
-                                personInformation.setMiddleAndSurName("MIDDLE LAST");
-                                personInformation.setPersonHsaId(invocation.getArgument(1));
-                                List<PersonInformation> personInformationList = new ArrayList<>();
-                                personInformationList.add(personInformation);
-                                return personInformationList;
-                            }
-                    );
+                .thenAnswer(
+                    invocation -> {
+                        PersonInformation personInformation = new PersonInformation();
+                        personInformation.setGivenName("FIRST");
+                        personInformation.setMiddleAndSurName("MIDDLE LAST");
+                        personInformation.setPersonHsaId(invocation.getArgument(1));
+                        List<PersonInformation> personInformationList = new ArrayList<>();
+                        personInformationList.add(personInformation);
+                        return personInformationList;
+                    }
+                );
         }
 
         public void setupStaffWithNoLastName() {
             when(hsaEmployeeService.getEmployee(any(), anyString()))
-                    .thenAnswer(
-                            invocation -> {
-                                PersonInformation personInformation = new PersonInformation();
-                                personInformation.setGivenName("FIRST");
-                                personInformation.setPersonHsaId(invocation.getArgument(1));
-                                List<PersonInformation> personInformationList = new ArrayList<>();
-                                personInformationList.add(personInformation);
-                                return personInformationList;
-                            }
-                    );
+                .thenAnswer(
+                    invocation -> {
+                        PersonInformation personInformation = new PersonInformation();
+                        personInformation.setGivenName("FIRST");
+                        personInformation.setPersonHsaId(invocation.getArgument(1));
+                        List<PersonInformation> personInformationList = new ArrayList<>();
+                        personInformationList.add(personInformation);
+                        return personInformationList;
+                    }
+                );
         }
 
         @Test
         public void shouldDecorateWithStaffLastName() {
             setupStaffWithOnlyLastName();
             final List<ListIntygEntry> list = new ArrayList<ListIntygEntry>(
-                    List.of(ListTestHelper.createListIntygEntry("STATUS", true, true))
+                List.of(ListTestHelper.createListIntygEntry("STATUS", true, true))
             );
 
             listDecorator.decorateWithStaffName(list);
@@ -136,7 +138,7 @@ class ListDecoratorImplTest {
         public void shouldDecorateWithStaffFullName() {
             setupStaffWithCompleteName();
             final List<ListIntygEntry> list = new ArrayList<ListIntygEntry>(
-                    List.of(ListTestHelper.createListIntygEntry("STATUS", true, true))
+                List.of(ListTestHelper.createListIntygEntry("STATUS", true, true))
             );
 
             listDecorator.decorateWithStaffName(list);
@@ -148,7 +150,7 @@ class ListDecoratorImplTest {
         public void shouldNotDecorateIfStaffHasNoLastName() {
             setupStaffWithNoLastName();
             final List<ListIntygEntry> list = new ArrayList<ListIntygEntry>(
-                    List.of(ListTestHelper.createListIntygEntry("STATUS", true, true))
+                List.of(ListTestHelper.createListIntygEntry("STATUS", true, true))
             );
 
             listDecorator.decorateWithStaffName(list);
@@ -159,8 +161,9 @@ class ListDecoratorImplTest {
 
     @Nested
     class ProtectedPersonStatus {
+
         final List<ListIntygEntry> list = new ArrayList<ListIntygEntry>(
-                List.of(ListTestHelper.createListIntygEntry("STATUS", true, true))
+            List.of(ListTestHelper.createListIntygEntry("STATUS", true, true))
         );
 
         public void setupPatientStatus(SekretessStatus status, boolean flag) {
@@ -175,7 +178,7 @@ class ListDecoratorImplTest {
 
         public void setupHandleProtectedPatientPrivilege() {
             ListTestHelper.setupUser(webCertUserService, AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
-                    LuseEntryPoint.MODULE_ID, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
+                LuseEntryPoint.MODULE_ID, AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
         }
 
         @Test

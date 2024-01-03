@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -37,7 +37,7 @@ public class ListSignedCertificatesConfigFacadeServiceImpl implements ListConfig
     private static final String RESET_FILTER_TOOLTIP = "Återställ sökfilter för signerade intyg.";
     private static final String DESCRIPTION = "Nedan visas dina signerade intyg för den enhet du är inloggad på.";
     private static final String EMPTY_LIST_TEXT =
-            "Det finns inga signerade intyg de senaste 3 månaderna för den enhet du är inloggad på.";
+        "Det finns inga signerade intyg de senaste 3 månaderna för den enhet du är inloggad på.";
 
     private final WebCertUserService webCertUserService;
 
@@ -71,12 +71,12 @@ public class ListSignedCertificatesConfigFacadeServiceImpl implements ListConfig
     }
 
     public TableHeading[] getTableHeadings() {
-        return new TableHeading[] {
-                TableHeadingFactory.text(ListColumnType.CERTIFICATE_TYPE_NAME),
-                TableHeadingFactory.text(ListColumnType.STATUS, getStatusDescription()),
-                TableHeadingFactory.date(ListColumnType.SIGNED),
-                TableHeadingFactory.patientInfo(ListColumnType.PATIENT_ID),
-                TableHeadingFactory.openButton(ListColumnType.CERTIFICATE_ID)
+        return new TableHeading[]{
+            TableHeadingFactory.text(ListColumnType.CERTIFICATE_TYPE_NAME),
+            TableHeadingFactory.text(ListColumnType.STATUS, getStatusDescription()),
+            TableHeadingFactory.date(ListColumnType.SIGNED),
+            TableHeadingFactory.patientInfo(ListColumnType.PATIENT_ID),
+            TableHeadingFactory.openButton(ListColumnType.CERTIFICATE_ID)
         };
     }
 
@@ -89,8 +89,9 @@ public class ListSignedCertificatesConfigFacadeServiceImpl implements ListConfig
         filters.add(ListFilterConfigFactory.pageSize());
         return filters;
     }
+
     private String getStatusDescription() {
         return "<p>Visar signerade intygets status:<ul><li>Skickat= intyget är signerat och skickat till mottagaren."
-                + "</li><li>Ej skickat= intyget är signerat men inte skickat, intyget kan öppnas och skickas.</li></p>";
+            + "</li><li>Ej skickat= intyget är signerat men inte skickat, intyget kan öppnas och skickas.</li></p>";
     }
 }

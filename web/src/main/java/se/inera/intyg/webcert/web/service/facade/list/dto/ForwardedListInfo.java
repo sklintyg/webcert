@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,10 +19,11 @@
 package se.inera.intyg.webcert.web.service.facade.list.dto;
 
 public class ForwardedListInfo {
-   private boolean forwarded;
-   private String unitName;
-   private String careProviderName;
-   private String certificateType;
+
+    private boolean forwarded;
+    private String unitName;
+    private String careProviderName;
+    private String certificateType;
 
     public ForwardedListInfo(boolean forwarded, String unitName, String careProviderName, String certificateType) {
         this.forwarded = forwarded;

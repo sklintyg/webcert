@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -253,7 +253,7 @@ public class AccessServiceEvaluationTest {
         final var subscriptionInfo = new SubscriptionInfo("date1", "date2");
         subscriptionInfo.setSubscriptionAction(subscriptionAction);
         subscriptionInfo.setCareProvidersMissingSubscription(List.copyOf(missingSubscriptionList));
-        return  subscriptionInfo;
+        return subscriptionInfo;
     }
 
     private List<String> getMissingSubscriptionsList(int numberOfMissingSubscriptions) {
@@ -263,4 +263,4 @@ public class AccessServiceEvaluationTest {
         }
         return careProviderHsaIds;
     }
- }
+}

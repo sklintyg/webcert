@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -58,9 +58,9 @@ public class ResourceLinkListHelperImpl implements ResourceLinkListHelper {
 
     @Autowired
     public ResourceLinkListHelperImpl(CertificateAccessServiceHelper certificateAccessServiceHelper,
-                                      WebCertUserService webCertUserService, UserService userService,
-                                      CertificateRelationsConverter certificateRelationsConverter,
-                                      AuthoritiesHelper authoritiesHelper) {
+        WebCertUserService webCertUserService, UserService userService,
+        CertificateRelationsConverter certificateRelationsConverter,
+        AuthoritiesHelper authoritiesHelper) {
         this.certificateAccessServiceHelper = certificateAccessServiceHelper;
         this.webCertUserService = webCertUserService;
         this.userService = userService;
@@ -91,11 +91,11 @@ public class ResourceLinkListHelperImpl implements ResourceLinkListHelper {
         final var links = new ArrayList<ActionLink>();
 
         final AccessEvaluationParameters accessEvaluationParameters = AccessEvaluationParameters.create(
-                entry.getCertificateType(),
-                entry.getCertificateTypeVersion(),
-                careUnit,
-                Personnummer.createPersonnummer(entry.getCivicRegistrationNumber()).get(),
-                entry.isTestIndicator()
+            entry.getCertificateType(),
+            entry.getCertificateTypeVersion(),
+            careUnit,
+            Personnummer.createPersonnummer(entry.getCivicRegistrationNumber()).get(),
+            entry.isTestIndicator()
         );
 
         if (certificateAccessServiceHelper.isAllowToRead(accessEvaluationParameters)) {
@@ -111,19 +111,19 @@ public class ResourceLinkListHelperImpl implements ResourceLinkListHelper {
 
     private List<ResourceLinkDTO> convertResourceLinks(List<ActionLink> links, CertificateListItemStatus status) {
         return links.stream()
-                .map((link) -> getConvertedResourceLink(link, status))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+            .map((link) -> getConvertedResourceLink(link, status))
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
     }
 
     private List<ResourceLinkDTO> convertResourceLinks(
-                List<ActionLink> links, String unitId, String certificateType,
-                CertificateListItemStatus status, CertificateRelations relations
-            ) {
+        List<ActionLink> links, String unitId, String certificateType,
+        CertificateListItemStatus status, CertificateRelations relations
+    ) {
         return links.stream()
-                .map((link) -> getConvertedResourceLink(link, unitId, certificateType, status, relations))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+            .map((link) -> getConvertedResourceLink(link, unitId, certificateType, status, relations))
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
     }
 
     private ResourceLinkDTO getConvertedResourceLink(ActionLink link, CertificateListItemStatus status) {
@@ -156,13 +156,13 @@ public class ResourceLinkListHelperImpl implements ResourceLinkListHelper {
 
     private boolean validateForward(ActionLink link, CertificateStatus status) {
         return link.getType() == ActionLinkType.VIDAREBEFORDRA_UTKAST
-                && CertificateForwardFunction.validate(status, webCertUserService.getUser());
+            && CertificateForwardFunction.validate(status, webCertUserService.getUser());
     }
 
     private ResourceLinkDTO getConvertedResourceLink(
-                ActionLink link, String savedUnitId, String certificateType,
-                CertificateListItemStatus status, CertificateRelations relations
-            ) {
+        ActionLink link, String savedUnitId, String certificateType,
+        CertificateListItemStatus status, CertificateRelations relations
+    ) {
         final var convertedResourceLink = getConvertedResourceLink(link, status);
         if (convertedResourceLink != null) {
             return convertedResourceLink;
@@ -175,7 +175,7 @@ public class ResourceLinkListHelperImpl implements ResourceLinkListHelper {
 
     private boolean validateRenew(ActionLink link, String certificateType, CertificateRelations relations, CertificateStatus status) {
         return link.getType() == ActionLinkType.FORNYA_INTYG
-                && CertificateRenewFunction.validate(certificateType, relations, status, authoritiesHelper);
+            && CertificateRenewFunction.validate(certificateType, relations, status, authoritiesHelper);
     }
 
     private Vardenhet createCareUnit(String unitId, String caregiverId) {

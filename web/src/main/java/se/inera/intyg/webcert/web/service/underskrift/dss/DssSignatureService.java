@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -272,7 +272,7 @@ public class DssSignatureService {
         final var idpUrl = dssSignMessageIdpProvider.get(
             userService.getUser().getIdentityProviderForSign()
         );
-        
+
         var identityProvider = objectFactorySaml.createNameIDType();
         identityProvider.setFormat("urn:oasis:names:tc:SAML:2.0:nameid-format:entity");
         identityProvider.setValue(idpUrl);

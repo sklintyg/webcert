@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -56,7 +56,8 @@ public class KundportalenStubRestApiServiceTest {
         when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
 
         final var response = kundportalenStubRestApiService.createSubscriptionResponse(ACCESS_TOKEN, SERVICE,
-            List.of("ORGANIZATION_NUMBER_1")).readEntity(new GenericType<List<Map<String, Object>>>(){});
+            List.of("ORGANIZATION_NUMBER_1")).readEntity(new GenericType<List<Map<String, Object>>>() {
+        });
 
         final var serviceCodeList = objectToListOfStrings(response.get(0).get("serviceCode"));
         assertEquals(1, response.size());
@@ -71,7 +72,8 @@ public class KundportalenStubRestApiServiceTest {
         when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
 
         final var response = kundportalenStubRestApiService.createSubscriptionResponse(ACCESS_TOKEN, SERVICE,
-            List.of("ORGANIZATION_NUMBER_2")).readEntity(new GenericType<List<Map<String, Object>>>(){});
+            List.of("ORGANIZATION_NUMBER_2")).readEntity(new GenericType<List<Map<String, Object>>>() {
+        });
 
         final var serviceCodeList = objectToListOfStrings(response.get(0).get("serviceCode"));
         assertEquals(1, response.size());
@@ -87,7 +89,8 @@ public class KundportalenStubRestApiServiceTest {
         when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
 
         final var response = kundportalenStubRestApiService.createSubscriptionResponse(ACCESS_TOKEN, SERVICE,
-            List.of("ORGANIZATION_NUMBER_3")).readEntity(new GenericType<List<Map<String, Object>>>(){});
+            List.of("ORGANIZATION_NUMBER_3")).readEntity(new GenericType<List<Map<String, Object>>>() {
+        });
 
         assertEquals(1, response.size());
         assertEquals("ORGANIZATION_NUMBER_3", response.get(0).get("orgNo"));
@@ -101,7 +104,8 @@ public class KundportalenStubRestApiServiceTest {
         when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
 
         final var response = kundportalenStubRestApiService.createSubscriptionResponse(ACCESS_TOKEN, SERVICE,
-            List.of("ORGANIZATION_NUMBER_1", "ORGANIZATION_NUMBER_2")).readEntity(new GenericType<List<Map<String, Object>>>(){});
+            List.of("ORGANIZATION_NUMBER_1", "ORGANIZATION_NUMBER_2")).readEntity(new GenericType<List<Map<String, Object>>>() {
+        });
 
         assert response != null;
         final var serviceCodeList1 = objectToListOfStrings(response.get(0).get("serviceCode"));
@@ -120,7 +124,8 @@ public class KundportalenStubRestApiServiceTest {
         when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
 
         final var response = kundportalenStubRestApiService.createSubscriptionResponse(ACCESS_TOKEN, SERVICE,
-            List.of("ORGANIZATION_NUMBER_2", "ORGANIZATION_NUMBER_3")).readEntity(new GenericType<List<Map<String, Object>>>(){});
+            List.of("ORGANIZATION_NUMBER_2", "ORGANIZATION_NUMBER_3")).readEntity(new GenericType<List<Map<String, Object>>>() {
+        });
 
         assert response != null;
         assertEquals(2, response.size());
@@ -140,7 +145,8 @@ public class KundportalenStubRestApiServiceTest {
         when(stubState.getServiceCodeList()).thenReturn(List.of("SERVICE_CODE_1", "SERVICE_CODE_2", "SERVICE_CODE_3"));
 
         final var response = kundportalenStubRestApiService.createSubscriptionResponse(ACCESS_TOKEN, SERVICE,
-            List.of("ORGANIZATION_NUMBER_1")).readEntity(new GenericType<List<Map<String, Object>>>() { });
+            List.of("ORGANIZATION_NUMBER_1")).readEntity(new GenericType<List<Map<String, Object>>>() {
+        });
 
         assertEquals(1, response.size());
         assertEquals(3, ((List<?>) response.get(0).get("serviceCode")).size());
@@ -155,7 +161,8 @@ public class KundportalenStubRestApiServiceTest {
         when(stubState.getSubscriptionReturnValue()).thenReturn(setReturnValue);
 
         final var response = kundportalenStubRestApiService.createSubscriptionResponse(ACCESS_TOKEN, SERVICE,
-            List.of("ORGANIZATION_NUMBER_1")).readEntity(new GenericType<List<Map<String, Object>>>() { });
+            List.of("ORGANIZATION_NUMBER_1")).readEntity(new GenericType<List<Map<String, Object>>>() {
+        });
 
         assertEquals(1, response.size());
         assertEquals(0, ((List<?>) response.get(0).get("serviceCode")).size());

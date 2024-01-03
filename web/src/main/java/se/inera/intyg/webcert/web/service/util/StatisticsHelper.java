@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -31,11 +31,11 @@ public class StatisticsHelper {
         Map<String, Long> mergedMap = new HashMap<>();
 
         Set<String> uniqueEnhetsId = Stream.of(fragaSvarStatsMap.keySet(), arendeStatsMap.keySet()).flatMap(Collection::stream).distinct()
-                .collect(Collectors.toSet());
+            .collect(Collectors.toSet());
 
         for (String enhetId : uniqueEnhetsId) {
             Long sum = (fragaSvarStatsMap.get(enhetId) != null ? fragaSvarStatsMap.get(enhetId) : 0)
-                    + (arendeStatsMap.get(enhetId) != null ? arendeStatsMap.get(enhetId) : 0);
+                + (arendeStatsMap.get(enhetId) != null ? arendeStatsMap.get(enhetId) : 0);
             mergedMap.put(enhetId, sum);
         }
         return mergedMap;

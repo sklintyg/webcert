@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -98,7 +98,7 @@ public class CertificateStatusUpdateForCareCreatorTest {
 
     private static final Long EVENT_ID = 1000L;
     private static final HandelsekodEnum EVENT_ENUM = HandelsekodEnum.SKAPAT;
-    private static final LocalDateTime EVENT_TIMESTAMP = LocalDateTime.of(2021, 2, 22, 15, 15,15,123456789);
+    private static final LocalDateTime EVENT_TIMESTAMP = LocalDateTime.of(2021, 2, 22, 15, 15, 15, 123456789);
 
     private static final TextNode UTKAST_JSON = JsonNodeFactory.instance.textNode("UTKAST_JSON");
     private static final String SUBJECT_CODE = "KOMPLT";

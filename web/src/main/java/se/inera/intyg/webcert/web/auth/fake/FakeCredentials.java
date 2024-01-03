@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -148,14 +148,15 @@ public class FakeCredentials implements Serializable, FakeCredential {
     @Override
     public String toString() {
         return "FakeCredentials{"
-                + "hsaId='" + hsaId + '\''
-                + ", fornamn='" + forNamn + '\''
-                + ", efternamn='" + efterNamn + '\''
-                + ", lakare='" + isLakare() + '\''
-                + '}';
+            + "hsaId='" + hsaId + '\''
+            + ", fornamn='" + forNamn + '\''
+            + ", efternamn='" + efterNamn + '\''
+            + ", lakare='" + isLakare() + '\''
+            + '}';
     }
 
     public static class PaTitle {
+
         private String titleCode;
         private String titleName;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -110,6 +110,7 @@ public class AbstractBuilderTest {
     public void expectCallToWebcertUserService() {
         when(webcertUserService.isAuthorizedForUnit(VARDGIVARE_ID, VARDENHET_ID, true)).thenReturn(true);
     }
+
     @Before
     public void expectCallIntygTextService() {
         when(intygTextsService.getLatestVersionForSameMajorVersion(anyString(), anyString())).thenReturn("1.0");

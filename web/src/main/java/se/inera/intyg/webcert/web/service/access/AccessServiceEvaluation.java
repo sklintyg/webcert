@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -765,7 +765,7 @@ public final class AccessServiceEvaluation {
         final var isSubscriptionRequired = subscriptionInfo.getSubscriptionAction() == SubscriptionAction.BLOCK;
 
         if (isFristaendeWebcertUser && isSubscriptionRequired) {
-            final var missingSubscriptions =  subscriptionInfo.getCareProvidersMissingSubscription();
+            final var missingSubscriptions = subscriptionInfo.getCareProvidersMissingSubscription();
             final var selectedCareProvider = webCertUser.getValdVardgivare();
             return selectedCareProvider != null && missingSubscriptions.contains(selectedCareProvider.getId());
         }

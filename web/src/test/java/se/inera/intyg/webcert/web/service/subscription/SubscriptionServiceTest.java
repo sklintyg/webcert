@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -259,7 +259,7 @@ public class SubscriptionServiceTest {
 
     @Test
     public void shouldMonitorLogLoginAttemptsMissingSubscriptionWhenSubscriptionRequired() {
-        final var webcertUser = createWebCertSithsUser(3, 1,2);
+        final var webcertUser = createWebCertSithsUser(3, 1, 2);
 
         setFeaturesHelperMockToReturn(false, true);
         setRestServiceMockToReturn(2);
@@ -690,7 +690,7 @@ public class SubscriptionServiceTest {
     }
 
     private void setMockToReturnRestClientResponseExceptionForUnregistered() {
-        final var e = new RestClientResponseException("MESSAGE_TEXT", 500, "statusText", null,null, null);
+        final var e = new RestClientResponseException("MESSAGE_TEXT", 500, "statusText", null, null, null);
         when(subscriptionRestService.isMissingSubscriptionUnregisteredElegUser(any(String.class))).thenThrow(e);
     }
 
@@ -700,7 +700,7 @@ public class SubscriptionServiceTest {
     }
 
     private void setMockToReturnRestClientResponseException(int httpStatusCode) {
-        final var e = new RestClientResponseException("MESSAGE_TEXT", httpStatusCode, "statusText", null,null, null);
+        final var e = new RestClientResponseException("MESSAGE_TEXT", httpStatusCode, "statusText", null, null, null);
         when(subscriptionRestService.getMissingSubscriptions(any(), any(AuthenticationMethodEnum.class))).thenThrow(e);
     }
 

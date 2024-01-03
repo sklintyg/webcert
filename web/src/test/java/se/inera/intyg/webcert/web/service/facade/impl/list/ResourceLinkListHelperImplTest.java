@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -74,9 +74,9 @@ class ResourceLinkListHelperImplTest {
 
     public void setup(boolean renew, boolean read) {
         final var relations = CertificateRelations
-                .builder()
-                .children(new CertificateRelation[0])
-                .build();
+            .builder()
+            .children(new CertificateRelation[0])
+            .build();
 
         final var unit = new Vardenhet();
         unit.setId("UNIT_ID");
@@ -93,6 +93,7 @@ class ResourceLinkListHelperImplTest {
 
     @Nested
     class RenewCertificate {
+
         @Test
         public void shouldIncludeRenewResourceLinkIfActionLinkExists() {
             setup(true, false);
@@ -121,6 +122,7 @@ class ResourceLinkListHelperImplTest {
 
     @Nested
     class ForwardCertificate {
+
         @Test
         public void shouldIncludeForwardResourceLinkIfActionLinkExists() {
             setup(false, false);
@@ -179,6 +181,7 @@ class ResourceLinkListHelperImplTest {
 
     @Nested
     class ReadCertificate {
+
         @Test
         public void shouldIncludeReadResourceLinkIfActionLinkExists() {
             setup(false, false);

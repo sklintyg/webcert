@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -31,6 +31,7 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 @Service
 public class GetPatientFacadeServiceImpl implements GetPatientFacadeService {
+
     private static final Logger LOG = LoggerFactory.getLogger(GetPatientFacadeServiceImpl.class);
 
     private final PUService puService;
@@ -71,20 +72,20 @@ public class GetPatientFacadeServiceImpl implements GetPatientFacadeService {
         }
 
         return Patient.builder()
-                .personId(
-                        PersonId.builder()
-                                .id(patientId)
-                                .type("")
-                                .build()
-                )
-                .firstName(personSvar.getPerson().getFornamn())
-                .lastName(personSvar.getPerson().getEfternamn())
-                .middleName(personSvar.getPerson().getMellannamn())
-                .fullName(getFullName(personSvar))
-                .deceased(personSvar.getPerson().isAvliden())
-                .protectedPerson(personSvar.getPerson().isSekretessmarkering())
-                .testIndicated(personSvar.getPerson().isTestIndicator())
-                .build();
+            .personId(
+                PersonId.builder()
+                    .id(patientId)
+                    .type("")
+                    .build()
+            )
+            .firstName(personSvar.getPerson().getFornamn())
+            .lastName(personSvar.getPerson().getEfternamn())
+            .middleName(personSvar.getPerson().getMellannamn())
+            .fullName(getFullName(personSvar))
+            .deceased(personSvar.getPerson().isAvliden())
+            .protectedPerson(personSvar.getPerson().isSekretessmarkering())
+            .testIndicated(personSvar.getPerson().isTestIndicator())
+            .build();
     }
 
     private String getFullName(PersonSvar personSvar) {

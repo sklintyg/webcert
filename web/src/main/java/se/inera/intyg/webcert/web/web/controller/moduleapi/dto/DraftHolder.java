@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -71,7 +71,6 @@ public class DraftHolder {
     private UtkastCandidateMetaData candidateMetaData;
 
     private boolean isTestIntyg = false;
-
 
     // Getters and Setters
 

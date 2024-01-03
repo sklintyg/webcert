@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -57,7 +57,7 @@ public class InvalidateSessionServiceImpl implements InvalidateSessionService {
             removeSession(invalidateRequest.getLaunchId());
         } else {
             LOG.info("InvalidateSessionServiceImpl called - launchId: {} - hsaId: {} did not match with session stored in redis,"
-                    + " session is not removed", invalidateRequest.getLaunchId(), invalidateRequest.getUserHsaId());
+                + " session is not removed", invalidateRequest.getLaunchId(), invalidateRequest.getUserHsaId());
         }
     }
 

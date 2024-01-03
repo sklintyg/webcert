@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -100,7 +100,8 @@ public class ArendeServiceImplTest {
         Mockito.doReturn(hsaNames).when(arendeService).getNamesByHsaIds(any());
         WebCertUser user = Mockito.mock(WebCertUser.class);
         Mockito.when(webcertUserService.getUser()).thenReturn(user);
-        Mockito.when(authoritiesHelper.getIntygstyperForPrivilege(eq(user), anyString())).thenReturn(new HashSet<>(Arrays.asList("a", "b")));
+        Mockito.when(authoritiesHelper.getIntygstyperForPrivilege(eq(user), anyString()))
+            .thenReturn(new HashSet<>(Arrays.asList("a", "b")));
 
         //Names in arende
         final Arende arende1 = buildArende("sign1", "B", "enhet");
@@ -141,22 +142,22 @@ public class ArendeServiceImplTest {
 
     private Arende buildArende(String signeratAv, String signeratAvName, String enhet, Status status, String meddelandeId) {
         return buildArende(signeratAv, signeratAvName, enhet, status, "PAMINNELSE_MEDDELANDE_ID", "SVAR_PA_ID", "SKICKAT_AV",
-                LocalDate.now(),
-                ArendeAmne.OVRIGT, Boolean.TRUE, LocalDateTime.now(), meddelandeId);
+            LocalDate.now(),
+            ArendeAmne.OVRIGT, Boolean.TRUE, LocalDateTime.now(), meddelandeId);
     }
 
     private Arende buildArende(String signeratAv, String signeratAvName, String enhet, Status status, String paminnelseMeddelandeId,
-                               String svarPaId,
-                               String skickatAv, LocalDate sistaDatumForSvar, ArendeAmne amne, Boolean vidarebefordrad, LocalDateTime senasteHandelse,
-                               String meddelandeId) {
+        String svarPaId,
+        String skickatAv, LocalDate sistaDatumForSvar, ArendeAmne amne, Boolean vidarebefordrad, LocalDateTime senasteHandelse,
+        String meddelandeId) {
         return buildArende(signeratAv, signeratAvName, enhet, status, paminnelseMeddelandeId, svarPaId, skickatAv, sistaDatumForSvar, amne,
-                vidarebefordrad, senasteHandelse, meddelandeId, "vardaktorName");
+            vidarebefordrad, senasteHandelse, meddelandeId, "vardaktorName");
     }
 
     private Arende buildArende(String signeratAv, String signeratAvName, String enhet, Status status, String paminnelseMeddelandeId,
-                               String svarPaId,
-                               String skickatAv, LocalDate sistaDatumForSvar, ArendeAmne amne, Boolean vidarebefordrad, LocalDateTime senasteHandelse,
-                               String meddelandeId, String vardaktorName) {
+        String svarPaId,
+        String skickatAv, LocalDate sistaDatumForSvar, ArendeAmne amne, Boolean vidarebefordrad, LocalDateTime senasteHandelse,
+        String meddelandeId, String vardaktorName) {
         Arende res = new Arende();
         res.setAmne(amne);
         res.setIntygsId("INTYG_ID");

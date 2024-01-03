@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -44,10 +44,10 @@ public class ListSignedCertificatesFacadeServiceImpl implements ListSignedCertif
 
     @Autowired
     public ListSignedCertificatesFacadeServiceImpl(WebCertUserService webCertUserService,
-                                                   CertificateService certificateService,
-                                                   CertificateFilterConverter certificateFilterConverter,
-                                                   CertificateListItemConverter certificateListItemConverter,
-                                                   GetStaffInfoFacadeService getStaffInfoFacadeService) {
+        CertificateService certificateService,
+        CertificateFilterConverter certificateFilterConverter,
+        CertificateListItemConverter certificateListItemConverter,
+        GetStaffInfoFacadeService getStaffInfoFacadeService) {
         this.webCertUserService = webCertUserService;
         this.certificateService = certificateService;
         this.certificateFilterConverter = certificateFilterConverter;
@@ -65,9 +65,9 @@ public class ListSignedCertificatesFacadeServiceImpl implements ListSignedCertif
 
         final var listResponse = certificateService.listCertificatesForDoctor(convertedFilter);
         final var convertedList = listResponse.getCertificates()
-                .stream()
-                .map(certificateListItemConverter::convert)
-                .collect(Collectors.toList());
+            .stream()
+            .map(certificateListItemConverter::convert)
+            .collect(Collectors.toList());
 
         return new ListInfo(listResponse.getTotalCount(), convertedList);
     }

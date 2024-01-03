@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -54,7 +54,8 @@ public final class NotificationRedeliveryUtil {
 
     private static final String TEMPORARY_ARBETSPLATSKOD = "TEMPORARY ARBETSPLATSKOD";
 
-    private NotificationRedeliveryUtil() { }
+    private NotificationRedeliveryUtil() {
+    }
 
     public static <T extends IIType> T getIIType(T iiType, String extension, String root) {
         if (extension == null) {

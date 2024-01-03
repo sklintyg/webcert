@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -60,13 +60,13 @@ class ListTestHelper {
     }
 
     public static WebCertUser setupUser(
-            WebCertUserService webcertUserService, String privilegeString, String intygType, Vardenhet unit, String... features
+        WebCertUserService webcertUserService, String privilegeString, String intygType, Vardenhet unit, String... features
     ) {
         return setupUser(webcertUserService, false, privilegeString, intygType, unit, features);
     }
 
     public static WebCertUser setupUser(
-            WebCertUserService webcertUserService, String privilegeString, String intygType, String... features
+        WebCertUserService webcertUserService, String privilegeString, String intygType, String... features
     ) {
         WebCertUser user = new WebCertUser();
         user.setAuthorities(new HashMap<>());
@@ -94,7 +94,7 @@ class ListTestHelper {
     }
 
     public static WebCertUser setupUser(WebCertUserService webcertUserService, boolean isPrivatePractitioner,
-                                        String privilegeString, String intygType, Vardenhet unit, String... features) {
+        String privilegeString, String intygType, Vardenhet unit, String... features) {
         WebCertUser user = new WebCertUser();
         user.setAuthorities(new HashMap<>());
         user.getFeatures().putAll(Stream.of(features).collect(Collectors.toMap(Function.identity(), s -> {
@@ -195,7 +195,7 @@ class ListTestHelper {
     }
 
     public static ListIntygEntry createListIntygEntry(String status, boolean includePatientStatuses,
-                                                      boolean forwarded, String patientId, ActionLink link) {
+        boolean forwarded, String patientId, ActionLink link) {
         final var listIntygEntry = new ListIntygEntry();
         listIntygEntry.setIntygType("luse");
         listIntygEntry.setIntygId("CERTIFICATE_ID");
@@ -210,7 +210,7 @@ class ListTestHelper {
         listIntygEntry.setUpdatedSignedById("HSA_ID");
         listIntygEntry.setVardenhetId("UNIT_ID");
         listIntygEntry.setVardgivarId("CARE_PROVIDER_ID");
-        if(link != null) {
+        if (link != null) {
             listIntygEntry.addLink(link);
         }
         return listIntygEntry;

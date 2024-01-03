@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -144,14 +144,14 @@ public class CertificateEventServiceImplTest {
         verify(eventRepository).findByCertificateId(UTKAST_CERTIFICATE_ID);
         verify(intygService).fetchIntygDataForInternalUse(UTKAST_CERTIFICATE_ID, true);
         assertTrue("Expects a NYFRFM event", eventList.stream()
-                .anyMatch(certificateEvent -> certificateEvent.getEventCode() == EventCode.NYFRFM
-                        && earlierEventTimestamp.equals(certificateEvent.getTimestamp())));
+            .anyMatch(certificateEvent -> certificateEvent.getEventCode() == EventCode.NYFRFM
+                && earlierEventTimestamp.equals(certificateEvent.getTimestamp())));
         assertTrue("Expects a KOMPLBEGARAN event", eventList.stream()
-                .anyMatch(certificateEvent -> certificateEvent.getEventCode() == EventCode.KOMPLBEGARAN
-                        && latestEventTimestamp.equals(certificateEvent.getTimestamp())));
+            .anyMatch(certificateEvent -> certificateEvent.getEventCode() == EventCode.KOMPLBEGARAN
+                && latestEventTimestamp.equals(certificateEvent.getTimestamp())));
         assertTrue("Expects a PAMINNELSE event", eventList.stream()
-                .anyMatch(certificateEvent -> certificateEvent.getEventCode() == EventCode.PAMINNELSE
-                        && newMessageTimestamp.equals(certificateEvent.getTimestamp())));
+            .anyMatch(certificateEvent -> certificateEvent.getEventCode() == EventCode.PAMINNELSE
+                && newMessageTimestamp.equals(certificateEvent.getTimestamp())));
     }
 
     @Test
@@ -318,7 +318,8 @@ public class CertificateEventServiceImplTest {
         final var result = eventService.getCertificateEvents(INTYG_CERTIFICATE_ID);
 
         assertFalse(result.isEmpty());
-        assertTrue("Expects a KOMPLBEGARAN event", result.stream().anyMatch(certificateEvent -> certificateEvent.getEventCode() == EventCode.KOMPLBEGARAN));
+        assertTrue("Expects a KOMPLBEGARAN event",
+            result.stream().anyMatch(certificateEvent -> certificateEvent.getEventCode() == EventCode.KOMPLBEGARAN));
     }
 
     @Test
@@ -390,31 +391,31 @@ public class CertificateEventServiceImplTest {
         status.add(new se.inera.intyg.common.support.model.Status(CertificateState.SENT, "FKASSA", LocalDateTime.now()));
 
         return IntygContentHolder.builder()
-                .setContents("<external-json/>")
-                .setUtlatande(getUtlatande())
-                .setStatuses(status)
-                .setRevoked(false)
-                .setDeceased(false)
-                .setSekretessmarkering(false)
-                .setPatientNameChangedInPU(false)
-                .setPatientAddressChangedInPU(false)
-                .setTestIntyg(false)
-                .build();
+            .setContents("<external-json/>")
+            .setUtlatande(getUtlatande())
+            .setStatuses(status)
+            .setRevoked(false)
+            .setDeceased(false)
+            .setSekretessmarkering(false)
+            .setPatientNameChangedInPU(false)
+            .setPatientAddressChangedInPU(false)
+            .setTestIntyg(false)
+            .build();
     }
 
     private IntygContentHolder getIntygContentHolderGeneratingNoEvents() {
 
         IntygContentHolder certificate = IntygContentHolder.builder()
-                .setContents("<external-json/>")
-                .setUtlatande(getUtlatande())
-                .setStatuses(null)
-                .setRevoked(false)
-                .setDeceased(false)
-                .setSekretessmarkering(false)
-                .setPatientNameChangedInPU(false)
-                .setPatientAddressChangedInPU(false)
-                .setTestIntyg(false)
-                .build();
+            .setContents("<external-json/>")
+            .setUtlatande(getUtlatande())
+            .setStatuses(null)
+            .setRevoked(false)
+            .setDeceased(false)
+            .setSekretessmarkering(false)
+            .setPatientNameChangedInPU(false)
+            .setPatientAddressChangedInPU(false)
+            .setTestIntyg(false)
+            .build();
 
         certificate.getUtlatande().getGrundData().setSigneringsdatum(null);
 
@@ -426,7 +427,7 @@ public class CertificateEventServiceImplTest {
         // create mocked Utlatande from intygstjansten
         try {
             return new CustomObjectMapper().readValue(new ClassPathResource(
-                    "FragaSvarServiceImplTest/utlatande.json").getFile(), Fk7263Utlatande.class);
+                "FragaSvarServiceImplTest/utlatande.json").getFile(), Fk7263Utlatande.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

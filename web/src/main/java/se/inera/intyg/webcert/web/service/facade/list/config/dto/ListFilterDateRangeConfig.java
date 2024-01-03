@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,12 +19,13 @@
 package se.inera.intyg.webcert.web.service.facade.list.config.dto;
 
 public class ListFilterDateRangeConfig extends ListFilterConfig {
+
     private ListFilterDateConfig to;
     private ListFilterDateConfig from;
     private boolean forbidFutureDates;
 
     public ListFilterDateRangeConfig(String id, String title, ListFilterDateConfig to,
-                                     ListFilterDateConfig from, boolean forbidFutureDates) {
+        ListFilterDateConfig from, boolean forbidFutureDates) {
         super(ListFilterType.DATE_RANGE, id, title);
         this.to = to;
         this.from = from;
@@ -32,7 +33,7 @@ public class ListFilterDateRangeConfig extends ListFilterConfig {
     }
 
     public ListFilterDateRangeConfig(String id, String title, ListFilterDateConfig to,
-                                     ListFilterDateConfig from, boolean forbidFutureDates, String description) {
+        ListFilterDateConfig from, boolean forbidFutureDates, String description) {
         super(ListFilterType.DATE_RANGE, id, title, false, description);
         this.to = to;
         this.from = from;

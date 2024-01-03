@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -44,7 +44,7 @@ class ListPreviousCertificatesConfigFacadeServiceImplTest {
     @Test
     public void shouldSetSecondaryTitle() {
         final var config = listPreviousCertificatesConfigFacadeService.get();
-        assertEquals("Tidigare intyg",config.getSecondaryTitle());
+        assertEquals("Tidigare intyg", config.getSecondaryTitle());
     }
 
     @Test
@@ -79,6 +79,7 @@ class ListPreviousCertificatesConfigFacadeServiceImplTest {
 
     @Nested
     public class RadioStatusFilter {
+
         ListFilterRadioConfig filter;
         ListConfig config;
 
@@ -116,6 +117,7 @@ class ListPreviousCertificatesConfigFacadeServiceImplTest {
 
     @Nested
     public class OrderBy {
+
         ListFilterOrderConfig filter;
         ListConfig config;
 
@@ -148,6 +150,7 @@ class ListPreviousCertificatesConfigFacadeServiceImplTest {
 
     @Nested
     public class PageSize {
+
         ListFilterPageSizeConfig filter;
         ListConfig config;
 
@@ -180,6 +183,7 @@ class ListPreviousCertificatesConfigFacadeServiceImplTest {
 
     @Nested
     public class Ascending {
+
         ListFilterBooleanConfig filter;
         ListConfig config;
 

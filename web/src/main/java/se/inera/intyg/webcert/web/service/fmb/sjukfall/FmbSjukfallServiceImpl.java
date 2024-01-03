@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -107,8 +107,9 @@ public class FmbSjukfallServiceImpl implements FmbSjukfallService {
 
     /**
      * Calculate the sum of periods and adding one day to include both start and end date.
-     * @param periods   Periods to calculate the sum.
-     * @return  Total number of days.
+     *
+     * @param periods Periods to calculate the sum.
+     * @return Total number of days.
      */
     private int getTotalNumberOfDaysFromPeriods(List<Period> periods) {
         return periods.stream()
@@ -175,7 +176,7 @@ public class FmbSjukfallServiceImpl implements FmbSjukfallService {
      * If the last formagas slutdatum is in the past, then use that date instead of now.
      *
      * @param intygData List of intygData to consider.
-     * @return  Date to consider as active.
+     * @return Date to consider as active.
      */
     private LocalDate calculateWhichActiveDateToUse(List<IntygData> intygData) {
         final LocalDate now = LocalDate.now();
@@ -215,7 +216,7 @@ public class FmbSjukfallServiceImpl implements FmbSjukfallService {
      * Add the difference between the ealiest from date and now to the MAX_GAP to cater for this.
      *
      * @param periods Periods to calculate max days since now.
-     * @return  Number of max days since now.
+     * @return Number of max days since now.
      */
     private int calculateMaxDaysSinceNow(List<Period> periods) {
         if (periods.size() == 0) {

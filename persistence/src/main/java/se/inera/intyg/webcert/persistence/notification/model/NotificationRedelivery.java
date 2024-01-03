@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -54,7 +54,8 @@ public class NotificationRedelivery {
     @Column(name = "ATTEMPTED_DELIVERIES")
     private Integer attemptedDeliveries;
 
-    public NotificationRedelivery() { }
+    public NotificationRedelivery() {
+    }
 
     public NotificationRedelivery(String correlationId, Long eventId, byte[] message, NotificationRedeliveryStrategyEnum redeliveryStrategy,
         LocalDateTime redeliveryTime, Integer attemptedDeliveries) {

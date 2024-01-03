@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -53,7 +53,7 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
 
     @Autowired
     public CertificateListItemConverterImpl(HsaOrganizationsService hsaOrganizationsService,
-                                            ResourceLinkListHelper resourceLinkListHelper) {
+        ResourceLinkListHelper resourceLinkListHelper) {
         this.hsaOrganizationsService = hsaOrganizationsService;
         this.resourceLinkListHelper = resourceLinkListHelper;
     }
@@ -84,7 +84,7 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
         listItem.addValue(ListColumnType.SAVED, listIntygEntry.getLastUpdatedSigned());
         listItem.addValue(ListColumnType.PATIENT_ID, patientListInfo);
         listItem.addValue(listType == ListType.DRAFTS ? ListColumnType.SAVED_BY : ListColumnType.SAVED_SIGNED_BY,
-                listIntygEntry.getUpdatedSignedBy()
+            listIntygEntry.getUpdatedSignedBy()
         );
         listItem.addValue(ListColumnType.CERTIFICATE_ID, listIntygEntry.getIntygId());
         listItem.addValue(ListColumnType.LINKS, convertedLinks);
@@ -111,8 +111,8 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
 
         if (isAllowedToForward(convertedLinks)) {
             listItem.addValue(
-                    ListColumnType.FORWARD_CERTIFICATE,
-                    getForwardedListInfo(entry.getEnhetsnamn(), entry.getVardgivarnamn(), entry.isVidarebefordrad(), entry.getIntygTyp())
+                ListColumnType.FORWARD_CERTIFICATE,
+                getForwardedListInfo(entry.getEnhetsnamn(), entry.getVardgivarnamn(), entry.isVidarebefordrad(), entry.getIntygTyp())
             );
         }
 
@@ -182,7 +182,7 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
     }
 
     private boolean checkActiveRelation(WebcertCertificateRelation relationFromCertificate, WebcertCertificateRelation relationFromDraft) {
-        return  (relationFromCertificate != null && !relationFromCertificate.isMakulerat()) || relationFromDraft != null;
+        return (relationFromCertificate != null && !relationFromCertificate.isMakulerat()) || relationFromDraft != null;
     }
 
     private boolean isReplaced(Relations relations) {
@@ -219,34 +219,34 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
 
     private PatientListInfo getPatientListInfo(ListIntygEntry listIntygEntry) {
         return new PatientListInfo(
-                listIntygEntry.getPatientId().getPersonnummerWithDash(),
-                listIntygEntry.isSekretessmarkering(),
-                listIntygEntry.isAvliden(),
-                listIntygEntry.isTestIntyg()
+            listIntygEntry.getPatientId().getPersonnummerWithDash(),
+            listIntygEntry.isSekretessmarkering(),
+            listIntygEntry.isAvliden(),
+            listIntygEntry.isTestIntyg()
         );
     }
 
     private PatientListInfo getPatientListInfo(ArendeListItem listIntygEntry) {
         return new PatientListInfo(
-                listIntygEntry.getPatientId(),
-                listIntygEntry.isSekretessmarkering(),
-                listIntygEntry.isAvliden(),
-                listIntygEntry.isTestIntyg()
+            listIntygEntry.getPatientId(),
+            listIntygEntry.isSekretessmarkering(),
+            listIntygEntry.isAvliden(),
+            listIntygEntry.isTestIntyg()
         );
     }
 
     private PatientListInfo getPatientListInfo(CertificateListEntry certificateListEntry) {
         return new PatientListInfo(
-                certificateListEntry.getCivicRegistrationNumber(),
-                certificateListEntry.isProtectedIdentity(),
-                certificateListEntry.isDeceased(),
-                certificateListEntry.isTestIndicator()
+            certificateListEntry.getCivicRegistrationNumber(),
+            certificateListEntry.isProtectedIdentity(),
+            certificateListEntry.isDeceased(),
+            certificateListEntry.isTestIndicator()
         );
     }
 
     private boolean isAllowedToForward(List<ResourceLinkDTO> links) {
         return links.stream().anyMatch((link) ->
-                link.getType() == ResourceLinkTypeDTO.FORWARD_CERTIFICATE || link.getType() == ResourceLinkTypeDTO.FORWARD_QUESTION
+            link.getType() == ResourceLinkTypeDTO.FORWARD_CERTIFICATE || link.getType() == ResourceLinkTypeDTO.FORWARD_QUESTION
         );
     }
 
@@ -258,9 +258,9 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
 
     private ForwardedListInfo getForwardedListInfo(String unitName, String careGiverName, boolean isForwarded, String certificateType) {
         return new ForwardedListInfo(
-                isForwarded,
-                unitName,
-                careGiverName,
-                certificateType);
+            isForwarded,
+            unitName,
+            careGiverName,
+            certificateType);
     }
 }

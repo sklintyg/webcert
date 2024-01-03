@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -70,8 +70,8 @@ public class DiagnosInformationRepositoryTest {
 
         final List<Icd10Kod> icd10KodList = Arrays
             .asList(createIcd10Item("A10", Arrays.asList(
-                createTypFall(14, "2", "wk"),
-                createTypFall(10, "10", "d"))),
+                    createTypFall(14, "2", "wk"),
+                    createTypFall(10, "10", "d"))),
                 createIcd10Item("B10", Arrays.asList(
                     createTypFall(9, "9", "d"),
                     createTypFall(61, "2", "mo"))));

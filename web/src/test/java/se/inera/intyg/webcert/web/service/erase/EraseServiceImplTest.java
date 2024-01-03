@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -441,7 +441,7 @@ class EraseServiceImplTest {
         final var random = new Random();
         final var ids = new ArrayList<Long>();
         for (int i = 0; i < 3; i++) {
-            ids.add(min + (long)(random.nextDouble()*(max - min)));
+            ids.add(min + (long) (random.nextDouble() * (max - min)));
         }
         eventIds.add(ids);
         return ids;

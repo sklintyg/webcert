@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -40,9 +40,9 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
     private static final String OPEN_CERTIFICATE_TOOLTIP = "Öppnar intyget och frågan/svaret.";
     private static final String SEARCH_CERTIFICATE_TOOLTIP = "Sök efter frågor och svar.";
     private static final String DESCRIPTION =
-            "Nedan visas ej hanterade ärenden, kompletteringsbegäran och administrativa frågor, för den eller de enheter du väljer.";
+        "Nedan visas ej hanterade ärenden, kompletteringsbegäran och administrativa frågor, för den eller de enheter du väljer.";
     private static final String EMPTY_LIST_TEXT =
-            "Det finns inga ohanterade ärenden för den enhet eller de enheter du är inloggad på.";
+        "Det finns inga ohanterade ärenden för den enhet eller de enheter du är inloggad på.";
     private static final String RESET_FILTER_TOOLTIP = "Återställ sökfilter för ej hanterade ärenden.";
 
     private final GetStaffInfoFacadeService getStaffInfoFacadeService;
@@ -52,9 +52,9 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
 
     @Autowired
     public ListQuestionsConfigFacadeServiceImpl(GetStaffInfoFacadeService getStaffInfoFacadeService,
-                                                UserStatisticsService userStatisticsService,
-                                                WebCertUserService webCertUserService,
-                                                HsaOrganizationsService hsaOrganizationsService) {
+        UserStatisticsService userStatisticsService,
+        WebCertUserService webCertUserService,
+        HsaOrganizationsService hsaOrganizationsService) {
         this.getStaffInfoFacadeService = getStaffInfoFacadeService;
         this.userStatisticsService = userStatisticsService;
         this.webCertUserService = webCertUserService;
@@ -78,9 +78,9 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
 
     private Optional<ListFilterConfig> getFilterFromId(List<ListFilterConfig> currentFilters, String id) {
         return currentFilters
-                .stream()
-                .filter((filter) -> filter.getId().equals(id))
-                .findFirst();
+            .stream()
+            .filter((filter) -> filter.getId().equals(id))
+            .findFirst();
     }
 
     private List<ListFilterConfig> removeFilter(ListConfig config, String unit) {
@@ -125,7 +125,7 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
     }
 
     public TableHeading[] getTableHeadings() {
-        return new TableHeading[] {
+        return new TableHeading[]{
             TableHeadingFactory.text(ListColumnType.QUESTION_ACTION),
             TableHeadingFactory.text(ListColumnType.SENDER),
             TableHeadingFactory.patientInfo(ListColumnType.PATIENT_ID),
@@ -185,23 +185,23 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
         final var subUnits = hsaOrganizationsService.getVardenhet(loggedInUnit.getId()).getMottagningar();
 
         final var list = statistics.getUnitStatistics()
-                .entrySet()
-                .stream()
-                .filter(
-                        (unit) -> subUnits
-                                .stream()
-                                .map(AbstractVardenhet::getId)
-                                .anyMatch(
-                                        (subUnitId) -> isMatchedUnit(
-                                                subUnitId, unit.getKey()) || isMatchedUnit(loggedInUnit.getId(), unit.getKey()
-                                        )
-                                )
-                )
-                .sorted(sortUnitFirstAndSubUnitsAlphabetical(loggedInUnit.getId()))
-                .map(
-                        (unit) -> getUnitSelectOption(unit.getKey(), unit.getValue())
-                )
-                .collect(Collectors.toList());
+            .entrySet()
+            .stream()
+            .filter(
+                (unit) -> subUnits
+                    .stream()
+                    .map(AbstractVardenhet::getId)
+                    .anyMatch(
+                        (subUnitId) -> isMatchedUnit(
+                            subUnitId, unit.getKey()) || isMatchedUnit(loggedInUnit.getId(), unit.getKey()
+                        )
+                    )
+            )
+            .sorted(sortUnitFirstAndSubUnitsAlphabetical(loggedInUnit.getId()))
+            .map(
+                (unit) -> getUnitSelectOption(unit.getKey(), unit.getValue())
+            )
+            .collect(Collectors.toList());
 
         list.add(0, ListFilterConfigValue.create("", getShowAllText(loggedInUnit.getId(), statistics), true));
 
@@ -216,9 +216,9 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
 
     private Comparator<Map.Entry<String, UnitStatisticsDTO>> sortUnitFirstAndSubUnitsAlphabetical(String unitId) {
         return (o1, o2) -> isMatchedUnit(o1.getKey(), unitId) ? -1
-                : isMatchedUnit(o2.getKey(), unitId) ? 1 :
+            : isMatchedUnit(o2.getKey(), unitId) ? 1 :
                 hsaOrganizationsService.getVardenhet(o1.getKey()).getNamn()
-                        .compareTo(hsaOrganizationsService.getVardenhet(o2.getKey()).getNamn());
+                    .compareTo(hsaOrganizationsService.getVardenhet(o2.getKey()).getNamn());
     }
 
     private boolean isMatchedUnit(String subUnitId, String unitId) {

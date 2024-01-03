@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -122,7 +122,7 @@ public class FmbSjukfallServiceImplTest {
         final ListActiveSickLeavesForCareUnitType actualRequest = requestCaptor.getValue();
 
         assertEquals(VARDENHET_VE1, actualRequest.getEnhetsId().getExtension());
-        assertThat(tid).isEqualTo((int) DAYS.between(START_DATUM, SLUT_DATUM)+1);
+        assertThat(tid).isEqualTo((int) DAYS.between(START_DATUM, SLUT_DATUM) + 1);
 
     }
 
@@ -158,7 +158,7 @@ public class FmbSjukfallServiceImplTest {
         final ListActiveSickLeavesForCareUnitType actualRequest = requestCaptor.getValue();
 
         assertEquals(VARDENHET_VE1, actualRequest.getEnhetsId().getExtension());
-        assertThat(tid).isEqualTo((int) DAYS.between(START_DATUM, SLUT_DATUM)+1);
+        assertThat(tid).isEqualTo((int) DAYS.between(START_DATUM, SLUT_DATUM) + 1);
 
     }
 
@@ -231,7 +231,7 @@ public class FmbSjukfallServiceImplTest {
         final ListActiveSickLeavesForCareUnitType actualRequest = requestCaptor.getValue();
 
         assertEquals(VARDENHET_VE1, actualRequest.getEnhetsId().getExtension());
-        assertThat(tid).isEqualTo((int) DAYS.between(START_DATUM, SLUT_DATUM) +1);
+        assertThat(tid).isEqualTo((int) DAYS.between(START_DATUM, SLUT_DATUM) + 1);
 
     }
 
@@ -239,7 +239,7 @@ public class FmbSjukfallServiceImplTest {
         SjukfallEnhet sjukfallEnhet = new SjukfallEnhet();
         sjukfallEnhet.setStart(start);
         sjukfallEnhet.setSlut(slut);
-        sjukfallEnhet.setDagar((int) DAYS.between(start, slut) +1);
+        sjukfallEnhet.setDagar((int) DAYS.between(start, slut) + 1);
         sjukfallEnhet.setAktivGrad(100);
 
         return sjukfallEnhet;

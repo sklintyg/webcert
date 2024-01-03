@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -115,9 +115,9 @@ public class CertificateRelationServiceImplTest {
 
     private List<WebcertCertificateRelation> buildChildRelations() {
         return Stream.of(
-            new WebcertCertificateRelation(CHILD_INTYG_ID_1, RelationKod.ERSATT, LocalDateTime.now().minusDays(5),
-                UtkastStatus.DRAFT_INCOMPLETE, false),
-            new WebcertCertificateRelation(CHILD_INTYG_ID_2, RelationKod.KOMPLT, LocalDateTime.now(), UtkastStatus.SIGNED, false))
+                new WebcertCertificateRelation(CHILD_INTYG_ID_1, RelationKod.ERSATT, LocalDateTime.now().minusDays(5),
+                    UtkastStatus.DRAFT_INCOMPLETE, false),
+                new WebcertCertificateRelation(CHILD_INTYG_ID_2, RelationKod.KOMPLT, LocalDateTime.now(), UtkastStatus.SIGNED, false))
             .collect(Collectors.toList());
     }
 

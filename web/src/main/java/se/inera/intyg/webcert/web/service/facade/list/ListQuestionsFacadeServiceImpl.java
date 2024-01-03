@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -51,10 +51,10 @@ public class ListQuestionsFacadeServiceImpl implements ListSignedCertificatesFac
 
     @Autowired
     public ListQuestionsFacadeServiceImpl(QuestionFilterConverter questionFilterConverter,
-                                          CertificateListItemConverter certificateListItemConverter,
-                                          ArendeService arendeService,
-                                          WebCertUserService webCertUserService,
-                                          CertificateAccessServiceHelper certificateAccessServiceHelper) {
+        CertificateListItemConverter certificateListItemConverter,
+        ArendeService arendeService,
+        WebCertUserService webCertUserService,
+        CertificateAccessServiceHelper certificateAccessServiceHelper) {
         this.questionFilterConverter = questionFilterConverter;
         this.certificateListItemConverter = certificateListItemConverter;
         this.arendeService = arendeService;
@@ -70,10 +70,10 @@ public class ListQuestionsFacadeServiceImpl implements ListSignedCertificatesFac
 
         final var listResponse = arendeService.filterArende(convertedFilter, true);
         final var convertedList = listResponse.getResults()
-                .stream()
-                .map(this::decorateWithResourceLinks)
-                .map(certificateListItemConverter::convert)
-                .collect(Collectors.toList());
+            .stream()
+            .map(this::decorateWithResourceLinks)
+            .map(certificateListItemConverter::convert)
+            .collect(Collectors.toList());
 
         return new ListInfo(listResponse.getTotalCount(), convertedList);
     }
@@ -95,11 +95,11 @@ public class ListQuestionsFacadeServiceImpl implements ListSignedCertificatesFac
 
     private ArendeListItem decorateWithResourceLinks(ArendeListItem item) {
         final AccessEvaluationParameters accessEvaluationParameters = AccessEvaluationParameters.create(
-                item.getIntygTyp(),
-                null,
-                getUnit(),
-                Personnummer.createPersonnummer(item.getPatientId()).orElseThrow(),
-                item.isTestIntyg());
+            item.getIntygTyp(),
+            null,
+            getUnit(),
+            Personnummer.createPersonnummer(item.getPatientId()).orElseThrow(),
+            item.isTestIntyg());
 
         if (certificateAccessServiceHelper.isAllowToForwardQuestions(accessEvaluationParameters)) {
             item.addLink(new ActionLink(ActionLinkType.VIDAREBEFODRA_FRAGA));

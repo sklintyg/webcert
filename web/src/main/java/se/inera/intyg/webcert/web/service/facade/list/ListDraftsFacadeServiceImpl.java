@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -52,9 +52,9 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
 
     @Autowired
     public ListDraftsFacadeServiceImpl(WebCertUserService webCertUserService, UtkastService utkastService,
-                                       LogService logService, DraftFilterConverter draftFilterConverter,
-                                       ListPaginationHelper listPaginationHelper, ListSortHelper listSortHelper,
-                                       ListDecorator listDecorator, CertificateListItemConverter certificateListItemConverter) {
+        LogService logService, DraftFilterConverter draftFilterConverter,
+        ListPaginationHelper listPaginationHelper, ListSortHelper listSortHelper,
+        ListDecorator listDecorator, CertificateListItemConverter certificateListItemConverter) {
         this.webCertUserService = webCertUserService;
         this.utkastService = utkastService;
         this.logService = logService;
@@ -97,7 +97,7 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
 
     private void logListUsage(WebCertUser user, List<CertificateListItem> paginatedList) {
         paginatedList.stream().map(CertificateListItem::valueAsPatientId).distinct().forEach(
-                id -> performPDLLogging(user, id)
+            id -> performPDLLogging(user, id)
         );
     }
 

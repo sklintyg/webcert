@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -51,6 +51,7 @@ public class ListControllerTest {
 
     @Nested
     class ListDrafts {
+
         ListInfo listInfo = new ListInfo();
         final List<CertificateListItem> list = List.of(new CertificateListItem());
 
@@ -59,8 +60,8 @@ public class ListControllerTest {
             listInfo.setList(list);
             listInfo.setTotalCount(1);
             doReturn(listInfo)
-                    .when(listDraftsFacadeService)
-                    .get(any());
+                .when(listDraftsFacadeService)
+                .get(any());
         }
 
         @Test
@@ -82,6 +83,7 @@ public class ListControllerTest {
 
     @Nested
     class ListSignedCertificates {
+
         ListInfo listInfo = new ListInfo();
         final List<CertificateListItem> list = List.of(new CertificateListItem());
 
@@ -90,8 +92,8 @@ public class ListControllerTest {
             listInfo.setList(list);
             listInfo.setTotalCount(1);
             doReturn(listInfo)
-                    .when(listSignedCertificatesFacadeService)
-                    .get(any());
+                .when(listSignedCertificatesFacadeService)
+                .get(any());
         }
 
         @Test

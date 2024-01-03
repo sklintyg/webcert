@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -339,7 +339,8 @@ public class ArendeConverterTest {
 
         when(hsaEmployeeService.getEmployee(null, signedBy)).thenReturn(createHsaResponse(givenName, surname));
 
-        Arende res = ArendeConverter.createMessageFromCertificate(subject, header, messageText, certificate, now, careGiverName, hsaEmployeeService);
+        Arende res = ArendeConverter.createMessageFromCertificate(subject, header, messageText, certificate, now, careGiverName,
+            hsaEmployeeService);
 
         assertNotNull(res);
         assertEquals(subject, res.getAmne());

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -52,36 +52,36 @@ public final class AuthoritiesHelperUtil {
     }
 
     public static boolean mayNotCreateUtkastForSekretessMarkerad(SekretessStatus sekretessStatus, IntygUser user,
-                                                                 String intygsTyp) {
+        String intygsTyp) {
         if (SekretessStatus.UNDEFINED.equals(sekretessStatus)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
-                    "Could not fetch sekretesstatus for patient from PU service");
+                "Could not fetch sekretesstatus for patient from PU service");
         }
         boolean sekr = sekretessStatus == SekretessStatus.TRUE;
         return (sekr && !authoritiesValidator.given(user, intygsTyp)
-                .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT).isVerified());
+            .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT).isVerified());
     }
 
     public static ValidateDraftCreationResponse performUniqueAndModuleValidation(
-            IntygUser user,
-            String certificateType,
-            Map<String, Map<String, PreviousIntyg>> previousDraftAndCertificates,
-            ModuleApi moduleApi) {
+        IntygUser user,
+        String certificateType,
+        Map<String, Map<String, PreviousIntyg>> previousDraftAndCertificates,
+        ModuleApi moduleApi) {
 
         ValidateDraftCreationResponse certificateValidation =
-                validateUniqueCertificate(user, certificateType, previousDraftAndCertificates);
+            validateUniqueCertificate(user, certificateType, previousDraftAndCertificates);
         ValidateDraftCreationResponse draftValidation =
-                validateUniqueDraft(user, certificateType, previousDraftAndCertificates);
+            validateUniqueDraft(user, certificateType, previousDraftAndCertificates);
         ValidateDraftCreationResponse certificateTypeSpecificValidation =
-                validateCertificateTypeSpecifics(moduleApi, previousDraftAndCertificates);
+            validateCertificateTypeSpecifics(moduleApi, previousDraftAndCertificates);
 
         return getPrimaryValidationMessage(certificateValidation, draftValidation, certificateTypeSpecificValidation);
     }
 
     private static ValidateDraftCreationResponse getPrimaryValidationMessage(
-            ValidateDraftCreationResponse certificateValidation,
-            ValidateDraftCreationResponse draftValidation,
-            ValidateDraftCreationResponse certificateTypeSpecificValidation) {
+        ValidateDraftCreationResponse certificateValidation,
+        ValidateDraftCreationResponse draftValidation,
+        ValidateDraftCreationResponse certificateTypeSpecificValidation) {
 
         if (containsError(certificateValidation)) {
             return certificateValidation;
@@ -112,43 +112,43 @@ public final class AuthoritiesHelperUtil {
 
     private static boolean containsError(ValidateDraftCreationResponse validateDraftCreationResponse) {
         return validateDraftCreationResponse != null
-                && validateDraftCreationResponse.getResultCode() == ResultCodeType.ERROR;
+            && validateDraftCreationResponse.getResultCode() == ResultCodeType.ERROR;
     }
 
     private static boolean containsInfo(ValidateDraftCreationResponse validateDraftCreationResponse) {
         return validateDraftCreationResponse != null
-                && validateDraftCreationResponse.getResultCode() == ResultCodeType.INFO;
+            && validateDraftCreationResponse.getResultCode() == ResultCodeType.INFO;
     }
 
     private static ValidateDraftCreationResponse validateUniqueCertificate(
-            IntygUser user,
-            String certificateType, Map<String,
-            Map<String, PreviousIntyg>> previousDraftAndCertificates) {
+        IntygUser user,
+        String certificateType, Map<String,
+        Map<String, PreviousIntyg>> previousDraftAndCertificates) {
 
         PreviousIntyg previousCertificate = previousDraftAndCertificates.get(CERTIFICATE).get(certificateType);
 
         if (previousCertificate != null
-                && (authoritiesValidator.given(user, certificateType)
-                .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG).isVerified()
-                || authoritiesValidator.given(user, certificateType)
-                .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG).isVerified())) {
+            && (authoritiesValidator.given(user, certificateType)
+            .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG).isVerified()
+            || authoritiesValidator.given(user, certificateType)
+            .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG).isVerified())) {
             if (previousCertificate.isSameVardgivare()) {
                 if (previousCertificate.isSameEnhet()) {
                     return createResponse(CERTIFICATE_FROM_SAME_CARE_PROVIDER_AND_UNIT_EXISTS, ResultCodeType.ERROR,
-                            certificateType);
+                        certificateType);
                 } else {
                     return createResponse(CERTIFICATE_FROM_SAME_CARE_PROVIDER_ON_OTHER_UNIT_EXISTS, ResultCodeType.ERROR,
-                            certificateType);
+                        certificateType);
                 }
             } else {
                 if (authoritiesValidator.given(user, certificateType)
-                        .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG).isVerified()) {
+                    .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG).isVerified()) {
                     return createResponse(CERTIFICATE_FROM_OTHER_CARE_PROVIDER_EXISTS, ResultCodeType.ERROR,
-                            certificateType);
+                        certificateType);
                 } else if (authoritiesValidator.given(user, certificateType)
-                        .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG).isVerified()) {
+                    .features(AuthoritiesConstants.FEATURE_UNIKT_INTYG_INOM_VG).isVerified()) {
                     return createResponse(CERTIFICATE_FROM_OTHER_CARE_PROVIDER_EXISTS_OVERRIDE, ResultCodeType.INFO,
-                            certificateType);
+                        certificateType);
                 }
             }
         }
@@ -157,21 +157,21 @@ public final class AuthoritiesHelperUtil {
     }
 
     private static ValidateDraftCreationResponse validateUniqueDraft(
-            IntygUser user,
-            String certificateType,
-            Map<String, Map<String, PreviousIntyg>> previousDraftAndCertificates) {
+        IntygUser user,
+        String certificateType,
+        Map<String, Map<String, PreviousIntyg>> previousDraftAndCertificates) {
 
         PreviousIntyg previousDraft = previousDraftAndCertificates.get(DRAFT).get(certificateType);
 
         if (previousDraft != null && authoritiesValidator.given(user, certificateType)
-                .features(AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG).isVerified()) {
+            .features(AuthoritiesConstants.FEATURE_UNIKT_UTKAST_INOM_VG).isVerified()) {
             if (previousDraft.isSameVardgivare()) {
                 if (previousDraft.isSameEnhet()) {
                     return createResponse(DRAFT_FROM_SAME_CARE_PROVIDER_AND_UNIT_EXISTS, ResultCodeType.ERROR,
-                            certificateType);
+                        certificateType);
                 } else {
                     return createResponse(DRAFT_FROM_SAME_CARE_PROVIDER_ON_OTHER_UNIT_EXISTS, ResultCodeType.ERROR,
-                            certificateType);
+                        certificateType);
                 }
             } else {
                 return createResponse(DRAFT_FROM_OTHER_CARE_PROVIDER_EXISTS, ResultCodeType.INFO, certificateType);
@@ -182,7 +182,7 @@ public final class AuthoritiesHelperUtil {
     }
 
     private static ValidateDraftCreationResponse validateCertificateTypeSpecifics(
-            ModuleApi moduleApi, Map<String, Map<String, PreviousIntyg>> previousDraftAndCertificates) {
+        ModuleApi moduleApi, Map<String, Map<String, PreviousIntyg>> previousDraftAndCertificates) {
 
         Set<String> previousCertificateSet = previousDraftAndCertificates.get(CERTIFICATE).keySet();
 
@@ -190,9 +190,9 @@ public final class AuthoritiesHelperUtil {
     }
 
     private static ValidateDraftCreationResponse createResponse(String message, ResultCodeType resultCode,
-                                                                          String certificateType) {
+        String certificateType) {
         String messageWithCertificateName = String.format(message,
-                KvIntygstyp.getDisplayNameFromCodeValue(certificateType).toLowerCase());
+            KvIntygstyp.getDisplayNameFromCodeValue(certificateType).toLowerCase());
         return new ValidateDraftCreationResponse(messageWithCertificateName, resultCode);
     }
 

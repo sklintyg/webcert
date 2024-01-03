@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -145,7 +145,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         String latestIntygTypeVersion = intygTextsService.getLatestVersion(intygsTyp);
 
         Personnummer personnummer = Personnummer.createPersonnummer(
-            utkastsParams.getPatient().getPersonId().getExtension())
+                utkastsParams.getPatient().getPersonId().getExtension())
             .orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
                 "Failed to create valid personnummer for createDraft request"));
 
@@ -158,13 +158,13 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         }
 
         Map<String, Map<String, PreviousIntyg>> intygstypToPreviousIntyg =
-                utkastService.checkIfPersonHasExistingIntyg(personnummer, user, null);
+            utkastService.checkIfPersonHasExistingIntyg(personnummer, user, null);
         ValidateDraftCreationResponse validateDraftCreationResponse =
-                AuthoritiesHelperUtil.performUniqueAndModuleValidation(user, intygsTyp, intygstypToPreviousIntyg,
-                        moduleApi);
+            AuthoritiesHelperUtil.performUniqueAndModuleValidation(user, intygsTyp, intygstypToPreviousIntyg,
+                moduleApi);
 
         if (validateDraftCreationResponse != null
-                && validateDraftCreationResponse.getResultCode() == ResultCodeType.ERROR) {
+            && validateDraftCreationResponse.getResultCode() == ResultCodeType.ERROR) {
             return createErrorResponse(validateDraftCreationResponse.getMessage(), ErrorIdType.APPLICATION_ERROR);
         }
 
@@ -230,10 +230,10 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
     }
 
     private CreateDraftCertificateResponseType createSuccessResponse(String nyttUtkastsId, String invokingUnitHsaId,
-                                                                     ValidateDraftCreationResponse validateDraftCreationResponse) {
+        ValidateDraftCreationResponse validateDraftCreationResponse) {
         ResultType result = null;
         if (validateDraftCreationResponse != null
-                && validateDraftCreationResponse.getResultCode() == ResultCodeType.INFO) {
+            && validateDraftCreationResponse.getResultCode() == ResultCodeType.INFO) {
             result = ResultTypeUtil.infoResult(validateDraftCreationResponse.getMessage());
         } else {
             result = ResultTypeUtil.okResult();

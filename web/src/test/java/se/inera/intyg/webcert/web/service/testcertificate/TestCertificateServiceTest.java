@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -45,6 +45,7 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TestCertificateServiceTest {
+
     @Mock
     private UtkastRepository utkastRepository;
 
@@ -228,7 +229,7 @@ public class TestCertificateServiceTest {
 
         final var actualEraseResult = testCertificateService.eraseTestCertificates(FROM, TO);
 
-        assertEquals(3 , actualEraseResult.getErasedCount());
+        assertEquals(3, actualEraseResult.getErasedCount());
         assertEquals(0, actualEraseResult.getFailedCount());
         verify(eraseTestCertificateService, times(1)).eraseTestCertificates(any());
         verify(monitoringLogService, times(3)).logTestCertificateErased(any(), any(), any());
@@ -247,7 +248,7 @@ public class TestCertificateServiceTest {
 
         final var actualEraseResult = testCertificateService.eraseTestCertificates(FROM, TO);
 
-        assertEquals(4 , actualEraseResult.getErasedCount());
+        assertEquals(4, actualEraseResult.getErasedCount());
         assertEquals(0, actualEraseResult.getFailedCount());
         verify(eraseTestCertificateService, times(2)).eraseTestCertificates(any());
         verify(monitoringLogService, times(4)).logTestCertificateErased(any(), any(), any());
@@ -268,7 +269,7 @@ public class TestCertificateServiceTest {
 
         final var actualEraseResult = testCertificateService.eraseTestCertificates(FROM, TO);
 
-        assertEquals(3 , actualEraseResult.getErasedCount());
+        assertEquals(3, actualEraseResult.getErasedCount());
         assertEquals(1, actualEraseResult.getFailedCount());
         verify(eraseTestCertificateService, times(2)).eraseTestCertificates(any());
         verify(monitoringLogService, times(3)).logTestCertificateErased(any(), any(), any());
@@ -289,7 +290,7 @@ public class TestCertificateServiceTest {
 
         final var actualEraseResult = testCertificateService.eraseTestCertificates(FROM, TO);
 
-        assertEquals(1 , actualEraseResult.getErasedCount());
+        assertEquals(1, actualEraseResult.getErasedCount());
         assertEquals(3, actualEraseResult.getFailedCount());
         verify(eraseTestCertificateService, times(2)).eraseTestCertificates(any());
         verify(monitoringLogService, times(1)).logTestCertificateErased(any(), any(), any());

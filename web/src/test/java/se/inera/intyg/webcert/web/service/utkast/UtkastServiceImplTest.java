@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -263,7 +263,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
             .createCertificateEvent(anyString(), anyString(), eq(EventCode.KFSIGN));
     }
 
-    private CreateNewDraftRequest setupForifyllnadUtkast(ValidationStatus status) throws IOException, ModuleNotFoundException, ModuleException {
+    private CreateNewDraftRequest setupForifyllnadUtkast(ValidationStatus status)
+        throws IOException, ModuleNotFoundException, ModuleException {
         CreateNewDraftRequest request = buildCreateNewDraftRequest();
         request.setReferens(REFERENS);
 
@@ -1158,7 +1159,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         try {
             utkastService.getDraft(INTYG_ID, INTYG_TYPE, false);
             fail("Should have thrown an exception");
-        } catch(WebCertServiceException ex) {
+        } catch (WebCertServiceException ex) {
             assertEquals(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, ex.getErrorCode());
         }
     }

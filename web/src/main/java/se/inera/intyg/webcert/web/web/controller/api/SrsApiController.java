@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -85,10 +85,10 @@ public class SrsApiController extends AbstractApiController {
         @ApiParam(value = "Svar på frågor") List<SrsQuestionResponse> questions) {
         authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_SRS).orThrow();
         LOG.debug("getSrs(intygId: {}, diagnosisCode: {}, prediktion: {}, atgard: {}, statistik: {}, daysIntoSickLeave, {})",
-                intygId, diagnosisCode, prediktion, atgard, statistik, daysIntoSickLeave);
+            intygId, diagnosisCode, prediktion, atgard, statistik, daysIntoSickLeave);
         try {
             SrsResponse srsResponse = srsService.getSrs(getWebCertUserService().getUser(), intygId, personnummer, diagnosisCode,
-                    prediktion, atgard, statistik, questions, daysIntoSickLeave);
+                prediktion, atgard, statistik, questions, daysIntoSickLeave);
             return Response.ok(srsResponse).build();
         } catch (InvalidPersonNummerException | IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST).build();
@@ -167,7 +167,7 @@ public class SrsApiController extends AbstractApiController {
 
         try {
             ResultCodeEnum result = srsService.setOwnOpinion(personnummer, vardgivareHsaId, vardenhetHsaId, intygId,
-                    diagnosisCode, opinion);
+                diagnosisCode, opinion);
             return Response.ok(result).build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST).build();

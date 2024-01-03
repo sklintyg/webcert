@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,21 +22,22 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        property = "type")
+    use = JsonTypeInfo.Id.NAME,
+    property = "type")
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = ListFilterTextValue.class, name = "TEXT"),
-        @JsonSubTypes.Type(value = ListFilterPersonIdValue.class, name = "PERSON_ID"),
-        @JsonSubTypes.Type(value = ListFilterDateRangeValue.class, name = "DATE_RANGE"),
-        @JsonSubTypes.Type(value = ListFilterSelectValue.class, name = "SELECT"),
-        @JsonSubTypes.Type(value = ListFilterRadioValue.class, name = "RADIO"),
-        @JsonSubTypes.Type(value = ListFilterTextValue.class, name = "ORDER"),
-        @JsonSubTypes.Type(value = ListFilterBooleanValue.class, name = "BOOLEAN"),
-        @JsonSubTypes.Type(value = ListFilterNumberValue.class, name = "NUMBER")
+    @JsonSubTypes.Type(value = ListFilterTextValue.class, name = "TEXT"),
+    @JsonSubTypes.Type(value = ListFilterPersonIdValue.class, name = "PERSON_ID"),
+    @JsonSubTypes.Type(value = ListFilterDateRangeValue.class, name = "DATE_RANGE"),
+    @JsonSubTypes.Type(value = ListFilterSelectValue.class, name = "SELECT"),
+    @JsonSubTypes.Type(value = ListFilterRadioValue.class, name = "RADIO"),
+    @JsonSubTypes.Type(value = ListFilterTextValue.class, name = "ORDER"),
+    @JsonSubTypes.Type(value = ListFilterBooleanValue.class, name = "BOOLEAN"),
+    @JsonSubTypes.Type(value = ListFilterNumberValue.class, name = "NUMBER")
 
 
 })
 
 public interface ListFilterValue {
+
     ListFilterType getType();
 }

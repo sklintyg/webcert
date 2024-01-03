@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -34,14 +34,14 @@ public class WebcertSAMLContextProviderLB extends SAMLContextProviderLB {
     @Value("${webcert.domain.name}")
     private String webcertDomainName;
 
-    private static final  String WC2 = "wc2.";
-    private static final  String SITHS_WC2_ALIAS = "/siths-wc2";
+    private static final String WC2 = "wc2.";
+    private static final String SITHS_WC2_ALIAS = "/siths-wc2";
 
     @Override
     public SAMLMessageContext getLocalAndPeerEntity(
         HttpServletRequest request, HttpServletResponse response) throws MetadataProviderException {
 
-        final var isRequestFromReactClient  = isRequestFromReactClient(request);
+        final var isRequestFromReactClient = isRequestFromReactClient(request);
         setServerName(getServerName(isRequestFromReactClient));
         setLocalEntityId(isRequestFromReactClient, request);
 

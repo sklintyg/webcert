@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -86,8 +86,9 @@ public final class ArendeConverter {
     /**
      * Decorate a message ({@link Arende}) with metadata from the certificate. This method can be used when there is no {@link Utkast}
      * available, but the {@link Utlatande} is.
-     * @param arende    Message to decorate
-     * @param certificate   Certificate to decorate with
+     *
+     * @param arende Message to decorate
+     * @param certificate Certificate to decorate with
      * @param timestamp DateTime of the message
      */
     public static void decorateMessageFromCertificate(Arende arende, Utlatande certificate, LocalDateTime timestamp) {
@@ -105,7 +106,7 @@ public final class ArendeConverter {
     }
 
     public static Arende createArendeFromUtkast(ArendeAmne amne, String rubrik, String meddelande, Utkast utkast, LocalDateTime now,
-                                                String vardaktorNamn, HsatkEmployeeService hsaEmployeeService) {
+        String vardaktorNamn, HsatkEmployeeService hsaEmployeeService) {
         Arende arende = new Arende();
         arende.setStatus(Status.PENDING_EXTERNAL_ACTION);
         arende.setAmne(amne);
@@ -127,18 +128,18 @@ public final class ArendeConverter {
      * Creates a message ({@link Arende}) with metadata from the certificate. This method can be used when there is no {@link Utkast}
      * available, but the {@link Utlatande} is.
      *
-     * @param subject            Subject of the message
-     * @param header             Header of the message
-     * @param messageText        The actual message
-     * @param certificate        Certificate that the message is related to
-     * @param timestamp          Timestamp of the message
-     * @param nameOfCareGiver    Name of the care giver
+     * @param subject Subject of the message
+     * @param header Header of the message
+     * @param messageText The actual message
+     * @param certificate Certificate that the message is related to
+     * @param timestamp Timestamp of the message
+     * @param nameOfCareGiver Name of the care giver
      * @param hsaEmployeeService {@link HsatkEmployeeService} implementation to use
      * @return The created message
      */
     public static Arende createMessageFromCertificate(ArendeAmne subject, String header, String messageText, Utlatande certificate,
-                                                      LocalDateTime timestamp, String nameOfCareGiver,
-                                                      HsatkEmployeeService hsaEmployeeService) {
+        LocalDateTime timestamp, String nameOfCareGiver,
+        HsatkEmployeeService hsaEmployeeService) {
         final var message = new Arende();
         message.setStatus(Status.PENDING_EXTERNAL_ACTION);
         message.setAmne(subject);
@@ -200,7 +201,7 @@ public final class ArendeConverter {
         if (utkast.getSkapadAv() != null && utkast.getSkapadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
             return utkast.getSkapadAv().getNamn();
         } else if (utkast.getSenastSparadAv() != null
-                && utkast.getSenastSparadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
+            && utkast.getSenastSparadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
             return utkast.getSenastSparadAv().getNamn();
         } else {
             return getNameByHsaId(utkast.getSignatur().getSigneradAv(), hsaEmployeeService);
@@ -210,14 +211,14 @@ public final class ArendeConverter {
     private static String getNameByHsaId(String hsaId, HsatkEmployeeService hsaEmployeeService) {
         try {
             return hsaEmployeeService.getEmployee(null, hsaId)
-                    .stream()
-                    .filter(pit -> !Strings.isNullOrEmpty(pit.getMiddleAndSurName()))
-                    .map(pit -> !Strings.isNullOrEmpty(pit.getGivenName())
-                            ? pit.getGivenName() + " " + pit.getMiddleAndSurName()
-                            : pit.getMiddleAndSurName())
-                    .findFirst()
-                    .orElseThrow(
-                            () -> new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "No name was found in HSA"));
+                .stream()
+                .filter(pit -> !Strings.isNullOrEmpty(pit.getMiddleAndSurName()))
+                .map(pit -> !Strings.isNullOrEmpty(pit.getGivenName())
+                    ? pit.getGivenName() + " " + pit.getMiddleAndSurName()
+                    : pit.getMiddleAndSurName())
+                .findFirst()
+                .orElseThrow(
+                    () -> new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "No name was found in HSA"));
         } catch (WebServiceException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM,
                 "Could not communicate with HSA. Cause: " + e.getMessage());

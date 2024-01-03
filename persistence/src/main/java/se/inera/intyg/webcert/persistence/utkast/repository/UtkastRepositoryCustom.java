@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -85,8 +85,9 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
     /**
      * Returns all {@link Utkast} entities with status not DRAFT_LOCKED or SIGNED that were created before skapad.
      */
-    @Query("SELECT u from Utkast u WHERE u.status NOT IN(se.inera.intyg.common.support.model.UtkastStatus.DRAFT_LOCKED, se.inera.intyg.common.support.model.UtkastStatus.SIGNED) "
-        + "AND u.skapad <= :skapad")
+    @Query(
+        "SELECT u from Utkast u WHERE u.status NOT IN(se.inera.intyg.common.support.model.UtkastStatus.DRAFT_LOCKED, se.inera.intyg.common.support.model.UtkastStatus.SIGNED) "
+            + "AND u.skapad <= :skapad")
     List<Utkast> findDraftsByNotLockedOrSignedAndSkapadBefore(@Param("skapad") LocalDateTime skapad);
 
     /**

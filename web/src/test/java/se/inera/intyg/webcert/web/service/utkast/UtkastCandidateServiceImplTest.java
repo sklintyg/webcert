@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -144,7 +144,8 @@ public class UtkastCandidateServiceImplTest {
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
             .thenReturn(candidates);
 
-        assertTrue(utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
+        assertTrue(
+            utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
 
         // Signed by other user on the same care unit
         candidates = Arrays.asList(
@@ -155,7 +156,8 @@ public class UtkastCandidateServiceImplTest {
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
             .thenReturn(candidates);
 
-        assertTrue(utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
+        assertTrue(
+            utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
 
         // Signed by other user and on a care sub unit
         candidates = Arrays.asList(
@@ -166,7 +168,8 @@ public class UtkastCandidateServiceImplTest {
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
             .thenReturn(candidates);
 
-        assertTrue(utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
+        assertTrue(
+            utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
 
         // - - - - - - - - - - - - - - - - - - -
         // Run tests as Vårdadministratör
@@ -182,7 +185,8 @@ public class UtkastCandidateServiceImplTest {
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
             .thenReturn(candidates);
 
-        assertTrue(utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
+        assertTrue(
+            utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
 
         // PDL-logging shall be invoked
         verify(logService, times(4)).logReadIntyg(any(LogRequest.class), any(LogUser.class));
@@ -195,7 +199,8 @@ public class UtkastCandidateServiceImplTest {
         Patient patient = createPatient("Lilltolvan", "Tolvansson", createPnr("20121212-1212"));
         when(ag7804ModuleApiV1Mock.getCopyFromCriteria()).thenReturn(Optional.empty());
 
-        assertFalse(utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, utkastType, intygTypeVersion, patient, false).isPresent());
+        assertFalse(
+            utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, utkastType, intygTypeVersion, patient, false).isPresent());
 
         // No PDL-logging shall be invoked
         verify(logService, times(0)).logReadIntyg(any(LogRequest.class));
@@ -216,7 +221,8 @@ public class UtkastCandidateServiceImplTest {
         Set<String> validIntygType = new HashSet<>();
         validIntygType.add(copyFromCriteria.get().getIntygType());
 
-        assertFalse(utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
+        assertFalse(
+            utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
 
         // No PDL-logging shall be invoked
         verify(logService, times(0)).logReadIntyg(any(LogRequest.class));
@@ -251,7 +257,8 @@ public class UtkastCandidateServiceImplTest {
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
             .thenReturn(candidates);
 
-        assertFalse(utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
+        assertFalse(
+            utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
 
         // Wrong enhetsId - candidate is written on a unit that is not users current unit or a sub unit.
         candidates = Arrays.asList(
@@ -262,7 +269,8 @@ public class UtkastCandidateServiceImplTest {
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
             .thenReturn(candidates);
 
-        assertFalse(utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
+        assertFalse(
+            utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
 
         // Is revoked
         candidates = Arrays.asList(
@@ -273,7 +281,8 @@ public class UtkastCandidateServiceImplTest {
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
             .thenReturn(candidates);
 
-        assertFalse(utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
+        assertFalse(
+            utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
 
         // Incompatible majorversion
         candidates = Arrays.asList(
@@ -284,7 +293,8 @@ public class UtkastCandidateServiceImplTest {
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
             .thenReturn(candidates);
 
-        assertFalse(utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
+        assertFalse(
+            utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
 
         // - - - - - - - - - - - - - - - - - - -
         // Run tests as Vårdadministratör
@@ -300,7 +310,8 @@ public class UtkastCandidateServiceImplTest {
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
             .thenReturn(candidates);
 
-        assertFalse(utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
+        assertFalse(
+            utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
 
         // No PDL-logging shall be invoked
         verify(logService, times(0)).logReadIntyg(any(LogRequest.class), any(LogUser.class));
@@ -423,7 +434,8 @@ public class UtkastCandidateServiceImplTest {
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
             .thenReturn(candidates);
 
-        assertTrue(utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
+        assertTrue(
+            utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
 
         // Signed by other user on the same care unit
         candidates = Arrays.asList(
@@ -434,7 +446,8 @@ public class UtkastCandidateServiceImplTest {
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
             .thenReturn(candidates);
 
-        assertTrue(utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
+        assertTrue(
+            utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
 
         // Signed by user herself but on different unit
         candidates = Arrays.asList(
@@ -445,7 +458,8 @@ public class UtkastCandidateServiceImplTest {
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
             .thenReturn(candidates);
 
-        assertTrue(utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
+        assertTrue(
+            utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
 
         // Signed by other user and on different unit
         candidates = Arrays.asList(
@@ -456,7 +470,8 @@ public class UtkastCandidateServiceImplTest {
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
             .thenReturn(candidates);
 
-        assertTrue(utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
+        assertTrue(
+            utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
 
         // - - - - - - - - - - - - - - - - - - -
         // Run tests as Vårdadministratör
@@ -469,7 +484,8 @@ public class UtkastCandidateServiceImplTest {
                 "correct-ve-hsaid", null,
                 "intygId", intygTypeCandidate, intygTypeVersion, LocalDateTime.now(), "other-user-hsaid"));
 
-        assertFalse(utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
+        assertFalse(
+            utkastCandidateService.getCandidateMetaData(ag7804ModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
 
         // PDL-logging shall be invoked
         verify(logService, times(4)).logReadIntyg(any(LogRequest.class), any(LogUser.class));
@@ -642,7 +658,8 @@ public class UtkastCandidateServiceImplTest {
         );
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
             .thenReturn(candidates);
-        assertFalse(utkastCandidateService.getCandidateMetaData(doiModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
+        assertFalse(
+            utkastCandidateService.getCandidateMetaData(doiModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
 
         // Wrong care giver - candidate is issued on a care giver other than the user.
         candidates = Collections.singletonList(
@@ -652,7 +669,8 @@ public class UtkastCandidateServiceImplTest {
         );
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
             .thenReturn(candidates);
-        assertFalse(utkastCandidateService.getCandidateMetaData(doiModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
+        assertFalse(
+            utkastCandidateService.getCandidateMetaData(doiModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
 
         // Is revoked
         candidates = Collections.singletonList(
@@ -662,7 +680,8 @@ public class UtkastCandidateServiceImplTest {
         );
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
             .thenReturn(candidates);
-        assertFalse(utkastCandidateService.getCandidateMetaData(doiModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
+        assertFalse(
+            utkastCandidateService.getCandidateMetaData(doiModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
 
         // Replaced by certificate issued on other care giver
         candidates = Arrays.asList(
@@ -675,7 +694,8 @@ public class UtkastCandidateServiceImplTest {
         );
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
             .thenReturn(candidates);
-        assertFalse(utkastCandidateService.getCandidateMetaData(doiModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
+        assertFalse(
+            utkastCandidateService.getCandidateMetaData(doiModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
 
         // Incompatible major version
         candidates = Collections.singletonList(
@@ -685,7 +705,8 @@ public class UtkastCandidateServiceImplTest {
         );
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
             .thenReturn(candidates);
-        assertFalse(utkastCandidateService.getCandidateMetaData(doiModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
+        assertFalse(
+            utkastCandidateService.getCandidateMetaData(doiModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
 
         // No PDL-logging shall be invoked
         verify(logService, times(0)).logReadIntyg(any(LogRequest.class), any(LogUser.class));
@@ -724,7 +745,8 @@ public class UtkastCandidateServiceImplTest {
         );
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
             .thenReturn(candidates);
-        assertTrue(utkastCandidateService.getCandidateMetaData(doiModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
+        assertTrue(
+            utkastCandidateService.getCandidateMetaData(doiModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
 
         // Signed by other user on the same care unit
         candidates = Collections.singletonList(
@@ -734,7 +756,8 @@ public class UtkastCandidateServiceImplTest {
         );
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
             .thenReturn(candidates);
-        assertTrue(utkastCandidateService.getCandidateMetaData(doiModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
+        assertTrue(
+            utkastCandidateService.getCandidateMetaData(doiModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
 
         // Signed by other user on other care unit
         candidates = Collections.singletonList(
@@ -744,7 +767,8 @@ public class UtkastCandidateServiceImplTest {
         );
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
             .thenReturn(candidates);
-        assertTrue(utkastCandidateService.getCandidateMetaData(doiModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
+        assertTrue(
+            utkastCandidateService.getCandidateMetaData(doiModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
 
         // Run tests as Vårdadministratör
         when(webCertUser.isLakare()).thenReturn(false);
@@ -757,7 +781,8 @@ public class UtkastCandidateServiceImplTest {
         );
         when(utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(patient.getPersonId().getPersonnummerWithDash(), validIntygType))
             .thenReturn(candidates);
-        assertTrue(utkastCandidateService.getCandidateMetaData(doiModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
+        assertTrue(
+            utkastCandidateService.getCandidateMetaData(doiModuleApiV1Mock, intygType, intygTypeVersion, patient, false).isPresent());
 
         // PDL-logging shall be invoked
         verify(logService, times(4)).logReadIntyg(any(LogRequest.class), any(LogUser.class));

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Inera AB (http://www.inera.se)
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -194,7 +194,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         when(statisticsGroupByUtil.toSekretessFilteredMap(queryResult)).thenReturn(resultMap);
 
         Map<String, Long> result = service.getNbrOfUnhandledFragaSvarForCareUnits(Arrays.asList(
-            "HSA1", "HSA2"),
+                "HSA1", "HSA2"),
             Stream.of("fk7263").collect(Collectors.toSet()));
 
         verify(fragasvarRepositoryMock, times(1)).getUnhandledWithEnhetIdsAndIntygstyper(anyList(), anySet());
