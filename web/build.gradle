@@ -47,8 +47,8 @@ gretty {
     extraResourceBase webappOutputDir
 
     dependencies {
-        implementation "org.eclipse.jetty:apache-jstl"
-        implementation "se.inera.intyg.refdata:refdata:${refDataVersion}"
+        gretty "org.eclipse.jetty:apache-jstl"
+        gretty "se.inera.intyg.refdata:refdata:${refDataVersion}"
     }
 }
 
