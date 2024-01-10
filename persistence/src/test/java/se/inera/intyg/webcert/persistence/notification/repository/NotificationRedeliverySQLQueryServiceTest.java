@@ -110,6 +110,139 @@ class NotificationRedeliverySQLQueryServiceTest {
     }
 
     @Nested
+    class SendNotificationForUnits {
+
+        @Test
+        void shouldReturnCorrectQueryIncludingOnlyId() {
+            final var response = notificationRedeliverySQLQueryService.units(List.of("ID"), Collections.emptyList(), null, null);
+
+            assertEquals(
+                "INSERT INTO NOTIFICATION_REDELIVERY (HANDELSE_ID, REDELIVERY_STRATEGY, REDELIVERY_TIME) SELECT H.ID,"
+                    + " 'STANDARD', now() FROM HANDELSE H WHERE H.ENHETS_ID in ('ID') ORDER BY H.TIMESTAMP;",
+                response);
+        }
+
+        @Test
+        void shouldReturnCorrectQueryIncludingSeveralIds() {
+            final var response = notificationRedeliverySQLQueryService.units(List.of("ID", "123"), Collections.emptyList(), null,
+                null);
+
+            assertEquals(
+                "INSERT INTO NOTIFICATION_REDELIVERY (HANDELSE_ID, REDELIVERY_STRATEGY, REDELIVERY_TIME) SELECT H.ID,"
+                    + " 'STANDARD', now() FROM HANDELSE H WHERE H.ENHETS_ID in ('ID','123') ORDER BY H.TIMESTAMP;",
+                response);
+        }
+
+        @Test
+        void shouldReturnCorrectQueryIncludingIdAndStatus() {
+            final var response = notificationRedeliverySQLQueryService.units(List.of("ID"),
+                List.of(NotificationDeliveryStatusEnum.FAILURE), null, null);
+
+            assertEquals(
+                "INSERT INTO NOTIFICATION_REDELIVERY (HANDELSE_ID, REDELIVERY_STRATEGY, REDELIVERY_TIME) SELECT H.ID,"
+                    + " 'STANDARD', now() FROM HANDELSE H"
+                    + " INNER JOIN HANDELSE_METADATA HM ON H.ID = HM.HANDELSE_ID"
+                    + " WHERE H.ENHETS_ID in ('ID')"
+                    + " AND HM.DELIVERY_STATUS in ('FAILURE') ORDER BY H.TIMESTAMP;",
+                response);
+        }
+
+        @Test
+        void shouldReturnCorrectQueryIncludingIdStatusAndTimePeriod() {
+            final var start = LocalDateTime.now().minusDays(1);
+            final var end = LocalDateTime.now();
+            final var response = notificationRedeliverySQLQueryService.units(List.of("ID"),
+                List.of(NotificationDeliveryStatusEnum.FAILURE), start, end);
+
+            assertEquals(
+                "INSERT INTO NOTIFICATION_REDELIVERY (HANDELSE_ID, REDELIVERY_STRATEGY, REDELIVERY_TIME) SELECT H.ID,"
+                    + " 'STANDARD', now() FROM HANDELSE H"
+                    + " INNER JOIN HANDELSE_METADATA HM ON H.ID = HM.HANDELSE_ID"
+                    + " WHERE H.ENHETS_ID in ('ID')"
+                    + " AND HM.DELIVERY_STATUS in ('FAILURE')"
+                    + " AND H.TIMESTAMP BETWEEN '" + start + "' AND '" + end + "' ORDER BY H.TIMESTAMP;",
+                response);
+        }
+
+        @Test
+        void shouldReturnNowIfEndIsMissing() {
+            final var start = LocalDateTime.now().minusDays(1);
+            final var response = notificationRedeliverySQLQueryService.certificates(List.of("ID"),
+                List.of(NotificationDeliveryStatusEnum.FAILURE), start, null);
+
+            assertEquals(
+                "INSERT INTO NOTIFICATION_REDELIVERY (HANDELSE_ID, REDELIVERY_STRATEGY, REDELIVERY_TIME) SELECT H.ID,"
+                    + " 'STANDARD', now() FROM HANDELSE H"
+                    + " INNER JOIN HANDELSE_METADATA HM ON H.ID = HM.HANDELSE_ID"
+                    + " WHERE H.INTYGS_ID in ('ID')"
+                    + " AND HM.DELIVERY_STATUS in ('FAILURE')"
+                    + " AND H.TIMESTAMP BETWEEN '" + start + "' AND now() ORDER BY H.TIMESTAMP;",
+                response);
+        }
+    }
+
+    @Nested
+    class SendNotificationForCareGiver {
+
+        @Test
+        void shouldReturnCorrectQueryIncludingOnlyId() {
+            final var response = notificationRedeliverySQLQueryService.careGiver("ID", Collections.emptyList(), null, null);
+
+            assertEquals(
+                "INSERT INTO NOTIFICATION_REDELIVERY (HANDELSE_ID, REDELIVERY_STRATEGY, REDELIVERY_TIME) SELECT H.ID,"
+                    + " 'STANDARD', now() FROM HANDELSE H WHERE H.ENHETS_ID LIKE 'ID-%' ORDER BY H.TIMESTAMP;",
+                response);
+        }
+
+        @Test
+        void shouldReturnCorrectQueryIncludingIdAndStatus() {
+            final var response = notificationRedeliverySQLQueryService.careGiver("ID",
+                List.of(NotificationDeliveryStatusEnum.FAILURE), null, null);
+
+            assertEquals(
+                "INSERT INTO NOTIFICATION_REDELIVERY (HANDELSE_ID, REDELIVERY_STRATEGY, REDELIVERY_TIME) SELECT H.ID,"
+                    + " 'STANDARD', now() FROM HANDELSE H"
+                    + " INNER JOIN HANDELSE_METADATA HM ON H.ID = HM.HANDELSE_ID"
+                    + " WHERE H.ENHETS_ID LIKE 'ID-%'"
+                    + " AND HM.DELIVERY_STATUS in ('FAILURE') ORDER BY H.TIMESTAMP;",
+                response);
+        }
+
+        @Test
+        void shouldReturnCorrectQueryIncludingIdStatusAndTimePeriod() {
+            final var start = LocalDateTime.now().minusDays(1);
+            final var end = LocalDateTime.now();
+            final var response = notificationRedeliverySQLQueryService.careGiver("ID",
+                List.of(NotificationDeliveryStatusEnum.FAILURE), start, end);
+
+            assertEquals(
+                "INSERT INTO NOTIFICATION_REDELIVERY (HANDELSE_ID, REDELIVERY_STRATEGY, REDELIVERY_TIME) SELECT H.ID,"
+                    + " 'STANDARD', now() FROM HANDELSE H"
+                    + " INNER JOIN HANDELSE_METADATA HM ON H.ID = HM.HANDELSE_ID"
+                    + " WHERE H.ENHETS_ID LIKE 'ID-%'"
+                    + " AND HM.DELIVERY_STATUS in ('FAILURE')"
+                    + " AND H.TIMESTAMP BETWEEN '" + start + "' AND '" + end + "' ORDER BY H.TIMESTAMP;",
+                response);
+        }
+
+        @Test
+        void shouldReturnNowIfEndIsMissing() {
+            final var start = LocalDateTime.now().minusDays(1);
+            final var response = notificationRedeliverySQLQueryService.careGiver("ID",
+                List.of(NotificationDeliveryStatusEnum.FAILURE), start, null);
+
+            assertEquals(
+                "INSERT INTO NOTIFICATION_REDELIVERY (HANDELSE_ID, REDELIVERY_STRATEGY, REDELIVERY_TIME) SELECT H.ID,"
+                    + " 'STANDARD', now() FROM HANDELSE H"
+                    + " INNER JOIN HANDELSE_METADATA HM ON H.ID = HM.HANDELSE_ID"
+                    + " WHERE H.ENHETS_ID LIKE 'ID-%'"
+                    + " AND HM.DELIVERY_STATUS in ('FAILURE')"
+                    + " AND H.TIMESTAMP BETWEEN '" + start + "' AND now() ORDER BY H.TIMESTAMP;",
+                response);
+        }
+    }
+
+    @Nested
     class SendNotification {
 
         @Test

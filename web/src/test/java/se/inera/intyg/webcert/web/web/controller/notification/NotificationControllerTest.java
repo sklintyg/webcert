@@ -33,10 +33,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
 import se.inera.intyg.webcert.web.service.sendnotification.SendNotificationService;
+import se.inera.intyg.webcert.web.service.sendnotification.SendNotificationsForCareGiverService;
 import se.inera.intyg.webcert.web.service.sendnotification.SendNotificationsForCertificatesService;
+import se.inera.intyg.webcert.web.service.sendnotification.SendNotificationsForUnitsService;
 import se.inera.intyg.webcert.web.web.controller.internalapi.NotificationController;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForCareGiverRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForCertificatesRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForUnitsRequestDTO;
 
 @ExtendWith(MockitoExtension.class)
 class NotificationControllerTest {
@@ -46,12 +50,24 @@ class NotificationControllerTest {
     private static final SendNotificationsForCertificatesRequestDTO CERTIFICATE_REQUEST = SendNotificationsForCertificatesRequestDTO.create(
         List.of(ID), List.of(NotificationDeliveryStatusEnum.FAILURE), LocalDateTime.now(), LocalDateTime.now(), LocalDateTime.now()
     );
+    private static final SendNotificationsForUnitsRequestDTO UNITS_REQUEST = SendNotificationsForUnitsRequestDTO.create(
+        List.of(ID), List.of(NotificationDeliveryStatusEnum.FAILURE), LocalDateTime.now(), LocalDateTime.now(), LocalDateTime.now()
+    );
+    private static final SendNotificationsForCareGiverRequestDTO CARE_GIVER_REQUEST = SendNotificationsForCareGiverRequestDTO.create(
+        List.of(NotificationDeliveryStatusEnum.FAILURE), LocalDateTime.now(), LocalDateTime.now(), LocalDateTime.now()
+    );
 
     @Mock
     private SendNotificationService sendNotificationService;
 
     @Mock
     private SendNotificationsForCertificatesService sendNotificationsForCertificatesService;
+
+    @Mock
+    private SendNotificationsForUnitsService sendNotificationsForUnitsService;
+
+    @Mock
+    private SendNotificationsForCareGiverService sendNotificationsForCareGiverService;
 
     @InjectMocks
     private NotificationController notificationController;
@@ -85,6 +101,40 @@ class NotificationControllerTest {
         @Test
         void shouldReturnResponseFromService() {
             final var response = notificationController.sendNotification(ID);
+
+            assertEquals(COUNT, response.getCount());
+        }
+    }
+
+    @Nested
+    class SendNotificationsForUnits {
+
+        @BeforeEach
+        void setup() {
+            when(sendNotificationsForUnitsService.send(UNITS_REQUEST))
+                .thenReturn(SendNotificationResponseDTO.create(COUNT));
+        }
+
+        @Test
+        void shouldReturnResponseFromService() {
+            final var response = notificationController.sendNotificationsForUnits(UNITS_REQUEST);
+
+            assertEquals(COUNT, response.getCount());
+        }
+    }
+
+    @Nested
+    class SendNotificationsForCareGiver {
+
+        @BeforeEach
+        void setup() {
+            when(sendNotificationsForCareGiverService.send("ID", CARE_GIVER_REQUEST))
+                .thenReturn(SendNotificationResponseDTO.create(COUNT));
+        }
+
+        @Test
+        void shouldReturnResponseFromService() {
+            final var response = notificationController.sendNotificationsForCareGiver("ID", CARE_GIVER_REQUEST);
 
             assertEquals(COUNT, response.getCount());
         }

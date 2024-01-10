@@ -22,20 +22,20 @@ package se.inera.intyg.webcert.web.service.sendnotification;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepositoryCustom;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationResponseDTO;
-import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForCertificatesRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForUnitsRequestDTO;
 
 @Service
-public class SendNotificationsForCertificatesService {
+public class SendNotificationsForUnitsService {
 
     private final NotificationRedeliveryRepositoryCustom notificationRedeliveryRepository;
 
-    public SendNotificationsForCertificatesService(NotificationRedeliveryRepositoryCustom notificationRedeliveryRepository) {
+    public SendNotificationsForUnitsService(NotificationRedeliveryRepositoryCustom notificationRedeliveryRepository) {
         this.notificationRedeliveryRepository = notificationRedeliveryRepository;
     }
 
-    public SendNotificationResponseDTO send(SendNotificationsForCertificatesRequestDTO request) {
-        final var response = notificationRedeliveryRepository.sendNotificationsForCertificates(
-            request.getCertificateIds(),
+    public SendNotificationResponseDTO send(SendNotificationsForUnitsRequestDTO request) {
+        final var response = notificationRedeliveryRepository.sendNotificationsForUnits(
+            request.getUnitIds(),
             request.getStatuses(),
             request.getStart(),
             request.getEnd()

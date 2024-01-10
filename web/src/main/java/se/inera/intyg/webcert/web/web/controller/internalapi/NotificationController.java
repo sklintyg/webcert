@@ -27,8 +27,11 @@ import javax.ws.rs.core.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.sendnotification.SendNotificationService;
+import se.inera.intyg.webcert.web.service.sendnotification.SendNotificationsForCareGiverService;
 import se.inera.intyg.webcert.web.service.sendnotification.SendNotificationsForCertificatesService;
+import se.inera.intyg.webcert.web.service.sendnotification.SendNotificationsForUnitsService;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForCareGiverRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForUnitsRequestDTO;
 
@@ -39,11 +42,16 @@ public class NotificationController {
 
     private final SendNotificationsForCertificatesService sendNotificationsForCertificatesService;
     private final SendNotificationService sendNotificationService;
+    private final SendNotificationsForUnitsService sendNotificationsForUnitsService;
+    private final SendNotificationsForCareGiverService sendNotificationsForCareGiverService;
 
     public NotificationController(SendNotificationsForCertificatesService sendNotificationsForCertificatesService,
-        SendNotificationService sendNotificationService) {
+        SendNotificationService sendNotificationService, SendNotificationsForUnitsService sendNotificationsForUnitsService,
+        SendNotificationsForCareGiverService sendNotificationsForCareGiverService) {
         this.sendNotificationsForCertificatesService = sendNotificationsForCertificatesService;
         this.sendNotificationService = sendNotificationService;
+        this.sendNotificationsForUnitsService = sendNotificationsForUnitsService;
+        this.sendNotificationsForCareGiverService = sendNotificationsForCareGiverService;
     }
 
     @POST
@@ -67,7 +75,15 @@ public class NotificationController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
     public SendNotificationResponseDTO sendNotificationsForUnits(@RequestBody SendNotificationsForUnitsRequestDTO request) {
-        //return sendUnitsNotificationsService.send(request);
-        return null;
+        return sendNotificationsForUnitsService.send(request);
+    }
+
+    @POST
+    @Path("/careGiver/{careGiverId}")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public SendNotificationResponseDTO sendNotificationsForCareGiver(@PathParam("careGiverId") String careGiverId,
+        @RequestBody SendNotificationsForCareGiverRequestDTO request) {
+        return sendNotificationsForCareGiverService.send(careGiverId, request);
     }
 }

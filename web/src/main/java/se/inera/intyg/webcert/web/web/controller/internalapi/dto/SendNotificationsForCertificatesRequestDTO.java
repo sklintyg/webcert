@@ -29,16 +29,16 @@ public class SendNotificationsForCertificatesRequestDTO {
     private List<NotificationDeliveryStatusEnum> statuses;
     private LocalDateTime activationTime;
     private LocalDateTime start;
-    private LocalDateTime to;
+    private LocalDateTime end;
 
     public static SendNotificationsForCertificatesRequestDTO create(List<String> certificateIds,
-        List<NotificationDeliveryStatusEnum> statuses, LocalDateTime activationTime, LocalDateTime start, LocalDateTime to) {
+        List<NotificationDeliveryStatusEnum> statuses, LocalDateTime activationTime, LocalDateTime start, LocalDateTime end) {
         final var request = new SendNotificationsForCertificatesRequestDTO();
         request.activationTime = activationTime;
         request.certificateIds = certificateIds;
         request.statuses = statuses;
         request.start = start;
-        request.to = to;
+        request.end = end;
 
         return request;
     }
@@ -59,7 +59,7 @@ public class SendNotificationsForCertificatesRequestDTO {
         return start;
     }
 
-    public LocalDateTime getTo() {
-        return to;
+    public LocalDateTime getEnd() {
+        return end;
     }
 }

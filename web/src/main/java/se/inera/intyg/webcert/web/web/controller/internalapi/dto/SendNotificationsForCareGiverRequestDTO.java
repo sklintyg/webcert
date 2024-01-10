@@ -23,28 +23,22 @@ import java.time.LocalDateTime;
 import java.util.List;
 import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
 
-public class SendNotificationsForUnitsRequestDTO {
+public class SendNotificationsForCareGiverRequestDTO {
 
-    private List<String> unitIds;
     private List<NotificationDeliveryStatusEnum> statuses;
     private LocalDateTime activationTime;
     private LocalDateTime start;
     private LocalDateTime end;
 
-    public static SendNotificationsForUnitsRequestDTO create(List<String> certificateIds, List<NotificationDeliveryStatusEnum> statuses,
+    public static SendNotificationsForCareGiverRequestDTO create(List<NotificationDeliveryStatusEnum> statuses,
         LocalDateTime activationTime, LocalDateTime start, LocalDateTime end) {
-        final var request = new SendNotificationsForUnitsRequestDTO();
+        final var request = new SendNotificationsForCareGiverRequestDTO();
         request.activationTime = activationTime;
-        request.unitIds = certificateIds;
         request.statuses = statuses;
         request.start = start;
         request.end = end;
 
         return request;
-    }
-
-    public List<String> getUnitIds() {
-        return unitIds;
     }
 
     public List<NotificationDeliveryStatusEnum> getStatuses() {

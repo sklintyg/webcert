@@ -29,23 +29,48 @@ import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum
 @Service
 public class NotificationRedeliverySQLQueryService {
 
+    private static final String INSERT_QUERY = "INSERT INTO NOTIFICATION_REDELIVERY (HANDELSE_ID, REDELIVERY_STRATEGY, REDELIVERY_TIME)";
+    private static final String SPACE = " ";
+    private static final String END = ";";
+
     public String count() {
         return "SELECT COUNT(*) FROM NOTIFICATION_REDELIVERY;";
     }
 
-    public String certificates(List<String> certificateIds, List<NotificationDeliveryStatusEnum> statuses, LocalDateTime start,
-        LocalDateTime end) {
-        final var certificateIdsQuery = getListFilteringQuery(certificateIds);
-        final var certificateIdFilteringQuery = "H.INTYGS_ID in " + certificateIdsQuery;
-        final var eventTableQuery = getEventTableQuery(certificateIdFilteringQuery, statuses, start, end);
-
-        return "INSERT INTO NOTIFICATION_REDELIVERY (HANDELSE_ID, REDELIVERY_STRATEGY, REDELIVERY_TIME) "
-            + eventTableQuery + ";";
+    public String notification(String notificationId) {
+        return INSERT_QUERY + SPACE + "VALUES(" + notificationId + ", 'STANDARD', now())" + END;
     }
 
-    public String notification(String notificationId) {
-        return "INSERT INTO NOTIFICATION_REDELIVERY (HANDELSE_ID, REDELIVERY_STRATEGY, REDELIVERY_TIME) "
-            + "VALUES(" + notificationId + ", 'STANDARD', now());";
+    public String certificates(List<String> certificateIds, List<NotificationDeliveryStatusEnum> statuses, LocalDateTime start,
+        LocalDateTime end) {
+        final var prefix = "H.INTYGS_ID in";
+        return getQueryForFilteringOnIds(certificateIds, prefix, statuses, start, end);
+    }
+
+    public String units(List<String> unitIds, List<NotificationDeliveryStatusEnum> statuses, LocalDateTime start, LocalDateTime end) {
+        final var prefix = "H.ENHETS_ID in";
+        return getQueryForFilteringOnIds(unitIds, prefix, statuses, start, end);
+    }
+
+    public String careGiver(String careGiverId, List<NotificationDeliveryStatusEnum> statuses, LocalDateTime start,
+        LocalDateTime end) {
+        final var filteringOnCareProvider = "H.ENHETS_ID LIKE" + SPACE + "'" + careGiverId + "-%'";
+        return getQueryWithFiltering(filteringOnCareProvider, statuses, start, end);
+    }
+
+    private String getQueryForFilteringOnIds(List<String> ids, String idsFilteringPrefix, List<NotificationDeliveryStatusEnum> statuses,
+        LocalDateTime start,
+        LocalDateTime end) {
+        final var filteringOnIdsQuery = getListFilteringQuery(ids);
+        final var certificateIdFilteringQuery = idsFilteringPrefix + SPACE + filteringOnIdsQuery;
+        return getQueryWithFiltering(certificateIdFilteringQuery, statuses, start, end);
+    }
+
+    private String getQueryWithFiltering(String uniqueFiltering, List<NotificationDeliveryStatusEnum> statuses,
+        LocalDateTime start,
+        LocalDateTime end) {
+        final var eventTableQuery = getEventTableQuery(uniqueFiltering, statuses, start, end);
+        return INSERT_QUERY + SPACE + eventTableQuery + END;
     }
 
     private static String getListFilteringQuery(List<String> values) {
@@ -60,23 +85,26 @@ public class NotificationRedeliverySQLQueryService {
         final var statusFilteringQuery = getStatusFilteringQuery(statuses);
         final var timePeriodFilteringQuery = getTimePeriodFiltering(start, end);
         final var completeFilteringQuery = getFilteringQuery(uniqueFiltering, statusFilteringQuery, timePeriodFilteringQuery);
-        final var joinQuery = statuses == null || statuses.isEmpty() ? "" : "INNER JOIN HANDELSE_METADATA HM ON H.ID = HM.HANDELSE_ID ";
+        final var joinQuery =
+            statuses == null || statuses.isEmpty() ? "" : "INNER JOIN HANDELSE_METADATA HM ON H.ID = HM.HANDELSE_ID" + SPACE;
 
         if (completeFilteringQuery.isEmpty()) {
             return "";
         }
 
-        return "SELECT H.ID, 'STANDARD', now() FROM HANDELSE H "
+        return "SELECT H.ID, 'STANDARD', now() FROM HANDELSE H"
+            + SPACE
             + joinQuery
             + completeFilteringQuery
-            + " ORDER BY H.TIMESTAMP";
+            + SPACE
+            + "ORDER BY H.TIMESTAMP";
     }
 
     private String getFilteringQuery(String... s) {
         if (s.length == 0) {
             return "";
         }
-        return "WHERE " + Arrays.stream(s).filter(string -> !string.isEmpty()).collect(Collectors.joining(" AND "));
+        return "WHERE" + SPACE + Arrays.stream(s).filter(string -> !string.isEmpty()).collect(Collectors.joining(" AND "));
     }
 
     private String getTimePeriodFiltering(LocalDateTime start, LocalDateTime end) {
@@ -100,6 +128,6 @@ public class NotificationRedeliverySQLQueryService {
                 .collect(Collectors.toList())
         );
 
-        return "HM.DELIVERY_STATUS in " + formattedStatuses;
+        return "HM.DELIVERY_STATUS in" + SPACE + formattedStatuses;
     }
 }

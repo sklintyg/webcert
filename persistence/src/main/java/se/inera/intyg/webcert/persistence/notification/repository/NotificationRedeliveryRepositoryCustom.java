@@ -46,6 +46,18 @@ public class NotificationRedeliveryRepositoryCustom {
         return performCount();
     }
 
+    public int sendNotificationsForUnits(List<String> unitIds, List<NotificationDeliveryStatusEnum> statuses,
+        LocalDateTime start, LocalDateTime end) {
+        performUpdate(notificationRedeliverySQLQueryService.units(unitIds, statuses, start, end));
+        return performCount();
+    }
+
+    public int sendNotificationsForCareGiver(String careGiverId, List<NotificationDeliveryStatusEnum> statuses,
+        LocalDateTime start, LocalDateTime end) {
+        performUpdate(notificationRedeliverySQLQueryService.careGiver(careGiverId, statuses, start, end));
+        return performCount();
+    }
+
     public int sendNotification(String notificationId) {
         performUpdate(notificationRedeliverySQLQueryService.notification(notificationId));
         return performCount();
