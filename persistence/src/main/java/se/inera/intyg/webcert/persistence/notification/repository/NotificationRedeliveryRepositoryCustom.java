@@ -31,6 +31,8 @@ import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum
 @Transactional
 public class NotificationRedeliveryRepositoryCustom {
 
+    // TODO: In service check parameters otherwise return null
+
     private final NotificationRedeliverySQLQueryService notificationRedeliverySQLQueryService;
 
     @PersistenceContext()
@@ -55,6 +57,11 @@ public class NotificationRedeliveryRepositoryCustom {
     public int sendNotificationsForCareGiver(String careGiverId, List<NotificationDeliveryStatusEnum> statuses,
         LocalDateTime start, LocalDateTime end) {
         performUpdate(notificationRedeliverySQLQueryService.careGiver(careGiverId, statuses, start, end));
+        return performCount();
+    }
+
+    public int sendNotificationsForTimePeriod(List<NotificationDeliveryStatusEnum> statuses, LocalDateTime start, LocalDateTime end) {
+        performUpdate(notificationRedeliverySQLQueryService.timePeriod(statuses, start, end));
         return performCount();
     }
 

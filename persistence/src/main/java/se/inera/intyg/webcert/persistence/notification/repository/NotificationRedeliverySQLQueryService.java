@@ -58,6 +58,11 @@ public class NotificationRedeliverySQLQueryService {
         return getQueryWithFiltering(filteringOnCareProvider, statuses, start, end);
     }
 
+    public String timePeriod(List<NotificationDeliveryStatusEnum> statuses, LocalDateTime start,
+        LocalDateTime end) {
+        return getQueryWithFiltering(null, statuses, start, end);
+    }
+
     private String getQueryForFilteringOnIds(List<String> ids, String idsFilteringPrefix, List<NotificationDeliveryStatusEnum> statuses,
         LocalDateTime start,
         LocalDateTime end) {
@@ -104,7 +109,9 @@ public class NotificationRedeliverySQLQueryService {
         if (s.length == 0) {
             return "";
         }
-        return "WHERE" + SPACE + Arrays.stream(s).filter(string -> !string.isEmpty()).collect(Collectors.joining(" AND "));
+        return "WHERE" + SPACE + Arrays.stream(s)
+            .filter(string -> string != null && !string.isEmpty())
+            .collect(Collectors.joining(" AND "));
     }
 
     private String getTimePeriodFiltering(LocalDateTime start, LocalDateTime end) {

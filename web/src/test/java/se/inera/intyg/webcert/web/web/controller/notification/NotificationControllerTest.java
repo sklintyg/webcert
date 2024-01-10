@@ -35,11 +35,13 @@ import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum
 import se.inera.intyg.webcert.web.service.sendnotification.SendNotificationService;
 import se.inera.intyg.webcert.web.service.sendnotification.SendNotificationsForCareGiverService;
 import se.inera.intyg.webcert.web.service.sendnotification.SendNotificationsForCertificatesService;
+import se.inera.intyg.webcert.web.service.sendnotification.SendNotificationsForTimePeriodService;
 import se.inera.intyg.webcert.web.service.sendnotification.SendNotificationsForUnitsService;
 import se.inera.intyg.webcert.web.web.controller.internalapi.NotificationController;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForCareGiverRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForCertificatesRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForTimePeriodRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForUnitsRequestDTO;
 
 @ExtendWith(MockitoExtension.class)
@@ -56,6 +58,9 @@ class NotificationControllerTest {
     private static final SendNotificationsForCareGiverRequestDTO CARE_GIVER_REQUEST = SendNotificationsForCareGiverRequestDTO.create(
         List.of(NotificationDeliveryStatusEnum.FAILURE), LocalDateTime.now(), LocalDateTime.now(), LocalDateTime.now()
     );
+    private static final SendNotificationsForTimePeriodRequestDTO TIME_PERIOD_REQUEST = SendNotificationsForTimePeriodRequestDTO.create(
+        List.of(NotificationDeliveryStatusEnum.FAILURE), LocalDateTime.now(), LocalDateTime.now(), LocalDateTime.now()
+    );
 
     @Mock
     private SendNotificationService sendNotificationService;
@@ -68,6 +73,9 @@ class NotificationControllerTest {
 
     @Mock
     private SendNotificationsForCareGiverService sendNotificationsForCareGiverService;
+
+    @Mock
+    private SendNotificationsForTimePeriodService sendNotificationsForTimePeriodService;
 
     @InjectMocks
     private NotificationController notificationController;
@@ -135,6 +143,23 @@ class NotificationControllerTest {
         @Test
         void shouldReturnResponseFromService() {
             final var response = notificationController.sendNotificationsForCareGiver("ID", CARE_GIVER_REQUEST);
+
+            assertEquals(COUNT, response.getCount());
+        }
+    }
+
+    @Nested
+    class SendNotificationsForTimePeriod {
+
+        @BeforeEach
+        void setup() {
+            when(sendNotificationsForTimePeriodService.send(TIME_PERIOD_REQUEST))
+                .thenReturn(SendNotificationResponseDTO.create(COUNT));
+        }
+
+        @Test
+        void shouldReturnResponseFromService() {
+            final var response = notificationController.sendNotificationsForTimePeriod(TIME_PERIOD_REQUEST);
 
             assertEquals(COUNT, response.getCount());
         }

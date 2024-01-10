@@ -29,10 +29,12 @@ import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.sendnotification.SendNotificationService;
 import se.inera.intyg.webcert.web.service.sendnotification.SendNotificationsForCareGiverService;
 import se.inera.intyg.webcert.web.service.sendnotification.SendNotificationsForCertificatesService;
+import se.inera.intyg.webcert.web.service.sendnotification.SendNotificationsForTimePeriodService;
 import se.inera.intyg.webcert.web.service.sendnotification.SendNotificationsForUnitsService;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForCareGiverRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForCertificatesRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForTimePeriodRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForUnitsRequestDTO;
 
 @Path("/notification")
@@ -44,14 +46,17 @@ public class NotificationController {
     private final SendNotificationService sendNotificationService;
     private final SendNotificationsForUnitsService sendNotificationsForUnitsService;
     private final SendNotificationsForCareGiverService sendNotificationsForCareGiverService;
+    private final SendNotificationsForTimePeriodService sendNotificationsForTimePeriodService;
 
     public NotificationController(SendNotificationsForCertificatesService sendNotificationsForCertificatesService,
         SendNotificationService sendNotificationService, SendNotificationsForUnitsService sendNotificationsForUnitsService,
-        SendNotificationsForCareGiverService sendNotificationsForCareGiverService) {
+        SendNotificationsForCareGiverService sendNotificationsForCareGiverService,
+        SendNotificationsForTimePeriodService sendNotificationsForTimePeriodService) {
         this.sendNotificationsForCertificatesService = sendNotificationsForCertificatesService;
         this.sendNotificationService = sendNotificationService;
         this.sendNotificationsForUnitsService = sendNotificationsForUnitsService;
         this.sendNotificationsForCareGiverService = sendNotificationsForCareGiverService;
+        this.sendNotificationsForTimePeriodService = sendNotificationsForTimePeriodService;
     }
 
     @POST
@@ -79,11 +84,19 @@ public class NotificationController {
     }
 
     @POST
-    @Path("/careGiver/{careGiverId}")
+    @Path("/caregiver/{careGiverId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
     public SendNotificationResponseDTO sendNotificationsForCareGiver(@PathParam("careGiverId") String careGiverId,
         @RequestBody SendNotificationsForCareGiverRequestDTO request) {
         return sendNotificationsForCareGiverService.send(careGiverId, request);
+    }
+
+    @POST
+    @Path("/timeperiod")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public SendNotificationResponseDTO sendNotificationsForTimePeriod(@RequestBody SendNotificationsForTimePeriodRequestDTO request) {
+        return sendNotificationsForTimePeriodService.send(request);
     }
 }

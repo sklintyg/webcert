@@ -182,6 +182,64 @@ class NotificationRedeliverySQLQueryServiceTest {
     }
 
     @Nested
+    class SendNotificationForTimePeriod {
+
+        @Test
+        void shouldReturnCorrectQueryIncludingOnlyStart() {
+            final var start = LocalDateTime.now().minusDays(1);
+            final var response = notificationRedeliverySQLQueryService.timePeriod(Collections.emptyList(), start, null);
+
+            assertEquals(
+                "INSERT INTO NOTIFICATION_REDELIVERY (HANDELSE_ID, REDELIVERY_STRATEGY, REDELIVERY_TIME) SELECT H.ID,"
+                    + " 'STANDARD', now() FROM HANDELSE H WHERE H.TIMESTAMP BETWEEN '" + start
+                    + "' AND now() ORDER BY H.TIMESTAMP;", response);
+        }
+
+        @Test
+        void shouldReturnCorrectQueryIncludingStartAndEnd() {
+            final var start = LocalDateTime.now().minusDays(1);
+            final var end = LocalDateTime.now();
+            final var response = notificationRedeliverySQLQueryService.timePeriod(Collections.emptyList(), start, end);
+
+            assertEquals(
+                "INSERT INTO NOTIFICATION_REDELIVERY (HANDELSE_ID, REDELIVERY_STRATEGY, REDELIVERY_TIME) SELECT H.ID,"
+                    + " 'STANDARD', now() FROM HANDELSE H WHERE "
+                    + "H.TIMESTAMP BETWEEN '" + start + "' AND '" + end + "' ORDER BY H.TIMESTAMP;", response);
+        }
+
+        @Test
+        void shouldReturnCorrectQueryIncludingTimePeriodAndStatus() {
+            final var start = LocalDateTime.now().minusDays(1);
+            final var end = LocalDateTime.now();
+            final var response = notificationRedeliverySQLQueryService.timePeriod(List.of(NotificationDeliveryStatusEnum.FAILURE), start,
+                end);
+
+            assertEquals(
+                "INSERT INTO NOTIFICATION_REDELIVERY (HANDELSE_ID, REDELIVERY_STRATEGY, REDELIVERY_TIME) SELECT H.ID,"
+                    + " 'STANDARD', now() FROM HANDELSE H"
+                    + " INNER JOIN HANDELSE_METADATA HM ON H.ID = HM.HANDELSE_ID"
+                    + " WHERE HM.DELIVERY_STATUS in ('FAILURE')"
+                    + " AND H.TIMESTAMP BETWEEN '" + start + "' AND '" + end
+                    + "' ORDER BY H.TIMESTAMP;", response);
+        }
+
+        @Test
+        void shouldReturnCorrectQueryIncludingIdStatusAndStartOnly() {
+            final var start = LocalDateTime.now().minusDays(1);
+            final var response = notificationRedeliverySQLQueryService.timePeriod(List.of(NotificationDeliveryStatusEnum.FAILURE), start,
+                null);
+
+            assertEquals(
+                "INSERT INTO NOTIFICATION_REDELIVERY (HANDELSE_ID, REDELIVERY_STRATEGY, REDELIVERY_TIME) SELECT H.ID,"
+                    + " 'STANDARD', now() FROM HANDELSE H"
+                    + " INNER JOIN HANDELSE_METADATA HM ON H.ID = HM.HANDELSE_ID"
+                    + " WHERE"
+                    + " HM.DELIVERY_STATUS in ('FAILURE')"
+                    + " AND H.TIMESTAMP BETWEEN '" + start + "' AND now() ORDER BY H.TIMESTAMP;", response);
+        }
+    }
+
+    @Nested
     class SendNotificationForCareGiver {
 
         @Test
