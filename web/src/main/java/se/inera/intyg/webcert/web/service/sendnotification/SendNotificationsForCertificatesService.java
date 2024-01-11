@@ -29,20 +29,20 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificatio
 public class SendNotificationsForCertificatesService {
 
     private final NotificationRedeliveryRepositoryCustom notificationRedeliveryRepository;
-    private final SendNotificationRequestValidation sendNotificationRequestValidation;
+    private final SendNotificationRequestValidator sendNotificationRequestValidator;
 
     @Value("${timelimit.daysback.start}")
     private int maxDaysBackStartDate;
 
     public SendNotificationsForCertificatesService(NotificationRedeliveryRepositoryCustom notificationRedeliveryRepository,
-        SendNotificationRequestValidation sendNotificationRequestValidation) {
+        SendNotificationRequestValidator sendNotificationRequestValidator) {
         this.notificationRedeliveryRepository = notificationRedeliveryRepository;
-        this.sendNotificationRequestValidation = sendNotificationRequestValidation;
+        this.sendNotificationRequestValidator = sendNotificationRequestValidator;
     }
 
     public SendNotificationResponseDTO send(SendNotificationsForCertificatesRequestDTO request) {
-        sendNotificationRequestValidation.validateIds(request.getCertificateIds());
-        sendNotificationRequestValidation.validateDate(request.getStart(), request.getEnd(), maxDaysBackStartDate);
+        sendNotificationRequestValidator.validateIds(request.getCertificateIds());
+        sendNotificationRequestValidator.validateDate(request.getStart(), request.getEnd(), maxDaysBackStartDate);
 
         final var response = notificationRedeliveryRepository.sendNotificationsForCertificates(
             request.getCertificateIds(),

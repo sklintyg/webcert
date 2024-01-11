@@ -57,7 +57,7 @@ class SendNotificationsForCareGiverServiceTest {
     NotificationRedeliveryRepositoryCustom notificationRedeliveryRepositoryCustom;
 
     @Mock
-    SendNotificationRequestValidation sendNotificationRequestValidation;
+    SendNotificationRequestValidator sendNotificationRequestValidator;
 
     @InjectMocks
     SendNotificationsForCareGiverService sendNotificationsForCareGiverService;
@@ -83,7 +83,7 @@ class SendNotificationsForCareGiverServiceTest {
         final var captor = ArgumentCaptor.forClass(String.class);
         sendNotificationsForCareGiverService.send(ID, REQUEST);
 
-        verify(sendNotificationRequestValidation).validateId(captor.capture());
+        verify(sendNotificationRequestValidator).validateId(captor.capture());
 
         assertEquals(ID, captor.getValue());
     }
@@ -93,7 +93,7 @@ class SendNotificationsForCareGiverServiceTest {
         final var captor = ArgumentCaptor.forClass(LocalDateTime.class);
         sendNotificationsForCareGiverService.send(ID, REQUEST);
 
-        verify(sendNotificationRequestValidation).validateDate(captor.capture(), any(LocalDateTime.class), anyInt(), anyInt());
+        verify(sendNotificationRequestValidator).validateDate(captor.capture(), any(LocalDateTime.class), anyInt(), anyInt());
 
         assertEquals(REQUEST.getStart(), captor.getValue());
     }
@@ -103,7 +103,7 @@ class SendNotificationsForCareGiverServiceTest {
         final var captor = ArgumentCaptor.forClass(LocalDateTime.class);
         sendNotificationsForCareGiverService.send(ID, REQUEST);
 
-        verify(sendNotificationRequestValidation).validateDate(any(LocalDateTime.class), captor.capture(), anyInt(), anyInt());
+        verify(sendNotificationRequestValidator).validateDate(any(LocalDateTime.class), captor.capture(), anyInt(), anyInt());
 
         assertEquals(REQUEST.getEnd(), captor.getValue());
     }
@@ -113,7 +113,7 @@ class SendNotificationsForCareGiverServiceTest {
         final var captor = ArgumentCaptor.forClass(int.class);
         sendNotificationsForCareGiverService.send(ID, REQUEST);
 
-        verify(sendNotificationRequestValidation).validateDate(any(LocalDateTime.class), any(LocalDateTime.class), anyInt(),
+        verify(sendNotificationRequestValidator).validateDate(any(LocalDateTime.class), any(LocalDateTime.class), anyInt(),
             captor.capture());
 
         assertEquals(LIMIT, captor.getValue());
@@ -124,7 +124,7 @@ class SendNotificationsForCareGiverServiceTest {
         final var captor = ArgumentCaptor.forClass(int.class);
         sendNotificationsForCareGiverService.send(ID, REQUEST);
 
-        verify(sendNotificationRequestValidation).validateDate(any(LocalDateTime.class), any(LocalDateTime.class), captor.capture(),
+        verify(sendNotificationRequestValidator).validateDate(any(LocalDateTime.class), any(LocalDateTime.class), captor.capture(),
             anyInt());
 
         assertEquals(LIMIT_INTERVAL, captor.getValue());

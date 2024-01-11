@@ -56,7 +56,7 @@ class SendNotificationsForTimePeriodServiceTest {
     NotificationRedeliveryRepositoryCustom notificationRedeliveryRepositoryCustom;
 
     @Mock
-    SendNotificationRequestValidation sendNotificationRequestValidation;
+    SendNotificationRequestValidator sendNotificationRequestValidator;
 
     @InjectMocks
     SendNotificationsForTimePeriodService sendNotificationsForTimePeriodService;
@@ -82,7 +82,7 @@ class SendNotificationsForTimePeriodServiceTest {
         final var captor = ArgumentCaptor.forClass(LocalDateTime.class);
         sendNotificationsForTimePeriodService.send(REQUEST);
 
-        verify(sendNotificationRequestValidation).validateDate(captor.capture(), any(LocalDateTime.class), anyInt(), anyInt());
+        verify(sendNotificationRequestValidator).validateDate(captor.capture(), any(LocalDateTime.class), anyInt(), anyInt());
 
         assertEquals(REQUEST.getStart(), captor.getValue());
     }
@@ -92,7 +92,7 @@ class SendNotificationsForTimePeriodServiceTest {
         final var captor = ArgumentCaptor.forClass(LocalDateTime.class);
         sendNotificationsForTimePeriodService.send(REQUEST);
 
-        verify(sendNotificationRequestValidation).validateDate(any(LocalDateTime.class), captor.capture(), anyInt(), anyInt());
+        verify(sendNotificationRequestValidator).validateDate(any(LocalDateTime.class), captor.capture(), anyInt(), anyInt());
 
         assertEquals(REQUEST.getEnd(), captor.getValue());
     }
@@ -102,7 +102,7 @@ class SendNotificationsForTimePeriodServiceTest {
         final var captor = ArgumentCaptor.forClass(int.class);
         sendNotificationsForTimePeriodService.send(REQUEST);
 
-        verify(sendNotificationRequestValidation).validateDate(any(LocalDateTime.class), any(LocalDateTime.class), anyInt(),
+        verify(sendNotificationRequestValidator).validateDate(any(LocalDateTime.class), any(LocalDateTime.class), anyInt(),
             captor.capture());
 
         assertEquals(LIMIT, captor.getValue());
@@ -113,7 +113,7 @@ class SendNotificationsForTimePeriodServiceTest {
         final var captor = ArgumentCaptor.forClass(int.class);
         sendNotificationsForTimePeriodService.send(REQUEST);
 
-        verify(sendNotificationRequestValidation).validateDate(any(LocalDateTime.class), any(LocalDateTime.class), captor.capture(),
+        verify(sendNotificationRequestValidator).validateDate(any(LocalDateTime.class), any(LocalDateTime.class), captor.capture(),
             anyInt());
 
         assertEquals(LIMIT_INTERVAL, captor.getValue());

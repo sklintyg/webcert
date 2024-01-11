@@ -41,7 +41,7 @@ class SendNotificationServiceTest {
     NotificationRedeliveryRepositoryCustom notificationRedeliveryRepositoryCustom;
 
     @Mock
-    SendNotificationRequestValidation sendNotificationRequestValidation;
+    SendNotificationRequestValidator sendNotificationRequestValidator;
 
     @InjectMocks
     SendNotificationService sendNotificationService;
@@ -61,7 +61,7 @@ class SendNotificationServiceTest {
         final var captor = ArgumentCaptor.forClass(String.class);
         sendNotificationService.send(ID);
 
-        verify(sendNotificationRequestValidation).validateId(captor.capture());
+        verify(sendNotificationRequestValidator).validateId(captor.capture());
 
         assertEquals(ID, captor.getValue());
     }

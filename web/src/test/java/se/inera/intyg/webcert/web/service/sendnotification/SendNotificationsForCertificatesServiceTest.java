@@ -56,7 +56,7 @@ class SendNotificationsForCertificatesServiceTest {
     NotificationRedeliveryRepositoryCustom notificationRedeliveryRepositoryCustom;
 
     @Mock
-    SendNotificationRequestValidation sendNotificationRequestValidation;
+    SendNotificationRequestValidator sendNotificationRequestValidator;
 
     @InjectMocks
     SendNotificationsForCertificatesService sendNotificationsForCertificatesService;
@@ -81,7 +81,7 @@ class SendNotificationsForCertificatesServiceTest {
         final var captor = ArgumentCaptor.forClass(List.class);
         sendNotificationsForCertificatesService.send(REQUEST);
 
-        verify(sendNotificationRequestValidation).validateIds(captor.capture());
+        verify(sendNotificationRequestValidator).validateIds(captor.capture());
 
         assertEquals(REQUEST.getCertificateIds(), captor.getValue());
     }
@@ -91,7 +91,7 @@ class SendNotificationsForCertificatesServiceTest {
         final var captor = ArgumentCaptor.forClass(LocalDateTime.class);
         sendNotificationsForCertificatesService.send(REQUEST);
 
-        verify(sendNotificationRequestValidation).validateDate(captor.capture(), any(LocalDateTime.class), anyInt());
+        verify(sendNotificationRequestValidator).validateDate(captor.capture(), any(LocalDateTime.class), anyInt());
 
         assertEquals(REQUEST.getStart(), captor.getValue());
     }
@@ -101,7 +101,7 @@ class SendNotificationsForCertificatesServiceTest {
         final var captor = ArgumentCaptor.forClass(LocalDateTime.class);
         sendNotificationsForCertificatesService.send(REQUEST);
 
-        verify(sendNotificationRequestValidation).validateDate(any(LocalDateTime.class), captor.capture(), anyInt());
+        verify(sendNotificationRequestValidator).validateDate(any(LocalDateTime.class), captor.capture(), anyInt());
 
         assertEquals(REQUEST.getEnd(), captor.getValue());
     }
@@ -111,7 +111,7 @@ class SendNotificationsForCertificatesServiceTest {
         final var captor = ArgumentCaptor.forClass(int.class);
         sendNotificationsForCertificatesService.send(REQUEST);
 
-        verify(sendNotificationRequestValidation).validateDate(any(LocalDateTime.class), any(LocalDateTime.class), captor.capture());
+        verify(sendNotificationRequestValidator).validateDate(any(LocalDateTime.class), any(LocalDateTime.class), captor.capture());
 
         assertEquals(LIMIT, captor.getValue());
     }

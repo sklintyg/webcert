@@ -25,7 +25,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SendNotificationRequestValidation {
+public class SendNotificationRequestValidator {
 
     public void validateId(String id) {
         if (id == null || id.isBlank() || id.isEmpty()) {

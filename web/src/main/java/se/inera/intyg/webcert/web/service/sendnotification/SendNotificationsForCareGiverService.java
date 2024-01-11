@@ -29,12 +29,12 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificatio
 public class SendNotificationsForCareGiverService {
 
     private final NotificationRedeliveryRepositoryCustom notificationRedeliveryRepository;
-    private final SendNotificationRequestValidation sendNotificationRequestValidation;
+    private final SendNotificationRequestValidator sendNotificationRequestValidator;
 
     public SendNotificationsForCareGiverService(NotificationRedeliveryRepositoryCustom notificationRedeliveryRepository,
-        SendNotificationRequestValidation sendNotificationRequestValidation) {
+        SendNotificationRequestValidator sendNotificationRequestValidator) {
         this.notificationRedeliveryRepository = notificationRedeliveryRepository;
-        this.sendNotificationRequestValidation = sendNotificationRequestValidation;
+        this.sendNotificationRequestValidator = sendNotificationRequestValidator;
     }
 
     @Value("${timeinterval.maxdays.caregiver}")
@@ -44,8 +44,8 @@ public class SendNotificationsForCareGiverService {
     private int maxDaysBackStartDate;
 
     public SendNotificationResponseDTO send(String careGiverId, SendNotificationsForCareGiverRequestDTO request) {
-        sendNotificationRequestValidation.validateId(careGiverId);
-        sendNotificationRequestValidation.validateDate(request.getStart(), request.getEnd(), maxTimeInterval, maxDaysBackStartDate);
+        sendNotificationRequestValidator.validateId(careGiverId);
+        sendNotificationRequestValidator.validateDate(request.getStart(), request.getEnd(), maxTimeInterval, maxDaysBackStartDate);
 
         final var response = notificationRedeliveryRepository.sendNotificationsForCareGiver(
             careGiverId,

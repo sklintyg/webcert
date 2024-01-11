@@ -32,32 +32,32 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class SendNotificationRequestValidationTest {
+class SendNotificationRequestValidatorTest {
 
     @InjectMocks
-    private SendNotificationRequestValidation sendNotificationRequestValidation;
+    private SendNotificationRequestValidator sendNotificationRequestValidator;
 
     @Nested
     class ValidateId {
 
         @Test
         void shouldThrowExceptionIfIdIsEmpty() {
-            assertThrows(IllegalArgumentException.class, () -> sendNotificationRequestValidation.validateId(""));
+            assertThrows(IllegalArgumentException.class, () -> sendNotificationRequestValidator.validateId(""));
         }
 
         @Test
         void shouldThrowExceptionIfIdIsNull() {
-            assertThrows(IllegalArgumentException.class, () -> sendNotificationRequestValidation.validateId(null));
+            assertThrows(IllegalArgumentException.class, () -> sendNotificationRequestValidator.validateId(null));
         }
 
         @Test
         void shouldThrowExceptionIfIdIsBlank() {
-            assertThrows(IllegalArgumentException.class, () -> sendNotificationRequestValidation.validateId(" "));
+            assertThrows(IllegalArgumentException.class, () -> sendNotificationRequestValidator.validateId(" "));
         }
 
         @Test
         void shouldNotThrowIfValidId() {
-            assertDoesNotThrow(() -> sendNotificationRequestValidation.validateId("ID"));
+            assertDoesNotThrow(() -> sendNotificationRequestValidator.validateId("ID"));
         }
     }
 
@@ -67,17 +67,17 @@ class SendNotificationRequestValidationTest {
         @Test
         void shouldThrowExceptionIfIdIsEmpty() {
             final var ids = new ArrayList<String>();
-            assertThrows(IllegalArgumentException.class, () -> sendNotificationRequestValidation.validateIds(ids));
+            assertThrows(IllegalArgumentException.class, () -> sendNotificationRequestValidator.validateIds(ids));
         }
 
         @Test
         void shouldThrowExceptionIfIdIsNull() {
-            assertThrows(IllegalArgumentException.class, () -> sendNotificationRequestValidation.validateIds(null));
+            assertThrows(IllegalArgumentException.class, () -> sendNotificationRequestValidator.validateIds(null));
         }
 
         @Test
         void shouldNotThrowIfValidId() {
-            assertDoesNotThrow(() -> sendNotificationRequestValidation.validateIds(List.of("ID")));
+            assertDoesNotThrow(() -> sendNotificationRequestValidator.validateIds(List.of("ID")));
         }
     }
 
@@ -92,7 +92,7 @@ class SendNotificationRequestValidationTest {
             final var limitInterval = 10;
 
             assertThrows(IllegalArgumentException.class,
-                () -> sendNotificationRequestValidation.validateDate(start, end, limitInterval, limitBack));
+                () -> sendNotificationRequestValidator.validateDate(start, end, limitInterval, limitBack));
         }
 
         @Test
@@ -102,7 +102,7 @@ class SendNotificationRequestValidationTest {
             final var limitBack = 4;
             final var limitInterval = 10;
 
-            assertDoesNotThrow(() -> sendNotificationRequestValidation.validateDate(start, end, limitInterval, limitBack));
+            assertDoesNotThrow(() -> sendNotificationRequestValidator.validateDate(start, end, limitInterval, limitBack));
         }
 
         @Test
@@ -113,7 +113,7 @@ class SendNotificationRequestValidationTest {
             final var limitInterval = 10;
 
             assertThrows(IllegalArgumentException.class,
-                () -> sendNotificationRequestValidation.validateDate(start, end, limitInterval, limitBack));
+                () -> sendNotificationRequestValidator.validateDate(start, end, limitInterval, limitBack));
         }
 
         @Test
@@ -124,7 +124,7 @@ class SendNotificationRequestValidationTest {
             final var limitInterval = 10;
 
             assertThrows(IllegalArgumentException.class,
-                () -> sendNotificationRequestValidation.validateDate(start, end, limitInterval, limitBack));
+                () -> sendNotificationRequestValidator.validateDate(start, end, limitInterval, limitBack));
         }
 
         @Test
@@ -134,7 +134,7 @@ class SendNotificationRequestValidationTest {
             final var limitInterval = 10;
 
             assertThrows(IllegalArgumentException.class,
-                () -> sendNotificationRequestValidation.validateDate(start, null, limitInterval, limitBack));
+                () -> sendNotificationRequestValidator.validateDate(start, null, limitInterval, limitBack));
         }
     }
 
@@ -147,7 +147,7 @@ class SendNotificationRequestValidationTest {
             final var start = LocalDateTime.now().minusDays(5);
             final var limit = 4;
 
-            assertThrows(IllegalArgumentException.class, () -> sendNotificationRequestValidation.validateDate(start, end, limit));
+            assertThrows(IllegalArgumentException.class, () -> sendNotificationRequestValidator.validateDate(start, end, limit));
         }
 
         @Test
@@ -156,7 +156,7 @@ class SendNotificationRequestValidationTest {
             final var start = LocalDateTime.now();
             final var limit = 4;
 
-            assertThrows(IllegalArgumentException.class, () -> sendNotificationRequestValidation.validateDate(start, end, limit));
+            assertThrows(IllegalArgumentException.class, () -> sendNotificationRequestValidator.validateDate(start, end, limit));
         }
 
         @Test
@@ -165,7 +165,7 @@ class SendNotificationRequestValidationTest {
             final var start = LocalDateTime.now().minusDays(2);
             final var limit = 4;
 
-            assertDoesNotThrow(() -> sendNotificationRequestValidation.validateDate(start, end, limit));
+            assertDoesNotThrow(() -> sendNotificationRequestValidator.validateDate(start, end, limit));
         }
     }
 

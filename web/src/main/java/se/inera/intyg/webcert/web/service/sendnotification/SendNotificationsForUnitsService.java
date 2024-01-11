@@ -29,7 +29,7 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificatio
 public class SendNotificationsForUnitsService {
 
     private final NotificationRedeliveryRepositoryCustom notificationRedeliveryRepository;
-    private final SendNotificationRequestValidation sendNotificationRequestValidation;
+    private final SendNotificationRequestValidator sendNotificationRequestValidator;
 
     @Value("${timeinterval.maxdays.unit}")
     private int maxTimeInterval;
@@ -38,14 +38,14 @@ public class SendNotificationsForUnitsService {
     private int maxDaysBackStartDate;
 
     public SendNotificationsForUnitsService(NotificationRedeliveryRepositoryCustom notificationRedeliveryRepository,
-        SendNotificationRequestValidation sendNotificationRequestValidation) {
+        SendNotificationRequestValidator sendNotificationRequestValidator) {
         this.notificationRedeliveryRepository = notificationRedeliveryRepository;
-        this.sendNotificationRequestValidation = sendNotificationRequestValidation;
+        this.sendNotificationRequestValidator = sendNotificationRequestValidator;
     }
 
     public SendNotificationResponseDTO send(SendNotificationsForUnitsRequestDTO request) {
-        sendNotificationRequestValidation.validateIds(request.getUnitIds());
-        sendNotificationRequestValidation.validateDate(request.getStart(), request.getEnd(), maxTimeInterval, maxDaysBackStartDate);
+        sendNotificationRequestValidator.validateIds(request.getUnitIds());
+        sendNotificationRequestValidator.validateDate(request.getStart(), request.getEnd(), maxTimeInterval, maxDaysBackStartDate);
 
         final var response = notificationRedeliveryRepository.sendNotificationsForUnits(
             request.getUnitIds(),
