@@ -33,7 +33,6 @@ public class SendNotificationRequestValidator {
                 "Id is empty, cannot send notifications"
             );
         }
-
     }
 
     public void validateIds(List<String> ids) {
@@ -42,7 +41,6 @@ public class SendNotificationRequestValidator {
                 "Ids are empty, cannot send notifications"
             );
         }
-
     }
 
     public void validateDate(LocalDateTime start, LocalDateTime end, Integer maxDaysBackSinceStart) {
@@ -71,7 +69,6 @@ public class SendNotificationRequestValidator {
         final var daysBetween = ChronoUnit.DAYS.between(start, end != null ? end : LocalDateTime.now());
         return daysBetween <= maxDaysBetween;
     }
-
 
     private boolean isStartDateValid(LocalDateTime start, int maxDaysBack) {
         return isTimePeriodValid(start, LocalDateTime.now(), maxDaysBack);
