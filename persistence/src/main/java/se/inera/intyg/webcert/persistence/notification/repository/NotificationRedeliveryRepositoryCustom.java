@@ -126,7 +126,6 @@ public class NotificationRedeliveryRepositoryCustom {
 
     private int performCount() {
         final var count = (BigInteger) entityManager.createNativeQuery(notificationRedeliverySQLQueryGenerator.count()).getSingleResult();
-
         return count.intValue();
     }
 }

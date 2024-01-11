@@ -29,10 +29,10 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
 
-@Service
+@Component
 public class NotificationRedeliverySQLQueryGenerator {
 
     private static final String INSERT_QUERY = "INSERT INTO NOTIFICATION_REDELIVERY (HANDELSE_ID, REDELIVERY_STRATEGY, REDELIVERY_TIME)";
