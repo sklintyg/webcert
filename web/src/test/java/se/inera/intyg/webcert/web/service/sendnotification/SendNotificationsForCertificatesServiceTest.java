@@ -63,7 +63,7 @@ class SendNotificationsForCertificatesServiceTest {
 
     @BeforeEach
     void setup() {
-        when(notificationRedeliveryRepositoryCustom.sendNotificationsForCertificates(IDS, STATUSES, START, END))
+        when(notificationRedeliveryRepositoryCustom.sendNotificationsForCertificates(IDS, STATUSES, START, END, ACTIVATION_TIME))
             .thenReturn(COUNT);
 
         ReflectionTestUtils.setField(sendNotificationsForCertificatesService, "maxDaysBackStartDate", LIMIT);

@@ -64,7 +64,7 @@ class SendNotificationsForCareGiverServiceTest {
 
     @BeforeEach
     void setup() {
-        when(notificationRedeliveryRepositoryCustom.sendNotificationsForCareGiver(ID, STATUSES, START, END))
+        when(notificationRedeliveryRepositoryCustom.sendNotificationsForCareGiver(ID, STATUSES, START, END, ACTIVATION_TIME))
             .thenReturn(COUNT);
 
         ReflectionTestUtils.setField(sendNotificationsForCareGiverService, "maxDaysBackStartDate", LIMIT);

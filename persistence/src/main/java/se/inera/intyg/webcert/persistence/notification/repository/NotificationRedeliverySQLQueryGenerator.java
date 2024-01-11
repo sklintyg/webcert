@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.persistence.notification.repository;
 
+import static se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliverySQLConstants.ACTIVATION_TIME;
 import static se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliverySQLConstants.END;
 import static se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliverySQLConstants.ID;
 import static se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliverySQLConstants.START;
@@ -37,68 +38,76 @@ public class NotificationRedeliverySQLQueryGenerator {
     private static final String INSERT_QUERY = "INSERT INTO NOTIFICATION_REDELIVERY (HANDELSE_ID, REDELIVERY_STRATEGY, REDELIVERY_TIME)";
     private static final String SPACE = " ";
     private static final String END_QUERY = ";";
+    private static final String ID_PREFIX = ":";
 
     public String count() {
         return "SELECT COUNT(*) FROM NOTIFICATION_REDELIVERY;";
     }
 
     public String notification() {
-        return INSERT_QUERY + SPACE + "VALUES(" + ID + ", 'STANDARD', now())" + END_QUERY;
+        return INSERT_QUERY + SPACE + "VALUES(" + ID_PREFIX + ID + ", 'STANDARD', now())" + END_QUERY;
     }
 
     public String certificates(List<NotificationDeliveryStatusEnum> statuses, LocalDateTime start,
-        LocalDateTime end) {
+        LocalDateTime end, LocalDateTime activationTime) {
         final var prefix = "H.INTYGS_ID in";
-        return getQueryForFilteringOnIds(prefix, statuses, start, end);
+        return getQueryForFilteringOnIds(prefix, statuses, start, end, activationTime);
     }
 
-    public String units(List<NotificationDeliveryStatusEnum> statuses, LocalDateTime start, LocalDateTime end) {
+    public String units(List<NotificationDeliveryStatusEnum> statuses, LocalDateTime start, LocalDateTime end,
+        LocalDateTime activationTime) {
         final var prefix = "H.ENHETS_ID in";
-        return getQueryForFilteringOnIds(prefix, statuses, start, end);
+        return getQueryForFilteringOnIds(prefix, statuses, start, end, activationTime);
     }
 
     public String careGiver(List<NotificationDeliveryStatusEnum> statuses, LocalDateTime start,
-        LocalDateTime end) {
-        final var filteringOnCareProvider = "H.ENHETS_ID LIKE" + SPACE + ID;
-        return getQueryWithFiltering(filteringOnCareProvider, statuses, start, end);
+        LocalDateTime end, LocalDateTime activationTime) {
+        final var filteringOnCareProvider = "H.ENHETS_ID LIKE" + SPACE + ID_PREFIX + ID;
+        return getQueryWithFiltering(filteringOnCareProvider, statuses, start, end, activationTime);
     }
 
     public String timePeriod(List<NotificationDeliveryStatusEnum> statuses, LocalDateTime start,
-        LocalDateTime end) {
-        return getQueryWithFiltering(null, statuses, start, end);
+        LocalDateTime end, LocalDateTime activationTime) {
+        return getQueryWithFiltering(null, statuses, start, end, activationTime);
     }
 
     private String getQueryForFilteringOnIds(String idsFilteringPrefix, List<NotificationDeliveryStatusEnum> statuses, LocalDateTime start,
-        LocalDateTime end) {
-        final var certificateIdFilteringQuery = idsFilteringPrefix + SPACE + ID;
-        return getQueryWithFiltering(certificateIdFilteringQuery, statuses, start, end);
+        LocalDateTime end, LocalDateTime activationTime) {
+        final var certificateIdFilteringQuery = idsFilteringPrefix + SPACE + ID_PREFIX + ID;
+        return getQueryWithFiltering(certificateIdFilteringQuery, statuses, start, end, activationTime);
     }
 
-    private String getQueryWithFiltering(String uniqueFiltering, List<NotificationDeliveryStatusEnum> statuses,
+    private String getQueryWithFiltering(
+        String uniqueFiltering,
+        List<NotificationDeliveryStatusEnum> statuses,
         LocalDateTime start,
-        LocalDateTime end) {
-        final var eventTableQuery = getEventTableQuery(uniqueFiltering, statuses, start, end);
+        LocalDateTime end,
+        LocalDateTime activationTime
+    ) {
+        final var eventTableQuery = getEventTableQuery(uniqueFiltering, statuses, start, end, activationTime);
         return INSERT_QUERY + SPACE + eventTableQuery + END_QUERY;
     }
 
     private String getEventTableQuery(String uniqueFiltering, List<NotificationDeliveryStatusEnum> statuses, LocalDateTime start,
-        LocalDateTime end) {
+        LocalDateTime end, LocalDateTime activationTime) {
         final var statusFilteringQuery = getStatusFilteringQuery(statuses);
         final var timePeriodFilteringQuery = getTimePeriodFiltering(start, end);
         final var completeFilteringQuery = getFilteringQuery(uniqueFiltering, statusFilteringQuery, timePeriodFilteringQuery);
+
         final var joinQuery =
             statuses == null || statuses.isEmpty() ? "" : "INNER JOIN HANDELSE_METADATA HM ON H.ID = HM.HANDELSE_ID" + SPACE;
+        final var activationTimeQuery = activationTime != null ? ID_PREFIX + ACTIVATION_TIME : "now()";
 
         if (completeFilteringQuery.isEmpty()) {
             return "";
         }
 
-        return "SELECT H.ID, 'STANDARD', now() FROM HANDELSE H"
-            + SPACE
-            + joinQuery
+        return "SELECT H.ID, 'STANDARD',"
+            + SPACE + activationTimeQuery
+            + SPACE + "FROM HANDELSE H"
+            + SPACE + joinQuery
             + completeFilteringQuery
-            + SPACE
-            + "ORDER BY H.TIMESTAMP";
+            + SPACE + "ORDER BY H.TIMESTAMP";
     }
 
     private String getFilteringQuery(String... s) {
@@ -115,8 +124,8 @@ public class NotificationRedeliverySQLQueryGenerator {
             return "";
         }
 
-        final var endString = end != null ? END : "now()";
-        return "H.TIMESTAMP BETWEEN " + START + " AND " + endString;
+        final var endString = end != null ? ID_PREFIX + END : "now()";
+        return "H.TIMESTAMP BETWEEN " + ID_PREFIX + START + " AND " + endString;
     }
 
     private String getStatusFilteringQuery(List<NotificationDeliveryStatusEnum> statuses) {
@@ -124,6 +133,6 @@ public class NotificationRedeliverySQLQueryGenerator {
             return "";
         }
 
-        return "HM.DELIVERY_STATUS in" + SPACE + STATUS;
+        return "HM.DELIVERY_STATUS in" + SPACE + ID_PREFIX + STATUS;
     }
 }

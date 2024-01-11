@@ -49,7 +49,8 @@ public class SendNotificationsForTimePeriodService {
         final var response = notificationRedeliveryRepository.sendNotificationsForTimePeriod(
             request.getStatuses(),
             request.getStart(),
-            request.getEnd()
+            request.getEnd(),
+            request.getActivationTime()
         );
 
         return SendNotificationResponseDTO.create(response);

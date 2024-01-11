@@ -48,7 +48,8 @@ public class SendNotificationsForCertificatesService {
             request.getCertificateIds(),
             request.getStatuses(),
             request.getStart(),
-            request.getEnd()
+            request.getEnd(),
+            request.getActivationTime()
         );
 
         return SendNotificationResponseDTO.create(response);

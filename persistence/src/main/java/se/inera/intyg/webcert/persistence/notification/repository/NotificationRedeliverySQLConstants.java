@@ -22,11 +22,12 @@ package se.inera.intyg.webcert.persistence.notification.repository;
 public class NotificationRedeliverySQLConstants {
 
     private NotificationRedeliverySQLConstants() {
-        
+
     }
 
-    public static final String ID = ":id";
-    public static final String STATUS = ":status";
-    public static final String START = ":start";
-    public static final String END = ":end";
+    public static final String ID = "id";
+    public static final String STATUS = "status";
+    public static final String START = "start";
+    public static final String END = "end";
+    public static final String ACTIVATION_TIME = "activationTime";
 }

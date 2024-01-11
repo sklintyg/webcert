@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.persistence.notification.repository;
 
+import static se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliverySQLConstants.ACTIVATION_TIME;
 import static se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliverySQLConstants.END;
 import static se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliverySQLConstants.ID;
 import static se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliverySQLConstants.START;
@@ -47,37 +48,38 @@ public class NotificationRedeliveryRepositoryCustom {
     }
 
     public int sendNotificationsForCertificates(List<String> certificateIds, List<NotificationDeliveryStatusEnum> statuses,
-        LocalDateTime start, LocalDateTime end) {
-        final var sql = notificationRedeliverySQLQueryGenerator.certificates(statuses, start, end);
+        LocalDateTime start, LocalDateTime end, LocalDateTime activationTime) {
+        final var sql = notificationRedeliverySQLQueryGenerator.certificates(statuses, start, end, activationTime);
         final var query = entityManager.createQuery(sql);
-        setParameters(certificateIds, statuses, start, end, query);
+        setParameters(certificateIds, statuses, start, end, activationTime, query);
         query.executeUpdate();
         return performCount();
     }
 
     public int sendNotificationsForUnits(List<String> unitIds, List<NotificationDeliveryStatusEnum> statuses,
-        LocalDateTime start, LocalDateTime end) {
-        final var sql = notificationRedeliverySQLQueryGenerator.units(statuses, start, end);
+        LocalDateTime start, LocalDateTime end, LocalDateTime activationTime) {
+        final var sql = notificationRedeliverySQLQueryGenerator.units(statuses, start, end, activationTime);
         final var query = entityManager.createQuery(sql);
-        setParameters(unitIds, statuses, start, end, query);
+        setParameters(unitIds, statuses, start, end, activationTime, query);
         query.executeUpdate();
         return performCount();
     }
 
     public int sendNotificationsForCareGiver(String careGiverId, List<NotificationDeliveryStatusEnum> statuses,
-        LocalDateTime start, LocalDateTime end) {
+        LocalDateTime start, LocalDateTime end, LocalDateTime activationTime) {
         final var id = careGiverId + "-%";
-        final var sql = notificationRedeliverySQLQueryGenerator.careGiver(statuses, start, end);
+        final var sql = notificationRedeliverySQLQueryGenerator.careGiver(statuses, start, end, activationTime);
         final var query = entityManager.createQuery(sql);
-        setParameters(id, statuses, start, end, query);
+        setParameters(id, statuses, start, end, activationTime, query);
         query.executeUpdate();
         return performCount();
     }
 
-    public int sendNotificationsForTimePeriod(List<NotificationDeliveryStatusEnum> statuses, LocalDateTime start, LocalDateTime end) {
-        final var sql = notificationRedeliverySQLQueryGenerator.timePeriod(statuses, start, end);
+    public int sendNotificationsForTimePeriod(List<NotificationDeliveryStatusEnum> statuses, LocalDateTime start, LocalDateTime end,
+        LocalDateTime activationTime) {
+        final var sql = notificationRedeliverySQLQueryGenerator.timePeriod(statuses, start, end, activationTime);
         final var query = entityManager.createQuery(sql);
-        setParameters(statuses, start, end, query);
+        setParameters(statuses, start, end, activationTime, query);
         query.executeUpdate();
         return performCount();
     }
@@ -91,18 +93,22 @@ public class NotificationRedeliveryRepositoryCustom {
     }
 
     private void setParameters(String id, List<NotificationDeliveryStatusEnum> statuses, LocalDateTime start,
-        LocalDateTime end, Query query) {
+        LocalDateTime end, LocalDateTime activationTime, Query query) {
         query.setParameter(ID, id);
-        setParameters(statuses, start, end, query);
+        setParameters(statuses, start, end, activationTime, query);
     }
 
     private void setParameters(List<String> ids, List<NotificationDeliveryStatusEnum> statuses, LocalDateTime start,
-        LocalDateTime end, Query query) {
+        LocalDateTime end, LocalDateTime activationTime, Query query) {
         query.setParameter(ID, ids);
-        setParameters(statuses, start, end, query);
+        setParameters(statuses, start, end, activationTime, query);
     }
 
-    private static void setParameters(List<NotificationDeliveryStatusEnum> statuses, LocalDateTime start, LocalDateTime end, Query query) {
+    private static void setParameters(
+        List<NotificationDeliveryStatusEnum> statuses,
+        LocalDateTime start,
+        LocalDateTime end,
+        LocalDateTime activationTime, Query query) {
         query.setParameter(STATUS, statuses);
 
         if (start != null) {
@@ -111,6 +117,10 @@ public class NotificationRedeliveryRepositoryCustom {
 
         if (end != null) {
             query.setParameter(END, start);
+        }
+
+        if (activationTime != null) {
+            query.setParameter(ACTIVATION_TIME, activationTime);
         }
     }
 

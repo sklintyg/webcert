@@ -63,7 +63,7 @@ class SendNotificationsForTimePeriodServiceTest {
 
     @BeforeEach
     void setup() {
-        when(notificationRedeliveryRepositoryCustom.sendNotificationsForTimePeriod(STATUSES, START, END))
+        when(notificationRedeliveryRepositoryCustom.sendNotificationsForTimePeriod(STATUSES, START, END, ACTIVATION_TIME))
             .thenReturn(COUNT);
 
         ReflectionTestUtils.setField(sendNotificationsForTimePeriodService, "maxDaysBackStartDate", LIMIT);
