@@ -37,8 +37,6 @@ import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum
 @Transactional
 public class NotificationRedeliveryRepositoryCustom {
 
-    // TODO: In service check parameters otherwise return null
-
     private final NotificationRedeliverySQLQueryGenerator notificationRedeliverySQLQueryGenerator;
 
     @PersistenceContext()
