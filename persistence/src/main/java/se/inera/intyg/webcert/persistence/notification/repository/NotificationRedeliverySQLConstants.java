@@ -19,18 +19,14 @@
 
 package se.inera.intyg.webcert.persistence.notification.repository;
 
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+public class NotificationRedeliverySQLConstants {
 
-@ExtendWith(MockitoExtension.class)
-class NotificationRedeliveryRepositoryCustomTest {
+    private NotificationRedeliverySQLConstants() {
+        
+    }
 
-    @Mock
-    NotificationRedeliverySQLQueryGenerator notificationRedeliverySQLQueryGenerator;
-
-    @InjectMocks
-    NotificationRedeliveryRepositoryCustom notificationRedeliveryRepositoryCustom;
-
+    public static final String ID = ":id";
+    public static final String STATUS = ":status";
+    public static final String START = ":start";
+    public static final String END = ":end";
 }

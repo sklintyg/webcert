@@ -18,11 +18,17 @@
  */
 package se.inera.intyg.webcert.persistence.notification.repository;
 
+import static se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliverySQLConstants.END;
+import static se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliverySQLConstants.ID;
+import static se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliverySQLConstants.START;
+import static se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliverySQLConstants.STATUS;
+
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
@@ -33,49 +39,85 @@ public class NotificationRedeliveryRepositoryCustom {
 
     // TODO: In service check parameters otherwise return null
 
-    private final NotificationRedeliverySQLQueryService notificationRedeliverySQLQueryService;
+    private final NotificationRedeliverySQLQueryGenerator notificationRedeliverySQLQueryGenerator;
 
     @PersistenceContext()
     private EntityManager entityManager;
 
-    public NotificationRedeliveryRepositoryCustom(NotificationRedeliverySQLQueryService notificationRedeliverySQLQueryService) {
-        this.notificationRedeliverySQLQueryService = notificationRedeliverySQLQueryService;
+    public NotificationRedeliveryRepositoryCustom(NotificationRedeliverySQLQueryGenerator notificationRedeliverySQLQueryGenerator) {
+        this.notificationRedeliverySQLQueryGenerator = notificationRedeliverySQLQueryGenerator;
     }
 
     public int sendNotificationsForCertificates(List<String> certificateIds, List<NotificationDeliveryStatusEnum> statuses,
         LocalDateTime start, LocalDateTime end) {
-        performUpdate(notificationRedeliverySQLQueryService.certificates(certificateIds, statuses, start, end));
+        final var sql = notificationRedeliverySQLQueryGenerator.certificates(statuses, start, end);
+        final var query = entityManager.createQuery(sql);
+        setParameters(certificateIds, statuses, start, end, query);
+        query.executeUpdate();
         return performCount();
     }
 
     public int sendNotificationsForUnits(List<String> unitIds, List<NotificationDeliveryStatusEnum> statuses,
         LocalDateTime start, LocalDateTime end) {
-        performUpdate(notificationRedeliverySQLQueryService.units(unitIds, statuses, start, end));
+        final var sql = notificationRedeliverySQLQueryGenerator.units(statuses, start, end);
+        final var query = entityManager.createQuery(sql);
+        setParameters(unitIds, statuses, start, end, query);
+        query.executeUpdate();
         return performCount();
     }
 
     public int sendNotificationsForCareGiver(String careGiverId, List<NotificationDeliveryStatusEnum> statuses,
         LocalDateTime start, LocalDateTime end) {
-        performUpdate(notificationRedeliverySQLQueryService.careGiver(careGiverId, statuses, start, end));
+        final var id = careGiverId + "-%";
+        final var sql = notificationRedeliverySQLQueryGenerator.careGiver(statuses, start, end);
+        final var query = entityManager.createQuery(sql);
+        setParameters(id, statuses, start, end, query);
+        query.executeUpdate();
         return performCount();
     }
 
     public int sendNotificationsForTimePeriod(List<NotificationDeliveryStatusEnum> statuses, LocalDateTime start, LocalDateTime end) {
-        performUpdate(notificationRedeliverySQLQueryService.timePeriod(statuses, start, end));
+        final var sql = notificationRedeliverySQLQueryGenerator.timePeriod(statuses, start, end);
+        final var query = entityManager.createQuery(sql);
+        setParameters(statuses, start, end, query);
+        query.executeUpdate();
         return performCount();
     }
 
     public int sendNotification(String notificationId) {
-        performUpdate(notificationRedeliverySQLQueryService.notification(notificationId));
+        final var sql = notificationRedeliverySQLQueryGenerator.notification();
+        final var query = entityManager.createQuery(sql);
+        query.setParameter(ID, notificationId);
+        query.executeUpdate();
         return performCount();
     }
 
-    private void performUpdate(String sqlUpdate) {
-        entityManager.createNativeQuery(sqlUpdate).executeUpdate();
+    private void setParameters(String id, List<NotificationDeliveryStatusEnum> statuses, LocalDateTime start,
+        LocalDateTime end, Query query) {
+        query.setParameter(ID, id);
+        setParameters(statuses, start, end, query);
+    }
+
+    private void setParameters(List<String> ids, List<NotificationDeliveryStatusEnum> statuses, LocalDateTime start,
+        LocalDateTime end, Query query) {
+        query.setParameter(ID, ids);
+        setParameters(statuses, start, end, query);
+    }
+
+    private static void setParameters(List<NotificationDeliveryStatusEnum> statuses, LocalDateTime start, LocalDateTime end, Query query) {
+        query.setParameter(STATUS, statuses);
+
+        if (start != null) {
+            query.setParameter(START, start);
+        }
+
+        if (end != null) {
+            query.setParameter(END, start);
+        }
     }
 
     private int performCount() {
-        final var count = (BigInteger) entityManager.createNativeQuery(notificationRedeliverySQLQueryService.count()).getSingleResult();
+        final var count = (BigInteger) entityManager.createNativeQuery(notificationRedeliverySQLQueryGenerator.count()).getSingleResult();
 
         return count.intValue();
     }
