@@ -27,12 +27,17 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificatio
 public class SendNotificationService {
 
     private final NotificationRedeliveryRepositoryCustom notificationRedeliveryRepository;
+    private final SendNotificationRequestValidation sendNotificationRequestValidation;
 
-    public SendNotificationService(NotificationRedeliveryRepositoryCustom notificationRedeliveryRepository) {
+    public SendNotificationService(NotificationRedeliveryRepositoryCustom notificationRedeliveryRepository,
+        SendNotificationRequestValidation sendNotificationRequestValidation) {
         this.notificationRedeliveryRepository = notificationRedeliveryRepository;
+        this.sendNotificationRequestValidation = sendNotificationRequestValidation;
     }
 
     public SendNotificationResponseDTO send(String notificationId) {
+        sendNotificationRequestValidation.validateId(notificationId);
+
         final var response = notificationRedeliveryRepository.sendNotification(notificationId);
         return SendNotificationResponseDTO.create(
             response

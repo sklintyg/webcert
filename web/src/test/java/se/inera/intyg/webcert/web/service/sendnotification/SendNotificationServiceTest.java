@@ -20,10 +20,12 @@
 package se.inera.intyg.webcert.web.service.sendnotification;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -38,6 +40,9 @@ class SendNotificationServiceTest {
     @Mock
     NotificationRedeliveryRepositoryCustom notificationRedeliveryRepositoryCustom;
 
+    @Mock
+    SendNotificationRequestValidation sendNotificationRequestValidation;
+
     @InjectMocks
     SendNotificationService sendNotificationService;
 
@@ -49,5 +54,15 @@ class SendNotificationServiceTest {
         final var response = sendNotificationService.send(ID);
 
         assertEquals(COUNT, response.getCount());
+    }
+
+    @Test
+    void shouldValidateId() {
+        final var captor = ArgumentCaptor.forClass(String.class);
+        sendNotificationService.send(ID);
+
+        verify(sendNotificationRequestValidation).validateId(captor.capture());
+
+        assertEquals(ID, captor.getValue());
     }
 }

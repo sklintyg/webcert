@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.service.sendnotification;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepositoryCustom;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationResponseDTO;
@@ -28,12 +29,24 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificatio
 public class SendNotificationsForUnitsService {
 
     private final NotificationRedeliveryRepositoryCustom notificationRedeliveryRepository;
+    private final SendNotificationRequestValidation sendNotificationRequestValidation;
 
-    public SendNotificationsForUnitsService(NotificationRedeliveryRepositoryCustom notificationRedeliveryRepository) {
+    @Value("${timeinterval.maxdays.unit}")
+    private int maxTimeInterval;
+
+    @Value("${timelimit.daysback.start}")
+    private int maxDaysBackStartDate;
+
+    public SendNotificationsForUnitsService(NotificationRedeliveryRepositoryCustom notificationRedeliveryRepository,
+        SendNotificationRequestValidation sendNotificationRequestValidation) {
         this.notificationRedeliveryRepository = notificationRedeliveryRepository;
+        this.sendNotificationRequestValidation = sendNotificationRequestValidation;
     }
 
     public SendNotificationResponseDTO send(SendNotificationsForUnitsRequestDTO request) {
+        sendNotificationRequestValidation.validateIds(request.getUnitIds());
+        sendNotificationRequestValidation.validateDate(request.getStart(), request.getEnd(), maxTimeInterval, maxDaysBackStartDate);
+
         final var response = notificationRedeliveryRepository.sendNotificationsForUnits(
             request.getUnitIds(),
             request.getStatuses(),

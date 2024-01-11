@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.service.sendnotification;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepositoryCustom;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationResponseDTO;
@@ -28,12 +29,21 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificatio
 public class SendNotificationsForCertificatesService {
 
     private final NotificationRedeliveryRepositoryCustom notificationRedeliveryRepository;
+    private final SendNotificationRequestValidation sendNotificationRequestValidation;
 
-    public SendNotificationsForCertificatesService(NotificationRedeliveryRepositoryCustom notificationRedeliveryRepository) {
+    @Value("${timelimit.daysback.start}")
+    private int maxDaysBackStartDate;
+
+    public SendNotificationsForCertificatesService(NotificationRedeliveryRepositoryCustom notificationRedeliveryRepository,
+        SendNotificationRequestValidation sendNotificationRequestValidation) {
         this.notificationRedeliveryRepository = notificationRedeliveryRepository;
+        this.sendNotificationRequestValidation = sendNotificationRequestValidation;
     }
 
     public SendNotificationResponseDTO send(SendNotificationsForCertificatesRequestDTO request) {
+        sendNotificationRequestValidation.validateIds(request.getCertificateIds());
+        sendNotificationRequestValidation.validateDate(request.getStart(), request.getEnd(), maxDaysBackStartDate);
+
         final var response = notificationRedeliveryRepository.sendNotificationsForCertificates(
             request.getCertificateIds(),
             request.getStatuses(),

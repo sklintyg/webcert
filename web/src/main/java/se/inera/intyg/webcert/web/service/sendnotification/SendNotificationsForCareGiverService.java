@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.service.sendnotification;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepositoryCustom;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationResponseDTO;
@@ -28,12 +29,24 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificatio
 public class SendNotificationsForCareGiverService {
 
     private final NotificationRedeliveryRepositoryCustom notificationRedeliveryRepository;
+    private final SendNotificationRequestValidation sendNotificationRequestValidation;
 
-    public SendNotificationsForCareGiverService(NotificationRedeliveryRepositoryCustom notificationRedeliveryRepository) {
+    public SendNotificationsForCareGiverService(NotificationRedeliveryRepositoryCustom notificationRedeliveryRepository,
+        SendNotificationRequestValidation sendNotificationRequestValidation) {
         this.notificationRedeliveryRepository = notificationRedeliveryRepository;
+        this.sendNotificationRequestValidation = sendNotificationRequestValidation;
     }
 
+    @Value("${timeinterval.maxdays.caregiver}")
+    private int maxTimeInterval;
+
+    @Value("${timelimit.daysback.start}")
+    private int maxDaysBackStartDate;
+
     public SendNotificationResponseDTO send(String careGiverId, SendNotificationsForCareGiverRequestDTO request) {
+        sendNotificationRequestValidation.validateId(careGiverId);
+        sendNotificationRequestValidation.validateDate(request.getStart(), request.getEnd(), maxTimeInterval, maxDaysBackStartDate);
+
         final var response = notificationRedeliveryRepository.sendNotificationsForCareGiver(
             careGiverId,
             request.getStatuses(),
