@@ -28,7 +28,6 @@ import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 import org.springframework.stereotype.Repository;
@@ -39,12 +38,12 @@ import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum
 public class NotificationRedeliveryRepositoryCustom {
 
     private final NotificationRedeliverySQLQueryGenerator notificationRedeliverySQLQueryGenerator;
+    private final EntityManager entityManager;
 
-    @PersistenceContext()
-    private EntityManager entityManager;
-
-    public NotificationRedeliveryRepositoryCustom(NotificationRedeliverySQLQueryGenerator notificationRedeliverySQLQueryGenerator) {
+    public NotificationRedeliveryRepositoryCustom(NotificationRedeliverySQLQueryGenerator notificationRedeliverySQLQueryGenerator,
+        EntityManager entityManager) {
         this.notificationRedeliverySQLQueryGenerator = notificationRedeliverySQLQueryGenerator;
+        this.entityManager = entityManager;
     }
 
     public int sendNotificationsForCertificates(List<String> certificateIds, List<NotificationDeliveryStatusEnum> statuses,
@@ -116,7 +115,7 @@ public class NotificationRedeliveryRepositoryCustom {
         }
 
         if (end != null) {
-            query.setParameter(END, start);
+            query.setParameter(END, end);
         }
 
         if (activationTime != null) {
