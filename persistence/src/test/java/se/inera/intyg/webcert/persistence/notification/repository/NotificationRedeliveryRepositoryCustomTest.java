@@ -55,17 +55,13 @@ class NotificationRedeliveryRepositoryCustomTest {
     private static final String SQL = "SQL";
     private static final String PARAMETER_VALUE_ID = "P_ID";
     private static final String COUNT = "COUNT";
-
     private static final List<String> IDS = List.of("ID1", "ID2");
     private static final List<NotificationDeliveryStatusEnum> STATUS_VALUES = List.of(NotificationDeliveryStatusEnum.FAILURE);
     private static final LocalDateTime START_VALUE = LocalDateTime.now();
     private static final LocalDateTime END_VALUE = LocalDateTime.now();
     private static final LocalDateTime ACTIVATION = LocalDateTime.now();
-
     private static final BigInteger BIG_INT = BigInteger.TEN;
-
     private static Query query;
-
 
     @Mock
     NotificationRedeliverySQLQueryGenerator notificationRedeliverySQLQueryGenerator;
