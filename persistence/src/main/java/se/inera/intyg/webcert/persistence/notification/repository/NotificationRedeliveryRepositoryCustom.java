@@ -49,8 +49,7 @@ public class NotificationRedeliveryRepositoryCustom {
     public int sendNotificationsForCertificates(List<String> certificateIds, List<NotificationDeliveryStatusEnum> statuses,
         LocalDateTime start, LocalDateTime end, LocalDateTime activationTime) {
         final var sql = notificationRedeliverySQLQueryGenerator.certificates(statuses, start, end, activationTime);
-        final var query = entityManager.createQuery(sql);
-        setParameters(certificateIds, statuses, start, end, activationTime, query);
+        final var query = createQuery(certificateIds, statuses, start, end, activationTime, sql);
         query.executeUpdate();
         return performCount();
     }
@@ -58,8 +57,7 @@ public class NotificationRedeliveryRepositoryCustom {
     public int sendNotificationsForUnits(List<String> unitIds, List<NotificationDeliveryStatusEnum> statuses,
         LocalDateTime start, LocalDateTime end, LocalDateTime activationTime) {
         final var sql = notificationRedeliverySQLQueryGenerator.units(statuses, start, end, activationTime);
-        final var query = entityManager.createQuery(sql);
-        setParameters(unitIds, statuses, start, end, activationTime, query);
+        final var query = createQuery(unitIds, statuses, start, end, activationTime, sql);
         query.executeUpdate();
         return performCount();
     }
@@ -68,8 +66,7 @@ public class NotificationRedeliveryRepositoryCustom {
         LocalDateTime start, LocalDateTime end, LocalDateTime activationTime) {
         final var id = careGiverId + "-%";
         final var sql = notificationRedeliverySQLQueryGenerator.careGiver(statuses, start, end, activationTime);
-        final var query = entityManager.createQuery(sql);
-        setParameters(id, statuses, start, end, activationTime, query);
+        final var query = createQuery(id, statuses, start, end, activationTime, sql);
         query.executeUpdate();
         return performCount();
     }
@@ -77,8 +74,7 @@ public class NotificationRedeliveryRepositoryCustom {
     public int sendNotificationsForTimePeriod(List<NotificationDeliveryStatusEnum> statuses, LocalDateTime start, LocalDateTime end,
         LocalDateTime activationTime) {
         final var sql = notificationRedeliverySQLQueryGenerator.timePeriod(statuses, start, end, activationTime);
-        final var query = entityManager.createQuery(sql);
-        setParameters(statuses, start, end, activationTime, query);
+        final var query = createQuery(statuses, start, end, activationTime, sql);
         query.executeUpdate();
         return performCount();
     }
@@ -91,35 +87,45 @@ public class NotificationRedeliveryRepositoryCustom {
         return performCount();
     }
 
-    private void setParameters(String id, List<NotificationDeliveryStatusEnum> statuses, LocalDateTime start,
-        LocalDateTime end, LocalDateTime activationTime, Query query) {
+    private Query createQuery(String id, List<NotificationDeliveryStatusEnum> statuses, LocalDateTime start,
+        LocalDateTime end, LocalDateTime activationTime, String sql) {
+        final var query = createQuery(statuses, start, end, activationTime, sql);
         query.setParameter(ID, id);
-        setParameters(statuses, start, end, activationTime, query);
+        return query;
     }
 
-    private void setParameters(List<String> ids, List<NotificationDeliveryStatusEnum> statuses, LocalDateTime start,
-        LocalDateTime end, LocalDateTime activationTime, Query query) {
-        query.setParameter(ID, ids);
-        setParameters(statuses, start, end, activationTime, query);
+    private Query createQuery(List<String> ids, List<NotificationDeliveryStatusEnum> statuses, LocalDateTime start,
+        LocalDateTime end, LocalDateTime activationTime, String sql) {
+        final var query = createQuery(statuses, start, end, activationTime, sql);
+        setParameterToQuery(ID, ids, query);
+        return query;
     }
 
-    private static void setParameters(
+    private Query createQuery(
         List<NotificationDeliveryStatusEnum> statuses,
         LocalDateTime start,
         LocalDateTime end,
-        LocalDateTime activationTime, Query query) {
-        query.setParameter(STATUS, statuses);
+        LocalDateTime activationTime,
+        String sql) {
+        final var query = entityManager.createQuery(sql);
 
-        if (start != null) {
-            query.setParameter(START, start);
+        setParameterToQuery(STATUS, statuses, query);
+        setParameterToQuery(START, start, query);
+        setParameterToQuery(END, end, query);
+        setParameterToQuery(ACTIVATION_TIME, activationTime, query);
+
+        return query;
+    }
+
+    private <T> void setParameterToQuery(String id, List<T> values, Query query) {
+        if (values != null && !values.isEmpty()) {
+            query.setParameter(id, values);
         }
+    }
 
-        if (end != null) {
-            query.setParameter(END, end);
-        }
-
-        if (activationTime != null) {
-            query.setParameter(ACTIVATION_TIME, activationTime);
+    private void setParameterToQuery(String id, LocalDateTime value, Query query) {
+        if (value != null) {
+            query.setParameter(id, value);
         }
     }
 
