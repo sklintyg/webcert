@@ -31,7 +31,7 @@ public class SendNotificationsForCertificatesService {
     private final NotificationRedeliveryRepositoryCustom notificationRedeliveryRepository;
     private final SendNotificationRequestValidator sendNotificationRequestValidator;
 
-    @Value("${timelimit.daysback.start}")
+    @Value("${timelimit.daysback.start:365}")
     private int maxDaysBackStartDate;
 
     public SendNotificationsForCertificatesService(NotificationRedeliveryRepositoryCustom notificationRedeliveryRepository,

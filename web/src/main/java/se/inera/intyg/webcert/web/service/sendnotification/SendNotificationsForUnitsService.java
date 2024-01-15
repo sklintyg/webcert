@@ -31,10 +31,10 @@ public class SendNotificationsForUnitsService {
     private final NotificationRedeliveryRepositoryCustom notificationRedeliveryRepository;
     private final SendNotificationRequestValidator sendNotificationRequestValidator;
 
-    @Value("${timeinterval.maxdays.unit}")
+    @Value("${timeinterval.maxdays.unit:7}")
     private int maxTimeInterval;
 
-    @Value("${timelimit.daysback.start}")
+    @Value("${timelimit.daysback.start:365}")
     private int maxDaysBackStartDate;
 
     public SendNotificationsForUnitsService(NotificationRedeliveryRepositoryCustom notificationRedeliveryRepository,

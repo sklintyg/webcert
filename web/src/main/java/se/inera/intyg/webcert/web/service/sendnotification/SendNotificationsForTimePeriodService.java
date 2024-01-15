@@ -31,10 +31,10 @@ public class SendNotificationsForTimePeriodService {
     private final NotificationRedeliveryRepositoryCustom notificationRedeliveryRepository;
     private final SendNotificationRequestValidator sendNotificationRequestValidator;
 
-    @Value("${timelimit.daysback.start}")
+    @Value("${timelimit.daysback.start:365}")
     private int maxDaysBackStartDate;
 
-    @Value("${timeinterval.maxdays.timeperiod}")
+    @Value("${timeinterval.maxdays.timeperiod:1}")
     private int maxTimeInterval;
 
     public SendNotificationsForTimePeriodService(NotificationRedeliveryRepositoryCustom notificationRedeliveryRepository,

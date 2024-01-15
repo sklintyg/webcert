@@ -37,10 +37,10 @@ public class SendNotificationsForCareGiverService {
         this.sendNotificationRequestValidator = sendNotificationRequestValidator;
     }
 
-    @Value("${timeinterval.maxdays.caregiver}")
+    @Value("${timeinterval.maxdays.caregiver:1}")
     private int maxTimeInterval;
 
-    @Value("${timelimit.daysback.start}")
+    @Value("${timelimit.daysback.start:365}")
     private int maxDaysBackStartDate;
 
     public SendNotificationResponseDTO send(String careGiverId, SendNotificationsForCareGiverRequestDTO request) {
