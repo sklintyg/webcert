@@ -19,7 +19,15 @@
 package se.inera.intyg.webcert.web.service.diagnos.repo;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.containsStringIgnoringCase;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.startsWith;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Every.everyItem;
 import static org.junit.Assert.assertEquals;
@@ -30,7 +38,6 @@ import static org.junit.Assert.assertTrue;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
-
 import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,9 +51,7 @@ import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
 @ContextConfiguration("classpath:/DiagnosService/DiagnosRepositoryFactoryTest-context.xml")
 public class DiagnosRepositoryTest {
 
-    private static final String FILE_1 = "classpath:DiagnosService/icd10se/digit3.txt";
-    private static final String FILE_2 = "classpath:DiagnosService/icd10se/digit4.txt";
-    private static final String FILE_3 = "classpath:DiagnosService/icd10se/digit5.txt";
+    private static final String FILE = "classpath:DiagnosService/icd10se/icd-10-se.tsv";
 
     @Autowired
     private DiagnosRepositoryFactory factory;
@@ -55,10 +60,10 @@ public class DiagnosRepositoryTest {
 
     @Before
     public void setup() {
-        List<String> fileList = Arrays.asList(FILE_1, FILE_2, FILE_3);
+        List<String> fileList = Arrays.asList(FILE);
         DiagnosRepositoryImpl repoImpl = (DiagnosRepositoryImpl) factory.createAndInitDiagnosRepository(fileList,
             StandardCharsets.UTF_8);
-        assertEquals(35665, repoImpl.nbrOfDiagosis());
+        assertEquals(38628, repoImpl.nbrOfDiagosis());
         this.repo = repoImpl;
     }
 
