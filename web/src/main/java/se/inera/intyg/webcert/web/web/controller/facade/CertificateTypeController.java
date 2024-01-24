@@ -32,7 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.web.service.facade.GetCertificateTypesFacadeService;
+import se.inera.intyg.webcert.web.service.facade.aggregate.CertificateTypesAggregator;
 
 @Path("/certificate/type")
 public class CertificateTypeController {
@@ -41,11 +41,11 @@ public class CertificateTypeController {
 
     private static final String UTF_8_CHARSET = ";charset=utf-8";
 
-    private final GetCertificateTypesFacadeService getCertificateTypesFacadeService;
+    private final CertificateTypesAggregator certificateTypesAggregator;
 
     @Autowired
-    public CertificateTypeController(GetCertificateTypesFacadeService getCertificateTypesFacadeService) {
-        this.getCertificateTypesFacadeService = getCertificateTypesFacadeService;
+    public CertificateTypeController(CertificateTypesAggregator certificateTypesAggregator) {
+        this.certificateTypesAggregator = certificateTypesAggregator;
     }
 
     @GET
@@ -57,7 +57,7 @@ public class CertificateTypeController {
             LOG.debug("Retrieving certificate types for patient");
         }
         try {
-            final var certificateTypes = getCertificateTypesFacadeService.get(createPersonnummer(patientId));
+            final var certificateTypes = certificateTypesAggregator.get(createPersonnummer(patientId));
             return Response.ok(certificateTypes).build();
         } catch (InvalidPersonNummerException e) {
             LOG.error(e.getMessage());
