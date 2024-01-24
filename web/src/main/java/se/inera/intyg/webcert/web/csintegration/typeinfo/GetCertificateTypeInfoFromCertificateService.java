@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.csintegration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.dto.CertificateServiceTypeInfoRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientHelper;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserHelper;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateTypesFacadeService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
@@ -34,21 +35,25 @@ public class GetCertificateTypeInfoFromCertificateService implements GetCertific
     private final CSIntegrationService csIntegrationService;
     private final CertificateServiceUserHelper certificateServiceUserHelper;
 
+    private final CertificateServicePatientHelper certificateServicePatientHelper;
+
     public GetCertificateTypeInfoFromCertificateService(CSIntegrationService csIntegrationService,
-        CertificateServiceUserHelper certificateServiceUserHelper) {
+        CertificateServiceUserHelper certificateServiceUserHelper, CertificateServicePatientHelper certificateServicePatientHelper) {
         this.csIntegrationService = csIntegrationService;
         this.certificateServiceUserHelper = certificateServiceUserHelper;
+        this.certificateServicePatientHelper = certificateServicePatientHelper;
     }
 
     public List<CertificateTypeInfoDTO> get(Personnummer patientId) {
-        final var request = createRequest();
+        final var request = createRequest(patientId);
         return csIntegrationService.getTypeInfo(request);
     }
 
-    private CertificateServiceTypeInfoRequestDTO createRequest() {
+    private CertificateServiceTypeInfoRequestDTO createRequest(Personnummer patientId) {
         final var request = new CertificateServiceTypeInfoRequestDTO();
 
         request.setUser(certificateServiceUserHelper.get());
+        request.setPatient(certificateServicePatientHelper.get(patientId));
 
         return request;
     }

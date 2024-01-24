@@ -17,33 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.csintegration.user;
+package se.inera.intyg.webcert.web.csintegration.patient;
 
-public class CertificateServiceUser {
+public enum PersonIdType {
 
-    private String id;
-    private CertificateServiceUserRole role;
-    private boolean blocked;
+    COORDINATION_NUMBER, PERSON_ID;
 
-    public static CertificateServiceUser create(String id, CertificateServiceUserRole role, boolean blocked) {
-        final var object = new CertificateServiceUser();
-
-        object.id = id;
-        object.role = role;
-        object.blocked = blocked;
-
-        return object;
-    }
-
-    public boolean isBlocked() {
-        return blocked;
-    }
-
-    public CertificateServiceUserRole getRole() {
-        return role;
-    }
-
-    public String getId() {
-        return id;
-    }
 }

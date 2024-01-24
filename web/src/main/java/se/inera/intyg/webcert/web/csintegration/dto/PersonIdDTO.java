@@ -19,28 +19,31 @@
 
 package se.inera.intyg.webcert.web.csintegration.dto;
 
-import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientDTO;
-import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserDTO;
+import se.inera.intyg.webcert.web.csintegration.patient.PersonIdType;
 
-public class CertificateServiceTypeInfoRequestDTO {
+public class PersonIdDTO {
 
-    private CertificateServiceUserDTO user;
+    private PersonIdType type;
+    private String id;
 
-    private CertificateServicePatientDTO patient;
-
-    public CertificateServiceUserDTO getUser() {
-        return user;
+    public PersonIdDTO(PersonIdType type, String id) {
+        this.type = type;
+        this.id = id;
     }
 
-    public void setUser(CertificateServiceUserDTO user) {
-        this.user = user;
+    public PersonIdType getType() {
+        return type;
     }
 
-    public CertificateServicePatientDTO getPatient() {
-        return patient;
+    public void setType(PersonIdType type) {
+        this.type = type;
     }
 
-    public void setPatient(CertificateServicePatientDTO patient) {
-        this.patient = patient;
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

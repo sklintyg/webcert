@@ -17,30 +17,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.csintegration.dto;
+package se.inera.intyg.webcert.web.csintegration.user;
 
-import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientDTO;
-import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserDTO;
+public class CertificateServiceUserDTO {
 
-public class CertificateServiceTypeInfoRequestDTO {
+    private String id;
+    private CertificateServiceUserRole role;
+    private boolean blocked;
 
-    private CertificateServiceUserDTO user;
+    public static CertificateServiceUserDTO create(String id, CertificateServiceUserRole role, boolean blocked) {
+        final var object = new CertificateServiceUserDTO();
 
-    private CertificateServicePatientDTO patient;
+        object.id = id;
+        object.role = role;
+        object.blocked = blocked;
 
-    public CertificateServiceUserDTO getUser() {
-        return user;
+        return object;
     }
 
-    public void setUser(CertificateServiceUserDTO user) {
-        this.user = user;
+    public boolean isBlocked() {
+        return blocked;
     }
 
-    public CertificateServicePatientDTO getPatient() {
-        return patient;
+    public CertificateServiceUserRole getRole() {
+        return role;
     }
 
-    public void setPatient(CertificateServicePatientDTO patient) {
-        this.patient = patient;
+    public String getId() {
+        return id;
     }
 }

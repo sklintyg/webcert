@@ -47,10 +47,10 @@ public class CertificateServiceUserHelper {
         this.authoritiesHelper = authoritiesHelper;
     }
 
-    public CertificateServiceUser get() {
+    public CertificateServiceUserDTO get() {
         final var user = userService.getLoggedInUser();
 
-        return CertificateServiceUser.create(
+        return CertificateServiceUserDTO.create(
             user.getHsaId(),
             convertRole(user.getRole()),
             isBlocked()
