@@ -35,8 +35,10 @@ public class CertificateTypeInfoAggregator implements GetCertificateTypesFacadeS
     private final GetCertificateTypesFacadeService getCertificateTypesFacadeService;
 
     public CertificateTypeInfoAggregator(
-        @Qualifier("GetCertificateTypeInfoFromWebcert") GetCertificateTypesFacadeService getCertificateTypesFacadeService,
-        @Qualifier("GetCertificateTypeInfoFromCertificateService") GetCertificateTypesFacadeService getCertificateTypesFromCertificateService) {
+        @Qualifier("GetCertificateTypeInfoFromWebcert")
+        GetCertificateTypesFacadeService getCertificateTypesFacadeService,
+        @Qualifier("GetCertificateTypeInfoFromCertificateService")
+        GetCertificateTypesFacadeService getCertificateTypesFromCertificateService) {
         this.getCertificateTypesFromCertificateService = getCertificateTypesFromCertificateService;
         this.getCertificateTypesFacadeService = getCertificateTypesFacadeService;
     }
