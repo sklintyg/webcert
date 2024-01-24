@@ -46,7 +46,7 @@ import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelper;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 
-@Service
+@Service("GetCertificateTypeInfoFromWebcert")
 public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypesFacadeService {
 
     private final IntygModuleRegistry intygModuleRegistry;

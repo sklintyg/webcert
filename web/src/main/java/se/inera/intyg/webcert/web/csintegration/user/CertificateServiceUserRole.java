@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.integration.certificateservice.dto;
+package se.inera.intyg.webcert.web.csintegration.user;
 
-public class CertificateServiceTypeInfoRequestDTO {
-
+public enum CertificateServiceUserRole {
+    DOCTOR, MIDWIFE, DENTIST, NURSE, CARE_ADMIN, UNKNOWN
 }

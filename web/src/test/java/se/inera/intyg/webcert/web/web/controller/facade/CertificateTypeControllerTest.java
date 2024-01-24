@@ -32,14 +32,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.web.service.facade.aggregate.CertificateTypesAggregator;
+import se.inera.intyg.webcert.web.csintegration.aggregate.CertificateTypeInfoAggregator;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
 @ExtendWith(MockitoExtension.class)
 class CertificateTypeControllerTest {
 
     @Mock
-    private CertificateTypesAggregator certificateTypesAggregator;
+    private CertificateTypeInfoAggregator certificateTypeInfoAggregator;
 
     @InjectMocks
     private CertificateTypeController controller;
@@ -55,7 +55,7 @@ class CertificateTypeControllerTest {
             );
 
             doReturn(types)
-                .when(certificateTypesAggregator)
+                .when(certificateTypeInfoAggregator)
                 .get(any(Personnummer.class));
 
             final var response = (List<CertificateTypeInfoDTO>) controller.getCertificateTypes("19121212-1212").getEntity();

@@ -17,11 +17,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.integration.certificateservice.dto;
+package se.inera.intyg.webcert.web.csintegration.user;
 
-public class CertificateServiceTypeInfoDTO {
+public class CertificateServiceUser {
 
-    String type;
-    String version;
-    String name;
+    private String id;
+    private CertificateServiceUserRole role;
+    private boolean blocked;
+
+    public static CertificateServiceUser create(String id, CertificateServiceUserRole role, boolean blocked) {
+        final var object = new CertificateServiceUser();
+
+        object.id = id;
+        object.role = role;
+        object.blocked = blocked;
+
+        return object;
+    }
+
+    public boolean isBlocked() {
+        return blocked;
+    }
+
+    public CertificateServiceUserRole getRole() {
+        return role;
+    }
+
+    public String getId() {
+        return id;
+    }
 }

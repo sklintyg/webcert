@@ -28,11 +28,11 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.web.service.facade.aggregate.CertificateTypesAggregator;
+import se.inera.intyg.webcert.web.service.facade.GetCertificateTypesFacadeService;
 
 @Path("/certificate/type")
 public class CertificateTypeController {
@@ -41,11 +41,11 @@ public class CertificateTypeController {
 
     private static final String UTF_8_CHARSET = ";charset=utf-8";
 
-    private final CertificateTypesAggregator certificateTypesAggregator;
+    private final GetCertificateTypesFacadeService getCertificateTypesFacadeService;
 
-    @Autowired
-    public CertificateTypeController(CertificateTypesAggregator certificateTypesAggregator) {
-        this.certificateTypesAggregator = certificateTypesAggregator;
+    public CertificateTypeController(
+        @Qualifier("GetCertificateTypeInfoAggregator") GetCertificateTypesFacadeService getCertificateTypesFacadeService) {
+        this.getCertificateTypesFacadeService = getCertificateTypesFacadeService;
     }
 
     @GET
@@ -57,7 +57,7 @@ public class CertificateTypeController {
             LOG.debug("Retrieving certificate types for patient");
         }
         try {
-            final var certificateTypes = certificateTypesAggregator.get(createPersonnummer(patientId));
+            final var certificateTypes = getCertificateTypesFacadeService.get(createPersonnummer(patientId));
             return Response.ok(certificateTypes).build();
         } catch (InvalidPersonNummerException e) {
             LOG.error(e.getMessage());

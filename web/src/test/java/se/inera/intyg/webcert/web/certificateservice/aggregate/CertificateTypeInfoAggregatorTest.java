@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.service.facade.aggregate;
+package se.inera.intyg.webcert.web.certificateservice.aggregate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -31,43 +31,41 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.web.csintegration.aggregate.CertificateTypeInfoAggregator;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateTypesFacadeService;
-import se.inera.intyg.webcert.web.service.facade.certificateservice.GetCertificateTypesFromCertificateService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
 @ExtendWith(MockitoExtension.class)
-class CertificateTypesAggregatorTest {
+class CertificateTypeInfoAggregatorTest {
 
-    private static final CertificateTypeInfoDTO info1 = new CertificateTypeInfoDTO();
-    private static final CertificateTypeInfoDTO info2 = new CertificateTypeInfoDTO();
+    private static final CertificateTypeInfoDTO infoFromCS = new CertificateTypeInfoDTO();
+    private static final CertificateTypeInfoDTO infoFromWC = new CertificateTypeInfoDTO();
     private static final String ORIGINAL_PATIENT_ID = "191212121212";
     private static final Personnummer PATIENT_ID = Personnummer.createPersonnummer(ORIGINAL_PATIENT_ID).get();
 
     @Mock
-    GetCertificateTypesFromCertificateService getCertificateTypesFromCertificateService;
-
+    GetCertificateTypesFacadeService getCertificateTypeInfoFromCertificateService;
     @Mock
     GetCertificateTypesFacadeService getCertificateTypesFacadeService;
 
     @InjectMocks
-    CertificateTypesAggregator certificateTypesAggregator;
+    CertificateTypeInfoAggregator certificateTypeInfoAggregator;
 
     @BeforeEach
     void setup() {
-        when(getCertificateTypesFromCertificateService.get(ORIGINAL_PATIENT_ID))
-            .thenReturn(List.of(info1));
+        when(getCertificateTypeInfoFromCertificateService.get(PATIENT_ID))
+            .thenReturn(List.of(infoFromCS));
 
         when(getCertificateTypesFacadeService.get(PATIENT_ID))
-            .thenReturn(List.of(info2));
+            .thenReturn(List.of(infoFromWC));
     }
 
     @Test
     void shouldMergeCertificateTypesLists() {
-        final var response = certificateTypesAggregator.get(PATIENT_ID);
+        final var response = certificateTypeInfoAggregator.get(PATIENT_ID);
 
         assertEquals(2, response.size());
-        assertTrue(response.contains(info1));
-        assertTrue(response.contains(info2));
+        assertTrue(response.contains(infoFromCS));
+        assertTrue(response.contains(infoFromWC));
     }
-
 }

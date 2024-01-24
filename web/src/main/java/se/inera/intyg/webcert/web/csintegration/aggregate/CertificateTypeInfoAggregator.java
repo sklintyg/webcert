@@ -17,35 +17,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.service.facade.aggregate;
+package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateTypesFacadeService;
-import se.inera.intyg.webcert.web.service.facade.certificateservice.GetCertificateTypesFromCertificateService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
-@Component
-public class CertificateTypesAggregator {
+@Service("GetCertificateTypeInfoAggregator")
+public class CertificateTypeInfoAggregator implements GetCertificateTypesFacadeService {
 
-    private final GetCertificateTypesFromCertificateService getCertificateTypesFromCertificateService;
+    private final GetCertificateTypesFacadeService getCertificateTypesFromCertificateService;
     private final GetCertificateTypesFacadeService getCertificateTypesFacadeService;
 
-    public CertificateTypesAggregator(GetCertificateTypesFromCertificateService getCertificateTypesFromCertificateService,
-        GetCertificateTypesFacadeService getCertificateTypesFacadeService) {
+    public CertificateTypeInfoAggregator(
+        @Qualifier("GetCertificateTypeInfoFromWebcert") GetCertificateTypesFacadeService getCertificateTypesFacadeService,
+        @Qualifier("GetCertificateTypeInfoFromCertificateService") GetCertificateTypesFacadeService getCertificateTypesFromCertificateService) {
         this.getCertificateTypesFromCertificateService = getCertificateTypesFromCertificateService;
         this.getCertificateTypesFacadeService = getCertificateTypesFacadeService;
     }
 
     public List<CertificateTypeInfoDTO> get(Personnummer patientId) {
-        final var typesFromCertificateService = getCertificateTypesFromCertificateService.get(patientId.getOriginalPnr());
+        final var typesFromCertificateService = getCertificateTypesFromCertificateService.get(patientId);
         final var typesFromWebcert = getCertificateTypesFacadeService.get(patientId);
 
         return Stream
-            .concat(typesFromWebcert.stream(), typesFromCertificateService.stream())
+            .concat(
+                typesFromWebcert.stream(),
+                typesFromCertificateService.stream()
+            )
             .collect(Collectors.toList());
     }
 }

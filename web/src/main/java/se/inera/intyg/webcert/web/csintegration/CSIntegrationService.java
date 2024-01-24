@@ -16,16 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.integration.certificateservice;
+package se.inera.intyg.webcert.web.csintegration;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import se.inera.intyg.webcert.web.integration.certificateservice.dto.CertificateServiceTypeInfoDTO;
-import se.inera.intyg.webcert.web.integration.certificateservice.dto.CertificateServiceTypeInfoRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.dto.CertificateServiceTypeInfoRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
 @Service
 public class CSIntegrationService {
@@ -42,9 +43,8 @@ public class CSIntegrationService {
     @Value("${certificateservice.base.url}")
     private String baseUrl;
 
-    // Switch to CertificateServiceTypeInfoDTO
-    public CertificateServiceTypeInfoDTO getTypeInfo(CertificateServiceTypeInfoRequestDTO request) {
+    public List<CertificateTypeInfoDTO> getTypeInfo(CertificateServiceTypeInfoRequestDTO request) {
         final var url = baseUrl + "api/certificatetypeinfo";
-        return restTemplate.postForObject(url, request, CertificateServiceTypeInfoDTO.class);
+        return restTemplate.postForObject(url, request, List.class);
     }
 }
