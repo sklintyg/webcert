@@ -19,7 +19,9 @@
 
 package se.inera.intyg.webcert.web.csintegration.patient;
 
+import java.util.Optional;
 import org.springframework.stereotype.Component;
+import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 
@@ -36,7 +38,7 @@ public class CertificateServicePatientHelper {
         final var personSvar = patientDetailsResolver.getPersonFromPUService(patientId);
         final var patient = new CertificateServicePatientDTO();
 
-        patient.setId(new PersonIdDTO(PersonIdType.PERSON_ID, patientId.getOriginalPnr()));
+        patient.setId(getPersonId(patientId));
         patient.setProtectedPerson(personSvar.getPerson().isSekretessmarkering());
         patient.setDeceased(personSvar.getPerson().isAvliden());
         patient.setFirstName(personSvar.getPerson().getFornamn());
@@ -48,6 +50,17 @@ public class CertificateServicePatientHelper {
         patient.setTestIndicated(personSvar.getPerson().isTestIndicator());
 
         return patient;
+    }
+
+    private PersonIdDTO getPersonId(Personnummer patientId) {
+        return new PersonIdDTO(
+            isCoordinationNumber(patientId) ? PersonIdType.COORDINATION_NUMBER : PersonIdType.PERSON_ID,
+            patientId.getOriginalPnr()
+        );
+    }
+
+    private boolean isCoordinationNumber(Personnummer personId) {
+        return SamordningsnummerValidator.isSamordningsNummer(Optional.of(personId));
     }
 
 }

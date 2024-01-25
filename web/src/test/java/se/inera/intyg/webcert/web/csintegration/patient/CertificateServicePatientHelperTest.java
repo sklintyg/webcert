@@ -41,7 +41,9 @@ import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 class CertificateServicePatientHelperTest {
 
     private static final String ORIGINAL_PATIENT_ID = "191212121212";
+    private static final String COORDINATION_NUMBER_PATIENT_ID = "191212721212";
     private static final Personnummer PATIENT_ID = Personnummer.createPersonnummer(ORIGINAL_PATIENT_ID).get();
+    private static final Personnummer COORDINATION_NUMBER = Personnummer.createPersonnummer(COORDINATION_NUMBER_PATIENT_ID).get();
     private static final String FIRST_NAME = "firstName";
     private static final String LAST_NAME = "lastName";
     public static final String MIDDLE_NAME = "middleName";
@@ -57,6 +59,23 @@ class CertificateServicePatientHelperTest {
 
 
     @Nested
+    class CoordinationNumber {
+
+        @BeforeEach
+        void setup() {
+            when(patientDetailsResolver.getPersonFromPUService(COORDINATION_NUMBER))
+                .thenReturn(PersonSvar.found(createPerson(COORDINATION_NUMBER)));
+        }
+
+        @Test
+        void shouldSetPatientIdTypeAsCoordinationNumberId() {
+            final var response = certificateServicePatientHelper.get(COORDINATION_NUMBER);
+
+            assertEquals(PersonIdType.COORDINATION_NUMBER, response.getId().getType());
+        }
+    }
+
+    @Nested
     class TextValues {
 
         @BeforeEach
@@ -70,6 +89,13 @@ class CertificateServicePatientHelperTest {
             final var response = certificateServicePatientHelper.get(PATIENT_ID);
 
             assertEquals(ORIGINAL_PATIENT_ID, response.getId().getId());
+        }
+
+        @Test
+        void shouldSetPatientIdTypeAsPersonId() {
+            final var response = certificateServicePatientHelper.get(PATIENT_ID);
+
+            assertEquals(PersonIdType.PERSON_ID, response.getId().getType());
         }
 
         @Test
@@ -219,9 +245,9 @@ class CertificateServicePatientHelperTest {
         }
     }
 
-    private Person createPerson() {
+    private Person createPerson(Personnummer id) {
         return new Person(
-            PATIENT_ID,
+            id,
             false,
             false,
             FIRST_NAME,
@@ -233,5 +259,9 @@ class CertificateServicePatientHelperTest {
             false
 
         );
+    }
+
+    private Person createPerson() {
+        return createPerson(PATIENT_ID);
     }
 }
