@@ -75,6 +75,5 @@ class CSIntegrationServiceTest {
     void shouldReturnConvertedObject() {
         final var response = csIntegrationService.getTypeInfo(REQUEST);
         assertTrue(response.contains(convertedTypeInfo));
-
     }
 }
