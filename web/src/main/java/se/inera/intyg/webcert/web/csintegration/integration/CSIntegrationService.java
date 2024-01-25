@@ -16,35 +16,47 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.csintegration;
+package se.inera.intyg.webcert.web.csintegration.integration;
 
+import java.util.Collections;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import se.inera.intyg.webcert.web.csintegration.dto.CertificateServiceTypeInfoDTO;
 import se.inera.intyg.webcert.web.csintegration.dto.CertificateServiceTypeInfoRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
 @Service
 public class CSIntegrationService {
 
-    @Bean("csRestTemplate")
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
+    private final CertificateTypeInfoConverter certificateTypeInfoConverter;
+
+    private final RestTemplate restTemplate;
+
+    public CSIntegrationService(CertificateTypeInfoConverter certificateTypeInfoConverter, @Qualifier("csRestTemplate")
+    RestTemplate restTemplate) {
+        this.certificateTypeInfoConverter = certificateTypeInfoConverter;
+        this.restTemplate = restTemplate;
     }
 
-    @Autowired
-    @Qualifier("csRestTemplate")
-    private RestTemplate restTemplate;
 
     @Value("${certificateservice.base.url}")
     private String baseUrl;
 
     public List<CertificateTypeInfoDTO> getTypeInfo(CertificateServiceTypeInfoRequestDTO request) {
         final var url = baseUrl + "api/certificatetypeinfo";
-        return restTemplate.postForObject(url, request, List.class);
+        final var response = (List<CertificateServiceTypeInfoDTO>) restTemplate.postForObject(url, request, List.class);
+
+        if (response == null) {
+            return Collections.emptyList();
+        }
+
+        return response.stream()
+            .map(certificateTypeInfoConverter::convert)
+            .collect(Collectors.toList());
     }
+
 }

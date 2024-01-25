@@ -17,8 +17,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.csintegration;
+package se.inera.intyg.webcert.web.csintegration.integration.configuration;
 
-class CSIntegrationServiceTest {
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
+
+@Configuration
+public class RestTemplateConfiguration {
+
+    @Bean("csRestTemplate")
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
 
 }
