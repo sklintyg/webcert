@@ -21,6 +21,6 @@ package se.inera.intyg.webcert.web.csintegration.patient;
 
 public enum PersonIdType {
 
-    COORDINATION_NUMBER, PERSON_ID;
+    COORDINATION_NUMBER, PERSONAL_IDENTITY_NUMBER
 
 }

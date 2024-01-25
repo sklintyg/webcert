@@ -23,7 +23,7 @@ public class CertificateServiceUserDTO {
 
     private String id;
     private CertificateServiceUserRole role;
-    private boolean blocked;
+    private Boolean blocked;
 
     public static CertificateServiceUserDTO create(String id, CertificateServiceUserRole role, boolean blocked) {
         final var object = new CertificateServiceUserDTO();
@@ -35,7 +35,7 @@ public class CertificateServiceUserDTO {
         return object;
     }
 
-    public boolean isBlocked() {
+    public Boolean isBlocked() {
         return blocked;
     }
 

@@ -29,9 +29,9 @@ public class CertificateServicePatientDTO {
     private String street;
     private String city;
     private String zipCode;
-    private boolean testIndicated;
-    private boolean protectedPerson;
-    private boolean deceased;
+    private Boolean testIndicated;
+    private Boolean protectedPerson;
+    private Boolean deceased;
 
     public PersonIdDTO getId() {
         return id;
@@ -97,27 +97,27 @@ public class CertificateServicePatientDTO {
         this.zipCode = zipCode;
     }
 
-    public boolean isTestIndicated() {
+    public Boolean isTestIndicated() {
         return testIndicated;
     }
 
-    public void setTestIndicated(boolean testIndicated) {
+    public void setTestIndicated(Boolean testIndicated) {
         this.testIndicated = testIndicated;
     }
 
-    public boolean isProtectedPerson() {
+    public Boolean isProtectedPerson() {
         return protectedPerson;
     }
 
-    public void setProtectedPerson(boolean protectedPerson) {
+    public void setProtectedPerson(Boolean protectedPerson) {
         this.protectedPerson = protectedPerson;
     }
 
-    public boolean isDeceased() {
+    public Boolean isDeceased() {
         return deceased;
     }
 
-    public void setDeceased(boolean deceased) {
+    public void setDeceased(Boolean deceased) {
         this.deceased = deceased;
     }
 }

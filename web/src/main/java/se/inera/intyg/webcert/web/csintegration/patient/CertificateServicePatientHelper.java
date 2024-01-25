@@ -54,7 +54,7 @@ public class CertificateServicePatientHelper {
 
     private PersonIdDTO getPersonId(Personnummer patientId) {
         return new PersonIdDTO(
-            isCoordinationNumber(patientId) ? PersonIdType.COORDINATION_NUMBER : PersonIdType.PERSON_ID,
+            isCoordinationNumber(patientId) ? PersonIdType.COORDINATION_NUMBER : PersonIdType.PERSONAL_IDENTITY_NUMBER,
             patientId.getOriginalPnr()
         );
     }

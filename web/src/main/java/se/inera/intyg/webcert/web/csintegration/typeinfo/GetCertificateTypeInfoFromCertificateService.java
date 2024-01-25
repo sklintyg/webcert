@@ -36,7 +36,6 @@ public class GetCertificateTypeInfoFromCertificateService implements GetCertific
     private final CSIntegrationService csIntegrationService;
     private final CertificateServiceUserHelper certificateServiceUserHelper;
     private final CertificateServicePatientHelper certificateServicePatientHelper;
-
     private final CertificateServiceUnitHelper certificateServiceUnitHelper;
 
     public GetCertificateTypeInfoFromCertificateService(CSIntegrationService csIntegrationService,

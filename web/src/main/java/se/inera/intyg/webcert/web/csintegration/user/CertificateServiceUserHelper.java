@@ -32,14 +32,6 @@ public class CertificateServiceUserHelper {
     private final WebCertUserService webCertUserService;
     private final AuthoritiesHelper authoritiesHelper;
 
-    // careprovider missing subscription list contains id
-    // origin should be normal to check otherwise true
-    // feature blocked, global
-
-    // subscription exists -> inte blockerad
-    // normal and no subscription och blockerad (globalt) aktiv -> blockerad
-    // djupintegration -> aldrig blockerad
-
     public CertificateServiceUserHelper(UserService userService, WebCertUserService webCertUserService,
         AuthoritiesHelper authoritiesHelper) {
         this.userService = userService;

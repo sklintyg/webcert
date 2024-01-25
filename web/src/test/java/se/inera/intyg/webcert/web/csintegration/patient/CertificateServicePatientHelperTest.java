@@ -95,7 +95,7 @@ class CertificateServicePatientHelperTest {
         void shouldSetPatientIdTypeAsPersonId() {
             final var response = certificateServicePatientHelper.get(PATIENT_ID);
 
-            assertEquals(PersonIdType.PERSON_ID, response.getId().getType());
+            assertEquals(PersonIdType.PERSONAL_IDENTITY_NUMBER, response.getId().getType());
         }
 
         @Test
