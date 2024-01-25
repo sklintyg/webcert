@@ -30,7 +30,7 @@ import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserHelpe
 import se.inera.intyg.webcert.web.service.facade.GetCertificateTypesFacadeService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
-@Service("GetCertificateTypeInfoFromCertificateService")
+@Service("getCertificateTypeInfoFromCertificateService")
 public class GetCertificateTypeInfoFromCertificateService implements GetCertificateTypesFacadeService {
 
     private final CSIntegrationService csIntegrationService;
@@ -63,8 +63,4 @@ public class GetCertificateTypeInfoFromCertificateService implements GetCertific
         request.setCareProvider(certificateServiceUnitHelper.getCareProvider());
         return request;
     }
-
-    // 1.1 Skapa upp request (vill vi skapa återanvändbar logik, t.ex. för behörighetsvärden
-    // 1.2 Hämta data från CS. Internt rest-api
-
 }

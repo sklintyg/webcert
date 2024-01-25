@@ -21,14 +21,13 @@ package se.inera.intyg.webcert.web.certificateservice.aggregate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.csintegration.aggregate.CertificateTypeInfoAggregator;
@@ -43,21 +42,24 @@ class CertificateTypeInfoAggregatorTest {
     private static final String ORIGINAL_PATIENT_ID = "191212121212";
     private static final Personnummer PATIENT_ID = Personnummer.createPersonnummer(ORIGINAL_PATIENT_ID).get();
 
-    @Mock
+    GetCertificateTypesFacadeService getCertificateTypeInfoFromWebcert;
     GetCertificateTypesFacadeService getCertificateTypeInfoFromCertificateService;
-    @Mock
-    GetCertificateTypesFacadeService getCertificateTypesFacadeService;
-
-    @InjectMocks
     CertificateTypeInfoAggregator certificateTypeInfoAggregator;
 
     @BeforeEach
     void setup() {
+        getCertificateTypeInfoFromCertificateService = mock(GetCertificateTypesFacadeService.class);
+        getCertificateTypeInfoFromWebcert = mock(GetCertificateTypesFacadeService.class);
+
+        when(getCertificateTypeInfoFromWebcert.get(PATIENT_ID))
+            .thenReturn(List.of(infoFromWC));
         when(getCertificateTypeInfoFromCertificateService.get(PATIENT_ID))
             .thenReturn(List.of(infoFromCS));
 
-        when(getCertificateTypesFacadeService.get(PATIENT_ID))
-            .thenReturn(List.of(infoFromWC));
+        certificateTypeInfoAggregator = new CertificateTypeInfoAggregator(
+            getCertificateTypeInfoFromWebcert,
+            getCertificateTypeInfoFromCertificateService
+        );
     }
 
     @Test

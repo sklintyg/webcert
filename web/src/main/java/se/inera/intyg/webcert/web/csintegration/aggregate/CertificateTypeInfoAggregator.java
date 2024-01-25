@@ -31,21 +31,21 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoD
 @Service("GetCertificateTypeInfoAggregator")
 public class CertificateTypeInfoAggregator implements GetCertificateTypesFacadeService {
 
-    private final GetCertificateTypesFacadeService getCertificateTypesFromCertificateService;
-    private final GetCertificateTypesFacadeService getCertificateTypesFacadeService;
+    private final GetCertificateTypesFacadeService getCertificateTypeInfoFromWebcert;
+    private final GetCertificateTypesFacadeService getCertificateTypeInfoFromCertificateService;
 
     public CertificateTypeInfoAggregator(
-        @Qualifier("GetCertificateTypeInfoFromWebcert")
-        GetCertificateTypesFacadeService getCertificateTypesFacadeService,
-        @Qualifier("GetCertificateTypeInfoFromCertificateService")
-        GetCertificateTypesFacadeService getCertificateTypesFromCertificateService) {
-        this.getCertificateTypesFromCertificateService = getCertificateTypesFromCertificateService;
-        this.getCertificateTypesFacadeService = getCertificateTypesFacadeService;
+        @Qualifier("getCertificateTypeInfoFromWebcert")
+        GetCertificateTypesFacadeService getCertificateTypeInfoFromWebcert,
+        @Qualifier("getCertificateTypeInfoFromCertificateService")
+        GetCertificateTypesFacadeService getCertificateTypeInfoFromCertificateService) {
+        this.getCertificateTypeInfoFromWebcert = getCertificateTypeInfoFromWebcert;
+        this.getCertificateTypeInfoFromCertificateService = getCertificateTypeInfoFromCertificateService;
     }
 
     public List<CertificateTypeInfoDTO> get(Personnummer patientId) {
-        final var typesFromCertificateService = getCertificateTypesFromCertificateService.get(patientId);
-        final var typesFromWebcert = getCertificateTypesFacadeService.get(patientId);
+        final var typesFromCertificateService = getCertificateTypeInfoFromCertificateService.get(patientId);
+        final var typesFromWebcert = getCertificateTypeInfoFromWebcert.get(patientId);
 
         return Stream
             .concat(
