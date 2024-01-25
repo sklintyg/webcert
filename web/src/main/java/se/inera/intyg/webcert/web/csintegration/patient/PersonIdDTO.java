@@ -17,9 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.csintegration.dto;
-
-import se.inera.intyg.webcert.web.csintegration.patient.PersonIdType;
+package se.inera.intyg.webcert.web.csintegration.patient;
 
 public class PersonIdDTO {
 

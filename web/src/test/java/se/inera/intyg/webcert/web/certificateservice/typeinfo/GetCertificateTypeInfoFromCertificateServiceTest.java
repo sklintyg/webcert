@@ -39,6 +39,8 @@ import se.inera.intyg.webcert.web.csintegration.dto.CertificateServiceTypeInfoRe
 import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientDTO;
 import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientHelper;
 import se.inera.intyg.webcert.web.csintegration.typeinfo.GetCertificateTypeInfoFromCertificateService;
+import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitDTO;
+import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitHelper;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserDTO;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserHelper;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
@@ -52,6 +54,8 @@ class GetCertificateTypeInfoFromCertificateServiceTest {
 
     private static final CertificateServicePatientDTO PATIENT = new CertificateServicePatientDTO();
 
+    private static final CertificateServiceUnitDTO UNIT = new CertificateServiceUnitDTO();
+
     @Mock
     CSIntegrationService csIntegrationService;
 
@@ -60,6 +64,9 @@ class GetCertificateTypeInfoFromCertificateServiceTest {
 
     @Mock
     CertificateServicePatientHelper certificateServicePatientHelper;
+
+    @Mock
+    CertificateServiceUnitHelper certificateServiceUnitHelper;
 
     @InjectMocks
     private GetCertificateTypeInfoFromCertificateService getCertificateTypeInfoFromCertificateService;
@@ -95,6 +102,42 @@ class GetCertificateTypeInfoFromCertificateServiceTest {
             verify(csIntegrationService).getTypeInfo(captor.capture());
 
             assertEquals(PATIENT, captor.getValue().getPatient());
+        }
+
+        @Test
+        void shouldSetUnit() {
+            final var captor = ArgumentCaptor.forClass(CertificateServiceTypeInfoRequestDTO.class);
+            when(certificateServiceUnitHelper.getUnit())
+                .thenReturn(UNIT);
+
+            getCertificateTypeInfoFromCertificateService.get(PATIENT_ID);
+            verify(csIntegrationService).getTypeInfo(captor.capture());
+
+            assertEquals(UNIT, captor.getValue().getUnit());
+        }
+
+        @Test
+        void shouldSetCareUnit() {
+            final var captor = ArgumentCaptor.forClass(CertificateServiceTypeInfoRequestDTO.class);
+            when(certificateServiceUnitHelper.getCareUnit())
+                .thenReturn(UNIT);
+
+            getCertificateTypeInfoFromCertificateService.get(PATIENT_ID);
+            verify(csIntegrationService).getTypeInfo(captor.capture());
+
+            assertEquals(UNIT, captor.getValue().getCareUnit());
+        }
+
+        @Test
+        void shouldSetCareProvider() {
+            final var captor = ArgumentCaptor.forClass(CertificateServiceTypeInfoRequestDTO.class);
+            when(certificateServiceUnitHelper.getCareProvider())
+                .thenReturn(UNIT);
+
+            getCertificateTypeInfoFromCertificateService.get(PATIENT_ID);
+            verify(csIntegrationService).getTypeInfo(captor.capture());
+
+            assertEquals(UNIT, captor.getValue().getCareProvider());
         }
     }
 

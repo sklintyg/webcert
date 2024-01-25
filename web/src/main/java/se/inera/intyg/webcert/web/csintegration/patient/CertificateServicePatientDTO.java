@@ -19,8 +19,6 @@
 
 package se.inera.intyg.webcert.web.csintegration.patient;
 
-import se.inera.intyg.webcert.web.csintegration.dto.PersonIdDTO;
-
 public class CertificateServicePatientDTO {
 
     private PersonIdDTO id;

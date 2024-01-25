@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.csintegration.patient;
 
 import org.springframework.stereotype.Component;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.web.csintegration.dto.PersonIdDTO;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 
 @Component
