@@ -47,6 +47,7 @@ public class GetCertificateTypeInfoFromCertificateService implements GetCertific
         this.certificateServiceUnitHelper = certificateServiceUnitHelper;
     }
 
+    @Override
     public List<CertificateTypeInfoDTO> get(Personnummer patientId) {
         final var request = createRequest(patientId);
         return csIntegrationService.getTypeInfo(request);
