@@ -70,6 +70,7 @@ public class CreateCertificateFromCertificateService implements CreateCertificat
 
     private CreateCertificateRequestDTO createRequest(String certificateType, String patientId) throws CreateCertificateException {
         final var request = new CreateCertificateRequestDTO();
+        //replace intygTexts with something else to get version, the new types will not exists in intygTexts
         final var certificateModelId = new CertificateModelIdDTO(certificateType, intygTextsService.getLatestVersion(certificateType));
 
         request.setUnit(certificateServiceUnitHelper.getUnit());

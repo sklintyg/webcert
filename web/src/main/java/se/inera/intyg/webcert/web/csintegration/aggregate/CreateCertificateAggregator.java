@@ -55,6 +55,7 @@ public class CreateCertificateAggregator implements CreateCertificateFacadeServi
             return createCertificateFromWC.create(certificateType, patientId);
         }
 
+        //replace intygTexts with something else to get version, the new types will not exists in intygTexts
         final var version = intygTextsService.getLatestVersion(certificateType);
         final var csHasCertificateModel = csIntegrationService.createCertificateExists(certificateType, version);
 
