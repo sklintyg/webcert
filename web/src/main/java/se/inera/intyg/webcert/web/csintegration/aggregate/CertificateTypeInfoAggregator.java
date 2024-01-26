@@ -29,7 +29,7 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateTypesFacadeService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
-@Service("CertificateServiceTypeInfoAggregator")
+@Service("CertificateTypeInfoAggregator")
 public class CertificateTypeInfoAggregator implements GetCertificateTypesFacadeService {
 
     private final GetCertificateTypesFacadeService getCertificateTypeInfoFromWebcert;
