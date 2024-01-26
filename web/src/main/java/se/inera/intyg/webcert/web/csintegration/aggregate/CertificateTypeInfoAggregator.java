@@ -23,31 +23,39 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Profile;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateTypesFacadeService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
-@Service
-@Profile("certificate-service-active")
+@Service("CertificateServiceTypeInfoAggregator")
 public class CertificateTypeInfoAggregator implements GetCertificateTypesFacadeService {
 
     private final GetCertificateTypesFacadeService getCertificateTypeInfoFromWebcert;
     private final GetCertificateTypesFacadeService getCertificateTypeInfoFromCertificateService;
+    private final Environment environment;
 
     public CertificateTypeInfoAggregator(
         @Qualifier("getCertificateTypeInfoFromWebcert")
         GetCertificateTypesFacadeService getCertificateTypeInfoFromWebcert,
         @Qualifier("getCertificateTypeInfoFromCertificateService")
-        GetCertificateTypesFacadeService getCertificateTypeInfoFromCertificateService) {
+        GetCertificateTypesFacadeService getCertificateTypeInfoFromCertificateService,
+        Environment environment) {
         this.getCertificateTypeInfoFromWebcert = getCertificateTypeInfoFromWebcert;
         this.getCertificateTypeInfoFromCertificateService = getCertificateTypeInfoFromCertificateService;
+        this.environment = environment;
     }
 
+    @Override
     public List<CertificateTypeInfoDTO> get(Personnummer patientId) {
-        final var typesFromCertificateService = getCertificateTypeInfoFromCertificateService.get(patientId);
         final var typesFromWebcert = getCertificateTypeInfoFromWebcert.get(patientId);
+
+        if (!environment.matchesProfiles("certificate-service-active")) {
+            return typesFromWebcert;
+        }
+
+        final var typesFromCertificateService = getCertificateTypeInfoFromCertificateService.get(patientId);
 
         return Stream
             .concat(

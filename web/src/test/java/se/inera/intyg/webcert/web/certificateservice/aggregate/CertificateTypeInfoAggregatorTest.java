@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.web.certificateservice.aggregate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -29,6 +30,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.env.Environment;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.csintegration.aggregate.CertificateTypeInfoAggregator;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateTypesFacadeService;
@@ -44,30 +46,45 @@ class CertificateTypeInfoAggregatorTest {
 
     GetCertificateTypesFacadeService getCertificateTypeInfoFromWebcert;
     GetCertificateTypesFacadeService getCertificateTypeInfoFromCertificateService;
+    Environment environment;
     CertificateTypeInfoAggregator certificateTypeInfoAggregator;
 
     @BeforeEach
     void setup() {
         getCertificateTypeInfoFromCertificateService = mock(GetCertificateTypesFacadeService.class);
         getCertificateTypeInfoFromWebcert = mock(GetCertificateTypesFacadeService.class);
+        environment = mock(Environment.class);
 
         when(getCertificateTypeInfoFromWebcert.get(PATIENT_ID))
             .thenReturn(List.of(infoFromWC));
-        when(getCertificateTypeInfoFromCertificateService.get(PATIENT_ID))
-            .thenReturn(List.of(infoFromCS));
 
         certificateTypeInfoAggregator = new CertificateTypeInfoAggregator(
             getCertificateTypeInfoFromWebcert,
-            getCertificateTypeInfoFromCertificateService
+            getCertificateTypeInfoFromCertificateService,
+            environment
         );
     }
 
     @Test
     void shouldMergeCertificateTypesLists() {
+        when(getCertificateTypeInfoFromCertificateService.get(PATIENT_ID))
+            .thenReturn(List.of(infoFromCS));
+        when(environment.matchesProfiles("certificate-service-active"))
+            .thenReturn(true);
+
         final var response = certificateTypeInfoAggregator.get(PATIENT_ID);
 
         assertEquals(2, response.size());
         assertTrue(response.contains(infoFromCS));
+        assertTrue(response.contains(infoFromWC));
+    }
+
+    @Test
+    void shouldNotMergeCertificateTypesIfProfileNotActive() {
+        final var response = certificateTypeInfoAggregator.get(PATIENT_ID);
+
+        assertEquals(1, response.size());
+        assertFalse(response.contains(infoFromCS));
         assertTrue(response.contains(infoFromWC));
     }
 }
