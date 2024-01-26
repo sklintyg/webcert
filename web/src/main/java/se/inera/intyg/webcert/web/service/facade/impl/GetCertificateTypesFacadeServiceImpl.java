@@ -46,7 +46,7 @@ import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelper;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 
-@Service
+@Service("getCertificateTypeInfoFromWebcert")
 public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypesFacadeService {
 
     private final IntygModuleRegistry intygModuleRegistry;
@@ -102,7 +102,7 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
         certificateTypeInfo.setIssuerTypeId(module.getIssuerTypeId());
         certificateTypeInfo.setLinks(convertResourceLinks(module.getLinks()));
         certificateTypeMessageService.get(module.getId(), patientId)
-            .ifPresent((message) -> certificateTypeInfo.setMessage(message.getMessage()));
+            .ifPresent(message -> certificateTypeInfo.setMessage(message.getMessage()));
         return certificateTypeInfo;
     }
 
@@ -133,9 +133,9 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
 
         final var intygModuleDTOs = intygModules.stream()
             .map(IntygModuleDTO::new)
-            .filter((intygModule) -> allowedCertificateTypes.contains(intygModule.getId()))
-            .filter((intygModule) -> intygModule.isDisplayDeprecated() || !intygModule.isDeprecated())
-            .filter((intygModule) -> intygTextsService.getLatestVersion(intygModule.getId()) != null)
+            .filter(intygModule -> allowedCertificateTypes.contains(intygModule.getId()))
+            .filter(intygModule -> intygModule.isDisplayDeprecated() || !intygModule.isDeprecated())
+            .filter(intygModule -> intygTextsService.getLatestVersion(intygModule.getId()) != null)
             .collect(Collectors.toList());
 
         resourceLinkHelper.decorateIntygModuleWithValidActionLinks(intygModuleDTOs, personnummer);
