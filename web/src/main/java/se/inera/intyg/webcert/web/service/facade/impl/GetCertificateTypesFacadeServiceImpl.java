@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.luae_na.support.LuaenaEntryPoint;
@@ -47,7 +46,6 @@ import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelper;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 
-@Profile("!certificate-service-active")
 @Service("getCertificateTypeInfoFromWebcert")
 public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypesFacadeService {
 

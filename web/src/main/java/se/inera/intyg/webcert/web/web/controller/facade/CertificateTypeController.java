@@ -28,6 +28,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -42,7 +43,8 @@ public class CertificateTypeController {
 
     private final GetCertificateTypesFacadeService getCertificateTypesFacadeService;
 
-    public CertificateTypeController(GetCertificateTypesFacadeService getCertificateTypesFacadeService) {
+    public CertificateTypeController(
+        @Qualifier("CertificateTypeInfoAggregator") GetCertificateTypesFacadeService getCertificateTypesFacadeService) {
         this.getCertificateTypesFacadeService = getCertificateTypesFacadeService;
     }
 
