@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.csintegration.integration;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,14 +48,14 @@ public class CSIntegrationService {
     private String baseUrl;
 
     public List<CertificateTypeInfoDTO> getTypeInfo(CertificateServiceTypeInfoRequestDTO request) {
-        final var url = baseUrl + "api/certificatetypeinfo";
-        final var response = (List<CertificateServiceTypeInfoDTO>) restTemplate.postForObject(url, request, List.class);
+        final var url = baseUrl + "/api/certificatetypeinfo";
+        final var response = restTemplate.postForObject(url, request, CertificateServiceTypeInfoDTO[].class);
 
         if (response == null) {
             return Collections.emptyList();
         }
 
-        return response.stream()
+        return Arrays.stream(response)
             .map(certificateTypeInfoConverter::convert)
             .collect(Collectors.toList());
     }

@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.csintegration.unit;
 
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -109,5 +110,13 @@ class CertificateServiceUnitConverterTest {
         final var response = certificateServiceUnitConverter.convert(unit);
 
         assertEquals(unit.getIsInactive(), response.getInactive());
+    }
+
+    @Test
+    void shouldConvertInactiveAsFalseIfNull() {
+        final var unit = Unit.builder().build();
+        final var response = certificateServiceUnitConverter.convert(unit);
+
+        assertFalse(response.getInactive());
     }
 }

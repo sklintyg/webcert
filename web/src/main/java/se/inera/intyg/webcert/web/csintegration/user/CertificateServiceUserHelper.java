@@ -69,20 +69,24 @@ public class CertificateServiceUserHelper {
     }
 
     private CertificateServiceUserRole convertRole(String role) {
-        switch (role) {
+        switch (role.toUpperCase()) {
             case "LAKARE":
+            case "LÄKARE":
             case "DOCTOR":
                 return CertificateServiceUserRole.DOCTOR;
             case "TANDLAKARE":
+            case "TANDLÄKARE":
             case "DENTIST":
                 return CertificateServiceUserRole.DENTIST;
             case "SJUKSKOTERSKA":
+            case "SJUKSKÖTERSKA":
             case "NURSE":
                 return CertificateServiceUserRole.NURSE;
             case "BARNMORSKA":
             case "MIDWIFE":
                 return CertificateServiceUserRole.MIDWIFE;
             case "VARDADMIN":
+            case "VÅRDADMINISTRATÖR":
             case "ADMINISTRATOR":
                 return CertificateServiceUserRole.CARE_ADMIN;
             default:

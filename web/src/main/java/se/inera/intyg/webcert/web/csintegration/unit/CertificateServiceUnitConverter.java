@@ -35,7 +35,7 @@ public class CertificateServiceUnitConverter {
         convertedUnit.setCity(unit.getCity());
         convertedUnit.setPhoneNumber(unit.getPhoneNumber());
         convertedUnit.setEmail(unit.getEmail());
-        convertedUnit.setInactive(unit.getIsInactive());
+        convertedUnit.setInactive(unit.getIsInactive() == null ? Boolean.FALSE : unit.getIsInactive());
 
         return convertedUnit;
 
