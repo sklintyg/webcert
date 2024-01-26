@@ -22,7 +22,6 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
@@ -41,16 +40,14 @@ public class CreateCertificateFromCertificateService implements CreateCertificat
     private final CertificateServiceUserHelper certificateServiceUserHelper;
     private final CertificateServiceUnitHelper certificateServiceUnitHelper;
     private final CertificateServicePatientHelper certificateServicePatientHelper;
-    private final IntygTextsService intygTextsService;
 
     public CreateCertificateFromCertificateService(CSIntegrationService csIntegrationService,
         CertificateServiceUserHelper certificateServiceUserHelper, CertificateServiceUnitHelper certificateServiceUnitHelper,
-        CertificateServicePatientHelper certificateServicePatientHelper, IntygTextsService intygTextsService) {
+        CertificateServicePatientHelper certificateServicePatientHelper) {
         this.csIntegrationService = csIntegrationService;
         this.certificateServiceUserHelper = certificateServiceUserHelper;
         this.certificateServiceUnitHelper = certificateServiceUnitHelper;
         this.certificateServicePatientHelper = certificateServicePatientHelper;
-        this.intygTextsService = intygTextsService;
     }
 
     @Override
@@ -70,8 +67,7 @@ public class CreateCertificateFromCertificateService implements CreateCertificat
 
     private CreateCertificateRequestDTO createRequest(String certificateType, String patientId) throws CreateCertificateException {
         final var request = new CreateCertificateRequestDTO();
-        //replace intygTexts with something else to get version, the new types will not exists in intygTexts
-        final var certificateModelId = new CertificateModelIdDTO(certificateType, intygTextsService.getLatestVersion(certificateType));
+        final var certificateModelId = new CertificateModelIdDTO(certificateType, null);
 
         request.setUnit(certificateServiceUnitHelper.getUnit());
         request.setCareUnit(certificateServiceUnitHelper.getCareUnit());

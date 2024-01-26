@@ -23,7 +23,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.service.facade.CreateCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.impl.CreateCertificateException;
@@ -36,17 +35,15 @@ public class CreateCertificateAggregator implements CreateCertificateFacadeServi
     private final CreateCertificateFacadeService createCertificateFromCS;
     private final CSIntegrationService csIntegrationService;
     private final Environment environment;
-    private final IntygTextsService intygTextsService;
 
     public CreateCertificateAggregator(
         @Qualifier("CreateCertificateFromWC") CreateCertificateFacadeService createCertificateFromWC,
         @Qualifier("CreateCertificateFromCS") CreateCertificateFacadeService createCertificateFromCS,
-        CSIntegrationService csIntegrationService, Environment environment, IntygTextsService intygTextsService) {
+        CSIntegrationService csIntegrationService, Environment environment) {
         this.createCertificateFromWC = createCertificateFromWC;
         this.createCertificateFromCS = createCertificateFromCS;
         this.csIntegrationService = csIntegrationService;
         this.environment = environment;
-        this.intygTextsService = intygTextsService;
     }
 
     @Override
@@ -55,9 +52,7 @@ public class CreateCertificateAggregator implements CreateCertificateFacadeServi
             return createCertificateFromWC.create(certificateType, patientId);
         }
 
-        //replace intygTexts with something else to get version, the new types will not exists in intygTexts
-        final var version = intygTextsService.getLatestVersion(certificateType);
-        final var csHasCertificateModel = csIntegrationService.createCertificateExists(certificateType, version);
+        final var csHasCertificateModel = csIntegrationService.createCertificateExists(certificateType, null);
 
         return csHasCertificateModel
             ? createCertificateFromCS.create(certificateType, patientId)

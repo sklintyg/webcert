@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -33,7 +34,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -56,7 +56,6 @@ class CreateCertificateFromCertificateServiceTest {
     private static final String PATIENT_ID = "191212121212";
     private static final Personnummer PERSONNUMMER = Personnummer.createPersonnummer(PATIENT_ID).get();
     private static final String TYPE = "TYPE";
-    private static final String VERSION = "VERSION";
     public static final String ID = "ID";
 
     private static Certificate certificate;
@@ -72,9 +71,6 @@ class CreateCertificateFromCertificateServiceTest {
 
     @Mock
     CSIntegrationService csIntegrationService;
-
-    @Mock
-    IntygTextsService intygTextsService;
 
     @InjectMocks
     CreateCertificateFromCertificateService createCertificateFromCertificateService;
@@ -100,8 +96,6 @@ class CreateCertificateFromCertificateServiceTest {
 
             when(csIntegrationService.createCertificate(any()))
                 .thenReturn(certificate);
-            when(intygTextsService.getLatestVersion(TYPE))
-                .thenReturn(VERSION);
         }
 
         @Test
@@ -190,13 +184,13 @@ class CreateCertificateFromCertificateServiceTest {
             }
 
             @Test
-            void shouldSetVersion() throws CreateCertificateException {
+            void shouldSetVersionToNull() throws CreateCertificateException {
                 final var captor = ArgumentCaptor.forClass(CreateCertificateRequestDTO.class);
 
                 createCertificateFromCertificateService.create(TYPE, PATIENT_ID);
                 verify(csIntegrationService).createCertificate(captor.capture());
 
-                assertEquals(VERSION, captor.getValue().getCertificateModelIdDTO().getVersion());
+                assertNull(captor.getValue().getCertificateModelIdDTO().getVersion());
             }
         }
     }

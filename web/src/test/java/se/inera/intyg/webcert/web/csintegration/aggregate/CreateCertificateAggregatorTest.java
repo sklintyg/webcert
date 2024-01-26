@@ -32,7 +32,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.env.Environment;
-import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.service.facade.CreateCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.impl.CreateCertificateException;
@@ -42,15 +41,11 @@ class CreateCertificateAggregatorTest {
 
     private static final String ORIGINAL_PATIENT_ID = "191212121212";
     private static final String TYPE = "TYPE";
-    private static final String VERSION = "VERSION";
     private static final String ID_FROM_CS = "ID_FROM_CS";
     private static final String ID_FROM_WC = "ID_FROM_WC";
 
     @Mock
     CSIntegrationService csIntegrationService;
-
-    @Mock
-    IntygTextsService intygTextsService;
 
     CreateCertificateFacadeService createCertificateFromWC;
     CreateCertificateFacadeService createCertificateFromCS;
@@ -67,12 +62,8 @@ class CreateCertificateAggregatorTest {
             createCertificateFromWC,
             createCertificateFromCS,
             csIntegrationService,
-            environment,
-            intygTextsService
+            environment
         );
-
-        when(intygTextsService.getLatestVersion(TYPE))
-            .thenReturn(VERSION);
     }
 
     @Nested
@@ -86,7 +77,7 @@ class CreateCertificateAggregatorTest {
 
         @Test
         void shouldReturnCertificateIdFromCSIfTypeExistsInCS() throws CreateCertificateException {
-            when(csIntegrationService.createCertificateExists(TYPE, VERSION))
+            when(csIntegrationService.createCertificateExists(TYPE, null))
                 .thenReturn(true);
             when(createCertificateFromCS.create(TYPE, ORIGINAL_PATIENT_ID))
                 .thenReturn(ID_FROM_CS);
