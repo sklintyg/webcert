@@ -23,12 +23,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateTypesFacadeService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
-@Service("GetCertificateTypeInfoAggregator")
+@Service
+@Profile("certificate-service-active")
 public class CertificateTypeInfoAggregator implements GetCertificateTypesFacadeService {
 
     private final GetCertificateTypesFacadeService getCertificateTypeInfoFromWebcert;
