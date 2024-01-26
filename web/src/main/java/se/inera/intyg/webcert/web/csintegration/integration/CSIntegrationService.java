@@ -26,8 +26,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import se.inera.intyg.webcert.web.csintegration.dto.CertificateServiceTypeInfoDTO;
-import se.inera.intyg.webcert.web.csintegration.dto.CertificateServiceTypeInfoRequestDTO;
+import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.webcert.web.csintegration.certificate.CertificateServiceTypeInfoDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
 @Service
@@ -58,6 +60,17 @@ public class CSIntegrationService {
         return Arrays.stream(response)
             .map(certificateTypeInfoConverter::convert)
             .collect(Collectors.toList());
+    }
+
+    public Certificate createCertificate(CreateCertificateRequestDTO request) {
+        final var url = baseUrl + "/api/certificate";
+
+        return restTemplate.postForObject(url, request, Certificate.class);
+    }
+
+    public boolean createCertificateExists(String certificateType, String certificateVersion) {
+        final var url = baseUrl + "/api/certificate/" + certificateType + "/" + certificateVersion + "/exists";
+        return Boolean.TRUE.equals(restTemplate.getForObject(url, Boolean.class));
     }
 
 }
