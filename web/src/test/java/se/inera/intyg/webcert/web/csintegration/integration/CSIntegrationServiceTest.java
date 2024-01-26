@@ -26,7 +26,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,8 +34,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestTemplate;
-import se.inera.intyg.webcert.web.csintegration.dto.CertificateServiceTypeInfoDTO;
-import se.inera.intyg.webcert.web.csintegration.dto.CertificateServiceTypeInfoRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.certificate.CertificateServiceTypeInfoDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
 @ExtendWith(MockitoExtension.class)
@@ -45,6 +44,7 @@ class CSIntegrationServiceTest {
     private static final CertificateServiceTypeInfoRequestDTO REQUEST = new CertificateServiceTypeInfoRequestDTO();
     private static final CertificateTypeInfoDTO convertedTypeInfo = new CertificateTypeInfoDTO();
     private static final CertificateServiceTypeInfoDTO typeInfo = new CertificateServiceTypeInfoDTO();
+    private static final CertificateServiceTypeInfoDTO[] typeInfos = {typeInfo};
 
     @Mock
     private RestTemplate restTemplate;
@@ -60,7 +60,7 @@ class CSIntegrationServiceTest {
         when(certificateTypeInfoConverter.convert(any()))
             .thenReturn(convertedTypeInfo);
         when(restTemplate.postForObject(anyString(), any(), any()))
-            .thenReturn(List.of(typeInfo));
+            .thenReturn(typeInfos);
     }
 
     @Test
