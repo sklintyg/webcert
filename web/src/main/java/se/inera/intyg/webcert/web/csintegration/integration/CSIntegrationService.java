@@ -18,16 +18,20 @@
  */
 package se.inera.intyg.webcert.web.csintegration.integration;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateTypeExistsResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateTypeInfoResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
 @Service
 public class CSIntegrationService {
@@ -47,9 +51,18 @@ public class CSIntegrationService {
     @Value("${certificateservice.base.url}")
     private String baseUrl;
 
-    public CertificateTypeInfoResponseDTO getTypeInfo(CertificateServiceTypeInfoRequestDTO request) {
+    public List<CertificateTypeInfoDTO> getTypeInfo(CertificateServiceTypeInfoRequestDTO request) {
         final var url = baseUrl + "/api/certificatetypeinfo";
-        return restTemplate.postForObject(url, request, CertificateTypeInfoResponseDTO.class);
+        final var response = restTemplate.postForObject(url, request, CertificateServiceTypeInfoResponseDTO.class);
+
+        if (response == null) {
+            return Collections.emptyList();
+        }
+
+        return response.getList()
+            .stream()
+            .map(certificateTypeInfoConverter::convert)
+            .collect(Collectors.toList());
     }
 
     public Certificate createCertificate(CreateCertificateRequestDTO request) {

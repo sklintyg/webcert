@@ -25,7 +25,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -38,22 +38,24 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.csintegration.certificate.CertificateModelIdDTO;
+import se.inera.intyg.webcert.web.csintegration.certificate.CertificateServiceTypeInfoDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateTypeExistsResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateTypeInfoResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
 @ExtendWith(MockitoExtension.class)
 class CSIntegrationServiceTest {
 
-    private static final CertificateServiceTypeInfoRequestDTO REQUEST = new CertificateServiceTypeInfoRequestDTO();
-    private static final CertificateTypeInfoDTO convertedTypeInfo = new CertificateTypeInfoDTO();
-    private static final CertificateTypeInfoResponseDTO TYPE_INFO_RESPONSE = new CertificateTypeInfoResponseDTO(
-        Collections.emptyList()
-    );
-    private static final Certificate certificate = new Certificate();
+    private static final CertificateTypeInfoDTO CONVERTED_TYPE_INFO = new CertificateTypeInfoDTO();
+    private static final CertificateServiceTypeInfoDTO TYPE_INFO = new CertificateServiceTypeInfoDTO();
+    private static final List<CertificateServiceTypeInfoDTO> TYPE_INFOS = List.of(TYPE_INFO);
+    private static final CertificateServiceTypeInfoRequestDTO TYPE_INFO_REQUEST = new CertificateServiceTypeInfoRequestDTO();
+    private static final CertificateServiceTypeInfoResponseDTO TYPE_INFO_RESPONSE = new CertificateServiceTypeInfoResponseDTO(TYPE_INFOS);
+
     private static final CreateCertificateRequestDTO CREATE_CERTIFICATE_REQUEST = new CreateCertificateRequestDTO();
+    private static final Certificate CERTIFICATE = new Certificate();
 
     @Mock
     private RestTemplate restTemplate;
@@ -70,7 +72,7 @@ class CSIntegrationServiceTest {
         @BeforeEach
         void setUp() {
             when(certificateTypeInfoConverter.convert(any()))
-                .thenReturn(convertedTypeInfo);
+                .thenReturn(CONVERTED_TYPE_INFO);
             when(restTemplate.postForObject(anyString(), any(), any()))
                 .thenReturn(TYPE_INFO_RESPONSE);
         }
@@ -78,14 +80,14 @@ class CSIntegrationServiceTest {
         @Test
         void shouldPreformPostUsingRequest() {
             final var captor = ArgumentCaptor.forClass(CertificateServiceTypeInfoRequestDTO.class);
-            csIntegrationService.getTypeInfo(REQUEST);
+            csIntegrationService.getTypeInfo(TYPE_INFO_REQUEST);
             verify(restTemplate).postForObject(anyString(), captor.capture(), any());
-            assertEquals(REQUEST, captor.getValue());
+            assertEquals(TYPE_INFO_REQUEST, captor.getValue());
         }
 
         @Test
         void shouldReturnResponse() {
-            final var response = csIntegrationService.getTypeInfo(REQUEST);
+            final var response = csIntegrationService.getTypeInfo(TYPE_INFO_REQUEST);
             assertEquals(TYPE_INFO_RESPONSE, response);
         }
 
@@ -97,7 +99,7 @@ class CSIntegrationServiceTest {
         @Test
         void shouldPreformPostUsingRequest() {
             when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(certificate);
+                .thenReturn(CERTIFICATE);
             final var captor = ArgumentCaptor.forClass(CreateCertificateRequestDTO.class);
 
             csIntegrationService.createCertificate(CREATE_CERTIFICATE_REQUEST);
@@ -109,10 +111,10 @@ class CSIntegrationServiceTest {
         @Test
         void shouldReturnCertificate() {
             when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(certificate);
+                .thenReturn(CERTIFICATE);
             final var response = csIntegrationService.createCertificate(CREATE_CERTIFICATE_REQUEST);
 
-            assertEquals(certificate, response);
+            assertEquals(CERTIFICATE, response);
         }
 
         @Test
