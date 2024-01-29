@@ -30,11 +30,13 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.csintegration.certificate.CertificateServiceTypeInfoDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
 @Service
 public class CSIntegrationService {
 
+    private static final String ENDPOINT_URL = "/api/certificate";
     private final CertificateTypeInfoConverter certificateTypeInfoConverter;
 
     private final RestTemplate restTemplate;
@@ -63,13 +65,24 @@ public class CSIntegrationService {
     }
 
     public Certificate createCertificate(CreateCertificateRequestDTO request) {
-        final var url = baseUrl + "/api/certificate";
+        final var url = baseUrl + ENDPOINT_URL;
+
+        return restTemplate.postForObject(url, request, Certificate.class);
+    }
+
+    public Certificate getCertificate(String certificateId, GetCertificateRequestDTO request) {
+        final var url = baseUrl + ENDPOINT_URL + certificateId;
 
         return restTemplate.postForObject(url, request, Certificate.class);
     }
 
     public boolean createCertificateExists(String certificateType, String certificateVersion) {
-        final var url = baseUrl + "/api/certificate/" + certificateType + "/" + certificateVersion + "/exists";
+        final var url = baseUrl + ENDPOINT_URL + certificateType + "/" + certificateVersion + "/exists";
+        return Boolean.TRUE.equals(restTemplate.getForObject(url, Boolean.class));
+    }
+
+    public boolean certificateExists(String certificateId) {
+        final var url = baseUrl + ENDPOINT_URL + certificateId + "/exists";
         return Boolean.TRUE.equals(restTemplate.getForObject(url, Boolean.class));
     }
 
