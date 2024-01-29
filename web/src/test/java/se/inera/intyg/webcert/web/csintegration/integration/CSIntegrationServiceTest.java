@@ -26,6 +26,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,7 +45,9 @@ class CSIntegrationServiceTest {
     private static final CertificateServiceTypeInfoRequestDTO REQUEST = new CertificateServiceTypeInfoRequestDTO();
     private static final CertificateTypeInfoDTO convertedTypeInfo = new CertificateTypeInfoDTO();
     private static final CertificateServiceTypeInfoDTO typeInfo = new CertificateServiceTypeInfoDTO();
-    private static final CertificateServiceTypeInfoDTO[] typeInfos = {typeInfo};
+    private static final List<CertificateServiceTypeInfoDTO> typeInfos = List.of(typeInfo);
+    private static final CertificateServiceTypeInfoResponseDTO RESPONSE = new CertificateServiceTypeInfoResponseDTO(typeInfos);
+
 
     @Mock
     private RestTemplate restTemplate;
@@ -60,7 +63,7 @@ class CSIntegrationServiceTest {
         when(certificateTypeInfoConverter.convert(any()))
             .thenReturn(convertedTypeInfo);
         when(restTemplate.postForObject(anyString(), any(), any()))
-            .thenReturn(typeInfos);
+            .thenReturn(RESPONSE);
     }
 
     @Test

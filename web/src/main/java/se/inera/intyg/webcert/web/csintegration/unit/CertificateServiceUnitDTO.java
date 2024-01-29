@@ -28,7 +28,7 @@ public class CertificateServiceUnitDTO {
     private String city;
     private String phoneNumber;
     private String email;
-    private Boolean isInactive;
+    private Boolean inactive;
 
     public String getId() {
         return id;
@@ -87,10 +87,10 @@ public class CertificateServiceUnitDTO {
     }
 
     public Boolean getInactive() {
-        return isInactive;
+        return inactive;
     }
 
     public void setInactive(Boolean inactive) {
-        isInactive = inactive;
+        this.inactive = inactive;
     }
 }
