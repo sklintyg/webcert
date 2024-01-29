@@ -38,6 +38,7 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateTypeExistsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientDTO;
 import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientHelper;
@@ -52,10 +53,14 @@ class CreateCertificateFromCertificateServiceTest {
 
     private static final CertificateServiceUserDTO USER = new CertificateServiceUserDTO();
     private static final CertificateServiceUnitDTO UNIT = new CertificateServiceUnitDTO();
+    private static final String TYPE = "TYPE";
+    private static final String VERSION = "VERSION";
     private static final CertificateServicePatientDTO PATIENT = new CertificateServicePatientDTO();
+    private static final CertificateTypeExistsResponseDTO EXISTS_RESPONSE = new CertificateTypeExistsResponseDTO(
+        new CertificateModelIdDTO(TYPE, VERSION)
+    );
     private static final String PATIENT_ID = "191212121212";
     private static final Personnummer PERSONNUMMER = Personnummer.createPersonnummer(PATIENT_ID).get();
-    private static final String TYPE = "TYPE";
     public static final String ID = "ID";
 
     private static Certificate certificate;
@@ -77,12 +82,34 @@ class CreateCertificateFromCertificateServiceTest {
 
     @Test
     void shouldThrowErrorIfIntegrationAPIReturnsNull() {
+        when(csIntegrationService.certificateTypeExists(TYPE))
+            .thenReturn(EXISTS_RESPONSE);
+
         assertThrows(CreateCertificateException.class, () -> createCertificateFromCertificateService.create(TYPE, "wrongFormat"));
     }
 
     @Test
     void shouldThrowErrorIfPatientIdHasWrongFormat() {
+        when(csIntegrationService.certificateTypeExists(TYPE))
+            .thenReturn(EXISTS_RESPONSE);
+
         assertThrows(CreateCertificateException.class, () -> createCertificateFromCertificateService.create(TYPE, "wrongFormat"));
+    }
+
+    @Test
+    void shouldReturnNullIfCertificateIntegrationResponseIsNull() throws CreateCertificateException {
+        final var response = createCertificateFromCertificateService.create(TYPE, PATIENT_ID);
+
+        assertNull(response);
+    }
+
+    @Test
+    void shouldReturnNullIfCertificateTypeDoesNotExistInCS() throws CreateCertificateException {
+        when(csIntegrationService.certificateTypeExists(TYPE))
+            .thenReturn(new CertificateTypeExistsResponseDTO(null));
+        final var response = createCertificateFromCertificateService.create(TYPE, PATIENT_ID);
+
+        assertNull(response);
     }
 
     @Nested
@@ -94,6 +121,8 @@ class CreateCertificateFromCertificateServiceTest {
             final var metadata = CertificateMetadata.builder().id(ID).build();
             certificate.setMetadata(metadata);
 
+            when(csIntegrationService.certificateTypeExists(TYPE))
+                .thenReturn(EXISTS_RESPONSE);
             when(csIntegrationService.createCertificate(any()))
                 .thenReturn(certificate);
         }
@@ -184,13 +213,13 @@ class CreateCertificateFromCertificateServiceTest {
             }
 
             @Test
-            void shouldSetVersionToNull() throws CreateCertificateException {
+            void shouldSetTypeVersion() throws CreateCertificateException {
                 final var captor = ArgumentCaptor.forClass(CreateCertificateRequestDTO.class);
 
                 createCertificateFromCertificateService.create(TYPE, PATIENT_ID);
                 verify(csIntegrationService).createCertificate(captor.capture());
 
-                assertNull(captor.getValue().getCertificateModelIdDTO().getVersion());
+                assertEquals(VERSION, captor.getValue().getCertificateModelIdDTO().getVersion());
             }
         }
     }

@@ -26,13 +26,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.env.Environment;
-import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.service.facade.CreateCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.impl.CreateCertificateException;
 
@@ -43,9 +40,6 @@ class CreateCertificateAggregatorTest {
     private static final String TYPE = "TYPE";
     private static final String ID_FROM_CS = "ID_FROM_CS";
     private static final String ID_FROM_WC = "ID_FROM_WC";
-
-    @Mock
-    CSIntegrationService csIntegrationService;
 
     CreateCertificateFacadeService createCertificateFromWC;
     CreateCertificateFacadeService createCertificateFromCS;
@@ -61,44 +55,33 @@ class CreateCertificateAggregatorTest {
         aggregator = new CreateCertificateAggregator(
             createCertificateFromWC,
             createCertificateFromCS,
-            csIntegrationService,
             environment
         );
     }
 
-    @Nested
-    class CSActivated {
+    @Test
+    void shouldReturnCertificateIdFromCSIIfCSProfileIsActive() throws CreateCertificateException {
+        when(environment.matchesProfiles("certificate-service-active"))
+            .thenReturn(true);
+        when(createCertificateFromCS.create(TYPE, ORIGINAL_PATIENT_ID))
+            .thenReturn(ID_FROM_CS);
 
-        @BeforeEach
-        void setup() {
-            when(environment.matchesProfiles("certificate-service-active"))
-                .thenReturn(true);
-        }
+        final var response = aggregator.create(TYPE, ORIGINAL_PATIENT_ID);
+        verify(createCertificateFromCS, times(1)).create(TYPE, ORIGINAL_PATIENT_ID);
 
-        @Test
-        void shouldReturnCertificateIdFromCSIfTypeExistsInCS() throws CreateCertificateException {
-            when(csIntegrationService.createCertificateExists(TYPE, null))
-                .thenReturn(true);
-            when(createCertificateFromCS.create(TYPE, ORIGINAL_PATIENT_ID))
-                .thenReturn(ID_FROM_CS);
-
-            final var response = aggregator.create(TYPE, ORIGINAL_PATIENT_ID);
-            verify(createCertificateFromCS, times(1)).create(TYPE, ORIGINAL_PATIENT_ID);
-
-            assertEquals(ID_FROM_CS, response);
-        }
-
-        @Test
-        void shouldReturnCertificateIdFromWCIfTypeDoesNotExistInCS() throws CreateCertificateException {
-            when(createCertificateFromWC.create(TYPE, ORIGINAL_PATIENT_ID))
-                .thenReturn(ID_FROM_WC);
-
-            final var response = aggregator.create(TYPE, ORIGINAL_PATIENT_ID);
-            verify(createCertificateFromWC, times(1)).create(TYPE, ORIGINAL_PATIENT_ID);
-
-            assertEquals(ID_FROM_WC, response);
-        }
-
+        assertEquals(ID_FROM_CS, response);
     }
+
+    @Test
+    void shouldReturnCertificateIdFromWCIfCSProfileIsNotActivated() throws CreateCertificateException {
+        when(createCertificateFromWC.create(TYPE, ORIGINAL_PATIENT_ID))
+            .thenReturn(ID_FROM_WC);
+
+        final var response = aggregator.create(TYPE, ORIGINAL_PATIENT_ID);
+        verify(createCertificateFromWC, times(1)).create(TYPE, ORIGINAL_PATIENT_ID);
+
+        assertEquals(ID_FROM_WC, response);
+    }
+
 
 }

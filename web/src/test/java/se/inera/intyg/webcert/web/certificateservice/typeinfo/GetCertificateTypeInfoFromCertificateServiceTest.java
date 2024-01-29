@@ -37,6 +37,7 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.csintegration.certificate.GetCertificateTypeInfoFromCertificateService;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateTypeInfoResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientDTO;
 import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientHelper;
 import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitDTO;
@@ -50,6 +51,7 @@ class GetCertificateTypeInfoFromCertificateServiceTest {
 
     private static final Personnummer PATIENT_ID = Personnummer.createPersonnummer("191212121212").get();
     private static final List<CertificateTypeInfoDTO> types = List.of(new CertificateTypeInfoDTO());
+    private static final CertificateTypeInfoResponseDTO RESPONSE = new CertificateTypeInfoResponseDTO(types);
     private static final CertificateServiceUserDTO USER = new CertificateServiceUserDTO();
 
     private static final CertificateServicePatientDTO PATIENT = new CertificateServicePatientDTO();
@@ -74,7 +76,7 @@ class GetCertificateTypeInfoFromCertificateServiceTest {
     @BeforeEach
     void setup() {
         when(csIntegrationService.getTypeInfo(any()))
-            .thenReturn(types);
+            .thenReturn(RESPONSE);
     }
 
     @Nested

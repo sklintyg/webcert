@@ -19,7 +19,6 @@
 
 package se.inera.intyg.webcert.web.csintegration.integration.dto;
 
-import se.inera.intyg.webcert.web.csintegration.certificate.CertificateModelIdDTO;
 import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientDTO;
 import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitDTO;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserDTO;
@@ -72,13 +71,5 @@ public class GetCertificateRequestDTO {
 
     public void setCareProvider(CertificateServiceUnitDTO careProvider) {
         this.careProvider = careProvider;
-    }
-
-    public CertificateModelIdDTO getCertificateModelIdDTO() {
-        return certificateModelIdDTO;
-    }
-
-    public void setCertificateModelIdDTO(CertificateModelIdDTO certificateModelIdDTO) {
-        this.certificateModelIdDTO = certificateModelIdDTO;
     }
 }

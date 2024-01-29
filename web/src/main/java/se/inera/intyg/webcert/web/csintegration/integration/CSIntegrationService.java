@@ -18,20 +18,16 @@
  */
 package se.inera.intyg.webcert.web.csintegration.integration;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.webcert.web.csintegration.certificate.CertificateServiceTypeInfoDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateTypeExistsResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateTypeInfoResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
 @Service
 public class CSIntegrationService {
@@ -51,17 +47,9 @@ public class CSIntegrationService {
     @Value("${certificateservice.base.url}")
     private String baseUrl;
 
-    public List<CertificateTypeInfoDTO> getTypeInfo(CertificateServiceTypeInfoRequestDTO request) {
+    public CertificateTypeInfoResponseDTO getTypeInfo(CertificateServiceTypeInfoRequestDTO request) {
         final var url = baseUrl + "/api/certificatetypeinfo";
-        final var response = restTemplate.postForObject(url, request, CertificateServiceTypeInfoDTO[].class);
-
-        if (response == null) {
-            return Collections.emptyList();
-        }
-
-        return Arrays.stream(response)
-            .map(certificateTypeInfoConverter::convert)
-            .collect(Collectors.toList());
+        return restTemplate.postForObject(url, request, CertificateTypeInfoResponseDTO.class);
     }
 
     public Certificate createCertificate(CreateCertificateRequestDTO request) {
@@ -76,9 +64,9 @@ public class CSIntegrationService {
         return restTemplate.postForObject(url, request, Certificate.class);
     }
 
-    public boolean createCertificateExists(String certificateType, String certificateVersion) {
-        final var url = baseUrl + ENDPOINT_URL + certificateType + "/" + certificateVersion + "/exists";
-        return Boolean.TRUE.equals(restTemplate.getForObject(url, Boolean.class));
+    public CertificateTypeExistsResponseDTO certificateTypeExists(String certificateType) {
+        final var url = baseUrl + ENDPOINT_URL + "/type/" + certificateType + "/exists";
+        return restTemplate.getForObject(url, CertificateTypeExistsResponseDTO.class);
     }
 
     public boolean certificateExists(String certificateId) {

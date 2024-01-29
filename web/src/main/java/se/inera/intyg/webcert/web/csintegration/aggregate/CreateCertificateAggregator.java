@@ -23,7 +23,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.service.facade.CreateCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.impl.CreateCertificateException;
 
@@ -33,16 +32,13 @@ public class CreateCertificateAggregator implements CreateCertificateFacadeServi
 
     private final CreateCertificateFacadeService createCertificateFromWC;
     private final CreateCertificateFacadeService createCertificateFromCS;
-    private final CSIntegrationService csIntegrationService;
     private final Environment environment;
 
     public CreateCertificateAggregator(
         @Qualifier("CreateCertificateFromWC") CreateCertificateFacadeService createCertificateFromWC,
-        @Qualifier("CreateCertificateFromCS") CreateCertificateFacadeService createCertificateFromCS,
-        CSIntegrationService csIntegrationService, Environment environment) {
+        @Qualifier("CreateCertificateFromCS") CreateCertificateFacadeService createCertificateFromCS, Environment environment) {
         this.createCertificateFromWC = createCertificateFromWC;
         this.createCertificateFromCS = createCertificateFromCS;
-        this.csIntegrationService = csIntegrationService;
         this.environment = environment;
     }
 
@@ -52,10 +48,10 @@ public class CreateCertificateAggregator implements CreateCertificateFacadeServi
             return createCertificateFromWC.create(certificateType, patientId);
         }
 
-        final var csHasCertificateModel = csIntegrationService.createCertificateExists(certificateType, null);
+        final var responseFromCS = createCertificateFromCS.create(certificateType, patientId);
 
-        return csHasCertificateModel
-            ? createCertificateFromCS.create(certificateType, patientId)
+        return responseFromCS != null
+            ? responseFromCS
             : createCertificateFromWC.create(certificateType, patientId);
     }
 }

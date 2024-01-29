@@ -52,29 +52,37 @@ public class CreateCertificateFromCertificateService implements CreateCertificat
 
     @Override
     public String create(String certificateType, String patientId) throws CreateCertificateException {
-        final var request = createRequest(certificateType, patientId);
-
         LOG.debug("Attempting to create certificate of type '{}'", certificateType);
 
+        final var integrationResponse = csIntegrationService.certificateTypeExists(certificateType);
+        if (integrationResponse == null || integrationResponse.getId() == null) {
+            return null;
+        }
+
+        final var modelId = integrationResponse.getId();
+        final var request = createRequest(modelId, patientId);
         final var response = csIntegrationService.createCertificate(request);
 
         if (response == null) {
             throw new CreateCertificateException("Could not create certificate, received null");
         }
 
+        LOG.debug("Created certificate using certificate service of type '{}' and version '{}'",
+            modelId.getType(),
+            modelId.getVersion());
+
         return response.getMetadata().getId();
     }
 
-    private CreateCertificateRequestDTO createRequest(String certificateType, String patientId) throws CreateCertificateException {
+    private CreateCertificateRequestDTO createRequest(CertificateModelIdDTO modelId, String patientId) throws CreateCertificateException {
         final var request = new CreateCertificateRequestDTO();
-        final var certificateModelId = new CertificateModelIdDTO(certificateType, null);
 
         request.setUnit(certificateServiceUnitHelper.getUnit());
         request.setCareUnit(certificateServiceUnitHelper.getCareUnit());
         request.setCareProvider(certificateServiceUnitHelper.getCareProvider());
         request.setPatient(certificateServicePatientHelper.get(createPatientId(patientId)));
         request.setUser(certificateServiceUserHelper.get());
-        request.setCertificateModelIdDTO(certificateModelId);
+        request.setCertificateModelIdDTO(modelId);
 
         return request;
     }
