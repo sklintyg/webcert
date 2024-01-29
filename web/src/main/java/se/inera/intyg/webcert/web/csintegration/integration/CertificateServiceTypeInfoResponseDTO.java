@@ -26,6 +26,9 @@ public class CertificateServiceTypeInfoResponseDTO {
 
     private List<CertificateServiceTypeInfoDTO> list;
 
+    public CertificateServiceTypeInfoResponseDTO() {
+    }
+
     public CertificateServiceTypeInfoResponseDTO(List<CertificateServiceTypeInfoDTO> list) {
         this.list = list;
     }
