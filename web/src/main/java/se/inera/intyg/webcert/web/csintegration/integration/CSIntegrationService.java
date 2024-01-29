@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.csintegration.integration;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,7 +25,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import se.inera.intyg.webcert.web.csintegration.dto.CertificateServiceTypeInfoDTO;
 import se.inera.intyg.webcert.web.csintegration.dto.CertificateServiceTypeInfoRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
@@ -49,13 +47,14 @@ public class CSIntegrationService {
 
     public List<CertificateTypeInfoDTO> getTypeInfo(CertificateServiceTypeInfoRequestDTO request) {
         final var url = baseUrl + "/api/certificatetypeinfo";
-        final var response = restTemplate.postForObject(url, request, CertificateServiceTypeInfoDTO[].class);
+        final var response = restTemplate.postForObject(url, request, CertificateServiceTypeInfoResponseDTO.class);
 
         if (response == null) {
             return Collections.emptyList();
         }
 
-        return Arrays.stream(response)
+        return response.getList()
+            .stream()
             .map(certificateTypeInfoConverter::convert)
             .collect(Collectors.toList());
     }
