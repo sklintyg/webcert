@@ -58,11 +58,11 @@ public class CreateCertificateFromCertificateService implements CreateCertificat
         LOG.debug("Attempting to create certificate of type '{}'", certificateType);
 
         final var modelId = csIntegrationService.certificateTypeExists(certificateType);
-        if (modelId == null) {
+        if (modelId.isEmpty()) {
             return null;
         }
 
-        final var request = createRequest(modelId, patientId);
+        final var request = createRequest(modelId.get(), patientId);
         final var response = csIntegrationService.createCertificate(request);
 
         if (response == null) {
@@ -71,8 +71,8 @@ public class CreateCertificateFromCertificateService implements CreateCertificat
 
         pdlLogService.logCreated(patientId);
         LOG.debug("Created certificate using certificate service of type '{}' and version '{}'",
-            modelId.getType(),
-            modelId.getVersion()
+            modelId.get().getType(),
+            modelId.get().getVersion()
         );
 
         return response.getMetadata().getId();

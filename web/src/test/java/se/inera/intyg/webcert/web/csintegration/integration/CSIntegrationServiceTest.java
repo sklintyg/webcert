@@ -163,7 +163,46 @@ class CSIntegrationServiceTest {
 
                 final var response = csIntegrationService.certificateTypeExists("type");
 
-                assertEquals(expectedResponse.getId(), response);
+                assertEquals(expectedResponse.getId(), response.get());
+            }
+
+            @Test
+            void shouldReturnNullIfTypeIsMissing() {
+                final var expectedResponse = new CertificateTypeExistsResponseDTO(
+                    new CertificateModelIdDTO(null, "version")
+                );
+                when(restTemplate.getForObject(anyString(), any()))
+                    .thenReturn(expectedResponse);
+
+                final var response = csIntegrationService.certificateTypeExists("type");
+
+                assertTrue(response.isEmpty());
+            }
+
+            @Test
+            void shouldReturnNullIfVersionIsMissing() {
+                final var expectedResponse = new CertificateTypeExistsResponseDTO(
+                    new CertificateModelIdDTO("type", null)
+                );
+                when(restTemplate.getForObject(anyString(), any()))
+                    .thenReturn(expectedResponse);
+
+                final var response = csIntegrationService.certificateTypeExists("type");
+
+                assertTrue(response.isEmpty());
+            }
+
+            @Test
+            void shouldReturnNullIfObjectIsEmpty() {
+                final var expectedResponse = new CertificateTypeExistsResponseDTO(
+                    new CertificateModelIdDTO(null, null)
+                );
+                when(restTemplate.getForObject(anyString(), any()))
+                    .thenReturn(expectedResponse);
+
+                final var response = csIntegrationService.certificateTypeExists("type");
+
+                assertTrue(response.isEmpty());
             }
 
             @Test

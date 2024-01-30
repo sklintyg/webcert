@@ -27,6 +27,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -83,7 +84,7 @@ class CreateCertificateFromCertificateServiceTest {
     @Test
     void shouldThrowErrorIfIntegrationAPIReturnsNull() {
         when(csIntegrationService.certificateTypeExists(TYPE))
-            .thenReturn(EXISTS_RESPONSE);
+            .thenReturn(Optional.of(EXISTS_RESPONSE));
 
         assertThrows(CreateCertificateException.class, () -> createCertificateFromCertificateService.create(TYPE, "wrongFormat"));
     }
@@ -91,7 +92,7 @@ class CreateCertificateFromCertificateServiceTest {
     @Test
     void shouldThrowErrorIfPatientIdHasWrongFormat() {
         when(csIntegrationService.certificateTypeExists(TYPE))
-            .thenReturn(EXISTS_RESPONSE);
+            .thenReturn(Optional.of(EXISTS_RESPONSE));
 
         assertThrows(CreateCertificateException.class, () -> createCertificateFromCertificateService.create(TYPE, "wrongFormat"));
     }
@@ -127,7 +128,7 @@ class CreateCertificateFromCertificateServiceTest {
             certificate.setMetadata(metadata);
 
             when(csIntegrationService.certificateTypeExists(TYPE))
-                .thenReturn(EXISTS_RESPONSE);
+                .thenReturn(Optional.of(EXISTS_RESPONSE));
             when(csIntegrationService.createCertificate(any()))
                 .thenReturn(certificate);
         }

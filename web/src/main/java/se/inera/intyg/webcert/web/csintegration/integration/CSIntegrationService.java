@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.csintegration.integration;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -79,15 +80,18 @@ public class CSIntegrationService {
         return restTemplate.postForObject(url, request, Certificate.class);
     }
 
-    public CertificateModelIdDTO certificateTypeExists(String certificateType) {
+    public Optional<CertificateModelIdDTO> certificateTypeExists(String certificateType) {
         final var url = baseUrl + CERTIFICATE_TYPE_INFO_ENDPOINT_URL + "/" + certificateType + "/exists";
         final var response = restTemplate.getForObject(url, CertificateTypeExistsResponseDTO.class);
 
-        if (response == null) {
-            return null;
+        if (response == null
+            || response.getId() == null
+            || response.getId().getType() == null
+            || response.getId().getVersion() == null) {
+            return Optional.empty();
         }
 
-        return response.getId();
+        return Optional.of(response.getId());
     }
 
     public Boolean certificateExists(String certificateId) {
