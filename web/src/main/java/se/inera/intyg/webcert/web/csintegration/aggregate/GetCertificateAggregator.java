@@ -20,14 +20,12 @@
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 
 @Service("GetCertificateAggregator")
-@Profile("certificate-service-active")
 public class GetCertificateAggregator implements GetCertificateFacadeService {
 
     private final GetCertificateFacadeService getCertificateFromWC;

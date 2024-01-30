@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.service.facade.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.model.UtkastStatus;
@@ -39,6 +40,7 @@ import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
 @Service("GetCertificateFromWC")
+@Primary
 public class GetCertificateFacadeServiceImpl implements GetCertificateFacadeService {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetCertificateFacadeServiceImpl.class);
