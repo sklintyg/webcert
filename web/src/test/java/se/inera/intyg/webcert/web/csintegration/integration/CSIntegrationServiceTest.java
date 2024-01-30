@@ -40,6 +40,7 @@ import org.springframework.web.client.RestTemplate;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.csintegration.certificate.CertificateModelIdDTO;
 import se.inera.intyg.webcert.web.csintegration.certificate.CertificateServiceTypeInfoDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateExistsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateTypeExistsResponseDTO;
@@ -94,6 +95,17 @@ class CSIntegrationServiceTest {
             final var response = csIntegrationService.getTypeInfo(TYPE_INFO_REQUEST);
             assertTrue(response.contains(CONVERTED_TYPE_INFO));
         }
+
+        @Test
+        void shouldSetUrlCorrect() {
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            csIntegrationService.getTypeInfo(TYPE_INFO_REQUEST);
+            verify(restTemplate).postForObject(captor.capture(), any(), any());
+
+            assertEquals("baseUrl/api/certificatetypeinfo", captor.getValue());
+        }
     }
 
     @Nested
@@ -121,27 +133,42 @@ class CSIntegrationServiceTest {
         }
 
         @Test
-        void shouldReturnModelIdFromResponseFromExistsApiEndpoint() {
-            final var expectedResponse = new CertificateTypeExistsResponseDTO(
-                new CertificateModelIdDTO("type", "version")
-            );
-            when(restTemplate.getForObject(anyString(), any()))
-                .thenReturn(expectedResponse);
-
-            final var response = csIntegrationService.certificateTypeExists("type");
-
-            assertEquals(expectedResponse.getId(), response);
-        }
-
-        @Test
-        void shouldSetUrlCorrectForExists() {
+        void shouldSetUrlCorrect() {
             ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
             final var captor = ArgumentCaptor.forClass(String.class);
 
-            csIntegrationService.certificateTypeExists("fk7211");
-            verify(restTemplate).getForObject(captor.capture(), any());
+            csIntegrationService.createCertificate(CREATE_CERTIFICATE_REQUEST);
+            verify(restTemplate).postForObject(captor.capture(), any(), any());
 
-            assertEquals("baseUrl/api/certificate/type/fk7211/exists", captor.getValue());
+            assertEquals("baseUrl/api/certificate", captor.getValue());
+        }
+
+        @Nested
+        class Exists {
+
+            @Test
+            void shouldReturnModelIdFromResponse() {
+                final var expectedResponse = new CertificateTypeExistsResponseDTO(
+                    new CertificateModelIdDTO("type", "version")
+                );
+                when(restTemplate.getForObject(anyString(), any()))
+                    .thenReturn(expectedResponse);
+
+                final var response = csIntegrationService.certificateTypeExists("type");
+
+                assertEquals(expectedResponse.getId(), response);
+            }
+
+            @Test
+            void shouldSetUrlCorrect() {
+                ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+                final var captor = ArgumentCaptor.forClass(String.class);
+
+                csIntegrationService.certificateTypeExists("fk7211");
+                verify(restTemplate).getForObject(captor.capture(), any());
+
+                assertEquals("baseUrl/api/certificate/type/fk7211/exists", captor.getValue());
+            }
         }
     }
 
@@ -170,27 +197,40 @@ class CSIntegrationServiceTest {
         }
 
         @Test
-        void shouldReturnModelIdFromResponseFromExistsApiEndpoint() {
-            final var expectedResponse = new CertificateTypeExistsResponseDTO(
-                new CertificateModelIdDTO("type", "version")
-            );
-            when(restTemplate.getForObject(anyString(), any()))
-                .thenReturn(expectedResponse);
-
-            final var response = csIntegrationService.certificateTypeExists("type");
-
-            assertEquals(expectedResponse.getId(), response);
-        }
-
-        @Test
-        void shouldSetUrlCorrectForExists() {
+        void shouldSetUrlCorrect() {
             ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
             final var captor = ArgumentCaptor.forClass(String.class);
 
-            csIntegrationService.certificateTypeExists("fk7211");
-            verify(restTemplate).getForObject(captor.capture(), any());
+            csIntegrationService.getCertificate("id", GET_CERTIFICATE_REQUEST);
+            verify(restTemplate).postForObject(captor.capture(), any(), any());
 
-            assertEquals("baseUrl/api/certificate/type/fk7211/exists", captor.getValue());
+            assertEquals("baseUrl/api/certificate/id", captor.getValue());
+        }
+
+        @Nested
+        class Exists {
+
+            @Test
+            void shouldReturnBooleanFromResponse() {
+                final var expectedResponse = new CertificateExistsResponseDTO(true);
+                when(restTemplate.getForObject(anyString(), any()))
+                    .thenReturn(expectedResponse);
+
+                final var response = csIntegrationService.certificateExists("id");
+
+                assertEquals(expectedResponse.getExists(), response);
+            }
+
+            @Test
+            void shouldSetUrlCorrect() {
+                ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+                final var captor = ArgumentCaptor.forClass(String.class);
+
+                csIntegrationService.certificateExists("id");
+                verify(restTemplate).getForObject(captor.capture(), any());
+
+                assertEquals("baseUrl/api/certificate/id/exists", captor.getValue());
+            }
         }
     }
 }

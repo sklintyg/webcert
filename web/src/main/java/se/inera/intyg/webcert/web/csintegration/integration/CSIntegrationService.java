@@ -73,7 +73,7 @@ public class CSIntegrationService {
     }
 
     public Certificate getCertificate(String certificateId, GetCertificateRequestDTO request) {
-        final var url = baseUrl + ENDPOINT_URL + certificateId;
+        final var url = baseUrl + ENDPOINT_URL + "/" + certificateId;
 
         return restTemplate.postForObject(url, request, Certificate.class);
     }
@@ -90,10 +90,10 @@ public class CSIntegrationService {
     }
 
     public Boolean certificateExists(String certificateId) {
-        final var url = baseUrl + ENDPOINT_URL + certificateId + "/exists";
+        final var url = baseUrl + ENDPOINT_URL + "/" + certificateId + "/exists";
 
         final var response = restTemplate.getForObject(url, CertificateExistsResponseDTO.class);
-        
+
         if (response == null) {
             return false;
         }
