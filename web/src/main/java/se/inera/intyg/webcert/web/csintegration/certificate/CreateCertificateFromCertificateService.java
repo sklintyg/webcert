@@ -28,6 +28,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificat
 import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientHelper;
 import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitHelper;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserHelper;
+import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.facade.CreateCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.impl.CreateCertificateException;
 
@@ -40,26 +41,27 @@ public class CreateCertificateFromCertificateService implements CreateCertificat
     private final CertificateServiceUserHelper certificateServiceUserHelper;
     private final CertificateServiceUnitHelper certificateServiceUnitHelper;
     private final CertificateServicePatientHelper certificateServicePatientHelper;
+    private final PDLLogService pdlLogService;
 
     public CreateCertificateFromCertificateService(CSIntegrationService csIntegrationService,
         CertificateServiceUserHelper certificateServiceUserHelper, CertificateServiceUnitHelper certificateServiceUnitHelper,
-        CertificateServicePatientHelper certificateServicePatientHelper) {
+        CertificateServicePatientHelper certificateServicePatientHelper, PDLLogService pdlLogService) {
         this.csIntegrationService = csIntegrationService;
         this.certificateServiceUserHelper = certificateServiceUserHelper;
         this.certificateServiceUnitHelper = certificateServiceUnitHelper;
         this.certificateServicePatientHelper = certificateServicePatientHelper;
+        this.pdlLogService = pdlLogService;
     }
 
     @Override
     public String create(String certificateType, String patientId) throws CreateCertificateException {
         LOG.debug("Attempting to create certificate of type '{}'", certificateType);
 
-        final var integrationResponse = csIntegrationService.certificateTypeExists(certificateType);
-        if (integrationResponse == null || integrationResponse.getId() == null) {
+        final var modelId = csIntegrationService.certificateTypeExists(certificateType);
+        if (modelId == null) {
             return null;
         }
 
-        final var modelId = integrationResponse.getId();
         final var request = createRequest(modelId, patientId);
         final var response = csIntegrationService.createCertificate(request);
 
@@ -67,9 +69,11 @@ public class CreateCertificateFromCertificateService implements CreateCertificat
             throw new CreateCertificateException("Could not create certificate, received null");
         }
 
+        pdlLogService.logCreated(patientId);
         LOG.debug("Created certificate using certificate service of type '{}' and version '{}'",
             modelId.getType(),
-            modelId.getVersion());
+            modelId.getVersion()
+        );
 
         return response.getMetadata().getId();
     }

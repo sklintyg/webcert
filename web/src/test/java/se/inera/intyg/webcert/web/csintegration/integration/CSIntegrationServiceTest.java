@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.web.csintegration.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
@@ -43,6 +44,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServi
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateTypeExistsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
 @ExtendWith(MockitoExtension.class)
@@ -55,7 +57,9 @@ class CSIntegrationServiceTest {
     private static final CertificateServiceTypeInfoResponseDTO TYPE_INFO_RESPONSE = new CertificateServiceTypeInfoResponseDTO(TYPE_INFOS);
 
     private static final CreateCertificateRequestDTO CREATE_CERTIFICATE_REQUEST = new CreateCertificateRequestDTO();
+    private static final GetCertificateRequestDTO GET_CERTIFICATE_REQUEST = new GetCertificateRequestDTO();
     private static final Certificate CERTIFICATE = new Certificate();
+    private static final String ID = "ID";
 
     @Mock
     private RestTemplate restTemplate;
@@ -88,7 +92,7 @@ class CSIntegrationServiceTest {
         @Test
         void shouldReturnResponse() {
             final var response = csIntegrationService.getTypeInfo(TYPE_INFO_REQUEST);
-            assertEquals(TYPE_INFO_RESPONSE, response);
+            assertTrue(response.contains(CONVERTED_TYPE_INFO));
         }
 
     }
@@ -118,7 +122,7 @@ class CSIntegrationServiceTest {
         }
 
         @Test
-        void shouldReturnResponseFromExistsApiEndpoint() {
+        void shouldReturnModelIdFromResponseFromExistsApiEndpoint() {
             final var expectedResponse = new CertificateTypeExistsResponseDTO(
                 new CertificateModelIdDTO("type", "version")
             );
@@ -127,7 +131,7 @@ class CSIntegrationServiceTest {
 
             final var response = csIntegrationService.certificateTypeExists("type");
 
-            assertEquals(expectedResponse, response);
+            assertEquals(expectedResponse.getId(), response);
         }
 
         @Test
@@ -135,10 +139,59 @@ class CSIntegrationServiceTest {
             ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
             final var captor = ArgumentCaptor.forClass(String.class);
 
-            csIntegrationService.certificateTypeExists("type");
+            csIntegrationService.certificateTypeExists("fk7211");
             verify(restTemplate).getForObject(captor.capture(), any());
 
-            assertEquals("baseUrl/api/certificate/type/version/exists", captor.getValue());
+            assertEquals("baseUrl/api/certificate/type/fk7211/exists", captor.getValue());
+        }
+    }
+
+    @Nested
+    class GetCertificate {
+
+        @Test
+        void shouldPreformPostUsingRequest() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(CERTIFICATE);
+            final var captor = ArgumentCaptor.forClass(GetCertificateRequestDTO.class);
+
+            csIntegrationService.getCertificate(ID, GET_CERTIFICATE_REQUEST);
+            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+
+            assertEquals(GET_CERTIFICATE_REQUEST, captor.getValue());
+        }
+
+        @Test
+        void shouldReturnCertificate() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(CERTIFICATE);
+            final var response = csIntegrationService.getCertificate(ID, GET_CERTIFICATE_REQUEST);
+
+            assertEquals(CERTIFICATE, response);
+        }
+
+        @Test
+        void shouldReturnModelIdFromResponseFromExistsApiEndpoint() {
+            final var expectedResponse = new CertificateTypeExistsResponseDTO(
+                new CertificateModelIdDTO("type", "version")
+            );
+            when(restTemplate.getForObject(anyString(), any()))
+                .thenReturn(expectedResponse);
+
+            final var response = csIntegrationService.certificateTypeExists("type");
+
+            assertEquals(expectedResponse.getId(), response);
+        }
+
+        @Test
+        void shouldSetUrlCorrectForExists() {
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            csIntegrationService.certificateTypeExists("fk7211");
+            verify(restTemplate).getForObject(captor.capture(), any());
+
+            assertEquals("baseUrl/api/certificate/type/fk7211/exists", captor.getValue());
         }
     }
 }

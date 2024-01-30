@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -38,7 +39,6 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateTypeExistsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientDTO;
 import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientHelper;
@@ -46,6 +46,7 @@ import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitDTO;
 import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitHelper;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserDTO;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserHelper;
+import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.facade.impl.CreateCertificateException;
 
 @ExtendWith(MockitoExtension.class)
@@ -56,9 +57,7 @@ class CreateCertificateFromCertificateServiceTest {
     private static final String TYPE = "TYPE";
     private static final String VERSION = "VERSION";
     private static final CertificateServicePatientDTO PATIENT = new CertificateServicePatientDTO();
-    private static final CertificateTypeExistsResponseDTO EXISTS_RESPONSE = new CertificateTypeExistsResponseDTO(
-        new CertificateModelIdDTO(TYPE, VERSION)
-    );
+    private static final CertificateModelIdDTO EXISTS_RESPONSE = new CertificateModelIdDTO(TYPE, VERSION);
     private static final String PATIENT_ID = "191212121212";
     private static final Personnummer PERSONNUMMER = Personnummer.createPersonnummer(PATIENT_ID).get();
     public static final String ID = "ID";
@@ -76,6 +75,9 @@ class CreateCertificateFromCertificateServiceTest {
 
     @Mock
     CSIntegrationService csIntegrationService;
+
+    @Mock
+    PDLLogService pdlLogService;
 
     @InjectMocks
     CreateCertificateFromCertificateService createCertificateFromCertificateService;
@@ -105,11 +107,16 @@ class CreateCertificateFromCertificateServiceTest {
 
     @Test
     void shouldReturnNullIfCertificateTypeDoesNotExistInCS() throws CreateCertificateException {
-        when(csIntegrationService.certificateTypeExists(TYPE))
-            .thenReturn(new CertificateTypeExistsResponseDTO(null));
         final var response = createCertificateFromCertificateService.create(TYPE, PATIENT_ID);
 
         assertNull(response);
+    }
+
+    @Test
+    void shouldNotPerformPDLLogIfTypeWasNotCreatedFromCS() throws CreateCertificateException {
+        createCertificateFromCertificateService.create(TYPE, PATIENT_ID);
+
+        verify(pdlLogService, times(0)).logCreated(PATIENT_ID);
     }
 
     @Nested
@@ -132,6 +139,13 @@ class CreateCertificateFromCertificateServiceTest {
             final var response = createCertificateFromCertificateService.create(TYPE, PATIENT_ID);
 
             assertEquals(ID, response);
+        }
+
+        @Test
+        void shouldPerformPDLForCreateCertificate() throws CreateCertificateException {
+            createCertificateFromCertificateService.create(TYPE, PATIENT_ID);
+
+            verify(pdlLogService, times(1)).logCreated(PATIENT_ID);
         }
 
         @Nested
