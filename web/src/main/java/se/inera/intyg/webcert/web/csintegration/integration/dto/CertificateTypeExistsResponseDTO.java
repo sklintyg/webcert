@@ -23,21 +23,21 @@ import se.inera.intyg.webcert.web.csintegration.certificate.CertificateModelIdDT
 
 public class CertificateTypeExistsResponseDTO {
 
-    private CertificateModelIdDTO id;
+    private CertificateModelIdDTO certificateModelId;
 
     public CertificateTypeExistsResponseDTO() {
 
     }
 
-    public CertificateModelIdDTO getId() {
-        return id;
+    public CertificateModelIdDTO getCertificateModelId() {
+        return certificateModelId;
     }
 
-    public void setId(CertificateModelIdDTO id) {
-        this.id = id;
+    public void setCertificateModelId(CertificateModelIdDTO certificateModelId) {
+        this.certificateModelId = certificateModelId;
     }
 
-    public CertificateTypeExistsResponseDTO(CertificateModelIdDTO id) {
-        this.id = id;
+    public CertificateTypeExistsResponseDTO(CertificateModelIdDTO certificateModelId) {
+        this.certificateModelId = certificateModelId;
     }
 }

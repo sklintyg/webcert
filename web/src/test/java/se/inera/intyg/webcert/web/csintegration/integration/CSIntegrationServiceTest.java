@@ -163,7 +163,7 @@ class CSIntegrationServiceTest {
 
                 final var response = csIntegrationService.certificateTypeExists("type");
 
-                assertEquals(expectedResponse.getId(), response.get());
+                assertEquals(expectedResponse.getCertificateModelId(), response.get());
             }
 
             @Test

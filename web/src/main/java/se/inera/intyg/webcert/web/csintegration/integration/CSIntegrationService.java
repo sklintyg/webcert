@@ -85,13 +85,13 @@ public class CSIntegrationService {
         final var response = restTemplate.getForObject(url, CertificateTypeExistsResponseDTO.class);
 
         if (response == null
-            || response.getId() == null
-            || response.getId().getType() == null
-            || response.getId().getVersion() == null) {
+            || response.getCertificateModelId() == null
+            || response.getCertificateModelId().getType() == null
+            || response.getCertificateModelId().getVersion() == null) {
             return Optional.empty();
         }
 
-        return Optional.of(response.getId());
+        return Optional.of(response.getCertificateModelId());
     }
 
     public Boolean certificateExists(String certificateId) {

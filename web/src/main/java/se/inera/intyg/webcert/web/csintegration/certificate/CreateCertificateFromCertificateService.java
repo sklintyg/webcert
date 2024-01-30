@@ -55,10 +55,11 @@ public class CreateCertificateFromCertificateService implements CreateCertificat
 
     @Override
     public String create(String certificateType, String patientId) throws CreateCertificateException {
-        LOG.debug("Attempting to create certificate of type '{}'", certificateType);
+        LOG.info("Attempting to create certificate of type '{}'", certificateType);
 
         final var modelId = csIntegrationService.certificateTypeExists(certificateType);
         if (modelId.isEmpty()) {
+            LOG.info("Certificate type '{}' does not exist in certificate service", certificateType);
             return null;
         }
 
@@ -70,7 +71,7 @@ public class CreateCertificateFromCertificateService implements CreateCertificat
         }
 
         pdlLogService.logCreated(patientId);
-        LOG.debug("Created certificate using certificate service of type '{}' and version '{}'",
+        LOG.info("Created certificate using certificate service of type '{}' and version '{}'",
             modelId.get().getType(),
             modelId.get().getVersion()
         );

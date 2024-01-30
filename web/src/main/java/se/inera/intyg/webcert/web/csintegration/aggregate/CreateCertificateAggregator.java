@@ -42,7 +42,7 @@ public class CreateCertificateAggregator implements CreateCertificateFacadeServi
 
     @Override
     public String create(String certificateType, String patientId) throws CreateCertificateException {
-        if (!environment.matchesProfiles("certificate-service-active")) {
+        if (environment.matchesProfiles("certificate-service-active")) {
             return createCertificateFromWC.create(certificateType, patientId);
         }
 
