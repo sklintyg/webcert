@@ -42,6 +42,8 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.csintegration.certificate.CertificateModelIdDTO;
 import se.inera.intyg.webcert.web.csintegration.certificate.CertificateServiceTypeInfoDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateExistsResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceCreateCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceGetCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateTypeExistsResponseDTO;
@@ -57,10 +59,13 @@ class CSIntegrationServiceTest {
     private static final List<CertificateServiceTypeInfoDTO> TYPE_INFOS = List.of(TYPE_INFO);
     private static final CertificateServiceTypeInfoRequestDTO TYPE_INFO_REQUEST = new CertificateServiceTypeInfoRequestDTO();
     private static final CertificateServiceTypeInfoResponseDTO TYPE_INFO_RESPONSE = new CertificateServiceTypeInfoResponseDTO(TYPE_INFOS);
-
-    private static final CreateCertificateRequestDTO CREATE_CERTIFICATE_REQUEST = new CreateCertificateRequestDTO();
-    private static final GetCertificateRequestDTO GET_CERTIFICATE_REQUEST = new GetCertificateRequestDTO();
     private static final Certificate CERTIFICATE = new Certificate();
+    private static final CreateCertificateRequestDTO CREATE_CERTIFICATE_REQUEST = new CreateCertificateRequestDTO();
+    private static final CertificateServiceCreateCertificateResponseDTO CREATE_RESPONSE = new CertificateServiceCreateCertificateResponseDTO(
+        CERTIFICATE);
+    private static final GetCertificateRequestDTO GET_CERTIFICATE_REQUEST = new GetCertificateRequestDTO();
+    private static final CertificateServiceGetCertificateResponseDTO GET_RESPONSE = new CertificateServiceGetCertificateResponseDTO(
+        CERTIFICATE);
     private static final String ID = "ID";
 
     @Mock
@@ -121,7 +126,7 @@ class CSIntegrationServiceTest {
         @Test
         void shouldPreformPostUsingRequest() {
             when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(CERTIFICATE);
+                .thenReturn(CREATE_RESPONSE);
             final var captor = ArgumentCaptor.forClass(CreateCertificateRequestDTO.class);
 
             csIntegrationService.createCertificate(CREATE_CERTIFICATE_REQUEST);
@@ -133,7 +138,7 @@ class CSIntegrationServiceTest {
         @Test
         void shouldReturnCertificate() {
             when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(CERTIFICATE);
+                .thenReturn(CREATE_RESPONSE);
             final var response = csIntegrationService.createCertificate(CREATE_CERTIFICATE_REQUEST);
 
             assertEquals(CERTIFICATE, response);
@@ -224,7 +229,7 @@ class CSIntegrationServiceTest {
         @Test
         void shouldPreformPostUsingRequest() {
             when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(CERTIFICATE);
+                .thenReturn(GET_RESPONSE);
             final var captor = ArgumentCaptor.forClass(GetCertificateRequestDTO.class);
 
             csIntegrationService.getCertificate(ID, GET_CERTIFICATE_REQUEST);
@@ -236,7 +241,7 @@ class CSIntegrationServiceTest {
         @Test
         void shouldReturnCertificate() {
             when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(CERTIFICATE);
+                .thenReturn(GET_RESPONSE);
             final var response = csIntegrationService.getCertificate(ID, GET_CERTIFICATE_REQUEST);
 
             assertEquals(CERTIFICATE, response);

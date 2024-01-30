@@ -29,6 +29,8 @@ import org.springframework.web.client.RestTemplate;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.csintegration.certificate.CertificateModelIdDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateExistsResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceCreateCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceGetCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateTypeExistsResponseDTO;
@@ -71,13 +73,25 @@ public class CSIntegrationService {
     public Certificate createCertificate(CreateCertificateRequestDTO request) {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL;
 
-        return restTemplate.postForObject(url, request, Certificate.class);
+        final var response = restTemplate.postForObject(url, request, CertificateServiceCreateCertificateResponseDTO.class);
+
+        if (response == null) {
+            return null;
+        }
+
+        return response.getCertificate();
     }
 
     public Certificate getCertificate(String certificateId, GetCertificateRequestDTO request) {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId;
 
-        return restTemplate.postForObject(url, request, Certificate.class);
+        final var response = restTemplate.postForObject(url, request, CertificateServiceGetCertificateResponseDTO.class);
+
+        if (response == null) {
+            return null;
+        }
+
+        return response.getCertificate();
     }
 
     public Optional<CertificateModelIdDTO> certificateTypeExists(String certificateType) {
