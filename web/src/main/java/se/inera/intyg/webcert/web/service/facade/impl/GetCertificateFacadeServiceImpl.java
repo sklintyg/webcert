@@ -38,7 +38,7 @@ import se.inera.intyg.webcert.web.service.facade.util.UtkastToCertificateConvert
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
-@Service
+@Service("GetCertificateFromWC")
 public class GetCertificateFacadeServiceImpl implements GetCertificateFacadeService {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetCertificateFacadeServiceImpl.class);

@@ -28,7 +28,7 @@ import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserHelpe
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 
-@Service
+@Service("GetCertificateFromCS")
 public class GetCertificateFromCertificateService implements GetCertificateFacadeService {
 
     private final CSIntegrationService csIntegrationService;
