@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.service.facade.CreateCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.impl.CreateCertificateException;
 
-@Service
+@Service("CreateCertificateAggregator")
 @Profile("certificate-service-active")
 public class CreateCertificateAggregator implements CreateCertificateFacadeService {
 

@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 
-@Service
+@Service("GetCertificateAggregator")
 @Profile("certificate-service-active")
 public class GetCertificateAggregator implements GetCertificateFacadeService {
 
