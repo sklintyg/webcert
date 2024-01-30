@@ -73,7 +73,7 @@ class CreateCertificateAggregatorTest {
     }
 
     @Test
-    void shouldReturnCertificateIdFromWCIfCSProfileIsNotActivated() throws CreateCertificateException {
+    void shouldReturnCertificateIdFromWCIfCSProfileIsNotActive() throws CreateCertificateException {
         when(createCertificateFromWC.create(TYPE, ORIGINAL_PATIENT_ID))
             .thenReturn(ID_FROM_WC);
 
@@ -82,6 +82,4 @@ class CreateCertificateAggregatorTest {
 
         assertEquals(ID_FROM_WC, response);
     }
-
-
 }

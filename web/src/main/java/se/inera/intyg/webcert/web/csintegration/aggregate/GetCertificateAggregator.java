@@ -24,7 +24,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 
 @Service
@@ -33,16 +32,13 @@ public class GetCertificateAggregator implements GetCertificateFacadeService {
 
     private final GetCertificateFacadeService getCertificateFromWC;
     private final GetCertificateFacadeService getCertificateFromCS;
-    private final CSIntegrationService csIntegrationService;
     private final Environment environment;
 
     public GetCertificateAggregator(
         @Qualifier("GetCertificateFromWC") GetCertificateFacadeService getCertificateFromWC,
-        @Qualifier("GetCertificateFromCS") GetCertificateFacadeService getCertificateFromCS,
-        CSIntegrationService csIntegrationService, Environment environment) {
+        @Qualifier("GetCertificateFromCS") GetCertificateFacadeService getCertificateFromCS, Environment environment) {
         this.getCertificateFromWC = getCertificateFromWC;
         this.getCertificateFromCS = getCertificateFromCS;
-        this.csIntegrationService = csIntegrationService;
         this.environment = environment;
     }
 
@@ -52,10 +48,10 @@ public class GetCertificateAggregator implements GetCertificateFacadeService {
             return getCertificateFromWC.getCertificate(certificateId, pdlLog, validateAccess);
         }
 
-        final var csHasCertificate = csIntegrationService.certificateExists(certificateId);
+        final var responseFromCS = getCertificateFromCS.getCertificate(certificateId, pdlLog, validateAccess);
 
-        return csHasCertificate
-            ? getCertificateFromCS.getCertificate(certificateId, pdlLog, validateAccess)
+        return responseFromCS != null
+            ? responseFromCS
             : getCertificateFromWC.getCertificate(certificateId, pdlLog, validateAccess);
     }
 }
