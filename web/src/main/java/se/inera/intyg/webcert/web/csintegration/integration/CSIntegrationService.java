@@ -38,7 +38,8 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoD
 @Service
 public class CSIntegrationService {
 
-    private static final String ENDPOINT_URL = "/api/certificate";
+    private static final String CERTIFICATE_ENDPOINT_URL = "/api/certificate";
+    private static final String CERTIFICATE_TYPE_INFO_ENDPOINT_URL = "/api/certificatetypeinfo";
     private final CertificateTypeInfoConverter certificateTypeInfoConverter;
 
     private final RestTemplate restTemplate;
@@ -53,7 +54,7 @@ public class CSIntegrationService {
     private String baseUrl;
 
     public List<CertificateTypeInfoDTO> getTypeInfo(CertificateServiceTypeInfoRequestDTO request) {
-        final var url = baseUrl + "/api/certificatetypeinfo";
+        final var url = baseUrl + CERTIFICATE_TYPE_INFO_ENDPOINT_URL;
         final var response = restTemplate.postForObject(url, request, CertificateServiceTypeInfoResponseDTO.class);
 
         if (response == null) {
@@ -67,19 +68,19 @@ public class CSIntegrationService {
     }
 
     public Certificate createCertificate(CreateCertificateRequestDTO request) {
-        final var url = baseUrl + ENDPOINT_URL;
+        final var url = baseUrl + CERTIFICATE_ENDPOINT_URL;
 
         return restTemplate.postForObject(url, request, Certificate.class);
     }
 
     public Certificate getCertificate(String certificateId, GetCertificateRequestDTO request) {
-        final var url = baseUrl + ENDPOINT_URL + "/" + certificateId;
+        final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId;
 
         return restTemplate.postForObject(url, request, Certificate.class);
     }
 
     public CertificateModelIdDTO certificateTypeExists(String certificateType) {
-        final var url = baseUrl + ENDPOINT_URL + "/type/" + certificateType + "/exists";
+        final var url = baseUrl + CERTIFICATE_TYPE_INFO_ENDPOINT_URL + "/" + certificateType + "/exists";
         final var response = restTemplate.getForObject(url, CertificateTypeExistsResponseDTO.class);
 
         if (response == null) {
@@ -90,7 +91,7 @@ public class CSIntegrationService {
     }
 
     public Boolean certificateExists(String certificateId) {
-        final var url = baseUrl + ENDPOINT_URL + "/" + certificateId + "/exists";
+        final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/exists";
 
         final var response = restTemplate.getForObject(url, CertificateExistsResponseDTO.class);
 

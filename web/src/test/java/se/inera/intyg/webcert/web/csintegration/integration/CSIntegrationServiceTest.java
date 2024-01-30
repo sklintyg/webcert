@@ -174,7 +174,7 @@ class CSIntegrationServiceTest {
                 csIntegrationService.certificateTypeExists("fk7211");
                 verify(restTemplate).getForObject(captor.capture(), any());
 
-                assertEquals("baseUrl/api/certificate/type/fk7211/exists", captor.getValue());
+                assertEquals("baseUrl/api/certificatetypeinfo/fk7211/exists", captor.getValue());
             }
         }
     }
