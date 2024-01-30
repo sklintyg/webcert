@@ -26,6 +26,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -70,6 +71,12 @@ class CSIntegrationServiceTest {
 
     @InjectMocks
     private CSIntegrationService csIntegrationService;
+
+    @Test
+    void shouldReturnEmptyListIfTypeInfoResponseIsNull() {
+        final var response = csIntegrationService.getTypeInfo(TYPE_INFO_REQUEST);
+        assertEquals(Collections.emptyList(), response);
+    }
 
     @Nested
     class TypeInfo {
