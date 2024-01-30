@@ -58,16 +58,17 @@ class PDLLogServiceTest {
     @InjectMocks
     PDLLogService pdlLogService;
 
-    @Nested
-    class Created {
+    @BeforeEach
+    void setup() {
+        when(webCertUserService.getUser())
+            .thenReturn(USER);
 
-        @BeforeEach
-        void setup() {
-            when(webCertUserService.getUser())
-                .thenReturn(USER);
-            when(logRequestFactory.createLogRequestFromUser(any(WebCertUser.class), anyString()))
-                .thenReturn(REQUEST);
-        }
+        when(logRequestFactory.createLogRequestFromUser(any(WebCertUser.class), anyString()))
+            .thenReturn(REQUEST);
+    }
+
+    @Nested
+    class Create {
 
         @Test
         void shouldCreateRequestUsingUser() {
@@ -97,6 +98,41 @@ class PDLLogServiceTest {
             pdlLogService.logCreated(PATIENT_ID);
 
             verify(logService).logCreateIntyg(captor.capture());
+            assertEquals(REQUEST, captor.getValue());
+        }
+    }
+
+    @Nested
+    class Read {
+
+        @Test
+        void shouldCreateRequestUsingUser() {
+            final var captor = ArgumentCaptor.forClass(WebCertUser.class);
+
+            pdlLogService.logRead(PATIENT_ID);
+
+            verify(logRequestFactory).createLogRequestFromUser(captor.capture(), anyString());
+            assertEquals(USER, captor.getValue());
+        }
+
+        @Test
+        void shouldCreateRequestUsingPatientId() {
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            pdlLogService.logRead(PATIENT_ID);
+
+            verify(logRequestFactory).createLogRequestFromUser(any(WebCertUser.class), captor.capture());
+            assertEquals(PATIENT_ID, captor.getValue());
+        }
+
+
+        @Test
+        void shouldLogUsingRequest() {
+            final var captor = ArgumentCaptor.forClass(LogRequest.class);
+
+            pdlLogService.logRead(PATIENT_ID);
+
+            verify(logService).logReadIntyg(captor.capture());
             assertEquals(REQUEST, captor.getValue());
         }
     }

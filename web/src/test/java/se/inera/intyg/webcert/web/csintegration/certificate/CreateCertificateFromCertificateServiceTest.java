@@ -62,8 +62,6 @@ class CreateCertificateFromCertificateServiceTest {
     private static final Personnummer PERSONNUMMER = Personnummer.createPersonnummer(PATIENT_ID).get();
     public static final String ID = "ID";
 
-    private static Certificate certificate;
-
     @Mock
     CertificateServiceUnitHelper certificateServiceUnitHelper;
 
@@ -124,7 +122,7 @@ class CreateCertificateFromCertificateServiceTest {
 
         @BeforeEach
         void setup() {
-            certificate = new Certificate();
+            Certificate certificate = new Certificate();
             final var metadata = CertificateMetadata.builder().id(ID).build();
             certificate.setMetadata(metadata);
 

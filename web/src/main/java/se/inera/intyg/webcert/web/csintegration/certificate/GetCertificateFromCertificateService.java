@@ -25,6 +25,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitHelper;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserHelper;
+import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 
 @Service
@@ -33,17 +34,27 @@ public class GetCertificateFromCertificateService implements GetCertificateFacad
     private final CSIntegrationService csIntegrationService;
     private final CertificateServiceUserHelper certificateServiceUserHelper;
     private final CertificateServiceUnitHelper certificateServiceUnitHelper;
+    private final PDLLogService pdlLogService;
 
     public GetCertificateFromCertificateService(CSIntegrationService csIntegrationService,
-        CertificateServiceUserHelper certificateServiceUserHelper, CertificateServiceUnitHelper certificateServiceUnitHelper) {
+        CertificateServiceUserHelper certificateServiceUserHelper, CertificateServiceUnitHelper certificateServiceUnitHelper,
+        PDLLogService pdlLogService) {
         this.csIntegrationService = csIntegrationService;
         this.certificateServiceUserHelper = certificateServiceUserHelper;
         this.certificateServiceUnitHelper = certificateServiceUnitHelper;
+        this.pdlLogService = pdlLogService;
     }
 
     @Override
     public Certificate getCertificate(String certificateId, boolean pdlLog, boolean validateAccess) {
-        return csIntegrationService.getCertificate(certificateId, createRequest());
+        if (Boolean.FALSE.equals(csIntegrationService.certificateExists(certificateId))) {
+            return null;
+        }
+
+        final var response = csIntegrationService.getCertificate(certificateId, createRequest());
+        pdlLogService.logRead(response.getMetadata().getPatient().getPersonId().getId());
+
+        return response;
     }
 
     private GetCertificateRequestDTO createRequest() {

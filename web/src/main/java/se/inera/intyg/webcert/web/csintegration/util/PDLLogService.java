@@ -42,4 +42,10 @@ public class PDLLogService {
 
         logService.logCreateIntyg(request);
     }
+
+    public void logRead(String patientId) {
+        final var request = logRequestFactory.createLogRequestFromUser(webCertUserService.getUser(), patientId);
+
+        logService.logReadIntyg(request);
+    }
 }
