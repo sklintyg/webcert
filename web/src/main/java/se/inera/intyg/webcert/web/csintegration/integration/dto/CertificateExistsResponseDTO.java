@@ -23,6 +23,10 @@ public class CertificateExistsResponseDTO {
 
     private Boolean exists;
 
+    public CertificateExistsResponseDTO() {
+
+    }
+
     public Boolean getExists() {
         return exists;
     }

@@ -25,6 +25,10 @@ public class CertificateTypeExistsResponseDTO {
 
     private CertificateModelIdDTO id;
 
+    public CertificateTypeExistsResponseDTO() {
+
+    }
+
     public CertificateModelIdDTO getId() {
         return id;
     }
