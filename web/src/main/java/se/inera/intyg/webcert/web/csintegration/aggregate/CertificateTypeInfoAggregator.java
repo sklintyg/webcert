@@ -51,7 +51,7 @@ public class CertificateTypeInfoAggregator implements GetCertificateTypesFacadeS
     public List<CertificateTypeInfoDTO> get(Personnummer patientId) {
         final var typesFromWebcert = getCertificateTypeInfoFromWebcert.get(patientId);
 
-        if (environment.matchesProfiles("certificate-service-active")) {
+        if (!environment.matchesProfiles("certificate-service-active")) {
             return typesFromWebcert;
         }
 

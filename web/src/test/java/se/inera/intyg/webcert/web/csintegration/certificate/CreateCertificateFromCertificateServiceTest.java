@@ -61,7 +61,7 @@ class CreateCertificateFromCertificateServiceTest {
     private static final CertificateModelIdDTO EXISTS_RESPONSE = new CertificateModelIdDTO(TYPE, VERSION);
     private static final String PATIENT_ID = "191212121212";
     private static final Personnummer PERSONNUMMER = Personnummer.createPersonnummer(PATIENT_ID).get();
-    public static final String ID = "ID";
+    private static final String ID = "ID";
 
     @Mock
     CertificateServiceUnitHelper certificateServiceUnitHelper;
@@ -115,7 +115,7 @@ class CreateCertificateFromCertificateServiceTest {
     void shouldNotPerformPDLLogIfTypeWasNotCreatedFromCS() throws CreateCertificateException {
         createCertificateFromCertificateService.create(TYPE, PATIENT_ID);
 
-        verify(pdlLogService, times(0)).logCreated(PATIENT_ID);
+        verify(pdlLogService, times(0)).logCreated(PATIENT_ID, ID);
     }
 
     @Nested
@@ -144,7 +144,7 @@ class CreateCertificateFromCertificateServiceTest {
         void shouldPerformPDLForCreateCertificate() throws CreateCertificateException {
             createCertificateFromCertificateService.create(TYPE, PATIENT_ID);
 
-            verify(pdlLogService, times(1)).logCreated(PATIENT_ID);
+            verify(pdlLogService, times(1)).logCreated(PATIENT_ID, ID);
         }
 
         @Nested

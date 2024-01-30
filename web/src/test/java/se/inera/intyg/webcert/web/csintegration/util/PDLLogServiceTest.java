@@ -45,6 +45,7 @@ class PDLLogServiceTest {
     private static final LogRequest REQUEST = new LogRequest();
     private static final WebCertUser USER = new WebCertUser();
     private static final String PATIENT_ID = "191212121212";
+    private static final String CERTIFICATE_ID = "ID";
 
     @Mock
     LogService logService;
@@ -74,7 +75,7 @@ class PDLLogServiceTest {
         void shouldCreateRequestUsingUser() {
             final var captor = ArgumentCaptor.forClass(WebCertUser.class);
 
-            pdlLogService.logCreated(PATIENT_ID);
+            pdlLogService.logCreated(PATIENT_ID, CERTIFICATE_ID);
 
             verify(logRequestFactory).createLogRequestFromUser(captor.capture(), anyString());
             assertEquals(USER, captor.getValue());
@@ -84,10 +85,20 @@ class PDLLogServiceTest {
         void shouldCreateRequestUsingPatientId() {
             final var captor = ArgumentCaptor.forClass(String.class);
 
-            pdlLogService.logCreated(PATIENT_ID);
+            pdlLogService.logCreated(PATIENT_ID, CERTIFICATE_ID);
 
             verify(logRequestFactory).createLogRequestFromUser(any(WebCertUser.class), captor.capture());
             assertEquals(PATIENT_ID, captor.getValue());
+        }
+
+        @Test
+        void shouldCreateRequestUsingCertificateId() {
+            final var captor = ArgumentCaptor.forClass(LogRequest.class);
+
+            pdlLogService.logCreated(PATIENT_ID, CERTIFICATE_ID);
+
+            verify(logService).logCreateIntyg(captor.capture());
+            assertEquals(CERTIFICATE_ID, captor.getValue().getIntygId());
         }
 
 
@@ -95,7 +106,7 @@ class PDLLogServiceTest {
         void shouldLogUsingRequest() {
             final var captor = ArgumentCaptor.forClass(LogRequest.class);
 
-            pdlLogService.logCreated(PATIENT_ID);
+            pdlLogService.logCreated(PATIENT_ID, CERTIFICATE_ID);
 
             verify(logService).logCreateIntyg(captor.capture());
             assertEquals(REQUEST, captor.getValue());
@@ -109,7 +120,7 @@ class PDLLogServiceTest {
         void shouldCreateRequestUsingUser() {
             final var captor = ArgumentCaptor.forClass(WebCertUser.class);
 
-            pdlLogService.logRead(PATIENT_ID);
+            pdlLogService.logRead(PATIENT_ID, CERTIFICATE_ID);
 
             verify(logRequestFactory).createLogRequestFromUser(captor.capture(), anyString());
             assertEquals(USER, captor.getValue());
@@ -119,10 +130,20 @@ class PDLLogServiceTest {
         void shouldCreateRequestUsingPatientId() {
             final var captor = ArgumentCaptor.forClass(String.class);
 
-            pdlLogService.logRead(PATIENT_ID);
+            pdlLogService.logRead(PATIENT_ID, CERTIFICATE_ID);
 
             verify(logRequestFactory).createLogRequestFromUser(any(WebCertUser.class), captor.capture());
             assertEquals(PATIENT_ID, captor.getValue());
+        }
+
+        @Test
+        void shouldCreateRequestUsingCertificateId() {
+            final var captor = ArgumentCaptor.forClass(LogRequest.class);
+
+            pdlLogService.logRead(PATIENT_ID, CERTIFICATE_ID);
+
+            verify(logService).logReadIntyg(captor.capture());
+            assertEquals(CERTIFICATE_ID, captor.getValue().getIntygId());
         }
 
 
@@ -130,7 +151,7 @@ class PDLLogServiceTest {
         void shouldLogUsingRequest() {
             final var captor = ArgumentCaptor.forClass(LogRequest.class);
 
-            pdlLogService.logRead(PATIENT_ID);
+            pdlLogService.logRead(PATIENT_ID, CERTIFICATE_ID);
 
             verify(logService).logReadIntyg(captor.capture());
             assertEquals(REQUEST, captor.getValue());

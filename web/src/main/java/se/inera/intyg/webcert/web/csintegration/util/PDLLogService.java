@@ -37,14 +37,16 @@ public class PDLLogService {
         this.webCertUserService = webCertUserService;
     }
 
-    public void logCreated(String patientId) {
+    public void logCreated(String patientId, String certificateId) {
         final var request = logRequestFactory.createLogRequestFromUser(webCertUserService.getUser(), patientId);
+        request.setIntygId(certificateId);
 
         logService.logCreateIntyg(request);
     }
 
-    public void logRead(String patientId) {
+    public void logRead(String patientId, String certificateId) {
         final var request = logRequestFactory.createLogRequestFromUser(webCertUserService.getUser(), patientId);
+        request.setIntygId(certificateId);
 
         logService.logReadIntyg(request);
     }

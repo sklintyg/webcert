@@ -61,7 +61,10 @@ public class GetCertificateFromCertificateService implements GetCertificateFacad
         LOG.info("Certificate with id '{}' was retrieved from certificate service", certificateId);
 
         if (pdlLog) {
-            pdlLogService.logRead(response.getMetadata().getPatient().getPersonId().getId());
+            pdlLogService.logRead(
+                response.getMetadata().getPatient().getPersonId().getId(),
+                response.getMetadata().getId()
+            );
         }
 
         return response;

@@ -70,7 +70,7 @@ public class CreateCertificateFromCertificateService implements CreateCertificat
             throw new CreateCertificateException("Could not create certificate, received null");
         }
 
-        pdlLogService.logCreated(patientId);
+        pdlLogService.logCreated(patientId, response.getMetadata().getId());
         LOG.info("Created certificate using certificate service of type '{}' and version '{}'",
             modelId.get().getType(),
             modelId.get().getVersion()

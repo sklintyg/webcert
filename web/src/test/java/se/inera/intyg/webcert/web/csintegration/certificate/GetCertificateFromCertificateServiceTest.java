@@ -83,7 +83,7 @@ class GetCertificateFromCertificateServiceTest {
     void shouldNotPerformPDLLogIfTypeWasNotRetrievedFromCS() {
         getCertificateFromCertificateService.getCertificate(ID, true, true);
 
-        verify(pdlLogService, times(0)).logRead(PATIENT_ID);
+        verify(pdlLogService, times(0)).logRead(PATIENT_ID, ID);
     }
 
     @Nested
@@ -123,14 +123,14 @@ class GetCertificateFromCertificateServiceTest {
         void shouldPerformPDLForCreateCertificateUsingPatientIdFromResponse() {
             getCertificateFromCertificateService.getCertificate(ID, true, true);
 
-            verify(pdlLogService, times(1)).logRead(PATIENT_ID);
+            verify(pdlLogService, times(1)).logRead(PATIENT_ID, ID);
         }
 
         @Test
         void shouldNotPerformPDLIfBooleanIsFalse() {
             getCertificateFromCertificateService.getCertificate(ID, false, true);
 
-            verify(pdlLogService, times(0)).logRead(PATIENT_ID);
+            verify(pdlLogService, times(0)).logRead(PATIENT_ID, ID);
         }
 
         @Nested

@@ -42,7 +42,7 @@ public class GetCertificateAggregator implements GetCertificateFacadeService {
 
     @Override
     public Certificate getCertificate(String certificateId, boolean pdlLog, boolean validateAccess) {
-        if (environment.matchesProfiles("certificate-service-active")) {
+        if (!environment.matchesProfiles("certificate-service-active")) {
             return getCertificateFromWC.getCertificate(certificateId, pdlLog, validateAccess);
         }
 
