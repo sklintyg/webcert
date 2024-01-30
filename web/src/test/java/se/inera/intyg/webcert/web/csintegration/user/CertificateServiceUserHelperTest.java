@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.certificateservice.user;
+package se.inera.intyg.webcert.web.csintegration.user;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -37,8 +37,6 @@ import se.inera.intyg.common.support.facade.model.user.User;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserHelper;
-import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserRole;
 import se.inera.intyg.webcert.web.service.facade.user.UserService;
 import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionInfo;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;

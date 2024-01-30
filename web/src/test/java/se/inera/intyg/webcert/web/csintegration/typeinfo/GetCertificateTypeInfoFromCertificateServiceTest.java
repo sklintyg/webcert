@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.certificateservice.typeinfo;
+package se.inera.intyg.webcert.web.csintegration.typeinfo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
