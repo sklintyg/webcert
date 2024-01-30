@@ -19,6 +19,8 @@
 
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
@@ -30,6 +32,8 @@ import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 
 @Service("GetCertificateFromCS")
 public class GetCertificateFromCertificateService implements GetCertificateFacadeService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(GetCertificateFromCertificateService.class);
 
     private final CSIntegrationService csIntegrationService;
     private final CertificateServiceUserHelper certificateServiceUserHelper;
@@ -48,11 +52,17 @@ public class GetCertificateFromCertificateService implements GetCertificateFacad
     @Override
     public Certificate getCertificate(String certificateId, boolean pdlLog, boolean validateAccess) {
         if (Boolean.FALSE.equals(csIntegrationService.certificateExists(certificateId))) {
+            LOG.info("Certificate with id '{}' does not exist in certificate service", certificateId);
             return null;
         }
 
+        LOG.info("Getting certificate from certificate service with id '{}'", certificateId);
         final var response = csIntegrationService.getCertificate(certificateId, createRequest());
-        pdlLogService.logRead(response.getMetadata().getPatient().getPersonId().getId());
+        LOG.info("Certificate with id '{}' was retrieved from certificate service", certificateId);
+
+        if (pdlLog) {
+            pdlLogService.logRead(response.getMetadata().getPatient().getPersonId().getId());
+        }
 
         return response;
     }

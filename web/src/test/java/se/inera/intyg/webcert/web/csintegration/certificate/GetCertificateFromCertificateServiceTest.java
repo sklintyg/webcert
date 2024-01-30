@@ -126,6 +126,13 @@ class GetCertificateFromCertificateServiceTest {
             verify(pdlLogService, times(1)).logRead(PATIENT_ID);
         }
 
+        @Test
+        void shouldNotPerformPDLIfBooleanIsFalse() {
+            getCertificateFromCertificateService.getCertificate(ID, false, true);
+
+            verify(pdlLogService, times(0)).logRead(PATIENT_ID);
+        }
+
         @Nested
         class Request {
 
