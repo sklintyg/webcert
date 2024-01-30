@@ -94,7 +94,6 @@ class CSIntegrationServiceTest {
             final var response = csIntegrationService.getTypeInfo(TYPE_INFO_REQUEST);
             assertTrue(response.contains(CONVERTED_TYPE_INFO));
         }
-
     }
 
     @Nested
