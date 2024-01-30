@@ -222,7 +222,7 @@ class CreateCertificateFromCertificateServiceTest {
                 createCertificateFromCertificateService.create(TYPE, PATIENT_ID);
                 verify(csIntegrationService).createCertificate(captor.capture());
 
-                assertEquals(TYPE, captor.getValue().getCertificateModelIdDTO().getType());
+                assertEquals(TYPE, captor.getValue().getCertificateModelId().getType());
             }
 
             @Test
@@ -232,7 +232,7 @@ class CreateCertificateFromCertificateServiceTest {
                 createCertificateFromCertificateService.create(TYPE, PATIENT_ID);
                 verify(csIntegrationService).createCertificate(captor.capture());
 
-                assertEquals(VERSION, captor.getValue().getCertificateModelIdDTO().getVersion());
+                assertEquals(VERSION, captor.getValue().getCertificateModelId().getVersion());
             }
         }
     }

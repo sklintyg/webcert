@@ -87,7 +87,7 @@ public class CreateCertificateFromCertificateService implements CreateCertificat
         request.setCareProvider(certificateServiceUnitHelper.getCareProvider());
         request.setPatient(certificateServicePatientHelper.get(createPatientId(patientId)));
         request.setUser(certificateServiceUserHelper.get());
-        request.setCertificateModelIdDTO(modelId);
+        request.setCertificateModelId(modelId);
 
         return request;
     }

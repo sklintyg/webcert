@@ -34,7 +34,7 @@ public class CreateCertificateRequestDTO {
     private CertificateServiceUnitDTO careUnit;
     private CertificateServiceUnitDTO careProvider;
 
-    private CertificateModelIdDTO certificateModelIdDTO;
+    private CertificateModelIdDTO certificateModelId;
 
     public CertificateServiceUserDTO getUser() {
         return user;
@@ -76,11 +76,11 @@ public class CreateCertificateRequestDTO {
         this.careProvider = careProvider;
     }
 
-    public CertificateModelIdDTO getCertificateModelIdDTO() {
-        return certificateModelIdDTO;
+    public CertificateModelIdDTO getCertificateModelId() {
+        return certificateModelId;
     }
 
-    public void setCertificateModelIdDTO(CertificateModelIdDTO certificateModelIdDTO) {
-        this.certificateModelIdDTO = certificateModelIdDTO;
+    public void setCertificateModelId(CertificateModelIdDTO certificateModelId) {
+        this.certificateModelId = certificateModelId;
     }
 }

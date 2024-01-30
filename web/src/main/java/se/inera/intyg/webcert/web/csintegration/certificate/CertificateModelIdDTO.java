@@ -24,6 +24,9 @@ public class CertificateModelIdDTO {
     private String type;
     private String version;
 
+    public CertificateModelIdDTO() {
+    }
+
     public CertificateModelIdDTO(String type, String version) {
         this.type = type;
         this.version = version;
