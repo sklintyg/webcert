@@ -37,6 +37,7 @@ import javax.ws.rs.core.Response.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.RequestBody;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
@@ -87,6 +88,7 @@ public class CertificateController {
     private static final String UTF_8_CHARSET = ";charset=utf-8";
 
     @Autowired
+    @Qualifier("GetCertificateAggregator")
     private GetCertificateFacadeService getCertificateFacadeService;
     @Autowired
     private SaveCertificateFacadeService saveCertificateFacadeService;
@@ -121,6 +123,7 @@ public class CertificateController {
     @Autowired
     private CreateCertificateFromCandidateFacadeService createCertificateFromCandidateFacadeService;
     @Autowired
+    @Qualifier("CreateCertificateAggregator")
     private CreateCertificateFacadeService createCertificateFacadeService;
 
     @Autowired

@@ -17,27 +17,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.csintegration.integration;
+package se.inera.intyg.webcert.web.csintegration.certificate;
 
-import java.util.List;
-import se.inera.intyg.webcert.web.csintegration.dto.CertificateServiceTypeInfoDTO;
+public class CertificateModelIdDTO {
 
-public class CertificateServiceTypeInfoResponseDTO {
+    private String type;
+    private String version;
 
-    private List<CertificateServiceTypeInfoDTO> list;
-
-    public CertificateServiceTypeInfoResponseDTO() {
+    public CertificateModelIdDTO() {
     }
 
-    public CertificateServiceTypeInfoResponseDTO(List<CertificateServiceTypeInfoDTO> list) {
-        this.list = list;
+    public CertificateModelIdDTO(String type, String version) {
+        this.type = type;
+        this.version = version;
     }
 
-    public List<CertificateServiceTypeInfoDTO> getList() {
-        return list;
+    public String getType() {
+        return type;
     }
 
-    public void setList(List<CertificateServiceTypeInfoDTO> list) {
-        this.list = list;
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 }

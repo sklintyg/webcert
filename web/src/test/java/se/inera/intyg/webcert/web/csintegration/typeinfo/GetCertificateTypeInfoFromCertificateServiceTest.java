@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.certificateservice.typeinfo;
+package se.inera.intyg.webcert.web.csintegration.typeinfo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -34,11 +34,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.web.csintegration.dto.CertificateServiceTypeInfoRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.certificate.GetCertificateTypeInfoFromCertificateService;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientDTO;
 import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientHelper;
-import se.inera.intyg.webcert.web.csintegration.typeinfo.GetCertificateTypeInfoFromCertificateService;
 import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitDTO;
 import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitHelper;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserDTO;
@@ -49,7 +49,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoD
 class GetCertificateTypeInfoFromCertificateServiceTest {
 
     private static final Personnummer PATIENT_ID = Personnummer.createPersonnummer("191212121212").get();
-    private static final List<CertificateTypeInfoDTO> types = List.of(new CertificateTypeInfoDTO());
+    private static final List<CertificateTypeInfoDTO> TYPES = List.of(new CertificateTypeInfoDTO());
     private static final CertificateServiceUserDTO USER = new CertificateServiceUserDTO();
 
     private static final CertificateServicePatientDTO PATIENT = new CertificateServicePatientDTO();
@@ -74,7 +74,7 @@ class GetCertificateTypeInfoFromCertificateServiceTest {
     @BeforeEach
     void setup() {
         when(csIntegrationService.getTypeInfo(any()))
-            .thenReturn(types);
+            .thenReturn(TYPES);
     }
 
     @Nested
@@ -145,6 +145,6 @@ class GetCertificateTypeInfoFromCertificateServiceTest {
     void shouldReturnListOfTypesFromCSInternalApi() {
         final var response = getCertificateTypeInfoFromCertificateService.get(PATIENT_ID);
 
-        assertEquals(types, response);
+        assertEquals(TYPES, response);
     }
 }

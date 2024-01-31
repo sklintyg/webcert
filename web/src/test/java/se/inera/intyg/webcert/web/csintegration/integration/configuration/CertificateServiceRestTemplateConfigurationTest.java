@@ -16,11 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.facade.impl;
 
-public class CreateCertificateException extends Exception {
+package se.inera.intyg.webcert.web.csintegration.integration.configuration;
 
-    public CreateCertificateException(String message) {
-        super(message);
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
+import org.junit.jupiter.api.Test;
+
+class CertificateServiceRestTemplateConfigurationTest {
+
+    @Test
+    void shouldBeCreatedWithoutProblems() {
+        final var config = new CertificateServiceRestTemplateConfiguration();
+
+        assertDoesNotThrow(config::csRestTemplate);
     }
+
 }

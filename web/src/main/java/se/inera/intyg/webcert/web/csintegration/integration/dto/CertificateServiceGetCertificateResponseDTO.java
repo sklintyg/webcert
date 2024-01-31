@@ -16,11 +16,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.facade.impl;
 
-public class CreateCertificateException extends Exception {
+package se.inera.intyg.webcert.web.csintegration.integration.dto;
 
-    public CreateCertificateException(String message) {
-        super(message);
+import se.inera.intyg.common.support.facade.model.Certificate;
+
+public class CertificateServiceGetCertificateResponseDTO {
+
+    private Certificate certificate;
+
+    public CertificateServiceGetCertificateResponseDTO() {
+    }
+
+    public CertificateServiceGetCertificateResponseDTO(Certificate certificate) {
+        this.certificate = certificate;
+    }
+
+    public Certificate getCertificate() {
+        return certificate;
+    }
+
+    public void setCertificate(Certificate certificate) {
+        this.certificate = certificate;
     }
 }

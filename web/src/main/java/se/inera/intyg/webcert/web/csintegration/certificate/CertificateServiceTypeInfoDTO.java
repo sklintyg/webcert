@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.csintegration.dto;
+package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import java.util.List;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
