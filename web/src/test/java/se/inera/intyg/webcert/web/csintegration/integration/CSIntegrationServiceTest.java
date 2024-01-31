@@ -61,11 +61,11 @@ class CSIntegrationServiceTest {
     private static final CertificateServiceTypeInfoResponseDTO TYPE_INFO_RESPONSE = new CertificateServiceTypeInfoResponseDTO(TYPE_INFOS);
     private static final Certificate CERTIFICATE = new Certificate();
     private static final CreateCertificateRequestDTO CREATE_CERTIFICATE_REQUEST = new CreateCertificateRequestDTO();
-    private static final CertificateServiceCreateCertificateResponseDTO CREATE_RESPONSE = new CertificateServiceCreateCertificateResponseDTO(
-        CERTIFICATE);
+    private static final CertificateServiceCreateCertificateResponseDTO CREATE_RESPONSE =
+        new CertificateServiceCreateCertificateResponseDTO(CERTIFICATE);
     private static final GetCertificateRequestDTO GET_CERTIFICATE_REQUEST = new GetCertificateRequestDTO();
-    private static final CertificateServiceGetCertificateResponseDTO GET_RESPONSE = new CertificateServiceGetCertificateResponseDTO(
-        CERTIFICATE);
+    private static final CertificateServiceGetCertificateResponseDTO GET_RESPONSE =
+        new CertificateServiceGetCertificateResponseDTO(CERTIFICATE);
     private static final String ID = "ID";
 
     @Mock
