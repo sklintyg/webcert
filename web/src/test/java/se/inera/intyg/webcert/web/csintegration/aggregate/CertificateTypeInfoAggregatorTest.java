@@ -50,6 +50,8 @@ class CertificateTypeInfoAggregatorTest {
 
     @BeforeEach
     void setup() {
+        infoFromCS.setLabel("infoFromCS");
+        infoFromWC.setLabel("infoFromWC");
         getCertificateTypeInfoFromCertificateService = mock(GetCertificateTypesFacadeService.class);
         getCertificateTypeInfoFromWebcert = mock(GetCertificateTypesFacadeService.class);
         environment = mock(Environment.class);
@@ -76,6 +78,28 @@ class CertificateTypeInfoAggregatorTest {
         assertEquals(2, response.size());
         assertTrue(response.contains(infoFromCS));
         assertTrue(response.contains(infoFromWC));
+    }
+
+    @Test
+    void shouldSortElementsInAlphabeticalOrderBasedOnLabel() {
+        when(environment.matchesProfiles("certificate-service-active"))
+            .thenReturn(true);
+        final var infoA = new CertificateTypeInfoDTO();
+        infoA.setLabel("A");
+        final var infoB = new CertificateTypeInfoDTO();
+        infoB.setLabel("BBB");
+        final var infoC = new CertificateTypeInfoDTO();
+        infoC.setLabel("CC");
+        when(getCertificateTypeInfoFromCertificateService.get(PATIENT_ID))
+            .thenReturn(List.of(infoA, infoC));
+        when(getCertificateTypeInfoFromWebcert.get(PATIENT_ID))
+            .thenReturn(List.of(infoB));
+
+        final var response = certificateTypeInfoAggregator.get(PATIENT_ID);
+
+        assertEquals(infoA, response.get(0));
+        assertEquals(infoB, response.get(1));
+        assertEquals(infoC, response.get(2));
     }
 
     @Test

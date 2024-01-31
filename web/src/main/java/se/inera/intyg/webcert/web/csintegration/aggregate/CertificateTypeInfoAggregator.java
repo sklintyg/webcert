@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -62,6 +63,7 @@ public class CertificateTypeInfoAggregator implements GetCertificateTypesFacadeS
                 typesFromWebcert.stream(),
                 typesFromCertificateService.stream()
             )
+            .sorted(Comparator.comparing(CertificateTypeInfoDTO::getLabel))
             .collect(Collectors.toList());
     }
 }
