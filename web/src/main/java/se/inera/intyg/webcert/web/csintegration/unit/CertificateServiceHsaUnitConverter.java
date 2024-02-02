@@ -43,7 +43,7 @@ public class CertificateServiceHsaUnitConverter {
         return !unit.getPostalAddress().isEmpty() && unit.getPostalAddress().size() > 1;
     }
 
-    public static boolean isActive(LocalDateTime fromDate, LocalDateTime toDate) {
+    private static boolean isActive(LocalDateTime fromDate, LocalDateTime toDate) {
         final var now = LocalDateTime.now();
         final var alwaysActive = fromDate == null && toDate == null;
 
