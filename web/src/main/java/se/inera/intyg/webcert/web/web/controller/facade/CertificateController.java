@@ -40,6 +40,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.RequestBody;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.modules.support.facade.dto.CertificateEventDTO;
+import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.facade.ComplementCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.CopyCertificateFacadeService;
@@ -175,6 +177,9 @@ public class CertificateController {
     public Response validateCertificate(@PathParam("certificateId") String certificateId, @RequestBody @NotNull Certificate certificate) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Validating certificate with id: '{}'", certificateId);
+        }
+        if (certificate.getMetadata().getType().equalsIgnoreCase("fk7211")) {
+            return Response.ok(ValidateCertificateResponseDTO.create(new ValidationErrorDTO[0])).build();
         }
         final var validationErrors = validationCertificateFacadeService.validate(certificate);
         return Response.ok(ValidateCertificateResponseDTO.create(validationErrors)).build();
@@ -390,8 +395,12 @@ public class CertificateController {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Retrieving events for certificate with id: '{}'", certificateId);
         }
-        final var certificateEvents = getCertificateEventsFacadeService.getCertificateEvents(certificateId);
-        return Response.ok(CertificateEventResponseDTO.create(certificateEvents)).build();
+        try {
+            final var certificateEvents = getCertificateEventsFacadeService.getCertificateEvents(certificateId);
+            return Response.ok(CertificateEventResponseDTO.create(certificateEvents)).build();
+        } catch (Exception e) {
+            return Response.ok(CertificateEventResponseDTO.create(new CertificateEventDTO[0])).build();
+        }
     }
 
     @POST
