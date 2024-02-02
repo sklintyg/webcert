@@ -30,12 +30,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.facade.model.user.User;
+import se.inera.intyg.infra.integration.hsatk.services.HsatkOrganizationService;
 import se.inera.intyg.webcert.web.service.facade.user.UserService;
 
 @ExtendWith(MockitoExtension.class)
 class CertificateServiceUnitHelperTest {
 
     private static final Unit unit = Unit.builder().build();
+    private static final se.inera.intyg.infra.integration.hsatk.model.Unit hsaUnit = new se.inera.intyg.infra.integration.hsatk.model.Unit();
     private static final Unit careUnit = Unit.builder().build();
     private static final Unit careProvider = Unit.builder().build();
     private static final User user = User.builder()
@@ -52,6 +54,11 @@ class CertificateServiceUnitHelperTest {
     @Mock
     CertificateServiceUnitConverter certificateServiceUnitConverter;
 
+    @Mock
+    HsatkOrganizationService hsatkOrganizationService;
+    @Mock
+    CertificateServiceHsaUnitConverter certificateServiceHsaUnitConverter;
+
     @InjectMocks
     CertificateServiceUnitHelper certificateServiceUnitHelper;
 
@@ -63,7 +70,9 @@ class CertificateServiceUnitHelperTest {
 
     @Test
     void shouldReturnConvertedUnit() {
-        when(certificateServiceUnitConverter.convert(unit))
+        when(hsatkOrganizationService.getUnit(user.getLoggedInUnit().getUnitId(), null))
+            .thenReturn(hsaUnit);
+        when(certificateServiceHsaUnitConverter.convert(hsaUnit))
             .thenReturn(convertedUnit);
         final var response = certificateServiceUnitHelper.getUnit();
 
