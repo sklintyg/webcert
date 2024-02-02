@@ -22,6 +22,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -36,11 +38,13 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServi
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateTypeExistsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
+import se.inera.intyg.webcert.web.service.facade.impl.CreateCertificateException;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
 @Service
 public class CSIntegrationService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(CSIntegrationService.class);
     private static final String CERTIFICATE_ENDPOINT_URL = "/api/certificate";
     private static final String CERTIFICATE_TYPE_INFO_ENDPOINT_URL = "/api/certificatetypeinfo";
     private final CertificateTypeInfoConverter certificateTypeInfoConverter;
@@ -70,16 +74,23 @@ public class CSIntegrationService {
             .collect(Collectors.toList());
     }
 
-    public Certificate createCertificate(CreateCertificateRequestDTO request) {
+    public Certificate createCertificate(CreateCertificateRequestDTO request) throws CreateCertificateException {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL;
 
-        final var response = restTemplate.postForObject(url, request, CertificateServiceCreateCertificateResponseDTO.class);
+        try {
+            final var response = restTemplate.postForObject(url, request, CertificateServiceCreateCertificateResponseDTO.class);
 
-        if (response == null) {
-            return null;
+            if (response == null) {
+                return null;
+            }
+
+            return response.getCertificate();
+        } catch (Exception exception) {
+            LOG.error(
+                "Error with communication with certificate-service with reason '{}'", exception.getMessage(), exception
+            );
+            throw new CreateCertificateException("Could not create certificate");
         }
-
-        return response.getCertificate();
     }
 
     public Certificate getCertificate(String certificateId, GetCertificateRequestDTO request) {

@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.web.csintegration.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -49,6 +50,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServi
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateTypeExistsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
+import se.inera.intyg.webcert.web.service.facade.impl.CreateCertificateException;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
 @ExtendWith(MockitoExtension.class)
@@ -124,7 +126,16 @@ class CSIntegrationServiceTest {
     class CreateCertificate {
 
         @Test
-        void shouldPreformPostUsingRequest() {
+        void shouldThrowCreateCertificateExceptionIfExceptionFromCertificateService() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenThrow(IllegalStateException.class);
+            assertThrows(
+                CreateCertificateException.class,
+                () -> csIntegrationService.createCertificate(CREATE_CERTIFICATE_REQUEST));
+        }
+
+        @Test
+        void shouldPreformPostUsingRequest() throws CreateCertificateException {
             when(restTemplate.postForObject(anyString(), any(), any()))
                 .thenReturn(CREATE_RESPONSE);
             final var captor = ArgumentCaptor.forClass(CreateCertificateRequestDTO.class);
@@ -136,7 +147,7 @@ class CSIntegrationServiceTest {
         }
 
         @Test
-        void shouldReturnCertificate() {
+        void shouldReturnCertificate() throws CreateCertificateException {
             when(restTemplate.postForObject(anyString(), any(), any()))
                 .thenReturn(CREATE_RESPONSE);
             final var response = csIntegrationService.createCertificate(CREATE_CERTIFICATE_REQUEST);
@@ -145,7 +156,7 @@ class CSIntegrationServiceTest {
         }
 
         @Test
-        void shouldSetUrlCorrect() {
+        void shouldSetUrlCorrect() throws CreateCertificateException {
             ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
             final var captor = ArgumentCaptor.forClass(String.class);
 
@@ -168,7 +179,7 @@ class CSIntegrationServiceTest {
 
                 final var response = csIntegrationService.certificateTypeExists("type");
 
-                assertEquals(expectedResponse.getCertificateModelId(), response.get());
+                assertEquals(expectedResponse.getCertificateModelId(), response.orElse(null));
             }
 
             @Test
