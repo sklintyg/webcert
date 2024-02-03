@@ -24,9 +24,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateTypesFacadeService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
@@ -35,24 +35,24 @@ public class CertificateTypeInfoAggregator implements GetCertificateTypesFacadeS
 
     private final GetCertificateTypesFacadeService getCertificateTypeInfoFromWebcert;
     private final GetCertificateTypesFacadeService getCertificateTypeInfoFromCertificateService;
-    private final Environment environment;
+    private final CertificateServiceProfile certificateServiceProfile;
 
     public CertificateTypeInfoAggregator(
         @Qualifier("getCertificateTypeInfoFromWebcert")
         GetCertificateTypesFacadeService getCertificateTypeInfoFromWebcert,
         @Qualifier("getCertificateTypeInfoFromCertificateService")
         GetCertificateTypesFacadeService getCertificateTypeInfoFromCertificateService,
-        Environment environment) {
+        CertificateServiceProfile certificateServiceProfile) {
         this.getCertificateTypeInfoFromWebcert = getCertificateTypeInfoFromWebcert;
         this.getCertificateTypeInfoFromCertificateService = getCertificateTypeInfoFromCertificateService;
-        this.environment = environment;
+        this.certificateServiceProfile = certificateServiceProfile;
     }
 
     @Override
     public List<CertificateTypeInfoDTO> get(Personnummer patientId) {
         final var typesFromWebcert = getCertificateTypeInfoFromWebcert.get(patientId);
 
-        if (!environment.matchesProfiles("certificate-service-active")) {
+        if (!certificateServiceProfile.active()) {
             return typesFromWebcert;
         }
 

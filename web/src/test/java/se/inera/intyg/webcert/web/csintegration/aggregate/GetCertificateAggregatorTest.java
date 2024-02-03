@@ -29,8 +29,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.core.env.Environment;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,25 +42,25 @@ class GetCertificateAggregatorTest {
 
     GetCertificateFacadeService getCertificateFromWC;
     GetCertificateFacadeService getCertificateFromCS;
-    Environment environment;
+    CertificateServiceProfile certificateServiceProfile;
     GetCertificateFacadeService aggregator;
 
     @BeforeEach
     void setup() {
         getCertificateFromWC = mock(GetCertificateFacadeService.class);
         getCertificateFromCS = mock(GetCertificateFacadeService.class);
-        environment = mock(Environment.class);
+        certificateServiceProfile = mock(CertificateServiceProfile.class);
 
         aggregator = new GetCertificateAggregator(
             getCertificateFromWC,
             getCertificateFromCS,
-            environment
+            certificateServiceProfile
         );
     }
 
     @Test
     void shouldReturnCertificateFromCSIIfCSProfileIsActiveAndCertificateExistsInCS() {
-        when(environment.matchesProfiles("certificate-service-active"))
+        when(certificateServiceProfile.active())
             .thenReturn(true);
         when(getCertificateFromCS.getCertificate(ID, false, true))
             .thenReturn(CERTIFICATE_FROM_CS);
@@ -73,7 +73,7 @@ class GetCertificateAggregatorTest {
 
     @Test
     void shouldReturnCertificateFromWCIfCertificateDoesNotExistInCS() {
-        when(environment.matchesProfiles("certificate-service-active"))
+        when(certificateServiceProfile.active())
             .thenReturn(true);
         when(getCertificateFromWC.getCertificate(ID, true, false))
             .thenReturn(CERTIFICATE_FROM_WC);

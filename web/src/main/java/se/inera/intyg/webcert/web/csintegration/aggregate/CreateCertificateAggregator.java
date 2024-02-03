@@ -20,8 +20,8 @@
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.CreateCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.impl.CreateCertificateException;
 
@@ -30,19 +30,20 @@ public class CreateCertificateAggregator implements CreateCertificateFacadeServi
 
     private final CreateCertificateFacadeService createCertificateFromWC;
     private final CreateCertificateFacadeService createCertificateFromCS;
-    private final Environment environment;
+    private final CertificateServiceProfile certificateServiceProfile;
 
     public CreateCertificateAggregator(
         @Qualifier("CreateCertificateFromWC") CreateCertificateFacadeService createCertificateFromWC,
-        @Qualifier("CreateCertificateFromCS") CreateCertificateFacadeService createCertificateFromCS, Environment environment) {
+        @Qualifier("CreateCertificateFromCS") CreateCertificateFacadeService createCertificateFromCS,
+        CertificateServiceProfile certificateServiceProfile) {
         this.createCertificateFromWC = createCertificateFromWC;
         this.createCertificateFromCS = createCertificateFromCS;
-        this.environment = environment;
+        this.certificateServiceProfile = certificateServiceProfile;
     }
 
     @Override
     public String create(String certificateType, String patientId) throws CreateCertificateException {
-        if (!environment.matchesProfiles("certificate-service-active")) {
+        if (!certificateServiceProfile.active()) {
             return createCertificateFromWC.create(certificateType, patientId);
         }
 

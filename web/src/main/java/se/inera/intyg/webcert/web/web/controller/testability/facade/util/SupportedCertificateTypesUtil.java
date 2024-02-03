@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.af00213.support.Af00213EntryPoint;
 import se.inera.intyg.common.ag114.support.Ag114EntryPoint;
@@ -38,6 +37,7 @@ import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
 import se.inera.intyg.common.ts_diabetes.support.TsDiabetesEntryPoint;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
+import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CertificateType;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateFillType;
 
@@ -45,11 +45,11 @@ import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCe
 public class SupportedCertificateTypesUtil {
 
     private static final String FK7211_NAME = "Intyg om graviditet";
-    private final Environment environment;
+    private final CertificateServiceProfile certificateServiceProfile;
     private final CSIntegrationService csIntegrationService;
 
-    public SupportedCertificateTypesUtil(Environment environment, CSIntegrationService csIntegrationService) {
-        this.environment = environment;
+    public SupportedCertificateTypesUtil(CertificateServiceProfile certificateServiceProfile, CSIntegrationService csIntegrationService) {
+        this.certificateServiceProfile = certificateServiceProfile;
         this.csIntegrationService = csIntegrationService;
     }
 
@@ -182,7 +182,7 @@ public class SupportedCertificateTypesUtil {
             )
         );
 
-        if (environment.matchesProfiles("certificate-service-active")) {
+        if (certificateServiceProfile.active()) {
             final var modelId = csIntegrationService.certificateTypeExists("fk7211");
             modelId.ifPresent(
                 certificateModelIdDTO -> certificateTypes.add(

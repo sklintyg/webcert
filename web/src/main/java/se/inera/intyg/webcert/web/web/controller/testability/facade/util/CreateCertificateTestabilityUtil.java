@@ -41,6 +41,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
+import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.integration.util.HoSPersonHelper;
 import se.inera.intyg.webcert.web.service.facade.util.UtkastToCertificateConverter;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
@@ -67,13 +68,14 @@ public class CreateCertificateTestabilityUtil {
     private final IntygTextsService intygTextsService;
 
     private final TypeAheadProvider typeAheadProvider;
+    private final CertificateServiceProfile certificateServiceProfile;
 
     @Autowired
     public CreateCertificateTestabilityUtil(IntygModuleRegistry moduleRegistry,
         WebcertUserDetailsService webcertUserDetailsService,
         PatientDetailsResolver patientDetailsResolver, UtkastService utkastService,
         UtkastToCertificateConverter utkastToCertificateConverter, UtkastRepository utkastRepository,
-        IntygTextsService intygTextsService, TypeAheadProvider typeAheadProvider) {
+        IntygTextsService intygTextsService, TypeAheadProvider typeAheadProvider, CertificateServiceProfile certificateServiceProfile) {
         this.moduleRegistry = moduleRegistry;
         this.webcertUserDetailsService = webcertUserDetailsService;
         this.patientDetailsResolver = patientDetailsResolver;
@@ -82,6 +84,7 @@ public class CreateCertificateTestabilityUtil {
         this.utkastRepository = utkastRepository;
         this.intygTextsService = intygTextsService;
         this.typeAheadProvider = typeAheadProvider;
+        this.certificateServiceProfile = certificateServiceProfile;
     }
 
     public String createNewCertificate(@NotNull CreateCertificateRequestDTO createCertificateRequest) {
@@ -105,6 +108,9 @@ public class CreateCertificateTestabilityUtil {
             patient
         );
 
+        if (certificateServiceProfile.active()) {
+            return "";
+        }
         final var utkast = createNewDraft(createNewDraftRequest);
         final var updateJsonModel = getUpdateJsonModel(utkast, createCertificateRequest);
         utkast.setModel(updateJsonModel);
@@ -235,11 +241,12 @@ public class CreateCertificateTestabilityUtil {
     }
 
     private Patient getPatient(String patientId, String type, String typeVersion) {
-        final var patient = patientDetailsResolver.resolvePatient(
-            Personnummer.createPersonnummer(patientId).orElseThrow(),
-            type,
-            typeVersion);
-        final var personFromPUService = patientDetailsResolver.getPersonFromPUService(patient.getPersonId());
+        final var patient = new Patient();
+        final var personnummer = Personnummer.createPersonnummer(patientId).orElseThrow();
+        final var personFromPUService = patientDetailsResolver.getPersonFromPUService(
+            personnummer
+        );
+        patient.setPersonId(personnummer);
         patient.setFornamn(personFromPUService.getPerson().getFornamn());
         patient.setMellannamn(personFromPUService.getPerson().getMellannamn());
         patient.setEfternamn(personFromPUService.getPerson().getEfternamn());
