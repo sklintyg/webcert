@@ -30,4 +30,9 @@ public class CertificateServiceProfileInactive implements CertificateServiceProf
     public boolean active() {
         return false;
     }
+
+    @Override
+    public boolean activeAndSupportsType(String type) {
+        return false;
+    }
 }

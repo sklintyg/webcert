@@ -19,16 +19,45 @@
 
 package se.inera.intyg.webcert.web.csintegration.util;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doReturn;
 
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.webcert.web.csintegration.certificate.CertificateModelIdDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 
+@ExtendWith(MockitoExtension.class)
 class CertificateServiceProfileActiveTest {
 
-    private final CertificateServiceProfileActive certificateServiceProfileActive = new CertificateServiceProfileActive();
+    private static final String SUPPORTED_TYPE = "supportedType";
+    private static final String NOT_SUPPORTED_TYPE = "notSupportedType";
+    @Mock
+    private CSIntegrationService csIntegrationService;
+    @InjectMocks
+    private CertificateServiceProfileActive certificateServiceProfileActive;
 
     @Test
     void shallReturnTrue() {
         assertTrue(certificateServiceProfileActive.active());
+    }
+
+    @Test
+    void shouldReturnTrueIfProfileIsActiveAndTypeIsSupported() {
+        final var modelIdDTO = Optional.of(new CertificateModelIdDTO());
+        doReturn(modelIdDTO).when(csIntegrationService).certificateTypeExists(SUPPORTED_TYPE);
+        assertTrue(certificateServiceProfileActive.activeAndSupportsType(SUPPORTED_TYPE));
+    }
+
+    @Test
+    void shouldReturnFalseIfProfileIsActiveAndTypeIsNotSupported() {
+        final var modelIdDTO = Optional.empty();
+        doReturn(modelIdDTO).when(csIntegrationService).certificateTypeExists(NOT_SUPPORTED_TYPE);
+        assertFalse(certificateServiceProfileActive.activeAndSupportsType(NOT_SUPPORTED_TYPE));
     }
 }

@@ -21,13 +21,25 @@ package se.inera.intyg.webcert.web.csintegration.util;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 
 @Component
 @Profile("certificate-service-active")
 public class CertificateServiceProfileActive implements CertificateServiceProfile {
 
+    private final CSIntegrationService csIntegrationService;
+
+    public CertificateServiceProfileActive(CSIntegrationService csIntegrationService) {
+        this.csIntegrationService = csIntegrationService;
+    }
+
     @Override
     public boolean active() {
         return true;
+    }
+
+    @Override
+    public boolean activeAndSupportsType(String type) {
+        return csIntegrationService.certificateTypeExists(type).isPresent();
     }
 }

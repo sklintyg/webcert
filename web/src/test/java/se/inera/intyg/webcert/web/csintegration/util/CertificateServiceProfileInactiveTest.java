@@ -25,10 +25,16 @@ import org.junit.jupiter.api.Test;
 
 class CertificateServiceProfileInactiveTest {
 
+    private static final String CERTIFICATE_TYPE = "certificateType";
     private final CertificateServiceProfileInactive certificateServiceProfileInactive = new CertificateServiceProfileInactive();
 
     @Test
     void shallReturnFalse() {
         assertFalse(certificateServiceProfileInactive.active());
+    }
+
+    @Test
+    void shallReturnFalseForType() {
+        assertFalse(certificateServiceProfileInactive.activeAndSupportsType(CERTIFICATE_TYPE));
     }
 }
