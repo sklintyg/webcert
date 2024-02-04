@@ -260,8 +260,13 @@ public class CreateCertificateTestabilityUtil {
     }
 
     private Patient getPatient(String patientId, String type, String typeVersion) {
-        final var patient = new Patient();
         final var personnummer = Personnummer.createPersonnummer(patientId).orElseThrow();
+        final var patient = csIntegrationService.certificateTypeExists(type).isPresent()
+            ? new Patient() : patientDetailsResolver.resolvePatient(
+            personnummer,
+            type,
+            typeVersion
+        );
         final var personFromPUService = patientDetailsResolver.getPersonFromPUService(
             personnummer
         );
