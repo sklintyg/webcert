@@ -48,6 +48,7 @@ import se.inera.intyg.webcert.web.service.facade.util.UtkastToCertificateConvert
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
+import se.inera.intyg.webcert.web.web.controller.testability.facade.csintegration.CertificateServiceCreateRequest;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.csintegration.CertificateServiceTestabilityUtil;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateFillType;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateRequestDTO;
@@ -107,6 +108,19 @@ public class CreateCertificateTestabilityUtil {
             createCertificateRequest.getCertificateTypeVersion()
         );
 
+        if (certificateServiceProfile.active()) {
+            final var modelIdDTO = csIntegrationService.certificateTypeExists(createCertificateRequest.getCertificateType());
+            if (modelIdDTO.isPresent()) {
+                return certificateServiceTestabilityUtil.create(
+                    new CertificateServiceCreateRequest(
+                        patient,
+                        hosPersonal,
+                        modelIdDTO.get()
+                    )
+                );
+            }
+        }
+
         final var createNewDraftRequest = new CreateNewDraftRequest(
             null,
             createCertificateRequest.getCertificateType(),
@@ -116,19 +130,6 @@ public class CreateCertificateTestabilityUtil {
             patient
         );
 
-        if (!certificateServiceProfile.active()) {
-            return createNewDraftFromWC(createCertificateRequest, createNewDraftRequest, hosPersonal);
-        }
-
-        final var modelIdDTO = csIntegrationService.certificateTypeExists(createCertificateRequest.getCertificateType());
-        return modelIdDTO.isPresent()
-            ? certificateServiceTestabilityUtil.create(createNewDraftRequest, modelIdDTO.get())
-            : createNewDraftFromWC(createCertificateRequest, createNewDraftRequest, hosPersonal);
-    }
-
-    private String createNewDraftFromWC(CreateCertificateRequestDTO createCertificateRequest,
-        CreateNewDraftRequest createNewDraftRequest,
-        HoSPersonal hosPersonal) {
         final var utkast = createNewDraft(createNewDraftRequest);
         final var updateJsonModel = getUpdateJsonModel(utkast, createCertificateRequest);
         utkast.setModel(updateJsonModel);

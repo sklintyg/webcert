@@ -22,49 +22,40 @@ package se.inera.intyg.webcert.web.web.controller.testability.facade.csintegrati
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
-import se.inera.intyg.webcert.web.csintegration.certificate.CertificateModelIdDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientHelper;
 import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitDTO;
-import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserDTO;
-import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserRole;
-import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 
 @Component
 public class CertificateServiceTestabilityUtil {
 
     private final CertificateServicePatientHelper certificateServicePatientHelper;
     private final CSTestabilityIntegrationService csTestabilityIntegrationService;
+    private final CertificateServiceUserBuilder certificateServiceUserBuilder;
 
     public CertificateServiceTestabilityUtil(CertificateServicePatientHelper certificateServicePatientHelper,
-        CSTestabilityIntegrationService csTestabilityIntegrationService) {
+        CSTestabilityIntegrationService csTestabilityIntegrationService, CertificateServiceUserBuilder certificateServiceUserBuilder) {
         this.certificateServicePatientHelper = certificateServicePatientHelper;
         this.csTestabilityIntegrationService = csTestabilityIntegrationService;
+        this.certificateServiceUserBuilder = certificateServiceUserBuilder;
     }
 
-    public String create(CreateNewDraftRequest createNewDraftRequest, CertificateModelIdDTO modelId) {
-        final var certificateRequestDTO = createRequest(createNewDraftRequest, modelId);
+    public String create(CertificateServiceCreateRequest certificateServiceCreateRequest) {
+        final var certificateRequestDTO = createRequest(certificateServiceCreateRequest);
         final var certificate = csTestabilityIntegrationService.createCertificate(certificateRequestDTO);
         return certificate.getMetadata().getId();
     }
 
-    private CreateCertificateRequestDTO createRequest(CreateNewDraftRequest createNewDraftRequest,
-        CertificateModelIdDTO modelId) {
+    private CreateCertificateRequestDTO createRequest(CertificateServiceCreateRequest certificateServiceCreateRequest) {
         final var certificateRequestDTO = new CreateCertificateRequestDTO();
-        certificateRequestDTO.setUser(buildUser(createNewDraftRequest));
-        certificateRequestDTO.setPatient(
-            certificateServicePatientHelper.get(createNewDraftRequest.getPatient().getPersonId())
-        );
-        certificateRequestDTO.setUnit(convertToUnit(createNewDraftRequest.getHosPerson().getVardenhet()));
-        certificateRequestDTO.setCareUnit(convertToUnit(createNewDraftRequest.getHosPerson().getVardenhet()));
-        certificateRequestDTO.setCareProvider(convertToCareProvider(createNewDraftRequest.getHosPerson().getVardenhet().getVardgivare()));
-        certificateRequestDTO.setCertificateModelId(modelId);
+        final var careUnit = certificateServiceCreateRequest.getHosPerson().getVardenhet();
+        certificateRequestDTO.setUser(certificateServiceUserBuilder.build(certificateServiceCreateRequest.getHosPerson()));
+        certificateRequestDTO.setPatient(certificateServicePatientHelper.get(certificateServiceCreateRequest.getPatient().getPersonId()));
+        certificateRequestDTO.setCertificateModelId(certificateServiceCreateRequest.getCertificateModelId());
+        certificateRequestDTO.setCareProvider(convertToCareProvider(careUnit.getVardgivare()));
+        certificateRequestDTO.setCareUnit(convertToUnit(careUnit));
+        certificateRequestDTO.setUnit(convertToUnit(careUnit));
         return certificateRequestDTO;
-    }
-
-    private static CertificateServiceUserDTO buildUser(CreateNewDraftRequest createNewDraftRequest) {
-        return CertificateServiceUserDTO.create(createNewDraftRequest.getHosPerson().getPersonId(), CertificateServiceUserRole.DOCTOR,
-            false);
     }
 
     private static CertificateServiceUnitDTO convertToCareProvider(Vardgivare vardgivare) {
