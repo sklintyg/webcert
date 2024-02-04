@@ -121,8 +121,8 @@ public class CreateCertificateTestabilityUtil {
         }
 
         final var modelIdDTO = csIntegrationService.certificateTypeExists(createCertificateRequest.getCertificateType());
-        return modelIdDTO.isPresent() ?
-            certificateServiceTestabilityUtil.create(createNewDraftRequest, modelIdDTO.get())
+        return modelIdDTO.isPresent()
+            ? certificateServiceTestabilityUtil.create(createNewDraftRequest, modelIdDTO.get())
             : createNewDraftFromWC(createCertificateRequest, createNewDraftRequest, hosPersonal);
     }
 
