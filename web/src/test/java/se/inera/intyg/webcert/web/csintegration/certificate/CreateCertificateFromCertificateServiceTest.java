@@ -122,7 +122,7 @@ class CreateCertificateFromCertificateServiceTest {
     class HasCertificate {
 
         @BeforeEach
-        void setup() {
+        void setup() throws CreateCertificateException {
             Certificate certificate = new Certificate();
             final var metadata = CertificateMetadata.builder().id(ID).build();
             certificate.setMetadata(metadata);

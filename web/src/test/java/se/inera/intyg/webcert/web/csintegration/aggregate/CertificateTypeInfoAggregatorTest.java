@@ -30,8 +30,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.core.env.Environment;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateTypesFacadeService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
@@ -45,7 +45,7 @@ class CertificateTypeInfoAggregatorTest {
 
     GetCertificateTypesFacadeService getCertificateTypeInfoFromWebcert;
     GetCertificateTypesFacadeService getCertificateTypeInfoFromCertificateService;
-    Environment environment;
+    CertificateServiceProfile certificateServiceProfile;
     CertificateTypeInfoAggregator certificateTypeInfoAggregator;
 
     @BeforeEach
@@ -54,7 +54,7 @@ class CertificateTypeInfoAggregatorTest {
         infoFromWC.setLabel("infoFromWC");
         getCertificateTypeInfoFromCertificateService = mock(GetCertificateTypesFacadeService.class);
         getCertificateTypeInfoFromWebcert = mock(GetCertificateTypesFacadeService.class);
-        environment = mock(Environment.class);
+        certificateServiceProfile = mock(CertificateServiceProfile.class);
 
         when(getCertificateTypeInfoFromWebcert.get(PATIENT_ID))
             .thenReturn(List.of(infoFromWC));
@@ -62,7 +62,7 @@ class CertificateTypeInfoAggregatorTest {
         certificateTypeInfoAggregator = new CertificateTypeInfoAggregator(
             getCertificateTypeInfoFromWebcert,
             getCertificateTypeInfoFromCertificateService,
-            environment
+            certificateServiceProfile
         );
     }
 
@@ -70,7 +70,7 @@ class CertificateTypeInfoAggregatorTest {
     void shouldMergeCertificateTypesLists() {
         when(getCertificateTypeInfoFromCertificateService.get(PATIENT_ID))
             .thenReturn(List.of(infoFromCS));
-        when(environment.matchesProfiles("certificate-service-active"))
+        when(certificateServiceProfile.active())
             .thenReturn(true);
 
         final var response = certificateTypeInfoAggregator.get(PATIENT_ID);
@@ -82,7 +82,7 @@ class CertificateTypeInfoAggregatorTest {
 
     @Test
     void shouldSortElementsInAlphabeticalOrderBasedOnLabel() {
-        when(environment.matchesProfiles("certificate-service-active"))
+        when(certificateServiceProfile.active())
             .thenReturn(true);
         final var infoA = new CertificateTypeInfoDTO();
         infoA.setLabel("A");

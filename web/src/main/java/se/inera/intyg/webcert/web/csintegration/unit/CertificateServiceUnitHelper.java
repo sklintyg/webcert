@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.web.csintegration.unit;
 
 import org.springframework.stereotype.Component;
+import se.inera.intyg.infra.integration.hsatk.services.HsatkOrganizationService;
 import se.inera.intyg.webcert.web.service.facade.user.UserService;
 
 @Component
@@ -27,10 +28,15 @@ public class CertificateServiceUnitHelper {
 
     private final UserService userService;
     private final CertificateServiceUnitConverter certificateServiceUnitConverter;
+    private final CertificateServiceHsaUnitConverter certificateServiceHsaUnitConverter;
+    private final HsatkOrganizationService hsatkOrganizationService;
 
-    public CertificateServiceUnitHelper(UserService userService, CertificateServiceUnitConverter certificateServiceUnitConverter) {
+    public CertificateServiceUnitHelper(UserService userService, CertificateServiceUnitConverter certificateServiceUnitConverter,
+        CertificateServiceHsaUnitConverter certificateServiceHsaUnitConverter, HsatkOrganizationService hsatkOrganizationService) {
         this.userService = userService;
         this.certificateServiceUnitConverter = certificateServiceUnitConverter;
+        this.certificateServiceHsaUnitConverter = certificateServiceHsaUnitConverter;
+        this.hsatkOrganizationService = hsatkOrganizationService;
     }
 
     public CertificateServiceUnitDTO getCareProvider() {
@@ -45,7 +51,7 @@ public class CertificateServiceUnitHelper {
 
     public CertificateServiceUnitDTO getUnit() {
         final var user = userService.getLoggedInUser();
-        return certificateServiceUnitConverter.convert(user.getLoggedInUnit());
+        final var unit = hsatkOrganizationService.getUnit(user.getLoggedInUnit().getUnitId(), null);
+        return certificateServiceHsaUnitConverter.convert(unit);
     }
-
 }

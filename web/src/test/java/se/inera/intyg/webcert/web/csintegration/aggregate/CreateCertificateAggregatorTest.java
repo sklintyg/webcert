@@ -29,7 +29,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.core.env.Environment;
+import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.CreateCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.impl.CreateCertificateException;
 
@@ -43,25 +43,25 @@ class CreateCertificateAggregatorTest {
 
     CreateCertificateFacadeService createCertificateFromWC;
     CreateCertificateFacadeService createCertificateFromCS;
-    Environment environment;
+    CertificateServiceProfile certificateServiceProfile;
     CreateCertificateFacadeService aggregator;
 
     @BeforeEach
     void setup() {
         createCertificateFromWC = mock(CreateCertificateFacadeService.class);
         createCertificateFromCS = mock(CreateCertificateFacadeService.class);
-        environment = mock(Environment.class);
+        certificateServiceProfile = mock(CertificateServiceProfile.class);
 
         aggregator = new CreateCertificateAggregator(
             createCertificateFromWC,
             createCertificateFromCS,
-            environment
+            certificateServiceProfile
         );
     }
 
     @Test
     void shouldReturnCertificateIdFromCSIIfCSProfileIsActive() throws CreateCertificateException {
-        when(environment.matchesProfiles("certificate-service-active"))
+        when(certificateServiceProfile.active())
             .thenReturn(true);
         when(createCertificateFromCS.create(TYPE, ORIGINAL_PATIENT_ID))
             .thenReturn(ID_FROM_CS);

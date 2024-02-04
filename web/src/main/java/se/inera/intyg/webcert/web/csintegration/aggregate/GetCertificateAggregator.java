@@ -20,9 +20,9 @@
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 
 @Service("GetCertificateAggregator")
@@ -30,19 +30,20 @@ public class GetCertificateAggregator implements GetCertificateFacadeService {
 
     private final GetCertificateFacadeService getCertificateFromWC;
     private final GetCertificateFacadeService getCertificateFromCS;
-    private final Environment environment;
+    private final CertificateServiceProfile certificateServiceProfile;
 
     public GetCertificateAggregator(
         @Qualifier("GetCertificateFromWC") GetCertificateFacadeService getCertificateFromWC,
-        @Qualifier("GetCertificateFromCS") GetCertificateFacadeService getCertificateFromCS, Environment environment) {
+        @Qualifier("GetCertificateFromCS") GetCertificateFacadeService getCertificateFromCS,
+        CertificateServiceProfile certificateServiceProfile) {
         this.getCertificateFromWC = getCertificateFromWC;
         this.getCertificateFromCS = getCertificateFromCS;
-        this.environment = environment;
+        this.certificateServiceProfile = certificateServiceProfile;
     }
 
     @Override
     public Certificate getCertificate(String certificateId, boolean pdlLog, boolean validateAccess) {
-        if (!environment.matchesProfiles("certificate-service-active")) {
+        if (!certificateServiceProfile.active()) {
             return getCertificateFromWC.getCertificate(certificateId, pdlLog, validateAccess);
         }
 
