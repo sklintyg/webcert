@@ -66,6 +66,7 @@ import se.inera.intyg.infra.integration.hsatk.model.HealthCareUnit;
 import se.inera.intyg.infra.integration.hsatk.services.HsatkOrganizationService;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
 @ExtendWith(MockitoExtension.class)
 public class IntygToCertificateConverterImplTest {
@@ -469,17 +470,19 @@ public class IntygToCertificateConverterImplTest {
             .when(mockUtlatande).getGrundData();
 
         statusList.add(new Status(CertificateState.RECEIVED, "HSVARD", RECEIVED_DATE_TIME));
-
+        
         return IntygContentHolder.builder()
-            .setTestIntyg(IS_TEST_INTYG)
-            .setPatientAddressChangedInPU(false)
-            .setSekretessmarkering(false)
-            .setDeceased(false)
-            .setRevoked(false)
-            .setContents(CONTENT_JSON)
-            .setPatientNameChangedInPU(false)
-            .setUtlatande(mockUtlatande)
-            .setStatuses(statusList)
+            .testIntyg(IS_TEST_INTYG)
+            .patientAddressChangedInPU(false)
+            .sekretessmarkering(false)
+            .deceased(false)
+            .revoked(false)
+            .contents(CONTENT_JSON)
+            .patientNameChangedInPU(false)
+            .utlatande(mockUtlatande)
+            .statuses(statusList)
+            .relations(new Relations())
+            .latestMajorTextVersion(true)
             .build();
     }
 

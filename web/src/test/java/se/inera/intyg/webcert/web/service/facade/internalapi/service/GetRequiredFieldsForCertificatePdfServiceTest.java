@@ -235,15 +235,15 @@ class GetRequiredFieldsForCertificatePdfServiceTest {
     class UtkastMissingInWebcert {
 
         private final IntygContentHolder intygContentHolder = IntygContentHolder.builder()
-            .setRevoked(false)
-            .setDeceased(false)
-            .setUtlatande(new Fk7263Utlatande())
-            .setSekretessmarkering(false)
-            .setContents(INTERNAL_JSON_MODEL)
-            .setPatientNameChangedInPU(false)
-            .setPatientAddressChangedInPU(false)
-            .setTestIntyg(false)
-            .setStatuses(EXPECTED_STATUSES)
+            .revoked(false)
+            .deceased(false)
+            .utlatande(new Fk7263Utlatande())
+            .sekretessmarkering(false)
+            .contents(INTERNAL_JSON_MODEL)
+            .patientNameChangedInPU(false)
+            .patientAddressChangedInPU(false)
+            .testIntyg(false)
+            .statuses(EXPECTED_STATUSES)
             .build();
 
         @BeforeEach

@@ -264,13 +264,15 @@ dependencies {
     implementation "org.springframework:spring-jms"
     implementation "org.springframework.ws:spring-xml"
 
-    compileOnly "com.google.auto.value:auto-value:${autovalueVersion}"
-    compileOnly "com.google.auto.value:auto-value-annotations:${autovalueVersion}"
-    annotationProcessor "com.google.auto.value:auto-value:${autovalueVersion}"
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
 
     runtimeOnly "org.springframework:spring-webmvc"
     runtimeOnly "xerces:xercesImpl:${xercesVersion}"
     runtimeOnly "se.inera.intyg.infra:hsa-integration-intyg-proxy-service:${infraVersion}"
+
+    testAnnotationProcessor 'org.projectlombok:lombok'
+    testCompileOnly 'org.projectlombok:lombok'
 
     testImplementation ("com.helger:ph-schematron:${phSchematronVersion}") { exclude group: "com.helger", module: "ph-jaxb-pom" }
     testImplementation "org.assertj:assertj-core"

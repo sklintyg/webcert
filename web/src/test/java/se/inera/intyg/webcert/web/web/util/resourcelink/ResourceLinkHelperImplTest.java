@@ -49,6 +49,7 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygModuleDTO;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DraftHolder;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelperImpl;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
@@ -300,13 +301,15 @@ public class ResourceLinkHelperImplTest {
         doReturn(patient).when(patientMock).getPersonId();
 
         final IntygContentHolder intygContentHolder = IntygContentHolder.builder()
-            .setRevoked(false)
-            .setDeceased(false)
-            .setSekretessmarkering(false)
-            .setPatientNameChangedInPU(false)
-            .setPatientAddressChangedInPU(false)
-            .setUtlatande(utlatande)
-            .setTestIntyg(false)
+            .revoked(false)
+            .deceased(false)
+            .sekretessmarkering(false)
+            .patientNameChangedInPU(false)
+            .patientAddressChangedInPU(false)
+            .utlatande(utlatande)
+            .testIntyg(false)
+            .relations(new Relations())
+            .latestMajorTextVersion(true)
             .build();
 
         resourceLinkHelper.decorateIntygWithValidActionLinks(intygContentHolder);
@@ -353,13 +356,15 @@ public class ResourceLinkHelperImplTest {
         doReturn(patient).when(patientMock).getPersonId();
 
         final IntygContentHolder intygContentHolder = IntygContentHolder.builder()
-            .setRevoked(false)
-            .setDeceased(false)
-            .setSekretessmarkering(false)
-            .setPatientNameChangedInPU(false)
-            .setPatientAddressChangedInPU(false)
-            .setUtlatande(utlatande)
-            .setTestIntyg(false)
+            .revoked(false)
+            .deceased(false)
+            .sekretessmarkering(false)
+            .patientNameChangedInPU(false)
+            .patientAddressChangedInPU(false)
+            .utlatande(utlatande)
+            .testIntyg(false)
+            .relations(new Relations())
+            .latestMajorTextVersion(true)
             .build();
 
         resourceLinkHelper.decorateIntygWithValidActionLinks(intygContentHolder);

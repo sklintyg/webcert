@@ -30,7 +30,6 @@ import static org.mockito.Mockito.when;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
 import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,7 +39,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
-
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
@@ -244,16 +242,17 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
         Fk7263Utlatande utlatande = new CustomObjectMapper().readValue(new ClassPathResource(
             "IntygDraftServiceImplTest/utlatande.json").getFile(), Fk7263Utlatande.class);
         return IntygContentHolder.builder()
-            .setContents("<external-json/>")
-            .setUtlatande(utlatande)
-            .setStatuses(status)
-            .setRevoked(false)
-            .setRelations(new Relations())
-            .setDeceased(false)
-            .setSekretessmarkering(false)
-            .setPatientNameChangedInPU(false)
-            .setPatientAddressChangedInPU(false)
-            .setTestIntyg(false)
+            .contents("<external-json/>")
+            .utlatande(utlatande)
+            .statuses(status)
+            .revoked(false)
+            .relations(new Relations())
+            .deceased(false)
+            .sekretessmarkering(false)
+            .patientNameChangedInPU(false)
+            .patientAddressChangedInPU(false)
+            .testIntyg(false)
+            .latestMajorTextVersion(true)
             .build();
     }
 

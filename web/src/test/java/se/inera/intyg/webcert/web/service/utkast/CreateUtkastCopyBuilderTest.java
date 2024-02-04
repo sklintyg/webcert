@@ -30,7 +30,6 @@ import static org.mockito.Mockito.when;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
 import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,7 +39,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
-
 import se.inera.intyg.common.db.v1.model.internal.DbUtlatandeV1;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
@@ -168,16 +166,17 @@ public class CreateUtkastCopyBuilderTest extends AbstractBuilderTest {
         DbUtlatandeV1 utlatande = new CustomObjectMapper().readValue(new ClassPathResource(
             "IntygDraftServiceImplTest/db-utlatande.json").getFile(), DbUtlatandeV1.class);
         return IntygContentHolder.builder()
-            .setContents("<external-json/>")
-            .setUtlatande(utlatande)
-            .setStatuses(status)
-            .setRevoked(false)
-            .setRelations(new Relations())
-            .setDeceased(false)
-            .setSekretessmarkering(false)
-            .setPatientNameChangedInPU(false)
-            .setPatientAddressChangedInPU(false)
-            .setTestIntyg(false)
+            .contents("<external-json/>")
+            .utlatande(utlatande)
+            .statuses(status)
+            .revoked(false)
+            .relations(new Relations())
+            .deceased(false)
+            .sekretessmarkering(false)
+            .patientNameChangedInPU(false)
+            .patientAddressChangedInPU(false)
+            .testIntyg(false)
+            .latestMajorTextVersion(true)
             .build();
     }
 

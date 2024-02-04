@@ -29,7 +29,6 @@ ext {
     schemasContractVersion = "2.1.8.1"
     srsSchemasVersion = "0.0.16.1"
 
-    autovalueVersion = "1.10.4"
     camelVersion = "3.21.2"
     commonsIoVersion = "2.14.0"
     cxfVersion = "3.6.2"

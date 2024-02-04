@@ -29,6 +29,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
@@ -41,7 +42,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,11 +49,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.google.common.collect.ImmutableList;
-
 import se.inera.intyg.common.fkparent.model.converter.RespConstants;
 import se.inera.intyg.common.lisjp.v1.model.internal.LisjpUtlatandeV1;
 import se.inera.intyg.common.luse.v1.model.internal.LuseUtlatandeV1;
@@ -123,20 +118,21 @@ public class ArendeViewConverterTest {
         when(intygService.fetchIntygData(any(String.class), any(String.class)))
             .thenReturn(
                 IntygContentHolder.builder()
-                    .setContents("")
-                    .setUtlatande(buildLuseUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson",
+                    .contents("")
+                    .utlatande(buildLuseUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson",
                         SKAPADAV_PERSON_ID, LocalDateTime.now().minusDays(2)))
-                    .setStatuses(
+                    .statuses(
                         Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))))
-                    .setRevoked(false)
-                    .setRelations(new Relations())
+                    .revoked(false)
+                    .relations(new Relations())
                     // .setReplacedByRelation(null)
                     // .setComplementedByRelation(null)
-                    .setDeceased(false)
-                    .setSekretessmarkering(false)
-                    .setPatientNameChangedInPU(false)
-                    .setPatientAddressChangedInPU(false)
-                    .setTestIntyg(false)
+                    .deceased(false)
+                    .sekretessmarkering(false)
+                    .patientNameChangedInPU(false)
+                    .patientAddressChangedInPU(false)
+                    .testIntyg(false)
+                    .latestMajorTextVersion(true)
                     .build());
     }
 
@@ -160,7 +156,7 @@ public class ArendeViewConverterTest {
     }
 
     @Test
-    public void convertToJson() throws JsonGenerationException, JsonMappingException, IOException {
+    public void convertToJson() throws IOException {
         Arende arende = buildArende("lisjp");
         StringWriter jsonWriter = new StringWriter();
         CustomObjectMapper objectMapper = new CustomObjectMapper();
@@ -434,7 +430,13 @@ public class ArendeViewConverterTest {
         if (fraga.getSenasteHandelse().compareTo(sendDate) < 0) {
             fraga.setSenasteHandelse(sendDate);
         }
-        return AnsweredWithIntyg.create(fraga.getIntygsId(), "signeratAv", signDate, sendDate, "namnetpaskapareavintyg");
+        return AnsweredWithIntyg.builder()
+            .intygsId(fraga.getIntygsId())
+            .signeratAv("signeratAv")
+            .signeratDatum(signDate)
+            .signeratDatum(sendDate)
+            .namnetPaSkapareAvIntyg("namnetpaskapareavintyg")
+            .build();
     }
 
     private Arende createValidArendeForLuse(String typeOfArende, LocalDateTime timestamp, String meddelandeId, Arende relatedFraga) {
