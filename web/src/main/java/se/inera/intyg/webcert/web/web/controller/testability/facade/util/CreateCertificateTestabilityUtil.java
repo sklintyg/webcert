@@ -41,12 +41,14 @@ import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.integration.util.HoSPersonHelper;
 import se.inera.intyg.webcert.web.service.facade.util.UtkastToCertificateConverter;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
+import se.inera.intyg.webcert.web.web.controller.testability.facade.csintegration.CertificateServiceTestabilityUtil;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateFillType;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateRequestDTO;
 
@@ -70,12 +72,16 @@ public class CreateCertificateTestabilityUtil {
     private final TypeAheadProvider typeAheadProvider;
     private final CertificateServiceProfile certificateServiceProfile;
 
+    private final CertificateServiceTestabilityUtil certificateServiceTestabilityUtil;
+    private final CSIntegrationService csIntegrationService;
+
     @Autowired
     public CreateCertificateTestabilityUtil(IntygModuleRegistry moduleRegistry,
         WebcertUserDetailsService webcertUserDetailsService,
         PatientDetailsResolver patientDetailsResolver, UtkastService utkastService,
         UtkastToCertificateConverter utkastToCertificateConverter, UtkastRepository utkastRepository,
-        IntygTextsService intygTextsService, TypeAheadProvider typeAheadProvider, CertificateServiceProfile certificateServiceProfile) {
+        IntygTextsService intygTextsService, TypeAheadProvider typeAheadProvider, CertificateServiceProfile certificateServiceProfile,
+        CertificateServiceTestabilityUtil certificateServiceTestabilityUtil, CSIntegrationService csIntegrationService) {
         this.moduleRegistry = moduleRegistry;
         this.webcertUserDetailsService = webcertUserDetailsService;
         this.patientDetailsResolver = patientDetailsResolver;
@@ -85,6 +91,8 @@ public class CreateCertificateTestabilityUtil {
         this.intygTextsService = intygTextsService;
         this.typeAheadProvider = typeAheadProvider;
         this.certificateServiceProfile = certificateServiceProfile;
+        this.certificateServiceTestabilityUtil = certificateServiceTestabilityUtil;
+        this.csIntegrationService = csIntegrationService;
     }
 
     public String createNewCertificate(@NotNull CreateCertificateRequestDTO createCertificateRequest) {
@@ -108,9 +116,19 @@ public class CreateCertificateTestabilityUtil {
             patient
         );
 
-        if (certificateServiceProfile.active()) {
-            return "";
+        if (!certificateServiceProfile.active()) {
+            return createNewDraftFromWC(createCertificateRequest, createNewDraftRequest, hosPersonal);
         }
+
+        final var modelIdDTO = csIntegrationService.certificateTypeExists(createCertificateRequest.getCertificateType());
+        return modelIdDTO.isPresent() ?
+            certificateServiceTestabilityUtil.create(createNewDraftRequest, modelIdDTO.get())
+            : createNewDraftFromWC(createCertificateRequest, createNewDraftRequest, hosPersonal);
+    }
+
+    private String createNewDraftFromWC(CreateCertificateRequestDTO createCertificateRequest,
+        CreateNewDraftRequest createNewDraftRequest,
+        HoSPersonal hosPersonal) {
         final var utkast = createNewDraft(createNewDraftRequest);
         final var updateJsonModel = getUpdateJsonModel(utkast, createCertificateRequest);
         utkast.setModel(updateJsonModel);
