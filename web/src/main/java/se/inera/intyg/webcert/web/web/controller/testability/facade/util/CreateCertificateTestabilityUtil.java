@@ -108,17 +108,15 @@ public class CreateCertificateTestabilityUtil {
             createCertificateRequest.getCertificateTypeVersion()
         );
 
-        if (certificateServiceProfile.active()) {
+        if (certificateServiceProfile.activeAndSupportsType(createCertificateRequest.getCertificateType())) {
             final var modelIdDTO = csIntegrationService.certificateTypeExists(createCertificateRequest.getCertificateType());
-            if (modelIdDTO.isPresent()) {
-                return certificateServiceTestabilityUtil.create(
-                    new CertificateServiceCreateRequest(
-                        patient,
-                        hosPersonal,
-                        modelIdDTO.get()
-                    )
-                );
-            }
+            return certificateServiceTestabilityUtil.create(
+                new CertificateServiceCreateRequest(
+                    patient,
+                    hosPersonal,
+                    modelIdDTO.orElseThrow()
+                )
+            );
         }
 
         final var createNewDraftRequest = new CreateNewDraftRequest(
