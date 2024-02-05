@@ -434,7 +434,7 @@ public class ArendeViewConverterTest {
             .intygsId(fraga.getIntygsId())
             .signeratAv("signeratAv")
             .signeratDatum(signDate)
-            .signeratDatum(sendDate)
+            .skickatDatum(sendDate)
             .namnetPaSkapareAvIntyg("namnetpaskapareavintyg")
             .build();
     }
