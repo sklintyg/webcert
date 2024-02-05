@@ -102,7 +102,7 @@ public class CertificateEventConverterTest {
             .patientNameChangedInPU(false)
             .patientAddressChangedInPU(false)
             .testIntyg(false)
-            .relations(new Relations())
+            .relations(parent)
             .latestMajorTextVersion(true)
             .build();
     }
