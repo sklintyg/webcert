@@ -30,15 +30,15 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.facade.model.user.User;
-import se.inera.intyg.infra.integration.hsatk.services.HsatkOrganizationService;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
+import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
 import se.inera.intyg.webcert.web.service.facade.user.UserService;
 
 @ExtendWith(MockitoExtension.class)
 class CertificateServiceUnitHelperTest {
 
     private static final Unit unit = Unit.builder().build();
-    private static final se.inera.intyg.infra.integration.hsatk.model.Unit hsaUnit =
-        new se.inera.intyg.infra.integration.hsatk.model.Unit();
+    private static final Vardenhet vardEnhet = new Vardenhet();
     private static final Unit careUnit = Unit.builder().build();
     private static final Unit careProvider = Unit.builder().build();
     private static final User user = User.builder()
@@ -56,9 +56,9 @@ class CertificateServiceUnitHelperTest {
     CertificateServiceUnitConverter certificateServiceUnitConverter;
 
     @Mock
-    HsatkOrganizationService hsatkOrganizationService;
+    HsaOrganizationsService hsaOrganizationsService;
     @Mock
-    CertificateServiceHsaUnitConverter certificateServiceHsaUnitConverter;
+    CertificateServiceVardenhetConverter certificateServiceVardenhetConverter;
 
     @InjectMocks
     CertificateServiceUnitHelper certificateServiceUnitHelper;
@@ -71,9 +71,9 @@ class CertificateServiceUnitHelperTest {
 
     @Test
     void shouldReturnConvertedUnit() {
-        when(hsatkOrganizationService.getUnit(user.getLoggedInUnit().getUnitId(), null))
-            .thenReturn(hsaUnit);
-        when(certificateServiceHsaUnitConverter.convert(hsaUnit))
+        when(hsaOrganizationsService.getVardenhet(user.getLoggedInUnit().getUnitId()))
+            .thenReturn(vardEnhet);
+        when(certificateServiceVardenhetConverter.convert(vardEnhet))
             .thenReturn(convertedUnit);
         final var response = certificateServiceUnitHelper.getUnit();
 
