@@ -21,26 +21,22 @@ package se.inera.intyg.webcert.web.csintegration.unit;
 
 import java.time.LocalDateTime;
 import org.springframework.stereotype.Component;
-import se.inera.intyg.infra.integration.hsatk.model.Unit;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 
 @Component
-public class CertificateServiceHsaUnitConverter {
+public class CertificateServiceVardenhetConverter {
 
-    public CertificateServiceUnitDTO convert(Unit unit) {
+    public CertificateServiceUnitDTO convert(Vardenhet unit) {
         final var convertedUnit = new CertificateServiceUnitDTO();
-        convertedUnit.setId(unit.getUnitHsaId());
-        convertedUnit.setName(unit.getUnitName());
-        convertedUnit.setAddress(unit.getPostalAddress().isEmpty() ? null : unit.getPostalAddress().get(0));
-        convertedUnit.setZipCode(unit.getPostalCode());
-        convertedUnit.setCity(shouldIncludeCity(unit) ? unit.getPostalAddress().get(unit.getPostalAddress().size() - 1) : null);
-        convertedUnit.setPhoneNumber(unit.getTelephoneNumber().isEmpty() ? null : unit.getTelephoneNumber().get(0));
-        convertedUnit.setEmail(unit.getMail());
-        convertedUnit.setInactive(isActive(unit.getUnitStartDate(), unit.getUnitEndDate()));
+        convertedUnit.setId(unit.getId());
+        convertedUnit.setName(unit.getNamn());
+        convertedUnit.setAddress(unit.getPostadress());
+        convertedUnit.setZipCode(unit.getPostnummer());
+        convertedUnit.setCity(unit.getPostort());
+        convertedUnit.setPhoneNumber(unit.getTelefonnummer());
+        convertedUnit.setEmail(unit.getEpost());
+        convertedUnit.setInactive(isActive(unit.getStart(), unit.getEnd()));
         return convertedUnit;
-    }
-
-    private static boolean shouldIncludeCity(Unit unit) {
-        return !unit.getPostalAddress().isEmpty() && unit.getPostalAddress().size() > 1;
     }
 
     private static boolean isActive(LocalDateTime fromDate, LocalDateTime toDate) {
