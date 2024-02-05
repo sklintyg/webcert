@@ -27,10 +27,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
@@ -51,14 +51,12 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView.ArendeType;
 import se.inera.intyg.webcert.web.web.controller.api.dto.MedicinsktArendeView;
 
 @Component
+@RequiredArgsConstructor
 public class ArendeViewConverter {
 
     private static final Logger LOG = LoggerFactory.getLogger(ArendeViewConverter.class);
 
-    @Autowired
     private IntygModuleRegistryImpl moduleRegistry;
-
-    @Autowired
     private IntygService intygService;
 
     private static String getThreadRootMessageId(Arende arende) {
@@ -85,43 +83,50 @@ public class ArendeViewConverter {
             return null;
         }
         return ArendeView.builder()
-            .setAmne(arende.getAmne())
-            .setArendeType(getArendeType(arende))
-            .setEnhetsnamn(arende.getEnhetName())
-            .setFrageStallare(arende.getSkickatAv())
-            .setInternReferens(arende.getMeddelandeId())
-            .setIntygId(arende.getIntygsId())
-            .setMeddelande(arende.getMeddelande())
-            .setMeddelandeRubrik(arende.getRubrik())
-            .setPaminnelseMeddelandeId(arende.getPaminnelseMeddelandeId())
-            .setSistaDatumForSvar(arende.getSistaDatumForSvar())
-            .setStatus(arende.getStatus())
-            .setTimestamp(arende.getTimestamp())
-            .setSigneratAv(arende.getSigneratAvName())
-            .setVidarebefordrad(arende.getVidarebefordrad())
-            .setVardaktorNamn(arende.getVardaktorName())
-            .setSvarSkickadDatum(arende.getSkickatTidpunkt())
-            .setVardgivarnamn(arende.getVardgivareName())
-            .setExternaKontakter(ImmutableList.copyOf(arende.getKontaktInfo()))
-            .setKompletteringar(ImmutableList.copyOf(convertToMedicinsktArendeView(arende.getKomplettering(), arende.getIntygsId(),
-                arende.getIntygTyp())))
-            .setSvarPaId(arende.getSvarPaId())
+            .amne(arende.getAmne())
+            .arendeType(getArendeType(arende))
+            .enhetsnamn(arende.getEnhetName())
+            .frageStallare(arende.getSkickatAv())
+            .internReferens(arende.getMeddelandeId())
+            .intygId(arende.getIntygsId())
+            .meddelande(arende.getMeddelande())
+            .meddelandeRubrik(arende.getRubrik())
+            .paminnelseMeddelandeId(arende.getPaminnelseMeddelandeId())
+            .sistaDatumForSvar(arende.getSistaDatumForSvar())
+            .status(arende.getStatus())
+            .timestamp(arende.getTimestamp())
+            .signeratAv(arende.getSigneratAvName())
+            .vidarebefordrad(arende.getVidarebefordrad())
+            .vardaktorNamn(arende.getVardaktorName())
+            .svarSkickadDatum(arende.getSkickatTidpunkt())
+            .vardgivarnamn(arende.getVardgivareName())
+            .externaKontakter(ImmutableList.copyOf(arende.getKontaktInfo()))
+            .kompletteringar(
+                ImmutableList.copyOf(
+                    convertToMedicinsktArendeView(
+                        arende.getKomplettering(),
+                        arende.getIntygsId(),
+                        arende.getIntygTyp()
+                    )
+                )
+            )
+            .svarPaId(arende.getSvarPaId())
             .build();
     }
 
     public ArendeConversationView convertToArendeConversationView(Arende fraga, Arende svar, AnsweredWithIntyg komplt,
         List<Arende> paminnelser, String draftText) {
         return ArendeConversationView.builder()
-            .setFraga(convertToDto(fraga))
-            .setSvar(convertToDto(svar))
-            .setAnsweredWithIntyg(komplt)
-            .setPaminnelser(
+            .fraga(convertToDto(fraga))
+            .svar(convertToDto(svar))
+            .answeredWithIntyg(komplt)
+            .paminnelser(
                 paminnelser.stream()
                     .map(this::convertToDto)
                     .sorted(Comparator.comparing(ArendeView::getTimestamp).reversed())
                     .collect(Collectors.collectingAndThen(Collectors.toList(), ImmutableList::copyOf)))
-            .setSenasteHandelse(fraga.getSenasteHandelse())
-            .setDraftText(draftText)
+            .senasteHandelse(fraga.getSenasteHandelse())
+            .draftText(draftText)
             .build();
     }
 
@@ -211,7 +216,7 @@ public class ArendeViewConverter {
         List<String> frageIds = medicinskaArenden.stream().map(MedicinsktArende::getFrageId).distinct().collect(Collectors.toList());
 
         Utlatande utlatande = intygService.fetchIntygData(intygsId, intygsTyp).getUtlatande();
-        ModuleApi moduleApi = null;
+        ModuleApi moduleApi;
 
         try {
             moduleApi = moduleRegistry.getModuleApi(intygsTyp, utlatande.getTextVersion());
@@ -229,8 +234,13 @@ public class ArendeViewConverter {
         for (MedicinsktArende arende : medicinskaArenden) {
             Integer position = getListPositionForInstanceId(arende);
             String jsonPropertyHandle = getJsonPropertyHandle(arende, position, arendeParameters);
-            MedicinsktArendeView view = MedicinsktArendeView.builder().setFrageId(arende.getFrageId()).setInstans(arende.getInstans())
-                .setText(arende.getText()).setPosition(Math.max(position - 1, 0)).setJsonPropertyHandle(jsonPropertyHandle).build();
+            MedicinsktArendeView view = MedicinsktArendeView.builder()
+                .frageId(arende.getFrageId())
+                .instans(arende.getInstans())
+                .text(arende.getText())
+                .position(Math.max(position - 1, 0))
+                .jsonPropertyHandle(jsonPropertyHandle)
+                .build();
             medicinskaArendenViews.add(view);
         }
         return medicinskaArendenViews;
@@ -242,8 +252,9 @@ public class ArendeViewConverter {
             return filledPositions.get(position < filledPositions.size() ? position : 0);
         }
         LOG.error(
-            "The supplied Arende information for conversion to json parameters for Fraga " + arende.getFrageId()
-                + " must be a intygMessages of Strings.");
+            "The supplied Arende information for conversion to json parameters for Fraga {} must be a intygMessages of Strings.",
+            arende.getFrageId()
+        );
         return "";
     }
 

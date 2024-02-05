@@ -95,13 +95,15 @@ public class CertificateEventConverterTest {
         parent.setParent(complementedByIntyg);
 
         return IntygContentHolder.builder()
-            .setRelations(parent)
-            .setRevoked(false)
-            .setDeceased(false)
-            .setSekretessmarkering(false)
-            .setPatientNameChangedInPU(false)
-            .setPatientAddressChangedInPU(false)
-            .setTestIntyg(false)
+            .relations(parent)
+            .revoked(false)
+            .deceased(false)
+            .sekretessmarkering(false)
+            .patientNameChangedInPU(false)
+            .patientAddressChangedInPU(false)
+            .testIntyg(false)
+            .relations(new Relations())
+            .latestMajorTextVersion(true)
             .build();
     }
 }

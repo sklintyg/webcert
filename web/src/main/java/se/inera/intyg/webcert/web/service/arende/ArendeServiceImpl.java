@@ -268,7 +268,7 @@ public class ArendeServiceImpl implements ArendeService {
                 LocalDateTime.now(systemClock), webcertUserService.getUser().getNamn(), hsaEmployeeService);
         }
 
-        Arende saved = processOutgoingMessage(arende, NotificationEvent.NEW_QUESTION_FROM_CARE, EventCode.NYFRFV, true);
+        Arende saved = processOutgoingMessage(arende, NotificationEvent.NEW_QUESTION_FROM_CARE, true);
 
         logService.logCreateMessage(webcertUserService.getUser(), saved);
 
@@ -314,7 +314,7 @@ public class ArendeServiceImpl implements ArendeService {
         Arende arende = ArendeConverter.createAnswerFromArende(meddelande, svarPaMeddelande, LocalDateTime.now(systemClock),
             webcertUserService.getUser().getNamn());
 
-        Arende saved = processOutgoingMessage(arende, NotificationEvent.NEW_ANSWER_FROM_CARE, EventCode.HANFRFM, true);
+        Arende saved = processOutgoingMessage(arende, NotificationEvent.NEW_ANSWER_FROM_CARE, true);
 
         logService.logCreateMessage(webcertUserService.getUser(), saved);
 
@@ -347,7 +347,7 @@ public class ArendeServiceImpl implements ArendeService {
                     user.getNamn());
 
                 arendeDraftService.delete(arende.getIntygsId(), arende.getMeddelandeId());
-                Arende saved = processOutgoingMessage(answer, NotificationEvent.NEW_ANSWER_FROM_CARE, EventCode.HANFRFM,
+                Arende saved = processOutgoingMessage(answer, NotificationEvent.NEW_ANSWER_FROM_CARE,
                     Objects.equals(arende.getMeddelandeId(), latest.getMeddelandeId()));
 
                 allArende.add(saved);
@@ -494,6 +494,7 @@ public class ArendeServiceImpl implements ArendeService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public QueryFragaSvarResponse filterArende(QueryFragaSvarParameter filterParameters) {
         return filterArende(filterParameters, false);
     }
@@ -571,9 +572,7 @@ public class ArendeServiceImpl implements ArendeService {
             response.setResults(resultList);
 
             // PDL Logging
-            resultList.stream().map(ArendeListItem::getPatientId).distinct().forEach(patient -> {
-                logService.logListIntyg(user, patient);
-            });
+            resultList.stream().map(ArendeListItem::getPatientId).distinct().forEach(patient -> logService.logListIntyg(user, patient));
         }
 
         return response;
@@ -583,11 +582,11 @@ public class ArendeServiceImpl implements ArendeService {
         return !((item.getStatus() == Status.PENDING_INTERNAL_ACTION && isReminder(item) && item.getFragestallare().equals("FK"))
             || item.getStatus() == Status.ANSWERED
             || item.getStatus() == Status.CLOSED
-            || item.getAmne().equals("MAKULERING"));
+            || item.getAmne().equals(MAKULERING));
     }
 
     private boolean isReminder(ArendeListItem item) {
-        return item.getAmne().equals("PAMINNELSE") || item.getAmne().equals("PAMINN");
+        return item.getAmne().equals(PAMINNELSE) || item.getAmne().equals(PAMINN);
     }
 
     Map<String, String> getNamesByHsaIds(Set<String> hsaIds) {
@@ -602,7 +601,7 @@ public class ArendeServiceImpl implements ArendeService {
 
     public static String getAmneString(String amne, Status status, Boolean paminnelse, String fragestallare) {
         String amneString = "";
-        if (paminnelse) {
+        if (Boolean.TRUE.equals(paminnelse)) {
             amneString = "Påminnelse: ";
         }
         if (status == Status.CLOSED) {
@@ -630,10 +629,9 @@ public class ArendeServiceImpl implements ArendeService {
         } else {
             switch (orderBy) {
                 case "amne":
-                    comparator = (a1, a2) -> {
-                        return getAmneString(a1.getAmne(), a1.getStatus(), a1.isPaminnelse(), a1.getFragestallare())
-                            .compareTo(getAmneString(a2.getAmne(), a2.getStatus(), a2.isPaminnelse(), a2.getFragestallare()));
-                    };
+                    comparator = Comparator.comparing(
+                        a -> getAmneString(a.getAmne(), a.getStatus(), a.isPaminnelse(), a.getFragestallare())
+                    );
                     break;
                 case "fragestallare":
                     comparator = Comparator.comparing(ArendeListItem::getFragestallare);
@@ -846,7 +844,13 @@ public class ArendeServiceImpl implements ArendeService {
             final var signedDate = certificate.getUtlatande().getGrundData().getSigneringsdatum();
             final var issuerByName = certificate.getUtlatande().getGrundData().getSkapadAv().getFullstandigtNamn();
 
-            return AnsweredWithIntyg.create(certificateId, issuerByName, signedDate, signedDate, issuerByName);
+            return AnsweredWithIntyg.builder()
+                .intygsId(certificateId)
+                .signeratAv(issuerByName)
+                .signeratDatum(signedDate)
+                .signeratDatum(signedDate)
+                .namnetPaSkapareAvIntyg(issuerByName)
+                .build();
         }
         return null;
     }
@@ -986,8 +990,7 @@ public class ArendeServiceImpl implements ArendeService {
     }
 
 
-    private Arende processOutgoingMessage(Arende arende, NotificationEvent notificationEvent, EventCode eventCode,
-        boolean sendToRecipient) {
+    private Arende processOutgoingMessage(Arende arende, NotificationEvent notificationEvent, boolean sendToRecipient) {
         Arende saved = arendeRepository.save(arende);
         monitoringLog.logArendeCreated(arende.getIntygsId(), arende.getIntygTyp(), arende.getEnhetId(), arende.getAmne(),
             arende.getSvarPaId() != null);
