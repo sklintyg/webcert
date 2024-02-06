@@ -19,105 +19,31 @@
 
 package se.inera.intyg.webcert.web.csintegration.patient;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import lombok.Builder;
+import lombok.Value;
+import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientDTO.CertificateServicePatientDTOBuilder;
+
+@JsonDeserialize(builder = CertificateServicePatientDTOBuilder.class)
+@Value
+@Builder
 public class CertificateServicePatientDTO {
 
-    private PersonIdDTO id;
-    private String firstName;
-    private String lastName;
-    private String middleName;
-    private String fullName;
-    private String street;
-    private String city;
-    private String zipCode;
-    private Boolean testIndicated;
-    private Boolean protectedPerson;
-    private Boolean deceased;
+    PersonIdDTO id;
+    String firstName;
+    String lastName;
+    String middleName;
+    String fullName;
+    String street;
+    String city;
+    String zipCode;
+    Boolean testIndicated;
+    Boolean protectedPerson;
+    Boolean deceased;
 
-    public PersonIdDTO getId() {
-        return id;
-    }
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class CertificateServicePatientDTOBuilder {
 
-    public void setId(PersonIdDTO id) {
-        this.id = id;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getMiddleName() {
-        return middleName;
-    }
-
-    public void setMiddleName(String middleName) {
-        this.middleName = middleName;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getStreet() {
-        return street;
-    }
-
-    public void setStreet(String street) {
-        this.street = street;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public String getZipCode() {
-        return zipCode;
-    }
-
-    public void setZipCode(String zipCode) {
-        this.zipCode = zipCode;
-    }
-
-    public Boolean isTestIndicated() {
-        return testIndicated;
-    }
-
-    public void setTestIndicated(Boolean testIndicated) {
-        this.testIndicated = testIndicated;
-    }
-
-    public Boolean isProtectedPerson() {
-        return protectedPerson;
-    }
-
-    public void setProtectedPerson(Boolean protectedPerson) {
-        this.protectedPerson = protectedPerson;
-    }
-
-    public Boolean isDeceased() {
-        return deceased;
-    }
-
-    public void setDeceased(Boolean deceased) {
-        this.deceased = deceased;
     }
 }

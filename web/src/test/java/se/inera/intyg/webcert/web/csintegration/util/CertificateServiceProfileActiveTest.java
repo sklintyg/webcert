@@ -49,7 +49,7 @@ class CertificateServiceProfileActiveTest {
 
     @Test
     void shouldReturnTrueIfProfileIsActiveAndTypeIsSupported() {
-        final var modelIdDTO = Optional.of(new CertificateModelIdDTO());
+        final var modelIdDTO = Optional.of(CertificateModelIdDTO.builder().build());
         doReturn(modelIdDTO).when(csIntegrationService).certificateTypeExists(SUPPORTED_TYPE);
         assertTrue(certificateServiceProfileActive.activeAndSupportsType(SUPPORTED_TYPE));
     }

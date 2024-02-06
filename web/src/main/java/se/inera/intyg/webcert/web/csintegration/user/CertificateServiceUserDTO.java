@@ -19,31 +19,23 @@
 
 package se.inera.intyg.webcert.web.csintegration.user;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import lombok.Builder;
+import lombok.Value;
+import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserDTO.CertificateServiceUserDTOBuilder;
+
+@JsonDeserialize(builder = CertificateServiceUserDTOBuilder.class)
+@Value
+@Builder
 public class CertificateServiceUserDTO {
 
-    private String id;
-    private CertificateServiceUserRole role;
-    private Boolean blocked;
+    String id;
+    CertificateServiceUserRole role;
+    Boolean blocked;
 
-    public static CertificateServiceUserDTO create(String id, CertificateServiceUserRole role, boolean blocked) {
-        final var object = new CertificateServiceUserDTO();
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class CertificateServiceUserDTOBuilder {
 
-        object.id = id;
-        object.role = role;
-        object.blocked = blocked;
-
-        return object;
-    }
-
-    public Boolean isBlocked() {
-        return blocked;
-    }
-
-    public CertificateServiceUserRole getRole() {
-        return role;
-    }
-
-    public String getId() {
-        return id;
     }
 }

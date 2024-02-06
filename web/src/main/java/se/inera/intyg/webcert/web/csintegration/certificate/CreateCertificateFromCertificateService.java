@@ -80,16 +80,14 @@ public class CreateCertificateFromCertificateService implements CreateCertificat
     }
 
     private CreateCertificateRequestDTO createRequest(CertificateModelIdDTO modelId, String patientId) throws CreateCertificateException {
-        final var request = new CreateCertificateRequestDTO();
-
-        request.setUnit(certificateServiceUnitHelper.getUnit());
-        request.setCareUnit(certificateServiceUnitHelper.getCareUnit());
-        request.setCareProvider(certificateServiceUnitHelper.getCareProvider());
-        request.setPatient(certificateServicePatientHelper.get(createPatientId(patientId)));
-        request.setUser(certificateServiceUserHelper.get());
-        request.setCertificateModelId(modelId);
-
-        return request;
+        return CreateCertificateRequestDTO.builder()
+            .unit(certificateServiceUnitHelper.getUnit())
+            .careUnit(certificateServiceUnitHelper.getCareUnit())
+            .careProvider(certificateServiceUnitHelper.getCareProvider())
+            .patient(certificateServicePatientHelper.get(createPatientId(patientId)))
+            .user(certificateServiceUserHelper.get())
+            .certificateModelId(modelId)
+            .build();
     }
 
     private Personnummer createPatientId(String patientId) throws CreateCertificateException {

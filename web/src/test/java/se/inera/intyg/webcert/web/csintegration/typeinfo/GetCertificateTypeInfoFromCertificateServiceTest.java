@@ -50,11 +50,11 @@ class GetCertificateTypeInfoFromCertificateServiceTest {
 
     private static final Personnummer PATIENT_ID = Personnummer.createPersonnummer("191212121212").get();
     private static final List<CertificateTypeInfoDTO> TYPES = List.of(new CertificateTypeInfoDTO());
-    private static final CertificateServiceUserDTO USER = new CertificateServiceUserDTO();
+    private static final CertificateServiceUserDTO USER = CertificateServiceUserDTO.builder().build();
 
-    private static final CertificateServicePatientDTO PATIENT = new CertificateServicePatientDTO();
+    private static final CertificateServicePatientDTO PATIENT = CertificateServicePatientDTO.builder().build();
 
-    private static final CertificateServiceUnitDTO UNIT = new CertificateServiceUnitDTO();
+    private static final CertificateServiceUnitDTO UNIT = CertificateServiceUnitDTO.builder().build();
 
     @Mock
     CSIntegrationService csIntegrationService;

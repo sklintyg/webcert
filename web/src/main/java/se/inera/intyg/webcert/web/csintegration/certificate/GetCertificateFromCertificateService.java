@@ -71,13 +71,11 @@ public class GetCertificateFromCertificateService implements GetCertificateFacad
     }
 
     private GetCertificateRequestDTO createRequest() {
-        final var request = new GetCertificateRequestDTO();
-
-        request.setUnit(certificateServiceUnitHelper.getUnit());
-        request.setCareUnit(certificateServiceUnitHelper.getCareUnit());
-        request.setCareProvider(certificateServiceUnitHelper.getCareProvider());
-        request.setUser(certificateServiceUserHelper.get());
-
-        return request;
+        return GetCertificateRequestDTO.builder()
+            .unit(certificateServiceUnitHelper.getUnit())
+            .careUnit(certificateServiceUnitHelper.getCareUnit())
+            .careProvider(certificateServiceUnitHelper.getCareProvider())
+            .user(certificateServiceUserHelper.get())
+            .build();
     }
 }

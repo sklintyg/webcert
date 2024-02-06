@@ -47,7 +47,7 @@ class CertificateServiceUnitHelperTest {
         .loggedInCareProvider(careProvider)
         .build();
 
-    private static final CertificateServiceUnitDTO convertedUnit = new CertificateServiceUnitDTO();
+    private static final CertificateServiceUnitDTO convertedUnit = CertificateServiceUnitDTO.builder().build();
 
     @Mock
     UserService userService;

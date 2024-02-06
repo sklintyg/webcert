@@ -42,11 +42,11 @@ public class CertificateServiceUserHelper {
     public CertificateServiceUserDTO get() {
         final var user = userService.getLoggedInUser();
 
-        return CertificateServiceUserDTO.create(
-            user.getHsaId(),
-            convertRole(user.getRole()),
-            isBlocked()
-        );
+        return CertificateServiceUserDTO.builder()
+            .id(user.getHsaId())
+            .role(convertRole(user.getRole()))
+            .blocked(isBlocked())
+            .build();
     }
 
     private boolean isBlocked() {

@@ -19,29 +19,22 @@
 
 package se.inera.intyg.webcert.web.csintegration.patient;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import lombok.Builder;
+import lombok.Value;
+import se.inera.intyg.webcert.web.csintegration.patient.PersonIdDTO.PersonIdDTOBuilder;
+
+@JsonDeserialize(builder = PersonIdDTOBuilder.class)
+@Value
+@Builder
 public class PersonIdDTO {
 
-    private PersonIdType type;
-    private String id;
+    PersonIdType type;
+    String id;
 
-    public PersonIdDTO(PersonIdType type, String id) {
-        this.type = type;
-        this.id = id;
-    }
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class PersonIdDTOBuilder {
 
-    public PersonIdType getType() {
-        return type;
-    }
-
-    public void setType(PersonIdType type) {
-        this.type = type;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 }

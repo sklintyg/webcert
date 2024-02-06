@@ -19,68 +19,30 @@
 
 package se.inera.intyg.webcert.web.csintegration.integration.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import lombok.Builder;
+import lombok.Value;
 import se.inera.intyg.webcert.web.csintegration.certificate.CertificateModelIdDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO.CreateCertificateRequestDTOBuilder;
 import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientDTO;
 import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitDTO;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserDTO;
 
+@JsonDeserialize(builder = CreateCertificateRequestDTOBuilder.class)
+@Value
+@Builder
 public class CreateCertificateRequestDTO {
 
-    private CertificateServiceUserDTO user;
+    CertificateServiceUserDTO user;
+    CertificateServicePatientDTO patient;
+    CertificateServiceUnitDTO careUnit;
+    CertificateServiceUnitDTO unit;
+    CertificateServiceUnitDTO careProvider;
+    CertificateModelIdDTO certificateModelId;
 
-    private CertificateServicePatientDTO patient;
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class CreateCertificateRequestDTOBuilder {
 
-    private CertificateServiceUnitDTO unit;
-    private CertificateServiceUnitDTO careUnit;
-    private CertificateServiceUnitDTO careProvider;
-
-    private CertificateModelIdDTO certificateModelId;
-
-    public CertificateServiceUserDTO getUser() {
-        return user;
-    }
-
-    public void setUser(CertificateServiceUserDTO user) {
-        this.user = user;
-    }
-
-    public CertificateServicePatientDTO getPatient() {
-        return patient;
-    }
-
-    public void setPatient(CertificateServicePatientDTO patient) {
-        this.patient = patient;
-    }
-
-    public CertificateServiceUnitDTO getUnit() {
-        return unit;
-    }
-
-    public void setUnit(CertificateServiceUnitDTO unit) {
-        this.unit = unit;
-    }
-
-    public CertificateServiceUnitDTO getCareUnit() {
-        return careUnit;
-    }
-
-    public void setCareUnit(CertificateServiceUnitDTO careUnit) {
-        this.careUnit = careUnit;
-    }
-
-    public CertificateServiceUnitDTO getCareProvider() {
-        return careProvider;
-    }
-
-    public void setCareProvider(CertificateServiceUnitDTO careProvider) {
-        this.careProvider = careProvider;
-    }
-
-    public CertificateModelIdDTO getCertificateModelId() {
-        return certificateModelId;
-    }
-
-    public void setCertificateModelId(CertificateModelIdDTO certificateModelId) {
-        this.certificateModelId = certificateModelId;
     }
 }

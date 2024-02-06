@@ -111,11 +111,11 @@ public class CreateCertificateTestabilityUtil {
         if (certificateServiceProfile.activeAndSupportsType(createCertificateRequest.getCertificateType())) {
             final var modelIdDTO = csIntegrationService.certificateTypeExists(createCertificateRequest.getCertificateType());
             return certificateServiceTestabilityUtil.create(
-                new CertificateServiceCreateRequest(
-                    patient,
-                    hosPersonal,
-                    modelIdDTO.orElseThrow()
-                )
+                CertificateServiceCreateRequest.builder()
+                    .patient(patient)
+                    .hosPerson(hosPersonal)
+                    .certificateModelId(modelIdDTO.orElseThrow())
+                    .build()
             );
         }
 

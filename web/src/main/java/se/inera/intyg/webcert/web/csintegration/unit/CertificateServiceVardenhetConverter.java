@@ -27,16 +27,16 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 public class CertificateServiceVardenhetConverter {
 
     public CertificateServiceUnitDTO convert(Vardenhet unit) {
-        final var convertedUnit = new CertificateServiceUnitDTO();
-        convertedUnit.setId(unit.getId());
-        convertedUnit.setName(unit.getNamn());
-        convertedUnit.setAddress(unit.getPostadress());
-        convertedUnit.setZipCode(unit.getPostnummer());
-        convertedUnit.setCity(unit.getPostort());
-        convertedUnit.setPhoneNumber(unit.getTelefonnummer());
-        convertedUnit.setEmail(unit.getEpost());
-        convertedUnit.setInactive(isActive(unit.getStart(), unit.getEnd()));
-        return convertedUnit;
+        return CertificateServiceUnitDTO.builder()
+            .id(unit.getId())
+            .name(unit.getNamn())
+            .address(unit.getPostadress())
+            .zipCode(unit.getPostnummer())
+            .city(unit.getPostort())
+            .phoneNumber(unit.getTelefonnummer())
+            .email(unit.getEpost())
+            .inactive(isActive(unit.getStart(), unit.getEnd()))
+            .build();
     }
 
     private static boolean isActive(LocalDateTime fromDate, LocalDateTime toDate) {

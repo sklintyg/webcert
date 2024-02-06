@@ -19,78 +19,28 @@
 
 package se.inera.intyg.webcert.web.csintegration.unit;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import lombok.Builder;
+import lombok.Value;
+import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitDTO.CertificateServiceUnitDTOBuilder;
+
+@JsonDeserialize(builder = CertificateServiceUnitDTOBuilder.class)
+@Value
+@Builder
 public class CertificateServiceUnitDTO {
 
-    private String id;
-    private String name;
-    private String address;
-    private String zipCode;
-    private String city;
-    private String phoneNumber;
-    private String email;
-    private Boolean inactive;
+    String id;
+    String name;
+    String address;
+    String zipCode;
+    String city;
+    String phoneNumber;
+    String email;
+    Boolean inactive;
 
-    public String getId() {
-        return id;
-    }
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class CertificateServiceUnitDTOBuilder {
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getZipCode() {
-        return zipCode;
-    }
-
-    public void setZipCode(String zipCode) {
-        this.zipCode = zipCode;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public Boolean getInactive() {
-        return inactive;
-    }
-
-    public void setInactive(Boolean inactive) {
-        this.inactive = inactive;
     }
 }

@@ -36,20 +36,18 @@ public class CertificateServicePatientHelper {
 
     public CertificateServicePatientDTO get(Personnummer patientId) {
         final var personSvar = patientDetailsResolver.getPersonFromPUService(patientId);
-        final var patient = new CertificateServicePatientDTO();
-
-        patient.setId(getPersonId(patientId));
-        patient.setProtectedPerson(personSvar.getPerson().isSekretessmarkering());
-        patient.setDeceased(personSvar.getPerson().isAvliden());
-        patient.setFirstName(personSvar.getPerson().getFornamn());
-        patient.setLastName(personSvar.getPerson().getEfternamn());
-        patient.setMiddleName(personSvar.getPerson().getMellannamn());
-        patient.setStreet(personSvar.getPerson().getPostadress());
-        patient.setZipCode(personSvar.getPerson().getPostnummer());
-        patient.setCity(personSvar.getPerson().getPostort());
-        patient.setTestIndicated(personSvar.getPerson().isTestIndicator());
-
-        return patient;
+        return CertificateServicePatientDTO.builder()
+            .id(getPersonId(patientId))
+            .protectedPerson(personSvar.getPerson().isSekretessmarkering())
+            .deceased(personSvar.getPerson().isAvliden())
+            .firstName(personSvar.getPerson().getFornamn())
+            .lastName(personSvar.getPerson().getEfternamn())
+            .middleName(personSvar.getPerson().getMellannamn())
+            .street(personSvar.getPerson().getPostadress())
+            .zipCode(personSvar.getPerson().getPostnummer())
+            .city(personSvar.getPerson().getPostort())
+            .testIndicated(personSvar.getPerson().isTestIndicator())
+            .build();
     }
 
     private PersonIdDTO getPersonId(Personnummer patientId) {
