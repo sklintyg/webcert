@@ -27,10 +27,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
@@ -51,12 +51,14 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView.ArendeType;
 import se.inera.intyg.webcert.web.web.controller.api.dto.MedicinsktArendeView;
 
 @Component
-@RequiredArgsConstructor
 public class ArendeViewConverter {
 
     private static final Logger LOG = LoggerFactory.getLogger(ArendeViewConverter.class);
 
+    @Autowired
     private IntygModuleRegistryImpl moduleRegistry;
+    
+    @Autowired
     private IntygService intygService;
 
     private static String getThreadRootMessageId(Arende arende) {
