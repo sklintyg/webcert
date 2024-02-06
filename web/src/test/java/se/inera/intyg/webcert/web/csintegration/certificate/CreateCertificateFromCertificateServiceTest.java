@@ -53,11 +53,11 @@ import se.inera.intyg.webcert.web.service.facade.impl.CreateCertificateException
 @ExtendWith(MockitoExtension.class)
 class CreateCertificateFromCertificateServiceTest {
 
-    private static final CertificateServiceUserDTO USER = new CertificateServiceUserDTO();
-    private static final CertificateServiceUnitDTO UNIT = new CertificateServiceUnitDTO();
+    private static final CertificateServiceUserDTO USER = CertificateServiceUserDTO.builder().build();
+    private static final CertificateServiceUnitDTO UNIT = CertificateServiceUnitDTO.builder().build();
     private static final String TYPE = "TYPE";
     private static final String VERSION = "VERSION";
-    private static final CertificateServicePatientDTO PATIENT = new CertificateServicePatientDTO();
+    private static final CertificateServicePatientDTO PATIENT = CertificateServicePatientDTO.builder().build();
     private static final CertificateModelIdDTO EXISTS_RESPONSE = new CertificateModelIdDTO(TYPE, VERSION);
     private static final String PATIENT_ID = "191212121212";
     private static final Personnummer PERSONNUMMER = Personnummer.createPersonnummer(PATIENT_ID).get();

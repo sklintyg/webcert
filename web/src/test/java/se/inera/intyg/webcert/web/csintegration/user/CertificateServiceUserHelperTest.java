@@ -103,17 +103,15 @@ class CertificateServiceUserHelperTest {
         void shouldReturnBlockedFalseIfOriginIsNotNormal() {
             final var response = certificateServiceUserHelper.get();
 
-            assertFalse(response.isBlocked());
+            assertFalse(response.getBlocked());
         }
 
         @Nested
         class OriginNormal {
 
-            private SelectableVardenhet careProvider;
-
             @BeforeEach
             void setup() {
-                careProvider = mock(SelectableVardenhet.class);
+                final var careProvider = mock(SelectableVardenhet.class);
                 when(webCertUser.getOrigin())
                     .thenReturn("NORMAL");
 
@@ -134,7 +132,7 @@ class CertificateServiceUserHelperTest {
 
                 final var response = certificateServiceUserHelper.get();
 
-                assertFalse(response.isBlocked());
+                assertFalse(response.getBlocked());
             }
 
             @Test
@@ -144,7 +142,7 @@ class CertificateServiceUserHelperTest {
 
                 final var response = certificateServiceUserHelper.get();
 
-                assertTrue(response.isBlocked());
+                assertTrue(response.getBlocked());
             }
 
             @Test
@@ -155,7 +153,7 @@ class CertificateServiceUserHelperTest {
 
                 final var response = certificateServiceUserHelper.get();
 
-                assertTrue(response.isBlocked());
+                assertTrue(response.getBlocked());
             }
         }
     }

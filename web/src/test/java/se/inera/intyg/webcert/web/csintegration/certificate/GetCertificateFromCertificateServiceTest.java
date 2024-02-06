@@ -50,8 +50,8 @@ import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 @ExtendWith(MockitoExtension.class)
 class GetCertificateFromCertificateServiceTest {
 
-    private static final CertificateServiceUserDTO USER = new CertificateServiceUserDTO();
-    private static final CertificateServiceUnitDTO UNIT = new CertificateServiceUnitDTO();
+    private static final CertificateServiceUserDTO USER = CertificateServiceUserDTO.builder().build();
+    private static final CertificateServiceUnitDTO UNIT = CertificateServiceUnitDTO.builder().build();
     private static final String PATIENT_ID = "191212121212";
     public static final String ID = "ID";
 

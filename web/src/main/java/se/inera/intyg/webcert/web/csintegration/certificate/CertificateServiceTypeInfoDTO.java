@@ -19,45 +19,26 @@
 
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.util.List;
+import lombok.Builder;
+import lombok.Value;
+import se.inera.intyg.webcert.web.csintegration.certificate.CertificateServiceTypeInfoDTO.CertificateServiceTypeInfoDTOBuilder;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 
+@JsonDeserialize(builder = CertificateServiceTypeInfoDTOBuilder.class)
+@Value
+@Builder
 public class CertificateServiceTypeInfoDTO {
 
-    private String type;
-    private String name;
-    private String description;
-    private List<ResourceLinkDTO> links;
+    String type;
+    String name;
+    String description;
+    List<ResourceLinkDTO> links;
 
-    public String getType() {
-        return type;
-    }
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class CertificateServiceTypeInfoDTOBuilder {
 
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public List<ResourceLinkDTO> getLinks() {
-        return links;
-    }
-
-    public void setLinks(List<ResourceLinkDTO> links) {
-        this.links = links;
     }
 }

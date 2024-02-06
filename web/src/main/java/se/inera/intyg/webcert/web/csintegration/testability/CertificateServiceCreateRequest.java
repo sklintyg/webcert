@@ -19,33 +19,26 @@
 
 package se.inera.intyg.webcert.web.csintegration.testability;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import lombok.Builder;
+import lombok.Value;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.webcert.web.csintegration.certificate.CertificateModelIdDTO;
+import se.inera.intyg.webcert.web.csintegration.testability.CertificateServiceCreateRequest.CertificateServiceCreateRequestBuilder;
 
+@JsonDeserialize(builder = CertificateServiceCreateRequestBuilder.class)
+@Value
+@Builder
 public class CertificateServiceCreateRequest {
 
-    private final Patient patient;
+    Patient patient;
+    HoSPersonal hosPerson;
+    CertificateModelIdDTO certificateModelId;
 
-    private final HoSPersonal hosPerson;
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class CertificateServiceCreateRequestBuilder {
 
-    private final CertificateModelIdDTO certificateModelId;
-
-    public CertificateServiceCreateRequest(Patient patient, HoSPersonal hosPerson, CertificateModelIdDTO certificateModelId) {
-        this.patient = patient;
-        this.hosPerson = hosPerson;
-        this.certificateModelId = certificateModelId;
-    }
-
-    public Patient getPatient() {
-        return patient;
-    }
-
-    public HoSPersonal getHosPerson() {
-        return hosPerson;
-    }
-
-    public CertificateModelIdDTO getCertificateModelId() {
-        return certificateModelId;
     }
 }

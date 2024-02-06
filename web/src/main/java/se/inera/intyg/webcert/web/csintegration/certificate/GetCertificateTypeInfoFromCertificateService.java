@@ -54,13 +54,12 @@ public class GetCertificateTypeInfoFromCertificateService implements GetCertific
     }
 
     private CertificateServiceTypeInfoRequestDTO createRequest(Personnummer patientId) {
-        final var request = new CertificateServiceTypeInfoRequestDTO();
-
-        request.setUser(certificateServiceUserHelper.get());
-        request.setPatient(certificateServicePatientHelper.get(patientId));
-        request.setUnit(certificateServiceUnitHelper.getUnit());
-        request.setCareUnit(certificateServiceUnitHelper.getCareUnit());
-        request.setCareProvider(certificateServiceUnitHelper.getCareProvider());
-        return request;
+        return CertificateServiceTypeInfoRequestDTO.builder()
+            .user(certificateServiceUserHelper.get())
+            .patient(certificateServicePatientHelper.get(patientId))
+            .unit(certificateServiceUnitHelper.getUnit())
+            .careUnit(certificateServiceUnitHelper.getCareUnit())
+            .careProvider(certificateServiceUnitHelper.getCareProvider())
+            .build();
     }
 }

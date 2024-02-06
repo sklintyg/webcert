@@ -19,25 +19,22 @@
 
 package se.inera.intyg.webcert.web.csintegration.integration.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import lombok.Builder;
+import lombok.Value;
 import se.inera.intyg.webcert.web.csintegration.certificate.CertificateModelIdDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateTypeExistsResponseDTO.CertificateTypeExistsResponseDTOBuilder;
 
+@JsonDeserialize(builder = CertificateTypeExistsResponseDTOBuilder.class)
+@Value
+@Builder
 public class CertificateTypeExistsResponseDTO {
 
     private CertificateModelIdDTO certificateModelId;
 
-    public CertificateTypeExistsResponseDTO() {
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class CertificateTypeExistsResponseDTOBuilder {
 
-    }
-
-    public CertificateModelIdDTO getCertificateModelId() {
-        return certificateModelId;
-    }
-
-    public void setCertificateModelId(CertificateModelIdDTO certificateModelId) {
-        this.certificateModelId = certificateModelId;
-    }
-
-    public CertificateTypeExistsResponseDTO(CertificateModelIdDTO certificateModelId) {
-        this.certificateModelId = certificateModelId;
     }
 }

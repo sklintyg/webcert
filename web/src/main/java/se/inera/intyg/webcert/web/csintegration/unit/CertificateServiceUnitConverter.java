@@ -26,19 +26,16 @@ import se.inera.intyg.common.support.facade.model.metadata.Unit;
 public class CertificateServiceUnitConverter {
 
     public CertificateServiceUnitDTO convert(Unit unit) {
-        final var convertedUnit = new CertificateServiceUnitDTO();
-
-        convertedUnit.setId(unit.getUnitId());
-        convertedUnit.setName(unit.getUnitName());
-        convertedUnit.setAddress(unit.getAddress());
-        convertedUnit.setZipCode(unit.getZipCode());
-        convertedUnit.setCity(unit.getCity());
-        convertedUnit.setPhoneNumber(unit.getPhoneNumber());
-        convertedUnit.setEmail(unit.getEmail());
-        convertedUnit.setInactive(unit.getIsInactive() == null ? Boolean.FALSE : unit.getIsInactive());
-
-        return convertedUnit;
-
+        return CertificateServiceUnitDTO.builder()
+            .id(unit.getUnitId())
+            .name(unit.getUnitName())
+            .address(unit.getAddress())
+            .zipCode(unit.getZipCode())
+            .city(unit.getCity())
+            .phoneNumber(unit.getPhoneNumber())
+            .email(unit.getEmail())
+            .inactive(unit.getIsInactive() == null ? Boolean.FALSE : unit.getIsInactive())
+            .build();
     }
 
 }

@@ -36,14 +36,12 @@ class CertificateTypeInfoConverterTest {
     private static final CertificateTypeInfoConverter certificateTypeInfoConverter = new CertificateTypeInfoConverter();
 
     private CertificateServiceTypeInfoDTO createTypeInfo() {
-        final var typeInfo = new CertificateServiceTypeInfoDTO();
-
-        typeInfo.setName("name");
-        typeInfo.setDescription("description");
-        typeInfo.setLinks(List.of(new ResourceLinkDTO()));
-        typeInfo.setType("type");
-
-        return typeInfo;
+        return CertificateServiceTypeInfoDTO.builder()
+            .name("name")
+            .description("description")
+            .links(List.of(new ResourceLinkDTO()))
+            .type("type")
+            .build();
     }
 
     @Test

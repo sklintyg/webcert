@@ -57,17 +57,22 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoD
 class CSIntegrationServiceTest {
 
     private static final CertificateTypeInfoDTO CONVERTED_TYPE_INFO = new CertificateTypeInfoDTO();
-    private static final CertificateServiceTypeInfoDTO TYPE_INFO = new CertificateServiceTypeInfoDTO();
+    private static final CertificateServiceTypeInfoDTO TYPE_INFO = CertificateServiceTypeInfoDTO.builder().build();
     private static final List<CertificateServiceTypeInfoDTO> TYPE_INFOS = List.of(TYPE_INFO);
-    private static final CertificateServiceTypeInfoRequestDTO TYPE_INFO_REQUEST = new CertificateServiceTypeInfoRequestDTO();
-    private static final CertificateServiceTypeInfoResponseDTO TYPE_INFO_RESPONSE = new CertificateServiceTypeInfoResponseDTO(TYPE_INFOS);
+    private static final CertificateServiceTypeInfoRequestDTO TYPE_INFO_REQUEST = CertificateServiceTypeInfoRequestDTO.builder().build();
+    private static final CertificateServiceTypeInfoResponseDTO TYPE_INFO_RESPONSE = CertificateServiceTypeInfoResponseDTO.builder()
+        .list(TYPE_INFOS)
+        .build();
     private static final Certificate CERTIFICATE = new Certificate();
-    private static final CreateCertificateRequestDTO CREATE_CERTIFICATE_REQUEST = new CreateCertificateRequestDTO();
+    private static final CreateCertificateRequestDTO CREATE_CERTIFICATE_REQUEST = CreateCertificateRequestDTO.builder().build();
     private static final CertificateServiceCreateCertificateResponseDTO CREATE_RESPONSE =
-        new CertificateServiceCreateCertificateResponseDTO(CERTIFICATE);
-    private static final GetCertificateRequestDTO GET_CERTIFICATE_REQUEST = new GetCertificateRequestDTO();
-    private static final CertificateServiceGetCertificateResponseDTO GET_RESPONSE =
-        new CertificateServiceGetCertificateResponseDTO(CERTIFICATE);
+        CertificateServiceCreateCertificateResponseDTO.builder()
+            .certificate(CERTIFICATE)
+            .build();
+    private static final GetCertificateRequestDTO GET_CERTIFICATE_REQUEST = GetCertificateRequestDTO.builder().build();
+    private static final CertificateServiceGetCertificateResponseDTO GET_RESPONSE = CertificateServiceGetCertificateResponseDTO.builder()
+        .certificate(CERTIFICATE)
+        .build();
     private static final String ID = "ID";
 
     @Mock
@@ -171,9 +176,15 @@ class CSIntegrationServiceTest {
 
             @Test
             void shouldReturnModelIdFromResponse() {
-                final var expectedResponse = new CertificateTypeExistsResponseDTO(
-                    new CertificateModelIdDTO("type", "version")
-                );
+                final var expectedResponse = CertificateTypeExistsResponseDTO.builder()
+                    .certificateModelId(
+                        CertificateModelIdDTO.builder()
+                            .type("type")
+                            .version("version")
+                            .build()
+                    )
+                    .build();
+
                 when(restTemplate.getForObject(anyString(), any()))
                     .thenReturn(expectedResponse);
 
@@ -184,9 +195,14 @@ class CSIntegrationServiceTest {
 
             @Test
             void shouldReturnNullIfTypeIsMissing() {
-                final var expectedResponse = new CertificateTypeExistsResponseDTO(
-                    new CertificateModelIdDTO(null, "version")
-                );
+                final var expectedResponse = CertificateTypeExistsResponseDTO.builder()
+                    .certificateModelId(
+                        CertificateModelIdDTO.builder()
+                            .version("version")
+                            .build()
+                    )
+                    .build();
+
                 when(restTemplate.getForObject(anyString(), any()))
                     .thenReturn(expectedResponse);
 
@@ -197,9 +213,14 @@ class CSIntegrationServiceTest {
 
             @Test
             void shouldReturnNullIfVersionIsMissing() {
-                final var expectedResponse = new CertificateTypeExistsResponseDTO(
-                    new CertificateModelIdDTO("type", null)
-                );
+                final var expectedResponse = CertificateTypeExistsResponseDTO.builder()
+                    .certificateModelId(
+                        CertificateModelIdDTO.builder()
+                            .type("type")
+                            .build()
+                    )
+                    .build();
+
                 when(restTemplate.getForObject(anyString(), any()))
                     .thenReturn(expectedResponse);
 
@@ -210,9 +231,12 @@ class CSIntegrationServiceTest {
 
             @Test
             void shouldReturnNullIfObjectIsEmpty() {
-                final var expectedResponse = new CertificateTypeExistsResponseDTO(
-                    new CertificateModelIdDTO(null, null)
-                );
+                final var expectedResponse = CertificateTypeExistsResponseDTO.builder()
+                    .certificateModelId(
+                        CertificateModelIdDTO.builder().build()
+                    )
+                    .build();
+
                 when(restTemplate.getForObject(anyString(), any()))
                     .thenReturn(expectedResponse);
 
@@ -274,7 +298,9 @@ class CSIntegrationServiceTest {
 
             @Test
             void shouldReturnBooleanFromResponse() {
-                final var expectedResponse = new CertificateExistsResponseDTO(true);
+                final var expectedResponse = CertificateExistsResponseDTO.builder()
+                    .exists(true)
+                    .build();
                 when(restTemplate.getForObject(anyString(), any()))
                     .thenReturn(expectedResponse);
 

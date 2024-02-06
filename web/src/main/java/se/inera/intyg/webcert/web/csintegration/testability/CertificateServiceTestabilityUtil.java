@@ -47,34 +47,34 @@ public class CertificateServiceTestabilityUtil {
     }
 
     private CreateCertificateRequestDTO createRequest(CertificateServiceCreateRequest certificateServiceCreateRequest) {
-        final var certificateRequestDTO = new CreateCertificateRequestDTO();
         final var careUnit = certificateServiceCreateRequest.getHosPerson().getVardenhet();
-        certificateRequestDTO.setUser(certificateServiceUserBuilder.build(certificateServiceCreateRequest.getHosPerson()));
-        certificateRequestDTO.setPatient(certificateServicePatientHelper.get(certificateServiceCreateRequest.getPatient().getPersonId()));
-        certificateRequestDTO.setCertificateModelId(certificateServiceCreateRequest.getCertificateModelId());
-        certificateRequestDTO.setCareProvider(convertToCareProvider(careUnit.getVardgivare()));
-        certificateRequestDTO.setCareUnit(convertToUnit(careUnit));
-        certificateRequestDTO.setUnit(convertToUnit(careUnit));
-        return certificateRequestDTO;
+        return CreateCertificateRequestDTO.builder()
+            .user(certificateServiceUserBuilder.build(certificateServiceCreateRequest.getHosPerson()))
+            .patient(certificateServicePatientHelper.get(certificateServiceCreateRequest.getPatient().getPersonId()))
+            .certificateModelId(certificateServiceCreateRequest.getCertificateModelId())
+            .careProvider(convertToCareProvider(careUnit.getVardgivare()))
+            .careUnit(convertToUnit(careUnit))
+            .unit(convertToUnit(careUnit))
+            .build();
     }
 
     private static CertificateServiceUnitDTO convertToCareProvider(Vardgivare vardgivare) {
-        final var careProvider = new CertificateServiceUnitDTO();
-        careProvider.setId(vardgivare.getVardgivarid());
-        careProvider.setName(vardgivare.getVardgivarnamn());
-        return careProvider;
+        return CertificateServiceUnitDTO.builder()
+            .id(vardgivare.getVardgivarid())
+            .name(vardgivare.getVardgivarnamn())
+            .build();
     }
 
     private static CertificateServiceUnitDTO convertToUnit(Vardenhet vardenhet) {
-        final var unit = new CertificateServiceUnitDTO();
-        unit.setId(vardenhet.getEnhetsid());
-        unit.setAddress(vardenhet.getPostadress());
-        unit.setCity(vardenhet.getPostort());
-        unit.setName(vardenhet.getEnhetsnamn());
-        unit.setEmail(vardenhet.getEpost());
-        unit.setPhoneNumber(vardenhet.getTelefonnummer());
-        unit.setZipCode(vardenhet.getPostnummer());
-        unit.setInactive(false);
-        return unit;
+        return CertificateServiceUnitDTO.builder()
+            .id(vardenhet.getEnhetsid())
+            .address(vardenhet.getPostadress())
+            .city(vardenhet.getPostort())
+            .name(vardenhet.getEnhetsnamn())
+            .email(vardenhet.getEpost())
+            .phoneNumber(vardenhet.getTelefonnummer())
+            .zipCode(vardenhet.getPostnummer())
+            .inactive(false)
+            .build();
     }
 }

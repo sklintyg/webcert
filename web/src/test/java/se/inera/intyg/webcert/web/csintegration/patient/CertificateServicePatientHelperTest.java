@@ -19,8 +19,8 @@
 
 package se.inera.intyg.webcert.web.csintegration.patient;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -42,8 +42,8 @@ class CertificateServicePatientHelperTest {
 
     private static final String ORIGINAL_PATIENT_ID = "191212121212";
     private static final String COORDINATION_NUMBER_PATIENT_ID = "191212721212";
-    private static final Personnummer PATIENT_ID = Personnummer.createPersonnummer(ORIGINAL_PATIENT_ID).get();
-    private static final Personnummer COORDINATION_NUMBER = Personnummer.createPersonnummer(COORDINATION_NUMBER_PATIENT_ID).get();
+    private static final Personnummer PATIENT_ID = Personnummer.createPersonnummer(ORIGINAL_PATIENT_ID).orElseThrow();
+    private static final Personnummer COORDINATION_NUMBER = Personnummer.createPersonnummer(COORDINATION_NUMBER_PATIENT_ID).orElseThrow();
     private static final String FIRST_NAME = "firstName";
     private static final String LAST_NAME = "lastName";
     public static final String MIDDLE_NAME = "middleName";
@@ -165,7 +165,7 @@ class CertificateServicePatientHelperTest {
 
             final var response = certificateServicePatientHelper.get(PATIENT_ID);
 
-            assertTrue(response.isProtectedPerson());
+            assertTrue(response.getProtectedPerson());
         }
 
         @Test
@@ -180,7 +180,7 @@ class CertificateServicePatientHelperTest {
 
             final var response = certificateServicePatientHelper.get(PATIENT_ID);
 
-            assertFalse(response.isProtectedPerson());
+            assertFalse(response.getProtectedPerson());
         }
 
 
@@ -196,7 +196,7 @@ class CertificateServicePatientHelperTest {
 
             final var response = certificateServicePatientHelper.get(PATIENT_ID);
 
-            assertTrue(response.isDeceased());
+            assertTrue(response.getDeceased());
         }
 
         @Test
@@ -211,7 +211,7 @@ class CertificateServicePatientHelperTest {
 
             final var response = certificateServicePatientHelper.get(PATIENT_ID);
 
-            assertFalse(response.isDeceased());
+            assertFalse(response.getDeceased());
         }
 
         @Test
@@ -226,7 +226,7 @@ class CertificateServicePatientHelperTest {
 
             final var response = certificateServicePatientHelper.get(PATIENT_ID);
 
-            assertTrue(response.isTestIndicated());
+            assertTrue(response.getTestIndicated());
         }
 
         @Test
@@ -241,7 +241,7 @@ class CertificateServicePatientHelperTest {
 
             final var response = certificateServicePatientHelper.get(PATIENT_ID);
 
-            assertFalse(response.isTestIndicated());
+            assertFalse(response.getTestIndicated());
         }
     }
 

@@ -41,7 +41,11 @@ public class CertificateServiceUserBuilder {
     public CertificateServiceUserDTO build(HoSPersonal hoSPersonal) {
         final var user = webcertUserDetailsService.loadUserByHsaId(hoSPersonal.getPersonId());
         final var role = getRole(user.getRoles());
-        return CertificateServiceUserDTO.create(hoSPersonal.getPersonId(), role, false);
+        return CertificateServiceUserDTO.builder()
+            .id(hoSPersonal.getPersonId())
+            .role(role)
+            .blocked(false)
+            .build();
     }
 
     private CertificateServiceUserRole getRole(Map<String, Role> roles) {
