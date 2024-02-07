@@ -18,6 +18,9 @@
  */
 package se.inera.intyg.webcert.web.csintegration.testability;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -25,11 +28,13 @@ import org.springframework.web.client.RestTemplate;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceCreateCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CertificateType;
 
 @Service
 public class CSTestabilityIntegrationService {
 
     private static final String TESTABILITY_CERTIFICATE_ENDPOINT_URL = "/testability/certificate";
+    private static final String SUPPORTED_TYPES = "/types";
     private final RestTemplate restTemplate;
 
     public CSTestabilityIntegrationService(@Qualifier("csRestTemplate") RestTemplate restTemplate) {
@@ -49,5 +54,13 @@ public class CSTestabilityIntegrationService {
         }
 
         return response.getCertificate();
+    }
+
+    public List<CertificateType> getSupportedTypes() {
+        final var url = baseUrl + TESTABILITY_CERTIFICATE_ENDPOINT_URL + SUPPORTED_TYPES;
+
+        final var response = restTemplate.getForEntity(url, CertificateType[].class);
+
+        return Arrays.asList(Objects.requireNonNull(response.getBody()));
     }
 }
