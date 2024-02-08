@@ -36,7 +36,7 @@ import se.inera.intyg.common.luse.support.LuseEntryPoint;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
 import se.inera.intyg.common.ts_diabetes.support.TsDiabetesEntryPoint;
-import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
+import se.inera.intyg.webcert.web.csintegration.testability.CSTestabilityIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CertificateType;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateFillType;
@@ -44,13 +44,14 @@ import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCe
 @Component
 public class SupportedCertificateTypesUtil {
 
-    private static final String FK7211_NAME = "Intyg om graviditet";
     private final CertificateServiceProfile certificateServiceProfile;
-    private final CSIntegrationService csIntegrationService;
+    private final CSTestabilityIntegrationService csTestabilityIntegrationService;
 
-    public SupportedCertificateTypesUtil(CertificateServiceProfile certificateServiceProfile, CSIntegrationService csIntegrationService) {
+
+    public SupportedCertificateTypesUtil(CertificateServiceProfile certificateServiceProfile,
+        CSTestabilityIntegrationService csTestabilityIntegrationService) {
         this.certificateServiceProfile = certificateServiceProfile;
-        this.csIntegrationService = csIntegrationService;
+        this.csTestabilityIntegrationService = csTestabilityIntegrationService;
     }
 
     public List<CertificateType> get() {
@@ -183,18 +184,9 @@ public class SupportedCertificateTypesUtil {
         );
 
         if (certificateServiceProfile.active()) {
-            final var modelId = csIntegrationService.certificateTypeExists("fk7211");
-            modelId.ifPresent(
-                certificateModelIdDTO -> certificateTypes.add(
-                    new CertificateType(
-                        certificateModelIdDTO.getType(),
-                        certificateModelIdDTO.getType(),
-                        FK7211_NAME,
-                        Collections.singletonList(certificateModelIdDTO.getVersion()),
-                        Arrays.asList(CertificateStatus.UNSIGNED, CertificateStatus.SIGNED, CertificateStatus.LOCKED),
-                        Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL, CreateCertificateFillType.MAXIMAL)
-                    )
-                ));
+            certificateTypes.addAll(
+                csTestabilityIntegrationService.getSupportedTypes()
+            );
         }
         return certificateTypes;
     }
