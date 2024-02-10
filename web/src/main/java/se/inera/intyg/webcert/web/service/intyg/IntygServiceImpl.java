@@ -541,8 +541,7 @@ public class IntygServiceImpl implements IntygService {
             .createCertificateEvent(intygsId, webCertUserService.getUser().getHsaId(), EventCode.SKICKAT, "Recipient: " + recipient);
 
         // send PDL log event
-        LogRequest logRequest = logRequestFactory.createLogRequestFromUtlatande(utlatande);
-        logRequest.setAdditionalInfo(sendConfig.getPatientConsentMessage());
+        LogRequest logRequest = logRequestFactory.createLogRequestFromUtlatande(utlatande, sendConfig.getPatientConsentMessage());
         logService.logSendIntygToRecipient(logRequest);
 
         markUtkastWithSendDateAndRecipient(optionalUtkast.orElse(null), intygsId, recipient);

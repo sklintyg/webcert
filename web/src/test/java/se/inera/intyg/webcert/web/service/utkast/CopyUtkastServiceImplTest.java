@@ -222,7 +222,7 @@ public class CopyUtkastServiceImplTest {
         patient = new Patient();
         patient.setPersonId(PATIENT_SSN);
 
-        when(logRequestFactory.createLogRequestFromUtkast(any(Utkast.class))).thenReturn(new LogRequest());
+        when(logRequestFactory.createLogRequestFromUtkast(any(Utkast.class))).thenReturn(LogRequest.builder().build());
         when(patientDetailsResolver.isTestIndicator(any())).thenReturn(false);
     }
 

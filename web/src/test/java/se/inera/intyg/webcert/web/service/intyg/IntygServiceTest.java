@@ -358,8 +358,9 @@ public class IntygServiceTest {
 
     @Before
     public void setupPdlLogging() {
-        when(logRequestFactory.createLogRequestFromUtlatande(any(Utlatande.class))).thenReturn(new LogRequest());
-        when(logRequestFactory.createLogRequestFromUtlatande(any(Utlatande.class), anyBoolean())).thenReturn(new LogRequest());
+        when(logRequestFactory.createLogRequestFromUtlatande(any(Utlatande.class))).thenReturn(LogRequest.builder().build());
+        when(logRequestFactory.createLogRequestFromUtlatande(any(Utlatande.class), anyString())).thenReturn(LogRequest.builder().build());
+        when(logRequestFactory.createLogRequestFromUtlatande(any(Utlatande.class), anyBoolean())).thenReturn(LogRequest.builder().build());
     }
 
     private void setupUserAndVardgivare() {

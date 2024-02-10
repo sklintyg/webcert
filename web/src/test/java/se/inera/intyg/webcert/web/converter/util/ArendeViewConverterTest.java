@@ -50,7 +50,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.common.fkparent.model.converter.RespConstants;
-import se.inera.intyg.common.lisjp.v1.model.internal.LisjpUtlatandeV1;
 import se.inera.intyg.common.luse.v1.model.internal.LuseUtlatandeV1;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.InternalDate;
@@ -146,9 +145,9 @@ public class ArendeViewConverterTest {
             result.getKompletteringar().get(1).getJsonPropertyHandle());
         assertEquals(RespConstants.UNDERLAG_SVAR_JSON_ID_4,
             result.getKompletteringar().get(2).getJsonPropertyHandle());
-        assertEquals(new Integer(0), result.getKompletteringar().get(0).getPosition());
-        assertEquals(new Integer(0), result.getKompletteringar().get(1).getPosition());
-        assertEquals(new Integer(1), result.getKompletteringar().get(2).getPosition());
+        assertEquals(Integer.valueOf(0), result.getKompletteringar().get(0).getPosition());
+        assertEquals(Integer.valueOf(0), result.getKompletteringar().get(1).getPosition());
+        assertEquals(Integer.valueOf(1), result.getKompletteringar().get(2).getPosition());
         assertEquals(VARDAKTOR_NAMN, result.getVardaktorNamn());
         assertEquals(ENHETS_NAMN, result.getEnhetsnamn());
         assertEquals(VARDGIVARE_NAMN, result.getVardgivarnamn());
@@ -174,9 +173,9 @@ public class ArendeViewConverterTest {
             result.getKompletteringar().get(1).getJsonPropertyHandle());
         assertEquals(RespConstants.UNDERLAG_SVAR_JSON_ID_4,
             result.getKompletteringar().get(2).getJsonPropertyHandle());
-        assertEquals(new Integer(0), result.getKompletteringar().get(0).getPosition());
-        assertEquals(new Integer(0), result.getKompletteringar().get(1).getPosition());
-        assertEquals(new Integer(1), result.getKompletteringar().get(2).getPosition());
+        assertEquals(Integer.valueOf(0), result.getKompletteringar().get(0).getPosition());
+        assertEquals(Integer.valueOf(0), result.getKompletteringar().get(1).getPosition());
+        assertEquals(Integer.valueOf(1), result.getKompletteringar().get(2).getPosition());
         assertEquals(VARDAKTOR_NAMN, result.getVardaktorNamn());
         assertEquals(ENHETS_NAMN, result.getEnhetsnamn());
         assertEquals(VARDGIVARE_NAMN, result.getVardgivarnamn());
@@ -185,14 +184,14 @@ public class ArendeViewConverterTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testConvertKompletteringWithoutInstans() throws ModuleNotFoundException, ModuleException {
+    public void testConvertKompletteringWithoutInstans() throws ModuleException {
         Arende arende = buildArende("lisjp");
         arende.setKomplettering(Arrays.asList(buildMedicinsktArende("1", null, "arende1")));
         ArendeView result = converter.convertToDto(arende);
 
         assertEquals(1, result.getKompletteringar().size());
         assertEquals(RespConstants.GRUNDFORMEDICINSKTUNDERLAG_SVAR_JSON_ID_1, result.getKompletteringar().get(0).getJsonPropertyHandle());
-        assertEquals(new Integer(0), result.getKompletteringar().get(0).getPosition());
+        assertEquals(Integer.valueOf(0), result.getKompletteringar().get(0).getPosition());
         assertEquals(VARDAKTOR_NAMN, result.getVardaktorNamn());
         assertEquals(ENHETS_NAMN, result.getEnhetsnamn());
         assertEquals(VARDGIVARE_NAMN, result.getVardgivarnamn());
@@ -201,14 +200,14 @@ public class ArendeViewConverterTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testConvertKompletteringInstansTooHigh() throws ModuleNotFoundException, ModuleException {
+    public void testConvertKompletteringInstansTooHigh() throws ModuleException {
         Arende arende = buildArende("lisjp");
         arende.setKomplettering(Arrays.asList(buildMedicinsktArende("1", 3, "arende1")));
         ArendeView result = converter.convertToDto(arende);
 
         assertEquals(1, result.getKompletteringar().size());
         assertEquals(RespConstants.GRUNDFORMEDICINSKTUNDERLAG_SVAR_JSON_ID_1, result.getKompletteringar().get(0).getJsonPropertyHandle());
-        assertEquals(new Integer(2), result.getKompletteringar().get(0).getPosition());
+        assertEquals(Integer.valueOf(2), result.getKompletteringar().get(0).getPosition());
         assertEquals(VARDAKTOR_NAMN, result.getVardaktorNamn());
         assertEquals(ENHETS_NAMN, result.getEnhetsnamn());
         assertEquals(VARDGIVARE_NAMN, result.getVardgivarnamn());
@@ -217,14 +216,14 @@ public class ArendeViewConverterTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testConvertKompletteringUnknownQuestionId() throws ModuleNotFoundException, ModuleException {
+    public void testConvertKompletteringUnknownQuestionId() throws ModuleException {
         Arende arende = buildArende("lisjp");
         arende.setKomplettering(Arrays.asList(buildMedicinsktArende("10", 1, "arende1")));
         ArendeView result = converter.convertToDto(arende);
 
         assertEquals(1, result.getKompletteringar().size());
         assertEquals("", result.getKompletteringar().get(0).getJsonPropertyHandle());
-        assertEquals(new Integer(0), result.getKompletteringar().get(0).getPosition());
+        assertEquals(Integer.valueOf(0), result.getKompletteringar().get(0).getPosition());
         assertEquals(VARDAKTOR_NAMN, result.getVardaktorNamn());
         assertEquals(ENHETS_NAMN, result.getEnhetsnamn());
         assertEquals(VARDGIVARE_NAMN, result.getVardgivarnamn());
@@ -233,7 +232,7 @@ public class ArendeViewConverterTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testConvertToArendeWithoutKomplettering() throws ModuleNotFoundException, ModuleException {
+    public void testConvertToArendeWithoutKomplettering() throws ModuleException {
         ArendeView result = converter.convertToDto(buildArende("meddelandeId", LocalDateTime.now(), LocalDateTime.now()));
 
         assertTrue(result.getKompletteringar().isEmpty());
@@ -392,13 +391,11 @@ public class ArendeViewConverterTest {
         Arende svar = createValidArendeForLuse("svar", fragaTimestamp.plusMinutes(10), "unique id of svar", fraga);
 
         // When
-        Throwable thrown = catchThrowable(() -> {
-            converter.buildArendeConversations(
-                fraga.getIntygsId(),
-                ImmutableList.of(fraga, svar),
-                null,
-                Collections.emptyList());
-        });
+        Throwable thrown = catchThrowable(() -> converter.buildArendeConversations(
+            fraga.getIntygsId(),
+            ImmutableList.of(fraga, svar),
+            null,
+            Collections.emptyList()));
 
         // Then
         Assertions.assertThat(thrown).isInstanceOf(NullPointerException.class);
@@ -427,7 +424,7 @@ public class ArendeViewConverterTest {
 
     private AnsweredWithIntyg createMatchingAnsweredWithIntyg(Arende fraga, LocalDateTime signDate) {
         LocalDateTime sendDate = signDate.plusMinutes(5);
-        if (fraga.getSenasteHandelse().compareTo(sendDate) < 0) {
+        if (fraga.getSenasteHandelse().isBefore(sendDate)) {
             fraga.setSenasteHandelse(sendDate);
         }
         return AnsweredWithIntyg.builder()
@@ -500,20 +497,6 @@ public class ArendeViewConverterTest {
         }
 
         return arende;
-    }
-
-    private LisjpUtlatandeV1 buildLisjpUtlatande(String intygsid2, String enhetsId, String enhetsNamn, String patientPersonId,
-        String skapadAvNamn, String skapadavPersonId, LocalDateTime timeStamp) {
-
-        LisjpUtlatandeV1.Builder template = LisjpUtlatandeV1.builder();
-
-        template.setId(intygsId);
-        GrundData grundData = buildGrundData(enhetsId, enhetsNamn, patientPersonId, skapadavPersonId, timeStamp);
-        template.setGrundData(grundData);
-        template.setTextVersion("");
-        template.setTelefonkontaktMedPatienten(new InternalDate(timeStamp.toLocalDate()));
-
-        return template.build();
     }
 
     private LuseUtlatandeV1 buildLuseUtlatande(String intygsId, String enhetsId, String enhetsnamn, String patientPersonId,

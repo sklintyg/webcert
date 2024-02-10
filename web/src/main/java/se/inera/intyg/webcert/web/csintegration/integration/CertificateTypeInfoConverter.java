@@ -20,7 +20,7 @@
 package se.inera.intyg.webcert.web.csintegration.integration;
 
 import org.springframework.stereotype.Component;
-import se.inera.intyg.webcert.web.csintegration.certificate.CertificateServiceTypeInfoDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
 @Component

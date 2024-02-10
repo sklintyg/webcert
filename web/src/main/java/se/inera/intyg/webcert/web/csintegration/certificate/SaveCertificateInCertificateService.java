@@ -26,36 +26,44 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
-import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.facade.SaveCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 @Slf4j
-@Service("getCertificateFromCS")
+@Service("saveCertificateFacadeServiceCS")
 @RequiredArgsConstructor
-public class GetCertificateFromCertificateService implements GetCertificateFacadeService {
+public class SaveCertificateInCertificateService implements SaveCertificateFacadeService {
 
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
     private final PDLLogService pdlLogService;
+    private final MonitoringLogService monitoringLogService;
 
     @Override
-    public Certificate getCertificate(String certificateId, boolean pdlLog, boolean validateAccess) {
-        final var exists = csIntegrationService.certificateExists(certificateId);
+    public long saveCertificate(Certificate certificate, boolean pdlLog) {
+        log.debug("Attempting to save certificate '{}' of type '{}'",
+            certificate.getMetadata().getId(),
+            certificate.getMetadata().getType()
+        );
+
+        final var exists = csIntegrationService.certificateExists(certificate.getMetadata().getId());
         if (Boolean.FALSE.equals(exists)) {
-            log.debug("Certificate with id '{}' does not exist in certificate service", certificateId);
-            return null;
+            log.debug("Certificate '{}' does not exist in certificate service", certificate.getMetadata().getId());
+            return -1;
         }
 
-        log.debug("Getting certificate from certificate service with id '{}'", certificateId);
-        final var response = csIntegrationService.getCertificate(
-            certificateId,
-            csIntegrationRequestFactory.getCertificateRequest()
+        final var savedCertificate = csIntegrationService.saveCertificate(
+            csIntegrationRequestFactory.saveRequest(certificate)
         );
-        log.debug("Certificate with id '{}' was retrieved from certificate service", certificateId);
 
         if (pdlLog) {
-            pdlLogService.logRead(response);
+            pdlLogService.logSaved(savedCertificate);
+            monitoringLogService.logUtkastEdited(
+                certificate.getMetadata().getId(),
+                certificate.getMetadata().getType()
+            );
         }
 
-        return response;
+        return savedCertificate.getMetadata().getVersion();
     }
 }

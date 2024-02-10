@@ -24,7 +24,6 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.util.List;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.webcert.web.csintegration.certificate.CertificateServiceTypeInfoDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoResponseDTO.CertificateServiceTypeInfoResponseDTOBuilder;
 
 @JsonDeserialize(builder = CertificateServiceTypeInfoResponseDTOBuilder.class)
@@ -32,7 +31,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServi
 @Builder
 public class CertificateServiceTypeInfoResponseDTO {
 
-    private List<CertificateServiceTypeInfoDTO> list;
+    List<CertificateServiceTypeInfoDTO> list;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class CertificateServiceTypeInfoResponseDTOBuilder {

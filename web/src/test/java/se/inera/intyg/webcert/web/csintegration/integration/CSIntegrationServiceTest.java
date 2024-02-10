@@ -40,17 +40,19 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.webcert.web.csintegration.certificate.CertificateModelIdDTO;
-import se.inera.intyg.webcert.web.csintegration.certificate.CertificateServiceTypeInfoDTO;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateExistsResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceCreateCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceGetCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateTypeExistsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
-import se.inera.intyg.webcert.web.service.facade.impl.CreateCertificateException;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
 @ExtendWith(MockitoExtension.class)
@@ -83,6 +85,14 @@ class CSIntegrationServiceTest {
 
     @InjectMocks
     private CSIntegrationService csIntegrationService;
+
+    static {
+        CERTIFICATE.setMetadata(
+            CertificateMetadata.builder()
+                .id(ID)
+                .build()
+        );
+    }
 
     @Test
     void shouldReturnEmptyListIfTypeInfoResponseIsNull() {
@@ -131,16 +141,17 @@ class CSIntegrationServiceTest {
     class CreateCertificate {
 
         @Test
-        void shouldThrowCreateCertificateExceptionIfExceptionFromCertificateService() {
+        void shouldThrowExceptionIfResponseIsNull() {
             when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenThrow(IllegalStateException.class);
-            assertThrows(
-                CreateCertificateException.class,
-                () -> csIntegrationService.createCertificate(CREATE_CERTIFICATE_REQUEST));
+                .thenReturn(null);
+
+            assertThrows(IllegalStateException.class,
+                () -> csIntegrationService.createCertificate(CREATE_CERTIFICATE_REQUEST)
+            );
         }
 
         @Test
-        void shouldPreformPostUsingRequest() throws CreateCertificateException {
+        void shouldPreformPostUsingRequest() {
             when(restTemplate.postForObject(anyString(), any(), any()))
                 .thenReturn(CREATE_RESPONSE);
             final var captor = ArgumentCaptor.forClass(CreateCertificateRequestDTO.class);
@@ -152,7 +163,7 @@ class CSIntegrationServiceTest {
         }
 
         @Test
-        void shouldReturnCertificate() throws CreateCertificateException {
+        void shouldReturnCertificate() {
             when(restTemplate.postForObject(anyString(), any(), any()))
                 .thenReturn(CREATE_RESPONSE);
             final var response = csIntegrationService.createCertificate(CREATE_CERTIFICATE_REQUEST);
@@ -161,100 +172,102 @@ class CSIntegrationServiceTest {
         }
 
         @Test
-        void shouldSetUrlCorrect() throws CreateCertificateException {
+        void shouldSetUrlCorrect() {
             ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
             final var captor = ArgumentCaptor.forClass(String.class);
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(CREATE_RESPONSE);
 
             csIntegrationService.createCertificate(CREATE_CERTIFICATE_REQUEST);
             verify(restTemplate).postForObject(captor.capture(), any(), any());
 
             assertEquals("baseUrl/api/certificate", captor.getValue());
         }
+    }
 
-        @Nested
-        class Exists {
+    @Nested
+    class CertificateTypeExists {
 
-            @Test
-            void shouldReturnModelIdFromResponse() {
-                final var expectedResponse = CertificateTypeExistsResponseDTO.builder()
-                    .certificateModelId(
-                        CertificateModelIdDTO.builder()
-                            .type("type")
-                            .version("version")
-                            .build()
-                    )
-                    .build();
+        @Test
+        void shouldReturnModelIdFromResponse() {
+            final var expectedResponse = CertificateTypeExistsResponseDTO.builder()
+                .certificateModelId(
+                    CertificateModelIdDTO.builder()
+                        .type("type")
+                        .version("version")
+                        .build()
+                )
+                .build();
 
-                when(restTemplate.getForObject(anyString(), any()))
-                    .thenReturn(expectedResponse);
+            when(restTemplate.getForObject(anyString(), any()))
+                .thenReturn(expectedResponse);
 
-                final var response = csIntegrationService.certificateTypeExists("type");
+            final var response = csIntegrationService.certificateTypeExists("type");
 
-                assertEquals(expectedResponse.getCertificateModelId(), response.orElse(null));
-            }
+            assertEquals(expectedResponse.getCertificateModelId(), response.orElse(null));
+        }
 
-            @Test
-            void shouldReturnNullIfTypeIsMissing() {
-                final var expectedResponse = CertificateTypeExistsResponseDTO.builder()
-                    .certificateModelId(
-                        CertificateModelIdDTO.builder()
-                            .version("version")
-                            .build()
-                    )
-                    .build();
+        @Test
+        void shouldReturnNullIfTypeIsMissing() {
+            final var expectedResponse = CertificateTypeExistsResponseDTO.builder()
+                .certificateModelId(
+                    CertificateModelIdDTO.builder()
+                        .version("version")
+                        .build()
+                )
+                .build();
 
-                when(restTemplate.getForObject(anyString(), any()))
-                    .thenReturn(expectedResponse);
+            when(restTemplate.getForObject(anyString(), any()))
+                .thenReturn(expectedResponse);
 
-                final var response = csIntegrationService.certificateTypeExists("type");
+            final var response = csIntegrationService.certificateTypeExists("type");
 
-                assertTrue(response.isEmpty());
-            }
+            assertTrue(response.isEmpty());
+        }
 
-            @Test
-            void shouldReturnNullIfVersionIsMissing() {
-                final var expectedResponse = CertificateTypeExistsResponseDTO.builder()
-                    .certificateModelId(
-                        CertificateModelIdDTO.builder()
-                            .type("type")
-                            .build()
-                    )
-                    .build();
+        @Test
+        void shouldReturnNullIfVersionIsMissing() {
+            final var expectedResponse = CertificateTypeExistsResponseDTO.builder()
+                .certificateModelId(
+                    CertificateModelIdDTO.builder()
+                        .type("type")
+                        .build()
+                )
+                .build();
 
-                when(restTemplate.getForObject(anyString(), any()))
-                    .thenReturn(expectedResponse);
+            when(restTemplate.getForObject(anyString(), any()))
+                .thenReturn(expectedResponse);
 
-                final var response = csIntegrationService.certificateTypeExists("type");
+            final var response = csIntegrationService.certificateTypeExists("type");
 
-                assertTrue(response.isEmpty());
-            }
+            assertTrue(response.isEmpty());
+        }
 
-            @Test
-            void shouldReturnNullIfObjectIsEmpty() {
-                final var expectedResponse = CertificateTypeExistsResponseDTO.builder()
-                    .certificateModelId(
-                        CertificateModelIdDTO.builder().build()
-                    )
-                    .build();
+        @Test
+        void shouldReturnNullIfObjectIsEmpty() {
+            final var expectedResponse = CertificateTypeExistsResponseDTO.builder()
+                .certificateModelId(
+                    CertificateModelIdDTO.builder().build()
+                )
+                .build();
 
-                when(restTemplate.getForObject(anyString(), any()))
-                    .thenReturn(expectedResponse);
+            when(restTemplate.getForObject(anyString(), any()))
+                .thenReturn(expectedResponse);
 
-                final var response = csIntegrationService.certificateTypeExists("type");
+            final var response = csIntegrationService.certificateTypeExists("type");
 
-                assertTrue(response.isEmpty());
-            }
+            assertTrue(response.isEmpty());
+        }
 
-            @Test
-            void shouldSetUrlCorrect() {
-                ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
-                final var captor = ArgumentCaptor.forClass(String.class);
+        @Test
+        void shouldSetUrlCorrect() {
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(String.class);
 
-                csIntegrationService.certificateTypeExists("fk7211");
-                verify(restTemplate).getForObject(captor.capture(), any());
+            csIntegrationService.certificateTypeExists("fk7211");
+            verify(restTemplate).getForObject(captor.capture(), any());
 
-                assertEquals("baseUrl/api/certificatetypeinfo/fk7211/exists", captor.getValue());
-            }
+            assertEquals("baseUrl/api/certificatetypeinfo/fk7211/exists", captor.getValue());
         }
     }
 
@@ -292,33 +305,87 @@ class CSIntegrationServiceTest {
 
             assertEquals("baseUrl/api/certificate/id", captor.getValue());
         }
+    }
 
-        @Nested
-        class Exists {
+    @Nested
+    class CertificateExists {
 
-            @Test
-            void shouldReturnBooleanFromResponse() {
-                final var expectedResponse = CertificateExistsResponseDTO.builder()
-                    .exists(true)
-                    .build();
-                when(restTemplate.getForObject(anyString(), any()))
-                    .thenReturn(expectedResponse);
+        @Test
+        void shouldReturnBooleanFromResponse() {
+            final var expectedResponse = CertificateExistsResponseDTO.builder()
+                .exists(true)
+                .build();
+            when(restTemplate.getForObject(anyString(), any()))
+                .thenReturn(expectedResponse);
 
-                final var response = csIntegrationService.certificateExists("id");
+            final var response = csIntegrationService.certificateExists("id");
 
-                assertEquals(expectedResponse.getExists(), response);
-            }
+            assertEquals(expectedResponse.getExists(), response);
+        }
 
-            @Test
-            void shouldSetUrlCorrect() {
-                ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
-                final var captor = ArgumentCaptor.forClass(String.class);
+        @Test
+        void shouldSetUrlCorrect() {
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(String.class);
 
-                csIntegrationService.certificateExists("id");
-                verify(restTemplate).getForObject(captor.capture(), any());
+            csIntegrationService.certificateExists("id");
+            verify(restTemplate).getForObject(captor.capture(), any());
 
-                assertEquals("baseUrl/api/certificate/id/exists", captor.getValue());
-            }
+            assertEquals("baseUrl/api/certificate/id/exists", captor.getValue());
+        }
+    }
+
+    @Nested
+    class SaveCertificate {
+
+        private final SaveCertificateRequestDTO saveCertificateRequestDTO = SaveCertificateRequestDTO.builder()
+            .certificate(CERTIFICATE)
+            .build();
+        private final SaveCertificateResponseDTO saveCertificateResponseDTO = SaveCertificateResponseDTO.builder()
+            .certificate(CERTIFICATE)
+            .build();
+
+        @Test
+        void shouldPreformPostUsingRequest() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(saveCertificateResponseDTO);
+            final var captor = ArgumentCaptor.forClass(SaveCertificateResponseDTO.class);
+
+            csIntegrationService.saveCertificate(saveCertificateRequestDTO);
+            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+
+            assertEquals(saveCertificateRequestDTO, captor.getValue());
+        }
+
+        @Test
+        void shouldReturnCertificate() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(saveCertificateResponseDTO);
+            final var response = csIntegrationService.saveCertificate(saveCertificateRequestDTO);
+
+            assertEquals(CERTIFICATE, response);
+        }
+
+        @Test
+        void shouldThrowExceptionIfResponseIsNull() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(null);
+            assertThrows(IllegalStateException.class,
+                () -> csIntegrationService.saveCertificate(saveCertificateRequestDTO)
+            );
+        }
+
+        @Test
+        void shouldSetUrlCorrect() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(saveCertificateResponseDTO);
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            csIntegrationService.saveCertificate(saveCertificateRequestDTO);
+            verify(restTemplate).postForObject(captor.capture(), any(), any());
+
+            assertEquals("baseUrl/api/certificate/ID/save", captor.getValue());
         }
     }
 }

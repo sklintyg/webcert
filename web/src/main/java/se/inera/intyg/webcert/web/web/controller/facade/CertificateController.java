@@ -90,9 +90,10 @@ public class CertificateController {
     private static final String UTF_8_CHARSET = ";charset=utf-8";
 
     @Autowired
-    @Qualifier("GetCertificateAggregator")
+    @Qualifier("getCertificateAggregator")
     private GetCertificateFacadeService getCertificateFacadeService;
     @Autowired
+    @Qualifier("saveCertificateAggregator")
     private SaveCertificateFacadeService saveCertificateFacadeService;
     @Autowired
     private ValidateCertificateFacadeService validationCertificateFacadeService;
@@ -125,7 +126,7 @@ public class CertificateController {
     @Autowired
     private CreateCertificateFromCandidateFacadeService createCertificateFromCandidateFacadeService;
     @Autowired
-    @Qualifier("CreateCertificateAggregator")
+    @Qualifier("createCertificateAggregator")
     private CreateCertificateFacadeService createCertificateFacadeService;
 
     @Autowired

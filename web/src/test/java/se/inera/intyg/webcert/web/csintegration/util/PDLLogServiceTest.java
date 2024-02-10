@@ -20,32 +20,24 @@
 package se.inera.intyg.webcert.web.csintegration.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
-import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @ExtendWith(MockitoExtension.class)
 class PDLLogServiceTest {
 
-    private static final LogRequest REQUEST = new LogRequest();
-    private static final WebCertUser USER = new WebCertUser();
-    private static final String PATIENT_ID = "191212121212";
-    private static final String CERTIFICATE_ID = "ID";
+    private static final Certificate CERTIFICATE = new Certificate();
 
     @Mock
     LogService logService;
@@ -53,109 +45,48 @@ class PDLLogServiceTest {
     @Mock
     LogRequestFactory logRequestFactory;
 
-    @Mock
-    WebCertUserService webCertUserService;
-
     @InjectMocks
     PDLLogService pdlLogService;
 
-    @BeforeEach
-    void setup() {
-        when(webCertUserService.getUser())
-            .thenReturn(USER);
+    @Test
+    void shouldLogCreateCertificate() {
+        final var expectedLogRequest = LogRequest.builder().build();
+        final var captor = ArgumentCaptor.forClass(LogRequest.class);
 
-        when(logRequestFactory.createLogRequestFromUser(any(WebCertUser.class), anyString()))
-            .thenReturn(REQUEST);
+        doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE);
+
+        pdlLogService.logCreated(CERTIFICATE);
+
+        verify(logService).logCreateIntyg(captor.capture());
+
+        assertEquals(expectedLogRequest, captor.getValue());
     }
 
-    @Nested
-    class Create {
+    @Test
+    void shouldLogReadCertificate() {
+        final var expectedLogRequest = LogRequest.builder().build();
+        final var captor = ArgumentCaptor.forClass(LogRequest.class);
 
-        @Test
-        void shouldCreateRequestUsingUser() {
-            final var captor = ArgumentCaptor.forClass(WebCertUser.class);
+        doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE);
 
-            pdlLogService.logCreated(PATIENT_ID, CERTIFICATE_ID);
+        pdlLogService.logRead(CERTIFICATE);
 
-            verify(logRequestFactory).createLogRequestFromUser(captor.capture(), anyString());
-            assertEquals(USER, captor.getValue());
-        }
+        verify(logService).logReadIntyg(captor.capture());
 
-        @Test
-        void shouldCreateRequestUsingPatientId() {
-            final var captor = ArgumentCaptor.forClass(String.class);
-
-            pdlLogService.logCreated(PATIENT_ID, CERTIFICATE_ID);
-
-            verify(logRequestFactory).createLogRequestFromUser(any(WebCertUser.class), captor.capture());
-            assertEquals(PATIENT_ID, captor.getValue());
-        }
-
-        @Test
-        void shouldCreateRequestUsingCertificateId() {
-            final var captor = ArgumentCaptor.forClass(LogRequest.class);
-
-            pdlLogService.logCreated(PATIENT_ID, CERTIFICATE_ID);
-
-            verify(logService).logCreateIntyg(captor.capture());
-            assertEquals(CERTIFICATE_ID, captor.getValue().getIntygId());
-        }
-
-
-        @Test
-        void shouldLogUsingRequest() {
-            final var captor = ArgumentCaptor.forClass(LogRequest.class);
-
-            pdlLogService.logCreated(PATIENT_ID, CERTIFICATE_ID);
-
-            verify(logService).logCreateIntyg(captor.capture());
-            assertEquals(REQUEST, captor.getValue());
-        }
+        assertEquals(expectedLogRequest, captor.getValue());
     }
 
-    @Nested
-    class Read {
+    @Test
+    void shouldLogSavedCertificate() {
+        final var expectedLogRequest = LogRequest.builder().build();
+        final var captor = ArgumentCaptor.forClass(LogRequest.class);
 
-        @Test
-        void shouldCreateRequestUsingUser() {
-            final var captor = ArgumentCaptor.forClass(WebCertUser.class);
+        doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE);
 
-            pdlLogService.logRead(PATIENT_ID, CERTIFICATE_ID);
+        pdlLogService.logSaved(CERTIFICATE);
 
-            verify(logRequestFactory).createLogRequestFromUser(captor.capture(), anyString());
-            assertEquals(USER, captor.getValue());
-        }
+        verify(logService).logUpdateIntyg(captor.capture());
 
-        @Test
-        void shouldCreateRequestUsingPatientId() {
-            final var captor = ArgumentCaptor.forClass(String.class);
-
-            pdlLogService.logRead(PATIENT_ID, CERTIFICATE_ID);
-
-            verify(logRequestFactory).createLogRequestFromUser(any(WebCertUser.class), captor.capture());
-            assertEquals(PATIENT_ID, captor.getValue());
-        }
-
-        @Test
-        void shouldCreateRequestUsingCertificateId() {
-            final var captor = ArgumentCaptor.forClass(LogRequest.class);
-
-            pdlLogService.logRead(PATIENT_ID, CERTIFICATE_ID);
-
-            verify(logService).logReadIntyg(captor.capture());
-            assertEquals(CERTIFICATE_ID, captor.getValue().getIntygId());
-        }
-
-
-        @Test
-        void shouldLogUsingRequest() {
-            final var captor = ArgumentCaptor.forClass(LogRequest.class);
-
-            pdlLogService.logRead(PATIENT_ID, CERTIFICATE_ID);
-
-            verify(logService).logReadIntyg(captor.capture());
-            assertEquals(REQUEST, captor.getValue());
-        }
+        assertEquals(expectedLogRequest, captor.getValue());
     }
-
 }

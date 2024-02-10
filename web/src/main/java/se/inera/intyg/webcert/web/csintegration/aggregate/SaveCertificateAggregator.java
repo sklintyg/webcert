@@ -23,34 +23,38 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
-import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.facade.SaveCertificateFacadeService;
 
-@Service("getCertificateAggregator")
-public class GetCertificateAggregator implements GetCertificateFacadeService {
+@Service("saveCertificateAggregator")
+public class SaveCertificateAggregator implements SaveCertificateFacadeService {
 
-    private final GetCertificateFacadeService getCertificateFromWC;
-    private final GetCertificateFacadeService getCertificateFromCS;
+    private final SaveCertificateFacadeService saveCertificateFacadeServiceWC;
+    private final SaveCertificateFacadeService saveCertificateFacadeServiceCS;
     private final CertificateServiceProfile certificateServiceProfile;
 
-    public GetCertificateAggregator(
-        @Qualifier("getCertificateFromWC") GetCertificateFacadeService getCertificateFromWC,
-        @Qualifier("getCertificateFromCS") GetCertificateFacadeService getCertificateFromCS,
+    public SaveCertificateAggregator(
+        @Qualifier("saveCertificateFacadeServiceWC") SaveCertificateFacadeService saveCertificateFacadeServiceWC,
+        @Qualifier("saveCertificateFacadeServiceCS") SaveCertificateFacadeService saveCertificateFacadeServiceCS,
         CertificateServiceProfile certificateServiceProfile) {
-        this.getCertificateFromWC = getCertificateFromWC;
-        this.getCertificateFromCS = getCertificateFromCS;
+        this.saveCertificateFacadeServiceWC = saveCertificateFacadeServiceWC;
+        this.saveCertificateFacadeServiceCS = saveCertificateFacadeServiceCS;
         this.certificateServiceProfile = certificateServiceProfile;
     }
 
     @Override
-    public Certificate getCertificate(String certificateId, boolean pdlLog, boolean validateAccess) {
+    public long saveCertificate(Certificate certificate, boolean pdlLog) {
         if (!certificateServiceProfile.active()) {
-            return getCertificateFromWC.getCertificate(certificateId, pdlLog, validateAccess);
+            return saveCertificateFacadeServiceWC.saveCertificate(certificate, pdlLog);
         }
 
-        final var responseFromCS = getCertificateFromCS.getCertificate(certificateId, pdlLog, validateAccess);
+        final var versionFromCS = saveCertificateFacadeServiceCS.saveCertificate(certificate, pdlLog);
+        
+        return hasBeenSavedInCC(versionFromCS)
+            ? versionFromCS
+            : saveCertificateFacadeServiceWC.saveCertificate(certificate, pdlLog);
+    }
 
-        return responseFromCS != null
-            ? responseFromCS
-            : getCertificateFromWC.getCertificate(certificateId, pdlLog, validateAccess);
+    private static boolean hasBeenSavedInCC(long responseFromCS) {
+        return responseFromCS > 0;
     }
 }

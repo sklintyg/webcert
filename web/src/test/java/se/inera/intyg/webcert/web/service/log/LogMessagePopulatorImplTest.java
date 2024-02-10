@@ -33,7 +33,7 @@ public class LogMessagePopulatorImplTest {
 
     private static final String ADDITIONAL_INFO = "additional info";
     private static final String ACTIVITY_ARGS = "activity args";
-    private LogMessagePopulator testee = new LogMessagePopulatorImpl();
+    private final LogMessagePopulator testee = new LogMessagePopulatorImpl();
 
     @Test
     public void testActivityArgsAddedFromAdditionalInfoWhenActivityArgsAbsent() {
@@ -70,10 +70,11 @@ public class LogMessagePopulatorImplTest {
     }
 
     private LogRequest buildLogRequest(String additionalInfo) {
-        LogRequest logRequest = new LogRequest();
-        logRequest.setPatientId(Personnummer.createPersonnummer("19121212-1212").get());
-        logRequest.setAdditionalInfo(additionalInfo);
-        return logRequest;
+        return LogRequest.builder()
+            .intygId("abc123")
+            .patientId(Personnummer.createPersonnummer("19121212-1212").orElseThrow())
+            .additionalInfo(additionalInfo)
+            .build();
     }
 
     private LogUser buildLogUser() {

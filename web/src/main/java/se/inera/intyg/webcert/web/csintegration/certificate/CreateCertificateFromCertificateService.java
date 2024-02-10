@@ -19,84 +19,54 @@
 
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientHelper;
-import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitHelper;
-import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserHelper;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.facade.CreateCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.impl.CreateCertificateException;
 
-@Service("CreateCertificateFromCS")
+@Slf4j
+@Service("createCertificateFromCS")
+@RequiredArgsConstructor
 public class CreateCertificateFromCertificateService implements CreateCertificateFacadeService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CreateCertificateFromCertificateService.class);
-
     private final CSIntegrationService csIntegrationService;
-    private final CertificateServiceUserHelper certificateServiceUserHelper;
-    private final CertificateServiceUnitHelper certificateServiceUnitHelper;
-    private final CertificateServicePatientHelper certificateServicePatientHelper;
+    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
     private final PDLLogService pdlLogService;
-
-    public CreateCertificateFromCertificateService(CSIntegrationService csIntegrationService,
-        CertificateServiceUserHelper certificateServiceUserHelper, CertificateServiceUnitHelper certificateServiceUnitHelper,
-        CertificateServicePatientHelper certificateServicePatientHelper, PDLLogService pdlLogService) {
-        this.csIntegrationService = csIntegrationService;
-        this.certificateServiceUserHelper = certificateServiceUserHelper;
-        this.certificateServiceUnitHelper = certificateServiceUnitHelper;
-        this.certificateServicePatientHelper = certificateServicePatientHelper;
-        this.pdlLogService = pdlLogService;
-    }
 
     @Override
     public String create(String certificateType, String patientId) throws CreateCertificateException {
-        LOG.info("Attempting to create certificate of type '{}'", certificateType);
+        log.debug("Attempting to create certificate of type '{}'", certificateType);
 
         final var modelId = csIntegrationService.certificateTypeExists(certificateType);
         if (modelId.isEmpty()) {
-            LOG.info("Certificate type '{}' does not exist in certificate service", certificateType);
+            log.debug("Certificate type '{}' does not exist in certificate service", certificateType);
             return null;
         }
 
-        final var request = createRequest(modelId.get(), patientId);
-        final var response = csIntegrationService.createCertificate(request);
-
-        if (response == null) {
-            throw new CreateCertificateException("Could not create certificate, received null");
+        try {
+            return createCertificate(patientId, modelId.get());
+        } catch (Exception ex) {
+            log.error("Failed to create certificate in certificate-service!", ex);
+            throw new CreateCertificateException("Could not create certificate in certificate service!");
         }
+    }
 
-        pdlLogService.logCreated(patientId, response.getMetadata().getId());
-        LOG.info("Created certificate using certificate service of type '{}' and version '{}'",
-            modelId.get().getType(),
-            modelId.get().getVersion()
+    private String createCertificate(String patientId, CertificateModelIdDTO modelId) {
+        final var response = csIntegrationService.createCertificate(
+            csIntegrationRequestFactory.createCertificateRequest(modelId, patientId)
+        );
+
+        pdlLogService.logCreated(response);
+        log.debug("Created certificate using certificate service of type '{}' and version '{}'",
+            modelId.getType(),
+            modelId.getVersion()
         );
 
         return response.getMetadata().getId();
-    }
-
-    private CreateCertificateRequestDTO createRequest(CertificateModelIdDTO modelId, String patientId) throws CreateCertificateException {
-        return CreateCertificateRequestDTO.builder()
-            .unit(certificateServiceUnitHelper.getUnit())
-            .careUnit(certificateServiceUnitHelper.getCareUnit())
-            .careProvider(certificateServiceUnitHelper.getCareProvider())
-            .patient(certificateServicePatientHelper.get(createPatientId(patientId)))
-            .user(certificateServiceUserHelper.get())
-            .certificateModelId(modelId)
-            .build();
-    }
-
-    private Personnummer createPatientId(String patientId) throws CreateCertificateException {
-        final var convertedPatientId = Personnummer.createPersonnummer(patientId);
-
-        if (convertedPatientId.isEmpty()) {
-            throw new CreateCertificateException("PatientId has wrong format");
-        }
-
-        return convertedPatientId.get();
     }
 }

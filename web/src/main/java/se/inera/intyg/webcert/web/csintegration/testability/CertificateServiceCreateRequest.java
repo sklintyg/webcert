@@ -25,7 +25,7 @@ import lombok.Builder;
 import lombok.Value;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
-import se.inera.intyg.webcert.web.csintegration.certificate.CertificateModelIdDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
 import se.inera.intyg.webcert.web.csintegration.testability.CertificateServiceCreateRequest.CertificateServiceCreateRequestBuilder;
 
 @JsonDeserialize(builder = CertificateServiceCreateRequestBuilder.class)

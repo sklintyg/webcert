@@ -30,7 +30,7 @@ import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateTypesFacadeService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
-@Service("CertificateTypeInfoAggregator")
+@Service("certificateTypeInfoAggregator")
 public class CertificateTypeInfoAggregator implements GetCertificateTypesFacadeService {
 
     private final GetCertificateTypesFacadeService getCertificateTypeInfoFromWebcert;
@@ -51,7 +51,6 @@ public class CertificateTypeInfoAggregator implements GetCertificateTypesFacadeS
     @Override
     public List<CertificateTypeInfoDTO> get(Personnummer patientId) {
         final var typesFromWebcert = getCertificateTypeInfoFromWebcert.get(patientId);
-
         if (!certificateServiceProfile.active()) {
             return typesFromWebcert;
         }

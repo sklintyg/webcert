@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.log.factory;
 
+import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
@@ -31,7 +32,15 @@ public interface LogRequestFactory {
 
     LogRequest createLogRequestFromUtlatande(Utlatande utlatande);
 
+    LogRequest createLogRequestFromUtlatande(Utlatande utlatande, String additionalInfo);
+
     LogRequest createLogRequestFromUtlatande(Utlatande utlatande, boolean coherentJournaling);
 
     LogRequest createLogRequestFromUser(WebCertUser user, String patientId);
+
+    LogRequest createLogRequestFromUser(WebCertUser user, String patientId, String intygsId);
+
+    LogRequest createLogRequestFromCertificate(Certificate certificate);
+
+    LogRequest createLogRequestFromCertificate(Certificate certificate, boolean sjf);
 }

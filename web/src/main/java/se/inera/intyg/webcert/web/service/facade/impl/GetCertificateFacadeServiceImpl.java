@@ -39,7 +39,7 @@ import se.inera.intyg.webcert.web.service.facade.util.UtkastToCertificateConvert
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
-@Service("GetCertificateFromWC")
+@Service("getCertificateFromWC")
 @Primary
 public class GetCertificateFacadeServiceImpl implements GetCertificateFacadeService {
 

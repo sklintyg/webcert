@@ -152,7 +152,7 @@ public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationT
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(moduleApi.updateBeforeViewing(anyString(), any(Patient.class))).thenReturn("MODEL");
 
-        when(logRequestFactory.createLogRequestFromUtlatande(any(Utlatande.class))).thenReturn(new LogRequest());
+        when(logRequestFactory.createLogRequestFromUtlatande(any(Utlatande.class), anyString())).thenReturn(LogRequest.builder().build());
         when(intygTextsService.isLatestMajorVersion(any(String.class), any(String.class))).thenReturn(true);
     }
 

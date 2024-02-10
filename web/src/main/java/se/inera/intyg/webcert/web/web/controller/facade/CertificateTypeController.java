@@ -44,7 +44,7 @@ public class CertificateTypeController {
     private final GetCertificateTypesFacadeService getCertificateTypesFacadeService;
 
     public CertificateTypeController(
-        @Qualifier("CertificateTypeInfoAggregator") GetCertificateTypesFacadeService getCertificateTypesFacadeService) {
+        @Qualifier("certificateTypeInfoAggregator") GetCertificateTypesFacadeService getCertificateTypesFacadeService) {
         this.getCertificateTypesFacadeService = getCertificateTypesFacadeService;
     }
 

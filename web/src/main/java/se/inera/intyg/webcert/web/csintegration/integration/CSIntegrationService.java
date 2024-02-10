@@ -22,15 +22,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.webcert.web.csintegration.certificate.CertificateModelIdDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateExistsResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceCreateCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceGetCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoRequestDTO;
@@ -38,27 +36,27 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServi
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateTypeExistsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
-import se.inera.intyg.webcert.web.service.facade.impl.CreateCertificateException;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
 @Service
 public class CSIntegrationService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CSIntegrationService.class);
     private static final String CERTIFICATE_ENDPOINT_URL = "/api/certificate";
     private static final String CERTIFICATE_TYPE_INFO_ENDPOINT_URL = "/api/certificatetypeinfo";
     private final CertificateTypeInfoConverter certificateTypeInfoConverter;
 
     private final RestTemplate restTemplate;
 
+    @Value("${certificateservice.base.url}")
+    private String baseUrl;
+
     public CSIntegrationService(CertificateTypeInfoConverter certificateTypeInfoConverter, @Qualifier("csRestTemplate")
     RestTemplate restTemplate) {
         this.certificateTypeInfoConverter = certificateTypeInfoConverter;
         this.restTemplate = restTemplate;
     }
-
-    @Value("${certificateservice.base.url}")
-    private String baseUrl;
 
     public List<CertificateTypeInfoDTO> getTypeInfo(CertificateServiceTypeInfoRequestDTO request) {
         final var url = baseUrl + CERTIFICATE_TYPE_INFO_ENDPOINT_URL;
@@ -74,23 +72,16 @@ public class CSIntegrationService {
             .collect(Collectors.toList());
     }
 
-    public Certificate createCertificate(CreateCertificateRequestDTO request) throws CreateCertificateException {
+    public Certificate createCertificate(CreateCertificateRequestDTO request) {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL;
 
-        try {
-            final var response = restTemplate.postForObject(url, request, CertificateServiceCreateCertificateResponseDTO.class);
+        final var response = restTemplate.postForObject(url, request, CertificateServiceCreateCertificateResponseDTO.class);
 
-            if (response == null) {
-                return null;
-            }
-
-            return response.getCertificate();
-        } catch (Exception exception) {
-            LOG.error(
-                "Error with communication with certificate-service with reason '{}'", exception.getMessage(), exception
-            );
-            throw new CreateCertificateException("Could not create certificate");
+        if (response == null) {
+            throw new IllegalStateException("Certificate service returned null response!");
         }
+
+        return response.getCertificate();
     }
 
     public Certificate getCertificate(String certificateId, GetCertificateRequestDTO request) {
@@ -129,5 +120,18 @@ public class CSIntegrationService {
         }
 
         return Boolean.TRUE.equals(response.getExists());
+    }
+
+    public Certificate saveCertificate(SaveCertificateRequestDTO request) {
+        final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + request.getCertificate().getMetadata().getId() + "/save";
+        final var response = restTemplate.postForObject(url, request, SaveCertificateResponseDTO.class);
+        if (response == null) {
+            throw new IllegalStateException(
+                String.format("Saving certificate '%s' returned empty response!",
+                    request.getCertificate().getMetadata().getId()
+                )
+            );
+        }
+        return response.getCertificate();
     }
 }
