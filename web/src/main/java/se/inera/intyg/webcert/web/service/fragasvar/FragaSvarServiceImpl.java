@@ -296,28 +296,24 @@ public class FragaSvarServiceImpl implements FragaSvarService {
 
         if (!fragaSvar.getStatus().equals(Status.PENDING_INTERNAL_ACTION)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
-                "FragaSvar with id "
-                    + fragaSvar.getInternReferens().toString() + " has invalid state for saving answer("
-                    + fragaSvar.getStatus() + ")");
+                String.format("FragaSvar with id '%s' has invalid state for saving answer(%s)",
+                    fragaSvar.getInternReferens(),
+                    fragaSvar.getStatus()
+                )
+            );
         }
 
         // Implement Business Rule FS-007
-        if (Amne.PAMINNELSE.equals(fragaSvar.getAmne())) {
+        if (Amne.PAMINNELSE.equals(fragaSvar.getAmne()) || Amne.KOMPLETTERING_AV_LAKARINTYG.equals(fragaSvar.getAmne())) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
-                "FragaSvar with id "
-                    + fragaSvar.getInternReferens().toString() + " has invalid Amne("
-                    + fragaSvar.getAmne()
-                    + ") for saving answer");
+                String.format("FragaSvar with id '%s' has invalid Amne(%s) for saving answer",
+                    fragaSvar.getInternReferens(),
+                    fragaSvar.getAmne()
+                )
+            );
         }
 
         WebCertUser user = webCertUserService.getUser();
-        if (Amne.KOMPLETTERING_AV_LAKARINTYG.equals(fragaSvar.getAmne())) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
-                "FragaSvar with id "
-                    + fragaSvar.getInternReferens().toString() + " has invalid Amne("
-                    + fragaSvar.getAmne()
-                    + ") for saving answer");
-        }
 
         createSvar(user, svarsText, fragaSvar);
 
@@ -353,10 +349,11 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         if (!authoritiesValidator.given(user)
             .privilege(AuthoritiesConstants.PRIVILEGE_BESVARA_KOMPLETTERINGSFRAGA).isVerified()) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                "FragaSvar with id "
-                    + komplFragaSvar.getInternReferens().toString() + " and amne ("
-                    + Amne.KOMPLETTERING_AV_LAKARINTYG
-                    + ") can only be answered by user that is Lakare");
+                String.format("FragaSvar with id '%s' and amne (%s) can only be answered by user that is Lakare",
+                    komplFragaSvar.getInternReferens(),
+                    Amne.KOMPLETTERING_AV_LAKARINTYG
+                )
+            );
         }
 
         createSvar(user, svarsText, komplFragaSvar);
@@ -460,10 +457,9 @@ public class FragaSvarServiceImpl implements FragaSvarService {
         }
 
         if (!response.getResult().getResultCode().equals(ResultCodeEnum.OK)) {
-            LOGGER.error("Failed to send question to FK, result was {}", response.getResult().toString());
+            LOGGER.error("Failed to send question to FK, result was {}", response.getResult());
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM,
-                response.getResult()
-                    .getErrorText());
+                response.getResult().getErrorText());
         }
 
         monitoringService.logQuestionSent(saved.getExternReferens(), saved.getInternReferens(),
