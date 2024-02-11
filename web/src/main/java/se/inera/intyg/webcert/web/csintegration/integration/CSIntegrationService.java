@@ -24,6 +24,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import se.inera.intyg.common.support.facade.model.Certificate;
@@ -123,15 +128,24 @@ public class CSIntegrationService {
     }
 
     public Certificate saveCertificate(SaveCertificateRequestDTO request) {
-        final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + request.getCertificate().getMetadata().getId() + "/save";
-        final var response = restTemplate.postForObject(url, request, SaveCertificateResponseDTO.class);
-        if (response == null) {
+        final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + request.getCertificate().getMetadata().getId();
+        final var headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        final var response = restTemplate.<SaveCertificateResponseDTO>exchange(
+            url,
+            HttpMethod.PUT,
+            new HttpEntity<>(request, headers),
+            new ParameterizedTypeReference<>() {
+            },
+            Collections.emptyMap()
+        );
+        if (response.getBody() == null) {
             throw new IllegalStateException(
                 String.format("Saving certificate '%s' returned empty response!",
                     request.getCertificate().getMetadata().getId()
                 )
             );
         }
-        return response.getCertificate();
+        return response.getBody().getCertificate();
     }
 }

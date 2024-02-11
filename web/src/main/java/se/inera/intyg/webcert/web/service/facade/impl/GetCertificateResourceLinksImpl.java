@@ -69,6 +69,10 @@ public class GetCertificateResourceLinksImpl implements GetCertificateResourceLi
      */
     @Override
     public ResourceLinkDTO[] get(Certificate certificate) {
+        if (useLinksProvidedInCertificate(certificate)) {
+            return convertLinksProvidedInCertificate(certificate);
+        }
+
         final var accessEvaluationParameters = createAccessEvaluationParameters(certificate);
         final var availableFunctions = getCertificatesAvailableFunctions.get(certificate);
         final var functions = getAccessFunctions(certificate);
@@ -80,6 +84,30 @@ public class GetCertificateResourceLinksImpl implements GetCertificateResourceLi
                 }
                 return accessFunction.hasAccess(accessEvaluationParameters, certificate);
             })
+            .toArray(ResourceLinkDTO[]::new);
+    }
+
+    /**
+     * To support certificates returned from certificate-service we need to consider if
+     * the certificate already contains links. If the certificate do, then convert those
+     * links and return. If not evaluate as normal with available functions and access functions.
+     */
+    private static boolean useLinksProvidedInCertificate(Certificate certificate) {
+        return certificate.getLinks() != null;
+    }
+
+    private static ResourceLinkDTO[] convertLinksProvidedInCertificate(Certificate certificate) {
+        return certificate.getLinks().stream()
+            .map(link ->
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.valueOf(link.getType().name()),
+                    link.getTitle(),
+                    link.getName(),
+                    link.getDescription(),
+                    link.getBody(),
+                    link.isEnabled()
+                )
+            )
             .toArray(ResourceLinkDTO[]::new);
     }
 
