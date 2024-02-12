@@ -82,4 +82,19 @@ class CreateCertificateAggregatorTest {
 
         assertEquals(ID_FROM_WC, response);
     }
+
+    @Test
+    void shouldReturnCertificateIdFromWCIIfCSProfileIsActiveButReturnsNull() throws CreateCertificateException {
+        when(certificateServiceProfile.active())
+            .thenReturn(true);
+        when(createCertificateFromCS.create(TYPE, ORIGINAL_PATIENT_ID))
+            .thenReturn(null);
+        when(createCertificateFromWC.create(TYPE, ORIGINAL_PATIENT_ID))
+            .thenReturn(ID_FROM_WC);
+
+        final var response = aggregator.create(TYPE, ORIGINAL_PATIENT_ID);
+        verify(createCertificateFromCS, times(1)).create(TYPE, ORIGINAL_PATIENT_ID);
+
+        assertEquals(ID_FROM_WC, response);
+    }
 }

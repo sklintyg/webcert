@@ -19,35 +19,34 @@
 
 package se.inera.intyg.webcert.web.csintegration.util;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
-import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 @Service
+@RequiredArgsConstructor
 public class PDLLogService {
 
     private final LogRequestFactory logRequestFactory;
     private final LogService logService;
-    private final WebCertUserService webCertUserService;
 
-    public PDLLogService(LogRequestFactory logRequestFactory, LogService logService, WebCertUserService webCertUserService) {
-        this.logRequestFactory = logRequestFactory;
-        this.logService = logService;
-        this.webCertUserService = webCertUserService;
+    public void logCreated(Certificate certificate) {
+        logService.logCreateIntyg(
+            logRequestFactory.createLogRequestFromCertificate(certificate)
+        );
     }
 
-    public void logCreated(String patientId, String certificateId) {
-        final var request = logRequestFactory.createLogRequestFromUser(webCertUserService.getUser(), patientId);
-        request.setIntygId(certificateId);
-
-        logService.logCreateIntyg(request);
+    public void logRead(Certificate certificate) {
+        logService.logReadIntyg(
+            logRequestFactory.createLogRequestFromCertificate(certificate)
+        );
     }
 
-    public void logRead(String patientId, String certificateId) {
-        final var request = logRequestFactory.createLogRequestFromUser(webCertUserService.getUser(), patientId);
-        request.setIntygId(certificateId);
-
-        logService.logReadIntyg(request);
+    public void logSaved(Certificate certificate) {
+        logService.logUpdateIntyg(
+            logRequestFactory.createLogRequestFromCertificate(certificate)
+        );
     }
 }

@@ -38,7 +38,7 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 
-@Service("CreateCertificateFromWC")
+@Service("createCertificateFromWC")
 public class CreateCertificateFacadeServiceImpl implements CreateCertificateFacadeService {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateCertificateFacadeServiceImpl.class);

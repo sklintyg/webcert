@@ -17,28 +17,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.csintegration.certificate;
+package se.inera.intyg.webcert.web.csintegration.integration.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import java.util.List;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.webcert.web.csintegration.certificate.CertificateServiceTypeInfoDTO.CertificateServiceTypeInfoDTOBuilder;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO.CertificateModelIdDTOBuilder;
 
-@JsonDeserialize(builder = CertificateServiceTypeInfoDTOBuilder.class)
+@JsonDeserialize(builder = CertificateModelIdDTOBuilder.class)
 @Value
 @Builder
-public class CertificateServiceTypeInfoDTO {
+public class CertificateModelIdDTO {
 
     String type;
-    String name;
-    String description;
-    List<ResourceLinkDTO> links;
+    String version;
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class CertificateServiceTypeInfoDTOBuilder {
+    public static class CertificateModelIdDTOBuilder {
 
     }
 }

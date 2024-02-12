@@ -22,219 +22,131 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
-import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientDTO;
-import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientHelper;
-import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitDTO;
-import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitHelper;
-import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserDTO;
-import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserHelper;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.facade.impl.CreateCertificateException;
 
 @ExtendWith(MockitoExtension.class)
 class CreateCertificateFromCertificateServiceTest {
 
-    private static final CertificateServiceUserDTO USER = CertificateServiceUserDTO.builder().build();
-    private static final CertificateServiceUnitDTO UNIT = CertificateServiceUnitDTO.builder().build();
-    private static final String TYPE = "TYPE";
-    private static final String VERSION = "VERSION";
-    private static final CertificateServicePatientDTO PATIENT = CertificateServicePatientDTO.builder().build();
-    private static final CertificateModelIdDTO EXISTS_RESPONSE = new CertificateModelIdDTO(TYPE, VERSION);
-    private static final String PATIENT_ID = "191212121212";
-    private static final Personnummer PERSONNUMMER = Personnummer.createPersonnummer(PATIENT_ID).get();
-    private static final String ID = "ID";
-
-    @Mock
-    CertificateServiceUnitHelper certificateServiceUnitHelper;
-
-    @Mock
-    CertificateServicePatientHelper certificateServicePatientHelper;
-
-    @Mock
-    CertificateServiceUserHelper certificateServiceUserHelper;
-
     @Mock
     CSIntegrationService csIntegrationService;
-
+    @Mock
+    CSIntegrationRequestFactory csIntegrationRequestFactory;
     @Mock
     PDLLogService pdlLogService;
-
     @InjectMocks
     CreateCertificateFromCertificateService createCertificateFromCertificateService;
 
-    @Test
-    void shouldThrowErrorIfIntegrationAPIReturnsNull() {
-        when(csIntegrationService.certificateTypeExists(TYPE))
-            .thenReturn(Optional.of(EXISTS_RESPONSE));
+    private static final Certificate CERTIFICATE = new Certificate();
+    private static final String CERTIFICATE_ID = "ID";
+    private static final String PATIENT_ID = "s191212121212";
+    private static final String TYPE = "TYPE";
+    private static final String VERSION = "VERSION";
+    private static final CertificateModelIdDTO CERTIFICATE_MODEL_ID = CertificateModelIdDTO.builder()
+        .type(TYPE)
+        .version(VERSION)
+        .build();
+    private static final CreateCertificateRequestDTO REQUEST = CreateCertificateRequestDTO.builder().build();
 
-        assertThrows(CreateCertificateException.class, () -> createCertificateFromCertificateService.create(TYPE, "wrongFormat"));
+    static {
+        CERTIFICATE.setMetadata(
+            CertificateMetadata.builder()
+                .id(CERTIFICATE_ID)
+                .build()
+        );
     }
 
     @Test
-    void shouldThrowErrorIfPatientIdHasWrongFormat() {
-        when(csIntegrationService.certificateTypeExists(TYPE))
-            .thenReturn(Optional.of(EXISTS_RESPONSE));
+    void shouldThrowExceptionIfCertificateTypeExistsThrows() {
+        doThrow(new IllegalStateException()).when(csIntegrationService).certificateTypeExists(TYPE);
 
-        assertThrows(CreateCertificateException.class, () -> createCertificateFromCertificateService.create(TYPE, "wrongFormat"));
+        assertThrows(IllegalStateException.class,
+            () -> createCertificateFromCertificateService.create(TYPE, PATIENT_ID)
+        );
     }
 
     @Test
-    void shouldReturnNullIfCertificateIntegrationResponseIsNull() throws CreateCertificateException {
-        final var response = createCertificateFromCertificateService.create(TYPE, PATIENT_ID);
+    void shouldReturnNullIfCertificateTypeDoesntExist() throws CreateCertificateException {
+        doReturn(Optional.empty()).when(csIntegrationService).certificateTypeExists(TYPE);
 
-        assertNull(response);
-    }
-
-    @Test
-    void shouldReturnNullIfCertificateTypeDoesNotExistInCS() throws CreateCertificateException {
-        final var response = createCertificateFromCertificateService.create(TYPE, PATIENT_ID);
-
-        assertNull(response);
+        assertNull(
+            createCertificateFromCertificateService.create(TYPE, PATIENT_ID)
+        );
     }
 
     @Test
     void shouldNotPerformPDLLogIfTypeWasNotCreatedFromCS() throws CreateCertificateException {
+        doReturn(Optional.empty()).when(csIntegrationService).certificateTypeExists(TYPE);
         createCertificateFromCertificateService.create(TYPE, PATIENT_ID);
-
-        verify(pdlLogService, times(0)).logCreated(PATIENT_ID, ID);
+        verifyNoInteractions(pdlLogService);
     }
 
     @Nested
-    class HasCertificate {
+    class CertificateTypeExists {
 
         @BeforeEach
-        void setup() throws CreateCertificateException {
-            Certificate certificate = new Certificate();
-            final var metadata = CertificateMetadata.builder().id(ID).build();
-            certificate.setMetadata(metadata);
-
-            when(csIntegrationService.certificateTypeExists(TYPE))
-                .thenReturn(Optional.of(EXISTS_RESPONSE));
-            when(csIntegrationService.createCertificate(any()))
-                .thenReturn(certificate);
+        void setUp() {
+            doReturn(Optional.of(CERTIFICATE_MODEL_ID)).when(csIntegrationService).certificateTypeExists(TYPE);
         }
 
         @Test
-        void shouldReturnIdOfCertificate() throws CreateCertificateException {
-            final var response = createCertificateFromCertificateService.create(TYPE, PATIENT_ID);
+        void shouldThrowCertificateCreateExceptionIfCreateCertificateThrows() {
+            doReturn(REQUEST).when(csIntegrationRequestFactory).createCertificateRequest(CERTIFICATE_MODEL_ID, PATIENT_ID);
+            doThrow(new IllegalStateException()).when(csIntegrationService).createCertificate(REQUEST);
 
-            assertEquals(ID, response);
+            assertThrows(CreateCertificateException.class,
+                () -> createCertificateFromCertificateService.create(TYPE, PATIENT_ID)
+            );
+        }
+
+        @Test
+        void shouldThrowCertificateCreateExceptionIfCreateCertificateRequestThrows() {
+            doThrow(new IllegalStateException()).when(csIntegrationRequestFactory)
+                .createCertificateRequest(CERTIFICATE_MODEL_ID, PATIENT_ID);
+
+            assertThrows(CreateCertificateException.class,
+                () -> createCertificateFromCertificateService.create(TYPE, PATIENT_ID)
+            );
         }
 
         @Test
         void shouldPerformPDLForCreateCertificate() throws CreateCertificateException {
+            doReturn(REQUEST).when(csIntegrationRequestFactory).createCertificateRequest(CERTIFICATE_MODEL_ID, PATIENT_ID);
+            doReturn(CERTIFICATE).when(csIntegrationService).createCertificate(REQUEST);
+
             createCertificateFromCertificateService.create(TYPE, PATIENT_ID);
 
-            verify(pdlLogService, times(1)).logCreated(PATIENT_ID, ID);
+            verify(pdlLogService, times(1)).logCreated(CERTIFICATE);
         }
 
-        @Nested
-        class Request {
+        @Test
+        void shouldReturnIdOfCertificate() throws CreateCertificateException {
+            doReturn(REQUEST).when(csIntegrationRequestFactory).createCertificateRequest(CERTIFICATE_MODEL_ID, PATIENT_ID);
+            doReturn(CERTIFICATE).when(csIntegrationService).createCertificate(REQUEST);
 
-            @BeforeEach
-            void setup() {
-                when(certificateServiceUserHelper.get())
-                    .thenReturn(USER);
-                when(certificateServicePatientHelper.get(PERSONNUMMER))
-                    .thenReturn(PATIENT);
-            }
-
-            @Test
-            void shouldSetUser() throws CreateCertificateException {
-                final var captor = ArgumentCaptor.forClass(CreateCertificateRequestDTO.class);
-
-                createCertificateFromCertificateService.create(TYPE, PATIENT_ID);
-                verify(csIntegrationService).createCertificate(captor.capture());
-
-                assertEquals(USER, captor.getValue().getUser());
-            }
-
-            @Test
-            void shouldSetUnit() throws CreateCertificateException {
-                final var captor = ArgumentCaptor.forClass(CreateCertificateRequestDTO.class);
-
-                when(certificateServiceUnitHelper.getUnit())
-                    .thenReturn(UNIT);
-
-                createCertificateFromCertificateService.create(TYPE, PATIENT_ID);
-                verify(csIntegrationService).createCertificate(captor.capture());
-
-                assertEquals(UNIT, captor.getValue().getUnit());
-            }
-
-            @Test
-            void shouldSetCareUnit() throws CreateCertificateException {
-                final var captor = ArgumentCaptor.forClass(CreateCertificateRequestDTO.class);
-                when(certificateServiceUnitHelper.getCareUnit())
-                    .thenReturn(UNIT);
-
-                createCertificateFromCertificateService.create(TYPE, PATIENT_ID);
-                verify(csIntegrationService).createCertificate(captor.capture());
-
-                assertEquals(UNIT, captor.getValue().getCareUnit());
-            }
-
-            @Test
-            void shouldSetCareProvider() throws CreateCertificateException {
-                final var captor = ArgumentCaptor.forClass(CreateCertificateRequestDTO.class);
-                when(certificateServiceUnitHelper.getCareProvider())
-                    .thenReturn(UNIT);
-
-                createCertificateFromCertificateService.create(TYPE, PATIENT_ID);
-                verify(csIntegrationService).createCertificate(captor.capture());
-
-                assertEquals(UNIT, captor.getValue().getCareProvider());
-            }
-
-            @Test
-            void shouldSetPatient() throws CreateCertificateException {
-                final var captor = ArgumentCaptor.forClass(CreateCertificateRequestDTO.class);
-
-                createCertificateFromCertificateService.create(TYPE, PATIENT_ID);
-                verify(csIntegrationService).createCertificate(captor.capture());
-
-                assertEquals(PATIENT, captor.getValue().getPatient());
-            }
-
-            @Test
-            void shouldSetType() throws CreateCertificateException {
-                final var captor = ArgumentCaptor.forClass(CreateCertificateRequestDTO.class);
-
-                createCertificateFromCertificateService.create(TYPE, PATIENT_ID);
-                verify(csIntegrationService).createCertificate(captor.capture());
-
-                assertEquals(TYPE, captor.getValue().getCertificateModelId().getType());
-            }
-
-            @Test
-            void shouldSetTypeVersion() throws CreateCertificateException {
-                final var captor = ArgumentCaptor.forClass(CreateCertificateRequestDTO.class);
-
-                createCertificateFromCertificateService.create(TYPE, PATIENT_ID);
-                verify(csIntegrationService).createCertificate(captor.capture());
-
-                assertEquals(VERSION, captor.getValue().getCertificateModelId().getVersion());
-            }
+            assertEquals(CERTIFICATE_ID,
+                createCertificateFromCertificateService.create(TYPE, PATIENT_ID)
+            );
         }
     }
-
 }

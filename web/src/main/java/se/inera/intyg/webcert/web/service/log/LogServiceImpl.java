@@ -21,11 +21,14 @@ package se.inera.intyg.webcert.web.service.log;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
+import javax.annotation.PostConstruct;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Service;
@@ -33,18 +36,22 @@ import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.infra.logmessages.ActivityType;
 import se.inera.intyg.infra.logmessages.PdlLogMessage;
-import se.inera.intyg.webcert.common.service.log.template.*;
+import se.inera.intyg.webcert.common.service.log.template.IntygCreateMessage;
+import se.inera.intyg.webcert.common.service.log.template.IntygDeleteMessage;
+import se.inera.intyg.webcert.common.service.log.template.IntygListsMessage;
+import se.inera.intyg.webcert.common.service.log.template.IntygPredictionMessage;
+import se.inera.intyg.webcert.common.service.log.template.IntygPrintMessage;
+import se.inera.intyg.webcert.common.service.log.template.IntygReadMessage;
+import se.inera.intyg.webcert.common.service.log.template.IntygRevokeMessage;
+import se.inera.intyg.webcert.common.service.log.template.IntygSendMessage;
+import se.inera.intyg.webcert.common.service.log.template.IntygSignMessage;
+import se.inera.intyg.webcert.common.service.log.template.IntygUpdateMessage;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.dto.LogUser;
 import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import javax.annotation.PostConstruct;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Session;
 
 /**
  * Implementation of service for logging user actions according to PDL requirements.
@@ -204,8 +211,7 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public void logShowPrediction(String patientId, String intygId) {
-        LogRequest logReq = logRequestFactory.createLogRequestFromUser(webCertUserService.getUser(), patientId);
-        logReq.setIntygId(intygId);
+        LogRequest logReq = logRequestFactory.createLogRequestFromUser(webCertUserService.getUser(), patientId, intygId);
         logShowPrediction(logReq, getLogUser(webCertUserService.getUser()));
     }
 
@@ -218,8 +224,7 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public void logSetOwnOpinion(String patientId, String intygId) {
-        LogRequest logRequest = logRequestFactory.createLogRequestFromUser(webCertUserService.getUser(), patientId);
-        logRequest.setIntygId(intygId);
+        LogRequest logRequest = logRequestFactory.createLogRequestFromUser(webCertUserService.getUser(), patientId, intygId);
         logSetOwnOpinion(logRequest, getLogUser(webCertUserService.getUser()));
     }
 
@@ -273,12 +278,7 @@ public class LogServiceImpl implements LogService {
 
         LOGGER.debug("Logging {} ({}) of Intyg {}", logMsg.getActivityType(), logMsg.getActivityArgs(), logMsg.getActivityLevel());
 
-        try {
-            jmsTemplate.send(new MC(logMsg));
-        } catch (JmsException e) {
-            LOGGER.error("Could not log {} of Intyg '{}'", logMsg.getActivityType(), logMsg.getActivityLevel(), e);
-            throw e;
-        }
+        jmsTemplate.send(new MC(logMsg));
     }
 
     @VisibleForTesting

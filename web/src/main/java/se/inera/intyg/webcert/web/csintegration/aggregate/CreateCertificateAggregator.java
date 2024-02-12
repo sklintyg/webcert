@@ -25,7 +25,7 @@ import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.CreateCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.impl.CreateCertificateException;
 
-@Service("CreateCertificateAggregator")
+@Service("createCertificateAggregator")
 public class CreateCertificateAggregator implements CreateCertificateFacadeService {
 
     private final CreateCertificateFacadeService createCertificateFromWC;
@@ -33,8 +33,8 @@ public class CreateCertificateAggregator implements CreateCertificateFacadeServi
     private final CertificateServiceProfile certificateServiceProfile;
 
     public CreateCertificateAggregator(
-        @Qualifier("CreateCertificateFromWC") CreateCertificateFacadeService createCertificateFromWC,
-        @Qualifier("CreateCertificateFromCS") CreateCertificateFacadeService createCertificateFromCS,
+        @Qualifier("createCertificateFromWC") CreateCertificateFacadeService createCertificateFromWC,
+        @Qualifier("createCertificateFromCS") CreateCertificateFacadeService createCertificateFromCS,
         CertificateServiceProfile certificateServiceProfile) {
         this.createCertificateFromWC = createCertificateFromWC;
         this.createCertificateFromCS = createCertificateFromCS;
