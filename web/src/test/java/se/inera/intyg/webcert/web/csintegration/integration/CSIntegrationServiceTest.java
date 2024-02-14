@@ -50,6 +50,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServi
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateTypeExistsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
@@ -74,6 +75,7 @@ class CSIntegrationServiceTest {
         .certificate(CERTIFICATE)
         .build();
     private static final String ID = "ID";
+    private static final DeleteCertificateRequestDTO DELETE_CERTIFICATE_REQUEST = DeleteCertificateRequestDTO.builder().build();
 
     @Mock
     private RestTemplate restTemplate;
@@ -330,6 +332,31 @@ class CSIntegrationServiceTest {
             verify(restTemplate).getForObject(captor.capture(), any());
 
             assertEquals("baseUrl/api/certificate/id/exists", captor.getValue());
+        }
+    }
+
+    @Nested
+    class DeleteCertificate {
+
+        @Test
+        void shouldSetUrlCorrect() {
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            csIntegrationService.deleteCertificate("certificateId", 1, DELETE_CERTIFICATE_REQUEST);
+            verify(restTemplate).delete(captor.capture(), any(DeleteCertificateRequestDTO.class));
+
+            assertEquals("baseUrl/api/certificate/certificateId/1", captor.getValue());
+        }
+
+        @Test
+        void shouldSetRequestAsBody() {
+            final var captor = ArgumentCaptor.forClass(DeleteCertificateRequestDTO.class);
+
+            csIntegrationService.deleteCertificate("ID", 10, DELETE_CERTIFICATE_REQUEST);
+
+            verify(restTemplate).delete(anyString(), captor.capture());
+            assertEquals(DELETE_CERTIFICATE_REQUEST, captor.getValue());
         }
     }
 }

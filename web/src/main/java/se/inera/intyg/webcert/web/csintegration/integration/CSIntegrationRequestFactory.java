@@ -25,6 +25,7 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientHelper;
@@ -85,6 +86,15 @@ public class CSIntegrationRequestFactory {
             )
             .user(certificateServiceUserHelper.get())
             .certificate(certificate)
+            .build();
+    }
+
+    public DeleteCertificateRequestDTO deleteCertificateRequest() {
+        return DeleteCertificateRequestDTO.builder()
+            .unit(certificateServiceUnitHelper.getUnit())
+            .careUnit(certificateServiceUnitHelper.getCareUnit())
+            .careProvider(certificateServiceUnitHelper.getCareProvider())
+            .user(certificateServiceUserHelper.get())
             .build();
     }
 

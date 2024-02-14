@@ -40,6 +40,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServi
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateTypeExistsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateResponseDTO;
@@ -61,6 +62,11 @@ public class CSIntegrationService {
     RestTemplate restTemplate) {
         this.certificateTypeInfoConverter = certificateTypeInfoConverter;
         this.restTemplate = restTemplate;
+    }
+
+    public void deleteCertificate(String certificateId, long version, DeleteCertificateRequestDTO request) {
+        final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/" + version;
+        restTemplate.delete(url, request);
     }
 
     public List<CertificateTypeInfoDTO> getTypeInfo(CertificateServiceTypeInfoRequestDTO request) {
