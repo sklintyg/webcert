@@ -19,10 +19,16 @@
 
 package se.inera.intyg.webcert.web.csintegration.integration;
 
+import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.link.ResourceLink;
+import se.inera.intyg.common.support.facade.model.link.ResourceLinkTypeEnum;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
+import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
+import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 
+@Component
 public class ListIntygEntryConverter {
 
     public ListIntygEntry convert(Certificate certificate) {
@@ -49,7 +55,22 @@ public class ListIntygEntryConverter {
         listIntygEntry.setVardgivarId(metadata.getCareProvider().getUnitId());
         //TODO add separate converter for resource links
         listIntygEntry.setVidarebefordrad(metadata.isForwarded());
+
+        certificate.getLinks().forEach(link -> listIntygEntry.getLinks().add(convertResourceLink(link)));
+
         return listIntygEntry;
+    }
+
+    private ActionLink convertResourceLink(ResourceLink resourceLink) {
+        if (resourceLink.getType() == ResourceLinkTypeEnum.READ_CERTIFICATE) {
+            return new ActionLink(ActionLinkType.LASA_INTYG);
+        }
+
+        if (resourceLink.getType() == ResourceLinkTypeEnum.FORWARD_CERTIFICATE) {
+            return new ActionLink(ActionLinkType.VIDAREBEFORDRA_UTKAST);
+        }
+
+        return null;
     }
 
     private Personnummer createPatientId(String patientId) {
