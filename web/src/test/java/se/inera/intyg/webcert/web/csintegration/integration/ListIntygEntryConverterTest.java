@@ -19,18 +19,53 @@
 
 package se.inera.intyg.webcert.web.csintegration.integration;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.webcert.web.service.facade.CertificateFacadeTestHelper;
 
+@ExtendWith(MockitoExtension.class)
 class ListIntygEntryConverterTest {
 
+    @InjectMocks
+    private ListIntygEntryConverter listIntygEntryConverter;
     private static final Certificate CERTIFICATE = CertificateFacadeTestHelper.createCertificateTypeWithVersion(
         "type", CertificateStatus.UNSIGNED, true, "typeVersion");
 
     @Test
     void shouldConvertCertificateId() {
-
+        final var response = listIntygEntryConverter.convert(CERTIFICATE);
+        assertEquals(response.getIntygId(), CERTIFICATE.getMetadata().getId());
     }
+
+    @Test
+    void shouldConvertCertificateType() {
+        final var response = listIntygEntryConverter.convert(CERTIFICATE);
+        assertEquals(response.getIntygType(), CERTIFICATE.getMetadata().getType());
+    }
+
+    @Test
+    void shouldConvertCertificateTypeName() {
+        final var response = listIntygEntryConverter.convert(CERTIFICATE);
+        assertEquals(response.getIntygTypeName(), CERTIFICATE.getMetadata().getTypeName());
+    }
+
+    @Test
+    void shouldConvertCertificateTypeVersion() {
+        final var response = listIntygEntryConverter.convert(CERTIFICATE);
+        assertEquals(response.getIntygTypeVersion(), CERTIFICATE.getMetadata().getTypeVersion());
+    }
+
+    @Test
+    void shouldConvertCertificateVersion() {
+        final var response = listIntygEntryConverter.convert(CERTIFICATE);
+        assertEquals(response.getVersion(), CERTIFICATE.getMetadata().getVersion());
+    }
+
+
 }
