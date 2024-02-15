@@ -37,22 +37,33 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 @ExtendWith(MockitoExtension.class)
 class DeleteCertificateFromCertificateServiceTest {
 
     private static final DeleteCertificateRequestDTO REQUEST = DeleteCertificateRequestDTO.builder().build();
-    public static final String ID = "ID";
-    public static final int VERSION = 10;
+    private static final String ID = "ID";
+    private static final int VERSION = 10;
+    private static final Certificate CERTIFICATE = new Certificate();
+    private static final String TYPE = "TYPE";
 
     @Mock
     CSIntegrationService csIntegrationService;
 
     @Mock
     CSIntegrationRequestFactory csIntegrationRequestFactory;
+
+    @Mock
+    PDLLogService pdlLogService;
+
+    @Mock
+    MonitoringLogService monitoringLogService;
 
     @InjectMocks
     DeleteCertificateFromCertificateService deleteCertificateFromCertificateService;
@@ -69,6 +80,12 @@ class DeleteCertificateFromCertificateServiceTest {
 
         @BeforeEach
         void setup() {
+
+            CERTIFICATE.setMetadata(CertificateMetadata.builder()
+                .id(ID)
+                .type(TYPE)
+                .build());
+
             when(csIntegrationService.certificateExists(ID))
                 .thenReturn(true);
 
@@ -82,7 +99,7 @@ class DeleteCertificateFromCertificateServiceTest {
             @BeforeEach
             void setup() {
                 when(csIntegrationService.deleteCertificate(ID, VERSION, REQUEST))
-                    .thenReturn(new Certificate());
+                    .thenReturn(CERTIFICATE);
             }
 
             @Test
@@ -114,7 +131,15 @@ class DeleteCertificateFromCertificateServiceTest {
 
             @Test
             void shouldPdlLogDelete() {
+                deleteCertificateFromCertificateService.deleteCertificate(ID, VERSION);
+                verify(pdlLogService).logDeleted(CERTIFICATE);
 
+            }
+
+            @Test
+            void shouldMonitorLogDelete() {
+                deleteCertificateFromCertificateService.deleteCertificate(ID, VERSION);
+                verify(monitoringLogService).logUtkastDeleted(ID, TYPE);
             }
         }
 

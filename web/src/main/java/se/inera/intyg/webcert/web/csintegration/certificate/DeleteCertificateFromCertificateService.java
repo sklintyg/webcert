@@ -26,6 +26,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequest
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.facade.DeleteCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 @Slf4j
 @Service("deleteCertificateFromCertificateService")
@@ -35,10 +36,11 @@ public class DeleteCertificateFromCertificateService implements DeleteCertificat
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
     private final PDLLogService pdlLogService;
+    private final MonitoringLogService monitoringLogService;
 
     @Override
     public boolean deleteCertificate(String certificateId, long version) {
-        log.debug("Attempting to delete certificate '{}' with version '{}'", certificateId, version);
+        log.debug("Attempting to delete certificate '{}' with version '{}' from Certificate Service", certificateId, version);
 
         if (Boolean.FALSE.equals(csIntegrationService.certificateExists(certificateId))) {
             return false;
@@ -49,10 +51,12 @@ public class DeleteCertificateFromCertificateService implements DeleteCertificat
         );
 
         if (certificate == null) {
-            throw new IllegalStateException("Received null when trying to delete certificate");
+            throw new IllegalStateException("Received null when trying to delete certificate from Certificate Service");
         }
 
-        log.debug("Deleted certificate '{}'", certificateId);
+        log.debug("Deleted certificate '{}' from Certificate Service", certificateId);
+        monitoringLogService.logUtkastDeleted(certificate.getMetadata().getId(), certificate.getMetadata().getType());
+        pdlLogService.logDeleted(certificate);
 
         return true;
     }

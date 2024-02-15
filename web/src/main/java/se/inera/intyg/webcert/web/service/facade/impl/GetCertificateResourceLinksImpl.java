@@ -112,7 +112,7 @@ public class GetCertificateResourceLinksImpl implements GetCertificateResourceLi
     }
 
     /**
-     * Get all access functions that can be applied to a list of ResourceLinkTypeDTO's
+     * Get all access functions that can be applied to a list of ResourceLinkTypeDTO's.
      *
      * @return all access functions that should be applied to a resource links
      */
