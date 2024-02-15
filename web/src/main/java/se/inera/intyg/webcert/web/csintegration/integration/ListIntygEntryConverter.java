@@ -50,10 +50,9 @@ public class ListIntygEntryConverter {
         listIntygEntry.setSekretessmarkering(metadata.getPatient().isProtectedPerson());
 
         listIntygEntry.setUpdatedSignedBy(metadata.getIssuedBy().getFullName());
-        listIntygEntry.setLastUpdatedSigned(metadata.getReadyForSign());  //TODO is this correct?
+        listIntygEntry.setLastUpdatedSigned(metadata.getReadyForSign());
         listIntygEntry.setVardenhetId(metadata.getCareUnit().getUnitId());
         listIntygEntry.setVardgivarId(metadata.getCareProvider().getUnitId());
-        //TODO add separate converter for resource links
         listIntygEntry.setVidarebefordrad(metadata.isForwarded());
 
         if (certificate.getLinks() != null) {
