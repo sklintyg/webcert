@@ -49,4 +49,10 @@ public class PDLLogService {
             logRequestFactory.createLogRequestFromCertificate(certificate)
         );
     }
+
+    public void logDeleted(Certificate certificate) {
+        logService.logDeleteIntyg(
+            logRequestFactory.createLogRequestFromCertificate(certificate)
+        );
+    }
 }
