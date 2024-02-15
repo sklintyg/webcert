@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.service.facade.list;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
@@ -30,6 +31,7 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.web.csintegration.aggregate.ListCertificatesAggregator;
 import se.inera.intyg.webcert.web.service.facade.list.config.GetStaffInfoFacadeService;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterBooleanValue;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterPersonIdValue;
@@ -73,6 +75,7 @@ public class ListPreviousCertificatesFacadeServiceImpl implements ListPreviousCe
     private final ListSortHelper listSortHelper;
     private final ListDecorator listDecorator;
     private final CertificateForPatientService certificateForPatientService;
+    private final ListCertificatesAggregator listCertificatesAggregator;
 
     @Autowired
     public ListPreviousCertificatesFacadeServiceImpl(WebCertUserService webCertUserService, LogService logService,
@@ -83,7 +86,7 @@ public class ListPreviousCertificatesFacadeServiceImpl implements ListPreviousCe
         AuthoritiesHelper authoritiesHelper,
         ResourceLinkHelper resourceLinkHelper,
         ListSortHelper listSortHelper, ListDecorator listDecorator,
-        CertificateForPatientService certificatesForPatientService) {
+        CertificateForPatientService certificatesForPatientService, ListCertificatesAggregator listCertificatesAggregator) {
         this.webCertUserService = webCertUserService;
         this.logService = logService;
         this.listPaginationHelper = listPaginationHelper;
@@ -95,6 +98,7 @@ public class ListPreviousCertificatesFacadeServiceImpl implements ListPreviousCe
         this.listSortHelper = listSortHelper;
         this.listDecorator = listDecorator;
         this.certificateForPatientService = certificatesForPatientService;
+        this.listCertificatesAggregator = listCertificatesAggregator;
     }
 
     @Override
@@ -110,7 +114,12 @@ public class ListPreviousCertificatesFacadeServiceImpl implements ListPreviousCe
         resourceLinkHelper.decorateIntygWithValidActionLinks(filteredList, patientId);
         listDecorator.decorateWithCertificateTypeName(filteredList);
 
-        final var convertedList = convertList(filteredList);
+        final var listFromCertificateService = listCertificatesAggregator.getCertificate();
+        final var mergedList = Stream
+            .concat(filteredList.stream(), listFromCertificateService.stream())
+            .collect(Collectors.toList());
+
+        final var convertedList = convertList(mergedList);
         listSortHelper.sort(convertedList, getOrderBy(filter), getAscending(filter));
 
         final var filteredListOnStatus = filterListOnStatus(filter, convertedList);

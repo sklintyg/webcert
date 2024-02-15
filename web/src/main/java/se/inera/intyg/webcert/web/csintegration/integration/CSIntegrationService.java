@@ -45,6 +45,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificat
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
 @Service
@@ -63,6 +64,10 @@ public class CSIntegrationService {
     RestTemplate restTemplate) {
         this.certificateTypeInfoConverter = certificateTypeInfoConverter;
         this.restTemplate = restTemplate;
+    }
+
+    public List<ListIntygEntry> listCertificatesForPatient() {
+        return Collections.emptyList();
     }
 
     public Certificate deleteCertificate(String certificateId, long version, DeleteCertificateRequestDTO request) {
