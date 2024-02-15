@@ -37,11 +37,23 @@ public class DeleteCertificateFromCertificateService implements DeleteCertificat
     private final PDLLogService pdlLogService;
 
     @Override
-    public void deleteCertificate(String certificateId, long version) {
+    public boolean deleteCertificate(String certificateId, long version) {
         log.debug("Attempting to delete certificate '{}' with version '{}'", certificateId, version);
 
-        csIntegrationService.deleteCertificate(certificateId, version, csIntegrationRequestFactory.deleteCertificateRequest());
+        if (Boolean.FALSE.equals(csIntegrationService.certificateExists(certificateId))) {
+            return false;
+        }
+
+        final var certificate = csIntegrationService.deleteCertificate(
+            certificateId, version, csIntegrationRequestFactory.deleteCertificateRequest()
+        );
+
+        if (certificate == null) {
+            throw new IllegalStateException("Received null when trying to delete certificate");
+        }
 
         log.debug("Deleted certificate '{}'", certificateId);
+
+        return true;
     }
 }

@@ -20,16 +20,15 @@
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.DeleteCertificateFacadeService;
 
@@ -43,8 +42,6 @@ class DeleteCertificateAggregatorTest {
     DeleteCertificateFacadeService deleteCertificateFromCS;
     CertificateServiceProfile certificateServiceProfile;
     DeleteCertificateFacadeService aggregator;
-    @Mock
-    GetCertificateAggregator getCertificateAggregator;
 
     @BeforeEach
     void setup() {
@@ -55,8 +52,7 @@ class DeleteCertificateAggregatorTest {
         aggregator = new DeleteCertificateAggregator(
             deleteCertificateFromWC,
             deleteCertificateFromCS,
-            certificateServiceProfile,
-            getCertificateAggregator);
+            certificateServiceProfile);
     }
 
     @Test
@@ -77,18 +73,18 @@ class DeleteCertificateAggregatorTest {
 
         @Test
         void shouldDeleteFromCSIfProfileIsActiveAndCertificateExistsInCS() {
-            when(getCertificateAggregator.getCertificate(ID, false, true))
-                .thenReturn(new Certificate());
+            when(deleteCertificateFromCS.deleteCertificate(ID, VERSION))
+                .thenReturn(true);
             aggregator.deleteCertificate(ID, VERSION);
 
-            Mockito.verify(deleteCertificateFromCS).deleteCertificate(ID, VERSION);
+            Mockito.verify(deleteCertificateFromWC, times(0)).deleteCertificate(ID, VERSION);
         }
 
         @Test
         void shouldDeleteFromWCIfProfileIsInactiveAndCertificateDoesNotExistInCS() {
             aggregator.deleteCertificate(ID, VERSION);
 
-            Mockito.verify(deleteCertificateFromWC).deleteCertificate(ID, VERSION);
+            Mockito.verify(deleteCertificateFromWC, times(1)).deleteCertificate(ID, VERSION);
         }
     }
 }

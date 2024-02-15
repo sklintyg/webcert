@@ -30,29 +30,26 @@ public class DeleteCertificateAggregator implements DeleteCertificateFacadeServi
     private final DeleteCertificateFacadeService deleteCertificateFromWebcert;
     private final DeleteCertificateFacadeService deleteCertificateFromCertificateService;
     private final CertificateServiceProfile certificateServiceProfile;
-    private final GetCertificateAggregator getCertificateAggregator;
 
     public DeleteCertificateAggregator(
         @Qualifier("deleteCertificateFromWebcert")
         DeleteCertificateFacadeService deleteCertificateFromWebcert,
         @Qualifier("deleteCertificateFromCertificateService")
         DeleteCertificateFacadeService deleteCertificateFromCertificateService,
-        CertificateServiceProfile certificateServiceProfile,
-        GetCertificateAggregator getCertificateAggregator) {
+        CertificateServiceProfile certificateServiceProfile) {
         this.deleteCertificateFromWebcert = deleteCertificateFromWebcert;
         this.deleteCertificateFromCertificateService = deleteCertificateFromCertificateService;
         this.certificateServiceProfile = certificateServiceProfile;
-        this.getCertificateAggregator = getCertificateAggregator;
     }
 
     @Override
-    public void deleteCertificate(String certificateId, long version) {
-        if (!certificateServiceProfile.active()
-            || getCertificateAggregator.getCertificate(certificateId, false, true) == null) {
-            deleteCertificateFromWebcert.deleteCertificate(certificateId, version);
-            return;
+    public boolean deleteCertificate(String certificateId, long version) {
+        if (!certificateServiceProfile.active()) {
+            return deleteCertificateFromWebcert.deleteCertificate(certificateId, version);
         }
 
-        deleteCertificateFromCertificateService.deleteCertificate(certificateId, version);
+        final var responseFromCS = deleteCertificateFromCertificateService.deleteCertificate(certificateId, version);
+
+        return responseFromCS || deleteCertificateFromWebcert.deleteCertificate(certificateId, version);
     }
 }

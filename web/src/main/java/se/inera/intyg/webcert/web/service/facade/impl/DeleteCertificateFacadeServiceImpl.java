@@ -38,9 +38,11 @@ public class DeleteCertificateFacadeServiceImpl implements DeleteCertificateFaca
     }
 
     @Override
-    public void deleteCertificate(String certificateId, long version) {
+    public boolean deleteCertificate(String certificateId, long version) {
         LOG.debug("Deleting certificate '{}' with version '{}'", certificateId, version);
         utkastService.deleteUnsignedDraft(certificateId, version);
         LOG.debug("Certificate '{}' deleted!", certificateId);
+
+        return true;
     }
 }

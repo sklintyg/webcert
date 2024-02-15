@@ -65,7 +65,7 @@ public class CSIntegrationService {
         this.restTemplate = restTemplate;
     }
 
-    public DeleteCertificateResponseDTO deleteCertificate(String certificateId, long version, DeleteCertificateRequestDTO request) {
+    public Certificate deleteCertificate(String certificateId, long version, DeleteCertificateRequestDTO request) {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/" + version;
         final var headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -85,9 +85,7 @@ public class CSIntegrationService {
             );
         }
 
-        return DeleteCertificateResponseDTO.builder()
-            .certificate(response.getBody().getCertificate())
-            .build();
+        return response.getBody().getCertificate();
     }
 
     public List<CertificateTypeInfoDTO> getTypeInfo(CertificateServiceTypeInfoRequestDTO request) {

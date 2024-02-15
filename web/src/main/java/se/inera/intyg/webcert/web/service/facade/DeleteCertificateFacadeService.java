@@ -20,5 +20,5 @@ package se.inera.intyg.webcert.web.service.facade;
 
 public interface DeleteCertificateFacadeService {
 
-    void deleteCertificate(String certificateId, long version);
+    boolean deleteCertificate(String certificateId, long version);
 }

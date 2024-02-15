@@ -24,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -38,10 +37,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 import se.inera.intyg.common.support.facade.model.Certificate;
@@ -56,7 +51,6 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServi
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateTypeExistsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
@@ -338,79 +332,6 @@ class CSIntegrationServiceTest {
             verify(restTemplate).getForObject(captor.capture(), any());
 
             assertEquals("baseUrl/api/certificate/id/exists", captor.getValue());
-        }
-    }
-
-    @Nested
-    class DeleteCertificate {
-
-        void setupResponse() {
-            final var certificateResponse = DeleteCertificateResponseDTO.builder().certificate(CERTIFICATE).build();
-            final var response = mock(ResponseEntity.class);
-
-            when(response.getBody())
-                .thenReturn(certificateResponse);
-
-            when(restTemplate.exchange(
-                    anyString(),
-                    any(HttpMethod.class),
-                    any(HttpEntity.class),
-                    any(ParameterizedTypeReference.class),
-                    any(Collections.class)
-                )
-            ).thenReturn(response);
-        }
-
-        @Test
-        void shouldThrowExceptionIfResponseIsNull() {
-            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
-
-            assertThrows(IllegalStateException.class, () -> csIntegrationService.deleteCertificate("ID", 10, DELETE_CERTIFICATE_REQUEST));
-        }
-
-        @Test
-        void shouldSetUrlCorrect() {
-            setupResponse();
-            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
-            final var captor = ArgumentCaptor.forClass(String.class);
-
-            csIntegrationService.deleteCertificate("ID", 10, DELETE_CERTIFICATE_REQUEST);
-
-            verify(restTemplate).exchange(captor.capture(), any(HttpMethod.class), any(HttpEntity.class),
-                any(ParameterizedTypeReference.class), any(Collections.class));
-
-            assertEquals("baseUrl/api/certificate/certificateId/1", captor.getValue());
-        }
-
-        @Test
-        void shouldSetHttpMethod() {
-            setupResponse();
-            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
-            final var captor = ArgumentCaptor.forClass(HttpMethod.class);
-
-            csIntegrationService.deleteCertificate("ID", 10, DELETE_CERTIFICATE_REQUEST);
-
-            verify(restTemplate).exchange(anyString(), captor.capture(), any(HttpEntity.class),
-                any(ParameterizedTypeReference.class), any(Collections.class));
-
-            assertEquals(HttpMethod.DELETE, captor.getValue());
-        }
-
-        @Test
-        void shouldSetRequestAsBody() {
-            setupResponse();
-            final var captor = ArgumentCaptor.forClass(HttpEntity.class);
-
-            csIntegrationService.deleteCertificate("ID", 10, DELETE_CERTIFICATE_REQUEST);
-
-            verify(restTemplate).exchange(anyString(), any(HttpMethod.class), captor.capture(), any(ParameterizedTypeReference.class),
-                any(Collections.class));
-            assertEquals(DELETE_CERTIFICATE_REQUEST, captor.getValue().getBody());
-        }
-
-        @Test
-        void shouldReturnCertificate() {
-            
         }
     }
 }

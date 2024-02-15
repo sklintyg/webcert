@@ -20,6 +20,8 @@
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -27,12 +29,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
@@ -41,6 +45,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificat
 class DeleteCertificateFromCertificateServiceTest {
 
     private static final DeleteCertificateRequestDTO REQUEST = DeleteCertificateRequestDTO.builder().build();
+    public static final String ID = "ID";
+    public static final int VERSION = 10;
 
     @Mock
     CSIntegrationService csIntegrationService;
@@ -51,43 +57,71 @@ class DeleteCertificateFromCertificateServiceTest {
     @InjectMocks
     DeleteCertificateFromCertificateService deleteCertificateFromCertificateService;
 
-    @BeforeEach
-    void setup() {
-        when(csIntegrationRequestFactory.deleteCertificateRequest())
-            .thenReturn(REQUEST);
-    }
-
     @Test
-    void shouldCallDeleteWithId() {
-        final var captor = ArgumentCaptor.forClass(Long.class);
-        deleteCertificateFromCertificateService.deleteCertificate("ID", 10);
+    void shouldReturnFalseIfCertificateDoesNotExistInCS() {
+        final var response = deleteCertificateFromCertificateService.deleteCertificate(ID, VERSION);
 
-        verify(csIntegrationService).deleteCertificate(anyString(), captor.capture(), any(DeleteCertificateRequestDTO.class));
-        assertEquals(10, captor.getValue());
+        assertFalse(response);
     }
 
-    @Test
-    void shouldCallDeleteWithVersion() {
-        final var captor = ArgumentCaptor.forClass(String.class);
-        deleteCertificateFromCertificateService.deleteCertificate("ID", 10);
+    @Nested
+    class CertificateExistsInCS {
 
-        verify(csIntegrationService).deleteCertificate(captor.capture(), anyLong(), any(DeleteCertificateRequestDTO.class));
-        assertEquals("ID", captor.getValue());
+        @BeforeEach
+        void setup() {
+            when(csIntegrationService.certificateExists(ID))
+                .thenReturn(true);
+
+            when(csIntegrationRequestFactory.deleteCertificateRequest())
+                .thenReturn(REQUEST);
+        }
+
+        @Nested
+        class CertificateIsDeletedFromCS {
+
+            @BeforeEach
+            void setup() {
+                when(csIntegrationService.deleteCertificate(ID, VERSION, REQUEST))
+                    .thenReturn(new Certificate());
+            }
+
+            @Test
+            void shouldCallDeleteWithVersion() {
+                final var captor = ArgumentCaptor.forClass(Long.class);
+                deleteCertificateFromCertificateService.deleteCertificate(ID, VERSION);
+
+                verify(csIntegrationService).deleteCertificate(anyString(), captor.capture(), any(DeleteCertificateRequestDTO.class));
+                assertEquals(VERSION, captor.getValue());
+            }
+
+            @Test
+            void shouldCallDeleteWithId() {
+                final var captor = ArgumentCaptor.forClass(String.class);
+                deleteCertificateFromCertificateService.deleteCertificate(ID, VERSION);
+
+                verify(csIntegrationService).deleteCertificate(captor.capture(), anyLong(), any(DeleteCertificateRequestDTO.class));
+                assertEquals(ID, captor.getValue());
+            }
+
+            @Test
+            void shouldCallDeleteWithRequest() {
+                final var captor = ArgumentCaptor.forClass(DeleteCertificateRequestDTO.class);
+                deleteCertificateFromCertificateService.deleteCertificate(ID, VERSION);
+
+                verify(csIntegrationService).deleteCertificate(anyString(), anyLong(), captor.capture());
+                assertEquals(REQUEST, captor.getValue());
+            }
+
+            @Test
+            void shouldPdlLogDelete() {
+
+            }
+        }
+
+        @Test
+        void shouldThrowExceptionIfReturnedCertificateIsNull() {
+            assertThrows(IllegalStateException.class, () -> deleteCertificateFromCertificateService.deleteCertificate(ID, VERSION));
+        }
+
     }
-
-    @Test
-    void shouldCallDeleteWithRequest() {
-        final var captor = ArgumentCaptor.forClass(DeleteCertificateRequestDTO.class);
-        deleteCertificateFromCertificateService.deleteCertificate("ID", 10);
-
-        verify(csIntegrationService).deleteCertificate(anyString(), anyLong(), captor.capture());
-        assertEquals(REQUEST, captor.getValue());
-    }
-
-    @Test
-    void shouldPdlLogDelete() {
-
-    }
-
-
 }
