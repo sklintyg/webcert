@@ -59,6 +59,9 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificat
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
 @ExtendWith(MockitoExtension.class)
@@ -86,12 +89,20 @@ class CSIntegrationServiceTest {
     private static final ParameterizedTypeReference<DeleteCertificateResponseDTO> DELETE_RESPONSE
         = new ParameterizedTypeReference<>() {
     };
+    private static final GetPatientCertificatesResponseDTO PATIENT_LIST_RESPONSE = GetPatientCertificatesResponseDTO.builder()
+        .certificates(List.of(CERTIFICATE))
+        .build();
+    private static final GetPatientCertificatesRequestDTO PATIENT_LIST_REQUEST = GetPatientCertificatesRequestDTO.builder().build();
+    private static final ListIntygEntry CONVERTED_CERTIFICATE = new ListIntygEntry();
 
     @Mock
     private RestTemplate restTemplate;
 
     @Mock
     private CertificateTypeInfoConverter certificateTypeInfoConverter;
+
+    @Mock
+    private ListIntygEntryConverter listIntygEntryConverter;
 
     @InjectMocks
     private CSIntegrationService csIntegrationService;
@@ -413,6 +424,51 @@ class CSIntegrationServiceTest {
             final var response = csIntegrationService.deleteCertificate("ID", 10, DELETE_CERTIFICATE_REQUEST);
 
             assertEquals(CERTIFICATE, response);
+        }
+    }
+
+    @Nested
+    class GetPatientCertificates {
+
+        @BeforeEach
+        void setup() {
+            when(listIntygEntryConverter.convert(CERTIFICATE))
+                .thenReturn(CONVERTED_CERTIFICATE);
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(PATIENT_LIST_RESPONSE);
+        }
+
+        @Test
+        void shouldPreformPostUsingRequest() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(PATIENT_LIST_RESPONSE);
+            final var captor = ArgumentCaptor.forClass(GetPatientCertificatesRequestDTO.class);
+
+            csIntegrationService.listCertificatesForPatient(PATIENT_LIST_REQUEST);
+            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+
+            assertEquals(PATIENT_LIST_REQUEST, captor.getValue());
+        }
+
+        @Test
+        void shouldReturnConvertedCertificates() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(PATIENT_LIST_RESPONSE);
+
+            final var response = csIntegrationService.listCertificatesForPatient(PATIENT_LIST_REQUEST);
+
+            assertEquals(List.of(CONVERTED_CERTIFICATE), response);
+        }
+
+        @Test
+        void shouldSetUrlCorrect() {
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            csIntegrationService.listCertificatesForPatient(PATIENT_LIST_REQUEST);
+            verify(restTemplate).postForObject(captor.capture(), any(), any());
+
+            assertEquals("baseUrl/api/patient/certificates", captor.getValue());
         }
     }
 }

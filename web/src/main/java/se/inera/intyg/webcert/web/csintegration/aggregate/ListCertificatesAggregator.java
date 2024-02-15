@@ -19,9 +19,11 @@
 
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
+import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
@@ -32,12 +34,13 @@ public class ListCertificatesAggregator {
 
     private final CertificateServiceProfile certificateServiceProfile;
     private final CSIntegrationService csIntegrationService;
+    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
 
-    public List<ListIntygEntry> getCertificate() {
+    public List<ListIntygEntry> getCertificate(String patientId) {
         if (!certificateServiceProfile.active()) {
-            return csIntegrationService.listCertificatesForPatient();
+            return Collections.emptyList();
         }
 
-        return csIntegrationService.listCertificatesForPatient();
+        return csIntegrationService.listCertificatesForPatient(csIntegrationRequestFactory.getPatientCertificatesRequest(patientId));
     }
 }

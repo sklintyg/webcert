@@ -29,7 +29,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 
@@ -37,9 +39,14 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 class ListCertificatesAggregatorTest {
 
     private static final List<ListIntygEntry> FROM_CS = List.of(new ListIntygEntry());
+    private static final String PATIENT_ID = "PATIENT_ID";
+    private static final GetPatientCertificatesRequestDTO REQUEST = GetPatientCertificatesRequestDTO.builder().build();
 
     @Mock
     CertificateServiceProfile certificateServiceProfile;
+
+    @Mock
+    CSIntegrationRequestFactory csIntegrationRequestFactory;
 
     @Mock
     CSIntegrationService csIntegrationService;
@@ -49,18 +56,20 @@ class ListCertificatesAggregatorTest {
 
     @Test
     void shouldReturnEmptyListIfProfileIsNotActive() {
-        final var response = listCertificatesAggregator.getCertificate();
+        final var response = listCertificatesAggregator.getCertificate(PATIENT_ID);
         assertEquals(Collections.emptyList(), response);
     }
 
     @Test
     void shouldReturnListFromAPIIfProfileIsActive() {
+        when(csIntegrationRequestFactory.getPatientCertificatesRequest(PATIENT_ID))
+            .thenReturn(REQUEST);
         when(certificateServiceProfile.active())
             .thenReturn(true);
-        when(csIntegrationService.listCertificatesForPatient())
+        when(csIntegrationService.listCertificatesForPatient(REQUEST))
             .thenReturn(FROM_CS);
 
-        final var response = listCertificatesAggregator.getCertificate();
+        final var response = listCertificatesAggregator.getCertificate(PATIENT_ID);
 
         assertEquals(FROM_CS, response);
     }

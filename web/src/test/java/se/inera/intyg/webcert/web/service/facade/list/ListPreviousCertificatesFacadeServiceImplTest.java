@@ -113,7 +113,7 @@ class ListPreviousCertificatesFacadeServiceImplTest {
         when(certificateForPatientService.get(any(), any(), anyList())).thenReturn(
             TestIntygFactory.createListWithIntygItems());
 
-        when(listCertificatesAggregator.getCertificate())
+        when(listCertificatesAggregator.getCertificate("19121212-1212"))
             .thenReturn(LIST_FROM_CERTIFICATE_SERVICE);
     }
 

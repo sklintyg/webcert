@@ -114,7 +114,7 @@ public class ListPreviousCertificatesFacadeServiceImpl implements ListPreviousCe
         resourceLinkHelper.decorateIntygWithValidActionLinks(filteredList, patientId);
         listDecorator.decorateWithCertificateTypeName(filteredList);
 
-        final var listFromCertificateService = listCertificatesAggregator.getCertificate();
+        final var listFromCertificateService = listCertificatesAggregator.getCertificate(patientId.getOriginalPnr());
         final var mergedList = Stream
             .concat(filteredList.stream(), listFromCertificateService.stream())
             .collect(Collectors.toList());
@@ -182,7 +182,7 @@ public class ListPreviousCertificatesFacadeServiceImpl implements ListPreviousCe
 
     private List<CertificateListItem> performStatusFiltering(List<CertificateListItem> list, List<String> wantedStatuses) {
         return list.stream()
-            .filter((item) -> wantedStatuses.contains((String) item.getValue("STATUS")))
+            .filter(item -> wantedStatuses.contains((String) item.getValue("STATUS")))
             .collect(Collectors.toList());
     }
 
@@ -217,7 +217,7 @@ public class ListPreviousCertificatesFacadeServiceImpl implements ListPreviousCe
 
     private List<CertificateListItem> convertList(List<ListIntygEntry> intygEntryList) {
         return intygEntryList.stream()
-            .map((item) -> certificateListItemConverter.convert(item, LIST_TYPE))
+            .map(item -> certificateListItemConverter.convert(item, LIST_TYPE))
             .collect(Collectors.toList());
     }
 }
