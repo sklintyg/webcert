@@ -75,8 +75,7 @@ public class CSIntegrationService {
             HttpMethod.DELETE,
             new HttpEntity<>(request, headers),
             new ParameterizedTypeReference<>() {
-            },
-            Collections.emptyMap()
+            }
         );
 
         if (response.getBody() == null) {
