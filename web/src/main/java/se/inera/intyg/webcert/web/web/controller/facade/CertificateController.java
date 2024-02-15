@@ -100,6 +100,7 @@ public class CertificateController {
     @Autowired
     private SignCertificateFacadeService signCertificateFacadeService;
     @Autowired
+    @Qualifier("deleteCertificateAggregator")
     private DeleteCertificateFacadeService deleteCertificateFacadeService;
     @Autowired
     private RevokeCertificateFacadeService revokeCertificateFacadeService;

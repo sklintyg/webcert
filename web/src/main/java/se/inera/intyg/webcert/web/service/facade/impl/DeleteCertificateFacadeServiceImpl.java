@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.service.facade.DeleteCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
-@Service
+@Service("deleteCertificateFromWebcert")
 public class DeleteCertificateFacadeServiceImpl implements DeleteCertificateFacadeService {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeleteCertificateFacadeServiceImpl.class);
@@ -38,9 +38,11 @@ public class DeleteCertificateFacadeServiceImpl implements DeleteCertificateFaca
     }
 
     @Override
-    public void deleteCertificate(String certificateId, long version) {
+    public boolean deleteCertificate(String certificateId, long version) {
         LOG.debug("Deleting certificate '{}' with version '{}'", certificateId, version);
         utkastService.deleteUnsignedDraft(certificateId, version);
         LOG.debug("Certificate '{}' deleted!", certificateId);
+
+        return true;
     }
 }

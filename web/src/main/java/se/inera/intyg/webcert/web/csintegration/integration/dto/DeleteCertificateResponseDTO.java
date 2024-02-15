@@ -16,9 +16,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.facade;
 
-public interface DeleteCertificateFacadeService {
+package se.inera.intyg.webcert.web.csintegration.integration.dto;
 
-    boolean deleteCertificate(String certificateId, long version);
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import lombok.Builder;
+import lombok.Value;
+import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateResponseDTO.DeleteCertificateResponseDTOBuilder;
+
+@JsonDeserialize(builder = DeleteCertificateResponseDTOBuilder.class)
+@Value
+@Builder
+public class DeleteCertificateResponseDTO {
+
+    Certificate certificate;
+
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class DeleteCertificateResponseDTOBuilder {
+
+    }
 }

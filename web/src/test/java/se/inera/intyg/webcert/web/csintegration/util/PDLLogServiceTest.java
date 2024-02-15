@@ -89,4 +89,18 @@ class PDLLogServiceTest {
 
         assertEquals(expectedLogRequest, captor.getValue());
     }
+
+    @Test
+    void shouldLogDeletedCertificate() {
+        final var expectedLogRequest = LogRequest.builder().build();
+        final var captor = ArgumentCaptor.forClass(LogRequest.class);
+
+        doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE);
+
+        pdlLogService.logDeleted(CERTIFICATE);
+
+        verify(logService).logDeleteIntyg(captor.capture());
+
+        assertEquals(expectedLogRequest, captor.getValue());
+    }
 }
