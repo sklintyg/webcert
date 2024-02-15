@@ -20,12 +20,44 @@
 package se.inera.intyg.webcert.web.csintegration.integration;
 
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 
 public class ListIntygEntryConverter {
 
     public ListIntygEntry convert(Certificate certificate) {
-        return null;
+        final var listIntygEntry = new ListIntygEntry();
+        final var metadata = certificate.getMetadata();
+
+        listIntygEntry.setIntygId(metadata.getId());
+        listIntygEntry.setIntygType(metadata.getType());
+        listIntygEntry.setIntygTypeName(metadata.getTypeName());
+        listIntygEntry.setIntygTypeVersion(metadata.getTypeVersion());
+        listIntygEntry.setVersion(metadata.getVersion());
+
+        listIntygEntry.setTestIntyg(metadata.isTestCertificate());
+        listIntygEntry.setStatus(metadata.getStatus().toString());
+        listIntygEntry.setStatusName(metadata.getStatus().name());
+
+        listIntygEntry.setPatientId(createPatientId(metadata.getPatient().getPersonId().getId()));
+        listIntygEntry.setAvliden(metadata.getPatient().isDeceased());
+        listIntygEntry.setSekretessmarkering(metadata.getPatient().isProtectedPerson());
+
+        listIntygEntry.setUpdatedSignedBy(metadata.getIssuedBy().getFullName());
+        listIntygEntry.setLastUpdatedSigned(metadata.getReadyForSign());  //TODO is this correct?
+        listIntygEntry.setVardenhetId(metadata.getCareUnit().getUnitId());
+        listIntygEntry.setVardgivarId(metadata.getCareProvider().getUnitId());
+        //TODO add separate converter for resource links
+        listIntygEntry.setVidarebefordrad(metadata.isForwarded());
+        return listIntygEntry;
     }
 
+    private Personnummer createPatientId(String patientId) {
+        return Personnummer.createPersonnummer(patientId)
+            .orElseThrow(() ->
+                new IllegalArgumentException(
+                    String.format("PatientId has wrong format: '%s'", patientId)
+                )
+            );
+    }
 }
