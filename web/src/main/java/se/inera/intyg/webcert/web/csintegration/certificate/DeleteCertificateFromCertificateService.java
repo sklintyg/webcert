@@ -43,7 +43,5 @@ public class DeleteCertificateFromCertificateService implements DeleteCertificat
         csIntegrationService.deleteCertificate(certificateId, version, csIntegrationRequestFactory.deleteCertificateRequest());
 
         log.debug("Deleted certificate '{}'", certificateId);
-
-        //notificationService.sendNotificationForDraftDeleted();
     }
 }

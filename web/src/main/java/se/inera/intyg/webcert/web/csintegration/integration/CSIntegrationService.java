@@ -41,6 +41,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServi
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateTypeExistsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateResponseDTO;
@@ -64,9 +65,29 @@ public class CSIntegrationService {
         this.restTemplate = restTemplate;
     }
 
-    public void deleteCertificate(String certificateId, long version, DeleteCertificateRequestDTO request) {
+    public DeleteCertificateResponseDTO deleteCertificate(String certificateId, long version, DeleteCertificateRequestDTO request) {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/" + version;
-        restTemplate.delete(url, request);
+        final var headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        final var response = restTemplate.<DeleteCertificateResponseDTO>exchange(
+            url,
+            HttpMethod.DELETE,
+            new HttpEntity<>(request, headers),
+            new ParameterizedTypeReference<>() {
+            },
+            Collections.emptyMap()
+        );
+
+        if (response.getBody() == null) {
+            throw new IllegalStateException(
+                String.format("Deleting certificate '%s' returned empty response!", certificateId)
+            );
+        }
+
+        return DeleteCertificateResponseDTO.builder()
+            .certificate(response.getBody().getCertificate())
+            .build();
     }
 
     public List<CertificateTypeInfoDTO> getTypeInfo(CertificateServiceTypeInfoRequestDTO request) {
