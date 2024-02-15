@@ -56,7 +56,9 @@ public class ListIntygEntryConverter {
         //TODO add separate converter for resource links
         listIntygEntry.setVidarebefordrad(metadata.isForwarded());
 
-        certificate.getLinks().forEach(link -> listIntygEntry.getLinks().add(convertResourceLink(link)));
+        if (certificate.getLinks() != null) {
+            certificate.getLinks().forEach(link -> listIntygEntry.getLinks().add(convertResourceLink(link)));
+        }
 
         return listIntygEntry;
     }
