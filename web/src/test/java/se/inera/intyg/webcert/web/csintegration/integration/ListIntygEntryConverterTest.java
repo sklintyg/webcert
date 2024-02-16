@@ -22,6 +22,7 @@ package se.inera.intyg.webcert.web.csintegration.integration;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,7 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.link.ResourceLink;
 import se.inera.intyg.common.support.facade.model.link.ResourceLinkTypeEnum;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.CertificateFacadeTestHelper;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
@@ -85,7 +87,7 @@ class ListIntygEntryConverterTest {
     @Test
     void shouldConvertStatus() {
         final var response = listIntygEntryConverter.convert(CERTIFICATE);
-        assertEquals(CERTIFICATE.getMetadata().getStatus().toString(), response.getStatus());
+        assertEquals(UtkastStatus.DRAFT_INCOMPLETE.toString(), response.getStatus());
     }
 
     @Test
@@ -131,9 +133,9 @@ class ListIntygEntryConverterTest {
     }
 
     @Test
-    void shouldConvertLastUpdatedSigned() {
+    void shouldConvertCreated() {
         final var response = listIntygEntryConverter.convert(CERTIFICATE);
-        assertEquals(CERTIFICATE.getMetadata().getReadyForSign(), response.getLastUpdatedSigned());
+        assertEquals(CERTIFICATE.getMetadata().getCreated(), response.getLastUpdatedSigned());
     }
 
     @Test
@@ -173,6 +175,18 @@ class ListIntygEntryConverterTest {
 
             final var response = listIntygEntryConverter.convert(CERTIFICATE);
             assertTrue(response.getLinks().stream().anyMatch(link -> link.getType() == ActionLinkType.VIDAREBEFORDRA_UTKAST));
+        }
+
+        @Test
+        void shouldNotIncludeLinksNotSupported() {
+            CERTIFICATE.setLinks(List.of(ResourceLink.builder()
+                    .type(ResourceLinkTypeEnum.COPY_CERTIFICATE)
+                    .build()
+                )
+            );
+
+            final var response = listIntygEntryConverter.convert(CERTIFICATE);
+            assertEquals(Collections.emptyList(), response.getLinks());
         }
     }
 }

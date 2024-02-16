@@ -19,10 +19,13 @@
 
 package se.inera.intyg.webcert.web.csintegration.integration;
 
+import java.util.Collections;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.link.ResourceLink;
 import se.inera.intyg.common.support.facade.model.link.ResourceLinkTypeEnum;
+import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
@@ -42,7 +45,7 @@ public class ListIntygEntryConverter {
         listIntygEntry.setVersion(metadata.getVersion());
 
         listIntygEntry.setTestIntyg(metadata.isTestCertificate());
-        listIntygEntry.setStatus(metadata.getStatus().toString());
+        listIntygEntry.setStatus(convertStatus(metadata.getStatus()));
         listIntygEntry.setStatusName(metadata.getStatus().name());
 
         listIntygEntry.setPatientId(createPatientId(metadata.getPatient().getPersonId().getId()));
@@ -51,13 +54,14 @@ public class ListIntygEntryConverter {
 
         listIntygEntry.setUpdatedSignedBy(metadata.getIssuedBy().getFullName());
         listIntygEntry.setUpdatedSignedById(metadata.getIssuedBy().getPersonId());
-        listIntygEntry.setLastUpdatedSigned(metadata.getReadyForSign());
+        listIntygEntry.setLastUpdatedSigned(metadata.getCreated());
         listIntygEntry.setVardenhetId(metadata.getCareUnit().getUnitId());
         listIntygEntry.setVardgivarId(metadata.getCareProvider().getUnitId());
         listIntygEntry.setVidarebefordrad(metadata.isForwarded());
 
         if (certificate.getLinks() != null) {
             certificate.getLinks().forEach(link -> listIntygEntry.getLinks().add(convertResourceLink(link)));
+            listIntygEntry.getLinks().removeAll(Collections.singleton(null));
         }
 
         return listIntygEntry;
@@ -70,6 +74,14 @@ public class ListIntygEntryConverter {
 
         if (resourceLink.getType() == ResourceLinkTypeEnum.FORWARD_CERTIFICATE) {
             return new ActionLink(ActionLinkType.VIDAREBEFORDRA_UTKAST);
+        }
+
+        return null;
+    }
+
+    public String convertStatus(CertificateStatus status) {
+        if (status == CertificateStatus.UNSIGNED) {
+            return UtkastStatus.DRAFT_INCOMPLETE.toString();
         }
 
         return null;
