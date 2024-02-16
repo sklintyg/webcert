@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.csintegration.integration;
 
+import java.util.Collections;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.link.ResourceLink;
@@ -58,6 +59,7 @@ public class ListIntygEntryConverter {
 
         if (certificate.getLinks() != null) {
             certificate.getLinks().forEach(link -> listIntygEntry.getLinks().add(convertResourceLink(link)));
+            listIntygEntry.getLinks().removeAll(Collections.singleton(null));
         }
 
         return listIntygEntry;
