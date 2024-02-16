@@ -26,6 +26,7 @@ import se.inera.intyg.common.support.facade.model.CertificateDataElement;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
+import se.inera.intyg.common.support.facade.model.Staff;
 import se.inera.intyg.common.support.facade.model.config.CertificateDataConfigSickLeavePeriod;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
@@ -102,6 +103,11 @@ public class CertificateFacadeTestHelper {
                     .email("email")
                     .phoneNumber("phoneNumber")
                     .build()
+            ).issuedBy(Staff.builder()
+                .fullName("fullName")
+                .personId("personId")
+                .prescriptionCode("prescriptionCode")
+                .build()
             );
 
         return CertificateBuilder.create()

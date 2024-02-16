@@ -43,26 +43,47 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificat
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
 @Service
 public class CSIntegrationService {
 
     private static final String CERTIFICATE_ENDPOINT_URL = "/api/certificate";
+    private static final String PATIENT_ENDPOINT_URL = "/api/patient";
     private static final String CERTIFICATE_TYPE_INFO_ENDPOINT_URL = "/api/certificatetypeinfo";
     private final CertificateTypeInfoConverter certificateTypeInfoConverter;
+    private final ListIntygEntryConverter listIntygEntryConverter;
 
     private final RestTemplate restTemplate;
 
     @Value("${certificateservice.base.url}")
     private String baseUrl;
 
-    public CSIntegrationService(CertificateTypeInfoConverter certificateTypeInfoConverter, @Qualifier("csRestTemplate")
-    RestTemplate restTemplate) {
+    public CSIntegrationService(CertificateTypeInfoConverter certificateTypeInfoConverter, ListIntygEntryConverter listIntygEntryConverter,
+        @Qualifier("csRestTemplate")
+        RestTemplate restTemplate) {
         this.certificateTypeInfoConverter = certificateTypeInfoConverter;
+        this.listIntygEntryConverter = listIntygEntryConverter;
         this.restTemplate = restTemplate;
+    }
+
+    public List<ListIntygEntry> listCertificatesForPatient(GetPatientCertificatesRequestDTO request) {
+        final var url = baseUrl + PATIENT_ENDPOINT_URL + "/certificates";
+        final var response = restTemplate.postForObject(url, request, GetPatientCertificatesResponseDTO.class);
+
+        if (response == null) {
+            throw new IllegalStateException("Response from certificate service was null when getting patient certificate list");
+        }
+
+        return response.getCertificates()
+            .stream()
+            .map(listIntygEntryConverter::convert)
+            .collect(Collectors.toList());
     }
 
     public Certificate deleteCertificate(String certificateId, long version, DeleteCertificateRequestDTO request) {
