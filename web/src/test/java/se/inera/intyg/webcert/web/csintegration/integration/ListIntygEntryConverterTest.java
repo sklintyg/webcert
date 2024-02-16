@@ -22,6 +22,7 @@ package se.inera.intyg.webcert.web.csintegration.integration;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -173,6 +174,18 @@ class ListIntygEntryConverterTest {
 
             final var response = listIntygEntryConverter.convert(CERTIFICATE);
             assertTrue(response.getLinks().stream().anyMatch(link -> link.getType() == ActionLinkType.VIDAREBEFORDRA_UTKAST));
+        }
+
+        @Test
+        void shouldNotIncludeLinksNotSupported() {
+            CERTIFICATE.setLinks(List.of(ResourceLink.builder()
+                    .type(ResourceLinkTypeEnum.COPY_CERTIFICATE)
+                    .build()
+                )
+            );
+
+            final var response = listIntygEntryConverter.convert(CERTIFICATE);
+            assertEquals(Collections.emptyList(), response.getLinks());
         }
     }
 }
