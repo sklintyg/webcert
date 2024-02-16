@@ -59,7 +59,6 @@ public class CSIntegrationService {
     private static final String CERTIFICATE_TYPE_INFO_ENDPOINT_URL = "/api/certificatetypeinfo";
     private static final String UNIT_ENDPOINT_URL = "/api/unit";
 
-
     private final CertificateTypeInfoConverter certificateTypeInfoConverter;
     private final ListIntygEntryConverter listIntygEntryConverter;
 
