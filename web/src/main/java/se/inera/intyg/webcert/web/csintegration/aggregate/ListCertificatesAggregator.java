@@ -36,11 +36,23 @@ public class ListCertificatesAggregator {
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
 
-    public List<ListIntygEntry> getCertificate(String patientId) {
+    public List<ListIntygEntry> listCertificatesForPatient(String patientId) {
+        return handleList(
+            csIntegrationService.listCertificatesForPatient(csIntegrationRequestFactory.getPatientCertificatesRequest(patientId))
+        );
+    }
+
+    public List<ListIntygEntry> listCertificatesForUnit() {
+        return handleList(
+            csIntegrationService.listCertificatesForUnit(csIntegrationRequestFactory.getUnitCertificatesRequest())
+        );
+    }
+
+    private List<ListIntygEntry> handleList(List<ListIntygEntry> listFromCS) {
         if (!certificateServiceProfile.active()) {
             return Collections.emptyList();
         }
 
-        return csIntegrationService.listCertificatesForPatient(csIntegrationRequestFactory.getPatientCertificatesRequest(patientId));
+        return listFromCS;
     }
 }

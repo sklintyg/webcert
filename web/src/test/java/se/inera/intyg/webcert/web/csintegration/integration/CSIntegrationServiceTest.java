@@ -59,8 +59,9 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificat
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetListCertificatesResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
@@ -89,10 +90,11 @@ class CSIntegrationServiceTest {
     private static final ParameterizedTypeReference<DeleteCertificateResponseDTO> DELETE_RESPONSE
         = new ParameterizedTypeReference<>() {
     };
-    private static final GetPatientCertificatesResponseDTO PATIENT_LIST_RESPONSE = GetPatientCertificatesResponseDTO.builder()
+    private static final GetListCertificatesResponseDTO LIST_RESPONSE = GetListCertificatesResponseDTO.builder()
         .certificates(List.of(CERTIFICATE))
         .build();
     private static final GetPatientCertificatesRequestDTO PATIENT_LIST_REQUEST = GetPatientCertificatesRequestDTO.builder().build();
+    private static final GetUnitCertificatesRequestDTO UNIT_LIST_REQUEST = GetUnitCertificatesRequestDTO.builder().build();
     private static final ListIntygEntry CONVERTED_CERTIFICATE = new ListIntygEntry();
 
     @Mock
@@ -427,6 +429,16 @@ class CSIntegrationServiceTest {
         }
     }
 
+    @Test
+    void shouldThrowExceptionIfCertificatesForPatientResponseIsNull() {
+        assertThrows(IllegalStateException.class, () -> csIntegrationService.listCertificatesForPatient(PATIENT_LIST_REQUEST));
+    }
+
+    @Test
+    void shouldThrowExceptionIfCertificatesForUnitResponseIsNull() {
+        assertThrows(IllegalStateException.class, () -> csIntegrationService.listCertificatesForUnit(UNIT_LIST_REQUEST));
+    }
+
     @Nested
     class GetPatientCertificates {
 
@@ -435,13 +447,11 @@ class CSIntegrationServiceTest {
             when(listIntygEntryConverter.convert(CERTIFICATE))
                 .thenReturn(CONVERTED_CERTIFICATE);
             when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(PATIENT_LIST_RESPONSE);
+                .thenReturn(LIST_RESPONSE);
         }
 
         @Test
         void shouldPreformPostUsingRequest() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(PATIENT_LIST_RESPONSE);
             final var captor = ArgumentCaptor.forClass(GetPatientCertificatesRequestDTO.class);
 
             csIntegrationService.listCertificatesForPatient(PATIENT_LIST_REQUEST);
@@ -452,9 +462,6 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldReturnConvertedCertificates() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(PATIENT_LIST_RESPONSE);
-
             final var response = csIntegrationService.listCertificatesForPatient(PATIENT_LIST_REQUEST);
 
             assertEquals(List.of(CONVERTED_CERTIFICATE), response);
@@ -469,6 +476,46 @@ class CSIntegrationServiceTest {
             verify(restTemplate).postForObject(captor.capture(), any(), any());
 
             assertEquals("baseUrl/api/patient/certificates", captor.getValue());
+        }
+    }
+
+    @Nested
+    class GetUnitCertificates {
+
+        @BeforeEach
+        void setup() {
+            when(listIntygEntryConverter.convert(CERTIFICATE))
+                .thenReturn(CONVERTED_CERTIFICATE);
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(LIST_RESPONSE);
+        }
+
+        @Test
+        void shouldPreformPostUsingRequest() {
+            final var captor = ArgumentCaptor.forClass(GetUnitCertificatesRequestDTO.class);
+
+            csIntegrationService.listCertificatesForUnit(UNIT_LIST_REQUEST);
+            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+
+            assertEquals(UNIT_LIST_REQUEST, captor.getValue());
+        }
+
+        @Test
+        void shouldReturnConvertedCertificates() {
+            final var response = csIntegrationService.listCertificatesForUnit(UNIT_LIST_REQUEST);
+
+            assertEquals(List.of(CONVERTED_CERTIFICATE), response);
+        }
+
+        @Test
+        void shouldSetUrlCorrect() {
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            csIntegrationService.listCertificatesForUnit(UNIT_LIST_REQUEST);
+            verify(restTemplate).postForObject(captor.capture(), any(), any());
+
+            assertEquals("baseUrl/api/unit/certificates", captor.getValue());
         }
     }
 }

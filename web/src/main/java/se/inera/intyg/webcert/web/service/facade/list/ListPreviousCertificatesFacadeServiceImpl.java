@@ -114,7 +114,7 @@ public class ListPreviousCertificatesFacadeServiceImpl implements ListPreviousCe
         resourceLinkHelper.decorateIntygWithValidActionLinks(filteredList, patientId);
         listDecorator.decorateWithCertificateTypeName(filteredList);
 
-        final var listFromCertificateService = listCertificatesAggregator.getCertificate(patientId.getOriginalPnr());
+        final var listFromCertificateService = listCertificatesAggregator.listCertificatesForPatient(patientId.getOriginalPnr());
         final var mergedList = Stream
             .concat(filteredList.stream(), listFromCertificateService.stream())
             .collect(Collectors.toList());
