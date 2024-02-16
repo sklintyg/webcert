@@ -125,6 +125,12 @@ class ListIntygEntryConverterTest {
     }
 
     @Test
+    void shouldConvertUpdatedSignedById() {
+        final var response = listIntygEntryConverter.convert(CERTIFICATE);
+        assertEquals(CERTIFICATE.getMetadata().getIssuedBy().getPersonId(), response.getUpdatedSignedById());
+    }
+
+    @Test
     void shouldConvertLastUpdatedSigned() {
         final var response = listIntygEntryConverter.convert(CERTIFICATE);
         assertEquals(CERTIFICATE.getMetadata().getReadyForSign(), response.getLastUpdatedSigned());
