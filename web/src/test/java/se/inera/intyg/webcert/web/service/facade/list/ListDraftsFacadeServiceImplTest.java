@@ -96,6 +96,7 @@ class ListDraftsFacadeServiceImplTest {
 
         final var convertedFilter = new UtkastFilter("HSA_ID");
         convertedFilter.setOrderBy("ORDER_BY");
+        convertedFilter.setPatientId("PATIENT_ID");
         convertedFilter.setOrderAscending(false);
         when(draftFilterConverter.convert(any(ListFilter.class)))
             .thenReturn(convertedFilter);
@@ -103,7 +104,7 @@ class ListDraftsFacadeServiceImplTest {
 
     @Test
     void shouldMergeListWithCertificateServiceBeforeConverting() {
-        when(listCertificatesAggregator.listCertificatesForUnit())
+        when(listCertificatesAggregator.listCertificatesForUnit("PATIENT_ID"))
             .thenReturn(CS_LIST);
 
         listDraftsFacadeService.get(new ListFilter());
@@ -113,7 +114,7 @@ class ListDraftsFacadeServiceImplTest {
 
     @Test
     void shouldSetTotalCount() {
-        when(listCertificatesAggregator.listCertificatesForUnit())
+        when(listCertificatesAggregator.listCertificatesForUnit("PATIENT_ID"))
             .thenReturn(CS_LIST);
 
         final var response = listDraftsFacadeService.get(new ListFilter());

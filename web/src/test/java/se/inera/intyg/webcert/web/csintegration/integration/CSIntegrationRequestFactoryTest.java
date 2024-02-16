@@ -386,26 +386,34 @@ class CSIntegrationRequestFactoryTest {
 
         @Test
         void shouldSetUser() {
-            final var actualRequest = csIntegrationRequestFactory.getUnitCertificatesRequest();
+            final var actualRequest = csIntegrationRequestFactory.getUnitCertificatesRequest(null);
             assertEquals(USER, actualRequest.getUser());
         }
 
         @Test
         void shouldSetUnit() {
-            final var actualRequest = csIntegrationRequestFactory.getUnitCertificatesRequest();
+            final var actualRequest = csIntegrationRequestFactory.getUnitCertificatesRequest(null);
             assertEquals(UNIT, actualRequest.getUnit());
         }
 
         @Test
         void shouldSetCareUnit() {
-            final var actualRequest = csIntegrationRequestFactory.getUnitCertificatesRequest();
+            final var actualRequest = csIntegrationRequestFactory.getUnitCertificatesRequest(null);
             assertEquals(CARE_UNIT, actualRequest.getCareUnit());
         }
 
         @Test
         void shouldSetCareProvider() {
-            final var actualRequest = csIntegrationRequestFactory.getUnitCertificatesRequest();
+            final var actualRequest = csIntegrationRequestFactory.getUnitCertificatesRequest(null);
             assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
+        }
+
+        @Test
+        void shouldSetPatientIfIdIsDefined() {
+            when(certificateServicePatientHelper.get(PERSONNUMMER))
+                .thenReturn(PATIENT);
+            final var actualRequest = csIntegrationRequestFactory.getUnitCertificatesRequest(PATIENT_ID);
+            assertEquals(PATIENT, actualRequest.getPatient());
         }
     }
 }

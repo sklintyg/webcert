@@ -86,20 +86,20 @@ class ListCertificatesAggregatorTest {
 
         @Test
         void shouldReturnEmptyListIfProfileIsNotActive() {
-            final var response = listCertificatesAggregator.listCertificatesForUnit();
+            final var response = listCertificatesAggregator.listCertificatesForUnit(PATIENT_ID);
             assertEquals(Collections.emptyList(), response);
         }
 
         @Test
         void shouldReturnListFromAPIIfProfileIsActive() {
-            when(csIntegrationRequestFactory.getUnitCertificatesRequest())
+            when(csIntegrationRequestFactory.getUnitCertificatesRequest(PATIENT_ID))
                 .thenReturn(UNIT_REQUEST);
             when(certificateServiceProfile.active())
                 .thenReturn(true);
             when(csIntegrationService.listCertificatesForUnit(UNIT_REQUEST))
                 .thenReturn(FROM_CS);
 
-            final var response = listCertificatesAggregator.listCertificatesForUnit();
+            final var response = listCertificatesAggregator.listCertificatesForUnit(PATIENT_ID);
 
             assertEquals(FROM_CS, response);
         }

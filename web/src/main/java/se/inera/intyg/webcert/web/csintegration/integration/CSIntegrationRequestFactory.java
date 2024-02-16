@@ -110,8 +110,9 @@ public class CSIntegrationRequestFactory {
             .build();
     }
 
-    public GetUnitCertificatesRequestDTO getUnitCertificatesRequest() {
+    public GetUnitCertificatesRequestDTO getUnitCertificatesRequest(String patientId) {
         return GetUnitCertificatesRequestDTO.builder()
+            .patient(patientId != null ? certificateServicePatientHelper.get(createPatientId(patientId)) : null)
             .unit(certificateServiceUnitHelper.getUnit())
             .careUnit(certificateServiceUnitHelper.getCareUnit())
             .careProvider(certificateServiceUnitHelper.getCareProvider())

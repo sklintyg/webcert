@@ -42,9 +42,9 @@ public class ListCertificatesAggregator {
         );
     }
 
-    public List<ListIntygEntry> listCertificatesForUnit() {
+    public List<ListIntygEntry> listCertificatesForUnit(String patientId) {
         return handleList(
-            csIntegrationService.listCertificatesForUnit(csIntegrationRequestFactory.getUnitCertificatesRequest())
+            csIntegrationService.listCertificatesForUnit(csIntegrationRequestFactory.getUnitCertificatesRequest(patientId))
         );
     }
 
