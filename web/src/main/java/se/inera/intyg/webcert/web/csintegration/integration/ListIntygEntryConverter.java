@@ -54,7 +54,7 @@ public class ListIntygEntryConverter {
 
         listIntygEntry.setUpdatedSignedBy(metadata.getIssuedBy().getFullName());
         listIntygEntry.setUpdatedSignedById(metadata.getIssuedBy().getPersonId());
-        listIntygEntry.setLastUpdatedSigned(metadata.getReadyForSign());
+        listIntygEntry.setLastUpdatedSigned(metadata.getCreated());
         listIntygEntry.setVardenhetId(metadata.getCareUnit().getUnitId());
         listIntygEntry.setVardgivarId(metadata.getCareProvider().getUnitId());
         listIntygEntry.setVidarebefordrad(metadata.isForwarded());
