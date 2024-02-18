@@ -527,8 +527,8 @@ class CSIntegrationServiceTest {
 
         private static final String STAFF_ID = "staffId";
         private static final String STAFF_FULL_NAME = "staffFullName";
-        private final GetUnitCertificatesInfoRequestDTO REQUEST = GetUnitCertificatesInfoRequestDTO.builder().build();
-        private final GetUnitCertificatesInfoResponseDTO RESPONSE = GetUnitCertificatesInfoResponseDTO.builder()
+        private final GetUnitCertificatesInfoRequestDTO listInfoRequest = GetUnitCertificatesInfoRequestDTO.builder().build();
+        private final GetUnitCertificatesInfoResponseDTO listInfoResponse = GetUnitCertificatesInfoResponseDTO.builder()
             .staffs(
                 List.of(
                     Staff.builder()
@@ -542,22 +542,22 @@ class CSIntegrationServiceTest {
         @BeforeEach
         void setup() {
             when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(RESPONSE);
+                .thenReturn(listInfoResponse);
         }
 
         @Test
         void shouldPreformPostUsingRequest() {
             final var captor = ArgumentCaptor.forClass(GetUnitCertificatesRequestDTO.class);
 
-            csIntegrationService.listCertificatesInfoForUnit(REQUEST);
+            csIntegrationService.listCertificatesInfoForUnit(listInfoRequest);
             verify(restTemplate).postForObject(anyString(), captor.capture(), any());
 
-            assertEquals(REQUEST, captor.getValue());
+            assertEquals(listInfoRequest, captor.getValue());
         }
 
         @Test
         void shouldReturnConvertedStaffs() {
-            final var response = csIntegrationService.listCertificatesInfoForUnit(REQUEST);
+            final var response = csIntegrationService.listCertificatesInfoForUnit(listInfoRequest);
             assertEquals(List.of(new StaffListInfo(STAFF_ID, STAFF_FULL_NAME)), response);
         }
 
@@ -566,7 +566,7 @@ class CSIntegrationServiceTest {
             ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
             final var captor = ArgumentCaptor.forClass(String.class);
 
-            csIntegrationService.listCertificatesInfoForUnit(REQUEST);
+            csIntegrationService.listCertificatesInfoForUnit(listInfoRequest);
             verify(restTemplate).postForObject(captor.capture(), any(), any());
 
             assertEquals("baseUrl/api/unit/certificates/info", captor.getValue());
