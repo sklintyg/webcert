@@ -24,9 +24,9 @@ import java.util.List;
 import lombok.Builder;
 import lombok.Value;
 import se.inera.intyg.common.support.facade.model.Staff;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoResponseDTO.GetListCertificatesInfoResponseDTOBuilder;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoResponseDTO.GetUnitCertificatesInfoResponseDTOBuilder;
 
-@JsonDeserialize(builder = GetListCertificatesInfoResponseDTOBuilder.class)
+@JsonDeserialize(builder = GetUnitCertificatesInfoResponseDTOBuilder.class)
 @Value
 @Builder
 public class GetUnitCertificatesInfoResponseDTO {
@@ -34,7 +34,7 @@ public class GetUnitCertificatesInfoResponseDTO {
     List<Staff> staffs;
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class GetListCertificatesInfoResponseDTOBuilder {
+    public static class GetUnitCertificatesInfoResponseDTOBuilder {
 
     }
 }
