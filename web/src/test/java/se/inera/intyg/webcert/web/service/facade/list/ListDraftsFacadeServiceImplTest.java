@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.service.facade.list;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -53,6 +52,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 @ExtendWith(MockitoExtension.class)
 class ListDraftsFacadeServiceImplTest {
 
+    private static final ListFilter LIST_FILTER = new ListFilter();
     @Mock
     ListCertificatesAggregator listCertificatesAggregator;
     @Mock
@@ -73,7 +73,6 @@ class ListDraftsFacadeServiceImplTest {
     CertificateListItemConverter certificateListItemConverter;
     @Mock
     AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
-
     @InjectMocks
     ListDraftsFacadeServiceImpl listDraftsFacadeService;
 
@@ -104,20 +103,20 @@ class ListDraftsFacadeServiceImplTest {
 
     @Test
     void shouldMergeListWithCertificateServiceBeforeConverting() {
-        when(listCertificatesAggregator.listCertificatesForUnit("PATIENT_ID"))
+        when(listCertificatesAggregator.listCertificatesForUnit(LIST_FILTER))
             .thenReturn(CS_LIST);
 
-        listDraftsFacadeService.get(new ListFilter());
+        listDraftsFacadeService.get(LIST_FILTER);
 
         verify(certificateListItemConverter, times(2)).convert(any(ListIntygEntry.class), eq(ListType.DRAFTS));
     }
 
     @Test
     void shouldSetTotalCount() {
-        when(listCertificatesAggregator.listCertificatesForUnit("PATIENT_ID"))
+        when(listCertificatesAggregator.listCertificatesForUnit(LIST_FILTER))
             .thenReturn(CS_LIST);
 
-        final var response = listDraftsFacadeService.get(new ListFilter());
+        final var response = listDraftsFacadeService.get(LIST_FILTER);
 
         assertEquals(2, response.getTotalCount());
     }

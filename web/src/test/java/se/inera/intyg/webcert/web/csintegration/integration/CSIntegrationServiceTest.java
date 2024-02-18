@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -46,6 +45,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.Staff;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateExistsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
@@ -61,7 +61,10 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificat
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetListCertificatesResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
@@ -516,6 +519,57 @@ class CSIntegrationServiceTest {
             verify(restTemplate).postForObject(captor.capture(), any(), any());
 
             assertEquals("baseUrl/api/unit/certificates", captor.getValue());
+        }
+    }
+
+    @Nested
+    class GetUnitCertificatesInfo {
+
+        private static final String STAFF_ID = "staffId";
+        private static final String STAFF_FULL_NAME = "staffFullName";
+        private final GetUnitCertificatesInfoRequestDTO LIST_INFO_REQUEST = GetUnitCertificatesInfoRequestDTO.builder().build();
+        private final GetUnitCertificatesInfoResponseDTO LIST_INFO_RESPONSE = GetUnitCertificatesInfoResponseDTO.builder()
+            .staffs(
+                List.of(
+                    Staff.builder()
+                        .personId(STAFF_ID)
+                        .fullName(STAFF_FULL_NAME)
+                        .build()
+                )
+            )
+            .build();
+
+        @BeforeEach
+        void setup() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(LIST_INFO_RESPONSE);
+        }
+
+        @Test
+        void shouldPreformPostUsingRequest() {
+            final var captor = ArgumentCaptor.forClass(GetUnitCertificatesRequestDTO.class);
+
+            csIntegrationService.listCertificatesInfoForUnit(LIST_INFO_REQUEST);
+            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+
+            assertEquals(LIST_INFO_REQUEST, captor.getValue());
+        }
+
+        @Test
+        void shouldReturnConvertedStaffs() {
+            final var response = csIntegrationService.listCertificatesInfoForUnit(LIST_INFO_REQUEST);
+            assertEquals(List.of(new StaffListInfo(STAFF_ID, STAFF_FULL_NAME)), response);
+        }
+
+        @Test
+        void shouldSetUrlCorrect() {
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            csIntegrationService.listCertificatesInfoForUnit(LIST_INFO_REQUEST);
+            verify(restTemplate).postForObject(captor.capture(), any(), any());
+
+            assertEquals("baseUrl/api/unit/certificates/info", captor.getValue());
         }
     }
 }

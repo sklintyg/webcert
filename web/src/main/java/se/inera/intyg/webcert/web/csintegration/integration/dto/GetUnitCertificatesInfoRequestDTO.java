@@ -16,30 +16,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package se.inera.intyg.webcert.web.csintegration.user;
+package se.inera.intyg.webcert.web.csintegration.integration.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserDTO.CertificateServiceUserDTOBuilder;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoRequestDTO.GetUnitCertificatesInfoRequestDTOBuilder;
+import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitDTO;
+import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserDTO;
 
-@JsonDeserialize(builder = CertificateServiceUserDTOBuilder.class)
+@JsonDeserialize(builder = GetUnitCertificatesInfoRequestDTOBuilder.class)
 @Value
 @Builder
-public class CertificateServiceUserDTO {
+public class GetUnitCertificatesInfoRequestDTO {
 
-    String id;
-    String firstName;
-    String lastName;
-    String middleName;
-    String fullName;
-    CertificateServiceUserRole role;
-    Boolean blocked;
+    CertificateServiceUserDTO user;
+    CertificateServiceUnitDTO unit;
+    CertificateServiceUnitDTO careUnit;
+    CertificateServiceUnitDTO careProvider;
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class CertificateServiceUserDTOBuilder {
+    public static class GetUnitCertificatesInfoRequestDTOBuilder {
 
     }
 }

@@ -45,9 +45,12 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificat
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetListCertificatesResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateResponseDTO;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
@@ -86,6 +89,25 @@ public class CSIntegrationService {
         return response.getCertificates()
             .stream()
             .map(listIntygEntryConverter::convert)
+            .collect(Collectors.toList());
+    }
+
+    public List<StaffListInfo> listCertificatesInfoForUnit(GetUnitCertificatesInfoRequestDTO request) {
+        final var url = baseUrl + UNIT_ENDPOINT_URL + "/certificates/info";
+        final var response = restTemplate.postForObject(url, request, GetUnitCertificatesInfoResponseDTO.class);
+
+        if (response == null) {
+            throw new IllegalStateException("Response from certificate service was null when getting certificate list info");
+        }
+
+        return response.getStaffs()
+            .stream()
+            .map(staff ->
+                StaffListInfo.builder()
+                    .hsaId(staff.getPersonId())
+                    .name(staff.getFullName())
+                    .build()
+            )
             .collect(Collectors.toList());
     }
 

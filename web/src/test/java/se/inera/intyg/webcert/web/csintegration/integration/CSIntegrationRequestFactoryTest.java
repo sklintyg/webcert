@@ -35,12 +35,16 @@ import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesQueryCriteriaDTO;
 import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientDTO;
 import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientHelper;
+import se.inera.intyg.webcert.web.csintegration.patient.PersonIdDTO;
+import se.inera.intyg.webcert.web.csintegration.patient.PersonIdType;
 import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitDTO;
 import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitHelper;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserDTO;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserHelper;
+import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 
 @ExtendWith(MockitoExtension.class)
 class CSIntegrationRequestFactoryTest {
@@ -51,14 +55,11 @@ class CSIntegrationRequestFactoryTest {
     CertificateServiceUserHelper certificateServiceUserHelper;
     @Mock
     CertificateServicePatientHelper certificateServicePatientHelper;
+    @Mock
+    CertificatesQueryCriteriaFactory certificatesQueryCriteriaFactory;
     @InjectMocks
     CSIntegrationRequestFactory csIntegrationRequestFactory;
 
-    private static final CertificateServiceUserDTO USER = CertificateServiceUserDTO.builder().build();
-    private static final CertificateServiceUnitDTO UNIT = CertificateServiceUnitDTO.builder().build();
-    private static final CertificateServiceUnitDTO CARE_UNIT = CertificateServiceUnitDTO.builder().build();
-    private static final CertificateServiceUnitDTO CARE_PROVIDER = CertificateServiceUnitDTO.builder().build();
-    private static final CertificateServicePatientDTO PATIENT = CertificateServicePatientDTO.builder().build();
     private static final String TYPE = "TYPE";
     private static final String VERSION = "VERSION";
     private static final CertificateModelIdDTO CERTIFICATE_MODEL_ID = CertificateModelIdDTO.builder()
@@ -68,7 +69,13 @@ class CSIntegrationRequestFactoryTest {
     private static final Certificate CERTIFICATE = new Certificate();
     private static final String PATIENT_ID = "191212121212";
     private static final Personnummer PERSONNUMMER = Personnummer.createPersonnummer(PATIENT_ID).orElseThrow();
-    public static final String ID = "ID";
+    private static final CertificateServiceUserDTO USER = CertificateServiceUserDTO.builder().build();
+    private static final CertificateServiceUnitDTO UNIT = CertificateServiceUnitDTO.builder().build();
+    private static final CertificateServiceUnitDTO CARE_UNIT = CertificateServiceUnitDTO.builder().build();
+    private static final CertificateServiceUnitDTO CARE_PROVIDER = CertificateServiceUnitDTO.builder().build();
+    private static final CertificateServicePatientDTO PATIENT = CertificateServicePatientDTO.builder().build();
+    private static final ListFilter LIST_FILTER = new ListFilter();
+    private static final CertificatesQueryCriteriaDTO CERTIFICATES_QUERY_CRITERIA_DTO = CertificatesQueryCriteriaDTO.builder().build();
 
     static {
         CERTIFICATE.setMetadata(
@@ -386,34 +393,86 @@ class CSIntegrationRequestFactoryTest {
 
         @Test
         void shouldSetUser() {
-            final var actualRequest = csIntegrationRequestFactory.getUnitCertificatesRequest(null);
+            when(certificatesQueryCriteriaFactory.create(LIST_FILTER)).thenReturn(CERTIFICATES_QUERY_CRITERIA_DTO);
+            final var actualRequest = csIntegrationRequestFactory.getUnitCertificatesRequest(LIST_FILTER);
             assertEquals(USER, actualRequest.getUser());
         }
 
         @Test
         void shouldSetUnit() {
-            final var actualRequest = csIntegrationRequestFactory.getUnitCertificatesRequest(null);
+            when(certificatesQueryCriteriaFactory.create(LIST_FILTER)).thenReturn(CERTIFICATES_QUERY_CRITERIA_DTO);
+            final var actualRequest = csIntegrationRequestFactory.getUnitCertificatesRequest(LIST_FILTER);
             assertEquals(UNIT, actualRequest.getUnit());
         }
 
         @Test
         void shouldSetCareUnit() {
-            final var actualRequest = csIntegrationRequestFactory.getUnitCertificatesRequest(null);
+            when(certificatesQueryCriteriaFactory.create(LIST_FILTER)).thenReturn(CERTIFICATES_QUERY_CRITERIA_DTO);
+            final var actualRequest = csIntegrationRequestFactory.getUnitCertificatesRequest(LIST_FILTER);
             assertEquals(CARE_UNIT, actualRequest.getCareUnit());
         }
 
         @Test
         void shouldSetCareProvider() {
-            final var actualRequest = csIntegrationRequestFactory.getUnitCertificatesRequest(null);
+            when(certificatesQueryCriteriaFactory.create(LIST_FILTER)).thenReturn(CERTIFICATES_QUERY_CRITERIA_DTO);
+            final var actualRequest = csIntegrationRequestFactory.getUnitCertificatesRequest(LIST_FILTER);
             assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
         }
 
         @Test
         void shouldSetPatientIfIdIsDefined() {
-            when(certificateServicePatientHelper.get(PERSONNUMMER))
-                .thenReturn(PATIENT);
-            final var actualRequest = csIntegrationRequestFactory.getUnitCertificatesRequest(PATIENT_ID);
+            final var queryCriteriaDTO = CertificatesQueryCriteriaDTO.builder()
+                .personId(
+                    PersonIdDTO.builder()
+                        .id(PATIENT_ID)
+                        .type(PersonIdType.PERSONAL_IDENTITY_NUMBER)
+                        .build()
+                )
+                .build();
+            when(certificatesQueryCriteriaFactory.create(LIST_FILTER)).thenReturn(queryCriteriaDTO);
+            when(certificateServicePatientHelper.get(PERSONNUMMER)).thenReturn(PATIENT);
+            final var actualRequest = csIntegrationRequestFactory.getUnitCertificatesRequest(LIST_FILTER);
             assertEquals(PATIENT, actualRequest.getPatient());
+        }
+    }
+
+    @Nested
+    class GetUnitCertificatesInfoRequest {
+
+        @BeforeEach
+        void setup() {
+            when(certificateServiceUserHelper.get())
+                .thenReturn(USER);
+            when(certificateServiceUnitHelper.getUnit())
+                .thenReturn(UNIT);
+            when(certificateServiceUnitHelper.getCareUnit())
+                .thenReturn(CARE_UNIT);
+            when(certificateServiceUnitHelper.getCareProvider())
+                .thenReturn(CARE_PROVIDER);
+        }
+
+        @Test
+        void shouldSetUser() {
+            final var actualRequest = csIntegrationRequestFactory.getUnitCertificatesInfoRequest();
+            assertEquals(USER, actualRequest.getUser());
+        }
+
+        @Test
+        void shouldSetUnit() {
+            final var actualRequest = csIntegrationRequestFactory.getUnitCertificatesInfoRequest();
+            assertEquals(UNIT, actualRequest.getUnit());
+        }
+
+        @Test
+        void shouldSetCareUnit() {
+            final var actualRequest = csIntegrationRequestFactory.getUnitCertificatesInfoRequest();
+            assertEquals(CARE_UNIT, actualRequest.getCareUnit());
+        }
+
+        @Test
+        void shouldSetCareProvider() {
+            final var actualRequest = csIntegrationRequestFactory.getUnitCertificatesInfoRequest();
+            assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
         }
     }
 }

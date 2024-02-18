@@ -16,10 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.Collections;
@@ -35,6 +35,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
+import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,6 +43,7 @@ class ListCertificatesAggregatorTest {
 
     private static final List<ListIntygEntry> FROM_CS = List.of(new ListIntygEntry());
     private static final String PATIENT_ID = "PATIENT_ID";
+    private static final ListFilter LIST_FILTER = new ListFilter();
     private static final GetPatientCertificatesRequestDTO REQUEST = GetPatientCertificatesRequestDTO.builder().build();
     private static final GetUnitCertificatesRequestDTO UNIT_REQUEST = GetUnitCertificatesRequestDTO.builder().build();
 
@@ -64,6 +66,7 @@ class ListCertificatesAggregatorTest {
         void shouldReturnEmptyListIfProfileIsNotActive() {
             final var response = listCertificatesAggregator.listCertificatesForPatient(PATIENT_ID);
             assertEquals(Collections.emptyList(), response);
+            verifyNoInteractions(csIntegrationService);
         }
 
         @Test
@@ -86,20 +89,21 @@ class ListCertificatesAggregatorTest {
 
         @Test
         void shouldReturnEmptyListIfProfileIsNotActive() {
-            final var response = listCertificatesAggregator.listCertificatesForUnit(PATIENT_ID);
+            final var response = listCertificatesAggregator.listCertificatesForUnit(LIST_FILTER);
             assertEquals(Collections.emptyList(), response);
+            verifyNoInteractions(csIntegrationService);
         }
 
         @Test
         void shouldReturnListFromAPIIfProfileIsActive() {
-            when(csIntegrationRequestFactory.getUnitCertificatesRequest(PATIENT_ID))
+            when(csIntegrationRequestFactory.getUnitCertificatesRequest(LIST_FILTER))
                 .thenReturn(UNIT_REQUEST);
             when(certificateServiceProfile.active())
                 .thenReturn(true);
             when(csIntegrationService.listCertificatesForUnit(UNIT_REQUEST))
                 .thenReturn(FROM_CS);
 
-            final var response = listCertificatesAggregator.listCertificatesForUnit(PATIENT_ID);
+            final var response = listCertificatesAggregator.listCertificatesForUnit(LIST_FILTER);
 
             assertEquals(FROM_CS, response);
         }

@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -63,7 +62,7 @@ class ListIntygEntryConverterTest {
     @Test
     void shouldConvertCertificateTypeName() {
         final var response = listIntygEntryConverter.convert(CERTIFICATE);
-        assertEquals(CERTIFICATE.getMetadata().getTypeName(), response.getIntygTypeName());
+        assertEquals(CERTIFICATE.getMetadata().getName(), response.getIntygTypeName());
     }
 
     @Test

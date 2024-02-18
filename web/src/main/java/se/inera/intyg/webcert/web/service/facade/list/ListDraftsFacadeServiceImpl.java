@@ -82,9 +82,12 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
         final var intygEntryList = getIntygEntryList(convertedFilter);
         final var decoratedAndFilteredList = decorateList(intygEntryList);
 
-        final var listFromCertificateService = listCertificatesAggregator.listCertificatesForUnit(convertedFilter.getPatientId());
+        final var listFromCertificateService = listCertificatesAggregator.listCertificatesForUnit(filter);
         final var mergedList = Stream
-            .concat(decoratedAndFilteredList.stream(), listFromCertificateService.stream())
+            .concat(
+                decoratedAndFilteredList.stream(),
+                listFromCertificateService.stream()
+            )
             .collect(Collectors.toList());
 
         final var totalListCount = mergedList.size();

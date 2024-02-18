@@ -25,9 +25,9 @@ import java.util.List;
 import lombok.Builder;
 import lombok.Value;
 import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetListCertificatesResponseDTO.GetPatientCertificatesResponseDTOBuilder;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetListCertificatesResponseDTO.GetListCertificatesResponseDTOBuilder;
 
-@JsonDeserialize(builder = GetPatientCertificatesResponseDTOBuilder.class)
+@JsonDeserialize(builder = GetListCertificatesResponseDTOBuilder.class)
 @Value
 @Builder
 public class GetListCertificatesResponseDTO {
@@ -35,7 +35,7 @@ public class GetListCertificatesResponseDTO {
     List<Certificate> certificates;
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class GetPatientCertificatesResponseDTOBuilder {
+    public static class GetListCertificatesResponseDTOBuilder {
 
     }
 }
