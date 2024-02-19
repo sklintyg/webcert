@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import java.util.Collections;
@@ -26,28 +25,20 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
-import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
 
 @Service
 @RequiredArgsConstructor
-public class ListCertificatesAggregator {
+public class ListCertificatesInfoAggregator {
 
     private final CertificateServiceProfile certificateServiceProfile;
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
 
-    public List<ListIntygEntry> listCertificatesForPatient(String patientId) {
+    public List<StaffListInfo> listCertificatesInfoForUnit() {
         if (!certificateServiceProfile.active()) {
             return Collections.emptyList();
         }
-        return csIntegrationService.listCertificatesForPatient(csIntegrationRequestFactory.getPatientCertificatesRequest(patientId));
-    }
-
-    public List<ListIntygEntry> listCertificatesForUnit(ListFilter filter) {
-        if (!certificateServiceProfile.active()) {
-            return Collections.emptyList();
-        }
-        return csIntegrationService.listCertificatesForUnit(csIntegrationRequestFactory.getUnitCertificatesRequest(filter));
+        return csIntegrationService.listCertificatesInfoForUnit(csIntegrationRequestFactory.getUnitCertificatesInfoRequest());
     }
 }

@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.integration;
 
 import java.util.Collections;
@@ -40,7 +39,7 @@ public class ListIntygEntryConverter {
 
         listIntygEntry.setIntygId(metadata.getId());
         listIntygEntry.setIntygType(metadata.getType());
-        listIntygEntry.setIntygTypeName(metadata.getTypeName());
+        listIntygEntry.setIntygTypeName(metadata.getName());
         listIntygEntry.setIntygTypeVersion(metadata.getTypeVersion());
         listIntygEntry.setVersion(metadata.getVersion());
 

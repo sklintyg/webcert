@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.csintegration.integration.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -24,18 +23,18 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.util.List;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesResponseDTO.GetPatientCertificatesResponseDTOBuilder;
+import se.inera.intyg.common.support.facade.model.Staff;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoResponseDTO.GetUnitCertificatesInfoResponseDTOBuilder;
 
-@JsonDeserialize(builder = GetPatientCertificatesResponseDTOBuilder.class)
+@JsonDeserialize(builder = GetUnitCertificatesInfoResponseDTOBuilder.class)
 @Value
 @Builder
-public class GetPatientCertificatesResponseDTO {
+public class GetUnitCertificatesInfoResponseDTO {
 
-    List<Certificate> certificates;
+    List<Staff> staffs;
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class GetPatientCertificatesResponseDTOBuilder {
+    public static class GetUnitCertificatesInfoResponseDTOBuilder {
 
     }
 }

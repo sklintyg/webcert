@@ -28,10 +28,13 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificat
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientHelper;
 import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitHelper;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserHelper;
+import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 
 @Component
 @RequiredArgsConstructor
@@ -40,6 +43,7 @@ public class CSIntegrationRequestFactory {
     private final CertificateServiceUserHelper certificateServiceUserHelper;
     private final CertificateServiceUnitHelper certificateServiceUnitHelper;
     private final CertificateServicePatientHelper certificateServicePatientHelper;
+    private final CertificatesQueryCriteriaFactory certificatesQueryCriteriaFactory;
 
     public CertificateServiceTypeInfoRequestDTO getCertificateTypesRequest(Personnummer patientId) {
         return CertificateServiceTypeInfoRequestDTO.builder()
@@ -102,6 +106,30 @@ public class CSIntegrationRequestFactory {
     public GetPatientCertificatesRequestDTO getPatientCertificatesRequest(String patientId) {
         return GetPatientCertificatesRequestDTO.builder()
             .patient(certificateServicePatientHelper.get(createPatientId(patientId)))
+            .unit(certificateServiceUnitHelper.getUnit())
+            .careUnit(certificateServiceUnitHelper.getCareUnit())
+            .careProvider(certificateServiceUnitHelper.getCareProvider())
+            .user(certificateServiceUserHelper.get())
+            .build();
+    }
+
+    public GetUnitCertificatesRequestDTO getUnitCertificatesRequest(ListFilter filter) {
+        final var queryCriteria = certificatesQueryCriteriaFactory.create(filter);
+        final var patient = queryCriteria.getPersonId() == null ? null
+            : certificateServicePatientHelper.get(createPatientId(queryCriteria.getPersonId().getId()));
+
+        return GetUnitCertificatesRequestDTO.builder()
+            .patient(patient)
+            .unit(certificateServiceUnitHelper.getUnit())
+            .careUnit(certificateServiceUnitHelper.getCareUnit())
+            .careProvider(certificateServiceUnitHelper.getCareProvider())
+            .user(certificateServiceUserHelper.get())
+            .certificatesQueryCriteria(queryCriteria)
+            .build();
+    }
+
+    public GetUnitCertificatesInfoRequestDTO getUnitCertificatesInfoRequest() {
+        return GetUnitCertificatesInfoRequestDTO.builder()
             .unit(certificateServiceUnitHelper.getUnit())
             .careUnit(certificateServiceUnitHelper.getCareUnit())
             .careProvider(certificateServiceUnitHelper.getCareProvider())

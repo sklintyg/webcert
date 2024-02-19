@@ -33,10 +33,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
     @JsonSubTypes.Type(value = ListFilterTextValue.class, name = "ORDER"),
     @JsonSubTypes.Type(value = ListFilterBooleanValue.class, name = "BOOLEAN"),
     @JsonSubTypes.Type(value = ListFilterNumberValue.class, name = "NUMBER")
-
-
 })
-
 public interface ListFilterValue {
 
     ListFilterType getType();

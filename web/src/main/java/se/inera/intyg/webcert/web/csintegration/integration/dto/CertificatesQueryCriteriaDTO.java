@@ -16,30 +16,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package se.inera.intyg.webcert.web.csintegration.user;
+package se.inera.intyg.webcert.web.csintegration.integration.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import java.time.LocalDateTime;
+import java.util.List;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserDTO.CertificateServiceUserDTOBuilder;
+import se.inera.intyg.common.support.facade.model.CertificateStatus;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesQueryCriteriaDTO.CertificatesQueryCriteriaDTOBuilder;
+import se.inera.intyg.webcert.web.csintegration.patient.PersonIdDTO;
 
-@JsonDeserialize(builder = CertificateServiceUserDTOBuilder.class)
+@JsonDeserialize(builder = CertificatesQueryCriteriaDTOBuilder.class)
 @Value
 @Builder
-public class CertificateServiceUserDTO {
+public class CertificatesQueryCriteriaDTO {
 
-    String id;
-    String firstName;
-    String lastName;
-    String middleName;
-    String fullName;
-    CertificateServiceUserRole role;
-    Boolean blocked;
+    LocalDateTime from;
+    LocalDateTime to;
+    List<CertificateStatus> statuses;
+    String issuedByStaffId;
+    PersonIdDTO personId;
+    Boolean forwarded;
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class CertificateServiceUserDTOBuilder {
+    public static class CertificatesQueryCriteriaDTOBuilder {
 
     }
 }

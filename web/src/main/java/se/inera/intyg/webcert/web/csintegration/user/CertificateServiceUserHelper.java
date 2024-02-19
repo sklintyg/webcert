@@ -22,8 +22,10 @@ package se.inera.intyg.webcert.web.csintegration.user;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.service.facade.user.UserService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @Component
 public class CertificateServiceUserHelper {
@@ -41,31 +43,34 @@ public class CertificateServiceUserHelper {
 
     public CertificateServiceUserDTO get() {
         final var user = userService.getLoggedInUser();
+        final var webCertUser = webCertUserService.getUser();
 
         return CertificateServiceUserDTO.builder()
             .id(user.getHsaId())
+            .firstName(webCertUser.getFornamn())
+            .lastName(webCertUser.getEfternamn())
+            .fullName(webCertUser.getNamn())
             .role(convertRole(user.getRole()))
-            .blocked(isBlocked())
+            .blocked(isBlocked(webCertUser))
             .build();
     }
 
-    private boolean isBlocked() {
-        if (!webCertUserService.getUser().getOrigin().equals("NORMAL")) {
+    private boolean isBlocked(WebCertUser webCertUser) {
+        if (!webCertUser.getOrigin().equals(UserOriginType.NORMAL.name())) {
             return false;
         }
 
-        if (hasSubscription()) {
+        if (hasSubscription(webCertUser)) {
             return authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL);
         }
 
         return true;
     }
 
-    private boolean hasSubscription() {
-        final var user = webCertUserService.getUser();
-        final var careProviderId = user.getValdVardgivare().getId();
+    private boolean hasSubscription(WebCertUser webCertUser) {
+        final var careProviderId = webCertUser.getValdVardgivare().getId();
 
-        return !user.getSubscriptionInfo().getCareProvidersMissingSubscription().contains(careProviderId);
+        return !webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscription().contains(careProviderId);
     }
 
     private CertificateServiceUserRole convertRole(String role) {
