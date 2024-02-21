@@ -41,7 +41,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.RequestBody;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.modules.support.facade.dto.CertificateEventDTO;
-import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.service.facade.ComplementCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.CopyCertificateFacadeService;
@@ -181,9 +180,7 @@ public class CertificateController {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Validating certificate with id: '{}'", certificateId);
         }
-        if (certificate.getMetadata().getType().equalsIgnoreCase("fk7211")) {
-            return Response.ok(ValidateCertificateResponseDTO.create(new ValidationErrorDTO[0])).build();
-        }
+
         final var validationErrors = validationCertificateFacadeService.validate(certificate);
         return Response.ok(ValidateCertificateResponseDTO.create(validationErrors)).build();
     }
