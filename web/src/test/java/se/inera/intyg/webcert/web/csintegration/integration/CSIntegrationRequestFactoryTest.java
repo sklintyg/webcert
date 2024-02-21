@@ -475,4 +475,58 @@ class CSIntegrationRequestFactoryTest {
             assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
         }
     }
+
+    @Nested
+    class ValidateCertificateRequest {
+
+        @BeforeEach
+        void setup() {
+            when(certificateServiceUserHelper.get())
+                .thenReturn(USER);
+            when(certificateServiceUnitHelper.getUnit())
+                .thenReturn(UNIT);
+            when(certificateServiceUnitHelper.getCareUnit())
+                .thenReturn(CARE_UNIT);
+            when(certificateServiceUnitHelper.getCareProvider())
+                .thenReturn(CARE_PROVIDER);
+            when(certificateServicePatientHelper.get(PERSONNUMMER))
+                .thenReturn(PATIENT);
+        }
+
+        @Test
+        void shouldSetUser() {
+            final var actualRequest = csIntegrationRequestFactory.getValidateCertificateRequest(CERTIFICATE);
+            assertEquals(USER, actualRequest.getUser());
+        }
+
+        @Test
+        void shouldSetUnit() {
+            final var actualRequest = csIntegrationRequestFactory.getValidateCertificateRequest(CERTIFICATE);
+            assertEquals(UNIT, actualRequest.getUnit());
+        }
+
+        @Test
+        void shouldSetCareUnit() {
+            final var actualRequest = csIntegrationRequestFactory.getValidateCertificateRequest(CERTIFICATE);
+            assertEquals(CARE_UNIT, actualRequest.getCareUnit());
+        }
+
+        @Test
+        void shouldSetCareProvider() {
+            final var actualRequest = csIntegrationRequestFactory.getValidateCertificateRequest(CERTIFICATE);
+            assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
+        }
+
+        @Test
+        void shouldSetPatient() {
+            final var actualRequest = csIntegrationRequestFactory.getValidateCertificateRequest(CERTIFICATE);
+            assertEquals(PATIENT, actualRequest.getPatient());
+        }
+
+        @Test
+        void shouldSetCertificate() {
+            final var actualRequest = csIntegrationRequestFactory.getValidateCertificateRequest(CERTIFICATE);
+            assertEquals(CERTIFICATE, actualRequest.getCertificate());
+        }
+    }
 }

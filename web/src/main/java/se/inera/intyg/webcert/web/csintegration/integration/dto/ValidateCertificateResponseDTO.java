@@ -16,14 +16,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.facade;
 
-import org.springframework.stereotype.Service;
-import se.inera.intyg.common.support.facade.model.Certificate;
+package se.inera.intyg.webcert.web.csintegration.integration.dto;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import lombok.Builder;
+import lombok.Value;
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateResponseDTO.ValidateCertificateResponseDTOBuilder;
 
-@Service("validateCertificateFromWC")
-public interface ValidateCertificateFacadeService {
+@JsonDeserialize(builder = ValidateCertificateResponseDTOBuilder.class)
+@Value
+@Builder
+public class ValidateCertificateResponseDTO {
 
-    ValidationErrorDTO[] validate(Certificate certificate);
+    ValidationErrorDTO[] validationErrors;
+
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class ValidateCertificateResponseDTOBuilder {
+
+    }
 }

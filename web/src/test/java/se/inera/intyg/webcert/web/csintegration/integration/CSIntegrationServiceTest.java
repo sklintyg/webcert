@@ -47,6 +47,7 @@ import org.springframework.web.client.RestTemplate;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.Staff;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateExistsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceCreateCertificateResponseDTO;
@@ -64,6 +65,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertif
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateResponseDTO;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
@@ -99,6 +102,13 @@ class CSIntegrationServiceTest {
     private static final GetPatientCertificatesRequestDTO PATIENT_LIST_REQUEST = GetPatientCertificatesRequestDTO.builder().build();
     private static final GetUnitCertificatesRequestDTO UNIT_LIST_REQUEST = GetUnitCertificatesRequestDTO.builder().build();
     private static final ListIntygEntry CONVERTED_CERTIFICATE = new ListIntygEntry();
+    private static final ValidateCertificateRequestDTO VALIDATE_REQUEST = ValidateCertificateRequestDTO.builder()
+        .certificate(CERTIFICATE)
+        .build();
+    private static final ValidationErrorDTO[] VALIDATION_ERRORS = {new ValidationErrorDTO()};
+    private static final ValidateCertificateResponseDTO VALIDATE_RESPONSE = ValidateCertificateResponseDTO.builder()
+        .validationErrors(VALIDATION_ERRORS)
+        .build();
 
     @Mock
     private RestTemplate restTemplate;
@@ -547,7 +557,7 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldPreformPostUsingRequest() {
-            final var captor = ArgumentCaptor.forClass(GetUnitCertificatesRequestDTO.class);
+            final var captor = ArgumentCaptor.forClass(GetUnitCertificatesInfoRequestDTO.class);
 
             csIntegrationService.listCertificatesInfoForUnit(listInfoRequest);
             verify(restTemplate).postForObject(anyString(), captor.capture(), any());
@@ -570,6 +580,47 @@ class CSIntegrationServiceTest {
             verify(restTemplate).postForObject(captor.capture(), any(), any());
 
             assertEquals("baseUrl/api/unit/certificates/info", captor.getValue());
+        }
+    }
+
+    @Nested
+    class ValidateCertificate {
+
+        @BeforeEach
+        void setup() {
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+        }
+
+        @Test
+        void shouldPreformPostUsingRequest() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(VALIDATE_RESPONSE);
+            final var captor = ArgumentCaptor.forClass(ValidateCertificateRequestDTO.class);
+
+            csIntegrationService.validateCertificate(VALIDATE_REQUEST);
+            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+
+            assertEquals(VALIDATE_REQUEST, captor.getValue());
+        }
+
+        @Test
+        void shouldReturnValidationErrors() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(VALIDATE_RESPONSE);
+            final var response = csIntegrationService.validateCertificate(VALIDATE_REQUEST);
+
+            assertEquals(VALIDATION_ERRORS, response);
+        }
+
+        @Test
+        void shouldSetUrlCorrect() {
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            csIntegrationService.validateCertificate(VALIDATE_REQUEST);
+            verify(restTemplate).postForObject(captor.capture(), any(), any());
+
+            assertEquals("baseUrl/api/certificate/ID/validate", captor.getValue());
         }
     }
 }
