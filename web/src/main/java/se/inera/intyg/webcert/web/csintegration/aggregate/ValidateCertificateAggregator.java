@@ -26,7 +26,7 @@ import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorD
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.ValidateCertificateFacadeService;
 
-@Service("getCertificateAggregator")
+@Service("validateCertificateAggregator")
 public class ValidateCertificateAggregator implements ValidateCertificateFacadeService {
 
     private final ValidateCertificateFacadeService validateCertificateFromWC;

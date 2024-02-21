@@ -96,6 +96,7 @@ public class CertificateController {
     @Qualifier("saveCertificateAggregator")
     private SaveCertificateFacadeService saveCertificateFacadeService;
     @Autowired
+    @Qualifier("validateCertificateAggregator")
     private ValidateCertificateFacadeService validationCertificateFacadeService;
     @Autowired
     private SignCertificateFacadeService signCertificateFacadeService;
