@@ -18,11 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.facade;
 
-import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
 
-@Service("validateCertificateFromWC")
 public interface ValidateCertificateFacadeService {
 
     ValidationErrorDTO[] validate(Certificate certificate);
