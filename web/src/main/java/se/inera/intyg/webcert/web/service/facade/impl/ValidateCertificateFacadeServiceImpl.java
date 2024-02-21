@@ -35,7 +35,6 @@ import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
 import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationMessage;
 
 @Service("validateCertificateFromWC")
-
 public class ValidateCertificateFacadeServiceImpl implements ValidateCertificateFacadeService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ValidateCertificateFacadeServiceImpl.class);
