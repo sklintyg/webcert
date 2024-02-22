@@ -44,7 +44,7 @@ public class ListIntygEntryConverter {
         listIntygEntry.setVersion(metadata.getVersion());
 
         listIntygEntry.setTestIntyg(metadata.isTestCertificate());
-        listIntygEntry.setStatus(convertStatus(metadata.getStatus()));
+        listIntygEntry.setStatus(convertStatus(metadata.getStatus(), metadata.isValidForSign()));
         listIntygEntry.setStatusName(metadata.getStatus().name());
 
         listIntygEntry.setPatientId(createPatientId(metadata.getPatient().getPersonId().getId()));
@@ -78,8 +78,11 @@ public class ListIntygEntryConverter {
         return null;
     }
 
-    public String convertStatus(CertificateStatus status) {
+    public String convertStatus(CertificateStatus status, boolean validForSign) {
         if (status == CertificateStatus.UNSIGNED) {
+            if (validForSign) {
+                return UtkastStatus.DRAFT_COMPLETE.toString();
+            }
             return UtkastStatus.DRAFT_INCOMPLETE.toString();
         }
 

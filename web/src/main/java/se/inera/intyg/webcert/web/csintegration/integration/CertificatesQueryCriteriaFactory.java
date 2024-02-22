@@ -44,14 +44,27 @@ public class CertificatesQueryCriteriaFactory {
             .statuses(statuses(status))
             .personId(personId(patientId))
             .issuedByStaffId(issuedByStaffId(staffId))
+            .validForSign(validForSign(status))
             .build();
     }
 
-    /**
-     * Change this when validation is supported in CSs.
-     * Right now send CertificateStatus.UNSIGNED if UtkastStatus.DRAFT_COMPLETE or UtkastStatus.DRAFT_INCOMPLETE.
-     * If none of them send CertificateStatus.LOCKED which is the only other status in "unsigned draft" view.
-     */
+    @javax.annotation.Nullable
+    private Boolean validForSign(List<UtkastStatus> status) {
+        if (status.contains(UtkastStatus.DRAFT_INCOMPLETE) && status.contains(UtkastStatus.DRAFT_COMPLETE)) {
+            return null;
+        }
+
+        if (status.contains(UtkastStatus.DRAFT_COMPLETE)) {
+            return Boolean.TRUE;
+        }
+
+        if (status.contains(UtkastStatus.DRAFT_INCOMPLETE)) {
+            return Boolean.FALSE;
+        }
+
+        return null;
+    }
+
     private static List<CertificateStatus> statuses(List<UtkastStatus> status) {
         return status.contains(UtkastStatus.DRAFT_INCOMPLETE) || status.contains(UtkastStatus.DRAFT_COMPLETE)
             ? List.of(CertificateStatus.UNSIGNED)

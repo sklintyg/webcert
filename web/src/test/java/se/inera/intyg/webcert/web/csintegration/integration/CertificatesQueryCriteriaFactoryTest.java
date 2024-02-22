@@ -18,7 +18,9 @@
  */
 package se.inera.intyg.webcert.web.csintegration.integration;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.time.LocalDateTime;
@@ -92,6 +94,27 @@ class CertificatesQueryCriteriaFactoryTest {
         listFilter.addValue(new ListFilterSelectValue(CertificateListItemStatus.LOCKED.name()), "STATUS");
 
         assertEquals(statuses, certificatesQueryCriteriaFactory.create(listFilter).getStatuses());
+    }
+
+    @Test
+    void shallIncludeValidForSignTrueIfUtkastStatusIsComplete() {
+        listFilter.addValue(new ListFilterSelectValue(CertificateListItemStatus.COMPLETE.name()), "STATUS");
+
+        assertTrue(certificatesQueryCriteriaFactory.create(listFilter).getValidForSign());
+    }
+
+    @Test
+    void shallIncludeValidForSignFalseIfUtkastStatusIsIncomplete() {
+        listFilter.addValue(new ListFilterSelectValue(CertificateListItemStatus.INCOMPLETE.name()), "STATUS");
+
+        assertFalse(certificatesQueryCriteriaFactory.create(listFilter).getValidForSign());
+    }
+
+    @Test
+    void shallNotIncludeValidForSignIfUtkastStatusIsAll() {
+        listFilter.addValue(new ListFilterSelectValue(CertificateListItemStatus.SHOW_ALL.name()), "STATUS");
+
+        assertNull(certificatesQueryCriteriaFactory.create(listFilter).getValidForSign());
     }
 
     @Test

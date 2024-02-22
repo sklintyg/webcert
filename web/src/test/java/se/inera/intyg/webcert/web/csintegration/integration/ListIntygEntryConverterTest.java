@@ -84,9 +84,23 @@ class ListIntygEntryConverterTest {
     }
 
     @Test
-    void shouldConvertStatus() {
-        final var response = listIntygEntryConverter.convert(CERTIFICATE);
+    void shouldConvertStatusDraftAndValidForSignFalseToDraftIncomplete() {
+        final var certificate = CertificateFacadeTestHelper.createCertificateTypeWithVersion("type",
+            CertificateStatus.UNSIGNED, true, "typeVersion");
+        certificate.getMetadata().setValidForSign(false);
+
+        final var response = listIntygEntryConverter.convert(certificate);
         assertEquals(UtkastStatus.DRAFT_INCOMPLETE.toString(), response.getStatus());
+    }
+
+    @Test
+    void shouldConvertStatusDraftAndValidForSignTrueToDraftComplete() {
+        final var certificate = CertificateFacadeTestHelper.createCertificateTypeWithVersion("type",
+            CertificateStatus.UNSIGNED, true, "typeVersion");
+        certificate.getMetadata().setValidForSign(true);
+
+        final var response = listIntygEntryConverter.convert(certificate);
+        assertEquals(UtkastStatus.DRAFT_COMPLETE.toString(), response.getStatus());
     }
 
     @Test
