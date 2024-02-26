@@ -51,10 +51,11 @@ public class CertificateServiceTestabilityUtil {
         return CreateCertificateRequestDTO.builder()
             .user(certificateServiceUserBuilder.build(certificateServiceCreateRequest.getHosPerson()))
             .patient(certificateServicePatientHelper.get(certificateServiceCreateRequest.getPatient().getPersonId()))
-            .certificateModelId(certificateServiceCreateRequest.getCertificateModelId())
-            .careProvider(convertToCareProvider(careUnit.getVardgivare()))
-            .careUnit(convertToUnit(careUnit))
             .unit(convertToUnit(careUnit))
+            .careUnit(convertToUnit(careUnit))
+            .careProvider(convertToCareProvider(careUnit.getVardgivare()))
+            .certificateModelId(certificateServiceCreateRequest.getCertificateModelId())
+            .fillType(certificateServiceCreateRequest.getFillType())
             .build();
     }
 

@@ -111,6 +111,7 @@ public class CreateCertificateTestabilityUtil {
                     .patient(patient)
                     .hosPerson(hosPersonal)
                     .certificateModelId(modelIdDTO.orElseThrow())
+                    .fillType(createCertificateRequest.getFillType())
                     .build()
             );
         }
