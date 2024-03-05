@@ -188,7 +188,7 @@ public class UserApiControllerTest {
         doReturn(true).when(webCertUser).changeValdVardenhet(ID);
         doReturn(selectedUnit).when(webCertUser).getValdVardenhet();
         doReturn(selectedCareGiver).when(webCertUser).getValdVardgivare();
-        doReturn(true).when(dssSignatureService).shouldUseSignService(anyString());
+        doReturn(true).when(dssSignatureService).shouldUseSigningService(anyString());
 
         final var argumentCaptor = ArgumentCaptor.forClass(Boolean.class);
         userApiController.changeSelectedUnitOnUser(request);
@@ -209,7 +209,7 @@ public class UserApiControllerTest {
         doReturn(true).when(webCertUser).changeValdVardenhet(ID);
         doReturn(selectedUnit).when(webCertUser).getValdVardenhet();
         doReturn(selectedCareGiver).when(webCertUser).getValdVardgivare();
-        doReturn(false).when(dssSignatureService).shouldUseSignService(anyString());
+        doReturn(false).when(dssSignatureService).shouldUseSigningService(anyString());
 
         final var argumentCaptor = ArgumentCaptor.forClass(Boolean.class);
         userApiController.changeSelectedUnitOnUser(request);

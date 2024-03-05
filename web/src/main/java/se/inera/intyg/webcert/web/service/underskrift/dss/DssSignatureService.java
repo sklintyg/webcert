@@ -166,7 +166,7 @@ public class DssSignatureService {
         }
     }
 
-    public boolean shouldUseSignService(String currentCareUnitHsaId) {
+    public boolean shouldUseSigningService(String currentCareUnitHsaId) {
         if (currentCareUnitHsaId == null || currentCareUnitHsaId.isBlank()) {
             return true;
         }
