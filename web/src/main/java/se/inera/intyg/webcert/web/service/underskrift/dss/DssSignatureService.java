@@ -176,13 +176,13 @@ public class DssSignatureService {
      */
     public boolean isUnitInIeWhitelist(String currentCareUnitHsaId) {
         if (StringUtils.isEmpty(currentCareUnitHsaId)) {
-            return true;
+            return false;
         }
 
-        boolean inWhitelist = true;
+        boolean inWhitelist = false;
         for (String hsaIdInWhitelist : dssUnitWhitelistForIe) {
             if (hsaIdInWhitelist.equals("*")) {
-                return false;
+                return true;
             }
             if (hsaIdInWhitelist.endsWith("*")) {
                 var wildcardRemovedSubstring = hsaIdInWhitelist.substring(0, hsaIdInWhitelist.lastIndexOf("*"));
@@ -193,7 +193,6 @@ public class DssSignatureService {
             if (inWhitelist) {
                 break;
             }
-
         }
         return inWhitelist;
     }

@@ -308,11 +308,11 @@ public class DssSignatureServiceTest {
     public void isUnitInIeWhitelist() {
 
         // If currentCareUnitHsaId is null or empty
-        assertTrue(dssSignatureService.isUnitInIeWhitelist(""));
-        assertTrue(dssSignatureService.isUnitInIeWhitelist(null));
+        assertFalse(dssSignatureService.isUnitInIeWhitelist(""));
+        assertFalse(dssSignatureService.isUnitInIeWhitelist(null));
 
-        // Shall return true if whitelist is empty
-        assertTrue(dssSignatureService.isUnitInIeWhitelist("TSTNMT2321000156-1077"));
+        // Shall return false if whitelist is empty
+        assertFalse(dssSignatureService.isUnitInIeWhitelist("TSTNMT2321000156-1077"));
 
         // Just one empty post in whitelist
         ReflectionTestUtils
@@ -322,13 +322,13 @@ public class DssSignatureServiceTest {
         assertFalse(dssSignatureService.isUnitInIeWhitelist("TSTNMT23210001512WILDCARD"));
         assertFalse(dssSignatureService.isUnitInIeWhitelist("FINNS_INTE"));
 
-        // Shall return false for all units if wildcare * is used
+        // Shall return true for all units if wildcare * is used
         ReflectionTestUtils
             .setField(dssSignatureService, "dssUnitWhitelistForIe", Arrays.asList("*"));
-        assertFalse(dssSignatureService.isUnitInIeWhitelist("TSTNMT2321000156-1077"));
-        assertFalse(dssSignatureService.isUnitInIeWhitelist("TSTNMT23210001512-WILDCARD"));
-        assertFalse(dssSignatureService.isUnitInIeWhitelist("TSTNMT23210001512WILDCARD"));
-        assertFalse(dssSignatureService.isUnitInIeWhitelist("FINNS_INTE"));
+        assertTrue(dssSignatureService.isUnitInIeWhitelist("TSTNMT2321000156-1077"));
+        assertTrue(dssSignatureService.isUnitInIeWhitelist("TSTNMT23210001512-WILDCARD"));
+        assertTrue(dssSignatureService.isUnitInIeWhitelist("TSTNMT23210001512WILDCARD"));
+        assertTrue(dssSignatureService.isUnitInIeWhitelist("FINNS_INTE"));
 
         // One strict and one wildcard unit in whitelist
         ReflectionTestUtils
