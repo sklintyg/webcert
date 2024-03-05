@@ -58,7 +58,7 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEn
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.web.controller.facade.util.ReactPilotUtil;
+import se.inera.intyg.webcert.web.web.controller.facade.util.AngularClientUtil;
 import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirectToIntyg;
@@ -111,7 +111,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
     private ReactUriFactory reactUriFactory;
 
     @Autowired
-    private ReactPilotUtil reactPilotUtil;
+    private AngularClientUtil angularClientUtil;
 
     @Autowired
     private CommonAuthoritiesResolver commonAuthoritiesResolver;
@@ -450,10 +450,10 @@ public class IntygIntegrationController extends BaseIntegrationController {
     }
 
     private URI getRedirectUri(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg, WebCertUser user) {
-        if (reactPilotUtil.useReactClient(user, prepareRedirectToIntyg.getIntygTyp())) {
-            return reactUriFactory.uriForCertificate(uriInfo, prepareRedirectToIntyg.getIntygId());
+        if (angularClientUtil.useAngularClient(user)) {
+            return getRedirectUriForAngularClient(uriInfo, prepareRedirectToIntyg);
         }
-        return getRedirectUriForAngularClient(uriInfo, prepareRedirectToIntyg);
+        return reactUriFactory.uriForCertificate(uriInfo, prepareRedirectToIntyg.getIntygId());
     }
 
     private URI getRedirectUriForAngularClient(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg) {
