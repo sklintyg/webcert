@@ -53,14 +53,6 @@ class ReactPilotUtilTest {
         doReturn(features).when(user).getFeatures();
     }
 
-    private Feature getUseReactWebclientFeature(boolean global) {
-        final var feature = new Feature();
-        feature.setName(AuthoritiesConstants.FEATURE_USE_REACT_WEBCLIENT);
-        feature.setIntygstyper(Arrays.asList(certificateType));
-        feature.setGlobal(global);
-        return feature;
-    }
-
     private Feature getUseReactWebclientFristaendeFeature(boolean global) {
         final var feature = new Feature();
         feature.setName(AuthoritiesConstants.FEATURE_USE_REACT_WEBCLIENT_FRISTAENDE);

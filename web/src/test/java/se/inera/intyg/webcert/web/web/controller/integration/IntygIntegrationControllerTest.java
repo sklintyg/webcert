@@ -33,7 +33,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -296,14 +295,6 @@ public class IntygIntegrationControllerTest {
         return user;
     }
 
-    private Feature getUseReactWebclientFeature(List<String> certificateTypes, boolean global) {
-        final var feature = new Feature();
-        feature.setName(AuthoritiesConstants.FEATURE_USE_REACT_WEBCLIENT);
-        feature.setIntygstyper(certificateTypes);
-        feature.setGlobal(global);
-        return feature;
-    }
-
     @Nested
     class LaunchIdPostVerification {
 
@@ -454,10 +445,8 @@ public class IntygIntegrationControllerTest {
         @Test
         public void shallRedirectToReactWithStatusSEE_OTHERAsTheRedirectShouldAlwaysBeAGET() {
             final var user = createDefaultUserWithIntegrationParameters();
-            final var feature = getUseReactWebclientFeature(Collections.singletonList("lisjp"), true);
 
             when(webCertUserService.getUser()).thenReturn(user);
-            when(authoritiesResolver.getFeatures(any())).thenReturn(Collections.singletonMap(feature.getName(), feature));
 
             final var redirectToIntyg = intygIntegrationController.getRedirectToIntyg(httpServletRequest, uriInfo, INTYGSID, ENHETSID);
 
@@ -467,10 +456,8 @@ public class IntygIntegrationControllerTest {
         @Test
         public void shallRedirectToReactClientWhenFeatureUseReactClientActive() {
             final var user = createDefaultUserWithIntegrationParameters();
-            final var feature = getUseReactWebclientFeature(Collections.singletonList("lisjp"), true);
 
             when(webCertUserService.getUser()).thenReturn(user);
-            when(authoritiesResolver.getFeatures(any())).thenReturn(Collections.singletonMap(feature.getName(), feature));
 
             final var redirectToIntyg = intygIntegrationController.getRedirectToIntyg(httpServletRequest, uriInfo, INTYGSID, ENHETSID);
             assertEquals(Response.Status.SEE_OTHER.getStatusCode(), redirectToIntyg.getStatus());
@@ -481,10 +468,8 @@ public class IntygIntegrationControllerTest {
         @Test
         public void shallRedirectToReactClientWhenFeatureUseReactClientActiveForAllTypes() {
             final var user = createDefaultUserWithIntegrationParameters();
-            final var feature = getUseReactWebclientFeature(Collections.emptyList(), true);
 
             when(webCertUserService.getUser()).thenReturn(user);
-            when(authoritiesResolver.getFeatures(any())).thenReturn(Collections.singletonMap(feature.getName(), feature));
 
             final var redirectToIntyg = intygIntegrationController.getRedirectToIntyg(httpServletRequest, uriInfo, INTYGSID, ENHETSID);
 
@@ -518,10 +503,8 @@ public class IntygIntegrationControllerTest {
         @Test
         public void shallRedirectToAngularWithStatusSEE_OTHERAsTheRedirectShouldAlwaysBeAGET() {
             final var user = createDefaultUserWithIntegrationParameters();
-            final var feature = getUseReactWebclientFeature(Collections.emptyList(), false);
 
             when(webCertUserService.getUser()).thenReturn(user);
-            when(authoritiesResolver.getFeatures(any())).thenReturn(Collections.singletonMap(feature.getName(), feature));
 
             final var redirectToIntyg = intygIntegrationController.getRedirectToIntyg(httpServletRequest, uriInfo, INTYGSID, ENHETSID);
 
@@ -531,10 +514,8 @@ public class IntygIntegrationControllerTest {
         @Test
         public void shallRedirectToAngularClientWhenFeatureUseReactClientInactive() {
             final var user = createDefaultUserWithIntegrationParameters();
-            final var feature = getUseReactWebclientFeature(Collections.emptyList(), false);
 
             when(webCertUserService.getUser()).thenReturn(user);
-            when(authoritiesResolver.getFeatures(any())).thenReturn(Collections.singletonMap(feature.getName(), feature));
 
             final var redirectToIntyg = intygIntegrationController.getRedirectToIntyg(httpServletRequest, uriInfo, INTYGSID, ENHETSID);
 
@@ -545,10 +526,8 @@ public class IntygIntegrationControllerTest {
         @Test
         public void shallRedirectToAngularClientWhenFeatureUseReactClientInActiveForType() {
             final var user = createDefaultUserWithIntegrationParameters();
-            final var feature = getUseReactWebclientFeature(Collections.singletonList("luaena"), false);
 
             when(webCertUserService.getUser()).thenReturn(user);
-            when(authoritiesResolver.getFeatures(any())).thenReturn(Collections.singletonMap(feature.getName(), feature));
 
             final var redirectToIntyg = intygIntegrationController.getRedirectToIntyg(httpServletRequest, uriInfo, INTYGSID, ENHETSID);
 
@@ -561,7 +540,6 @@ public class IntygIntegrationControllerTest {
             final var user = createDefaultUserWithIntegrationParameters();
 
             when(webCertUserService.getUser()).thenReturn(user);
-            when(authoritiesResolver.getFeatures(any())).thenReturn(Collections.emptyMap());
 
             final var redirectToIntyg = intygIntegrationController.getRedirectToIntyg(httpServletRequest, uriInfo, INTYGSID, ENHETSID);
 

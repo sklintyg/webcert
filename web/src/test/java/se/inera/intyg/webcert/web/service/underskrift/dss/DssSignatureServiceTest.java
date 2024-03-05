@@ -306,53 +306,51 @@ public class DssSignatureServiceTest {
 
     @Test
     public void isUnitInIeWhitelist() {
-
-        // No units in whitelist
-        assertFalse(dssSignatureService.isUnitInIeWhitelist(""));
-        assertFalse(dssSignatureService.isUnitInIeWhitelist(null));
-        assertFalse(dssSignatureService.isUnitInIeWhitelist("TSTNMT2321000156-1077"));
+        assertTrue(dssSignatureService.shouldUseSigningService(""));
+        assertTrue(dssSignatureService.shouldUseSigningService(null));
+        assertTrue(dssSignatureService.shouldUseSigningService("TSTNMT2321000156-1077"));
 
         // Just one empty post in whitelist
         ReflectionTestUtils
             .setField(dssSignatureService, "dssUnitWhitelistForIe", Arrays.asList(""));
-        assertFalse(dssSignatureService.isUnitInIeWhitelist("TSTNMT2321000156-1077"));
-        assertFalse(dssSignatureService.isUnitInIeWhitelist("TSTNMT23210001512-WILDCARD"));
-        assertFalse(dssSignatureService.isUnitInIeWhitelist("TSTNMT23210001512WILDCARD"));
-        assertFalse(dssSignatureService.isUnitInIeWhitelist("FINNS_INTE"));
+        assertTrue(dssSignatureService.shouldUseSigningService("TSTNMT2321000156-1077"));
+        assertTrue(dssSignatureService.shouldUseSigningService("TSTNMT23210001512-WILDCARD"));
+        assertTrue(dssSignatureService.shouldUseSigningService("TSTNMT23210001512WILDCARD"));
+        assertTrue(dssSignatureService.shouldUseSigningService("FINNS_INTE"));
 
-        // One big wildcard in whitelist
+        // Shall return true for all units if wildcare * is used
         ReflectionTestUtils
             .setField(dssSignatureService, "dssUnitWhitelistForIe", Arrays.asList("*"));
-        assertTrue(dssSignatureService.isUnitInIeWhitelist("TSTNMT2321000156-1077"));
-        assertTrue(dssSignatureService.isUnitInIeWhitelist("TSTNMT23210001512-WILDCARD"));
-        assertTrue(dssSignatureService.isUnitInIeWhitelist("TSTNMT23210001512WILDCARD"));
-        assertTrue(dssSignatureService.isUnitInIeWhitelist("FINNS_INTE"));
+        assertFalse(dssSignatureService.shouldUseSigningService("TSTNMT2321000156-1077"));
+        assertFalse(dssSignatureService.shouldUseSigningService("TSTNMT23210001512-WILDCARD"));
+        assertFalse(dssSignatureService.shouldUseSigningService("TSTNMT23210001512WILDCARD"));
+        assertFalse(dssSignatureService.shouldUseSigningService("FINNS_INTE"));
 
         // One strict and one wildcard unit in whitelist
         ReflectionTestUtils
             .setField(dssSignatureService, "dssUnitWhitelistForIe", Arrays.asList("TSTNMT2321000156-1077", "TSTNMT23210001512-*"));
-        assertTrue(dssSignatureService.isUnitInIeWhitelist("TSTNMT2321000156-1077"));
-        assertFalse(dssSignatureService.isUnitInIeWhitelist("TSTNMT2321000156-107"));
-        assertFalse(dssSignatureService.isUnitInIeWhitelist("TSTNMT2321000156-10777"));
-        assertTrue(dssSignatureService.isUnitInIeWhitelist("TSTNMT23210001512-WILDCARD"));
-        assertFalse(dssSignatureService.isUnitInIeWhitelist("TSTNMT23210001512WILDCARD"));
-        assertFalse(dssSignatureService.isUnitInIeWhitelist("FINNS_INTE"));
+        assertFalse(dssSignatureService.shouldUseSigningService("TSTNMT2321000156-1077"));
+        assertTrue(dssSignatureService.shouldUseSigningService("TSTNMT2321000156-107"));
+        assertTrue(dssSignatureService.shouldUseSigningService("TSTNMT2321000156-10777"));
+        assertFalse(dssSignatureService.shouldUseSigningService("TSTNMT23210001512-WILDCARD"));
+        assertTrue(dssSignatureService.shouldUseSigningService("TSTNMT23210001512WILDCARD"));
+        assertTrue(dssSignatureService.shouldUseSigningService("FINNS_INTE"));
 
         // Mixed upper and lowercase in whitelist and currentCareUnit
         // One strict and one wildcard unit in whitelist
         ReflectionTestUtils
             .setField(dssSignatureService, "dssUnitWhitelistForIe", Arrays.asList("tStNmT2321000156-1077", "tStNmT23210001512-*"));
-        assertTrue(dssSignatureService.isUnitInIeWhitelist("TsTnMt2321000156-1077"));
-        assertTrue(dssSignatureService.isUnitInIeWhitelist("TsTnMt23210001512-WILDCARD"));
-        assertFalse(dssSignatureService.isUnitInIeWhitelist("TsTnMt23210001512WILDCARD"));
-        assertFalse(dssSignatureService.isUnitInIeWhitelist("FiNNS_iNTE"));
+        assertFalse(dssSignatureService.shouldUseSigningService("TsTnMt2321000156-1077"));
+        assertFalse(dssSignatureService.shouldUseSigningService("TsTnMt23210001512-WILDCARD"));
+        assertTrue(dssSignatureService.shouldUseSigningService("TsTnMt23210001512WILDCARD"));
+        assertTrue(dssSignatureService.shouldUseSigningService("FiNNS_iNTE"));
 
         // One wildcard value in whitelist
         ReflectionTestUtils
             .setField(dssSignatureService, "dssUnitWhitelistForIe", Arrays.asList("TSTNMT23210001512*"));
-        assertFalse(dssSignatureService.isUnitInIeWhitelist("TSTNMT2321000156-1077"));
-        assertTrue(dssSignatureService.isUnitInIeWhitelist("TSTNMT23210001512-WILDCARD"));
-        assertTrue(dssSignatureService.isUnitInIeWhitelist("TSTNMT23210001512WILDCARD"));
-        assertFalse(dssSignatureService.isUnitInIeWhitelist("FINNS_INTE"));
+        assertTrue(dssSignatureService.shouldUseSigningService("TSTNMT2321000156-1077"));
+        assertFalse(dssSignatureService.shouldUseSigningService("TSTNMT23210001512-WILDCARD"));
+        assertFalse(dssSignatureService.shouldUseSigningService("TSTNMT23210001512WILDCARD"));
+        assertTrue(dssSignatureService.shouldUseSigningService("FINNS_INTE"));
     }
 }

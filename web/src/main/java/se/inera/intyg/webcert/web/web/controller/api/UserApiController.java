@@ -84,7 +84,7 @@ public class UserApiController extends AbstractApiController {
 
         var valdVardenhet = user.getValdVardenhet();
         if (valdVardenhet != null) {
-            user.setUseSigningService(dssSignatureService.isUnitInIeWhitelist(valdVardenhet.getId()));
+            user.setUseSigningService(dssSignatureService.shouldUseSigningService(valdVardenhet.getId()));
         }
         return Response.ok(user.getAsJson()).build();
     }
@@ -126,7 +126,7 @@ public class UserApiController extends AbstractApiController {
 
         var valdVardenhet = user.getValdVardenhet();
         if (valdVardenhet != null) {
-            user.setUseSigningService(dssSignatureService.isUnitInIeWhitelist(valdVardenhet.getId()));
+            user.setUseSigningService(dssSignatureService.shouldUseSigningService(valdVardenhet.getId()));
         }
 
         user.setFeatures(commonAuthoritiesResolver.getFeatures(
