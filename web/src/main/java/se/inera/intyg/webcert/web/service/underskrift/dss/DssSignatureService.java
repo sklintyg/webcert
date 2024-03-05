@@ -176,11 +176,14 @@ public class DssSignatureService {
      */
     public boolean isUnitInIeWhitelist(String currentCareUnitHsaId) {
         if (StringUtils.isEmpty(currentCareUnitHsaId)) {
-            return false;
+            return true;
         }
 
-        boolean inWhitelist = false;
+        boolean inWhitelist = true;
         for (String hsaIdInWhitelist : dssUnitWhitelistForIe) {
+            if (hsaIdInWhitelist.equals("*")) {
+                return false;
+            }
             if (hsaIdInWhitelist.endsWith("*")) {
                 var wildcardRemovedSubstring = hsaIdInWhitelist.substring(0, hsaIdInWhitelist.lastIndexOf("*"));
                 inWhitelist = currentCareUnitHsaId.toUpperCase().startsWith(wildcardRemovedSubstring.toUpperCase());
