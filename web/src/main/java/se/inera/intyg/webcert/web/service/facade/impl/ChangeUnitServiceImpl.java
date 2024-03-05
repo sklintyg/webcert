@@ -77,7 +77,7 @@ public class ChangeUnitServiceImpl implements ChangeUnitService {
     private void updateSigningService(String unitId, WebCertUser user) {
         final var chosenUnit = user.getValdVardenhet();
         if (chosenUnit != null) {
-            user.setUseSigningService(!dssSignatureService.isUnitInIeWhitelist(unitId));
+            user.setUseSigningService(dssSignatureService.shouldUseSignService(unitId));
         }
     }
 

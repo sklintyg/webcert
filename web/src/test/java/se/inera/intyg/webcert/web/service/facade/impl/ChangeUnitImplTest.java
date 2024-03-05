@@ -86,7 +86,7 @@ class ChangeUnitImplTest {
 
         doReturn(false)
             .when(dssSignatureService)
-            .isUnitInIeWhitelist(NEW_UNIT_ID);
+            .shouldUseSignService(NEW_UNIT_ID);
     }
 
     void setUpUserForFailedChange() {
@@ -116,7 +116,7 @@ class ChangeUnitImplTest {
 
             changeUnitService.change(NEW_UNIT_ID);
 
-            verify(dssSignatureService, times(1)).isUnitInIeWhitelist(NEW_UNIT_ID);
+            verify(dssSignatureService, times(1)).shouldUseSignService(NEW_UNIT_ID);
             assertTrue(webcertUser.isUseSigningService());
         }
 

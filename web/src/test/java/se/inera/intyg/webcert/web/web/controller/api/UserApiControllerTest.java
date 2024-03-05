@@ -177,27 +177,6 @@ public class UserApiControllerTest {
     }
 
     @Test
-    public void shallSetUseSigningServiceToFalseIfUnitIsWhiteListed() {
-        final var request = new ChangeSelectedUnitRequest();
-        request.setId(ID);
-        final var selectedUnit = new Mottagning();
-        selectedUnit.setId(ID);
-        final var selectedCareGiver = new Mottagning();
-        selectedCareGiver.setId(ID);
-
-        doReturn(true).when(webCertUser).changeValdVardenhet(ID);
-        doReturn(selectedUnit).when(webCertUser).getValdVardenhet();
-        doReturn(selectedCareGiver).when(webCertUser).getValdVardgivare();
-        doReturn(true).when(dssSignatureService).isUnitInIeWhitelist(anyString());
-
-        final var argumentCaptor = ArgumentCaptor.forClass(Boolean.class);
-        userApiController.changeSelectedUnitOnUser(request);
-
-        verify(webCertUser).setUseSigningService(argumentCaptor.capture());
-        assertFalse(argumentCaptor.getValue());
-    }
-
-    @Test
     public void shallSetUseSigningServiceToTrueIfUnitIsNotWhiteListed() {
         final var request = new ChangeSelectedUnitRequest();
         request.setId(ID);
@@ -209,12 +188,33 @@ public class UserApiControllerTest {
         doReturn(true).when(webCertUser).changeValdVardenhet(ID);
         doReturn(selectedUnit).when(webCertUser).getValdVardenhet();
         doReturn(selectedCareGiver).when(webCertUser).getValdVardgivare();
-        doReturn(false).when(dssSignatureService).isUnitInIeWhitelist(anyString());
+        doReturn(true).when(dssSignatureService).shouldUseSignService(anyString());
 
         final var argumentCaptor = ArgumentCaptor.forClass(Boolean.class);
         userApiController.changeSelectedUnitOnUser(request);
 
         verify(webCertUser).setUseSigningService(argumentCaptor.capture());
         assertTrue(argumentCaptor.getValue());
+    }
+
+    @Test
+    public void shallSetUseSigningServiceToFalseIfUnitIsWhiteListed() {
+        final var request = new ChangeSelectedUnitRequest();
+        request.setId(ID);
+        final var selectedUnit = new Mottagning();
+        selectedUnit.setId(ID);
+        final var selectedCareGiver = new Mottagning();
+        selectedCareGiver.setId(ID);
+
+        doReturn(true).when(webCertUser).changeValdVardenhet(ID);
+        doReturn(selectedUnit).when(webCertUser).getValdVardenhet();
+        doReturn(selectedCareGiver).when(webCertUser).getValdVardgivare();
+        doReturn(false).when(dssSignatureService).shouldUseSignService(anyString());
+
+        final var argumentCaptor = ArgumentCaptor.forClass(Boolean.class);
+        userApiController.changeSelectedUnitOnUser(request);
+
+        verify(webCertUser).setUseSigningService(argumentCaptor.capture());
+        assertFalse(argumentCaptor.getValue());
     }
 }

@@ -166,35 +166,25 @@ public class DssSignatureService {
         }
     }
 
-    /**
-     * Checks whether the current Care unit HSA-id is in the whitelist
-     * for IE. If HSA id, or a wildcard version of it is in the list
-     * then this method will return true.
-     *
-     * @param currentCareUnitHsaId The users currently selected care unit
-     * @return true id care unit is in whitelist.
-     */
-    public boolean isUnitInIeWhitelist(String currentCareUnitHsaId) {
-        if (StringUtils.isEmpty(currentCareUnitHsaId)) {
-            return false;
+    public boolean shouldUseSignService(String currentCareUnitHsaId) {
+        if (currentCareUnitHsaId == null || currentCareUnitHsaId.isBlank()) {
+            return true;
         }
 
-        boolean inWhitelist = false;
-        for (String hsaIdInWhitelist : dssUnitWhitelistForIe) {
-            if (hsaIdInWhitelist.equals("*")) {
-                return true;
-            }
-            if (hsaIdInWhitelist.endsWith("*")) {
-                var wildcardRemovedSubstring = hsaIdInWhitelist.substring(0, hsaIdInWhitelist.lastIndexOf("*"));
-                inWhitelist = currentCareUnitHsaId.toUpperCase().startsWith(wildcardRemovedSubstring.toUpperCase());
-            } else {
-                inWhitelist = currentCareUnitHsaId.equalsIgnoreCase(hsaIdInWhitelist);
-            }
-            if (inWhitelist) {
-                break;
-            }
-        }
-        return inWhitelist;
+        return dssUnitWhitelistForIe.stream()
+            .filter(value -> !value.isBlank())
+            .noneMatch(value -> {
+                    if (value.equals("*")) {
+                        return true;
+                    }
+                    if (value.endsWith("*")) {
+                        final var wildcardRemovedSubstring = value.substring(0, value.lastIndexOf("*"));
+                        return currentCareUnitHsaId.toUpperCase().startsWith(wildcardRemovedSubstring.toUpperCase());
+                    } else {
+                        return currentCareUnitHsaId.equalsIgnoreCase(value);
+                    }
+                }
+            );
     }
 
     public DssSignRequestDTO createSignatureRequestDTO(SignaturBiljett sb) {
