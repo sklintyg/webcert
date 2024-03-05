@@ -84,7 +84,7 @@ class ChangeUnitImplTest {
             .when(userService)
             .getLoggedInUser();
 
-        doReturn(true)
+        doReturn(false)
             .when(dssSignatureService)
             .isUnitInIeWhitelist(NEW_UNIT_ID);
     }
