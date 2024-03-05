@@ -71,6 +71,7 @@ import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.facade.util.AngularClientUtil;
 import se.inera.intyg.webcert.web.web.controller.facade.util.ReactPilotUtil;
 import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
@@ -111,6 +112,9 @@ public class IntygIntegrationControllerTest {
     private ReactPilotUtil reactPilotUtil;
 
     @Mock
+    private AngularClientUtil angularClientUtil;
+
+    @Mock
     private @Context
     HttpServletRequest httpServletRequest;
 
@@ -133,6 +137,7 @@ public class IntygIntegrationControllerTest {
         when(uriInfo.getBaseUriBuilder()).thenReturn(uriBuilder);
         when(integrationService.prepareRedirectToIntyg(any(), any(), any())).thenReturn(createPrepareRedirectToIntyg());
         when(referensService.referensExists(eq(INTYGSID))).thenReturn(false);
+        when(angularClientUtil.useAngularClient(any(WebCertUser.class))).thenReturn(true);
 
         final var res = intygIntegrationController.handleRedirectToIntyg(uriInfo, INTYGSTYP, INTYGSID, ENHETSID, user);
 
@@ -149,6 +154,7 @@ public class IntygIntegrationControllerTest {
         final var uriBuilder = UriBuilder.fromUri("https://wc.localtest.me/visa/xxxx-yyyyy-zzzzz-qqqqq/saved");
         when(uriInfo.getBaseUriBuilder()).thenReturn(uriBuilder);
         when(integrationService.prepareRedirectToIntyg(any(), any(), any())).thenReturn(createPrepareRedirectToIntyg());
+        when(angularClientUtil.useAngularClient(any(WebCertUser.class))).thenReturn(true);
 
         final var res = intygIntegrationController.handleRedirectToIntyg(uriInfo, INTYGSTYP, INTYGSID, ENHETSID, user);
 
@@ -164,6 +170,7 @@ public class IntygIntegrationControllerTest {
         uriInfo = mock(UriInfo.class);
         final var uriBuilder = UriBuilder.fromUri("https://wc.localtest.me/visa/xxxx-yyyyy-zzzzz-qqqqq/saved");
         when(uriInfo.getBaseUriBuilder()).thenReturn(uriBuilder);
+        when(angularClientUtil.useAngularClient(any(WebCertUser.class))).thenReturn(true);
         when(integrationService.prepareRedirectToIntyg(any(), any(), any())).thenReturn(createPrepareRedirectToIntyg());
 
         final var res = intygIntegrationController.handleRedirectToIntyg(uriInfo, INTYGSTYP, INTYGSID, ENHETSID, user);
@@ -308,7 +315,7 @@ public class IntygIntegrationControllerTest {
             final var uriBuilder = UriBuilder.fromUri("https://wc.localtest.me/");
 
             when(uriInfo.getBaseUriBuilder()).thenReturn(uriBuilder);
-
+            when(angularClientUtil.useAngularClient(any(WebCertUser.class))).thenReturn(true);
             when(integrationService.prepareRedirectToIntyg(any(), any(), any()))
                 .thenReturn(createPrepareRedirectToIntyg());
             when(authoritiesResolver.getFeatures(any())).thenReturn(new HashMap<>());
@@ -395,7 +402,7 @@ public class IntygIntegrationControllerTest {
             final var uriBuilder = UriBuilder.fromUri("https://wc.localtest.me/");
 
             when(uriInfo.getBaseUriBuilder()).thenReturn(uriBuilder);
-
+            when(angularClientUtil.useAngularClient(any(WebCertUser.class))).thenReturn(true);
             when(integrationService.prepareRedirectToIntyg(any(), any(), any()))
                 .thenReturn(createPrepareRedirectToIntyg());
             when(authoritiesResolver.getFeatures(any())).thenReturn(new HashMap<>());
@@ -427,7 +434,7 @@ public class IntygIntegrationControllerTest {
             uriInfo = mock(UriInfo.class);
             final var uriBuilder = UriBuilder.fromUri("https://wc.localtest.me/visa/xxxx-yyyyy-zzzzz-qqqqq/saved");
             when(uriInfo.getBaseUriBuilder()).thenReturn(uriBuilder);
-
+            when(angularClientUtil.useAngularClient(any(WebCertUser.class))).thenReturn(false);
             when(integrationService.prepareRedirectToIntyg(any(), any(), any()))
                 .thenReturn(createPrepareRedirectToIntyg());
             when(authoritiesResolver.getFeatures(any())).thenReturn(new HashMap<>());
@@ -494,10 +501,10 @@ public class IntygIntegrationControllerTest {
             uriInfo = mock(UriInfo.class);
             final var uriBuilder = UriBuilder.fromUri("https://wc.localtest.me/visa/xxxx-yyyyy-zzzzz-qqqqq/saved");
             when(uriInfo.getBaseUriBuilder()).thenReturn(uriBuilder);
-
             when(integrationService.prepareRedirectToIntyg(any(), any(), any()))
                 .thenReturn(createPrepareRedirectToIntyg());
             when(authoritiesResolver.getFeatures(any())).thenReturn(new HashMap<>());
+            when(angularClientUtil.useAngularClient(any(WebCertUser.class))).thenReturn(true);
 
             intygIntegrationController.setUrlBaseTemplate("/");
             intygIntegrationController.setUrlIntygFragmentTemplate("/intyg/{certType}/{certTypeVersion}/{certId}/");

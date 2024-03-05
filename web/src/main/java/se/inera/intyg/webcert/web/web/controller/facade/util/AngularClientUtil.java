@@ -20,31 +20,26 @@ package se.inera.intyg.webcert.web.web.controller.facade.util;
 
 import org.springframework.stereotype.Component;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @Component
-public class ReactPilotUtil {
+public class AngularClientUtil {
 
-    public boolean useReactClientFristaende(WebCertUser user, String certificateType) {
-        if (isOriginDifferentThanFristaende(user)) {
+    public boolean useAngularClient(WebCertUser user) {
+        if (isOriginDifferentThanDjupintegration(user)) {
             return false;
         }
 
-        final var feature = user.getFeatures().get(AuthoritiesConstants.FEATURE_USE_REACT_WEBCLIENT_FRISTAENDE);
+        final var feature = user.getFeatures().get(AuthoritiesConstants.FEATURE_USE_ANGULAR_WEBCLIENT);
         if (feature == null) {
             return false;
         }
-
-        return isFeatureActive(certificateType, feature);
+        
+        return feature.getGlobal();
     }
 
-    private static boolean isFeatureActive(String certificateType, Feature feature) {
-        return (feature.getIntygstyper().isEmpty() || feature.getIntygstyper().contains(certificateType)) && feature.getGlobal();
-    }
-
-    private boolean isOriginDifferentThanFristaende(WebCertUser user) {
-        return !UserOriginType.NORMAL.name().equalsIgnoreCase(user.getOrigin());
+    private boolean isOriginDifferentThanDjupintegration(WebCertUser user) {
+        return !UserOriginType.DJUPINTEGRATION.name().equalsIgnoreCase(user.getOrigin());
     }
 }

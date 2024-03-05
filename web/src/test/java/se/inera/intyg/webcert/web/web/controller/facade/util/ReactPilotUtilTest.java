@@ -70,52 +70,6 @@ class ReactPilotUtilTest {
     }
 
     @Nested
-    class TestBasedOnOriginDjupintegration {
-
-        @BeforeEach
-        void setUp() {
-            final var reactPilotFeature = getUseReactWebclientFeature(true);
-            features.put(reactPilotFeature.getName(), reactPilotFeature);
-        }
-
-        @Test
-        void shallNotUseReactClientIfOriginNormal() {
-            doReturn(UserOriginType.NORMAL.name()).when(user).getOrigin();
-
-            final var actualResult = reactPilotUtil.useReactClient(user, certificateType);
-
-            assertFalse(actualResult);
-        }
-
-        @Test
-        void shallNotUseReactClientIfOriginReadonly() {
-            doReturn(UserOriginType.READONLY.name()).when(user).getOrigin();
-
-            final var actualResult = reactPilotUtil.useReactClient(user, certificateType);
-
-            assertFalse(actualResult);
-        }
-
-        @Test
-        void shallNotUseReactClientIfOriginUthopp() {
-            doReturn(UserOriginType.UTHOPP.name()).when(user).getOrigin();
-
-            final var actualResult = reactPilotUtil.useReactClient(user, certificateType);
-
-            assertFalse(actualResult);
-        }
-
-        @Test
-        void shallUseReactClientIfOriginDjupintegration() {
-            doReturn(UserOriginType.DJUPINTEGRATION.name()).when(user).getOrigin();
-
-            final var actualResult = reactPilotUtil.useReactClient(user, certificateType);
-
-            assertTrue(actualResult);
-        }
-    }
-
-    @Nested
     class TestBasedOnOriginFristaende {
 
         @BeforeEach
@@ -163,63 +117,6 @@ class ReactPilotUtilTest {
 
     @Nested
     class TestBasedOnFeature {
-
-        @Nested
-        class TestDjupintegration {
-
-            @BeforeEach
-            void setUp() {
-                doReturn(UserOriginType.DJUPINTEGRATION.name()).when(user).getOrigin();
-            }
-
-            @Test
-            void shallNotUseReactClientIfFeatureMissing() {
-                final var actualResult = reactPilotUtil.useReactClient(user, certificateType);
-
-                assertFalse(actualResult);
-            }
-
-            @Test
-            void shallNotUseReactClientIfFeatureNotActive() {
-                final var reactPilotFeature = getUseReactWebclientFeature(false);
-                features.put(reactPilotFeature.getName(), reactPilotFeature);
-
-                final var actualResult = reactPilotUtil.useReactClient(user, certificateType);
-
-                assertFalse(actualResult);
-            }
-
-            @Test
-            void shallNotUseReactClientIfFeatureMissingType() {
-                final var reactPilotFeature = getUseReactWebclientFeature(true);
-                features.put(reactPilotFeature.getName(), reactPilotFeature);
-
-                final var actualResult = reactPilotUtil.useReactClient(user, "anotherType");
-
-                assertFalse(actualResult);
-            }
-
-            @Test
-            void shallUseReactClientIfFeatureActive() {
-                final var reactPilotFeature = getUseReactWebclientFeature(true);
-                features.put(reactPilotFeature.getName(), reactPilotFeature);
-
-                final var actualResult = reactPilotUtil.useReactClient(user, certificateType);
-
-                assertTrue(actualResult);
-            }
-
-            @Test
-            void shallUseReactClientIfFeatureActiveForAllCertificateTypes() {
-                final var reactPilotFeature = getUseReactWebclientFeature(true);
-                reactPilotFeature.setIntygstyper(Collections.emptyList());
-                features.put(reactPilotFeature.getName(), reactPilotFeature);
-
-                final var actualResult = reactPilotUtil.useReactClient(user, certificateType);
-
-                assertTrue(actualResult);
-            }
-        }
 
         @Nested
         class TestFristaende {
