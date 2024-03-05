@@ -84,7 +84,7 @@ class ChangeUnitImplTest {
             .when(userService)
             .getLoggedInUser();
 
-        doReturn(false)
+        doReturn(true)
             .when(dssSignatureService)
             .shouldUseSigningService(NEW_UNIT_ID);
     }
