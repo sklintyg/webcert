@@ -27,19 +27,6 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 @Component
 public class ReactPilotUtil {
 
-    public boolean useReactClient(WebCertUser user, String certificateType) {
-        if (isOriginDifferentThanDjupintegration(user)) {
-            return false;
-        }
-
-        final var feature = user.getFeatures().get(AuthoritiesConstants.FEATURE_USE_REACT_WEBCLIENT);
-        if (feature == null) {
-            return false;
-        }
-
-        return isFeatureActive(certificateType, feature);
-    }
-
     public boolean useReactClientFristaende(WebCertUser user, String certificateType) {
         if (isOriginDifferentThanFristaende(user)) {
             return false;
