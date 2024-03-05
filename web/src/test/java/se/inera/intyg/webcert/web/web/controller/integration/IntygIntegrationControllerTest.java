@@ -298,7 +298,7 @@ public class IntygIntegrationControllerTest {
 
     private Feature getUseReactWebclientFeature(List<String> certificateTypes, boolean global) {
         final var feature = new Feature();
-        feature.setName(AuthoritiesConstants.FEATURE_USE_REACT_WEBCLIENT);
+        feature.setName(AuthoritiesConstants.FEATURE_USE_REACT_WEBCLIENT_FRISTAENDE);
         feature.setIntygstyper(certificateTypes);
         feature.setGlobal(global);
         return feature;
