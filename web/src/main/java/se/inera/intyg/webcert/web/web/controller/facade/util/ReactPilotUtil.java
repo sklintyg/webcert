@@ -44,10 +44,6 @@ public class ReactPilotUtil {
         return (feature.getIntygstyper().isEmpty() || feature.getIntygstyper().contains(certificateType)) && feature.getGlobal();
     }
 
-    private boolean isOriginDifferentThanDjupintegration(WebCertUser user) {
-        return !UserOriginType.DJUPINTEGRATION.name().equalsIgnoreCase(user.getOrigin());
-    }
-
     private boolean isOriginDifferentThanFristaende(WebCertUser user) {
         return !UserOriginType.NORMAL.name().equalsIgnoreCase(user.getOrigin());
     }
