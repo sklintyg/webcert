@@ -51,15 +51,17 @@ import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationResponse;
 @ExtendWith(MockitoExtension.class)
 class ServiceNowSubscriptionRestClientTest {
 
-    private static final String ORG_NO_1 = "ORG_NO_1";
-    private static final String SUBSCRIPTION_URL = "https://servicenow.test";
     @Mock
     private RestTemplate restTemplate;
+
     @InjectMocks
     private ServiceNowSubscriptionRestClient serviceNowSubscriptionRestClient;
+
+    private static final String ORG_NO_1 = "ORG_NO_1";
+    private static final String SUBSCRIPTION_URL = "https://servicenow.test";
+    private static final String SUBSCRIPTION_SERVICE_NAME = "Webcert-tj";
     private static final String SERVICENOW_USERNAME = "serviceNowUsername";
     private static final String SERVICENOW_PASSWORD = "serviceNowPassword";
-    private static final String SUBSCRIPTION_SERVICE_NAME = "Webcert-tj";
 
     @BeforeEach
     public void setup() {

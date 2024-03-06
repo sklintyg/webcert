@@ -20,33 +20,30 @@ package se.inera.intyg.webcert.integration.servicenow.service;
 
 import static se.inera.intyg.webcert.integration.api.subscription.ServiceNowIntegrationConstants.SERVICENOW_INTEGRATION_PROFILE;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.integration.api.subscription.AuthenticationMethodEnum;
 import se.inera.intyg.webcert.integration.api.subscription.SubscriptionRestService;
 import se.inera.intyg.webcert.integration.servicenow.client.ServiceNowSubscriptionRestClient;
-import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationResponse;
 
 @Service
 @Profile(SERVICENOW_INTEGRATION_PROFILE)
 public class ServiceNowSubscriptionRestService implements SubscriptionRestService {
 
-
-    @Value("#{${servicenow.service.codes.eleg}}")
-    private List<String> elegServiceCodes;
-
-    @Value("#{${servicenow.service.codes.siths}}")
-    private List<String> sithsServiceCodes;
     private final ServiceNowSubscriptionRestClient serviceNowSubscriptionRestClient;
+    private final GetCareProvidersMissingSubscriptionService getCareProvidersMissingSubscriptionService;
+    private final MissingSubscriptionService missingSubscriptionService;
 
     public ServiceNowSubscriptionRestService(
-        ServiceNowSubscriptionRestClient serviceNowSubscriptionRestClient) {
+        ServiceNowSubscriptionRestClient serviceNowSubscriptionRestClient,
+        GetCareProvidersMissingSubscriptionService getCareProvidersMissingSubscriptionService,
+        MissingSubscriptionService missingSubscriptionService) {
         this.serviceNowSubscriptionRestClient = serviceNowSubscriptionRestClient;
+        this.getCareProvidersMissingSubscriptionService = getCareProvidersMissingSubscriptionService;
+        this.missingSubscriptionService = missingSubscriptionService;
     }
 
     @Override
@@ -54,7 +51,8 @@ public class ServiceNowSubscriptionRestService implements SubscriptionRestServic
         final var organizationResponse = serviceNowSubscriptionRestClient.getSubscriptionServiceResponse(
             organizationNumberHsaIdMap.keySet()
         );
-        return getCareProvidersMissingSubscription(organizationResponse, organizationNumberHsaIdMap, authMethod);
+        return getCareProvidersMissingSubscriptionService.get(organizationResponse, organizationNumberHsaIdMap,
+            authMethod);
     }
 
     @Override
@@ -62,30 +60,7 @@ public class ServiceNowSubscriptionRestService implements SubscriptionRestServic
         final var organizationResponse = serviceNowSubscriptionRestClient.getSubscriptionServiceResponse(
             Set.of(organizationNumber)
         );
-        return missingSubscription(organizationResponse.getResult().get(0).getServiceCodes(), AuthenticationMethodEnum.ELEG);
-    }
-
-
-    private List<String> getCareProvidersMissingSubscription(OrganizationResponse organizations,
-        Map<String, List<String>> organizationNumberHsaIdMap, AuthenticationMethodEnum authMethod) {
-        final var careProvidersMissingSubscription = new ArrayList<String>();
-
-        for (var organization : organizations.getResult()) {
-            final var serviceCodes = organization.getServiceCodes();
-            if (missingSubscription(serviceCodes, authMethod)) {
-                careProvidersMissingSubscription.addAll(organizationNumberHsaIdMap.get(organization.getOrganizationNumber()));
-            }
-        }
-        return careProvidersMissingSubscription;
-    }
-
-    private boolean missingSubscription(List<String> activeServiceCodes, AuthenticationMethodEnum authMethod) {
-        if (activeServiceCodes.isEmpty()) {
-            return true;
-        }
-        if (authMethod == AuthenticationMethodEnum.ELEG) {
-            return activeServiceCodes.stream().noneMatch(serviceCode -> elegServiceCodes.contains(serviceCode));
-        }
-        return activeServiceCodes.stream().noneMatch(serviceCode -> sithsServiceCodes.contains(serviceCode));
+        return missingSubscriptionService.missingSubscription(organizationResponse.getResult().get(0).getServiceCodes(),
+            AuthenticationMethodEnum.ELEG);
     }
 }
