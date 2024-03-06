@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.integration.servicenow.stub.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Service;
@@ -44,13 +45,16 @@ public class ServiceNowStubSettingsApiService {
     public void setActiveSubscription(String orgNumber, String serviceCode) {
         final var activeSubscriptions = stubState.getActiveSubscriptions();
         if (activeSubscriptions.containsKey(orgNumber)) {
-            final var  serviceCodes = activeSubscriptions.get(orgNumber);
+            final var serviceCodes = activeSubscriptions.get(orgNumber);
             if (!serviceCodes.contains(serviceCode)) {
                 serviceCodes.add(serviceCode);
             }
         } else {
-            activeSubscriptions.put(orgNumber, List.of(serviceCode));
+            final var serviceCodeList = new ArrayList<String>();
+            serviceCodeList.add(serviceCode);
+            activeSubscriptions.put(orgNumber, serviceCodeList);
         }
+        stubState.setActiveSubscriptions(activeSubscriptions);
     }
 
     public void removeActiveSubscriptions(String orgNumber) {

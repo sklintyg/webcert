@@ -35,7 +35,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.integration.servicenow.dto.Organization;
 
 @ExtendWith(MockitoExtension.class)
-class GetCareProvidersCheckSubscriptionServiceTest {
+class GetCareProvidersMissingSubscriptionServiceTest {
 
     @Mock
     private CheckSubscriptionService checkSubscriptionService;
@@ -47,7 +47,6 @@ class GetCareProvidersCheckSubscriptionServiceTest {
     private static final String HSA_ID_1 = "HSA_ID_1";
     private static final String HSA_ID_2 = "HSA_ID_2";
     private static final String HSA_ID_3 = "HSA_ID_3";
-
 
     @Test
     void shouldAddHsaIdToListWhenMissingSubscription() {

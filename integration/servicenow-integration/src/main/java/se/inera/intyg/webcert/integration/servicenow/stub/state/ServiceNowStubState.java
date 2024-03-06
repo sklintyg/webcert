@@ -29,21 +29,18 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
+@Getter
+@Setter
 public class ServiceNowStubState {
 
-    @Setter
     private boolean subscriptionReturnValue = true;
-    @Getter
-    @Setter
     private int httpErrorCode = 0;
-    @Setter
-    @Getter
     private Map<String, List<String>> activeSubscriptions = new HashMap<>();
 
-    @Value("#{${kundportalen.service.codes.eleg}}")
+    @Value("#{${servicenow.service.codes.eleg}}")
     private List<String> elegServiceCodes;
 
-    @Value("#{${kundportalen.service.codes.siths}}")
+    @Value("#{${servicenow.service.codes.siths}}")
     private List<String> sithsServiceCodes;
 
     public List<String> getServiceCodeList() {

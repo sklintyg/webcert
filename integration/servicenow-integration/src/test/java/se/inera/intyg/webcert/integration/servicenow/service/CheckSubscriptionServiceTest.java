@@ -36,7 +36,6 @@ class CheckSubscriptionServiceTest {
     private static final List<String> SITHS_SERVICE_CODES = List.of("Webcert fristående med SITHS-kort", "Webcert Integrerad - via agent",
         "Webcert Integrerad - via region", "Webcert integrerad - direktanslutning");
 
-
     @BeforeEach
     public void setup() {
         checkSubscriptionService = new CheckSubscriptionService();
