@@ -21,6 +21,8 @@ package se.inera.intyg.webcert.integration.api.subscription;
 
 public class ServiceNowIntegrationConstants {
 
-  public static final String SERVICENOW_INTEGRATION_PROFILE = "servicenow-integration";
-  public static final String SERVICENOW_INTEGRATION_STUB_PROFILE = "servicenow-integration-stub";
+    public static final String SERVICENOW_INTEGRATION_PROFILE = "servicenow-integration";
+    public static final String SERVICENOW_INTEGRATION_STUB_PROFILE = "servicenow-integration-stub";
+    public static final String SUBSCRIPTION_SERVICE_REST_TEMPLATE = "subscriptionServiceRestTemplate";
+
 }

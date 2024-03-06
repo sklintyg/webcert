@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.integration.servicenow.config;
 
+import static se.inera.intyg.webcert.integration.api.subscription.ServiceNowIntegrationConstants.SUBSCRIPTION_SERVICE_REST_TEMPLATE;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -29,7 +31,7 @@ import se.inera.intyg.webcert.integration.api.subscription.ServiceNowIntegration
 
 @Configuration
 @Profile(ServiceNowIntegrationConstants.SERVICENOW_INTEGRATION_PROFILE)
-@ComponentScan(basePackages = "se.inera.intyg.webcert.integration.servicenow.service")
+@ComponentScan(basePackages = "se.inera.intyg.webcert.integration.servicenow")
 public class RestConfig {
 
     @Value("${servicenow.connection.request.timeout}")
@@ -41,7 +43,7 @@ public class RestConfig {
     @Value("${servicenow.read.timeout}")
     private int readTimeout;
 
-    @Bean(name = "subscriptionServiceRestTemplate")
+    @Bean(SUBSCRIPTION_SERVICE_REST_TEMPLATE)
     RestTemplate restTemplate() {
         final var httpRequestFactory = new HttpComponentsClientHttpRequestFactory();
         httpRequestFactory.setConnectionRequestTimeout(connectionRequestTimeout);

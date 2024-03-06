@@ -22,25 +22,21 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static se.inera.intyg.webcert.integration.api.subscription.AuthenticationMethodEnum.ELEG;
-import static se.inera.intyg.webcert.integration.api.subscription.AuthenticationMethodEnum.SITHS;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static se.inera.intyg.webcert.integration.api.subscription.AuthenticationMethodEnum.ELEG;
+import static se.inera.intyg.webcert.integration.api.subscription.AuthenticationMethodEnum.SITHS;
 
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -55,17 +51,14 @@ import se.inera.intyg.webcert.integration.servicenow.dto.Organization;
 import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationResponse;
 
 @ExtendWith(MockitoExtension.class)
-class ServiceNowSubscriptionRestServiceImplTest {
+class ServiceNowSubscriptionRestServiceTest {
 
     @Mock
     private RestTemplate restTemplate;
 
     @InjectMocks
-    private ServiceNowSubscriptionRestServiceImpl subscriptionRestService;
+    private ServiceNowSubscriptionRestService subscriptionRestService;
 
-    private static final String SERVICENOW_USERNAME = "serviceNowUsername";
-    private static final String SERVICENOW_PASSWORD = "serviceNowPassword";
-    private static final String SUBSCRIPTION_SERVICE_NAME = "Webcert-tj";
 
     private static final List<String> ELEG_SERVICE_CODES = List.of("Webcert fristående med e-legitimation");
     private static final List<String> SITHS_SERVICE_CODES = List.of("Webcert fristående med SITHS-kort", "Webcert Integrerad - via agent",
@@ -73,20 +66,16 @@ class ServiceNowSubscriptionRestServiceImplTest {
 
     @BeforeEach
     public void setup() {
-        ReflectionTestUtils.setField(subscriptionRestService, SERVICENOW_USERNAME, SERVICENOW_USERNAME);
-        ReflectionTestUtils.setField(subscriptionRestService, SERVICENOW_PASSWORD, SERVICENOW_PASSWORD);
-        ReflectionTestUtils.setField(subscriptionRestService, "serviceNowSubscriptionServiceUrl", "https://servicenow.test");
-        ReflectionTestUtils.setField(subscriptionRestService, "serviceNowSubscriptionService", SUBSCRIPTION_SERVICE_NAME);
-        ReflectionTestUtils.setField(subscriptionRestService, ServiceNowSubscriptionRestServiceImpl.class, "elegServiceCodes",
+        ReflectionTestUtils.setField(subscriptionRestService, ServiceNowSubscriptionRestService.class, "elegServiceCodes",
             ELEG_SERVICE_CODES, List.class);
-        ReflectionTestUtils.setField(subscriptionRestService, ServiceNowSubscriptionRestServiceImpl.class, "sithsServiceCodes",
+        ReflectionTestUtils.setField(subscriptionRestService, ServiceNowSubscriptionRestService.class, "sithsServiceCodes",
             SITHS_SERVICE_CODES, List.class);
     }
 
     // TESTS FOR SITHS USER
 
     @ParameterizedTest
-    @CsvSource({ "1, 1", "1, 3", "3, 1" })
+    @CsvSource({"1, 1", "1, 3", "3, 1"})
     void shouldReturnNoHsaIdsWhenSithsUserHasOneOrMoreSubscriptions(int hsaIdCount, int serviceCodeCount) {
         final var orgNoHsaIdMap = createOrgNoHsaIdMap(hsaIdCount);
         setMockToReturn(HttpStatus.OK, 1, 0, serviceCodeCount);
@@ -180,22 +169,6 @@ class ServiceNowSubscriptionRestServiceImplTest {
         assertTrue(response.contains("HSA_ID_1"));
     }
 
-    @Test
-    void shouldAddHeadersToServicenownRestRequestForSithsUser() {
-        final var orgNoHsaIdMap = createOrgNoHsaIdMap(1);
-        final var captureHttpEntity = ArgumentCaptor.forClass(HttpEntity.class);
-
-        setMockToReturn(HttpStatus.OK, 1, 0, 1);
-
-        subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, SITHS);
-
-        verify(restTemplate).exchange(any(String.class), any(HttpMethod.class), captureHttpEntity.capture(),
-            eq(OrganizationResponse.class));
-        assertTrue(Objects.requireNonNull(captureHttpEntity.getValue().getHeaders().get("Authorization")).contains(getBasicAuthString()));
-        assertTrue(Objects.requireNonNull(captureHttpEntity.getValue().getHeaders().get("Content-Type")).contains("application/json"));
-        assertTrue(Objects.requireNonNull(captureHttpEntity.getValue().getHeaders().get("Accept")).contains("application/json"));
-    }
-
     // TESTS FOR ELEG USER
 
     @Test
@@ -252,22 +225,6 @@ class ServiceNowSubscriptionRestServiceImplTest {
         assertEquals("HSA_ID_1", response.get(0));
     }
 
-    @Test
-    void shouldAddHeadersToServiceNowRestRequestForElegUser() {
-        final var orgNoHsaIdMap = createOrgNoHsaIdMap(1);
-        final var captureHttpEntity = ArgumentCaptor.forClass(HttpEntity.class);
-
-        setMockToReturnElegServiceCode();
-
-        subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, ELEG);
-
-        verify(restTemplate).exchange(any(String.class), any(HttpMethod.class), captureHttpEntity.capture(),
-            eq(OrganizationResponse.class));
-        assertTrue(Objects.requireNonNull(captureHttpEntity.getValue().getHeaders().get("Authorization")).contains(getBasicAuthString()));
-        assertTrue(Objects.requireNonNull(captureHttpEntity.getValue().getHeaders().get("Content-Type")).contains("application/json"));
-        assertTrue(Objects.requireNonNull(captureHttpEntity.getValue().getHeaders().get("Accept")).contains("application/json"));
-    }
-
     // TESTS FOR UNREGISTERED ELEG USER
 
     @Test
@@ -316,21 +273,6 @@ class ServiceNowSubscriptionRestServiceImplTest {
         );
     }
 
-    @Test
-    void shouldAddHeadersToServicenowRestRequestForUnregisteredElegUser() {
-        final var captureHttpEntity = ArgumentCaptor.forClass(HttpEntity.class);
-
-        setMockToReturn(HttpStatus.OK, 1, 0, 1);
-
-        subscriptionRestService.isMissingSubscriptionUnregisteredElegUser("ORG_NO_1");
-
-        verify(restTemplate).exchange(any(String.class), any(HttpMethod.class), captureHttpEntity.capture(),
-            eq(OrganizationResponse.class));
-        assertTrue(Objects.requireNonNull(captureHttpEntity.getValue().getHeaders().get("Authorization")).contains(getBasicAuthString()));
-        assertTrue(Objects.requireNonNull(captureHttpEntity.getValue().getHeaders().get("Content-Type")).contains("application/json"));
-        assertTrue(Objects.requireNonNull(captureHttpEntity.getValue().getHeaders().get("Accept")).contains("application/json"));
-    }
-
 
     private void setMockToReturn(HttpStatus httpStatus, int totalOrgsCount, int orgsMissingCount, int serviceCodeCount) {
         final var orgList = new ArrayList<Organization>();
@@ -344,7 +286,7 @@ class ServiceNowSubscriptionRestServiceImplTest {
             }
         }
         final var organizationResponse = OrganizationResponse.builder()
-                .result(orgList).build();
+            .result(orgList).build();
         when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), eq(OrganizationResponse.class)))
             .thenReturn(new ResponseEntity<>(organizationResponse, httpStatus));
     }
@@ -353,9 +295,9 @@ class ServiceNowSubscriptionRestServiceImplTest {
         final var organizationResponse = OrganizationResponse.builder()
             .result(
                 List.of(Organization.builder()
-                        .organizationNumber("ORG_NO_1")
-                        .serviceCodes(ELEG_SERVICE_CODES)
-                        .build())
+                    .organizationNumber("ORG_NO_1")
+                    .serviceCodes(ELEG_SERVICE_CODES)
+                    .build())
             ).build();
 
         when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), eq(OrganizationResponse.class)))
@@ -394,8 +336,4 @@ class ServiceNowSubscriptionRestServiceImplTest {
         return serviceCodeList;
     }
 
-    private String getBasicAuthString() {
-        final var authString = SERVICENOW_USERNAME + ":" + SERVICENOW_PASSWORD;
-        return "Basic " + Base64.getEncoder().encodeToString(authString.getBytes());
-    }
 }
