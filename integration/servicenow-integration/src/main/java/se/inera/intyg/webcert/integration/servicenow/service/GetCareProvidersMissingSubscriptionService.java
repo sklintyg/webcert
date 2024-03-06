@@ -19,34 +19,27 @@
 
 package se.inera.intyg.webcert.integration.servicenow.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.integration.api.subscription.AuthenticationMethodEnum;
-import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationResponse;
+import se.inera.intyg.webcert.integration.servicenow.dto.Organization;
 
 @Service
 public class GetCareProvidersMissingSubscriptionService {
 
-    private final MissingSubscriptionService missingSubscriptionService;
+    private final CheckSubscriptionService checkSubscriptionService;
 
-    public GetCareProvidersMissingSubscriptionService(MissingSubscriptionService missingSubscriptionService) {
-        this.missingSubscriptionService = missingSubscriptionService;
+    public GetCareProvidersMissingSubscriptionService(CheckSubscriptionService checkSubscriptionService) {
+        this.checkSubscriptionService = checkSubscriptionService;
     }
 
-    public List<String> get(OrganizationResponse organizations,
+    public List<String> get(List<Organization> organizations,
         Map<String, List<String>> organizationNumberHsaIdMap, AuthenticationMethodEnum authMethod) {
-        final var careProvidersMissingSubscription = new ArrayList<String>();
-
-        for (var organization : organizations.getResult()) {
-            final var serviceCodes = organization.getServiceCodes();
-            if (missingSubscriptionService.missingSubscription(serviceCodes, authMethod)) {
-                careProvidersMissingSubscription.addAll(organizationNumberHsaIdMap.get(organization.getOrganizationNumber()));
-            }
-        }
-        return careProvidersMissingSubscription;
+        return organizations.stream()
+            .filter(organization -> checkSubscriptionService.isMissing(organization.getServiceCodes(), authMethod))
+            .flatMap(organization -> organizationNumberHsaIdMap.get(organization.getOrganizationNumber()).stream())
+            .collect(Collectors.toList());
     }
-
-
 }

@@ -49,13 +49,13 @@ import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationRequest;
 import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationResponse;
 
 @ExtendWith(MockitoExtension.class)
-class ServiceNowSubscriptionRestClientTest {
+class SubscriptionRestClientTest {
 
     @Mock
     private RestTemplate restTemplate;
 
     @InjectMocks
-    private ServiceNowSubscriptionRestClient serviceNowSubscriptionRestClient;
+    private SubscriptionRestClient subscriptionRestClient;
 
     private static final String ORG_NO_1 = "ORG_NO_1";
     private static final String SUBSCRIPTION_URL = "https://servicenow.test";
@@ -65,10 +65,10 @@ class ServiceNowSubscriptionRestClientTest {
 
     @BeforeEach
     public void setup() {
-        ReflectionTestUtils.setField(serviceNowSubscriptionRestClient, SERVICENOW_USERNAME, SERVICENOW_USERNAME);
-        ReflectionTestUtils.setField(serviceNowSubscriptionRestClient, SERVICENOW_PASSWORD, SERVICENOW_PASSWORD);
-        ReflectionTestUtils.setField(serviceNowSubscriptionRestClient, "serviceNowSubscriptionServiceUrl", SUBSCRIPTION_URL);
-        ReflectionTestUtils.setField(serviceNowSubscriptionRestClient, "serviceNowSubscriptionService", SUBSCRIPTION_SERVICE_NAME);
+        ReflectionTestUtils.setField(subscriptionRestClient, SERVICENOW_USERNAME, SERVICENOW_USERNAME);
+        ReflectionTestUtils.setField(subscriptionRestClient, SERVICENOW_PASSWORD, SERVICENOW_PASSWORD);
+        ReflectionTestUtils.setField(subscriptionRestClient, "serviceNowSubscriptionServiceUrl", SUBSCRIPTION_URL);
+        ReflectionTestUtils.setField(subscriptionRestClient, "serviceNowSubscriptionService", SUBSCRIPTION_SERVICE_NAME);
     }
 
     @Nested
@@ -84,7 +84,7 @@ class ServiceNowSubscriptionRestClientTest {
         @Test
         void shouldSetAuthorizationHeaderWithUsernameAndPassword() {
             final var captureHttpEntity = ArgumentCaptor.forClass(HttpEntity.class);
-            serviceNowSubscriptionRestClient.getSubscriptionServiceResponse(Set.of(ORG_NO_1));
+            subscriptionRestClient.getSubscriptionServiceResponse(Set.of(ORG_NO_1));
 
             verify(restTemplate).exchange(any(String.class), any(HttpMethod.class), captureHttpEntity.capture(),
                 eq(OrganizationResponse.class));
@@ -96,7 +96,7 @@ class ServiceNowSubscriptionRestClientTest {
         @Test
         void shouldSetContentTypeHeaderToApplicationJson() {
             final var captureHttpEntity = ArgumentCaptor.forClass(HttpEntity.class);
-            serviceNowSubscriptionRestClient.getSubscriptionServiceResponse(Set.of(ORG_NO_1));
+            subscriptionRestClient.getSubscriptionServiceResponse(Set.of(ORG_NO_1));
 
             verify(restTemplate).exchange(any(String.class), any(HttpMethod.class), captureHttpEntity.capture(),
                 eq(OrganizationResponse.class));
@@ -106,7 +106,7 @@ class ServiceNowSubscriptionRestClientTest {
         @Test
         void shouldSetAcceptHeaderToApplicationJson() {
             final var captureHttpEntity = ArgumentCaptor.forClass(HttpEntity.class);
-            serviceNowSubscriptionRestClient.getSubscriptionServiceResponse(Set.of(ORG_NO_1));
+            subscriptionRestClient.getSubscriptionServiceResponse(Set.of(ORG_NO_1));
 
             verify(restTemplate).exchange(any(String.class), any(HttpMethod.class), captureHttpEntity.capture(),
                 eq(OrganizationResponse.class));
@@ -116,7 +116,7 @@ class ServiceNowSubscriptionRestClientTest {
         @Test
         void shouldSetOrganizationRequestBodyWithProvidedServiceName() {
             final var captureHttpEntity = ArgumentCaptor.forClass(HttpEntity.class);
-            serviceNowSubscriptionRestClient.getSubscriptionServiceResponse(Set.of(ORG_NO_1));
+            subscriptionRestClient.getSubscriptionServiceResponse(Set.of(ORG_NO_1));
 
             verify(restTemplate).exchange(any(String.class), any(HttpMethod.class), captureHttpEntity.capture(),
                 eq(OrganizationResponse.class));
@@ -129,7 +129,7 @@ class ServiceNowSubscriptionRestClientTest {
         @Test
         void shouldSetOrganizationRequestBodyWithProvidedOrganizationNumbers() {
             final var captureHttpEntity = ArgumentCaptor.forClass(HttpEntity.class);
-            serviceNowSubscriptionRestClient.getSubscriptionServiceResponse(Set.of(ORG_NO_1));
+            subscriptionRestClient.getSubscriptionServiceResponse(Set.of(ORG_NO_1));
 
             verify(restTemplate).exchange(any(String.class), any(HttpMethod.class), captureHttpEntity.capture(),
                 eq(OrganizationResponse.class));
@@ -150,7 +150,7 @@ class ServiceNowSubscriptionRestClientTest {
         doReturn(httpEntity).when(restTemplate)
             .exchange(eq(SUBSCRIPTION_URL), eq(HttpMethod.POST), any(HttpEntity.class), eq(OrganizationResponse.class));
 
-        final var actualResponse = serviceNowSubscriptionRestClient.getSubscriptionServiceResponse(Set.of(ORG_NO_1));
+        final var actualResponse = subscriptionRestClient.getSubscriptionServiceResponse(Set.of(ORG_NO_1));
         assertEquals(expectedResponse, actualResponse);
     }
 
@@ -159,7 +159,7 @@ class ServiceNowSubscriptionRestClientTest {
         doReturn(new ResponseEntity<>(null, HttpStatus.ACCEPTED)).when(restTemplate)
             .exchange(eq(SUBSCRIPTION_URL), eq(HttpMethod.POST), any(HttpEntity.class), eq(OrganizationResponse.class));
         final var orgData = Set.of(ORG_NO_1);
-        assertThrows(IllegalStateException.class, () -> serviceNowSubscriptionRestClient.getSubscriptionServiceResponse(orgData));
+        assertThrows(IllegalStateException.class, () -> subscriptionRestClient.getSubscriptionServiceResponse(orgData));
     }
 
     private String getBasicAuthString() {

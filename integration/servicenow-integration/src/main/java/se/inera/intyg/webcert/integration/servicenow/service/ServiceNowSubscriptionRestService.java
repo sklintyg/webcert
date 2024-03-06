@@ -27,40 +27,39 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.integration.api.subscription.AuthenticationMethodEnum;
 import se.inera.intyg.webcert.integration.api.subscription.SubscriptionRestService;
-import se.inera.intyg.webcert.integration.servicenow.client.ServiceNowSubscriptionRestClient;
+import se.inera.intyg.webcert.integration.servicenow.client.SubscriptionRestClient;
 
 @Service
 @Profile(SERVICENOW_INTEGRATION_PROFILE)
 public class ServiceNowSubscriptionRestService implements SubscriptionRestService {
 
-    private final ServiceNowSubscriptionRestClient serviceNowSubscriptionRestClient;
+    private final SubscriptionRestClient subscriptionRestClient;
     private final GetCareProvidersMissingSubscriptionService getCareProvidersMissingSubscriptionService;
-    private final MissingSubscriptionService missingSubscriptionService;
+    private final CheckSubscriptionService checkSubscriptionService;
 
     public ServiceNowSubscriptionRestService(
-        ServiceNowSubscriptionRestClient serviceNowSubscriptionRestClient,
+        SubscriptionRestClient subscriptionRestClient,
         GetCareProvidersMissingSubscriptionService getCareProvidersMissingSubscriptionService,
-        MissingSubscriptionService missingSubscriptionService) {
-        this.serviceNowSubscriptionRestClient = serviceNowSubscriptionRestClient;
+        CheckSubscriptionService checkSubscriptionService) {
+        this.subscriptionRestClient = subscriptionRestClient;
         this.getCareProvidersMissingSubscriptionService = getCareProvidersMissingSubscriptionService;
-        this.missingSubscriptionService = missingSubscriptionService;
+        this.checkSubscriptionService = checkSubscriptionService;
     }
 
     @Override
     public List<String> getMissingSubscriptions(Map<String, List<String>> organizationNumberHsaIdMap, AuthenticationMethodEnum authMethod) {
-        final var organizationResponse = serviceNowSubscriptionRestClient.getSubscriptionServiceResponse(
+        final var organizationResponse = subscriptionRestClient.getSubscriptionServiceResponse(
             organizationNumberHsaIdMap.keySet()
         );
-        return getCareProvidersMissingSubscriptionService.get(organizationResponse, organizationNumberHsaIdMap,
-            authMethod);
+        return getCareProvidersMissingSubscriptionService.get(organizationResponse.getResult(), organizationNumberHsaIdMap, authMethod);
     }
 
     @Override
     public boolean isMissingSubscriptionUnregisteredElegUser(String organizationNumber) {
-        final var organizationResponse = serviceNowSubscriptionRestClient.getSubscriptionServiceResponse(
+        final var organizationResponse = subscriptionRestClient.getSubscriptionServiceResponse(
             Set.of(organizationNumber)
         );
-        return missingSubscriptionService.missingSubscription(organizationResponse.getResult().get(0).getServiceCodes(),
-            AuthenticationMethodEnum.ELEG);
+        final var serviceCodes = organizationResponse.getResult().get(0).getServiceCodes();
+        return checkSubscriptionService.isMissing(serviceCodes, AuthenticationMethodEnum.ELEG);
     }
 }

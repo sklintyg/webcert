@@ -34,7 +34,7 @@ import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationRequest;
 import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationResponse;
 
 @Service
-public class ServiceNowSubscriptionRestClient {
+public class SubscriptionRestClient {
 
     @Value("${servicenow.username}")
     private String serviceNowUsername;
@@ -49,7 +49,7 @@ public class ServiceNowSubscriptionRestClient {
     private String serviceNowSubscriptionService;
     private final RestTemplate restTemplate;
 
-    public ServiceNowSubscriptionRestClient(@Qualifier("subscriptionServiceRestTemplate") RestTemplate restTemplate) {
+    public SubscriptionRestClient(@Qualifier("subscriptionServiceRestTemplate") RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 

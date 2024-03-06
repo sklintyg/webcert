@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.integration.api.subscription.AuthenticationMethodEnum;
 
 @Service
-public class MissingSubscriptionService {
+public class CheckSubscriptionService {
 
     @Value("#{${servicenow.service.codes.eleg}}")
     private List<String> elegServiceCodes;
@@ -33,7 +33,7 @@ public class MissingSubscriptionService {
     @Value("#{${servicenow.service.codes.siths}}")
     private List<String> sithsServiceCodes;
 
-    public boolean missingSubscription(List<String> activeServiceCodes, AuthenticationMethodEnum authMethod) {
+    public boolean isMissing(List<String> activeServiceCodes, AuthenticationMethodEnum authMethod) {
         if (activeServiceCodes.isEmpty()) {
             return true;
         }
