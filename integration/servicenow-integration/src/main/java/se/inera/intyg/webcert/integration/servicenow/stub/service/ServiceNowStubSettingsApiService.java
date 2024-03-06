@@ -21,14 +21,14 @@ package se.inera.intyg.webcert.integration.servicenow.stub.service;
 import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.webcert.integration.servicenow.stub.state.ServicenowStubState;
+import se.inera.intyg.webcert.integration.servicenow.stub.state.ServiceNowStubState;
 
 @Service
-public class ServicenowStubSettingsApiService {
+public class ServiceNowStubSettingsApiService {
 
-    private final ServicenowStubState stubState;
+    private final ServiceNowStubState stubState;
 
-    public ServicenowStubSettingsApiService(ServicenowStubState stubState) {
+    public ServiceNowStubSettingsApiService(ServiceNowStubState stubState) {
         this.stubState = stubState;
     }
 

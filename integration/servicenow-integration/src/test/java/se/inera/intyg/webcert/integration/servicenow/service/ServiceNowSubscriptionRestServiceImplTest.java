@@ -55,16 +55,16 @@ import se.inera.intyg.webcert.integration.servicenow.dto.Organization;
 import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationResponse;
 
 @ExtendWith(MockitoExtension.class)
-class ServicenowSubscriptionRestServiceImplTest {
+class ServiceNowSubscriptionRestServiceImplTest {
 
     @Mock
     private RestTemplate restTemplate;
 
     @InjectMocks
-    private ServicenowSubscriptionRestServiceImpl subscriptionRestService;
+    private ServiceNowSubscriptionRestServiceImpl subscriptionRestService;
 
-    private static final String SERVICENOW_USERNAME = "servicenowUsername";
-    private static final String SERVICENOW_PASSWORD = "servicenowPassword";
+    private static final String SERVICENOW_USERNAME = "serviceNowUsername";
+    private static final String SERVICENOW_PASSWORD = "serviceNowPassword";
     private static final String SUBSCRIPTION_SERVICE_NAME = "Webcert-tj";
 
     private static final List<String> ELEG_SERVICE_CODES = List.of("Webcert fristående med e-legitimation");
@@ -75,11 +75,11 @@ class ServicenowSubscriptionRestServiceImplTest {
     public void setup() {
         ReflectionTestUtils.setField(subscriptionRestService, SERVICENOW_USERNAME, SERVICENOW_USERNAME);
         ReflectionTestUtils.setField(subscriptionRestService, SERVICENOW_PASSWORD, SERVICENOW_PASSWORD);
-        ReflectionTestUtils.setField(subscriptionRestService, "servicenowSubscriptionServiceUrl", "https://servicenow.test");
-        ReflectionTestUtils.setField(subscriptionRestService, "servicenowSubscriptionService", SUBSCRIPTION_SERVICE_NAME);
-        ReflectionTestUtils.setField(subscriptionRestService, ServicenowSubscriptionRestServiceImpl.class, "elegServiceCodes",
+        ReflectionTestUtils.setField(subscriptionRestService, "serviceNowSubscriptionServiceUrl", "https://servicenow.test");
+        ReflectionTestUtils.setField(subscriptionRestService, "serviceNowSubscriptionService", SUBSCRIPTION_SERVICE_NAME);
+        ReflectionTestUtils.setField(subscriptionRestService, ServiceNowSubscriptionRestServiceImpl.class, "elegServiceCodes",
             ELEG_SERVICE_CODES, List.class);
-        ReflectionTestUtils.setField(subscriptionRestService, ServicenowSubscriptionRestServiceImpl.class, "sithsServiceCodes",
+        ReflectionTestUtils.setField(subscriptionRestService, ServiceNowSubscriptionRestServiceImpl.class, "sithsServiceCodes",
             SITHS_SERVICE_CODES, List.class);
     }
 

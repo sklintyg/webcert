@@ -33,16 +33,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.webcert.integration.servicenow.stub.state.ServicenowStubState;
+import se.inera.intyg.webcert.integration.servicenow.stub.state.ServiceNowStubState;
 
 @ExtendWith(MockitoExtension.class)
-class ServicenowStubSettingsApiServiceTest {
+class ServiceNowStubSettingsApiServiceTest {
 
     @Spy
-    private ServicenowStubState stubState;
+    private ServiceNowStubState stubState;
 
     @InjectMocks
-    private ServicenowStubSettingsApiService servicenowStubSettingsApiService;
+    private ServiceNowStubSettingsApiService serviceNowStubSettingsApiService;
 
     @BeforeEach
     void setup() {
@@ -53,7 +53,7 @@ class ServicenowStubSettingsApiServiceTest {
 
     @Test
     void shouldSetReturnValueAndClearActiveSubscriptions() {
-        servicenowStubSettingsApiService.setSubscriptionReturnValue(false);
+        serviceNowStubSettingsApiService.setSubscriptionReturnValue(false);
 
         assertFalse(stubState.getSubscriptionReturnValue());
         assertTrue(stubState.getActiveSubscriptions().isEmpty());
@@ -61,13 +61,13 @@ class ServicenowStubSettingsApiServiceTest {
 
     @Test
     void shouldReturnSubscriptionReturnValue() {
-        final var response = servicenowStubSettingsApiService.getSubscriptionReturnValue();
+        final var response = serviceNowStubSettingsApiService.getSubscriptionReturnValue();
         assertTrue(response);
     }
 
     @Test
     void shouldAddActiveSubscription() {
-        servicenowStubSettingsApiService.setActiveSubscription("ORGANIZATION_NUMBER_3", "SERVICE_CODE_1");
+        serviceNowStubSettingsApiService.setActiveSubscription("ORGANIZATION_NUMBER_3", "SERVICE_CODE_1");
 
         assertTrue(stubState.getActiveSubscriptions().containsKey("ORGANIZATION_NUMBER_3"));
         assertEquals("SERVICE_CODE_1", stubState.getActiveSubscriptions().get("ORGANIZATION_NUMBER_3").get(0));
@@ -75,7 +75,7 @@ class ServicenowStubSettingsApiServiceTest {
 
     @Test
     void shouldAddActiveSubscriptionToExistingOrganization() {
-        servicenowStubSettingsApiService.setActiveSubscription("ORGANIZATION_NUMBER_2", "SERVICE_CODE_2");
+        serviceNowStubSettingsApiService.setActiveSubscription("ORGANIZATION_NUMBER_2", "SERVICE_CODE_2");
 
         assertTrue(stubState.getActiveSubscriptions().containsKey("ORGANIZATION_NUMBER_2"));
         assertEquals(2, stubState.getActiveSubscriptions().get("ORGANIZATION_NUMBER_2").size());
@@ -83,7 +83,7 @@ class ServicenowStubSettingsApiServiceTest {
 
     @Test
     void shouldRemoveActiveSubscriptions() {
-        servicenowStubSettingsApiService.removeActiveSubscriptions("ORGANIZATION_NUMBER_1");
+        serviceNowStubSettingsApiService.removeActiveSubscriptions("ORGANIZATION_NUMBER_1");
 
         assertFalse(stubState.getActiveSubscriptions().containsKey("ORGANIZATION_NUMBER_1"));
     }
@@ -92,29 +92,29 @@ class ServicenowStubSettingsApiServiceTest {
     void shouldClearActiveSubscriptions() {
         stubState.setActiveSubscriptions(createActiveSubscriptions());
 
-        servicenowStubSettingsApiService.clearActiveSubscriptions();
+        serviceNowStubSettingsApiService.clearActiveSubscriptions();
 
         assertTrue(stubState.getActiveSubscriptions().isEmpty());
     }
 
     @Test
     void shouldGetActiveSubscriptions() {
-        final var response = servicenowStubSettingsApiService.getActiveSubscriptions();
+        final var response = serviceNowStubSettingsApiService.getActiveSubscriptions();
         assertEquals(2, response.size());
     }
 
     @Test
     void shouldCallStubStateWhenSettingErrorCode() {
-        servicenowStubSettingsApiService.setHttpError(403);
+        serviceNowStubSettingsApiService.setHttpError(403);
         assertEquals(403, stubState.getHttpErrorCode());
     }
 
     @Test
     void shouldSettubStateErrorCodeToZeroWhenClearingErrorCode() {
-        servicenowStubSettingsApiService.setHttpError(403);
+        serviceNowStubSettingsApiService.setHttpError(403);
         assertEquals(403, stubState.getHttpErrorCode());
 
-        servicenowStubSettingsApiService.clearHttpError();
+        serviceNowStubSettingsApiService.clearHttpError();
         assertEquals(0, stubState.getHttpErrorCode());
     }
 

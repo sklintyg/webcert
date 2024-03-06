@@ -42,19 +42,19 @@ import org.springframework.web.client.RestTemplate;
 
 @Service
 @Profile(SERVICENOW_INTEGRATION_PROFILE)
-public class ServicenowSubscriptionRestServiceImpl implements SubscriptionRestService {
+public class ServiceNowSubscriptionRestServiceImpl implements SubscriptionRestService {
 
     @Value("${servicenow.username}")
-    private String servicenowUsername;
+    private String serviceNowUsername;
 
     @Value("${servicenow.password}")
-    private String servicenowPassword;
+    private String serviceNowPassword;
 
     @Value("${servicenow.subscriptions.url}")
-    private String servicenowSubscriptionServiceUrl;
+    private String serviceNowSubscriptionServiceUrl;
 
     @Value("${servicenow.subscriptions.service}")
-    private String servicenowSubscriptionService;
+    private String serviceNowSubscriptionService;
 
     @Value("#{${servicenow.service.codes.eleg}}")
     private List<String> elegServiceCodes;
@@ -64,7 +64,7 @@ public class ServicenowSubscriptionRestServiceImpl implements SubscriptionRestSe
 
     private final RestTemplate restTemplate;
 
-    public ServicenowSubscriptionRestServiceImpl(@Qualifier("subscriptionServiceRestTemplate") RestTemplate restTemplate) {
+    public ServiceNowSubscriptionRestServiceImpl(@Qualifier("subscriptionServiceRestTemplate") RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
@@ -84,17 +84,17 @@ public class ServicenowSubscriptionRestServiceImpl implements SubscriptionRestSe
 
     private ResponseEntity<OrganizationResponse> getSubscriptionServiceResponse(Set<String> organizationNumbers) {
         final var httpEntity = getRequestEntity(organizationNumbers);
-        return restTemplate.exchange(servicenowSubscriptionServiceUrl, HttpMethod.POST, httpEntity, OrganizationResponse.class);
+        return restTemplate.exchange(serviceNowSubscriptionServiceUrl, HttpMethod.POST, httpEntity, OrganizationResponse.class);
     }
 
     private HttpEntity<OrganizationRequest> getRequestEntity(Set<String> organizationNumbers) {
         final var requestBody = OrganizationRequest.builder()
-            .service(servicenowSubscriptionService)
+            .service(serviceNowSubscriptionService)
             .customers(new ArrayList<>(organizationNumbers))
             .build();
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setBasicAuth(servicenowUsername, servicenowPassword);
+        headers.setBasicAuth(serviceNowUsername, serviceNowPassword);
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
         return new HttpEntity<>(requestBody, headers);

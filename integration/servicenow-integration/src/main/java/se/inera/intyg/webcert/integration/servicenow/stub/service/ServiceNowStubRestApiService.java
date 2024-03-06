@@ -28,14 +28,14 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.integration.servicenow.dto.Organization;
 import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationRequest;
 import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationResponse;
-import se.inera.intyg.webcert.integration.servicenow.stub.state.ServicenowStubState;
+import se.inera.intyg.webcert.integration.servicenow.stub.state.ServiceNowStubState;
 
 @Service
-public class ServicenowStubRestApiService {
+public class ServiceNowStubRestApiService {
 
-    private final ServicenowStubState stubState;
+    private final ServiceNowStubState stubState;
 
-    public ServicenowStubRestApiService(ServicenowStubState stubState) {
+    public ServiceNowStubRestApiService(ServiceNowStubState stubState) {
         this.stubState = stubState;
     }
 

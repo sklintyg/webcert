@@ -35,16 +35,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationRequest;
 import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationResponse;
-import se.inera.intyg.webcert.integration.servicenow.stub.state.ServicenowStubState;
+import se.inera.intyg.webcert.integration.servicenow.stub.state.ServiceNowStubState;
 
 @ExtendWith(MockitoExtension.class)
-class ServicenowStubRestApiServiceTest {
+class ServiceNowStubRestApiServiceTest {
 
     @Spy
-    private ServicenowStubState stubState;
+    private ServiceNowStubState stubState;
 
     @InjectMocks
-    ServicenowStubRestApiService servicenowStubRestApiService;
+    ServiceNowStubRestApiService serviceNowStubRestApiService;
 
     private static final String BASIC_AUTH = "Basic ";
     private static final String SERVICE = "Webcert-tj";
@@ -58,9 +58,9 @@ class ServicenowStubRestApiServiceTest {
 
     @BeforeEach
     public void setup() {
-        ReflectionTestUtils.setField(stubState, ServicenowStubState.class, "elegServiceCodes",
+        ReflectionTestUtils.setField(stubState, ServiceNowStubState.class, "elegServiceCodes",
             ELEG_SERVICE_CODES, List.class);
-        ReflectionTestUtils.setField(stubState, ServicenowStubState.class, "sithsServiceCodes",
+        ReflectionTestUtils.setField(stubState, ServiceNowStubState.class, "sithsServiceCodes",
             SITHS_SERVICE_CODES, List.class);
     }
 
@@ -74,7 +74,7 @@ class ServicenowStubRestApiServiceTest {
         when(stubState.getHttpErrorCode()).thenReturn(0);
         when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
 
-        try (final var response = servicenowStubRestApiService.createSubscriptionResponse(BASIC_AUTH,
+        try (final var response = serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH,
             organizationRequest)) {
             final var organizations = response.readEntity(OrganizationResponse.class).getResult();
 
@@ -95,7 +95,7 @@ class ServicenowStubRestApiServiceTest {
         when(stubState.getHttpErrorCode()).thenReturn(0);
         when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
 
-        try (final var response = servicenowStubRestApiService.createSubscriptionResponse(BASIC_AUTH,
+        try (final var response = serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH,
             organizationRequest)) {
             final var organizations = response.readEntity(OrganizationResponse.class).getResult();
 
@@ -117,7 +117,7 @@ class ServicenowStubRestApiServiceTest {
         when(stubState.getHttpErrorCode()).thenReturn(0);
         when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
 
-        try (final var response = servicenowStubRestApiService.createSubscriptionResponse(BASIC_AUTH,
+        try (final var response = serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH,
             organizationRequest)) {
             final var organizations = response.readEntity(OrganizationResponse.class).getResult();
 
@@ -137,7 +137,7 @@ class ServicenowStubRestApiServiceTest {
         when(stubState.getHttpErrorCode()).thenReturn(0);
         when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
 
-        try (final var response = servicenowStubRestApiService.createSubscriptionResponse(BASIC_AUTH,
+        try (final var response = serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH,
             organizationRequest)) {
             final var organizations = response.readEntity(OrganizationResponse.class).getResult();
 
@@ -161,7 +161,7 @@ class ServicenowStubRestApiServiceTest {
         when(stubState.getHttpErrorCode()).thenReturn(0);
         when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
 
-        try (final var response = servicenowStubRestApiService.createSubscriptionResponse(BASIC_AUTH,
+        try (final var response = serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH,
             organizationRequest)) {
             final var organizations = response.readEntity(OrganizationResponse.class).getResult();
 
@@ -186,7 +186,7 @@ class ServicenowStubRestApiServiceTest {
         when(stubState.getSubscriptionReturnValue()).thenReturn(setReturnValue);
         when(stubState.getServiceCodeList()).thenReturn(List.of(SERVICE_CODE_1, SERVICE_CODE_2, "SERVICE_CODE_3"));
 
-        try (final var response = servicenowStubRestApiService.createSubscriptionResponse(BASIC_AUTH,
+        try (final var response = serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH,
             organizationRequest)) {
             final var organizations = response.readEntity(OrganizationResponse.class).getResult();
 
@@ -207,7 +207,7 @@ class ServicenowStubRestApiServiceTest {
         when(stubState.getActiveSubscriptions()).thenReturn(activeSubscriptions);
         when(stubState.getSubscriptionReturnValue()).thenReturn(setReturnValue);
 
-        try (final var response = servicenowStubRestApiService.createSubscriptionResponse(BASIC_AUTH,
+        try (final var response = serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH,
             organizationRequest)) {
             final var organizations = response.readEntity(OrganizationResponse.class).getResult();
 
@@ -224,7 +224,7 @@ class ServicenowStubRestApiServiceTest {
             .build();
         when(stubState.getHttpErrorCode()).thenReturn(403);
 
-        try (final var response = servicenowStubRestApiService.createSubscriptionResponse(BASIC_AUTH,
+        try (final var response = serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH,
             organizationRequest)) {
 
             assertEquals(Status.FORBIDDEN, response.getStatusInfo().toEnum());
@@ -239,7 +239,7 @@ class ServicenowStubRestApiServiceTest {
             .build();
         when(stubState.getHttpErrorCode()).thenReturn(777);
 
-        try (final var response = servicenowStubRestApiService.createSubscriptionResponse(BASIC_AUTH,
+        try (final var response = serviceNowStubRestApiService.createSubscriptionResponse(BASIC_AUTH,
             organizationRequest)) {
 
             assertEquals(Status.INTERNAL_SERVER_ERROR, response.getStatusInfo().toEnum());
@@ -253,7 +253,7 @@ class ServicenowStubRestApiServiceTest {
             .customers(List.of(ORGANIZATION_NUMBER_1))
             .build();
 
-        try (final var response = servicenowStubRestApiService.createSubscriptionResponse(null,
+        try (final var response = serviceNowStubRestApiService.createSubscriptionResponse(null,
             organizationRequest)) {
 
             assertEquals(Status.BAD_REQUEST, response.getStatusInfo().toEnum());

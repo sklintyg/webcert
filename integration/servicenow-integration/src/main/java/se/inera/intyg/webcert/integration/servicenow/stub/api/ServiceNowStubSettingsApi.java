@@ -27,15 +27,15 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.springframework.stereotype.Controller;
-import se.inera.intyg.webcert.integration.servicenow.stub.service.ServicenowStubSettingsApiService;
+import se.inera.intyg.webcert.integration.servicenow.stub.service.ServiceNowStubSettingsApiService;
 
 @Controller
 @Path("/settings")
-public class ServicenowStubSettingsApi {
+public class ServiceNowStubSettingsApi {
 
-    private final ServicenowStubSettingsApiService stubSettingsService;
+    private final ServiceNowStubSettingsApiService stubSettingsService;
 
-    public ServicenowStubSettingsApi(ServicenowStubSettingsApiService stubSettingsService) {
+    public ServiceNowStubSettingsApi(ServiceNowStubSettingsApiService stubSettingsService) {
         this.stubSettingsService = stubSettingsService;
     }
 

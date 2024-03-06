@@ -27,16 +27,16 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.springframework.stereotype.Controller;
 import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationRequest;
-import se.inera.intyg.webcert.integration.servicenow.stub.service.ServicenowStubRestApiService;
+import se.inera.intyg.webcert.integration.servicenow.stub.service.ServiceNowStubRestApiService;
 
 @Controller
 @Path("/api/nabia/v1/inera_services")
-public class ServicenowStubRestApi {
+public class ServiceNowStubRestApi {
 
-    private final ServicenowStubRestApiService servicenowStubRestApiService;
+    private final ServiceNowStubRestApiService serviceNowStubRestApiService;
 
-    public ServicenowStubRestApi(ServicenowStubRestApiService kundportalenStubRestApiService) {
-        this.servicenowStubRestApiService = kundportalenStubRestApiService;
+    public ServiceNowStubRestApi(ServiceNowStubRestApiService serviceNowStubRestApiService) {
+        this.serviceNowStubRestApiService = serviceNowStubRestApiService;
     }
 
     @POST
@@ -46,6 +46,6 @@ public class ServicenowStubRestApi {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getSubscriptionPost(@HeaderParam("Authorization") String basicAuth, OrganizationRequest request) {
-        return servicenowStubRestApiService.createSubscriptionResponse(basicAuth, request);
+        return serviceNowStubRestApiService.createSubscriptionResponse(basicAuth, request);
     }
 }

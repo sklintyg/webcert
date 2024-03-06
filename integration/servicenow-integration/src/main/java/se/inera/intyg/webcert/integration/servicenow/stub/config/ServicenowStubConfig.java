@@ -34,19 +34,19 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.ClassPathResource;
-import se.inera.intyg.webcert.integration.servicenow.stub.api.ServicenowStubRestApi;
-import se.inera.intyg.webcert.integration.servicenow.stub.api.ServicenowStubSettingsApi;
+import se.inera.intyg.webcert.integration.servicenow.stub.api.ServiceNowStubRestApi;
+import se.inera.intyg.webcert.integration.servicenow.stub.api.ServiceNowStubSettingsApi;
 
 @Configuration
 @Profile(SERVICENOW_INTEGRATION_STUB_PROFILE)
 @ComponentScan(basePackages = "se.inera.intyg.webcert.integration.servicenow.stub")
 public class ServicenowStubConfig {
 
-    private final ServicenowStubRestApi servicenowStubRestApi;
-    private final ServicenowStubSettingsApi servicenowStubSettingsApi;
+    private final ServiceNowStubRestApi servicenowStubRestApi;
+    private final ServiceNowStubSettingsApi servicenowStubSettingsApi;
 
-    public ServicenowStubConfig(ServicenowStubRestApi servicenowStubRestApi,
-        ServicenowStubSettingsApi servicenowStubSettingsApi) {
+    public ServicenowStubConfig(ServiceNowStubRestApi servicenowStubRestApi,
+        ServiceNowStubSettingsApi servicenowStubSettingsApi) {
         this.servicenowStubRestApi = servicenowStubRestApi;
         this.servicenowStubSettingsApi = servicenowStubSettingsApi;
     }
