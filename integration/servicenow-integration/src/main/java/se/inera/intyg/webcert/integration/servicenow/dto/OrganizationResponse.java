@@ -16,9 +16,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.integration.kundportalen.enumerations;
+package se.inera.intyg.webcert.integration.servicenow.dto;
 
-public enum AuthenticationMethodEnum {
-    ELEG,
-    SITHS
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import java.util.List;
+import lombok.Builder;
+import lombok.Value;
+import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationResponse.OrganizationResponseBuilder;
+
+@JsonDeserialize(builder = OrganizationResponseBuilder.class)
+@Value
+@Builder
+public class OrganizationResponse {
+
+    List<Organization> result;
+
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class OrganizationResponseBuilder {
+
+    }
 }

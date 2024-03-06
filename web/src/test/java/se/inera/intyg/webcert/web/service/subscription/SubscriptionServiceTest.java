@@ -35,6 +35,7 @@ import static se.inera.intyg.infra.security.common.model.AuthoritiesConstants.FE
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.ELEG_AUTHN_CLASSES;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SITHS_AUTHN_CLASSES;
 
+import se.inera.intyg.webcert.integration.api.subscription.AuthenticationMethodEnum;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -63,7 +64,6 @@ import se.inera.intyg.webcert.integration.kundportalen.service.SubscriptionRestS
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionAction;
 import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionInfo;
-import se.inera.intyg.webcert.integration.kundportalen.enumerations.AuthenticationMethodEnum;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @ExtendWith(MockitoExtension.class)

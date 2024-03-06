@@ -16,16 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.integration.kundportalen.service;
 
-import java.util.List;
-import java.util.Map;
-import se.inera.intyg.webcert.integration.kundportalen.enumerations.AuthenticationMethodEnum;
+package se.inera.intyg.webcert.integration.api.subscription;
 
-public interface SubscriptionRestService {
+public class ServiceNowIntegrationConstants {
 
-    List<String> getMissingSubscriptions(Map<String, List<String>> organizationNumberHsaIdMap, AuthenticationMethodEnum authMethod);
-
-    boolean isMissingSubscriptionUnregisteredElegUser(String organizationNumber);
-
+  public static final String SERVICENOW_INTEGRATION_PROFILE = "servicenow-integration";
+  public static final String SERVICENOW_INTEGRATION_STUB_PROFILE = "servicenow-integration-stub";
 }

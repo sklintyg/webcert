@@ -16,15 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.integration.kundportalen.service;
+package se.inera.intyg.webcert.integration.servicenow.service;
 
 import static se.inera.intyg.webcert.integration.api.subscription.ServiceNowIntegrationConstants.SERVICENOW_INTEGRATION_PROFILE;
 
-import org.springframework.context.annotation.Profile;
-import se.inera.intyg.webcert.integration.api.subscription.SubscriptionRestService;
 import se.inera.intyg.webcert.integration.api.subscription.AuthenticationMethodEnum;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
+import se.inera.intyg.webcert.integration.api.subscription.SubscriptionRestService;
+import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationRequest;
+import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +31,7 @@ import java.util.Objects;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -40,35 +39,32 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
-import se.inera.intyg.webcert.integration.kundportalen.dto.OrganizationResponse;
 
 @Service
-@Profile("!" + SERVICENOW_INTEGRATION_PROFILE)
-public class SubscriptionRestServiceImpl implements SubscriptionRestService {
+@Profile(SERVICENOW_INTEGRATION_PROFILE)
+public class ServicenowSubscriptionRestServiceImpl implements SubscriptionRestService {
 
-    @Value("${kundportalen.access.token}")
-    private String kundportalenAccessToken;
+    @Value("${servicenow.username}")
+    private String servicenowUsername;
 
-    @Value("${kundportalen.subscriptions.url}")
-    private String kundportalenSubscriptionServiceUrl;
+    @Value("${servicenow.password}")
+    private String servicenowPassword;
 
-    @Value("${kundportalen.subscriptions.service}")
-    private String kundportalenSubscriptionService;
+    @Value("${servicenow.subscriptions.url}")
+    private String servicenowSubscriptionServiceUrl;
 
-    @Value("#{${kundportalen.service.codes.eleg}}")
+    @Value("${servicenow.subscriptions.service}")
+    private String servicenowSubscriptionService;
+
+    @Value("#{${servicenow.service.codes.eleg}}")
     private List<String> elegServiceCodes;
 
-    @Value("#{${kundportalen.service.codes.siths}}")
+    @Value("#{${servicenow.service.codes.siths}}")
     private List<String> sithsServiceCodes;
-
-    private static final ParameterizedTypeReference<List<OrganizationResponse>> LIST_ORGANIZATION_RESPONSE
-        = new ParameterizedTypeReference<>() {
-    };
 
     private final RestTemplate restTemplate;
 
-    public SubscriptionRestServiceImpl(@Qualifier("subscriptionServiceRestTemplate") RestTemplate restTemplate) {
+    public ServicenowSubscriptionRestServiceImpl(@Qualifier("subscriptionServiceRestTemplate") RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
@@ -82,37 +78,33 @@ public class SubscriptionRestServiceImpl implements SubscriptionRestService {
     @Override
     public boolean isMissingSubscriptionUnregisteredElegUser(String organizationNumber) {
         final var organizationResponse = getSubscriptionServiceResponse(Set.of(organizationNumber));
-        final var organizationInfo = Objects.requireNonNull(organizationResponse.getBody());
+        final var organizationInfo = Objects.requireNonNull(organizationResponse.getBody()).getResult();
         return missingSubscription(organizationInfo.get(0).getServiceCodes(), AuthenticationMethodEnum.ELEG);
     }
 
-    private ResponseEntity<List<OrganizationResponse>> getSubscriptionServiceResponse(Set<String> organizationNumbers) {
+    private ResponseEntity<OrganizationResponse> getSubscriptionServiceResponse(Set<String> organizationNumbers) {
         final var httpEntity = getRequestEntity(organizationNumbers);
-        final var requestUrl = getRequestUrlWithParams();
-        return restTemplate.exchange(requestUrl, HttpMethod.POST, httpEntity, LIST_ORGANIZATION_RESPONSE);
+        return restTemplate.exchange(servicenowSubscriptionServiceUrl, HttpMethod.POST, httpEntity, OrganizationResponse.class);
     }
 
-    private HttpEntity<Set<String>> getRequestEntity(Set<String> organizationNumbers) {
+    private HttpEntity<OrganizationRequest> getRequestEntity(Set<String> organizationNumbers) {
+        final var requestBody = OrganizationRequest.builder()
+            .service(servicenowSubscriptionService)
+            .customers(new ArrayList<>(organizationNumbers))
+            .build();
+
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", kundportalenAccessToken);
+        headers.setBasicAuth(servicenowUsername, servicenowPassword);
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
-        return new HttpEntity<>(organizationNumbers, headers);
+        return new HttpEntity<>(requestBody, headers);
     }
 
-    private URI getRequestUrlWithParams() {
-        return UriComponentsBuilder.fromHttpUrl(kundportalenSubscriptionServiceUrl)
-            .encode(StandardCharsets.UTF_8)
-            .queryParam("service", kundportalenSubscriptionService)
-            .build()
-            .toUri();
-    }
-
-    private List<String> getCareProvidersMissingSubscription(List<OrganizationResponse> organizations,
+    private List<String> getCareProvidersMissingSubscription(OrganizationResponse organizations,
         Map<String, List<String>> organizationNumberHsaIdMap, AuthenticationMethodEnum authMethod) {
         final var careProvidersMissingSubscription = new ArrayList<String>();
 
-        for (var organization : organizations) {
+        for (var organization : organizations.getResult()) {
             final var serviceCodes = organization.getServiceCodes();
             if (missingSubscription(serviceCodes, authMethod)) {
                 careProvidersMissingSubscription.addAll(organizationNumberHsaIdMap.get(organization.getOrganizationNumber()));

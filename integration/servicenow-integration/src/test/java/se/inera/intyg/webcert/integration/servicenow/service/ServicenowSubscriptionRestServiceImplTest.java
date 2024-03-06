@@ -16,32 +16,34 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.integration.kundportalen.service;
+package se.inera.intyg.webcert.integration.servicenow.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static se.inera.intyg.webcert.integration.api.subscription.AuthenticationMethodEnum.ELEG;
 import static se.inera.intyg.webcert.integration.api.subscription.AuthenticationMethodEnum.SITHS;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.net.URI;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.core.ParameterizedTypeReference;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -49,54 +51,45 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import se.inera.intyg.webcert.integration.kundportalen.dto.OrganizationResponse;
+import se.inera.intyg.webcert.integration.servicenow.dto.Organization;
+import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationResponse;
 
-@RunWith(MockitoJUnitRunner.class)
-public class SubscriptionRestServiceImplTest {
+@ExtendWith(MockitoExtension.class)
+class ServicenowSubscriptionRestServiceImplTest {
 
     @Mock
     private RestTemplate restTemplate;
 
     @InjectMocks
-    private SubscriptionRestServiceImpl subscriptionRestService;
+    private ServicenowSubscriptionRestServiceImpl subscriptionRestService;
 
-    private static final ParameterizedTypeReference<List<OrganizationResponse>> LIST_ORGANIZATION_RESPONSE
-        = new ParameterizedTypeReference<>() {
-    };
+    private static final String SERVICENOW_USERNAME = "servicenowUsername";
+    private static final String SERVICENOW_PASSWORD = "servicenowPassword";
+    private static final String SUBSCRIPTION_SERVICE_NAME = "Webcert-tj";
 
-    private static final List<String> ELEG_SERVICE_CODES = List.of("Webcert e-leg");
-    private static final List<String> SITHS_SERVICE_CODES = List.of("Webcert integrerad-direktanslutning", "Webcert som Agent", "Webcert",
-        "Webcert SITHS");
+    private static final List<String> ELEG_SERVICE_CODES = List.of("Webcert fristående med e-legitimation");
+    private static final List<String> SITHS_SERVICE_CODES = List.of("Webcert fristående med SITHS-kort", "Webcert Integrerad - via agent",
+        "Webcert Integrerad - via region", "Webcert integrerad - direktanslutning");
 
-    @Before
+    @BeforeEach
     public void setup() {
-        ReflectionTestUtils.setField(subscriptionRestService, "kundportalenAccessToken", "accessToken");
-        ReflectionTestUtils.setField(subscriptionRestService, "kundportalenSubscriptionServiceUrl", "https://kp.test");
-        ReflectionTestUtils.setField(subscriptionRestService, "kundportalenSubscriptionService", "Intygstjänster");
-        ReflectionTestUtils.setField(subscriptionRestService, SubscriptionRestServiceImpl.class, "elegServiceCodes",
+        ReflectionTestUtils.setField(subscriptionRestService, SERVICENOW_USERNAME, SERVICENOW_USERNAME);
+        ReflectionTestUtils.setField(subscriptionRestService, SERVICENOW_PASSWORD, SERVICENOW_PASSWORD);
+        ReflectionTestUtils.setField(subscriptionRestService, "servicenowSubscriptionServiceUrl", "https://servicenow.test");
+        ReflectionTestUtils.setField(subscriptionRestService, "servicenowSubscriptionService", SUBSCRIPTION_SERVICE_NAME);
+        ReflectionTestUtils.setField(subscriptionRestService, ServicenowSubscriptionRestServiceImpl.class, "elegServiceCodes",
             ELEG_SERVICE_CODES, List.class);
-        ReflectionTestUtils.setField(subscriptionRestService, SubscriptionRestServiceImpl.class, "sithsServiceCodes",
+        ReflectionTestUtils.setField(subscriptionRestService, ServicenowSubscriptionRestServiceImpl.class, "sithsServiceCodes",
             SITHS_SERVICE_CODES, List.class);
     }
 
     // TESTS FOR SITHS USER
 
-    @Test
-    public void shouldReturnNoHsaIdsWhenSithsUserWithSingleOrgHasAnyNonElegSubscription() {
-        final var orgNoHsaIdMap = createOrgNoHsaIdMap(1);
-
-        setMockToReturn(HttpStatus.OK, 1, 0, 1);
-
-        final var response = subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, SITHS);
-
-        assertTrue(response.isEmpty());
-    }
-
-    @Test
-    public void shouldReturnNoHsaIdsWhenSithsUserWithSingleOrgHasMultipleSubscription() {
-        final var orgNoHsaIdMap = createOrgNoHsaIdMap(1);
-
-        setMockToReturn(HttpStatus.OK, 1, 0, 3);
+    @ParameterizedTest
+    @CsvSource({ "1, 1", "1, 3", "3, 1" })
+    void shouldReturnNoHsaIdsWhenSithsUserHasOneOrMoreSubscriptions(int hsaIdCount, int serviceCodeCount) {
+        final var orgNoHsaIdMap = createOrgNoHsaIdMap(hsaIdCount);
+        setMockToReturn(HttpStatus.OK, 1, 0, serviceCodeCount);
 
         final var response = subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, SITHS);
 
@@ -104,23 +97,11 @@ public class SubscriptionRestServiceImplTest {
     }
 
     @Test
-    public void shouldReturnNoHsaIdsWhenSithsUserWithMultipleOrgsWhichAllHaveSubscriptions() {
-        final var orgNoHsaIdMap = createOrgNoHsaIdMap(1);
-
-        setMockToReturn(HttpStatus.OK, 1, 0, 1);
-
-        final var response = subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, SITHS);
-
-        assertTrue(response.isEmpty());
-    }
-
-    @Test
-    public void shouldReturnAllCareProvidersSharingTheSameOrgNumber() {
+    void shouldReturnAllCareProvidersSharingTheSameOrgNumber() {
         final var orgNoHsaIdMap = createOrgNoHsaIdMap(2);
         orgNoHsaIdMap.get("ORG_NO_1").add("HSA_ID_1-2");
         orgNoHsaIdMap.get("ORG_NO_1").add("HSA_ID_1-3");
         final var expectedHsaIds = orgNoHsaIdMap.get("ORG_NO_1");
-
         setMockToReturn(HttpStatus.OK, 2, 2, 0);
 
         final var response = subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, SITHS);
@@ -129,29 +110,31 @@ public class SubscriptionRestServiceImplTest {
         assertTrue(response.containsAll(expectedHsaIds));
     }
 
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowNullPointerExceptionWhenResponseBodyIsNullForSithsUser() {
+    @Test
+    void shouldThrowNullPointerExceptionWhenResponseBodyIsNullForSithsUser() {
         final var orgNoHsaIdMap = createOrgNoHsaIdMap(2);
 
-        when(restTemplate.exchange(any(URI.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_ORGANIZATION_RESPONSE)))
+        when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), eq(OrganizationResponse.class)))
             .thenReturn(new ResponseEntity<>(null, HttpStatus.OK));
 
-        subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, SITHS);
+        assertThrows(NullPointerException.class, () ->
+            subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, SITHS)
+        );
     }
 
-    @Test(expected = RestClientException.class)
-    public void shouldThrowRestClientExceptionReturnNoHsaIdsWhenServiceCallFailureForSithsUser() {
+    @Test
+    void shouldThrowRestClientExceptionReturnNoHsaIdsWhenServiceCallFailureForSithsUser() {
         final var orgNoHsaIdMap = createOrgNoHsaIdMap(2);
 
         setMockToReturnRestClientException();
 
-        final var response = subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, SITHS);
-
-        assertTrue(response.isEmpty());
+        assertThrows(RestClientException.class, () ->
+            subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, SITHS)
+        );
     }
 
     @Test
-    public void shouldReturnCorrectHsaIdWhenSithsUserWithSingleOrgHasNoSubscription() {
+    void shouldReturnCorrectHsaIdWhenSithsUserWithSingleOrgHasNoSubscription() {
         final var orgNoHsaIdMap = createOrgNoHsaIdMap(1);
 
         setMockToReturn(HttpStatus.OK, 1, 1, 1);
@@ -163,7 +146,7 @@ public class SubscriptionRestServiceImplTest {
     }
 
     @Test
-    public void shouldReturnCorrectHsaIdsWhenSithsUserWithMultipleOrgsHaveNoSubscriptions() {
+    void shouldReturnCorrectHsaIdsWhenSithsUserWithMultipleOrgsHaveNoSubscriptions() {
         final var orgNoHsaIdMap = createOrgNoHsaIdMap(3);
 
         setMockToReturn(HttpStatus.OK, 3, 3, 0);
@@ -175,7 +158,7 @@ public class SubscriptionRestServiceImplTest {
     }
 
     @Test
-    public void shouldReturnCorrectHsaIdsWhenSithsUserHasMultipleOrgsAndSomeMissingSubscription() {
+    void shouldReturnCorrectHsaIdsWhenSithsUserHasMultipleOrgsAndSomeMissingSubscription() {
         final var orgNoHsaIdMap = createOrgNoHsaIdMap(4);
 
         setMockToReturn(HttpStatus.OK, 4, 2, 1);
@@ -187,7 +170,7 @@ public class SubscriptionRestServiceImplTest {
     }
 
     @Test
-    public void shouldReturnCorrectHsaIdWhenSithsUserHasOnlyElegServiceCode() {
+    void shouldReturnCorrectHsaIdWhenSithsUserHasOnlyElegServiceCode() {
         final var orgNoHsaIdMap = createOrgNoHsaIdMap(1);
         setMockToReturnElegServiceCode();
 
@@ -198,7 +181,7 @@ public class SubscriptionRestServiceImplTest {
     }
 
     @Test
-    public void shouldAddHeadersToKundportalenRestRequestForSithsUser() {
+    void shouldAddHeadersToServicenownRestRequestForSithsUser() {
         final var orgNoHsaIdMap = createOrgNoHsaIdMap(1);
         final var captureHttpEntity = ArgumentCaptor.forClass(HttpEntity.class);
 
@@ -206,9 +189,9 @@ public class SubscriptionRestServiceImplTest {
 
         subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, SITHS);
 
-        verify(restTemplate).exchange(any(URI.class), any(HttpMethod.class), captureHttpEntity.capture(),
-            eq(LIST_ORGANIZATION_RESPONSE));
-        assertTrue(Objects.requireNonNull(captureHttpEntity.getValue().getHeaders().get("Authorization")).contains("accessToken"));
+        verify(restTemplate).exchange(any(String.class), any(HttpMethod.class), captureHttpEntity.capture(),
+            eq(OrganizationResponse.class));
+        assertTrue(Objects.requireNonNull(captureHttpEntity.getValue().getHeaders().get("Authorization")).contains(getBasicAuthString()));
         assertTrue(Objects.requireNonNull(captureHttpEntity.getValue().getHeaders().get("Content-Type")).contains("application/json"));
         assertTrue(Objects.requireNonNull(captureHttpEntity.getValue().getHeaders().get("Accept")).contains("application/json"));
     }
@@ -216,7 +199,7 @@ public class SubscriptionRestServiceImplTest {
     // TESTS FOR ELEG USER
 
     @Test
-    public void shouldReturnNoHsaIdsWhenElegUserHasElegSubscription() {
+    void shouldReturnNoHsaIdsWhenElegUserHasElegSubscription() {
         final var orgNoHsaIdMap = createOrgNoHsaIdMap(1);
 
         setMockToReturnElegServiceCode();
@@ -226,24 +209,27 @@ public class SubscriptionRestServiceImplTest {
         assertTrue(response.isEmpty());
     }
 
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowNullPointerExceptionWhenResponseBodyIsNullForElegUser() {
+    @Test
+    void shouldThrowNullPointerExceptionWhenResponseBodyIsNullForElegUser() {
         final var orgNoHsaIdMap = createOrgNoHsaIdMap(1);
 
-        subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, ELEG);
-    }
-
-    @Test(expected = RestClientException.class)
-    public void shouldThrowRestClientExceptionWhenServiceCallFailureForElegUser() {
-        final var orgNoHsaIdMap = createOrgNoHsaIdMap(1);
-
-        setMockToReturnRestClientException();
-
-        subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, ELEG);
+        assertThrows(NullPointerException.class, () ->
+            subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, ELEG)
+        );
     }
 
     @Test
-    public void shouldReturnCorrectHsaIdsWhenElegUserHasOnlyNonElegSubscriptions() {
+    void shouldThrowRestClientExceptionWhenServiceCallFailureForElegUser() {
+        final var orgNoHsaIdMap = createOrgNoHsaIdMap(1);
+        setMockToReturnRestClientException();
+
+        assertThrows(RestClientException.class, () ->
+            subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, ELEG)
+        );
+    }
+
+    @Test
+    void shouldReturnCorrectHsaIdsWhenElegUserHasOnlyNonElegSubscriptions() {
         final var orgNoHsaIdMap = createOrgNoHsaIdMap(1);
 
         setMockToReturn(HttpStatus.OK, 1, 0, 2);
@@ -255,7 +241,7 @@ public class SubscriptionRestServiceImplTest {
     }
 
     @Test
-    public void shouldReturnCorrectHsaIdWhenElegUserHasNoSubscription() {
+    void shouldReturnCorrectHsaIdWhenElegUserHasNoSubscription() {
         final var orgNoHsaIdMap = createOrgNoHsaIdMap(1);
 
         setMockToReturn(HttpStatus.OK, 1, 1, 0);
@@ -267,7 +253,7 @@ public class SubscriptionRestServiceImplTest {
     }
 
     @Test
-    public void shouldAddHeadersToKundportalenRestRequestForElegUser() {
+    void shouldAddHeadersToServiceNowRestRequestForElegUser() {
         final var orgNoHsaIdMap = createOrgNoHsaIdMap(1);
         final var captureHttpEntity = ArgumentCaptor.forClass(HttpEntity.class);
 
@@ -275,9 +261,9 @@ public class SubscriptionRestServiceImplTest {
 
         subscriptionRestService.getMissingSubscriptions(orgNoHsaIdMap, ELEG);
 
-        verify(restTemplate).exchange(any(URI.class), any(HttpMethod.class), captureHttpEntity.capture(),
-            eq(LIST_ORGANIZATION_RESPONSE));
-        assertTrue(Objects.requireNonNull(captureHttpEntity.getValue().getHeaders().get("Authorization")).contains("accessToken"));
+        verify(restTemplate).exchange(any(String.class), any(HttpMethod.class), captureHttpEntity.capture(),
+            eq(OrganizationResponse.class));
+        assertTrue(Objects.requireNonNull(captureHttpEntity.getValue().getHeaders().get("Authorization")).contains(getBasicAuthString()));
         assertTrue(Objects.requireNonNull(captureHttpEntity.getValue().getHeaders().get("Content-Type")).contains("application/json"));
         assertTrue(Objects.requireNonNull(captureHttpEntity.getValue().getHeaders().get("Accept")).contains("application/json"));
     }
@@ -285,7 +271,7 @@ public class SubscriptionRestServiceImplTest {
     // TESTS FOR UNREGISTERED ELEG USER
 
     @Test
-    public void shouldReturnFalseWhenUnregisteredElegUserHasElegServiceCode() {
+    void shouldReturnFalseWhenUnregisteredElegUserHasElegServiceCode() {
         setMockToReturnElegServiceCode();
 
         final var response = subscriptionRestService.isMissingSubscriptionUnregisteredElegUser("ORG_NO_1");
@@ -294,7 +280,7 @@ public class SubscriptionRestServiceImplTest {
     }
 
     @Test
-    public void shouldReturnTrueWhenUnregisteredElegUserHasOnlyNonElegServiceCode() {
+    void shouldReturnTrueWhenUnregisteredElegUserHasOnlyNonElegServiceCode() {
         setMockToReturn(HttpStatus.ACCEPTED, 1, 1, 1);
 
         final var response = subscriptionRestService.isMissingSubscriptionUnregisteredElegUser("ORG_NO_1");
@@ -303,7 +289,7 @@ public class SubscriptionRestServiceImplTest {
     }
 
     @Test
-    public void shouldReturnTrueWhenUnregisteredElegUserHasNoActiveServiceCodes() {
+    void shouldReturnTrueWhenUnregisteredElegUserHasNoActiveServiceCodes() {
         setMockToReturn(HttpStatus.ACCEPTED, 1, 1, 0);
 
         final var response = subscriptionRestService.isMissingSubscriptionUnregisteredElegUser("ORG_NO_1");
@@ -311,41 +297,43 @@ public class SubscriptionRestServiceImplTest {
         assertTrue(response);
     }
 
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowNullPointerExceptionWhenResponseBodyIsNullForUnregisteredElegUser() {
-        when(restTemplate.exchange(any(URI.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_ORGANIZATION_RESPONSE)))
+    @Test
+    void shouldThrowNullPointerExceptionWhenResponseBodyIsNullForUnregisteredElegUser() {
+        when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), eq(OrganizationResponse.class)))
             .thenReturn(new ResponseEntity<>(null, HttpStatus.OK));
 
-        final var response = subscriptionRestService.isMissingSubscriptionUnregisteredElegUser("ORG_NO_1");
-
-        assertTrue(response);
-    }
-
-    @Test(expected = RestClientException.class)
-    public void shouldThrowRestClientExceptionWhenServiceCallFailureForUnregisteredElegUser() {
-        setMockToReturnRestClientException();
-
-        subscriptionRestService.isMissingSubscriptionUnregisteredElegUser("ORG_NO_1");
+        assertThrows(NullPointerException.class, () ->
+            subscriptionRestService.isMissingSubscriptionUnregisteredElegUser("ORG_NO_1")
+        );
     }
 
     @Test
-    public void shouldAddHeadersToKundportalenRestRequestForUnregisteredElegUser() {
+    void shouldThrowRestClientExceptionWhenServiceCallFailureForUnregisteredElegUser() {
+        setMockToReturnRestClientException();
+
+        assertThrows(RestClientException.class, () ->
+            subscriptionRestService.isMissingSubscriptionUnregisteredElegUser("ORG_NO_1")
+        );
+    }
+
+    @Test
+    void shouldAddHeadersToServicenowRestRequestForUnregisteredElegUser() {
         final var captureHttpEntity = ArgumentCaptor.forClass(HttpEntity.class);
 
         setMockToReturn(HttpStatus.OK, 1, 0, 1);
 
         subscriptionRestService.isMissingSubscriptionUnregisteredElegUser("ORG_NO_1");
 
-        verify(restTemplate).exchange(any(URI.class), any(HttpMethod.class), captureHttpEntity.capture(),
-            eq(LIST_ORGANIZATION_RESPONSE));
-        assertTrue(Objects.requireNonNull(captureHttpEntity.getValue().getHeaders().get("Authorization")).contains("accessToken"));
+        verify(restTemplate).exchange(any(String.class), any(HttpMethod.class), captureHttpEntity.capture(),
+            eq(OrganizationResponse.class));
+        assertTrue(Objects.requireNonNull(captureHttpEntity.getValue().getHeaders().get("Authorization")).contains(getBasicAuthString()));
         assertTrue(Objects.requireNonNull(captureHttpEntity.getValue().getHeaders().get("Content-Type")).contains("application/json"));
         assertTrue(Objects.requireNonNull(captureHttpEntity.getValue().getHeaders().get("Accept")).contains("application/json"));
     }
 
 
     private void setMockToReturn(HttpStatus httpStatus, int totalOrgsCount, int orgsMissingCount, int serviceCodeCount) {
-        final var orgList = new ArrayList<OrganizationResponse>();
+        final var orgList = new ArrayList<Organization>();
         orgsMissingCount = Math.min(orgsMissingCount, totalOrgsCount);
 
         for (var i = 1; i <= totalOrgsCount; i++) {
@@ -355,22 +343,28 @@ public class SubscriptionRestServiceImplTest {
                 orgList.add(createOrganization(i, 0));
             }
         }
-
-        when(restTemplate.exchange(any(URI.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_ORGANIZATION_RESPONSE)))
-            .thenReturn(new ResponseEntity<>(orgList, httpStatus));
+        final var organizationResponse = OrganizationResponse.builder()
+                .result(orgList).build();
+        when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), eq(OrganizationResponse.class)))
+            .thenReturn(new ResponseEntity<>(organizationResponse, httpStatus));
     }
 
     private void setMockToReturnElegServiceCode() {
-        final var orgResponse = createOrganization(1, 0);
-        orgResponse.setServiceCodes(ELEG_SERVICE_CODES);
+        final var organizationResponse = OrganizationResponse.builder()
+            .result(
+                List.of(Organization.builder()
+                        .organizationNumber("ORG_NO_1")
+                        .serviceCodes(ELEG_SERVICE_CODES)
+                        .build())
+            ).build();
 
-        when(restTemplate.exchange(any(URI.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_ORGANIZATION_RESPONSE)))
-            .thenReturn(new ResponseEntity<>(List.of(orgResponse), HttpStatus.OK));
+        when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), eq(OrganizationResponse.class)))
+            .thenReturn(new ResponseEntity<>(organizationResponse, HttpStatus.OK));
     }
 
     private void setMockToReturnRestClientException() {
         final var e = new RestClientException("MESSAGE_TEXT");
-        when(restTemplate.exchange(any(URI.class), any(HttpMethod.class), any(HttpEntity.class), eq(LIST_ORGANIZATION_RESPONSE)))
+        when(restTemplate.exchange(any(String.class), any(HttpMethod.class), any(HttpEntity.class), eq(OrganizationResponse.class)))
             .thenThrow(e);
     }
 
@@ -384,12 +378,12 @@ public class SubscriptionRestServiceImplTest {
         return orgNoHsaIdMap;
     }
 
-    private OrganizationResponse createOrganization(int orgNo, int serviceCodeCount) {
-        final var orgResponse = new OrganizationResponse();
+    private Organization createOrganization(int orgNo, int serviceCodeCount) {
         final var serviceCodeList = createSithsServiceCodeList(serviceCodeCount);
-        orgResponse.setOrganizationNumber("ORG_NO_" + orgNo);
-        orgResponse.setServiceCodes(serviceCodeList);
-        return orgResponse;
+        return Organization.builder()
+            .organizationNumber("ORG_NO_" + orgNo)
+            .serviceCodes(serviceCodeList)
+            .build();
     }
 
     private List<String> createSithsServiceCodeList(int serviceCodeCount) {
@@ -398,5 +392,10 @@ public class SubscriptionRestServiceImplTest {
             serviceCodeList.add(SITHS_SERVICE_CODES.get(i));
         }
         return serviceCodeList;
+    }
+
+    private String getBasicAuthString() {
+        final var authString = SERVICENOW_USERNAME + ":" + SERVICENOW_PASSWORD;
+        return "Basic " + Base64.getEncoder().encodeToString(authString.getBytes());
     }
 }

@@ -1,6 +1,4 @@
 dependencies {
-    implementation project(":integration-api")
-
     implementation "com.fasterxml.jackson.core:jackson-annotations"
     implementation "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider"
     implementation "jakarta.ws.rs:jakarta.ws.rs-api"
