@@ -53,15 +53,17 @@ public class ServiceNowSubscriptionRestService implements SubscriptionRestServic
     @Override
     public List<String> getMissingSubscriptions(Map<String, List<String>> organizationNumberHsaIdMap, AuthenticationMethodEnum authMethod) {
         final var organizationResponse = serviceNowSubscriptionRestClient.getSubscriptionServiceResponse(
-            organizationNumberHsaIdMap.keySet());
+            organizationNumberHsaIdMap.keySet()
+        );
         final var organizationInfo = Objects.requireNonNull(organizationResponse.getBody());
-        // Hämta missing subsribtions från service
         return getCareProvidersMissingSubscription(organizationInfo, organizationNumberHsaIdMap, authMethod);
     }
 
     @Override
     public boolean isMissingSubscriptionUnregisteredElegUser(String organizationNumber) {
-        final var organizationResponse = serviceNowSubscriptionRestClient.getSubscriptionServiceResponse(Set.of(organizationNumber));
+        final var organizationResponse = serviceNowSubscriptionRestClient.getSubscriptionServiceResponse(
+            Set.of(organizationNumber)
+        );
         final var organizationInfo = Objects.requireNonNull(organizationResponse.getBody()).getResult();
         return missingSubscription(organizationInfo.get(0).getServiceCodes(), AuthenticationMethodEnum.ELEG);
     }
