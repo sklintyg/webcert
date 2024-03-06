@@ -23,7 +23,6 @@ import static se.inera.intyg.webcert.integration.api.subscription.ServiceNowInte
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
@@ -55,8 +54,7 @@ public class ServiceNowSubscriptionRestService implements SubscriptionRestServic
         final var organizationResponse = serviceNowSubscriptionRestClient.getSubscriptionServiceResponse(
             organizationNumberHsaIdMap.keySet()
         );
-        final var organizationInfo = Objects.requireNonNull(organizationResponse.getBody());
-        return getCareProvidersMissingSubscription(organizationInfo, organizationNumberHsaIdMap, authMethod);
+        return getCareProvidersMissingSubscription(organizationResponse, organizationNumberHsaIdMap, authMethod);
     }
 
     @Override
@@ -64,8 +62,7 @@ public class ServiceNowSubscriptionRestService implements SubscriptionRestServic
         final var organizationResponse = serviceNowSubscriptionRestClient.getSubscriptionServiceResponse(
             Set.of(organizationNumber)
         );
-        final var organizationInfo = Objects.requireNonNull(organizationResponse.getBody()).getResult();
-        return missingSubscription(organizationInfo.get(0).getServiceCodes(), AuthenticationMethodEnum.ELEG);
+        return missingSubscription(organizationResponse.getResult().get(0).getServiceCodes(), AuthenticationMethodEnum.ELEG);
     }
 
 

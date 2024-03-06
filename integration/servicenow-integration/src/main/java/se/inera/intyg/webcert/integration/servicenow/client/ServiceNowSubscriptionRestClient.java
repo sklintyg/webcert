@@ -28,7 +28,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationRequest;
@@ -54,9 +53,16 @@ public class ServiceNowSubscriptionRestClient {
         this.restTemplate = restTemplate;
     }
 
-    public ResponseEntity<OrganizationResponse> getSubscriptionServiceResponse(Set<String> organizationNumbers) {
+    public OrganizationResponse getSubscriptionServiceResponse(Set<String> organizationNumbers) {
         final var httpEntity = getRequestEntity(organizationNumbers);
-        return restTemplate.exchange(serviceNowSubscriptionServiceUrl, HttpMethod.POST, httpEntity, OrganizationResponse.class);
+        final var response = restTemplate.exchange(serviceNowSubscriptionServiceUrl, HttpMethod.POST, httpEntity,
+            OrganizationResponse.class);
+
+        if (response.getBody() == null) {
+            throw new IllegalStateException("Response body was null");
+        }
+
+        return response.getBody();
     }
 
     private HttpEntity<OrganizationRequest> getRequestEntity(Set<String> organizationNumbers) {
