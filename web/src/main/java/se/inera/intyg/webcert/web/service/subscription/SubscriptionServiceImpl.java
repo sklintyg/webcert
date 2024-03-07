@@ -104,8 +104,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     public boolean isUnregisteredElegUserMissingSubscription(String personId) {
         try {
             final var organizationNumber = createOrganizationNumberFromPersonId(personId);
+            final var hashedOrganizationNumber = hashed(organizationNumber);
             LOG.debug("Fetching subscription info for unregistered private practitioner with organization number {}.",
-                hashed(organizationNumber));
+                hashedOrganizationNumber);
             final var missingSubscription = isMissingSubscriptionUnregisteredElegUser(organizationNumber);
             monitorLogMissingSubscription(missingSubscription, personId, organizationNumber);
             return missingSubscription;
