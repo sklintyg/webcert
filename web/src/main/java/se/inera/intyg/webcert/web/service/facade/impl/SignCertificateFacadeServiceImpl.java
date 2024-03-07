@@ -29,7 +29,7 @@ import se.inera.intyg.webcert.web.service.facade.SignCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 
-@Service
+@Service("signCertificateFromWc")
 public class SignCertificateFacadeServiceImpl implements SignCertificateFacadeService {
 
     private static final Logger LOG = LoggerFactory.getLogger(SignCertificateFacadeServiceImpl.class);
