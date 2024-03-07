@@ -68,7 +68,7 @@ class SubscriptionRestClientTest {
         ReflectionTestUtils.setField(subscriptionRestClient, SERVICENOW_USERNAME, SERVICENOW_USERNAME);
         ReflectionTestUtils.setField(subscriptionRestClient, SERVICENOW_PASSWORD, SERVICENOW_PASSWORD);
         ReflectionTestUtils.setField(subscriptionRestClient, "serviceNowSubscriptionServiceUrl", SUBSCRIPTION_URL);
-        ReflectionTestUtils.setField(subscriptionRestClient, "serviceNowSubscriptionService", SUBSCRIPTION_SERVICE_NAME);
+        ReflectionTestUtils.setField(subscriptionRestClient, "serviceNowSubscriptionServiceName", SUBSCRIPTION_SERVICE_NAME);
     }
 
     @Nested
