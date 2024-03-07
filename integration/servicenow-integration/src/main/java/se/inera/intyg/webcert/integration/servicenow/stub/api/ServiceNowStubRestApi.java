@@ -38,8 +38,6 @@ public class ServiceNowStubRestApi {
     private final ServiceNowStubRestApiService serviceNowStubRestApiService;
 
     @POST
-    // Javax reserves endpoint 'services' for returning info about available endpoints. Thus for stub to return proper values
-    // endpoint 'services' is replaced with below value. Use wherever calls are made to the stub.
     @Path("/stub")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)

@@ -39,7 +39,7 @@ public class ServiceNowStubRestApiService {
 
     public Response createSubscriptionResponse(String basicAuth, OrganizationRequest request) {
         if (basicAuth == null) {
-            return Response.status(Status.BAD_REQUEST).entity("Authorization header required by Servicenow stub.").build();
+            return Response.status(Status.BAD_REQUEST).entity("Authorization header required by ServiceNow stub.").build();
         } else if (stubState.getHttpErrorCode() != 0) {
             return responseWithErrorStatusCode(stubState.getHttpErrorCode());
         } else {
@@ -79,9 +79,9 @@ public class ServiceNowStubRestApiService {
     private Response responseWithErrorStatusCode(int statusCode) {
         try {
             return Response.status(Status.fromStatusCode(statusCode))
-                .entity("Http error " + statusCode + " response from Kundportalen stub.").build();
+                .entity("Http error " + statusCode + " response from ServiceNow stub.").build();
         } catch (IllegalArgumentException e) {
-            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Http error 500 response from Kundportalen stub.").build();
+            return Response.status(Status.INTERNAL_SERVER_ERROR).entity("Http error 500 response from ServiceNow stub.").build();
         }
     }
 }

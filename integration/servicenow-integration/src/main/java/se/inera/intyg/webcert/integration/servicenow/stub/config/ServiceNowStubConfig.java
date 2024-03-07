@@ -18,8 +18,6 @@
  */
 package se.inera.intyg.webcert.integration.servicenow.stub.config;
 
-import static se.inera.intyg.webcert.integration.api.subscription.ServiceNowIntegrationConstants.SERVICENOW_INTEGRATION_STUB_PROFILE;
-
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,7 +30,6 @@ import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.ClassPathResource;
 import se.inera.intyg.webcert.integration.servicenow.stub.api.ServiceNowStubRestApi;
@@ -40,7 +37,6 @@ import se.inera.intyg.webcert.integration.servicenow.stub.api.ServiceNowStubSett
 
 @Configuration
 @RequiredArgsConstructor
-@Profile(SERVICENOW_INTEGRATION_STUB_PROFILE)
 @ComponentScan(basePackages = "se.inera.intyg.webcert.integration.servicenow.stub")
 public class ServiceNowStubConfig {
 

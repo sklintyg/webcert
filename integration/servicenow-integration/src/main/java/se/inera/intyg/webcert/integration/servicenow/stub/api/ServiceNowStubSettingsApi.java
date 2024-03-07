@@ -99,6 +99,6 @@ public class ServiceNowStubSettingsApi {
     @Produces(MediaType.APPLICATION_JSON)
     public String setServiceError() {
         stubSettingsService.clearHttpError();
-        return "Cleared stub Http error code.";
+        return "Cleared ServiceNow stub Http error code.";
     }
 }
