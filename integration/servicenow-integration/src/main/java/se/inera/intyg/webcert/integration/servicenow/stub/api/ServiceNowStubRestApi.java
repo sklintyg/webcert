@@ -25,19 +25,17 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationRequest;
 import se.inera.intyg.webcert.integration.servicenow.stub.service.ServiceNowStubRestApiService;
 
 @Controller
-@Path("/api/nabia/v1/inera_services")
+@RequiredArgsConstructor
+@Path("/api/nabia/v1/inera_services/services")
 public class ServiceNowStubRestApi {
 
     private final ServiceNowStubRestApiService serviceNowStubRestApiService;
-
-    public ServiceNowStubRestApi(ServiceNowStubRestApiService serviceNowStubRestApiService) {
-        this.serviceNowStubRestApiService = serviceNowStubRestApiService;
-    }
 
     @POST
     // Javax reserves endpoint 'services' for returning info about available endpoints. Thus for stub to return proper values

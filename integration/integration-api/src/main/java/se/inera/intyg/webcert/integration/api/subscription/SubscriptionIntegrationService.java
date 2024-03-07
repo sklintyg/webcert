@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.integration.api.subscription;
 import java.util.List;
 import java.util.Map;
 
-public interface SubscriptionRestService {
+public interface SubscriptionIntegrationService {
 
     List<String> getMissingSubscriptions(Map<String, List<String>> organizationNumberHsaIdMap, AuthenticationMethodEnum authMethod);
 

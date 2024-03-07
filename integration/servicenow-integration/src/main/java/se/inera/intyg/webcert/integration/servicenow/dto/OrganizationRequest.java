@@ -22,20 +22,20 @@ package se.inera.intyg.webcert.integration.servicenow.dto;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.util.List;
-import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationRequest.OrganizationRequestBuilder;
 import lombok.Builder;
 import lombok.Value;
+import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationRequest.OrganizationRequestBuilder;
 
 @JsonDeserialize(builder = OrganizationRequestBuilder.class)
 @Value
 @Builder
 public class OrganizationRequest {
 
-  String service;
-  List<String> customers;
+    String service;
+    List<String> customers;
 
-  @JsonPOJOBuilder(withPrefix = "")
-  public static class OrganizationRequestBuilder {
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class OrganizationRequestBuilder {
 
-  }
+    }
 }

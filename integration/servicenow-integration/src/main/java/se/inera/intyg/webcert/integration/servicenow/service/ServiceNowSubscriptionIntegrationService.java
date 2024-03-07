@@ -23,28 +23,21 @@ import static se.inera.intyg.webcert.integration.api.subscription.ServiceNowInte
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.integration.api.subscription.AuthenticationMethodEnum;
-import se.inera.intyg.webcert.integration.api.subscription.SubscriptionRestService;
+import se.inera.intyg.webcert.integration.api.subscription.SubscriptionIntegrationService;
 import se.inera.intyg.webcert.integration.servicenow.client.SubscriptionRestClient;
 
 @Service
+@RequiredArgsConstructor
 @Profile(SERVICENOW_INTEGRATION_PROFILE)
-public class ServiceNowSubscriptionRestService implements SubscriptionRestService {
+public class ServiceNowSubscriptionIntegrationService implements SubscriptionIntegrationService {
 
     private final SubscriptionRestClient subscriptionRestClient;
     private final GetCareProvidersMissingSubscriptionService getCareProvidersMissingSubscriptionService;
     private final CheckSubscriptionService checkSubscriptionService;
-
-    public ServiceNowSubscriptionRestService(
-        SubscriptionRestClient subscriptionRestClient,
-        GetCareProvidersMissingSubscriptionService getCareProvidersMissingSubscriptionService,
-        CheckSubscriptionService checkSubscriptionService) {
-        this.subscriptionRestClient = subscriptionRestClient;
-        this.getCareProvidersMissingSubscriptionService = getCareProvidersMissingSubscriptionService;
-        this.checkSubscriptionService = checkSubscriptionService;
-    }
 
     @Override
     public List<String> getMissingSubscriptions(Map<String, List<String>> organizationNumberHsaIdMap, AuthenticationMethodEnum authMethod) {

@@ -22,18 +22,16 @@ package se.inera.intyg.webcert.integration.servicenow.service;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.integration.api.subscription.AuthenticationMethodEnum;
 import se.inera.intyg.webcert.integration.servicenow.dto.Organization;
 
 @Service
+@RequiredArgsConstructor
 public class GetCareProvidersMissingSubscriptionService {
 
     private final CheckSubscriptionService checkSubscriptionService;
-
-    public GetCareProvidersMissingSubscriptionService(CheckSubscriptionService checkSubscriptionService) {
-        this.checkSubscriptionService = checkSubscriptionService;
-    }
 
     public List<String> get(List<Organization> organizations,
         Map<String, List<String>> organizationNumberHsaIdMap, AuthenticationMethodEnum authMethod) {

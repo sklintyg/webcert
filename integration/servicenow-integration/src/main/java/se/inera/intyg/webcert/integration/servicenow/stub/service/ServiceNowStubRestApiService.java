@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.integration.servicenow.dto.Organization;
 import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationRequest;
@@ -31,13 +32,10 @@ import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationResponse;
 import se.inera.intyg.webcert.integration.servicenow.stub.state.ServiceNowStubState;
 
 @Service
+@RequiredArgsConstructor
 public class ServiceNowStubRestApiService {
 
     private final ServiceNowStubState stubState;
-
-    public ServiceNowStubRestApiService(ServiceNowStubState stubState) {
-        this.stubState = stubState;
-    }
 
     public Response createSubscriptionResponse(String basicAuth, OrganizationRequest request) {
         if (basicAuth == null) {

@@ -24,6 +24,7 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.apache.cxf.Bus;
 import org.apache.cxf.bus.spring.SpringBus;
 import org.apache.cxf.endpoint.Server;
@@ -38,18 +39,13 @@ import se.inera.intyg.webcert.integration.servicenow.stub.api.ServiceNowStubRest
 import se.inera.intyg.webcert.integration.servicenow.stub.api.ServiceNowStubSettingsApi;
 
 @Configuration
+@RequiredArgsConstructor
 @Profile(SERVICENOW_INTEGRATION_STUB_PROFILE)
 @ComponentScan(basePackages = "se.inera.intyg.webcert.integration.servicenow.stub")
-public class ServicenowStubConfig {
+public class ServiceNowStubConfig {
 
     private final ServiceNowStubRestApi servicenowStubRestApi;
     private final ServiceNowStubSettingsApi servicenowStubSettingsApi;
-
-    public ServicenowStubConfig(ServiceNowStubRestApi servicenowStubRestApi,
-        ServiceNowStubSettingsApi servicenowStubSettingsApi) {
-        this.servicenowStubRestApi = servicenowStubRestApi;
-        this.servicenowStubSettingsApi = servicenowStubSettingsApi;
-    }
 
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {

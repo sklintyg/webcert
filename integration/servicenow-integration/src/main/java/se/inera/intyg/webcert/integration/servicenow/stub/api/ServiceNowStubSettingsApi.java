@@ -26,18 +26,16 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import se.inera.intyg.webcert.integration.servicenow.stub.service.ServiceNowStubSettingsApiService;
 
 @Controller
+@RequiredArgsConstructor
 @Path("/settings")
 public class ServiceNowStubSettingsApi {
 
     private final ServiceNowStubSettingsApiService stubSettingsService;
-
-    public ServiceNowStubSettingsApi(ServiceNowStubSettingsApiService stubSettingsService) {
-        this.stubSettingsService = stubSettingsService;
-    }
 
     @GET
     @Path("/set/{returnValue}")

@@ -31,8 +31,9 @@ import se.inera.intyg.webcert.integration.api.subscription.ServiceNowIntegration
 
 @Configuration
 @Profile(ServiceNowIntegrationConstants.SERVICENOW_INTEGRATION_PROFILE)
-@ComponentScan(basePackages = "se.inera.intyg.webcert.integration.servicenow")
-public class RestConfig {
+@ComponentScan(basePackages = {"se.inera.intyg.webcert.integration.servicenow.client", "se.inera.intyg.webcert.integration.servicenow.dto",
+    "se.inera.intyg.webcert.integration.servicenow.service"})
+public class ServiceNowIntegrationConfig {
 
     @Value("${servicenow.connection.request.timeout}")
     private int connectionRequestTimeout;

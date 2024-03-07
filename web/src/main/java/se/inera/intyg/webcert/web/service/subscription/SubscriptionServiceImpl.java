@@ -18,14 +18,13 @@
  */
 package se.inera.intyg.webcert.web.service.subscription;
 
-import static se.inera.intyg.webcert.integration.api.subscription.AuthenticationMethodEnum.ELEG;
-import static se.inera.intyg.webcert.integration.api.subscription.AuthenticationMethodEnum.SITHS;
 import static se.inera.intyg.infra.security.common.model.AuthoritiesConstants.FEATURE_SUBSCRIPTION_ADAPTATION_PERIOD;
 import static se.inera.intyg.infra.security.common.model.AuthoritiesConstants.FEATURE_SUBSCRIPTION_REQUIRED;
+import static se.inera.intyg.webcert.integration.api.subscription.AuthenticationMethodEnum.ELEG;
+import static se.inera.intyg.webcert.integration.api.subscription.AuthenticationMethodEnum.SITHS;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.ELEG_AUTHN_CLASSES;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.FAKE_AUTHENTICATION_ELEG_CONTEXT_REF;
 
-import se.inera.intyg.webcert.integration.api.subscription.AuthenticationMethodEnum;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -45,7 +44,8 @@ import se.inera.intyg.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.schemas.contract.util.HashUtility;
-import se.inera.intyg.webcert.integration.api.subscription.SubscriptionRestService;
+import se.inera.intyg.webcert.integration.api.subscription.AuthenticationMethodEnum;
+import se.inera.intyg.webcert.integration.api.subscription.SubscriptionIntegrationService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionAction;
 import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionInfo;
@@ -62,13 +62,13 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Value("${kundportalen.require.subscription.start.date}")
     private String requireSubscriptionStartDate;
 
-    private final SubscriptionRestService subscriptionRestService;
+    private final SubscriptionIntegrationService subscriptionIntegrationService;
     private final FeaturesHelper featuresHelper;
     private final MonitoringLogService monitoringLogService;
 
-    public SubscriptionServiceImpl(SubscriptionRestService subscriptionRestService,
+    public SubscriptionServiceImpl(SubscriptionIntegrationService subscriptionIntegrationService,
         FeaturesHelper featuresHelper, MonitoringLogService monitoringLogService) {
-        this.subscriptionRestService = subscriptionRestService;
+        this.subscriptionIntegrationService = subscriptionIntegrationService;
         this.featuresHelper = featuresHelper;
         this.monitoringLogService = monitoringLogService;
     }
@@ -214,7 +214,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private List<String> getMissingSubscriptions(Map<String, List<String>> careProviderOrgNumbers, AuthenticationMethodEnum authMethod) {
         try {
-            return subscriptionRestService.getMissingSubscriptions(careProviderOrgNumbers, authMethod);
+            return subscriptionIntegrationService.getMissingSubscriptions(careProviderOrgNumbers, authMethod);
         } catch (Exception e) {
             final var careProviderHsaids = flatMapCollection(careProviderOrgNumbers.values());
             LOG.error("Subscription service call failure for care providers {}.", careProviderHsaids, e);
@@ -225,7 +225,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private boolean isMissingSubscriptionUnregisteredElegUser(String organizationNumber) {
         try {
-            return subscriptionRestService.isMissingSubscriptionUnregisteredElegUser(organizationNumber);
+            return subscriptionIntegrationService.isMissingSubscriptionUnregisteredElegUser(organizationNumber);
         } catch (Exception e) {
             LOG.error("Subscription service call failure for unregistered eleg user with org number {}.",
                 hashed(organizationNumber), e);

@@ -21,17 +21,15 @@ package se.inera.intyg.webcert.integration.servicenow.stub.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.integration.servicenow.stub.state.ServiceNowStubState;
 
 @Service
+@RequiredArgsConstructor
 public class ServiceNowStubSettingsApiService {
 
     private final ServiceNowStubState stubState;
-
-    public ServiceNowStubSettingsApiService(ServiceNowStubState stubState) {
-        this.stubState = stubState;
-    }
 
     public void setSubscriptionReturnValue(Boolean returnValue) {
         stubState.setSubscriptionReturnValue(returnValue);

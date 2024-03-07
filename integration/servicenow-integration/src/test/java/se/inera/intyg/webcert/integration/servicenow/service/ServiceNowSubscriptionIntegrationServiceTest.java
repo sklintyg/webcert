@@ -40,7 +40,7 @@ import se.inera.intyg.webcert.integration.servicenow.dto.Organization;
 import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationResponse;
 
 @ExtendWith(MockitoExtension.class)
-class ServiceNowSubscriptionRestServiceTest {
+class ServiceNowSubscriptionIntegrationServiceTest {
 
     @Mock
     private SubscriptionRestClient subscriptionRestClient;
@@ -50,7 +50,7 @@ class ServiceNowSubscriptionRestServiceTest {
     private CheckSubscriptionService checkSubscriptionService;
 
     @InjectMocks
-    private ServiceNowSubscriptionRestService subscriptionRestService;
+    private ServiceNowSubscriptionIntegrationService subscriptionRestService;
 
     private static final String HSA_ID = "hsaId";
     private static final String ORG_NUMBER = "org_number";
