@@ -262,7 +262,7 @@ abstract public class LockedDraftAccessTest extends AccessTest {
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
         doReturn(true).when(intygTextsService).isLatestMajorVersion(intygsTyp, intygsTypVersion);
-        doReturn(new SubscriptionInfo("date1", "date2")).when(user).getSubscriptionInfo();
+        doReturn(new SubscriptionInfo()).when(user).getSubscriptionInfo();
 
         assertAllowToCopyOnSameCareProviderWhenUtkastSameVGExists(
             accessService.allowToCopy(
@@ -292,7 +292,7 @@ abstract public class LockedDraftAccessTest extends AccessTest {
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
         doReturn(true).when(intygTextsService).isLatestMajorVersion(intygsTyp, intygsTypVersion);
-        doReturn(new SubscriptionInfo("date1", "date2")).when(user).getSubscriptionInfo();
+        doReturn(new SubscriptionInfo()).when(user).getSubscriptionInfo();
 
         assertAllowToCopyOnDifferentCareProviderWhenIntygSameVGExists(
             accessService.allowToCopy(
@@ -322,7 +322,7 @@ abstract public class LockedDraftAccessTest extends AccessTest {
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, true);
         doReturn(true).when(webCertUserService).isAuthorizedForUnit(vardgivarId, enhetsId, false);
         doReturn(true).when(intygTextsService).isLatestMajorVersion(intygsTyp, intygsTypVersion);
-        doReturn(new SubscriptionInfo("date1", "date2")).when(user).getSubscriptionInfo();
+        doReturn(new SubscriptionInfo()).when(user).getSubscriptionInfo();
 
         assertAllowToCopyOnSameCareProviderWhenIntygExists(
             accessService.allowToCopy(

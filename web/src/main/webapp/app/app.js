@@ -155,8 +155,8 @@
       return null;
     });
   }
-  
-  app.factory('launchIdInterceptor', function($window){
+
+  app.factory('launchIdInterceptor', function($window) {
     return {
       request: function(config) {
         if ($window.sessionStorage.getItem('launchId')) {
@@ -206,43 +206,7 @@
 
       setupIntygModuleFutureStates($stateProvider);
     }]);
-
-  /*
-   // Workaround for bug #1404
-    // https://github.com/angular/angular.js/issues/1404
-    // Source: http://plnkr.co/edit/hSMzWC?p=preview
-
-      // Decorators that update form input names and interpolates them. Needed for datepicker directives templates dynamic name attributes
-      app.config(function($provide) {
-          $provide.decorator('ngModelDirective', function($delegate) {
-              var ngModel = $delegate[0], controller = ngModel.controller;
-              ngModel.controller =
-                  ['$scope', '$element', '$attrs', '$injector', function(scope, element, attrs, $injector) {
-                      var $interpolate = $injector.get('$interpolate');
-                      attrs.$set('name', $interpolate(attrs.name || '')(scope));
-                      $injector.invoke(controller, this, {
-                          '$scope': scope,
-                          '$element': element,
-                          '$attrs': attrs
-                      });
-                  }];
-              return $delegate;
-          });
-          $provide.decorator('formDirective', function($delegate) {
-              var form = $delegate[0], controller = form.controller;
-              form.controller = ['$scope', '$element', '$attrs', '$injector', function(scope, element, attrs, $injector) {
-                  var $interpolate = $injector.get('$interpolate');
-                  attrs.$set('name', $interpolate(attrs.name || attrs.ngForm || '')(scope));
-                  $injector.invoke(controller, this, {
-                      '$scope': scope,
-                      '$element': element,
-                      '$attrs': attrs
-                  });
-              }];
-              return $delegate;
-          });
-      });
-  */
+  
   // Global config of default date picker config (individual attributes can be
   // overridden per directive usage)
   app.constant('uibDatepickerPopupConfig', {
@@ -295,8 +259,6 @@
             } else {
               if (!redirectToUnitSelection(event, toState)) {
                 checkAndLogConnectivity(toState);
-                //termsCheck(event, toState);
-                subscriptionWarning(event, toState, fromState);
                 checkMissingSubscription(event, toState, fromState);
                 preventStateChangeIfModalOpen(event, fromState, fromParams, triggeredByLink);
               }
@@ -348,14 +310,6 @@
         }
       }
 
-      function subscriptionWarning(event, toState, fromState) {
-        if (toState.name !== 'webcert.subscription' && fromState.name !== 'webcert.subscription' &&
-            subscriptionService.shouldDisplayWarning()) {
-          event.preventDefault();
-          $state.go('webcert.subscription');
-        }
-      }
-
       function checkMissingSubscription(event, toState, fromState) {
         if (toState.name !== 'webcert.missingSubscription' && fromState.name !== 'webcert.missingSubscription' &&
             subscriptionService.shouldDisplayMissingSubscriptionModal()) {
@@ -363,18 +317,6 @@
           $state.go('webcert.missingSubscription');
         }
       }
-
-      /*function termsCheck(event, toState) {
-          // check terms if not accepted then always redirect
-          if (toState.name !== 'webcert.terms') {
-            UserModel.transitioning = false;
-          }
-          if (UserModel.isPrivatLakare() && !UserModel.doNotDisplayUserTerms && !UserModel.transitioning) {
-            event.preventDefault();
-            UserModel.transitioning = true;
-            $state.transitionTo('webcert.terms');
-          }
-      }*/
 
       function redirectToUnitSelection(event, toState) {
         if (toState.name !== 'normal-origin-enhetsval' && UserModel.isNormalOrigin() && !UserModel.user.valdVardenhet) {
@@ -433,8 +375,8 @@
         }
       };
     }]);
-  
-  function getRequestWithLaunchIdHeader(url, $window){
+
+  function getRequestWithLaunchIdHeader(url, $window) {
     return {headers: {'launchId': $window.sessionStorage.getItem('launchId')}, url: url};
   }
 

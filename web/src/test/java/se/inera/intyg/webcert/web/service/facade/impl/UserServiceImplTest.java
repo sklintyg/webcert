@@ -491,21 +491,7 @@ class UserServiceImplTest {
             final var loggedInUser = userService.getLoggedInUser();
             assertFalse(loggedInUser.getCareProviders().get(0).isMissingSubscription());
         }
-
-        @Test
-        void careProviderIsNotConsideredAsMissingSubscriptionIfActionIsWarn() {
-            final var subscriptionInfo = new SubscriptionInfo();
-            subscriptionInfo.setCareProvidersMissingSubscription(
-                Collections.singletonList(CARE_PROVIDER_ID)
-            );
-            subscriptionInfo.setSubscriptionAction(SubscriptionAction.WARN);
-
-            doReturn(subscriptionInfo).when(user).getSubscriptionInfo();
-
-            final var loggedInUser = userService.getLoggedInUser();
-            assertFalse(loggedInUser.getCareProviders().get(0).isMissingSubscription());
-        }
-
+        
         @Test
         void careProviderIsNotConsideredAsMissingSubscriptionIfActionIsNone() {
             final var subscriptionInfo = new SubscriptionInfo();

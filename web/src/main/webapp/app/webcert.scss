@@ -1,9 +1,12 @@
 @CHARSET "UTF-8";
 
 @import "mixins/wc-variables";
-@import "mixins/bootstrap-variables-override"; // Bootstrap override variables must be loaded before bootstrap due to its !default flags
-@import '../bower_components/bootstrap-sass/assets/stylesheets/bootstrap.scss'; // Load bootstrap defaults
-@import "mixins/bootstrap-css-override"; // CSS Override only, no bootstrap variables
+@import "mixins/bootstrap-variables-override";
+// Bootstrap override variables must be loaded before bootstrap due to its !default flags
+@import '../bower_components/bootstrap-sass/assets/stylesheets/bootstrap.scss';
+// Load bootstrap defaults
+@import "mixins/bootstrap-css-override";
+// CSS Override only, no bootstrap variables
 @import "mixins/fonts";
 
 [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
@@ -42,6 +45,5 @@
 @import 'views/sokSkrivIntyg/valjUtkastTyp.scss';
 @import 'views/sokSkrivIntyg/wcContent.scss';
 @import 'views/subscription/missingSubscription.body.scss';
-@import 'views/subscription/subscription.body.scss';
 @import 'views/views.scss';
 // endinjector

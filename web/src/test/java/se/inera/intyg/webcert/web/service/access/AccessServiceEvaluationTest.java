@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.access;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -250,7 +250,7 @@ public class AccessServiceEvaluationTest {
 
     private SubscriptionInfo getSubscriptionInfo(SubscriptionAction subscriptionAction, int numberOfMissingSubscriptions) {
         final var missingSubscriptionList = getMissingSubscriptionsList(numberOfMissingSubscriptions);
-        final var subscriptionInfo = new SubscriptionInfo("date1", "date2");
+        final var subscriptionInfo = new SubscriptionInfo();
         subscriptionInfo.setSubscriptionAction(subscriptionAction);
         subscriptionInfo.setCareProvidersMissingSubscription(List.copyOf(missingSubscriptionList));
         return subscriptionInfo;

@@ -26,12 +26,6 @@ public interface SubscriptionService {
 
     boolean isUnregisteredElegUserMissingSubscription(String personId);
 
-    boolean isSubscriptionRequired();
-
-    boolean isSubscriptionAdaptation();
-
-    boolean isAnySubscriptionFeatureActive();
-
     void acknowledgeSubscriptionModal(WebCertUser webCertUser);
 
 }

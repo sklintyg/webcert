@@ -22,7 +22,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Nested;
@@ -365,8 +364,7 @@ class GetUserResourceLinksImplTest {
                 }
 
                 final var subscriptionInfo = new SubscriptionInfo();
-                subscriptionInfo.setRequireSubscriptionStartDate(LocalDate.now().minusDays(1).toString());
-                subscriptionInfo.setSubscriptionAction(SubscriptionAction.WARN);
+                subscriptionInfo.setSubscriptionAction(SubscriptionAction.BLOCK);
                 subscriptionInfo.setCareProvidersMissingSubscription(missingSubscriptions);
                 subscriptionInfo.setCareProvidersForSubscriptionModal(subscriptionWarning);
                 user.setSubscriptionInfo(subscriptionInfo);
