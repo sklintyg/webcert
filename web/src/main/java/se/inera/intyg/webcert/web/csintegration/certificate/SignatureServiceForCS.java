@@ -19,17 +19,32 @@
 
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 
+@Slf4j
+@RequiredArgsConstructor
 @Service("signatureServiceForCS")
 public class SignatureServiceForCS implements UnderskriftService {
+
+    private final CSIntegrationService csIntegrationService;
 
     @Override
     public SignaturBiljett startSigningProcess(String intygsId, String intygsTyp, long version, SignMethod signMethod, String ticketID,
         boolean isWc2ClientRequest) {
+        final var exists = csIntegrationService.certificateExists(intygsId);
+        if (Boolean.FALSE.equals(exists)) {
+            log.debug("Certificate with id '{}' does not exist in certificate service", intygsId);
+            return null;
+        }
+
+        // hämta XML från certificate service
+
         return null;
     }
 
