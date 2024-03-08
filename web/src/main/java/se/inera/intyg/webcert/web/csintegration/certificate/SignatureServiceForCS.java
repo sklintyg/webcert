@@ -42,27 +42,28 @@ public class SignatureServiceForCS implements UnderskriftService {
 
 
     @Override
-    public SignaturBiljett startSigningProcess(String intygsId, String intygsTyp, long version, SignMethod signMethod, String ticketID,
-        boolean isWc2ClientRequest) {
-        final var exists = csIntegrationService.certificateExists(intygsId);
+    public SignaturBiljett startSigningProcess(String certificateId, String certificateType, long version, SignMethod signMethod,
+        String ticketID, boolean isWc2ClientRequest) {
+        final var exists = csIntegrationService.certificateExists(certificateId);
         if (Boolean.FALSE.equals(exists)) {
-            log.debug("Certificate with id '{}' does not exist in certificate service", intygsId);
+            log.debug("Certificate with id '{}' does not exist in certificate service", certificateId);
             return null;
         }
 
         final var certificateXml = csIntegrationService.getCertificateXml(
             csIntegrationRequestFactory.getCertificateXmlRequest(new Certificate()),
-            intygsId
+            certificateId
         );
 
-        final var signatureTicket = xmlUnderskriftService.skapaSigneringsBiljettMedDigest(intygsId, intygsTyp, version, Optional.empty(),
-            signMethod, ticketID,
-            isWc2ClientRequest, Optional.of(certificateXml));
+        final var signatureTicket = xmlUnderskriftService.skapaSigneringsBiljettMedDigest(
+            certificateId, certificateType, version, Optional.empty(),
+            signMethod, ticketID, isWc2ClientRequest, Optional.of(certificateXml)
+        );
 
         if (signatureTicket == null) {
             throw new IllegalStateException("Unhandled authentication method, could not create SignaturBiljett");
         }
-        
+
         return signatureTicket;
     }
 
