@@ -25,8 +25,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static se.inera.intyg.webcert.integration.kundportalen.enumerations.AuthenticationMethodEnum.ELEG;
-import static se.inera.intyg.webcert.integration.kundportalen.enumerations.AuthenticationMethodEnum.SITHS;
+import static se.inera.intyg.webcert.integration.api.subscription.AuthenticationMethodEnum.ELEG;
+import static se.inera.intyg.webcert.integration.api.subscription.AuthenticationMethodEnum.SITHS;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -58,7 +58,7 @@ public class SubscriptionRestServiceImplTest {
     private RestTemplate restTemplate;
 
     @InjectMocks
-    private SubscriptionRestServiceImpl subscriptionRestService;
+    private SubscriptionIntegrationServiceImpl subscriptionRestService;
 
     private static final ParameterizedTypeReference<List<OrganizationResponse>> LIST_ORGANIZATION_RESPONSE
         = new ParameterizedTypeReference<>() {
@@ -73,9 +73,9 @@ public class SubscriptionRestServiceImplTest {
         ReflectionTestUtils.setField(subscriptionRestService, "kundportalenAccessToken", "accessToken");
         ReflectionTestUtils.setField(subscriptionRestService, "kundportalenSubscriptionServiceUrl", "https://kp.test");
         ReflectionTestUtils.setField(subscriptionRestService, "kundportalenSubscriptionService", "Intygstjänster");
-        ReflectionTestUtils.setField(subscriptionRestService, SubscriptionRestServiceImpl.class, "elegServiceCodes",
+        ReflectionTestUtils.setField(subscriptionRestService, SubscriptionIntegrationServiceImpl.class, "elegServiceCodes",
             ELEG_SERVICE_CODES, List.class);
-        ReflectionTestUtils.setField(subscriptionRestService, SubscriptionRestServiceImpl.class, "sithsServiceCodes",
+        ReflectionTestUtils.setField(subscriptionRestService, SubscriptionIntegrationServiceImpl.class, "sithsServiceCodes",
             SITHS_SERVICE_CODES, List.class);
     }
 

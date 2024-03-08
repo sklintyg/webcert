@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.integration.kundportalen.service;
 
+import static se.inera.intyg.webcert.integration.api.subscription.ServiceNowIntegrationConstants.SERVICENOW_INTEGRATION_PROFILE;
+
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -27,6 +29,7 @@ import java.util.Objects;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -36,11 +39,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
+import se.inera.intyg.webcert.integration.api.subscription.AuthenticationMethodEnum;
+import se.inera.intyg.webcert.integration.api.subscription.SubscriptionIntegrationService;
 import se.inera.intyg.webcert.integration.kundportalen.dto.OrganizationResponse;
-import se.inera.intyg.webcert.integration.kundportalen.enumerations.AuthenticationMethodEnum;
 
 @Service
-public class SubscriptionRestServiceImpl implements SubscriptionRestService {
+@Profile("!" + SERVICENOW_INTEGRATION_PROFILE)
+public class SubscriptionIntegrationServiceImpl implements SubscriptionIntegrationService {
 
     @Value("${kundportalen.access.token}")
     private String kundportalenAccessToken;
@@ -63,7 +68,7 @@ public class SubscriptionRestServiceImpl implements SubscriptionRestService {
 
     private final RestTemplate restTemplate;
 
-    public SubscriptionRestServiceImpl(@Qualifier("subscriptionServiceRestTemplate") RestTemplate restTemplate) {
+    public SubscriptionIntegrationServiceImpl(@Qualifier("subscriptionServiceRestTemplate") RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 

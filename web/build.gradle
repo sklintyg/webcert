@@ -32,7 +32,7 @@ gretty {
     serverConfigFile = "tomcat-gretty.xml"
 
     jvmArgs = ["-Dcatalina.base=${buildDirectory}/catalina.base",
-               "-Dspring.profiles.active=dev,caching-enabled,wc-security-test,ia-stub,certificate-service-active,hsa-integration-intyg-proxy-service",
+               "-Dspring.profiles.active=dev,caching-enabled,wc-security-test,ia-stub,certificate-service-active,hsa-integration-intyg-proxy-service,servicenow-integration",
                "-Dlogback.file=${applicationDir}/config/logback-dev.xml",
                "-Djava.awt.headless=true",
                "-Dfile.encoding=UTF-8",
@@ -169,12 +169,14 @@ if (project.hasProperty("codeQuality")) {
 dependencies {
     implementation project(':fk-stub')
     implementation project(':fmb-integration')
+    implementation project(':integration-api')
     implementation project(':intygstjanst-stub')
     implementation project(':kundportalen-integration')
     implementation project(':mail-stub')
     implementation project(':notification-sender')
     implementation project(':notification-stub')
     implementation project(':pp-integration')
+    implementation project(':servicenow-integration')
     implementation project(':tak-integration')
     implementation project(':webcert-common')
     implementation project(':webcert-persistence')
@@ -274,7 +276,7 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok'
     testCompileOnly 'org.projectlombok:lombok'
 
-    testImplementation ("com.helger:ph-schematron:${phSchematronVersion}") { exclude group: "com.helger", module: "ph-jaxb-pom" }
+    testImplementation("com.helger:ph-schematron:${phSchematronVersion}") { exclude group: "com.helger", module: "ph-jaxb-pom" }
     testImplementation "org.assertj:assertj-core"
     testImplementation "org.springframework.boot:spring-boot-test"
     testImplementation "org.springframework:spring-test"

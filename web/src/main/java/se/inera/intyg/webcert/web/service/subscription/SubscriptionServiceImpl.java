@@ -20,8 +20,8 @@ package se.inera.intyg.webcert.web.service.subscription;
 
 import static se.inera.intyg.infra.security.common.model.AuthoritiesConstants.FEATURE_SUBSCRIPTION_ADAPTATION_PERIOD;
 import static se.inera.intyg.infra.security.common.model.AuthoritiesConstants.FEATURE_SUBSCRIPTION_REQUIRED;
-import static se.inera.intyg.webcert.integration.kundportalen.enumerations.AuthenticationMethodEnum.ELEG;
-import static se.inera.intyg.webcert.integration.kundportalen.enumerations.AuthenticationMethodEnum.SITHS;
+import static se.inera.intyg.webcert.integration.api.subscription.AuthenticationMethodEnum.ELEG;
+import static se.inera.intyg.webcert.integration.api.subscription.AuthenticationMethodEnum.SITHS;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.ELEG_AUTHN_CLASSES;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.FAKE_AUTHENTICATION_ELEG_CONTEXT_REF;
 
@@ -44,11 +44,11 @@ import se.inera.intyg.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.schemas.contract.util.HashUtility;
-import se.inera.intyg.webcert.integration.kundportalen.service.SubscriptionRestServiceImpl;
+import se.inera.intyg.webcert.integration.api.subscription.AuthenticationMethodEnum;
+import se.inera.intyg.webcert.integration.api.subscription.SubscriptionIntegrationService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionAction;
 import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionInfo;
-import se.inera.intyg.webcert.integration.kundportalen.enumerations.AuthenticationMethodEnum;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @Service
@@ -62,13 +62,13 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     @Value("${kundportalen.require.subscription.start.date}")
     private String requireSubscriptionStartDate;
 
-    private final SubscriptionRestServiceImpl subscriptionRestService;
+    private final SubscriptionIntegrationService subscriptionIntegrationService;
     private final FeaturesHelper featuresHelper;
     private final MonitoringLogService monitoringLogService;
 
-    public SubscriptionServiceImpl(SubscriptionRestServiceImpl subscriptionRestService,
+    public SubscriptionServiceImpl(SubscriptionIntegrationService subscriptionIntegrationService,
         FeaturesHelper featuresHelper, MonitoringLogService monitoringLogService) {
-        this.subscriptionRestService = subscriptionRestService;
+        this.subscriptionIntegrationService = subscriptionIntegrationService;
         this.featuresHelper = featuresHelper;
         this.monitoringLogService = monitoringLogService;
     }
@@ -104,8 +104,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     public boolean isUnregisteredElegUserMissingSubscription(String personId) {
         try {
             final var organizationNumber = createOrganizationNumberFromPersonId(personId);
+            final var hashedOrganizationNumber = hashed(organizationNumber);
             LOG.debug("Fetching subscription info for unregistered private practitioner with organization number {}.",
-                hashed(organizationNumber));
+                hashedOrganizationNumber);
             final var missingSubscription = isMissingSubscriptionUnregisteredElegUser(organizationNumber);
             monitorLogMissingSubscription(missingSubscription, personId, organizationNumber);
             return missingSubscription;
@@ -214,10 +215,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private List<String> getMissingSubscriptions(Map<String, List<String>> careProviderOrgNumbers, AuthenticationMethodEnum authMethod) {
         try {
-            return subscriptionRestService.getMissingSubscriptions(careProviderOrgNumbers, authMethod);
+            return subscriptionIntegrationService.getMissingSubscriptions(careProviderOrgNumbers, authMethod);
         } catch (Exception e) {
             final var careProviderHsaids = flatMapCollection(careProviderOrgNumbers.values());
-            LOG.error("Kundportalen subscription service call failure for care providers {}.", careProviderHsaids, e);
+            LOG.error("Subscription service call failure for care providers {}.", careProviderHsaids, e);
             monitorLogIfServiceCallFailure(careProviderHsaids, e);
             return Collections.emptyList();
         }
@@ -225,9 +226,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private boolean isMissingSubscriptionUnregisteredElegUser(String organizationNumber) {
         try {
-            return subscriptionRestService.isMissingSubscriptionUnregisteredElegUser(organizationNumber);
+            return subscriptionIntegrationService.isMissingSubscriptionUnregisteredElegUser(organizationNumber);
         } catch (Exception e) {
-            LOG.error("Kundportalen subscription service call failure for unregistered eleg user with org number {}.",
+            LOG.error("Subscription service call failure for unregistered eleg user with org number {}.",
                 hashed(organizationNumber), e);
             monitorLogIfServiceCallFailure(List.of(hashed(organizationNumber)), e);
             return false;

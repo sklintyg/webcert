@@ -16,16 +16,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.integration.kundportalen.service;
 
+package se.inera.intyg.webcert.integration.servicenow.dto;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.util.List;
-import java.util.Map;
-import se.inera.intyg.webcert.integration.kundportalen.enumerations.AuthenticationMethodEnum;
+import lombok.Builder;
+import lombok.Value;
+import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationRequest.OrganizationRequestBuilder;
 
-public interface SubscriptionRestService {
+@JsonDeserialize(builder = OrganizationRequestBuilder.class)
+@Value
+@Builder
+public class OrganizationRequest {
 
-    List<String> getMissingSubscriptions(Map<String, List<String>> organizationNumberHsaIdMap, AuthenticationMethodEnum authMethod);
+    String service;
+    List<String> customers;
 
-    boolean isMissingSubscriptionUnregisteredElegUser(String organizationNumber);
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class OrganizationRequestBuilder {
 
+    }
 }
