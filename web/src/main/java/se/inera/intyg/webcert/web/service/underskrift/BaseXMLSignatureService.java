@@ -61,20 +61,11 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
         Utkast utkast) {
         try {
             IntygXMLDSignature intygXmldSignature = (IntygXMLDSignature) biljett.getIntygSignature();
-
             applySignature(user, rawSignature, intygXmldSignature, biljett.getSignMethod());
-
-            // Store X509 in SignatureType
-            if (x509certificate != null && !x509certificate.isEmpty()) {
-                KeyInfoType keyInfoType = xmldSigService.buildKeyInfoForCertificate(x509certificate);
-                intygXmldSignature.getSignatureType().setKeyInfo(keyInfoType);
-            }
-
+            storeX509InSignatureType(x509certificate, intygXmldSignature);
             // This isn't strictly necessary...
             performBasicSignatureValidation(x509certificate, utkast, intygXmldSignature);
-
             String signatureXml = marshallSignatureToString(intygXmldSignature.getSignatureType());
-
             createAndPersistSignatureForXMLDSig(utkast, biljett, signatureXml, user);
 
             // If all good, change status of ticket
@@ -95,20 +86,28 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
 
             applySignature(user, rawSignature, intygXmldSignature, biljett.getSignMethod());
 
-            if (x509certificate != null && !x509certificate.isEmpty()) {
-                KeyInfoType keyInfoType = xmldSigService.buildKeyInfoForCertificate(x509certificate);
-                intygXmldSignature.getSignatureType().setKeyInfo(keyInfoType);
-            }
+            storeX509InSignatureType(x509certificate, intygXmldSignature);
 
             performBasicSignatureValidation(x509certificate, certificateXml, intygXmldSignature);
+
             String signatureXml = marshallSignatureToString(intygXmldSignature.getSignatureType());
+
             // TODO: Call CertificateService
+
             biljett.setStatus(SignaturStatus.SIGNERAD);
             return biljett;
         } catch (Throwable e) {
             // For ANY type of exception, update the ticket tracker and then rethrow.
             redisTicketTracker.updateStatus(biljett.getTicketId(), SignaturStatus.OKAND);
             throw e;
+        }
+    }
+
+    private void storeX509InSignatureType(String x509certificate, IntygXMLDSignature intygXmldSignature) {
+        // Store X509 in SignatureType
+        if (x509certificate != null && !x509certificate.isEmpty()) {
+            KeyInfoType keyInfoType = xmldSigService.buildKeyInfoForCertificate(x509certificate);
+            intygXmldSignature.getSignatureType().setKeyInfo(keyInfoType);
         }
     }
 
