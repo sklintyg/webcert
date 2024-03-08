@@ -49,11 +49,11 @@ public class SubscriptionRestClient {
     @Value("${servicenow.subscription.service.name}")
     private String serviceNowSubscriptionServiceName;
 
-    private final RestTemplate subscriptionServiceRestTemplate;
+    private final RestTemplate serviceNowRestTemplate;
 
     public OrganizationResponse getSubscriptionServiceResponse(Set<String> organizationNumbers) {
         final var httpEntity = getRequestEntity(organizationNumbers);
-        final var response = subscriptionServiceRestTemplate.exchange(serviceNowSubscriptionServiceUrl, HttpMethod.POST, httpEntity,
+        final var response = serviceNowRestTemplate.exchange(serviceNowSubscriptionServiceUrl, HttpMethod.POST, httpEntity,
             OrganizationResponse.class);
 
         if (response.getBody() == null) {

@@ -18,8 +18,6 @@
  */
 package se.inera.intyg.webcert.integration.servicenow.config;
 
-import static se.inera.intyg.webcert.integration.api.subscription.ServiceNowIntegrationConstants.SUBSCRIPTION_SERVICE_REST_TEMPLATE;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -43,6 +41,8 @@ public class ServiceNowIntegrationConfig {
 
     @Value("${servicenow.read.timeout}")
     private int readTimeout;
+
+    private static final String SUBSCRIPTION_SERVICE_REST_TEMPLATE = "serviceNowRestTemplate";
 
     @Bean(SUBSCRIPTION_SERVICE_REST_TEMPLATE)
     RestTemplate restTemplate() {

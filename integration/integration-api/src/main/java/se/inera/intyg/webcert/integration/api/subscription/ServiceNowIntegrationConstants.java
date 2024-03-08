@@ -26,6 +26,4 @@ import lombok.NoArgsConstructor;
 public class ServiceNowIntegrationConstants {
 
     public static final String SERVICENOW_INTEGRATION_PROFILE = "servicenow-integration";
-    public static final String SUBSCRIPTION_SERVICE_REST_TEMPLATE = "subscriptionServiceRestTemplate";
-
 }
