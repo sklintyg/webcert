@@ -26,6 +26,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
@@ -51,6 +52,7 @@ public class FakeSignatureApiController extends AbstractApiController {
     private static final String LAST_SAVED_DRAFT = "lastSavedDraft";
 
     @Autowired
+    @Qualifier("signatureAggregator")
     private UnderskriftService underskriftService;
 
     /**

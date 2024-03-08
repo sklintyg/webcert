@@ -17,44 +17,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.csintegration.aggregate;
+package se.inera.intyg.webcert.web.csintegration.certificate;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 
-@Service("signCertificateAggregator")
-public class SignCertificateAggregator implements UnderskriftService {
-
-    private final CertificateServiceProfile certificateServiceProfile;
-    private final UnderskriftService signCertificateFromWC;
-    private final UnderskriftService signCertificateFromCS;
-
-    public SignCertificateAggregator(CertificateServiceProfile certificateServiceProfile,
-        @Qualifier("signCertificateFromWC") UnderskriftService signCertificateFromWC,
-        @Qualifier("signCertificateFromCS") UnderskriftService signCertificateFromCS) {
-        this.certificateServiceProfile = certificateServiceProfile;
-        this.signCertificateFromWC = signCertificateFromWC;
-        this.signCertificateFromCS = signCertificateFromCS;
-    }
+@Service("signatureServiceForCS")
+public class SignatureServiceForCS implements UnderskriftService {
 
     @Override
     public SignaturBiljett startSigningProcess(String intygsId, String intygsTyp, long version, SignMethod signMethod, String ticketID,
         boolean isWc2ClientRequest) {
-        if (!certificateServiceProfile.active()) {
-            return signCertificateFromWC.startSigningProcess(intygsId, intygsTyp, version, signMethod,
-                ticketID, isWc2ClientRequest);
-        }
-
-        final var signaturBiljett = signCertificateFromCS.startSigningProcess(intygsId, intygsTyp, version, signMethod, ticketID,
-            isWc2ClientRequest);
-
-        return signaturBiljett != null ? signaturBiljett
-            : signCertificateFromWC.startSigningProcess(intygsId, intygsTyp, version, signMethod, ticketID,
-                isWc2ClientRequest);
+        return null;
     }
 
     @Override

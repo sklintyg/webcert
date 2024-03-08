@@ -42,6 +42,7 @@ import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpHeaders;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
@@ -80,6 +81,7 @@ public class SignatureApiController extends AbstractApiController {
     private ReactUriFactory reactUriFactory;
 
     @Autowired
+    @Qualifier("signatureAggregator")
     private UnderskriftService underskriftService;
 
     @Autowired
