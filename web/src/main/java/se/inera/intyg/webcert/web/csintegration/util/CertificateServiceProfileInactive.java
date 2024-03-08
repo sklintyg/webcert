@@ -26,13 +26,4 @@ import org.springframework.stereotype.Component;
 @Profile("!certificate-service-active")
 public class CertificateServiceProfileInactive implements CertificateServiceProfile {
 
-    @Override
-    public boolean active() {
-        return false;
-    }
-
-    @Override
-    public boolean activeAndSupportsType(String type) {
-        return false;
-    }
 }

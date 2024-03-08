@@ -47,7 +47,7 @@ public class XmlUnderskriftServiceImpl extends BaseXMLSignatureService implement
 
     @Override
     public SignaturBiljett skapaSigneringsBiljettMedDigest(String intygsId, String intygsTyp, long version, Optional<String> utkastJson,
-        SignMethod signMethod, String ticketId, boolean isWc2ClientRequest, Optional<String> certificateXml) {
+        SignMethod signMethod, String ticketId, boolean isWc2ClientRequest, String certificateXml) {
 
         String signatureAlgorithm;
         if (SignMethod.SIGN_SERVICE.equals(signMethod)) {
@@ -57,7 +57,7 @@ public class XmlUnderskriftServiceImpl extends BaseXMLSignatureService implement
         }
 
         IntygXMLDSignature intygSignature = prepareSignatureService
-            .prepareSignature(certificateXml.orElseThrow(), intygsId, signatureAlgorithm);
+            .prepareSignature(certificateXml, intygsId, signatureAlgorithm);
         intygSignature.setIntygJson(utkastJson.orElse(null));
 
         SignaturBiljett biljett = SignaturBiljett.SignaturBiljettBuilder

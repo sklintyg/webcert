@@ -134,13 +134,13 @@ public class UnderskriftServiceImpl implements UnderskriftService {
                 String registerCertificateXml = utkastModelToXMLConverter.utkastToXml(updatedJson, intygsTyp);
                 signaturBiljett = xmlUnderskriftService
                     .skapaSigneringsBiljettMedDigest(intygsId, intygsTyp, version, Optional.of(updatedJson), signMethod, ticketId,
-                        isWc2ClientRequest, Optional.of(registerCertificateXml));
+                        isWc2ClientRequest, registerCertificateXml);
                 break;
             case BANK_ID:
             case MOBILT_BANK_ID:
                 signaturBiljett = grpUnderskriftService
                     .skapaSigneringsBiljettMedDigest(intygsId, intygsTyp, version, Optional.of(updatedJson), signMethod, ticketId,
-                        isWc2ClientRequest, Optional.empty());
+                        isWc2ClientRequest, null);
                 break;
         }
 

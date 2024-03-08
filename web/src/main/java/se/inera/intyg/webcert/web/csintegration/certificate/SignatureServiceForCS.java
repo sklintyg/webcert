@@ -30,6 +30,8 @@ import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.xmldsig.XmlUnderskriftServiceImpl;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -39,6 +41,8 @@ public class SignatureServiceForCS implements UnderskriftService {
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
     private final XmlUnderskriftServiceImpl xmlUnderskriftService;
+    private final WebCertUserService webCertUserService;
+    private final FakeSignatureServiceCS fakeSignatureServiceCS;
 
 
     @Override
@@ -57,7 +61,7 @@ public class SignatureServiceForCS implements UnderskriftService {
 
         final var signatureTicket = xmlUnderskriftService.skapaSigneringsBiljettMedDigest(
             certificateId, certificateType, version, Optional.empty(),
-            signMethod, ticketID, isWc2ClientRequest, Optional.of(certificateXml)
+            signMethod, ticketID, isWc2ClientRequest, certificateXml
         );
 
         if (signatureTicket == null) {
@@ -69,7 +73,13 @@ public class SignatureServiceForCS implements UnderskriftService {
 
     @Override
     public SignaturBiljett fakeSignature(String intygsId, String intygsTyp, long version, String ticketId) {
-        return null;
+        WebCertUser user = webCertUserService.getUser();
+        final var certificateXml = csIntegrationService.getCertificateXml(
+            csIntegrationRequestFactory.getCertificateXmlRequest(new Certificate()),
+            intygsId
+        );
+
+        return fakeSignatureServiceCS.finalizeFakeSignature(ticketId, user, certificateXml);
     }
 
     @Override

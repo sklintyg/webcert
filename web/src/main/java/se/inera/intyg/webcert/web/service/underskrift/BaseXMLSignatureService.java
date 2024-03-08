@@ -88,20 +88,39 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
         }
     }
 
+    protected SignaturBiljett finalizeXMLDSigSignature(String x509certificate, WebCertUser user, SignaturBiljett biljett,
+        byte[] rawSignature, String certificateXml) {
+        try {
+            IntygXMLDSignature intygXmldSignature = (IntygXMLDSignature) biljett.getIntygSignature();
+
+            applySignature(user, rawSignature, intygXmldSignature, biljett.getSignMethod());
+
+            if (x509certificate != null && !x509certificate.isEmpty()) {
+                KeyInfoType keyInfoType = xmldSigService.buildKeyInfoForCertificate(x509certificate);
+                intygXmldSignature.getSignatureType().setKeyInfo(keyInfoType);
+            }
+
+            performBasicSignatureValidation(x509certificate, certificateXml, intygXmldSignature);
+            String signatureXml = marshallSignatureToString(intygXmldSignature.getSignatureType());
+            // TODO: Call CertificateService
+            biljett.setStatus(SignaturStatus.SIGNERAD);
+            return biljett;
+        } catch (Throwable e) {
+            // For ANY type of exception, update the ticket tracker and then rethrow.
+            redisTicketTracker.updateStatus(biljett.getTicketId(), SignaturStatus.OKAND);
+            throw e;
+        }
+    }
+
     private void performBasicSignatureValidation(String x509certificate, Utkast utkast, IntygXMLDSignature intygXmldSignature) {
-        // again, convert JSON to XML.
         String utkastXml = utkastModelToXMLConverter.utkastToXml(intygXmldSignature.getIntygJson(), utkast.getIntygsTyp());
+        performBasicSignatureValidation(x509certificate, utkastXml, intygXmldSignature);
+    }
 
-        // This is the base64 encoded
-        // <RegisterCertificate><intyg>...data...<Signature>...</Signature></intyg></<RegisterCertificate>>
-        // that we're storing.
+    private void performBasicSignatureValidation(String x509certificate, String certificateXml, IntygXMLDSignature intygXmldSignature) {
         String finalXml = prepareSignatureService.encodeSignatureIntoSignedXml(intygXmldSignature.getSignatureType(),
-            utkastXml);
-
-        // Only store if we received a certificate.
+            certificateXml);
         if (x509certificate != null && !x509certificate.isEmpty()) {
-
-            // Due to a bug with SAXON and the JDK DSIG validator, do NOT check references.
             boolean validationResult = xmldSigService.validateSignatureValidity(finalXml, false).isValid();
             if (!validationResult) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Signature is invalid.");

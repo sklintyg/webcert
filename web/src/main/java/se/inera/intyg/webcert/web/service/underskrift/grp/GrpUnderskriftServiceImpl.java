@@ -83,9 +83,11 @@ public class GrpUnderskriftServiceImpl extends BaseSignatureService implements C
 
     @Override
     public SignaturBiljett skapaSigneringsBiljettMedDigest(String intygsId, String intygsTyp, long version, Optional<String> intygJson,
-        SignMethod signMethod, String ticketId, boolean isWc2ClientRequest, Optional<String> certificateXml) {
+        SignMethod signMethod, String ticketId, boolean isWc2ClientRequest, String certificateXml) {
         final var jsonData = intygJson.orElse(null);
-        String hash = createHash(jsonData);
+        final var hash = intygJson.map(this::createHash)
+            .orElse(null);
+
         IntygGRPSignature intygGRPSignature = new IntygGRPSignature(jsonData, hash);
 
         SignaturBiljett biljett = SignaturBiljett.SignaturBiljettBuilder
