@@ -19,19 +19,12 @@
 
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
-import se.inera.intyg.webcert.web.service.facade.SignCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
 
 @ExtendWith(MockitoExtension.class)
 class SignCertificateAggregatorTest {
@@ -40,12 +33,11 @@ class SignCertificateAggregatorTest {
     @Mock
     private CertificateServiceProfile certificateServiceProfile;
     @Mock
-    private SignCertificateFacadeService signCertificateFacadeServiceWC;
+    private UnderskriftService signCertificateFacadeServiceWC;
     @Mock
-    private SignCertificateFacadeService signCertificateFacadeServiceCS;
-    private SignCertificateFacadeService signCertificateAggregator;
+    private UnderskriftService signCertificateFacadeServiceCS;
+    private UnderskriftService signCertificateAggregator;
 
-    private static final Certificate CERTIFICATE = new Certificate();
 
     @BeforeEach
     void setUp() {
@@ -54,45 +46,5 @@ class SignCertificateAggregatorTest {
             signCertificateFacadeServiceWC,
             signCertificateFacadeServiceCS
         );
-    }
-
-    @Test
-    void shallReturnSignedCertificateFromWcIfCertificateServiceProfileIsInactive() {
-        final var expectedCertificate = new Certificate();
-
-        doReturn(false).when(certificateServiceProfile).active();
-        doReturn(expectedCertificate).when(signCertificateFacadeServiceWC).signCertificate(CERTIFICATE);
-
-        final var actualCertificaite = signCertificateAggregator.signCertificate(CERTIFICATE);
-
-        verify(signCertificateFacadeServiceWC, times(1)).signCertificate(CERTIFICATE);
-        assertEquals(expectedCertificate, actualCertificaite);
-    }
-
-    @Test
-    void shallReturnSignedCertificateFromWcIfCertificateServiceProfileIsActiveButCertificateServiceReturnsNull() {
-        final var expectedCertificate = new Certificate();
-
-        doReturn(true).when(certificateServiceProfile).active();
-        doReturn(null).when(signCertificateFacadeServiceCS).signCertificate(CERTIFICATE);
-        doReturn(expectedCertificate).when(signCertificateFacadeServiceWC).signCertificate(CERTIFICATE);
-
-        final var actualCertificaite = signCertificateAggregator.signCertificate(CERTIFICATE);
-
-        verify(signCertificateFacadeServiceWC, times(1)).signCertificate(CERTIFICATE);
-        assertEquals(expectedCertificate, actualCertificaite);
-    }
-
-    @Test
-    void shallReturnSignedCertificateFromCSIfCertificateServiceProfileIsActiveAndCertificateServiceReturnsCertificate() {
-        final var expectedCertificate = new Certificate();
-
-        doReturn(true).when(certificateServiceProfile).active();
-        doReturn(expectedCertificate).when(signCertificateFacadeServiceCS).signCertificate(CERTIFICATE);
-
-        final var actualCertificaite = signCertificateAggregator.signCertificate(CERTIFICATE);
-
-        verify(signCertificateFacadeServiceWC, times(0)).signCertificate(CERTIFICATE);
-        assertEquals(expectedCertificate, actualCertificaite);
     }
 }

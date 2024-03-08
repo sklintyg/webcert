@@ -21,32 +21,59 @@ package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
-import se.inera.intyg.webcert.web.service.facade.SignCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
+import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
+import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 
 @Service("signCertificateAggregator")
-public class SignCertificateAggregator implements SignCertificateFacadeService {
+public class SignCertificateAggregator implements UnderskriftService {
 
     private final CertificateServiceProfile certificateServiceProfile;
-    private final SignCertificateFacadeService signCertificateFacadeServiceWC;
-    private final SignCertificateFacadeService signCertificateFacadeServiceCS;
+    private final UnderskriftService signCertificateFromWC;
+    private final UnderskriftService signCertificateFromCS;
 
     public SignCertificateAggregator(CertificateServiceProfile certificateServiceProfile,
-        @Qualifier("signCertificateFromWc") SignCertificateFacadeService signCertificateFacadeServiceWC,
-        @Qualifier("signCertificateFromCS") SignCertificateFacadeService signCertificateFacadeServiceCS) {
+        @Qualifier("signCertificateFromWC") UnderskriftService signCertificateFromWC,
+        @Qualifier("signCertificateFromCS") UnderskriftService signCertificateFromCS) {
         this.certificateServiceProfile = certificateServiceProfile;
-        this.signCertificateFacadeServiceWC = signCertificateFacadeServiceWC;
-        this.signCertificateFacadeServiceCS = signCertificateFacadeServiceCS;
+        this.signCertificateFromWC = signCertificateFromWC;
+        this.signCertificateFromCS = signCertificateFromCS;
     }
 
     @Override
-    public Certificate signCertificate(Certificate certificate) {
+    public SignaturBiljett startSigningProcess(String intygsId, String intygsTyp, long version, SignMethod signMethod, String ticketID,
+        boolean isWc2ClientRequest) {
         if (!certificateServiceProfile.active()) {
-            return signCertificateFacadeServiceWC.signCertificate(certificate);
+            return signCertificateFromWC.startSigningProcess(intygsId, intygsTyp, version, signMethod,
+                ticketID, isWc2ClientRequest);
         }
 
-        final var signedCertificate = signCertificateFacadeServiceCS.signCertificate(certificate);
-        return signedCertificate != null ? signedCertificate : signCertificateFacadeServiceWC.signCertificate(certificate);
+        final var signaturBiljett = signCertificateFromCS.startSigningProcess(intygsId, intygsTyp, version, signMethod, ticketID,
+            isWc2ClientRequest);
+
+        return signaturBiljett != null ? signaturBiljett
+            : signCertificateFromWC.startSigningProcess(intygsId, intygsTyp, version, signMethod, ticketID,
+                isWc2ClientRequest);
+    }
+
+    @Override
+    public SignaturBiljett fakeSignature(String intygsId, String intygsTyp, long version, String ticketId) {
+        return null;
+    }
+
+    @Override
+    public SignaturBiljett netidSignature(String biljettId, byte[] signatur, String certifikat) {
+        return null;
+    }
+
+    @Override
+    public SignaturBiljett grpSignature(String biljettId, byte[] signatur) {
+        return null;
+    }
+
+    @Override
+    public SignaturBiljett signeringsStatus(String ticketId) {
+        return null;
     }
 }

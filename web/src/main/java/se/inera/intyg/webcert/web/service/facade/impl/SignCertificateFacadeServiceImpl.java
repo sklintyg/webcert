@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.web.service.facade.impl;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
@@ -29,7 +29,7 @@ import se.inera.intyg.webcert.web.service.facade.SignCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 
-@Service("signCertificateFromWc")
+@Service
 public class SignCertificateFacadeServiceImpl implements SignCertificateFacadeService {
 
     private static final Logger LOG = LoggerFactory.getLogger(SignCertificateFacadeServiceImpl.class);
@@ -37,8 +37,7 @@ public class SignCertificateFacadeServiceImpl implements SignCertificateFacadeSe
     private final UnderskriftService underskriftService;
     private final GetCertificateFacadeService getCertificateFacadeService;
 
-    @Autowired
-    public SignCertificateFacadeServiceImpl(UnderskriftService underskriftService,
+    public SignCertificateFacadeServiceImpl(@Qualifier("signCertificateAggregator") UnderskriftService underskriftService,
         GetCertificateFacadeService getCertificateFacadeService) {
         this.underskriftService = underskriftService;
         this.getCertificateFacadeService = getCertificateFacadeService;

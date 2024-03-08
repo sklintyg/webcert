@@ -20,14 +20,36 @@
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import org.springframework.stereotype.Service;
-import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.webcert.web.service.facade.SignCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
+import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
+import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 
 @Service("signCertificateFromCS")
-public class SignCertificateFromCertificateService implements SignCertificateFacadeService {
+public class SignCertificateFromCertificateService implements UnderskriftService {
 
     @Override
-    public Certificate signCertificate(Certificate certificate) {
+    public SignaturBiljett startSigningProcess(String intygsId, String intygsTyp, long version, SignMethod signMethod, String ticketID,
+        boolean isWc2ClientRequest) {
+        return null;
+    }
+
+    @Override
+    public SignaturBiljett fakeSignature(String intygsId, String intygsTyp, long version, String ticketId) {
+        return null;
+    }
+
+    @Override
+    public SignaturBiljett netidSignature(String biljettId, byte[] signatur, String certifikat) {
+        return null;
+    }
+
+    @Override
+    public SignaturBiljett grpSignature(String biljettId, byte[] signatur) {
+        return null;
+    }
+
+    @Override
+    public SignaturBiljett signeringsStatus(String ticketId) {
         return null;
     }
 }
