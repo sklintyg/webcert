@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift;
 
+import java.util.Optional;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
@@ -25,8 +26,8 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 public interface CommonUnderskriftService {
 
-    SignaturBiljett skapaSigneringsBiljettMedDigest(String intygsId, String intygsTyp, long version, String intygJson,
-        SignMethod signMethod, String ticketId, boolean isWc2ClientRequest);
+    SignaturBiljett skapaSigneringsBiljettMedDigest(String intygsId, String intygsTyp, long version, Optional<String> intygJson,
+        SignMethod signMethod, String ticketId, boolean isWc2ClientRequest, Optional<String> certificateXml);
 
     SignaturBiljett finalizeSignature(SignaturBiljett biljett, byte[] signatur, String certifikat, Utkast utkast,
         WebCertUser user);

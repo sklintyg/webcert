@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.service.underskrift.xmldsig;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
@@ -39,18 +40,14 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 public class XmlUnderskriftServiceImpl extends BaseXMLSignatureService implements CommonUnderskriftService {
 
     @Autowired
-    private UtkastModelToXMLConverter utkastModelToXMLConverter;
-
-    @Autowired
     private PrepareSignatureService prepareSignatureService;
 
     @Autowired
     private MonitoringLogService monitoringLogService;
 
     @Override
-    public SignaturBiljett skapaSigneringsBiljettMedDigest(String intygsId, String intygsTyp, long version, String utkastJson,
-        SignMethod signMethod, String ticketId, boolean isWc2ClientRequest) {
-        String registerCertificateXml = utkastModelToXMLConverter.utkastToXml(utkastJson, intygsTyp);
+    public SignaturBiljett skapaSigneringsBiljettMedDigest(String intygsId, String intygsTyp, long version, Optional<String> utkastJson,
+        SignMethod signMethod, String ticketId, boolean isWc2ClientRequest, Optional<String> certificateXml) {
 
         String signatureAlgorithm;
         if (SignMethod.SIGN_SERVICE.equals(signMethod)) {
@@ -60,8 +57,8 @@ public class XmlUnderskriftServiceImpl extends BaseXMLSignatureService implement
         }
 
         IntygXMLDSignature intygSignature = prepareSignatureService
-            .prepareSignature(registerCertificateXml, intygsId, signatureAlgorithm);
-        intygSignature.setIntygJson(utkastJson);
+            .prepareSignature(certificateXml.orElseThrow(), intygsId, signatureAlgorithm);
+        intygSignature.setIntygJson(utkastJson.orElse(null));
 
         SignaturBiljett biljett = SignaturBiljett.SignaturBiljettBuilder
             .aSignaturBiljett(ticketId, SignaturTyp.XMLDSIG, signMethod)

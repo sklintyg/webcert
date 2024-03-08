@@ -195,8 +195,9 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
             .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", vardperson,
                 ENHET_ID, PERSON_ID)));
 
-        when(xmlUnderskriftService.skapaSigneringsBiljettMedDigest(anyString(), anyString(), anyLong(), anyString(), any(SignMethod.class),
-            anyString(), any(Boolean.class)))
+        when(xmlUnderskriftService.skapaSigneringsBiljettMedDigest(anyString(), anyString(), anyLong(), Optional.of(anyString()),
+            any(SignMethod.class),
+            anyString(), any(Boolean.class), any()))
             .thenReturn(createSignaturBiljett(SignaturStatus.BEARBETAR));
 
         when(draftModelToXMLValidator.validateDraftModelAsXml(any())).thenReturn(ValidateXmlResponse.createValidResponse());
@@ -238,8 +239,8 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
             .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, doiTyp, UtkastStatus.DRAFT_COMPLETE, "model", vardperson,
                 ENHET_ID, PERSON_ID, ersattandeIntygSkapad)));
 
-        when(xmlUnderskriftService.skapaSigneringsBiljettMedDigest(anyString(), anyString(), anyLong(), anyString(), any(SignMethod.class),
-            anyString(), any(Boolean.class)))
+        when(xmlUnderskriftService.skapaSigneringsBiljettMedDigest(anyString(), anyString(), anyLong(), any(), any(SignMethod.class),
+            anyString(), any(Boolean.class), any()))
             .thenReturn(createSignaturBiljett(SignaturStatus.BEARBETAR));
 
         when(utkastService.checkIfPersonHasExistingIntyg(any(), any(), any())).thenReturn(ImmutableMap.of(

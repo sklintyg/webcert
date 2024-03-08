@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.service.underskrift;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import javax.persistence.OptimisticLockException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +53,7 @@ import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
 import se.inera.intyg.webcert.web.service.underskrift.validator.DraftModelToXmlValidator;
+import se.inera.intyg.webcert.web.service.underskrift.xmldsig.UtkastModelToXMLConverter;
 import se.inera.intyg.webcert.web.service.underskrift.xmldsig.XmlUnderskriftServiceImpl;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -107,6 +109,9 @@ public class UnderskriftServiceImpl implements UnderskriftService {
     @Autowired
     private DraftModelToXmlValidator draftModelToXMLValidator;
 
+    @Autowired
+    private UtkastModelToXMLConverter utkastModelToXMLConverter;
+
     @Override
     public SignaturBiljett startSigningProcess(String intygsId, String intygsTyp, long version, SignMethod signMethod,
         String ticketId, boolean isWc2ClientRequest) {
@@ -126,13 +131,16 @@ public class UnderskriftServiceImpl implements UnderskriftService {
             case SITHS:
             case NET_ID:
             case FAKE:
+                String registerCertificateXml = utkastModelToXMLConverter.utkastToXml(updatedJson, intygsTyp);
                 signaturBiljett = xmlUnderskriftService
-                    .skapaSigneringsBiljettMedDigest(intygsId, intygsTyp, version, updatedJson, signMethod, ticketId, isWc2ClientRequest);
+                    .skapaSigneringsBiljettMedDigest(intygsId, intygsTyp, version, Optional.of(updatedJson), signMethod, ticketId,
+                        isWc2ClientRequest, Optional.of(registerCertificateXml));
                 break;
             case BANK_ID:
             case MOBILT_BANK_ID:
                 signaturBiljett = grpUnderskriftService
-                    .skapaSigneringsBiljettMedDigest(intygsId, intygsTyp, version, updatedJson, signMethod, ticketId, isWc2ClientRequest);
+                    .skapaSigneringsBiljettMedDigest(intygsId, intygsTyp, version, Optional.of(updatedJson), signMethod, ticketId,
+                        isWc2ClientRequest, Optional.empty());
                 break;
         }
 

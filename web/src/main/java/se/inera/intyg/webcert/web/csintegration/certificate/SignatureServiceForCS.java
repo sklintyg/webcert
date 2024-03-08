@@ -19,13 +19,17 @@
 
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
+import se.inera.intyg.webcert.web.service.underskrift.xmldsig.XmlUnderskriftServiceImpl;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -33,6 +37,9 @@ import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 public class SignatureServiceForCS implements UnderskriftService {
 
     private final CSIntegrationService csIntegrationService;
+    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+    private final XmlUnderskriftServiceImpl xmlUnderskriftService;
+
 
     @Override
     public SignaturBiljett startSigningProcess(String intygsId, String intygsTyp, long version, SignMethod signMethod, String ticketID,
@@ -43,9 +50,20 @@ public class SignatureServiceForCS implements UnderskriftService {
             return null;
         }
 
-        // hämta XML från certificate service
+        final var certificateXml = csIntegrationService.getCertificateXml(
+            csIntegrationRequestFactory.getCertificateXmlRequest(new Certificate()),
+            intygsId
+        );
 
-        return null;
+        final var signatureTicket = xmlUnderskriftService.skapaSigneringsBiljettMedDigest(intygsId, intygsTyp, version, Optional.empty(),
+            signMethod, ticketID,
+            isWc2ClientRequest, Optional.of(certificateXml));
+
+        if (signatureTicket == null) {
+            throw new IllegalStateException("Unhandled authentication method, could not create SignaturBiljett");
+        }
+        
+        return signatureTicket;
     }
 
     @Override

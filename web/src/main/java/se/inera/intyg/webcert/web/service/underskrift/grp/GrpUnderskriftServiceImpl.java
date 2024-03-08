@@ -82,11 +82,11 @@ public class GrpUnderskriftServiceImpl extends BaseSignatureService implements C
     private GrpCollectPollerFactory grpCollectPollerFactory;
 
     @Override
-    public SignaturBiljett skapaSigneringsBiljettMedDigest(String intygsId, String intygsTyp, long version, String intygJson,
-        SignMethod signMethod, String ticketId, boolean isWc2ClientRequest) {
-        String hash = createHash(intygJson);
-
-        IntygGRPSignature intygGRPSignature = new IntygGRPSignature(intygJson, hash);
+    public SignaturBiljett skapaSigneringsBiljettMedDigest(String intygsId, String intygsTyp, long version, Optional<String> intygJson,
+        SignMethod signMethod, String ticketId, boolean isWc2ClientRequest, Optional<String> certificateXml) {
+        final var jsonData = intygJson.orElse(null);
+        String hash = createHash(jsonData);
+        IntygGRPSignature intygGRPSignature = new IntygGRPSignature(jsonData, hash);
 
         SignaturBiljett biljett = SignaturBiljett.SignaturBiljettBuilder
             .aSignaturBiljett(UUID.randomUUID().toString(), SignaturTyp.PKCS7, signMethod)
