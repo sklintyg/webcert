@@ -1,12 +1,12 @@
 @CHARSET "UTF-8";
 
 @import "mixins/wc-variables";
-@import "mixins/bootstrap-variables-override";
 // Bootstrap override variables must be loaded before bootstrap due to its !default flags
-@import '../bower_components/bootstrap-sass/assets/stylesheets/bootstrap.scss';
+@import "mixins/bootstrap-variables-override";
 // Load bootstrap defaults
-@import "mixins/bootstrap-css-override";
+@import '../bower_components/bootstrap-sass/assets/stylesheets/bootstrap.scss';
 // CSS Override only, no bootstrap variables
+@import "mixins/bootstrap-css-override";
 @import "mixins/fonts";
 
 [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
