@@ -16,32 +16,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package se.inera.intyg.webcert.web.csintegration.user;
 
-package se.inera.intyg.webcert.web.csintegration.unit;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitDTO.CertificateServiceUnitDTOBuilder;
+import se.inera.intyg.webcert.web.csintegration.user.PaTitleDTO.PaTitleDTOBuilder;
 
-@JsonDeserialize(builder = CertificateServiceUnitDTOBuilder.class)
+@JsonDeserialize(builder = PaTitleDTOBuilder.class)
 @Value
 @Builder
-public class CertificateServiceUnitDTO {
+public class PaTitleDTO {
 
-    String id;
-    String name;
-    String address;
-    String zipCode;
-    String city;
-    String phoneNumber;
-    String email;
-    String workplaceCode;
-    Boolean inactive;
+    String code;
+    String description;
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class CertificateServiceUnitDTOBuilder {
+    public static class PaTitleDTOBuilder {
 
     }
 }

@@ -37,6 +37,7 @@ class CertificateServiceVardenhetConverterTest {
     private static final String EXPECTED_CITY = "expectedCity";
     private static final String EXPECTED_PHONE_NUMBER = "expectedPhoneNumber";
     private static final String EXPECTED_MAIL = "expectedMail";
+    private static final String EXPECTED_WORKPLACE_CODE = "expectedWorkplaceCode";
     private CertificateServiceVardenhetConverter certificateServiceVardenhetConverter;
     private Vardenhet unit;
 
@@ -51,6 +52,7 @@ class CertificateServiceVardenhetConverterTest {
         unit.setEpost(EXPECTED_MAIL);
         unit.setPostort(EXPECTED_CITY);
         unit.setTelefonnummer(EXPECTED_PHONE_NUMBER);
+        unit.setArbetsplatskod(EXPECTED_WORKPLACE_CODE);
     }
 
     @Test
@@ -93,6 +95,12 @@ class CertificateServiceVardenhetConverterTest {
     void shallConvertEmail() {
         final var unit = certificateServiceVardenhetConverter.convert(this.unit);
         assertEquals(EXPECTED_MAIL, unit.getEmail());
+    }
+
+    @Test
+    void shallConvertWorkplaceCode() {
+        final var unit = certificateServiceVardenhetConverter.convert(this.unit);
+        assertEquals(EXPECTED_WORKPLACE_CODE, unit.getWorkplaceCode());
     }
 
     @Test
