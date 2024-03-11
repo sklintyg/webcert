@@ -39,6 +39,7 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEn
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.web.csintegration.certificate.SignCertificateService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
@@ -52,6 +53,9 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
 
     @Autowired
     private PrepareSignatureService prepareSignatureService;
+
+    @Autowired
+    private SignCertificateService signCertificateService;
 
     @Autowired
     private XMLDSigService xmldSigService;
@@ -91,10 +95,7 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
             performBasicSignatureValidation(x509certificate, certificateXml, intygXmldSignature);
 
             String signatureXml = marshallSignatureToString(intygXmldSignature.getSignatureType());
-
-            // TODO: Call CertificateService
-            biljett.setStatus(SignaturStatus.SIGNERAD);
-            return biljett;
+            return signCertificateService.sign(biljett, certificateXml, signatureXml);
         } catch (Throwable e) {
             // For ANY type of exception, update the ticket tracker and then rethrow.
             redisTicketTracker.updateStatus(biljett.getTicketId(), SignaturStatus.OKAND);
@@ -172,7 +173,7 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
         TransformAndDigestResponse transformAndDigestResponse = prepareSignatureService
             .transformAndGenerateDigest(utkastXml, biljett.getIntygsId());
 
-        checkDigests(utkast, signingXmlHash, new String(transformAndDigestResponse.getDigest(), StandardCharsets.UTF_8));
+        checkDigests(utkast.getIntygsId(), signingXmlHash, new String(transformAndDigestResponse.getDigest(), StandardCharsets.UTF_8));
         checkVersion(utkast, biljett);
 
         // For WC 6.1, we want to store the following:

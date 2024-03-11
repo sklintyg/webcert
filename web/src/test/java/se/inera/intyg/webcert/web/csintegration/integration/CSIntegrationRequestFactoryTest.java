@@ -543,8 +543,6 @@ class CSIntegrationRequestFactoryTest {
                 .thenReturn(CARE_UNIT);
             when(certificateServiceUnitHelper.getCareProvider())
                 .thenReturn(CARE_PROVIDER);
-            when(certificateServicePatientHelper.get(PERSONNUMMER))
-                .thenReturn(PATIENT);
         }
 
         @Test
@@ -570,11 +568,67 @@ class CSIntegrationRequestFactoryTest {
             final var actualRequest = csIntegrationRequestFactory.getCertificateXmlRequest();
             assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
         }
+    }
+
+    @Nested
+    class SignCertificateRequest {
+
+        private static final String CERTIFICATE_XML = "certificateXml";
+        private static final String SIGNATURE_XML = "signatureXml";
+        private static final long VERSION = 1L;
+
+        @BeforeEach
+        void setup() {
+            when(certificateServiceUserHelper.get())
+                .thenReturn(USER);
+            when(certificateServiceUnitHelper.getUnit())
+                .thenReturn(UNIT);
+            when(certificateServiceUnitHelper.getCareUnit())
+                .thenReturn(CARE_UNIT);
+            when(certificateServiceUnitHelper.getCareProvider())
+                .thenReturn(CARE_PROVIDER);
+        }
 
         @Test
-        void shouldSetPatient() {
-            final var actualRequest = csIntegrationRequestFactory.getCertificateXmlRequest();
-            assertEquals(PATIENT, actualRequest.getPatient());
+        void shouldSetUser() {
+            final var actualRequest = csIntegrationRequestFactory.signCertificateRequest(CERTIFICATE_XML, SIGNATURE_XML, VERSION);
+            assertEquals(USER, actualRequest.getUser());
+        }
+
+        @Test
+        void shouldSetUnit() {
+            final var actualRequest = csIntegrationRequestFactory.signCertificateRequest(CERTIFICATE_XML, SIGNATURE_XML, VERSION);
+            assertEquals(UNIT, actualRequest.getUnit());
+        }
+
+        @Test
+        void shouldSetCareUnit() {
+            final var actualRequest = csIntegrationRequestFactory.signCertificateRequest(CERTIFICATE_XML, SIGNATURE_XML, VERSION);
+            assertEquals(CARE_UNIT, actualRequest.getCareUnit());
+        }
+
+        @Test
+        void shouldSetCareProvider() {
+            final var actualRequest = csIntegrationRequestFactory.signCertificateRequest(CERTIFICATE_XML, SIGNATURE_XML, VERSION);
+            assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
+        }
+
+        @Test
+        void shouldSetCertificateXml() {
+            final var actualRequest = csIntegrationRequestFactory.signCertificateRequest(CERTIFICATE_XML, SIGNATURE_XML, VERSION);
+            assertEquals(CERTIFICATE_XML, actualRequest.getCertificateXml());
+        }
+
+        @Test
+        void shouldSetSignatureXml() {
+            final var actualRequest = csIntegrationRequestFactory.signCertificateRequest(CERTIFICATE_XML, SIGNATURE_XML, VERSION);
+            assertEquals(SIGNATURE_XML, actualRequest.getSignatureXml());
+        }
+
+        @Test
+        void shouldSetVersion() {
+            final var actualRequest = csIntegrationRequestFactory.signCertificateRequest(CERTIFICATE_XML, SIGNATURE_XML, VERSION);
+            assertEquals(VERSION, actualRequest.getVersion());
         }
     }
 }

@@ -42,7 +42,9 @@ public class SignatureServiceForCS implements UnderskriftService {
     @Override
     public SignaturBiljett startSigningProcess(String certificateId, String certificateType, long version, SignMethod signMethod,
         String ticketID, boolean isWc2ClientRequest) {
-        if (certificateNotPresentInCertificateService(certificateId)) {
+        final var exists = csIntegrationService.certificateExists(certificateId);
+        if (Boolean.FALSE.equals(exists)) {
+            log.debug("Certificate with id '{}' does not exist in certificate service", certificateId);
             return null;
         }
 
@@ -57,7 +59,9 @@ public class SignatureServiceForCS implements UnderskriftService {
 
     @Override
     public SignaturBiljett fakeSignature(String certificateId, String certificateType, long version, String ticketId) {
-        if (certificateNotPresentInCertificateService(certificateId)) {
+        final var exists = csIntegrationService.certificateExists(certificateId);
+        if (Boolean.FALSE.equals(exists)) {
+            log.debug("Certificate with id '{}' does not exist in certificate service", certificateId);
             return null;
         }
 
@@ -83,14 +87,5 @@ public class SignatureServiceForCS implements UnderskriftService {
     @Override
     public SignaturBiljett signeringsStatus(String ticketId) {
         return null;
-    }
-
-    private boolean certificateNotPresentInCertificateService(String certificateId) {
-        final var exists = csIntegrationService.certificateExists(certificateId);
-        if (Boolean.FALSE.equals(exists)) {
-            log.debug("Certificate with id '{}' does not exist in certificate service", certificateId);
-            return true;
-        }
-        return false;
     }
 }
