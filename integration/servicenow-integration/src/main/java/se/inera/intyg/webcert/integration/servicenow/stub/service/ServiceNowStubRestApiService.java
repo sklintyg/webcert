@@ -43,11 +43,11 @@ public class ServiceNowStubRestApiService {
         } else if (stubState.getHttpErrorCode() != 0) {
             return responseWithErrorStatusCode(stubState.getHttpErrorCode());
         } else {
-            return getSubscriptionInfo(request.getCustomers());
+            return getSubscriptions(request.getCustomers());
         }
     }
 
-    private Response getSubscriptionInfo(List<String> organizationNumbers) {
+    private Response getSubscriptions(List<String> organizationNumbers) {
         final var activeSubscriptions = stubState.getActiveSubscriptions();
         final var organizations = new ArrayList<Organization>();
 

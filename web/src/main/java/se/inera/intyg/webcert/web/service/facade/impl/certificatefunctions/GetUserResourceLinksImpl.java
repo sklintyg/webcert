@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions;
 
 import java.util.ArrayList;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
@@ -30,10 +29,6 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
 @Service
 public class GetUserResourceLinksImpl implements GetUserResourceLinks {
-
-    @Autowired
-    public GetUserResourceLinksImpl() {
-    }
 
     @Override
     public ResourceLinkDTO[] get(WebCertUser user) {

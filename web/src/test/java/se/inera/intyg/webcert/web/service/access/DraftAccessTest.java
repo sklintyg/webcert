@@ -127,7 +127,7 @@ abstract public class DraftAccessTest extends AccessTest {
         doReturn(vardgivarId).when(selectedVardgivare).getId();
         doReturn(selectedVardenhet).when(user).getValdVardenhet();
         doReturn(enhetsId).when(selectedVardenhet).getId();
-        doReturn(new SubscriptionInfo("date1", "date2")).when(user).getSubscriptionInfo();
+        doReturn(new SubscriptionInfo()).when(user).getSubscriptionInfo();
 
         assertAllowToCreateUtkastOnSameCareProviderWhenUtkastSameVGExists(accessService.allowToCreateDraft(
             AccessEvaluationParameters.create(intygsTyp, PERSONNUMMER)
@@ -153,7 +153,7 @@ abstract public class DraftAccessTest extends AccessTest {
         doReturn(vardgivarId).when(selectedVardgivare).getId();
         doReturn(selectedVardenhet).when(user).getValdVardenhet();
         doReturn(enhetsId).when(selectedVardenhet).getId();
-        doReturn(new SubscriptionInfo("date1", "date2")).when(user).getSubscriptionInfo();
+        doReturn(new SubscriptionInfo()).when(user).getSubscriptionInfo();
 
         assertAllowToCreateUtkastOnDifferentCareProviderWhenIntygSameVGExists(accessService.allowToCreateDraft(
             AccessEvaluationParameters.create(intygsTyp, PERSONNUMMER)
@@ -179,7 +179,7 @@ abstract public class DraftAccessTest extends AccessTest {
         doReturn(vardgivarId).when(selectedVardgivare).getId();
         doReturn(selectedVardenhet).when(user).getValdVardenhet();
         doReturn(enhetsId).when(selectedVardenhet).getId();
-        doReturn(new SubscriptionInfo("date1", "date2")).when(user).getSubscriptionInfo();
+        doReturn(new SubscriptionInfo()).when(user).getSubscriptionInfo();
 
         assertAllowToCreateUtkastOnSameCareProviderWhenIntygExists(accessService.allowToCreateDraft(
             AccessEvaluationParameters.create(intygsTyp, PERSONNUMMER)

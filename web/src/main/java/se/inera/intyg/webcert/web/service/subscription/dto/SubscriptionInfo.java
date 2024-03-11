@@ -22,7 +22,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 public class SubscriptionInfo implements Serializable {
 
     @JsonProperty
@@ -34,63 +38,12 @@ public class SubscriptionInfo implements Serializable {
     @JsonProperty
     private List<String> careProvidersMissingSubscription;
 
-    @JsonProperty
-    private String subscriptionAdaptationStartDate;
-
-    @JsonProperty
-    private String requireSubscriptionStartDate;
-
     private static final long serialVersionUID = -1586500199315227249L;
 
     public SubscriptionInfo() {
-        this("", "");
-    }
-
-    public SubscriptionInfo(String subscriptionAdaptationStartDate, String requireSubscriptionStartDate) {
-        this.subscriptionAdaptationStartDate = subscriptionAdaptationStartDate;
-        this.requireSubscriptionStartDate = requireSubscriptionStartDate;
         this.subscriptionAction = SubscriptionAction.NONE;
         this.careProvidersForSubscriptionModal = Collections.emptyList();
         this.careProvidersMissingSubscription = Collections.emptyList();
     }
 
-    public SubscriptionAction getSubscriptionAction() {
-        return subscriptionAction;
-    }
-
-    public void setSubscriptionAction(SubscriptionAction subscriptionAction) {
-        this.subscriptionAction = subscriptionAction;
-    }
-
-    public List<String> getCareProvidersForSubscriptionModal() {
-        return careProvidersForSubscriptionModal;
-    }
-
-    public void setCareProvidersForSubscriptionModal(List<String> careProvidersForSubscriptionModal) {
-        this.careProvidersForSubscriptionModal = careProvidersForSubscriptionModal;
-    }
-
-    public List<String> getCareProvidersMissingSubscription() {
-        return careProvidersMissingSubscription;
-    }
-
-    public void setCareProvidersMissingSubscription(List<String> careProvidersMissingSubscription) {
-        this.careProvidersMissingSubscription = careProvidersMissingSubscription;
-    }
-
-    public String getSubscriptionAdaptationStartDate() {
-        return subscriptionAdaptationStartDate;
-    }
-
-    public void setSubscriptionAdaptationStartDate(String subscriptionAdaptationStartDate) {
-        this.subscriptionAdaptationStartDate = subscriptionAdaptationStartDate;
-    }
-
-    public String getRequireSubscriptionStartDate() {
-        return requireSubscriptionStartDate;
-    }
-
-    public void setRequireSubscriptionStartDate(String requireSubscriptionStartDate) {
-        this.requireSubscriptionStartDate = requireSubscriptionStartDate;
-    }
 }

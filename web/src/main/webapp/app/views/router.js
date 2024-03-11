@@ -137,14 +137,6 @@ angular.module('webcert').config(function($stateProvider, $urlRouterProvider, $h
         controller: 'webcert.TermsCtrl'
       }
     }
-  }).state('webcert.subscription', {
-    url: '/subscription',
-    views: {
-      'dialogs@webcert': {
-        templateUrl: '/app/views/subscription/subscription.main.html',
-        controller: 'webcert.SubscriptionCtrl'
-      }
-    }
   }).state('webcert.missingSubscription', {
     url: '/noSubscription',
     views: {
