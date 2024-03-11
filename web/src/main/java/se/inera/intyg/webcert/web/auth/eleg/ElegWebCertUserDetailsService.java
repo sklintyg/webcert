@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.auth.eleg;
 
-import static se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerResultCode.NOT_AUTHORIZED_IN_HOSP;
 import static se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerResultCode.NO_ACCOUNT;
 import static se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerResultCode.OK;
 
@@ -53,8 +52,8 @@ import se.inera.intyg.webcert.integration.pp.services.PPRestService;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.webcert.web.auth.common.BaseWebCertUserDetailsService;
-import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerAuthorizationException;
 import se.inera.intyg.webcert.web.auth.exceptions.MissingSubscriptionException;
+import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerAuthorizationException;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 import se.inera.intyg.webcert.web.service.subscription.SubscriptionService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -136,27 +135,6 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
     }
 
     private void redirectUnregisteredUsers(String personId, ValidatePrivatePractitionerResultCode ppAuthStatus) {
-
-        if (!subscriptionService.isAnySubscriptionFeatureActive()) {
-            redirectWhenNoActiveSubscriptionFeatures(personId, ppAuthStatus);
-            return;
-        }
-        if (subscriptionService.isSubscriptionAdaptation()) {
-            redirectWhenActiveSubscriptionFeatures(personId, ppAuthStatus);
-            return;
-        }
-        if (subscriptionService.isSubscriptionRequired()) {
-            redirectWhenActiveSubscriptionFeatures(personId, ppAuthStatus);
-        }
-    }
-
-    private void redirectWhenNoActiveSubscriptionFeatures(String personId, ValidatePrivatePractitionerResultCode ppAuthStatus) {
-        if (ppAuthStatus == NO_ACCOUNT) {
-            throw privatePractitionerAuthorizationException(hashed(personId));
-        }
-    }
-
-    private void redirectWhenActiveSubscriptionFeatures(String personId, ValidatePrivatePractitionerResultCode ppAuthStatus) {
         if (ppAuthStatus == NO_ACCOUNT) {
             final var hasSubscription = !subscriptionService.isUnregisteredElegUserMissingSubscription(personId);
             if (hasSubscription) {
@@ -167,41 +145,6 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
     }
 
     private void assertWebCertUserIsAuthorized(WebCertUser webCertUser, ValidatePrivatePractitionerResultCode ppAuthStatus) {
-
-        if (!subscriptionService.isAnySubscriptionFeatureActive()) {
-            authorizeWhenNoActiveSubscriptionFeatures(webCertUser, ppAuthStatus);
-            return;
-        }
-        if (subscriptionService.isSubscriptionAdaptation()) {
-            authorizeWhenSubscriptionAdaptation(webCertUser, ppAuthStatus);
-            return;
-        }
-        if (subscriptionService.isSubscriptionRequired()) {
-            authorizeWhenSubscriptionRequired(webCertUser, ppAuthStatus);
-        }
-    }
-
-    private void authorizeWhenNoActiveSubscriptionFeatures(WebCertUser webCertUser, ValidatePrivatePractitionerResultCode ppAuthStatus) {
-        if (ppAuthStatus == OK) {
-            return;
-        }
-        throw privatePractitionerAuthorizationException(webCertUser.getHsaId());
-    }
-
-    private void authorizeWhenSubscriptionAdaptation(WebCertUser webCertUser, ValidatePrivatePractitionerResultCode ppAuthStatus) {
-        final var hasSubscription = subscriptionService.checkSubscriptions(webCertUser);
-        final var acceptedTerms = avtalService.userHasApprovedLatestAvtal(webCertUser.getHsaId());
-
-        if (ppAuthStatus == OK && (acceptedTerms || hasSubscription)) {
-            return;
-        }
-        if (ppAuthStatus == NOT_AUTHORIZED_IN_HOSP && (acceptedTerms || hasSubscription)) {
-            throw privatePractitionerAuthorizationException(webCertUser.getHsaId());
-        }
-        throw missingSubscriptionException(webCertUser.getHsaId());
-    }
-
-    private void authorizeWhenSubscriptionRequired(WebCertUser webCertUser, ValidatePrivatePractitionerResultCode ppAuthStatus) {
         final var hasSubscription = subscriptionService.checkSubscriptions(webCertUser);
 
         if (ppAuthStatus == OK) {
@@ -277,14 +220,12 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         decorateWebCertUserWithDefaultVardenhet(user);
         decorateWebcertUserWithSekretessMarkering(user, hosPerson);
         decorateWebcertUserWithAnvandarPreferenser(user);
-        decorateWebcertUserWithUserTermsApprovedOrSubscriptionInUse(hosPerson, user);
+        decorateWebcertUserWithUserTermsApprovedOrSubscriptionInUse(user);
         return user;
     }
 
-    private void decorateWebcertUserWithUserTermsApprovedOrSubscriptionInUse(HoSPersonType hosPerson, WebCertUser user) {
-        final var userTermsApprovedOrSubscriptionInUse = subscriptionService.isAnySubscriptionFeatureActive()
-            || avtalService.userHasApprovedLatestAvtal(hosPerson.getHsaId().getExtension());
-        user.setUserTermsApprovedOrSubscriptionInUse(userTermsApprovedOrSubscriptionInUse);
+    private void decorateWebcertUserWithUserTermsApprovedOrSubscriptionInUse(WebCertUser user) {
+        user.setUserTermsApprovedOrSubscriptionInUse(true);
     }
 
     private void decorateWebcertUserWithAnvandarPreferenser(WebCertUser user) {

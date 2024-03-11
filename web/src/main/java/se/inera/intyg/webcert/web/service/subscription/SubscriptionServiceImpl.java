@@ -18,8 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.subscription;
 
-import static se.inera.intyg.infra.security.common.model.AuthoritiesConstants.FEATURE_SUBSCRIPTION_ADAPTATION_PERIOD;
-import static se.inera.intyg.infra.security.common.model.AuthoritiesConstants.FEATURE_SUBSCRIPTION_REQUIRED;
 import static se.inera.intyg.webcert.integration.api.subscription.AuthenticationMethodEnum.ELEG;
 import static se.inera.intyg.webcert.integration.api.subscription.AuthenticationMethodEnum.SITHS;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.ELEG_AUTHN_CLASSES;
@@ -35,12 +33,10 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
-import se.inera.intyg.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.schemas.contract.util.HashUtility;
@@ -48,7 +44,6 @@ import se.inera.intyg.webcert.integration.api.subscription.AuthenticationMethodE
 import se.inera.intyg.webcert.integration.api.subscription.SubscriptionIntegrationService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionAction;
-import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionInfo;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @Service
@@ -56,28 +51,19 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private static final Logger LOG = LoggerFactory.getLogger(SubscriptionServiceImpl.class);
 
-    @Value("${kundportalen.subscription.adaptation.start.date}")
-    private String subscriptionAdaptationStartDate;
-
-    @Value("${kundportalen.require.subscription.start.date}")
-    private String requireSubscriptionStartDate;
-
     private final SubscriptionIntegrationService subscriptionIntegrationService;
-    private final FeaturesHelper featuresHelper;
     private final MonitoringLogService monitoringLogService;
 
     public SubscriptionServiceImpl(SubscriptionIntegrationService subscriptionIntegrationService,
-        FeaturesHelper featuresHelper, MonitoringLogService monitoringLogService) {
+        MonitoringLogService monitoringLogService) {
         this.subscriptionIntegrationService = subscriptionIntegrationService;
-        this.featuresHelper = featuresHelper;
         this.monitoringLogService = monitoringLogService;
     }
 
     @Override
     public boolean checkSubscriptions(WebCertUser webCertUser) {
-        setSubscriptionInfo(webCertUser);
 
-        if (!isFristaendeWebcertUser(webCertUser) || !isAnySubscriptionFeatureActive()) {
+        if (!isFristaendeWebcertUser(webCertUser)) {
             return true;
         }
 
@@ -93,11 +79,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         }
 
         return webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscription().isEmpty();
-    }
-
-    public void setSubscriptionInfo(WebCertUser webCertUser) {
-        final var subscriptionInfo = new SubscriptionInfo(subscriptionAdaptationStartDate, requireSubscriptionStartDate);
-        webCertUser.setSubscriptionInfo(subscriptionInfo);
     }
 
     @Override
@@ -123,8 +104,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     private void setSubscriptionActions(WebCertUser webCertUser, List<String> missingSubscriptions) {
-        final var action = isSubscriptionRequired() ? SubscriptionAction.BLOCK : SubscriptionAction.WARN;
-        webCertUser.getSubscriptionInfo().setSubscriptionAction(action);
+        webCertUser.getSubscriptionInfo().setSubscriptionAction(SubscriptionAction.BLOCK);
         webCertUser.getSubscriptionInfo().setCareProvidersMissingSubscription(List.copyOf(missingSubscriptions));
         webCertUser.getSubscriptionInfo().setCareProvidersForSubscriptionModal(missingSubscriptions);
     }
@@ -195,21 +175,13 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private void monitorLogMissingSubscriptions(String userHsaId, AuthenticationMethodEnum authMethod, List<String> careProviderHsaIds) {
         if (!careProviderHsaIds.isEmpty()) {
-            if (isSubscriptionAdaptation()) {
-                monitoringLogService.logSubscriptionWarnings(userHsaId, authMethod.name(), careProviderHsaIds.toString());
-            } else {
-                monitoringLogService.logLoginAttemptMissingSubscription(userHsaId, authMethod.name(), careProviderHsaIds.toString());
-            }
+            monitoringLogService.logLoginAttemptMissingSubscription(userHsaId, authMethod.name(), careProviderHsaIds.toString());
         }
     }
 
     private void monitorLogMissingSubscription(boolean missingSubscription, String personId, String organizationNumber) {
         if (missingSubscription) {
-            if (isSubscriptionAdaptation()) {
-                monitoringLogService.logSubscriptionWarnings(hash(personId), ELEG.name(), hashed(organizationNumber));
-            } else {
-                monitoringLogService.logLoginAttemptMissingSubscription(hash(personId), ELEG.name(), hashed(organizationNumber));
-            }
+            monitoringLogService.logLoginAttemptMissingSubscription(hash(personId), ELEG.name(), hashed(organizationNumber));
         }
     }
 
@@ -251,22 +223,5 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private List<String> flatMapCollection(Collection<List<String>> collection) {
         return collection.stream().flatMap(Collection::stream).collect(Collectors.toList());
-    }
-
-    @Override
-    public boolean isSubscriptionRequired() {
-        return featuresHelper.isFeatureActive(FEATURE_SUBSCRIPTION_REQUIRED);
-    }
-
-    @Override
-    public boolean isSubscriptionAdaptation() {
-        return featuresHelper.isFeatureActive(FEATURE_SUBSCRIPTION_ADAPTATION_PERIOD)
-            && !featuresHelper.isFeatureActive(FEATURE_SUBSCRIPTION_REQUIRED);
-    }
-
-    @Override
-    public boolean isAnySubscriptionFeatureActive() {
-        return featuresHelper.isFeatureActive(FEATURE_SUBSCRIPTION_REQUIRED)
-            || featuresHelper.isFeatureActive(FEATURE_SUBSCRIPTION_ADAPTATION_PERIOD);
     }
 }

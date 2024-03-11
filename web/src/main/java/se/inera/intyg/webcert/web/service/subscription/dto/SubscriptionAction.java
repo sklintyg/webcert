@@ -20,6 +20,5 @@ package se.inera.intyg.webcert.web.service.subscription.dto;
 
 public enum SubscriptionAction {
     NONE,
-    WARN,
     BLOCK
 }
