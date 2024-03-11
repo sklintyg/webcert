@@ -19,19 +19,14 @@
 
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
-import se.inera.intyg.webcert.web.service.underskrift.xmldsig.XmlUnderskriftServiceImpl;
-import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -40,47 +35,40 @@ public class SignatureServiceForCS implements UnderskriftService {
 
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
-    private final XmlUnderskriftServiceImpl xmlUnderskriftService;
-    private final WebCertUserService webCertUserService;
     private final FakeSignatureServiceCS fakeSignatureServiceCS;
+    private final CreateSignatureTicketService createSignatureTicketService;
 
 
     @Override
     public SignaturBiljett startSigningProcess(String certificateId, String certificateType, long version, SignMethod signMethod,
         String ticketID, boolean isWc2ClientRequest) {
-        final var exists = csIntegrationService.certificateExists(certificateId);
-        if (Boolean.FALSE.equals(exists)) {
-            log.debug("Certificate with id '{}' does not exist in certificate service", certificateId);
+        if (certificateNotPresentInCertificateService(certificateId)) {
             return null;
         }
 
         final var certificateXml = csIntegrationService.getCertificateXml(
-            csIntegrationRequestFactory.getCertificateXmlRequest(new Certificate()),
+            csIntegrationRequestFactory.getCertificateXmlRequest(),
             certificateId
         );
 
-        final var signatureTicket = xmlUnderskriftService.skapaSigneringsBiljettMedDigest(
-            certificateId, certificateType, version, Optional.empty(),
-            signMethod, ticketID, isWc2ClientRequest, certificateXml
-        );
-
-        if (signatureTicket == null) {
-            throw new IllegalStateException("Unhandled authentication method, could not create SignaturBiljett");
-        }
-
-        return signatureTicket;
+        return createSignatureTicketService.create(certificateId, certificateType, version, signMethod, ticketID, isWc2ClientRequest,
+            certificateXml);
     }
 
     @Override
-    public SignaturBiljett fakeSignature(String intygsId, String intygsTyp, long version, String ticketId) {
-        WebCertUser user = webCertUserService.getUser();
+    public SignaturBiljett fakeSignature(String certificateId, String certificateType, long version, String ticketId) {
+        if (certificateNotPresentInCertificateService(certificateId)) {
+            return null;
+        }
+
         final var certificateXml = csIntegrationService.getCertificateXml(
-            csIntegrationRequestFactory.getCertificateXmlRequest(new Certificate()),
-            intygsId
+            csIntegrationRequestFactory.getCertificateXmlRequest(),
+            certificateId
         );
 
-        return fakeSignatureServiceCS.finalizeFakeSignature(ticketId, user, certificateXml);
+        return fakeSignatureServiceCS.finalizeFakeSignature(ticketId, certificateXml);
     }
+
 
     @Override
     public SignaturBiljett netidSignature(String biljettId, byte[] signatur, String certifikat) {
@@ -95,5 +83,14 @@ public class SignatureServiceForCS implements UnderskriftService {
     @Override
     public SignaturBiljett signeringsStatus(String ticketId) {
         return null;
+    }
+
+    private boolean certificateNotPresentInCertificateService(String certificateId) {
+        final var exists = csIntegrationService.certificateExists(certificateId);
+        if (Boolean.FALSE.equals(exists)) {
+            log.debug("Certificate with id '{}' does not exist in certificate service", certificateId);
+            return true;
+        }
+        return false;
     }
 }

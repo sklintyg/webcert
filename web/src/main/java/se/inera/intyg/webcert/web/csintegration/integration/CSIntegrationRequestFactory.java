@@ -150,16 +150,11 @@ public class CSIntegrationRequestFactory {
             .build();
     }
 
-    public GetCertificateXmlRequestDTO getCertificateXmlRequest(Certificate certificate) {
+    public GetCertificateXmlRequestDTO getCertificateXmlRequest() {
         return GetCertificateXmlRequestDTO.builder()
             .unit(certificateServiceUnitHelper.getUnit())
             .careUnit(certificateServiceUnitHelper.getCareUnit())
             .careProvider(certificateServiceUnitHelper.getCareProvider())
-            .patient(
-                certificateServicePatientHelper.get(
-                    createPatientId(certificate.getMetadata().getPatient().getPersonId().getId())
-                )
-            )
             .user(certificateServiceUserHelper.get())
             .build();
     }

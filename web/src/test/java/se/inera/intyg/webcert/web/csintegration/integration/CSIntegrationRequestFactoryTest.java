@@ -549,31 +549,31 @@ class CSIntegrationRequestFactoryTest {
 
         @Test
         void shouldSetUser() {
-            final var actualRequest = csIntegrationRequestFactory.getCertificateXmlRequest(CERTIFICATE);
+            final var actualRequest = csIntegrationRequestFactory.getCertificateXmlRequest();
             assertEquals(USER, actualRequest.getUser());
         }
 
         @Test
         void shouldSetUnit() {
-            final var actualRequest = csIntegrationRequestFactory.getCertificateXmlRequest(CERTIFICATE);
+            final var actualRequest = csIntegrationRequestFactory.getCertificateXmlRequest();
             assertEquals(UNIT, actualRequest.getUnit());
         }
 
         @Test
         void shouldSetCareUnit() {
-            final var actualRequest = csIntegrationRequestFactory.getCertificateXmlRequest(CERTIFICATE);
+            final var actualRequest = csIntegrationRequestFactory.getCertificateXmlRequest();
             assertEquals(CARE_UNIT, actualRequest.getCareUnit());
         }
 
         @Test
         void shouldSetCareProvider() {
-            final var actualRequest = csIntegrationRequestFactory.getCertificateXmlRequest(CERTIFICATE);
+            final var actualRequest = csIntegrationRequestFactory.getCertificateXmlRequest();
             assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
         }
 
         @Test
         void shouldSetPatient() {
-            final var actualRequest = csIntegrationRequestFactory.getCertificateXmlRequest(CERTIFICATE);
+            final var actualRequest = csIntegrationRequestFactory.getCertificateXmlRequest();
             assertEquals(PATIENT, actualRequest.getPatient());
         }
     }

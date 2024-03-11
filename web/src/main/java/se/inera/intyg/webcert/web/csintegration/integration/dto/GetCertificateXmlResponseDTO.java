@@ -30,9 +30,10 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXm
 @Value
 @Builder
 public class GetCertificateXmlResponseDTO {
-
-
+    
+    long version;
     String certificateXml;
+
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class GetCertificateXmlResponseDTOBuilder {

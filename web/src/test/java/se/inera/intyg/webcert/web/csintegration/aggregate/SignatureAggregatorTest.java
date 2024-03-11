@@ -109,4 +109,40 @@ class SignatureAggregatorTest {
             assertEquals(expectedResult, actualResult);
         }
     }
+
+    @Nested
+    class FakeSignature {
+
+        @Test
+        void shallUseWebcertImplementationIfProfileNotActive() {
+            doReturn(false).when(certificateServiceProfile).active();
+
+            signCertificateAggregator.fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, TICKED_ID);
+
+            verify(signatureServiceForWC, times(1)).fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, TICKED_ID);
+        }
+
+        @Test
+        void shallUseWebcertImplementationIfCSReturnsNull() {
+            doReturn(true).when(certificateServiceProfile).active();
+            doReturn(null).when(signatureServiceForCS).fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, TICKED_ID);
+
+            signCertificateAggregator.fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, TICKED_ID);
+            verify(signatureServiceForWC, times(1)).fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, TICKED_ID);
+        }
+
+
+        @Test
+        void shallUseCertificateServiceImplementationIfProfileIsActiveAndSignatureBiljettIsReturned() {
+            final var expectedResult = new SignaturBiljett();
+            doReturn(true).when(certificateServiceProfile).active();
+            doReturn(expectedResult).when(signatureServiceForCS).fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, TICKED_ID);
+
+            final var actualResult = signCertificateAggregator.fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, TICKED_ID);
+
+            verify(signatureServiceForWC, times(0)).fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, TICKED_ID);
+            verify(signatureServiceForCS, times(1)).fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, TICKED_ID);
+            assertEquals(expectedResult, actualResult);
+        }
+    }
 }

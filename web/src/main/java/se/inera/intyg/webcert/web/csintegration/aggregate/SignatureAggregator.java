@@ -59,7 +59,14 @@ public class SignatureAggregator implements UnderskriftService {
 
     @Override
     public SignaturBiljett fakeSignature(String intygsId, String intygsTyp, long version, String ticketId) {
-        return null;
+        if (!certificateServiceProfile.active()) {
+            return signatureServiceForWC.fakeSignature(intygsId, intygsTyp, version, ticketId);
+        }
+
+        final var signaturBiljett = signatureServiceForCS.fakeSignature(intygsId, intygsTyp, version, ticketId);
+
+        return signaturBiljett != null ? signaturBiljett
+            : signatureServiceForWC.fakeSignature(intygsId, intygsTyp, version, ticketId);
     }
 
     @Override

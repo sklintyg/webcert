@@ -28,20 +28,23 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEn
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.underskrift.BaseXMLSignatureService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 @Service
 @RequiredArgsConstructor
 public class FakeSignatureServiceCS extends BaseXMLSignatureService {
 
     private final FakeSignatureServiceImpl fakeSignatureService;
+    private final WebCertUserService webCertUserService;
 
-    public SignaturBiljett finalizeFakeSignature(String ticketId, WebCertUser user, String certificateXml) {
+
+    public SignaturBiljett finalizeFakeSignature(String ticketId, String certificateXml) {
         SignaturBiljett biljett = redisTicketTracker.findBiljett(ticketId);
         if (biljett == null) {
             throw new IllegalStateException("No ticket found in Redis for " + ticketId);
         }
-
+        
+        final var user = webCertUserService.getUser();
         final var base64EncodedSignedInfoXml = Base64.getEncoder()
             .encodeToString(biljett.getIntygSignature().getSigningData().getBytes(StandardCharsets.UTF_8));
 

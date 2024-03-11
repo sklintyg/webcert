@@ -93,7 +93,6 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
             String signatureXml = marshallSignatureToString(intygXmldSignature.getSignatureType());
 
             // TODO: Call CertificateService
-
             biljett.setStatus(SignaturStatus.SIGNERAD);
             return biljett;
         } catch (Throwable e) {
