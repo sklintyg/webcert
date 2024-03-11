@@ -115,7 +115,7 @@ class CSIntegrationServiceTest {
 
     private static final String XML_DATA = "xmlData";
     private static final GetCertificateXmlResponseDTO GET_CERTIFICIATE_XML_RESPONSE = GetCertificateXmlResponseDTO.builder()
-        .certificateXml(XML_DATA)
+        .xml(XML_DATA)
         .build();
 
     private static final GetCertificateXmlRequestDTO GET_CERTIFICIATE_XML_REQUEST = GetCertificateXmlRequestDTO.builder().build();
@@ -657,12 +657,12 @@ class CSIntegrationServiceTest {
         }
 
         @Test
-        void shouldReturnXmlRepresentationOfCertificate() {
+        void shouldReturnGetCertificateXmlResponseDTO() {
             when(restTemplate.postForObject(anyString(), eq(GET_CERTIFICIATE_XML_REQUEST), eq(GetCertificateXmlResponseDTO.class)))
                 .thenReturn(GET_CERTIFICIATE_XML_RESPONSE);
             final var response = csIntegrationService.getCertificateXml(GET_CERTIFICIATE_XML_REQUEST, CERTIFICATE_ID);
 
-            assertEquals(XML_DATA, response);
+            assertEquals(GET_CERTIFICIATE_XML_RESPONSE, response);
         }
 
         @Test

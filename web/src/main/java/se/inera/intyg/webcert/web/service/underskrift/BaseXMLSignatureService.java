@@ -76,7 +76,7 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
             biljett.setStatus(SignaturStatus.SIGNERAD);
 
             return biljett;
-        } catch (Throwable e) {
+        } catch (Exception e) {
             // For ANY type of exception, update the ticket tracker and then rethrow.
             redisTicketTracker.updateStatus(biljett.getTicketId(), SignaturStatus.OKAND);
             throw e;
@@ -86,17 +86,15 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
     protected SignaturBiljett finalizeXMLDSigSignature(String x509certificate, WebCertUser user, SignaturBiljett biljett,
         byte[] rawSignature, String certificateXml) {
         try {
-            IntygXMLDSignature intygXmldSignature = (IntygXMLDSignature) biljett.getIntygSignature();
+            final var intygXmldSignature = (IntygXMLDSignature) biljett.getIntygSignature();
 
             applySignature(user, rawSignature, intygXmldSignature, biljett.getSignMethod());
-
             storeX509InSignatureType(x509certificate, intygXmldSignature);
-
             performBasicSignatureValidation(x509certificate, certificateXml, intygXmldSignature);
 
-            String signatureXml = marshallSignatureToString(intygXmldSignature.getSignatureType());
+            final var signatureXml = marshallSignatureToString(intygXmldSignature.getSignatureType());
             return signCertificateService.sign(biljett, certificateXml, signatureXml);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             // For ANY type of exception, update the ticket tracker and then rethrow.
             redisTicketTracker.updateStatus(biljett.getTicketId(), SignaturStatus.OKAND);
             throw e;

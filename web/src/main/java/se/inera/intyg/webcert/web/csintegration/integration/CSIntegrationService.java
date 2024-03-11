@@ -252,7 +252,7 @@ public class CSIntegrationService {
         return response.getBody().getCertificate();
     }
 
-    public String getCertificateXml(GetCertificateXmlRequestDTO request, String certificateId) {
+    public GetCertificateXmlResponseDTO getCertificateXml(GetCertificateXmlRequestDTO request, String certificateId) {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/xml";
 
         final var response = restTemplate.postForObject(url, request, GetCertificateXmlResponseDTO.class);
@@ -261,7 +261,7 @@ public class CSIntegrationService {
             return null;
         }
 
-        return response.getCertificateXml();
+        return response;
     }
 
     public String signCertificate(SignCertificateRequestDTO request, String certificateId) {

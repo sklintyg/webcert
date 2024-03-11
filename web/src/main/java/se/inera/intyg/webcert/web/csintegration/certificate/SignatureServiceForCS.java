@@ -54,7 +54,7 @@ public class SignatureServiceForCS implements UnderskriftService {
         );
 
         return createSignatureTicketService.create(certificateId, certificateType, version, signMethod, ticketID, isWc2ClientRequest,
-            certificateXml);
+            certificateXml.getXml());
     }
 
     @Override
@@ -70,7 +70,7 @@ public class SignatureServiceForCS implements UnderskriftService {
             certificateId
         );
 
-        return fakeSignatureServiceCS.finalizeFakeSignature(ticketId, certificateXml);
+        return fakeSignatureServiceCS.finalizeFakeSignature(ticketId, certificateXml.getXml());
     }
 
 
