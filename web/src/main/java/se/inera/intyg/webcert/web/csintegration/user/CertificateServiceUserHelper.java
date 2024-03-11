@@ -19,7 +19,11 @@
 
 package se.inera.intyg.webcert.web.csintegration.user;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import se.inera.intyg.common.support.services.BefattningService;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
@@ -28,18 +32,12 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @Component
+@RequiredArgsConstructor
 public class CertificateServiceUserHelper {
 
     private final UserService userService;
     private final WebCertUserService webCertUserService;
     private final AuthoritiesHelper authoritiesHelper;
-
-    public CertificateServiceUserHelper(UserService userService, WebCertUserService webCertUserService,
-        AuthoritiesHelper authoritiesHelper) {
-        this.userService = userService;
-        this.webCertUserService = webCertUserService;
-        this.authoritiesHelper = authoritiesHelper;
-    }
 
     public CertificateServiceUserDTO get() {
         final var user = userService.getLoggedInUser();
@@ -52,7 +50,20 @@ public class CertificateServiceUserHelper {
             .fullName(webCertUser.getNamn())
             .role(convertRole(user.getRole()))
             .blocked(isBlocked(webCertUser))
+            .paTitles(paTitles(webCertUser.getBefattningar()))
+            .specialities(webCertUser.getSpecialiseringar())
             .build();
+    }
+
+    private List<PaTitleDTO> paTitles(List<String> befattningar) {
+        return befattningar.stream()
+            .map(befattning ->
+                PaTitleDTO.builder()
+                    .code(befattning)
+                    .description(BefattningService.getDescriptionFromCode(befattning).orElse(befattning))
+                    .build()
+            )
+            .collect(Collectors.toList());
     }
 
     private boolean isBlocked(WebCertUser webCertUser) {

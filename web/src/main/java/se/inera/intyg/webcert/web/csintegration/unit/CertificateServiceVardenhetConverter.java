@@ -36,6 +36,7 @@ public class CertificateServiceVardenhetConverter {
             .phoneNumber(unit.getTelefonnummer())
             .email(unit.getEpost())
             .inactive(isActive(unit.getStart(), unit.getEnd()))
+            .workplaceCode(unit.getArbetsplatskod())
             .build();
     }
 

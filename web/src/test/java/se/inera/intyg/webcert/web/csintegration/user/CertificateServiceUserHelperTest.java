@@ -25,15 +25,20 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.user.User;
+import se.inera.intyg.common.support.services.BefattningService;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -51,6 +56,12 @@ class CertificateServiceUserHelperTest {
 
     private static final List<String> HAS_SUBSCRIPTION = List.of("NOT_THIS_ID");
     private static final List<String> HAS_NOT_SUBSCRIPTION = List.of(CARE_PROVIDER_ID);
+    private static final List<String> SPECIALITIES = List.of("SpecialityOne", "SpecialityTwo");
+    private static final String CODE_ONE = "CODE_ONE";
+    private static final String DESCRIPTION_ONE = "DESCRIPTION_ONE";
+    private static final String CODE_TWO = "CODE_TWO";
+    private static final String DESCRIPTION_TWO = "DESCRIPTION_TWO";
+    private static final List<String> PA_TITLES = List.of(CODE_ONE, CODE_TWO);
 
     private static User user;
     private static WebCertUser webCertUser;
@@ -58,6 +69,9 @@ class CertificateServiceUserHelperTest {
 
     @Mock
     UserService userService;
+
+    @Mock
+    BefattningService befattningService;
 
     @Mock
     WebCertUserService webCertUserService;
@@ -87,6 +101,9 @@ class CertificateServiceUserHelperTest {
 
         when(webCertUser.getOrigin())
             .thenReturn("DJUPINTEGRATION");
+
+        when(webCertUser.getSpecialiseringar())
+            .thenReturn(SPECIALITIES);
     }
 
     @Test
@@ -94,6 +111,13 @@ class CertificateServiceUserHelperTest {
         final var response = certificateServiceUserHelper.get();
 
         assertEquals(ID, response.getId());
+    }
+
+    @Test
+    void shouldReturnUserWithSpecialities() {
+        final var response = certificateServiceUserHelper.get();
+
+        assertEquals(SPECIALITIES, response.getSpecialities());
     }
 
     @Nested
@@ -270,6 +294,73 @@ class CertificateServiceUserHelperTest {
 
             assertEquals(CertificateServiceUserRole.UNKNOWN, response.getRole());
         }
+    }
 
+    @Nested
+    class PaTitles {
+
+        @Test
+        void shouldReturnPaTitlesWhenDescriptionExists() {
+            final var expectedPaTitles = List.of(
+                PaTitleDTO.builder()
+                    .code(CODE_ONE)
+                    .description(DESCRIPTION_ONE)
+                    .build(),
+                PaTitleDTO.builder()
+                    .code(CODE_TWO)
+                    .description(DESCRIPTION_TWO)
+                    .build()
+            );
+
+            when(webCertUser.getBefattningar())
+                .thenReturn(PA_TITLES);
+
+            try (MockedStatic<BefattningService> utilities = Mockito.mockStatic(BefattningService.class)) {
+                utilities.when(() -> BefattningService.getDescriptionFromCode(CODE_ONE)).thenReturn(Optional.of(DESCRIPTION_ONE));
+                utilities.when(() -> BefattningService.getDescriptionFromCode(CODE_TWO)).thenReturn(Optional.of(DESCRIPTION_TWO));
+
+                final var response = certificateServiceUserHelper.get();
+
+                assertEquals(expectedPaTitles, response.getPaTitles());
+            }
+        }
+
+        @Test
+        void shouldReturnPaTitlesWhenDescriptionDoesntExists() {
+            final var expectedPaTitles = List.of(
+                PaTitleDTO.builder()
+                    .code(CODE_ONE)
+                    .description(CODE_ONE)
+                    .build(),
+                PaTitleDTO.builder()
+                    .code(CODE_TWO)
+                    .description(CODE_TWO)
+                    .build()
+            );
+
+            when(webCertUser.getBefattningar())
+                .thenReturn(PA_TITLES);
+
+            try (MockedStatic<BefattningService> utilities = Mockito.mockStatic(BefattningService.class)) {
+                utilities.when(() -> BefattningService.getDescriptionFromCode(CODE_ONE)).thenReturn(Optional.empty());
+                utilities.when(() -> BefattningService.getDescriptionFromCode(CODE_TWO)).thenReturn(Optional.empty());
+
+                final var response = certificateServiceUserHelper.get();
+
+                assertEquals(expectedPaTitles, response.getPaTitles());
+            }
+        }
+
+        @Test
+        void shouldReturnEmptyPaTitles() {
+            final var expectedPaTitles = Collections.emptyList();
+
+            when(webCertUser.getBefattningar())
+                .thenReturn(Collections.emptyList());
+
+            final var response = certificateServiceUserHelper.get();
+
+            assertEquals(expectedPaTitles, response.getPaTitles());
+        }
     }
 }
