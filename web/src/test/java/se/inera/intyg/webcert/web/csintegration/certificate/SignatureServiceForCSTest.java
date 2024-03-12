@@ -32,6 +32,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlResponseDTO;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 
@@ -49,6 +50,8 @@ class SignatureServiceForCSTest {
 
     @Mock
     private CreateSignatureTicketService createSignatureTicketService;
+    @Mock
+    private FakeSignatureServiceCS fakeSignatureServiceCS;
 
     @InjectMocks
     private SignatureServiceForCS signatureServiceForCS;
@@ -69,7 +72,11 @@ class SignatureServiceForCSTest {
             final var certificateXmlRequestDTO = GetCertificateXmlRequestDTO.builder().build();
             doReturn(certificateXmlRequestDTO).when(csIntegrationRequestFactory).getCertificateXmlRequest();
             doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
-            doReturn(CERTIFICATE_XML_DATA).when(csIntegrationService).getCertificateXml(certificateXmlRequestDTO, CERTIFICATE_ID);
+            doReturn(
+                GetCertificateXmlResponseDTO.builder()
+                    .xml(CERTIFICATE_XML_DATA)
+                    .build()
+            ).when(csIntegrationService).getCertificateXml(certificateXmlRequestDTO, CERTIFICATE_ID);
             doReturn(expectedTicket).when(createSignatureTicketService)
                 .create(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE, TICKET_ID, false, CERTIFICATE_XML_DATA);
 
@@ -86,6 +93,24 @@ class SignatureServiceForCSTest {
         void shallReturnNullIfCertificateDontExistsInCertificateService() {
             doReturn(false).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
             assertNull(signatureServiceForCS.fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, TICKET_ID));
+        }
+
+        @Test
+        void shallReturnSignaturBiljett() {
+            final var expectedTicket = new SignaturBiljett();
+            final var certificateXmlRequestDTO = GetCertificateXmlRequestDTO.builder().build();
+            doReturn(certificateXmlRequestDTO).when(csIntegrationRequestFactory).getCertificateXmlRequest();
+            doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
+            doReturn(
+                GetCertificateXmlResponseDTO.builder()
+                    .xml(CERTIFICATE_XML_DATA)
+                    .build()
+            ).when(csIntegrationService).getCertificateXml(certificateXmlRequestDTO, CERTIFICATE_ID);
+            doReturn(expectedTicket).when(fakeSignatureServiceCS)
+                .finalizeFakeSignature(TICKET_ID, CERTIFICATE_XML_DATA);
+
+            final var actualTicket = signatureServiceForCS.fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, TICKET_ID);
+            assertEquals(expectedTicket, actualTicket);
         }
     }
 }

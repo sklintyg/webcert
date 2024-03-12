@@ -22,19 +22,24 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.xmldsig.XmlUnderskriftServiceImpl;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @Service
 @RequiredArgsConstructor
 public class CreateSignatureTicketService {
 
     private final XmlUnderskriftServiceImpl xmlUnderskriftService;
+    private final WebCertUserService webCertUserService;
 
     public SignaturBiljett create(String certificateId, String certificateType, long version, SignMethod signMethod,
         String ticketID, boolean isWc2ClientRequest, String certificateXml) {
-        if (signMethod.equals(SignMethod.FAKE)) {
+        WebCertUser user = webCertUserService.getUser();
+        if (user.getAuthenticationMethod().equals(AuthenticationMethod.FAKE)) {
             final var ticket = xmlUnderskriftService.skapaSigneringsBiljettMedDigest(
                 certificateId, certificateType, version, Optional.empty(),
                 signMethod, ticketID, isWc2ClientRequest, certificateXml

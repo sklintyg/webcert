@@ -23,16 +23,21 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.xmldsig.XmlUnderskriftServiceImpl;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @ExtendWith(MockitoExtension.class)
 class CreateSignatureTicketServiceTest {
@@ -43,18 +48,29 @@ class CreateSignatureTicketServiceTest {
     private static final String CERTIFICATE_XML = "certificateXml";
     @Mock
     private XmlUnderskriftServiceImpl xmlUnderskriftService;
+    @Mock
+    private WebCertUserService webCertUserService;
 
+    private WebCertUser user;
     @InjectMocks
     private CreateSignatureTicketService createSignatureTicketService;
 
+    @BeforeEach
+    void setUp() {
+        user = mock(WebCertUser.class);
+        doReturn(user).when(webCertUserService).getUser();
+    }
+
     @Test
     void shallReturnNullIfSignMethodIsNotSupported() {
+        doReturn(AuthenticationMethod.NET_ID).when(user).getAuthenticationMethod();
         assertNull(createSignatureTicketService.create(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.NETID_PLUGIN, TICKET_ID, false,
             CERTIFICATE_XML));
     }
 
     @Test
     void shallThrowIfTicketFromServiceIsNull() {
+        doReturn(AuthenticationMethod.FAKE).when(user).getAuthenticationMethod();
         doReturn(null).when(xmlUnderskriftService)
             .skapaSigneringsBiljettMedDigest(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, Optional.empty(), SignMethod.FAKE, TICKET_ID, false,
                 CERTIFICATE_XML);
@@ -67,6 +83,7 @@ class CreateSignatureTicketServiceTest {
     @Test
     void shallReturnCreatedSignatureTicket() {
         final var expectedTicket = new SignaturBiljett();
+        doReturn(AuthenticationMethod.FAKE).when(user).getAuthenticationMethod();
         doReturn(expectedTicket).when(xmlUnderskriftService)
             .skapaSigneringsBiljettMedDigest(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, Optional.empty(), SignMethod.FAKE, TICKET_ID, false,
                 CERTIFICATE_XML);
