@@ -36,9 +36,7 @@ public class SignCertificateRequestDTO {
     CertificateServiceUnitDTO unit;
     CertificateServiceUnitDTO careUnit;
     CertificateServiceUnitDTO careProvider;
-    String certificateXml;
     String signatureXml;
-    long version;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class SignCertificateRequestDTOBuilder {

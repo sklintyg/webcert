@@ -21,18 +21,25 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.ConcurrentModificationException;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 
@@ -47,6 +54,8 @@ class SignatureServiceForCSTest {
     private CSIntegrationService csIntegrationService;
     @Mock
     private CSIntegrationRequestFactory csIntegrationRequestFactory;
+    @Mock
+    private PDLLogService pdlLogService;
 
     @Mock
     private CreateSignatureTicketService createSignatureTicketService;
@@ -67,6 +76,21 @@ class SignatureServiceForCSTest {
         }
 
         @Test
+        void shallThrowExceptionIfVersionDontMatch() {
+            final var certificateXmlRequestDTO = GetCertificateXmlRequestDTO.builder().build();
+            doReturn(certificateXmlRequestDTO).when(csIntegrationRequestFactory).getCertificateXmlRequest();
+            doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
+            doReturn(GetCertificateXmlResponseDTO.builder()
+                .xml(CERTIFICATE_XML_DATA)
+                .version(1L)
+                .build()
+            ).when(csIntegrationService).getCertificateXml(certificateXmlRequestDTO, CERTIFICATE_ID);
+            assertThrows(ConcurrentModificationException.class,
+                () -> signatureServiceForCS.startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE,
+                    TICKET_ID, false));
+        }
+
+        @Test
         void shallReturnSignaturBiljett() {
             final var expectedTicket = new SignaturBiljett();
             final var certificateXmlRequestDTO = GetCertificateXmlRequestDTO.builder().build();
@@ -78,7 +102,8 @@ class SignatureServiceForCSTest {
                     .build()
             ).when(csIntegrationService).getCertificateXml(certificateXmlRequestDTO, CERTIFICATE_ID);
             doReturn(expectedTicket).when(createSignatureTicketService)
-                .create(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE, TICKET_ID, false, CERTIFICATE_XML_DATA);
+                .create(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE, TICKET_ID, false,
+                    new String(Base64.getDecoder().decode(CERTIFICATE_XML_DATA), StandardCharsets.UTF_8));
 
             final var actualTicket = signatureServiceForCS.startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE,
                 TICKET_ID, false);
@@ -96,18 +121,32 @@ class SignatureServiceForCSTest {
         }
 
         @Test
+        void shallLogSignIntygWithProvidedCertificate() {
+            final var ticket = new SignaturBiljett();
+            final var certificate = new Certificate();
+            final var expectedResponse = FinalizedCertificateSignature.builder()
+                .signaturBiljett(ticket)
+                .certificate(certificate)
+                .build();
+
+            doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
+            doReturn(expectedResponse).when(fakeSignatureServiceCS)
+                .finalizeFakeSignature(TICKET_ID);
+
+            signatureServiceForCS.fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, TICKET_ID);
+            verify(pdlLogService).logSign(certificate);
+        }
+
+        @Test
         void shallReturnSignaturBiljett() {
             final var expectedTicket = new SignaturBiljett();
-            final var certificateXmlRequestDTO = GetCertificateXmlRequestDTO.builder().build();
-            doReturn(certificateXmlRequestDTO).when(csIntegrationRequestFactory).getCertificateXmlRequest();
+            final var expectedResponse = FinalizedCertificateSignature.builder()
+                .signaturBiljett(expectedTicket)
+                .build();
+
             doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
-            doReturn(
-                GetCertificateXmlResponseDTO.builder()
-                    .xml(CERTIFICATE_XML_DATA)
-                    .build()
-            ).when(csIntegrationService).getCertificateXml(certificateXmlRequestDTO, CERTIFICATE_ID);
-            doReturn(expectedTicket).when(fakeSignatureServiceCS)
-                .finalizeFakeSignature(TICKET_ID, CERTIFICATE_XML_DATA);
+            doReturn(expectedResponse).when(fakeSignatureServiceCS)
+                .finalizeFakeSignature(TICKET_ID);
 
             final var actualTicket = signatureServiceForCS.fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, TICKET_ID);
             assertEquals(expectedTicket, actualTicket);

@@ -19,11 +19,16 @@
 
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.ConcurrentModificationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
@@ -37,6 +42,7 @@ public class SignatureServiceForCS implements UnderskriftService {
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
     private final FakeSignatureServiceCS fakeSignatureServiceCS;
     private final CreateSignatureTicketService createSignatureTicketService;
+    private final PDLLogService pdlLogService;
 
 
     @Override
@@ -53,8 +59,21 @@ public class SignatureServiceForCS implements UnderskriftService {
             certificateId
         );
 
-        return createSignatureTicketService.create(certificateId, certificateType, version, signMethod, ticketID, isWc2ClientRequest,
-            certificateXml.getXml());
+        if (version != certificateXml.getVersion()) {
+            throw new ConcurrentModificationException(
+                String.format("Version '%s' did not match version '%s'", version, certificateXml.getVersion())
+            );
+        }
+
+        return createSignatureTicketService.create(
+            certificateId,
+            certificateType,
+            version,
+            signMethod,
+            ticketID,
+            isWc2ClientRequest,
+            getDecodedXmlData(certificateXml)
+        );
     }
 
     @Override
@@ -65,12 +84,13 @@ public class SignatureServiceForCS implements UnderskriftService {
             return null;
         }
 
-        final var certificateXml = csIntegrationService.getCertificateXml(
-            csIntegrationRequestFactory.getCertificateXmlRequest(),
-            certificateId
+        final var finalizedCertificateSignature = fakeSignatureServiceCS.finalizeFakeSignature(ticketId);
+
+        pdlLogService.logSign(
+            finalizedCertificateSignature.getCertificate()
         );
 
-        return fakeSignatureServiceCS.finalizeFakeSignature(ticketId, certificateXml.getXml());
+        return finalizedCertificateSignature.getSignaturBiljett();
     }
 
 
@@ -87,5 +107,9 @@ public class SignatureServiceForCS implements UnderskriftService {
     @Override
     public SignaturBiljett signeringsStatus(String ticketId) {
         return null;
+    }
+
+    private static String getDecodedXmlData(GetCertificateXmlResponseDTO certificateXml) {
+        return new String(Base64.getDecoder().decode(certificateXml.getXml()), StandardCharsets.UTF_8);
     }
 }

@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.web.csintegration.integration;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.Certificate;
@@ -169,15 +171,13 @@ public class CSIntegrationRequestFactory {
             );
     }
 
-    public SignCertificateRequestDTO signCertificateRequest(String certificateXml, String signatureXml, long version) {
+    public SignCertificateRequestDTO signCertificateRequest(String signatureXml) {
         return SignCertificateRequestDTO.builder()
             .unit(certificateServiceUnitHelper.getUnit())
             .careUnit(certificateServiceUnitHelper.getCareUnit())
             .careProvider(certificateServiceUnitHelper.getCareProvider())
             .user(certificateServiceUserHelper.get())
-            .certificateXml(certificateXml)
-            .signatureXml(signatureXml)
-            .version(version)
+            .signatureXml(Base64.getEncoder().encodeToString(signatureXml.getBytes(StandardCharsets.UTF_8)))
             .build();
     }
 }

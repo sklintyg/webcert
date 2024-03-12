@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Value;
+import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateResponseDTO.SignCertificateResponseDTOBuilder;
 
 @JsonDeserialize(builder = SignCertificateResponseDTOBuilder.class)
@@ -31,7 +32,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateR
 public class SignCertificateResponseDTO {
 
 
-    String certificateId;
+    Certificate certificate;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class SignCertificateResponseDTOBuilder {

@@ -55,4 +55,10 @@ public class PDLLogService {
             logRequestFactory.createLogRequestFromCertificate(certificate)
         );
     }
+
+    public void logSign(Certificate certificate) {
+        logService.logSignIntyg(
+            logRequestFactory.createLogRequestFromCertificate(certificate)
+        );
+    }
 }

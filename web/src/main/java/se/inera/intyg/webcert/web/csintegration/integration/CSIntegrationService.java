@@ -258,8 +258,8 @@ public class CSIntegrationService {
         return restTemplate.postForObject(url, request, GetCertificateXmlResponseDTO.class);
     }
 
-    public String signCertificate(SignCertificateRequestDTO request, String certificateId) {
-        final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/sign";
+    public Certificate signCertificate(SignCertificateRequestDTO request, String certificateId, long version) {
+        final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/sign/" + version;
 
         final var response = restTemplate.postForObject(url, request, SignCertificateResponseDTO.class);
 
@@ -267,6 +267,6 @@ public class CSIntegrationService {
             return null;
         }
 
-        return response.getCertificateId();
+        return response.getCertificate();
     }
 }

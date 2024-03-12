@@ -39,6 +39,7 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEn
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.web.csintegration.certificate.FinalizedCertificateSignature;
 import se.inera.intyg.webcert.web.csintegration.certificate.SignCertificateService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
@@ -83,17 +84,22 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
         }
     }
 
-    protected SignaturBiljett finalizeXMLDSigSignature(String x509certificate, WebCertUser user, SignaturBiljett biljett,
-        byte[] rawSignature, String certificateXml) {
+    protected FinalizedCertificateSignature finalizeXMLDSigSignature(String x509certificate, WebCertUser user, SignaturBiljett biljett,
+        byte[] rawSignature) {
         try {
             final var intygXmldSignature = (IntygXMLDSignature) biljett.getIntygSignature();
-
             applySignature(user, rawSignature, intygXmldSignature, biljett.getSignMethod());
             storeX509InSignatureType(x509certificate, intygXmldSignature);
-            performBasicSignatureValidation(x509certificate, certificateXml, intygXmldSignature);
 
             final var signatureXml = marshallSignatureToString(intygXmldSignature.getSignatureType());
-            return signCertificateService.sign(biljett, certificateXml, signatureXml);
+            final var certificate = signCertificateService.sign(biljett.getIntygsId(), signatureXml, biljett.getVersion());
+            biljett.setStatus(SignaturStatus.SIGNERAD);
+
+            return FinalizedCertificateSignature.builder()
+                .signaturBiljett(biljett)
+                .certificate(certificate)
+                .build();
+            
         } catch (Exception e) {
             // For ANY type of exception, update the ticket tracker and then rethrow.
             redisTicketTracker.updateStatus(biljett.getTicketId(), SignaturStatus.OKAND);

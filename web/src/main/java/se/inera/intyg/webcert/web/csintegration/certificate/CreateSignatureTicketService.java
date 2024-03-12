@@ -27,7 +27,6 @@ import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.xmldsig.XmlUnderskriftServiceImpl;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @Service
 @RequiredArgsConstructor
@@ -38,7 +37,7 @@ public class CreateSignatureTicketService {
 
     public SignaturBiljett create(String certificateId, String certificateType, long version, SignMethod signMethod,
         String ticketID, boolean isWc2ClientRequest, String certificateXml) {
-        WebCertUser user = webCertUserService.getUser();
+        final var user = webCertUserService.getUser();
         if (user.getAuthenticationMethod().equals(AuthenticationMethod.FAKE)) {
             final var ticket = xmlUnderskriftService.skapaSigneringsBiljettMedDigest(
                 certificateId, certificateType, version, Optional.empty(),
@@ -46,7 +45,7 @@ public class CreateSignatureTicketService {
             );
             return validatedTicket(ticket);
         }
-        return null;
+        throw new IllegalStateException("Unsupported type");
     }
 
     private SignaturBiljett validatedTicket(SignaturBiljett ticket) {

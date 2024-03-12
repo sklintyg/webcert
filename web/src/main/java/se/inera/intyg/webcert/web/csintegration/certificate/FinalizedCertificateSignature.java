@@ -19,23 +19,15 @@
 
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import lombok.Builder;
+import lombok.Value;
 import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
-import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
-import se.inera.intyg.webcert.web.service.underskrift.BaseSignatureService;
+import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 
-@Service
-@RequiredArgsConstructor
-public class SignCertificateService extends BaseSignatureService {
+@Value
+@Builder
+public class FinalizedCertificateSignature {
 
-    private final CSIntegrationService csIntegrationService;
-    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
-
-    public Certificate sign(String certificateId, String signatureXml, long version) {
-        return csIntegrationService.signCertificate(
-            csIntegrationRequestFactory.signCertificateRequest(signatureXml), certificateId, version
-        );
-    }
+    Certificate certificate;
+    SignaturBiljett signaturBiljett;
 }

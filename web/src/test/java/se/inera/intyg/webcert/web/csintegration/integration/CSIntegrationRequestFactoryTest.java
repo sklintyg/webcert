@@ -22,6 +22,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -591,44 +593,33 @@ class CSIntegrationRequestFactoryTest {
 
         @Test
         void shouldSetUser() {
-            final var actualRequest = csIntegrationRequestFactory.signCertificateRequest(CERTIFICATE_XML, SIGNATURE_XML, VERSION);
+            final var actualRequest = csIntegrationRequestFactory.signCertificateRequest(SIGNATURE_XML);
             assertEquals(USER, actualRequest.getUser());
         }
 
         @Test
         void shouldSetUnit() {
-            final var actualRequest = csIntegrationRequestFactory.signCertificateRequest(CERTIFICATE_XML, SIGNATURE_XML, VERSION);
+            final var actualRequest = csIntegrationRequestFactory.signCertificateRequest(SIGNATURE_XML);
             assertEquals(UNIT, actualRequest.getUnit());
         }
 
         @Test
         void shouldSetCareUnit() {
-            final var actualRequest = csIntegrationRequestFactory.signCertificateRequest(CERTIFICATE_XML, SIGNATURE_XML, VERSION);
+            final var actualRequest = csIntegrationRequestFactory.signCertificateRequest(SIGNATURE_XML);
             assertEquals(CARE_UNIT, actualRequest.getCareUnit());
         }
 
         @Test
         void shouldSetCareProvider() {
-            final var actualRequest = csIntegrationRequestFactory.signCertificateRequest(CERTIFICATE_XML, SIGNATURE_XML, VERSION);
+            final var actualRequest = csIntegrationRequestFactory.signCertificateRequest(SIGNATURE_XML);
             assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
         }
 
         @Test
-        void shouldSetCertificateXml() {
-            final var actualRequest = csIntegrationRequestFactory.signCertificateRequest(CERTIFICATE_XML, SIGNATURE_XML, VERSION);
-            assertEquals(CERTIFICATE_XML, actualRequest.getCertificateXml());
-        }
-
-        @Test
-        void shouldSetSignatureXml() {
-            final var actualRequest = csIntegrationRequestFactory.signCertificateRequest(CERTIFICATE_XML, SIGNATURE_XML, VERSION);
-            assertEquals(SIGNATURE_XML, actualRequest.getSignatureXml());
-        }
-
-        @Test
-        void shouldSetVersion() {
-            final var actualRequest = csIntegrationRequestFactory.signCertificateRequest(CERTIFICATE_XML, SIGNATURE_XML, VERSION);
-            assertEquals(VERSION, actualRequest.getVersion());
+        void shouldSetBase64EncodedSignatureXml() {
+            final var actualRequest = csIntegrationRequestFactory.signCertificateRequest(SIGNATURE_XML);
+            assertEquals(Base64.getEncoder().encodeToString(SIGNATURE_XML.getBytes(StandardCharsets.UTF_8)),
+                actualRequest.getSignatureXml());
         }
     }
 }
