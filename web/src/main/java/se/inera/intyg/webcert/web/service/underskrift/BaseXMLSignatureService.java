@@ -99,9 +99,8 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
                 .signaturBiljett(biljett)
                 .certificate(certificate)
                 .build();
-            
+
         } catch (Exception e) {
-            // For ANY type of exception, update the ticket tracker and then rethrow.
             redisTicketTracker.updateStatus(biljett.getTicketId(), SignaturStatus.OKAND);
             throw e;
         }
@@ -117,12 +116,8 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
 
     private void performBasicSignatureValidation(String x509certificate, Utkast utkast, IntygXMLDSignature intygXmldSignature) {
         String utkastXml = utkastModelToXMLConverter.utkastToXml(intygXmldSignature.getIntygJson(), utkast.getIntygsTyp());
-        performBasicSignatureValidation(x509certificate, utkastXml, intygXmldSignature);
-    }
-
-    private void performBasicSignatureValidation(String x509certificate, String certificateXml, IntygXMLDSignature intygXmldSignature) {
         String finalXml = prepareSignatureService.encodeSignatureIntoSignedXml(intygXmldSignature.getSignatureType(),
-            certificateXml);
+            utkastXml);
         if (x509certificate != null && !x509certificate.isEmpty()) {
             boolean validationResult = xmldSigService.validateSignatureValidity(finalXml, false).isValid();
             if (!validationResult) {
