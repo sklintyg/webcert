@@ -20,7 +20,6 @@
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -62,10 +61,11 @@ class CreateSignatureTicketServiceTest {
     }
 
     @Test
-    void shallReturnNullIfSignMethodIsNotSupported() {
+    void shallThrowIfSignMethodIsNotSupported() {
         doReturn(AuthenticationMethod.NET_ID).when(user).getAuthenticationMethod();
-        assertNull(createSignatureTicketService.create(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.NETID_PLUGIN, TICKET_ID, false,
-            CERTIFICATE_XML));
+        assertThrows(IllegalStateException.class,
+            () -> createSignatureTicketService.create(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.NETID_PLUGIN, TICKET_ID, false,
+                CERTIFICATE_XML));
     }
 
     @Test

@@ -45,7 +45,7 @@ public class CreateSignatureTicketService {
             );
             return validatedTicket(ticket);
         }
-        throw new IllegalStateException("Unsupported type");
+        throw new IllegalStateException("AuthenticationMethod not supported '%s'");
     }
 
     private SignaturBiljett validatedTicket(SignaturBiljett ticket) {
