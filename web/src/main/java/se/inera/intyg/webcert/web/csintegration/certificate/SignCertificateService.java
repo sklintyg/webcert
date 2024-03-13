@@ -24,11 +24,10 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
-import se.inera.intyg.webcert.web.service.underskrift.BaseSignatureService;
 
 @Service
 @RequiredArgsConstructor
-public class SignCertificateService extends BaseSignatureService {
+public class SignCertificateService {
 
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
