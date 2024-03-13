@@ -85,8 +85,7 @@ public class GrpUnderskriftServiceImpl extends BaseSignatureService implements C
     public SignaturBiljett skapaSigneringsBiljettMedDigest(String intygsId, String intygsTyp, long version, Optional<String> intygJson,
         SignMethod signMethod, String ticketId, boolean isWc2ClientRequest, String certificateXml) {
         final var jsonData = intygJson.orElse(null);
-        final var hash = intygJson.map(this::createHash)
-            .orElse(null);
+        final var hash = intygJson.map(this::createHash).orElse(null);
 
         IntygGRPSignature intygGRPSignature = new IntygGRPSignature(jsonData, hash);
 
