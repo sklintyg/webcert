@@ -38,7 +38,7 @@ public class SignCertificateFacadeServiceImpl implements SignCertificateFacadeSe
     private final GetCertificateFacadeService getCertificateFacadeService;
 
     public SignCertificateFacadeServiceImpl(@Qualifier("signatureAggregator") UnderskriftService signatureAggregator,
-        GetCertificateFacadeService getCertificateFacadeService) {
+        @Qualifier("getCertificateAggregator") GetCertificateFacadeService getCertificateFacadeService) {
         this.underskriftService = signatureAggregator;
         this.getCertificateFacadeService = getCertificateFacadeService;
     }
