@@ -131,7 +131,7 @@ public class UnderskriftServiceImpl implements UnderskriftService {
             case SITHS:
             case NET_ID:
             case FAKE:
-                String registerCertificateXml = utkastModelToXMLConverter.utkastToXml(updatedJson, intygsTyp);
+                final var registerCertificateXml = utkastModelToXMLConverter.utkastToXml(updatedJson, intygsTyp);
                 signaturBiljett = xmlUnderskriftService
                     .skapaSigneringsBiljettMedDigest(intygsId, intygsTyp, version, Optional.of(updatedJson), signMethod, ticketId,
                         isWc2ClientRequest, registerCertificateXml);
