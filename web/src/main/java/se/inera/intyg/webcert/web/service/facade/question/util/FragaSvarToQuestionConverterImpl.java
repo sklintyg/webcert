@@ -74,6 +74,7 @@ public class FragaSvarToQuestionConverterImpl implements FragaSvarToQuestionConv
                 fragaSvar.getAmne() == Amne.KOMPLETTERING_AV_LAKARINTYG ? getAnsweredByCertificate(fragaSvar,
                     getAnswersByCertificate(fragaSvar.getIntygsReferens().getIntygsId(),
                         fragaSvar.getKompletteringar())) : null)
+            .certificateId(fragaSvar.getIntygsReferens().getIntygsId())
             .build();
     }
 
