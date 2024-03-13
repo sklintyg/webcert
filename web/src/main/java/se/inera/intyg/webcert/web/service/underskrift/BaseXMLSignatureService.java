@@ -66,7 +66,7 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
         Utkast utkast) {
         try {
             IntygXMLDSignature intygXmldSignature = (IntygXMLDSignature) biljett.getIntygSignature();
-            applySignature(user, rawSignature, intygXmldSignature, biljett.getSignMethod());
+            applySignature(rawSignature, intygXmldSignature, biljett.getSignMethod());
             storeX509InSignatureType(x509certificate, intygXmldSignature);
             // This isn't strictly necessary...
             performBasicSignatureValidation(x509certificate, utkast, intygXmldSignature);
@@ -84,11 +84,11 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
         }
     }
 
-    protected FinalizedCertificateSignature finalizeXMLDSigSignature(String x509certificate, WebCertUser user, SignaturBiljett biljett,
+    protected FinalizedCertificateSignature finalizeXMLDSigSignature(String x509certificate, SignaturBiljett biljett,
         byte[] rawSignature) {
         try {
             final var intygXmldSignature = (IntygXMLDSignature) biljett.getIntygSignature();
-            applySignature(user, rawSignature, intygXmldSignature, biljett.getSignMethod());
+            applySignature(rawSignature, intygXmldSignature, biljett.getSignMethod());
             storeX509InSignatureType(x509certificate, intygXmldSignature);
 
             final var signatureXml = marshallSignatureToString(intygXmldSignature.getSignatureType());
@@ -135,7 +135,7 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
         }
     }
 
-    private void applySignature(WebCertUser user, byte[] rawSignature, IntygXMLDSignature intygXmldSignature, SignMethod signMethod) {
+    private void applySignature(byte[] rawSignature, IntygXMLDSignature intygXmldSignature, SignMethod signMethod) {
         SignatureValueType svt = new SignatureValueType();
         switch (signMethod) {
             case NETID_PLUGIN:

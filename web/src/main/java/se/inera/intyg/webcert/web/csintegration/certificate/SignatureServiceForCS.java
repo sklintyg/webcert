@@ -28,7 +28,6 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
@@ -42,8 +41,7 @@ public class SignatureServiceForCS implements UnderskriftService {
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
     private final FakeSignatureServiceCS fakeSignatureServiceCS;
     private final CreateSignatureTicketService createSignatureTicketService;
-    private final PDLLogService pdlLogService;
-
+    private final FinalizedCertificateLogService finalizedCertificateLogService;
 
     @Override
     public SignaturBiljett startSigningProcess(String certificateId, String certificateType, long version, SignMethod signMethod,
@@ -83,13 +81,8 @@ public class SignatureServiceForCS implements UnderskriftService {
             log.debug("Certificate with id '{}' does not exist in certificate service", certificateId);
             return null;
         }
-
         final var finalizedCertificateSignature = fakeSignatureServiceCS.finalizeFakeSignature(ticketId);
-
-        pdlLogService.logSign(
-            finalizedCertificateSignature.getCertificate()
-        );
-
+        finalizedCertificateLogService.log(finalizedCertificateSignature.getCertificate());
         return finalizedCertificateSignature.getSignaturBiljett();
     }
 

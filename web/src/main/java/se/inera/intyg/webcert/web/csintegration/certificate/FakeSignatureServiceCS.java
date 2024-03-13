@@ -27,15 +27,12 @@ import se.inera.intyg.infra.xmldsig.service.FakeSignatureServiceImpl;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.underskrift.BaseXMLSignatureService;
-import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 @Service
 @RequiredArgsConstructor
 public class FakeSignatureServiceCS extends BaseXMLSignatureService {
 
     private final FakeSignatureServiceImpl fakeSignatureService;
-    private final WebCertUserService webCertUserService;
-
 
     public FinalizedCertificateSignature finalizeFakeSignature(String ticketId) {
         final var ticket = redisTicketTracker.findBiljett(ticketId);
@@ -43,7 +40,6 @@ public class FakeSignatureServiceCS extends BaseXMLSignatureService {
             throw new IllegalStateException("No ticket found in Redis for " + ticketId);
         }
 
-        final var user = webCertUserService.getUser();
         final var base64EncodedSignedInfoXml = Base64.getEncoder()
             .encodeToString(ticket.getIntygSignature().getSigningData().getBytes(StandardCharsets.UTF_8));
 
@@ -53,7 +49,6 @@ public class FakeSignatureServiceCS extends BaseXMLSignatureService {
         try {
             final var finalizedCertificateSignature = finalizeXMLDSigSignature(
                 Base64.getEncoder().encodeToString(x509Certificate.getEncoded()),
-                user,
                 ticket,
                 Base64.getDecoder().decode(fakeSignatureData)
             );

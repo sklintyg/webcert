@@ -39,7 +39,6 @@ import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequest
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 
@@ -55,7 +54,7 @@ class SignatureServiceForCSTest {
     @Mock
     private CSIntegrationRequestFactory csIntegrationRequestFactory;
     @Mock
-    private PDLLogService pdlLogService;
+    private FinalizedCertificateLogService finalizedCertificateLogService;
 
     @Mock
     private CreateSignatureTicketService createSignatureTicketService;
@@ -134,7 +133,7 @@ class SignatureServiceForCSTest {
                 .finalizeFakeSignature(TICKET_ID);
 
             signatureServiceForCS.fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, TICKET_ID);
-            verify(pdlLogService).logSign(certificate);
+            verify(finalizedCertificateLogService).log(certificate);
         }
 
         @Test
