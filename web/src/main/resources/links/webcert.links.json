@@ -55,8 +55,14 @@
   },
   {
     "key": "minaintyg",
-    "url": "https://minaintyg.se/",
-    "text": "minaintyg.se",
+    "url": "https://intyg.1177.se/",
+    "text": "intyg.1177.se",
+    "target": "_blank"
+  },
+  {
+    "key": "intyg",
+    "url": "https://intyg.1177.se/",
+    "text": "intyg.1177.se",
     "target": "_blank"
   },
   {
