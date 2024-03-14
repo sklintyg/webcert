@@ -54,7 +54,7 @@ class SignServiceForCSTest {
     @Mock
     private CSIntegrationRequestFactory csIntegrationRequestFactory;
     @Mock
-    private FinalizedCertificateLogService finalizedCertificateLogService;
+    private FinalizeCertificateSignService finalizeCertificateSignService;
 
     @Mock
     private CreateSignatureTicketService createSignatureTicketService;
@@ -133,7 +133,7 @@ class SignServiceForCSTest {
                 .finalizeFakeSignature(TICKET_ID);
 
             signServiceForCS.fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, TICKET_ID);
-            verify(finalizedCertificateLogService).log(certificate);
+            verify(finalizeCertificateSignService).finalizeSign(certificate);
         }
 
         @Test

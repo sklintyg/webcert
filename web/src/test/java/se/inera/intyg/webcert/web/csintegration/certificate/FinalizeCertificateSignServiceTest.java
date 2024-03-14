@@ -45,7 +45,7 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @ExtendWith(MockitoExtension.class)
-class FinalizedCertificateLogServiceTest {
+class FinalizeCertificateSignServiceTest {
 
     private static final String HSA_ID = "hsaId";
     private static final String AUTH_SCHEME = "authScheme";
@@ -61,7 +61,7 @@ class FinalizedCertificateLogServiceTest {
     private CertificateEventService certificateEventService;
 
     @InjectMocks
-    private FinalizedCertificateLogService finalizedCertificateLogService;
+    private FinalizeCertificateSignService finalizeCertificateSignService;
 
     private static final Certificate CERTIFICATE = new Certificate();
     private static final WebCertUser USER = new WebCertUser();
@@ -88,7 +88,7 @@ class FinalizedCertificateLogServiceTest {
 
         @Test
         void shouldLogIntygSignedWithIdFromCertificate() {
-            finalizedCertificateLogService.log(CERTIFICATE);
+            finalizeCertificateSignService.finalizeSign(CERTIFICATE);
             verify(monitoringLogService).logIntygSigned(argumentCaptor.capture(), eq(TYPE), eq(HSA_ID), eq(AUTH_SCHEME), eq(null));
 
             assertEquals(ID, argumentCaptor.getValue());
@@ -96,7 +96,7 @@ class FinalizedCertificateLogServiceTest {
 
         @Test
         void shouldLogIntygSignedWithTypeFromCertificate() {
-            finalizedCertificateLogService.log(CERTIFICATE);
+            finalizeCertificateSignService.finalizeSign(CERTIFICATE);
             verify(monitoringLogService).logIntygSigned(eq(ID), argumentCaptor.capture(), eq(HSA_ID), eq(AUTH_SCHEME), eq(null));
 
             assertEquals(TYPE, argumentCaptor.getValue());
@@ -104,7 +104,7 @@ class FinalizedCertificateLogServiceTest {
 
         @Test
         void shouldLogIntygSignedWithHsaIdFromWebcertUser() {
-            finalizedCertificateLogService.log(CERTIFICATE);
+            finalizeCertificateSignService.finalizeSign(CERTIFICATE);
             verify(monitoringLogService).logIntygSigned(eq(ID), eq(TYPE), argumentCaptor.capture(), eq(AUTH_SCHEME), eq(null));
 
             assertEquals(HSA_ID, argumentCaptor.getValue());
@@ -112,7 +112,7 @@ class FinalizedCertificateLogServiceTest {
 
         @Test
         void shouldLogIntygSignedWithAuthSchemaFromWebcertUser() {
-            finalizedCertificateLogService.log(CERTIFICATE);
+            finalizeCertificateSignService.finalizeSign(CERTIFICATE);
             verify(monitoringLogService).logIntygSigned(eq(ID), eq(TYPE), eq(HSA_ID), argumentCaptor.capture(), eq(null));
 
             assertEquals(AUTH_SCHEME, argumentCaptor.getValue());
@@ -120,7 +120,7 @@ class FinalizedCertificateLogServiceTest {
 
         @Test
         void shouldLogIntygSignedWithRelationCodeNull() {
-            finalizedCertificateLogService.log(CERTIFICATE);
+            finalizeCertificateSignService.finalizeSign(CERTIFICATE);
             verify(monitoringLogService).logIntygSigned(eq(ID), eq(TYPE), eq(HSA_ID), eq(AUTH_SCHEME), argumentCaptorRelation.capture());
 
             assertNull(argumentCaptorRelation.getValue());
@@ -134,7 +134,7 @@ class FinalizedCertificateLogServiceTest {
 
         @Test
         void shouldLogSignWithProvidedCertificate() {
-            finalizedCertificateLogService.log(CERTIFICATE);
+            finalizeCertificateSignService.finalizeSign(CERTIFICATE);
             verify(pdlLogService).logSign(certificateArgumentCaptor.capture());
 
             assertEquals(CERTIFICATE, certificateArgumentCaptor.getValue());
@@ -149,7 +149,7 @@ class FinalizedCertificateLogServiceTest {
 
         @Test
         void shouldSendNotificationCertificateMessageWithCertificateId() {
-            finalizedCertificateLogService.log(CERTIFICATE);
+            finalizeCertificateSignService.finalizeSign(CERTIFICATE);
             verify(certificateEventService).send(argumentCaptor.capture());
 
             assertEquals(ID, argumentCaptor.getValue().getCertificateId());
@@ -157,7 +157,7 @@ class FinalizedCertificateLogServiceTest {
 
         @Test
         void shouldSendNotificationCertificateMessageWithEventTypeCertificateSigned() {
-            finalizedCertificateLogService.log(CERTIFICATE);
+            finalizeCertificateSignService.finalizeSign(CERTIFICATE);
             verify(certificateEventService).send(argumentCaptor.capture());
 
             assertEquals(CERTIFICATE_SIGNED, argumentCaptor.getValue().getEventType());

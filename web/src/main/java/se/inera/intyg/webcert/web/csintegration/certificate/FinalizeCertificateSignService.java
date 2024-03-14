@@ -32,14 +32,14 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 @Service
 @RequiredArgsConstructor
-public class FinalizedCertificateLogService {
+public class FinalizeCertificateSignService {
 
     private final PDLLogService pdlLogService;
     private final WebCertUserService webCertUserService;
     private final MonitoringLogService monitoringLogService;
     private final CertificateEventService certificateEventService;
 
-    public void log(Certificate certificate) {
+    public void finalizeSign(Certificate certificate) {
         final var user = webCertUserService.getUser();
 
         monitoringLogService.logIntygSigned(

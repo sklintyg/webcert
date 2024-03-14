@@ -47,7 +47,7 @@ public class FakeSignatureServiceCS extends BaseXMLSignatureService {
         final var x509Certificate = fakeSignatureService.getX509Certificate();
 
         try {
-            final var finalizedCertificateSignature = finalizeXMLDSigSignature(
+            final var finalizedCertificateSignature = finalizeXMLDSigSignatureForCS(
                 Base64.getEncoder().encodeToString(x509Certificate.getEncoded()),
                 ticket,
                 Base64.getDecoder().decode(fakeSignatureData)

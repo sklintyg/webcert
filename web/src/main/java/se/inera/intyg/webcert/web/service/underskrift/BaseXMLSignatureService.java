@@ -77,14 +77,14 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
             biljett.setStatus(SignaturStatus.SIGNERAD);
 
             return biljett;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             // For ANY type of exception, update the ticket tracker and then rethrow.
             redisTicketTracker.updateStatus(biljett.getTicketId(), SignaturStatus.OKAND);
             throw e;
         }
     }
 
-    protected FinalizedCertificateSignature finalizeXMLDSigSignature(String x509certificate, SignaturBiljett biljett,
+    protected FinalizedCertificateSignature finalizeXMLDSigSignatureForCS(String x509certificate, SignaturBiljett biljett,
         byte[] rawSignature) {
         try {
             final var intygXmldSignature = (IntygXMLDSignature) biljett.getIntygSignature();
@@ -100,7 +100,7 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
                 .certificate(certificate)
                 .build();
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
             redisTicketTracker.updateStatus(biljett.getTicketId(), SignaturStatus.OKAND);
             throw e;
         }

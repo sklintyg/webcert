@@ -41,7 +41,7 @@ public class SignServiceForCS implements UnderskriftService {
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
     private final FakeSignatureServiceCS fakeSignatureServiceCS;
     private final CreateSignatureTicketService createSignatureTicketService;
-    private final FinalizedCertificateLogService finalizedCertificateLogService;
+    private final FinalizeCertificateSignService finalizeCertificateSignService;
 
     @Override
     public SignaturBiljett startSigningProcess(String certificateId, String certificateType, long version, SignMethod signMethod,
@@ -82,7 +82,7 @@ public class SignServiceForCS implements UnderskriftService {
             return null;
         }
         final var finalizedCertificateSignature = fakeSignatureServiceCS.finalizeFakeSignature(ticketId);
-        finalizedCertificateLogService.log(finalizedCertificateSignature.getCertificate());
+        finalizeCertificateSignService.finalizeSign(finalizedCertificateSignature.getCertificate());
         return finalizedCertificateSignature.getSignaturBiljett();
     }
 
