@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.csintegration.notification;
+package se.inera.intyg.webcert.web.csintegration.certificateevents;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -44,13 +44,13 @@ import org.springframework.jms.core.MessageCreator;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 
 @ExtendWith(MockitoExtension.class)
-class NotificationCertificateEventServiceTest {
+class CertificateEventServiceTest {
 
     private static final String CERTIFICATE_ID = "certificateId";
     private static final String CERTIFICATE_SIGN = "certificate-sign";
     private final ArgumentCaptor<MessageCreator> messageCaptor = ArgumentCaptor.forClass(MessageCreator.class);
 
-    private final NotificationCertificateMessage message = NotificationCertificateMessage.builder()
+    private final CertificateEventMessage message = CertificateEventMessage.builder()
         .certificateId(CERTIFICATE_ID)
         .eventType(CERTIFICATE_SIGN)
         .build();
@@ -61,7 +61,7 @@ class NotificationCertificateEventServiceTest {
     private Session session;
 
     @InjectMocks
-    private NotificationCertificateEventService notificationCertificateEventService;
+    private CertificateEventService certificateEventService;
 
     @Nested
     class RouteHeadersTests {
@@ -74,7 +74,7 @@ class NotificationCertificateEventServiceTest {
 
         @Test
         void shallSetHeaderCertificateId() throws JMSException {
-            notificationCertificateEventService.send(message);
+            certificateEventService.send(message);
             verify(jmsTemplateNotificationPostProcessing).send(messageCaptor.capture());
             assertEquals(CERTIFICATE_ID,
                 messageCaptor.getValue().createMessage(session).getStringProperty(NotificationRouteHeaders.CERTIFICATE_ID));
@@ -82,7 +82,7 @@ class NotificationCertificateEventServiceTest {
 
         @Test
         void shallSetHeaderEventType() throws JMSException {
-            notificationCertificateEventService.send(message);
+            certificateEventService.send(message);
             verify(jmsTemplateNotificationPostProcessing).send(messageCaptor.capture());
             assertEquals(CERTIFICATE_SIGN,
                 messageCaptor.getValue().createMessage(session).getStringProperty(NotificationRouteHeaders.EVENT_TYPE));
@@ -92,12 +92,12 @@ class NotificationCertificateEventServiceTest {
 
     @Test
     void shallReturnTrueIfMessageIsSent() {
-        assertTrue(notificationCertificateEventService.send(message));
+        assertTrue(certificateEventService.send(message));
     }
 
     @Test
     void shallReturnFalseIfExceptionIsThrown() {
         doThrow(IllegalStateException.class).when(jmsTemplateNotificationPostProcessing).send(any());
-        assertFalse(notificationCertificateEventService.send(message));
+        assertFalse(certificateEventService.send(message));
     }
 }

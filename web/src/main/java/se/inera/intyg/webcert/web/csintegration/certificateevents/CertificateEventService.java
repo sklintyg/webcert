@@ -17,38 +17,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.csintegration.notification;
+package se.inera.intyg.webcert.web.csintegration.certificateevents;
+
+import static se.inera.intyg.webcert.web.csintegration.certificateevents.CertificateEventType.CERTIFICATE_ID;
+import static se.inera.intyg.webcert.web.csintegration.certificateevents.CertificateEventType.EVENT_TYPE;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 
 @Slf4j
 @Service
-public class NotificationCertificateEventService {
+public class CertificateEventService {
 
     private final JmsTemplate jmsCertificateEventTemplate;
 
-    public NotificationCertificateEventService(
+    public CertificateEventService(
         @Qualifier("jmsCertificateEventTemplate") JmsTemplate jmsCertificateEventTemplate) {
         this.jmsCertificateEventTemplate = jmsCertificateEventTemplate;
     }
 
-    public boolean send(NotificationCertificateMessage notificationCertificateMessage) {
+    public boolean send(CertificateEventMessage certificateEventMessage) {
 
         try {
             jmsCertificateEventTemplate.send(session -> {
                 final var textMessage = session.createTextMessage();
-                textMessage.setStringProperty(NotificationRouteHeaders.CERTIFICATE_ID, notificationCertificateMessage.getCertificateId());
-                textMessage.setStringProperty(NotificationRouteHeaders.EVENT_TYPE, notificationCertificateMessage.getEventType());
+                textMessage.setStringProperty(CERTIFICATE_ID, certificateEventMessage.getCertificateId());
+                textMessage.setStringProperty(EVENT_TYPE, certificateEventMessage.getEventType());
                 return textMessage;
             });
             return true;
         } catch (Exception e) {
             log.warn("Exception occured while trying to send NotificationCertificateEvent for certificate: '{}'",
-                notificationCertificateMessage.getCertificateId(), e);
+                certificateEventMessage.getCertificateId(), e);
             return false;
         }
     }

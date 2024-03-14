@@ -17,9 +17,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.csintegration.notification;
+package se.inera.intyg.webcert.web.csintegration.certificateevents;
 
-public class NotificationCertificateEventType {
+import lombok.Builder;
+import lombok.Value;
 
-    public static final String CERTIFICATE_SIGNED = "certificate-signed";
+@Value
+@Builder
+public class CertificateEventMessage {
+
+    String certificateId;
+    String eventType;
 }

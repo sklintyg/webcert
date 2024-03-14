@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
-import static se.inera.intyg.webcert.web.csintegration.notification.NotificationCertificateEventType.CERTIFICATE_SIGNED;
+import static se.inera.intyg.webcert.web.csintegration.certificateevents.CertificateEventType.CERTIFICATE_SIGNED;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -37,8 +37,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
-import se.inera.intyg.webcert.web.csintegration.notification.NotificationCertificateEventService;
-import se.inera.intyg.webcert.web.csintegration.notification.NotificationCertificateMessage;
+import se.inera.intyg.webcert.web.csintegration.certificateevents.CertificateEventMessage;
+import se.inera.intyg.webcert.web.csintegration.certificateevents.CertificateEventService;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -58,7 +58,7 @@ class FinalizedCertificateLogServiceTest {
     @Mock
     private MonitoringLogService monitoringLogService;
     @Mock
-    private NotificationCertificateEventService notificationCertificateEventService;
+    private CertificateEventService certificateEventService;
 
     @InjectMocks
     private FinalizedCertificateLogService finalizedCertificateLogService;
@@ -144,13 +144,13 @@ class FinalizedCertificateLogServiceTest {
     @Nested
     class NotificationTests {
 
-        private final ArgumentCaptor<NotificationCertificateMessage> argumentCaptor = ArgumentCaptor.forClass(
-            NotificationCertificateMessage.class);
+        private final ArgumentCaptor<CertificateEventMessage> argumentCaptor = ArgumentCaptor.forClass(
+            CertificateEventMessage.class);
 
         @Test
         void shouldSendNotificationCertificateMessageWithCertificateId() {
             finalizedCertificateLogService.log(CERTIFICATE);
-            verify(notificationCertificateEventService).send(argumentCaptor.capture());
+            verify(certificateEventService).send(argumentCaptor.capture());
 
             assertEquals(ID, argumentCaptor.getValue().getCertificateId());
         }
@@ -158,7 +158,7 @@ class FinalizedCertificateLogServiceTest {
         @Test
         void shouldSendNotificationCertificateMessageWithEventTypeCertificateSigned() {
             finalizedCertificateLogService.log(CERTIFICATE);
-            verify(notificationCertificateEventService).send(argumentCaptor.capture());
+            verify(certificateEventService).send(argumentCaptor.capture());
 
             assertEquals(CERTIFICATE_SIGNED, argumentCaptor.getValue().getEventType());
         }
