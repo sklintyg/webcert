@@ -41,7 +41,8 @@ import se.inera.intyg.webcert.web.service.underskrift.xmldsig.XmlUnderskriftServ
 @Service("signServiceForCS")
 public class SignServiceForCS implements UnderskriftService {
 
-    private static final String CERTIFICATE_WITH_ID_DOES_NOT_EXIST_IN_CERTIFICATE_SERVICE = "Certificate with id '{}' does not exist in certificate service";
+    private static final String CERTIFICATE_WITH_ID_DOES_NOT_EXIST_IN_CERTIFICATE_SERVICE =
+        "Certificate with id '{}' does not exist in certificate service";
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
     private final XmlUnderskriftServiceImpl xmlUnderskriftService;
