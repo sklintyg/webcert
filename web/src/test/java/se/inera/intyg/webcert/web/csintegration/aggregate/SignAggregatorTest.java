@@ -36,7 +36,7 @@ import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 
 @ExtendWith(MockitoExtension.class)
-class SignatureAggregatorTest {
+class SignAggregatorTest {
 
 
     private static final String CERTIFICATE_ID = "certificateId";
@@ -53,7 +53,7 @@ class SignatureAggregatorTest {
 
     @BeforeEach
     void setUp() {
-        signCertificateAggregator = new SignatureAggregator(
+        signCertificateAggregator = new SignAggregator(
             certificateServiceProfile,
             signatureServiceForWC,
             signatureServiceForCS

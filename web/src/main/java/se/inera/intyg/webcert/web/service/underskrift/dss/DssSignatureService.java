@@ -142,7 +142,7 @@ public class DssSignatureService {
     @Autowired
     public DssSignatureService(DssMetadataService dssMetadataService, DssSignMessageService dssSignMessageService,
         WebCertUserService userService, UtkastRepository utkastRepository, DssSignMessageIdpProvider dssSignMessageIdpProvider,
-        @Qualifier("signatureAggregator") UnderskriftService underskriftService,
+        @Qualifier("signAggregator") UnderskriftService underskriftService,
         RedisTicketTracker redisTicketTracker, MonitoringLogService monitoringLogService, IntygModuleRegistry moduleRegistry) {
         this.dssSignMessageIdpProvider = dssSignMessageIdpProvider;
         objectFactoryDssCore = new se.inera.intyg.webcert.dss.xsd.dsscore.ObjectFactory();

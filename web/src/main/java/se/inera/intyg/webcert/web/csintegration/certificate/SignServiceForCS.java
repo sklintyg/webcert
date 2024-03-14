@@ -34,8 +34,8 @@ import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 
 @Slf4j
 @RequiredArgsConstructor
-@Service("signatureServiceForCS")
-public class SignatureServiceForCS implements UnderskriftService {
+@Service("signServiceForCS")
+public class SignServiceForCS implements UnderskriftService {
 
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;

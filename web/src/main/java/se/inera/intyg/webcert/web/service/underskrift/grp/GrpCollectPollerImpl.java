@@ -78,7 +78,7 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
     private RedisTicketTracker redisTicketTracker;
 
     @Autowired
-    @Qualifier("signatureAggregator")
+    @Qualifier("signAggregator")
     private UnderskriftService underskriftService;
 
     @Autowired

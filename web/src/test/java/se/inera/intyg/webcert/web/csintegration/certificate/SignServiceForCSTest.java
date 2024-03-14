@@ -43,7 +43,7 @@ import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 
 @ExtendWith(MockitoExtension.class)
-class SignatureServiceForCSTest {
+class SignServiceForCSTest {
 
     private static final String CERTIFICATE_ID = "certificateId";
     private static final String CERTIFICATE_TYPE = "certificateType";
@@ -62,7 +62,7 @@ class SignatureServiceForCSTest {
     private FakeSignatureServiceCS fakeSignatureServiceCS;
 
     @InjectMocks
-    private SignatureServiceForCS signatureServiceForCS;
+    private SignServiceForCS signServiceForCS;
 
 
     @Nested
@@ -71,7 +71,7 @@ class SignatureServiceForCSTest {
         @Test
         void shallReturnNullIfCertificateDontExistsInCertificateService() {
             doReturn(false).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
-            assertNull(signatureServiceForCS.startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE, TICKET_ID, false));
+            assertNull(signServiceForCS.startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE, TICKET_ID, false));
         }
 
         @Test
@@ -85,7 +85,7 @@ class SignatureServiceForCSTest {
                 .build()
             ).when(csIntegrationService).getCertificateXml(certificateXmlRequestDTO, CERTIFICATE_ID);
             assertThrows(ConcurrentModificationException.class,
-                () -> signatureServiceForCS.startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE,
+                () -> signServiceForCS.startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE,
                     TICKET_ID, false));
         }
 
@@ -104,7 +104,7 @@ class SignatureServiceForCSTest {
                 .create(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE, TICKET_ID, false,
                     new String(Base64.getDecoder().decode(CERTIFICATE_XML_DATA), StandardCharsets.UTF_8));
 
-            final var actualTicket = signatureServiceForCS.startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE,
+            final var actualTicket = signServiceForCS.startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE,
                 TICKET_ID, false);
             assertEquals(expectedTicket, actualTicket);
         }
@@ -116,7 +116,7 @@ class SignatureServiceForCSTest {
         @Test
         void shallReturnNullIfCertificateDontExistsInCertificateService() {
             doReturn(false).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
-            assertNull(signatureServiceForCS.fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, TICKET_ID));
+            assertNull(signServiceForCS.fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, TICKET_ID));
         }
 
         @Test
@@ -132,7 +132,7 @@ class SignatureServiceForCSTest {
             doReturn(expectedResponse).when(fakeSignatureServiceCS)
                 .finalizeFakeSignature(TICKET_ID);
 
-            signatureServiceForCS.fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, TICKET_ID);
+            signServiceForCS.fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, TICKET_ID);
             verify(finalizedCertificateLogService).log(certificate);
         }
 
@@ -147,7 +147,7 @@ class SignatureServiceForCSTest {
             doReturn(expectedResponse).when(fakeSignatureServiceCS)
                 .finalizeFakeSignature(TICKET_ID);
 
-            final var actualTicket = signatureServiceForCS.fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, TICKET_ID);
+            final var actualTicket = signServiceForCS.fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, TICKET_ID);
             assertEquals(expectedTicket, actualTicket);
         }
     }

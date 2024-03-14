@@ -59,7 +59,7 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 
-@Service("signatureServiceForWC")
+@Service("signServiceForWC")
 public class UnderskriftServiceImpl implements UnderskriftService {
 
     private static final Logger LOG = LoggerFactory.getLogger(UnderskriftServiceImpl.class);

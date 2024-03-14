@@ -26,47 +26,47 @@ import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 
-@Service("signatureAggregator")
-public class SignatureAggregator implements UnderskriftService {
+@Service("signAggregator")
+public class SignAggregator implements UnderskriftService {
 
     private final CertificateServiceProfile certificateServiceProfile;
-    private final UnderskriftService signatureServiceForWC;
-    private final UnderskriftService signatureServiceForCS;
+    private final UnderskriftService signServiceForWC;
+    private final UnderskriftService signServiceForCS;
 
-    public SignatureAggregator(CertificateServiceProfile certificateServiceProfile,
-        @Qualifier("signatureServiceForWC") UnderskriftService signatureServiceForWC,
-        @Qualifier("signatureServiceForCS") UnderskriftService signatureServiceForCS) {
+    public SignAggregator(CertificateServiceProfile certificateServiceProfile,
+        @Qualifier("signServiceForWC") UnderskriftService signServiceForWC,
+        @Qualifier("signServiceForCS") UnderskriftService signServiceForCS) {
         this.certificateServiceProfile = certificateServiceProfile;
-        this.signatureServiceForWC = signatureServiceForWC;
-        this.signatureServiceForCS = signatureServiceForCS;
+        this.signServiceForWC = signServiceForWC;
+        this.signServiceForCS = signServiceForCS;
     }
 
     @Override
     public SignaturBiljett startSigningProcess(String intygsId, String intygsTyp, long version, SignMethod signMethod, String ticketID,
         boolean isWc2ClientRequest) {
         if (!certificateServiceProfile.active()) {
-            return signatureServiceForWC.startSigningProcess(intygsId, intygsTyp, version, signMethod,
+            return signServiceForWC.startSigningProcess(intygsId, intygsTyp, version, signMethod,
                 ticketID, isWc2ClientRequest);
         }
 
-        final var signaturBiljett = signatureServiceForCS.startSigningProcess(intygsId, intygsTyp, version, signMethod, ticketID,
+        final var signaturBiljett = signServiceForCS.startSigningProcess(intygsId, intygsTyp, version, signMethod, ticketID,
             isWc2ClientRequest);
 
         return signaturBiljett != null ? signaturBiljett
-            : signatureServiceForWC.startSigningProcess(intygsId, intygsTyp, version, signMethod, ticketID,
+            : signServiceForWC.startSigningProcess(intygsId, intygsTyp, version, signMethod, ticketID,
                 isWc2ClientRequest);
     }
 
     @Override
     public SignaturBiljett fakeSignature(String intygsId, String intygsTyp, long version, String ticketId) {
         if (!certificateServiceProfile.active()) {
-            return signatureServiceForWC.fakeSignature(intygsId, intygsTyp, version, ticketId);
+            return signServiceForWC.fakeSignature(intygsId, intygsTyp, version, ticketId);
         }
 
-        final var signaturBiljett = signatureServiceForCS.fakeSignature(intygsId, intygsTyp, version, ticketId);
+        final var signaturBiljett = signServiceForCS.fakeSignature(intygsId, intygsTyp, version, ticketId);
 
         return signaturBiljett != null ? signaturBiljett
-            : signatureServiceForWC.fakeSignature(intygsId, intygsTyp, version, ticketId);
+            : signServiceForWC.fakeSignature(intygsId, intygsTyp, version, ticketId);
     }
 
     @Override

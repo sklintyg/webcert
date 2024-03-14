@@ -52,7 +52,7 @@ public class FakeSignatureApiController extends AbstractApiController {
     private static final String LAST_SAVED_DRAFT = "lastSavedDraft";
 
     @Autowired
-    @Qualifier("signatureAggregator")
+    @Qualifier("signAggregator")
     private UnderskriftService underskriftService;
 
     /**
