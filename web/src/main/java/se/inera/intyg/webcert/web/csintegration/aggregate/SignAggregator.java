@@ -71,7 +71,14 @@ public class SignAggregator implements UnderskriftService {
 
     @Override
     public SignaturBiljett netidSignature(String biljettId, byte[] signatur, String certifikat) {
-        return null;
+        if (!certificateServiceProfile.active()) {
+            return signServiceForWC.netidSignature(biljettId, signatur, certifikat);
+        }
+
+        final var signaturBiljett = signServiceForCS.netidSignature(biljettId, signatur, certifikat);
+
+        return signaturBiljett != null ? signaturBiljett
+            : signServiceForWC.netidSignature(biljettId, signatur, certifikat);
     }
 
     @Override

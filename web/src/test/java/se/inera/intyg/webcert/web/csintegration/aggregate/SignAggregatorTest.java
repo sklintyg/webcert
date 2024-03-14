@@ -24,6 +24,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -42,6 +43,8 @@ class SignAggregatorTest {
     private static final String CERTIFICATE_ID = "certificateId";
     private static final String CERTIFICATE_TYPE = "certificateType";
     private static final String TICKED_ID = "tickedId";
+    private static final byte[] SIGN_BYTE = "signature".getBytes(StandardCharsets.UTF_8);
+    private static final String SIGN_CERTIFICATE = "sign-certificate";
     @Mock
     private CertificateServiceProfile certificateServiceProfile;
     @Mock
@@ -142,6 +145,42 @@ class SignAggregatorTest {
 
             verify(signatureServiceForWC, times(0)).fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, TICKED_ID);
             verify(signatureServiceForCS, times(1)).fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, TICKED_ID);
+            assertEquals(expectedResult, actualResult);
+        }
+    }
+
+    @Nested
+    class NetidSignature {
+
+        @Test
+        void shallUseWebcertImplementationIfProfileNotActive() {
+            doReturn(false).when(certificateServiceProfile).active();
+
+            signCertificateAggregator.netidSignature(TICKED_ID, SIGN_BYTE, SIGN_CERTIFICATE);
+
+            verify(signatureServiceForWC, times(1)).netidSignature(TICKED_ID, SIGN_BYTE, SIGN_CERTIFICATE);
+        }
+
+        @Test
+        void shallUseWebcertImplementationIfCSReturnsNull() {
+            doReturn(true).when(certificateServiceProfile).active();
+            doReturn(null).when(signatureServiceForCS).netidSignature(TICKED_ID, SIGN_BYTE, SIGN_CERTIFICATE);
+
+            signCertificateAggregator.netidSignature(TICKED_ID, SIGN_BYTE, SIGN_CERTIFICATE);
+            verify(signatureServiceForWC, times(1)).netidSignature(TICKED_ID, SIGN_BYTE, SIGN_CERTIFICATE);
+        }
+
+
+        @Test
+        void shallUseCertificateServiceImplementationIfProfileIsActiveAndSignatureBiljettIsReturned() {
+            final var expectedResult = new SignaturBiljett();
+            doReturn(true).when(certificateServiceProfile).active();
+            doReturn(expectedResult).when(signatureServiceForCS).netidSignature(TICKED_ID, SIGN_BYTE, SIGN_CERTIFICATE);
+
+            final var actualResult = signCertificateAggregator.netidSignature(TICKED_ID, SIGN_BYTE, SIGN_CERTIFICATE);
+
+            verify(signatureServiceForWC, times(0)).netidSignature(TICKED_ID, SIGN_BYTE, SIGN_CERTIFICATE);
+            verify(signatureServiceForCS, times(1)).netidSignature(TICKED_ID, SIGN_BYTE, SIGN_CERTIFICATE);
             assertEquals(expectedResult, actualResult);
         }
     }
