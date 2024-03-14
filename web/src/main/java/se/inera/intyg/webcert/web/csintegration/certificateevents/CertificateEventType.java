@@ -21,6 +21,10 @@ package se.inera.intyg.webcert.web.csintegration.certificateevents;
 
 public class CertificateEventType {
 
+    private CertificateEventType() {
+        throw new IllegalStateException();
+    }
+
     public static final String CERTIFICATE_SIGNED = "certificate-signed";
 
     public static final String CERTIFICATE_ID = "certificateId";

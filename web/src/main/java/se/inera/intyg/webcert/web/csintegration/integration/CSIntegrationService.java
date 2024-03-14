@@ -264,7 +264,9 @@ public class CSIntegrationService {
         final var response = restTemplate.postForObject(url, request, SignCertificateResponseDTO.class);
 
         if (response == null) {
-            return null;
+            throw new IllegalStateException(
+                String.format("Sign certificate request for '%s' returned empty response!", certificateId)
+            );
         }
 
         return response.getCertificate();

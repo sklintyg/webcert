@@ -26,6 +26,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
+import static se.inera.intyg.webcert.web.csintegration.certificateevents.CertificateEventType.EVENT_TYPE;
 
 import javax.jms.JMSException;
 import javax.jms.Session;
@@ -41,7 +42,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
-import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 
 @ExtendWith(MockitoExtension.class)
 class CertificateEventServiceTest {
@@ -77,7 +77,7 @@ class CertificateEventServiceTest {
             certificateEventService.send(message);
             verify(jmsTemplateNotificationPostProcessing).send(messageCaptor.capture());
             assertEquals(CERTIFICATE_ID,
-                messageCaptor.getValue().createMessage(session).getStringProperty(NotificationRouteHeaders.CERTIFICATE_ID));
+                messageCaptor.getValue().createMessage(session).getStringProperty(CERTIFICATE_ID));
         }
 
         @Test
@@ -85,7 +85,7 @@ class CertificateEventServiceTest {
             certificateEventService.send(message);
             verify(jmsTemplateNotificationPostProcessing).send(messageCaptor.capture());
             assertEquals(CERTIFICATE_SIGN,
-                messageCaptor.getValue().createMessage(session).getStringProperty(NotificationRouteHeaders.EVENT_TYPE));
+                messageCaptor.getValue().createMessage(session).getStringProperty(EVENT_TYPE));
         }
 
     }

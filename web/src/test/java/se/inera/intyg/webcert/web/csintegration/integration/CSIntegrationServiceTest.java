@@ -724,7 +724,9 @@ class CSIntegrationServiceTest {
         void shouldSetUrlCorrect() {
             ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
             final var captor = ArgumentCaptor.forClass(String.class);
-
+            when(restTemplate.postForObject(anyString(), eq(SIGN_CERTIFICATE_REQUEST_DTO), eq(SignCertificateResponseDTO.class)))
+                .thenReturn(SIGN_CERTIFICATE_RESPONSE_DTO);
+            
             csIntegrationService.signCertificate(SIGN_CERTIFICATE_REQUEST_DTO, CERTIFICATE_ID, VERSION);
             verify(restTemplate).postForObject(captor.capture(), eq(SIGN_CERTIFICATE_REQUEST_DTO), eq(SignCertificateResponseDTO.class));
 
@@ -735,7 +737,8 @@ class CSIntegrationServiceTest {
         void shouldReturnNullIfResponseIsNull() {
             when(restTemplate.postForObject(anyString(), eq(SIGN_CERTIFICATE_REQUEST_DTO), eq(SignCertificateResponseDTO.class)))
                 .thenReturn(null);
-            assertNull(csIntegrationService.signCertificate(SIGN_CERTIFICATE_REQUEST_DTO, CERTIFICATE_ID, VERSION));
+            assertThrows(IllegalStateException.class,
+                () -> csIntegrationService.signCertificate(SIGN_CERTIFICATE_REQUEST_DTO, CERTIFICATE_ID, VERSION));
         }
     }
 }
