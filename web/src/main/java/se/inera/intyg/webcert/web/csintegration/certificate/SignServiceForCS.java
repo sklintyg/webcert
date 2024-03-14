@@ -25,20 +25,27 @@ import java.util.ConcurrentModificationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlResponseDTO;
 import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
+import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
+import se.inera.intyg.webcert.web.service.underskrift.xmldsig.XmlUnderskriftServiceImpl;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service("signServiceForCS")
 public class SignServiceForCS implements UnderskriftService {
 
+    private static final String CERTIFICATE_WITH_ID_DOES_NOT_EXIST_IN_CERTIFICATE_SERVICE = "Certificate with id '{}' does not exist in certificate service";
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+    private final XmlUnderskriftServiceImpl xmlUnderskriftService;
+    private final RedisTicketTracker redisTicketTracker;
     private final FakeSignatureServiceCS fakeSignatureServiceCS;
     private final CreateSignatureTicketService createSignatureTicketService;
     private final FinalizeCertificateSignService finalizeCertificateSignService;
@@ -48,7 +55,7 @@ public class SignServiceForCS implements UnderskriftService {
         String ticketID, boolean isWc2ClientRequest) {
         final var exists = csIntegrationService.certificateExists(certificateId);
         if (Boolean.FALSE.equals(exists)) {
-            log.debug("Certificate with id '{}' does not exist in certificate service", certificateId);
+            log.debug(CERTIFICATE_WITH_ID_DOES_NOT_EXIST_IN_CERTIFICATE_SERVICE, certificateId);
             return null;
         }
 
@@ -78,7 +85,7 @@ public class SignServiceForCS implements UnderskriftService {
     public SignaturBiljett fakeSignature(String certificateId, String certificateType, long version, String ticketId) {
         final var exists = csIntegrationService.certificateExists(certificateId);
         if (Boolean.FALSE.equals(exists)) {
-            log.debug("Certificate with id '{}' does not exist in certificate service", certificateId);
+            log.debug(CERTIFICATE_WITH_ID_DOES_NOT_EXIST_IN_CERTIFICATE_SERVICE, certificateId);
             return null;
         }
         final var finalizedCertificateSignature = fakeSignatureServiceCS.finalizeFakeSignature(ticketId);
@@ -89,7 +96,24 @@ public class SignServiceForCS implements UnderskriftService {
 
     @Override
     public SignaturBiljett netidSignature(String biljettId, byte[] signatur, String certifikat) {
-        return null;
+        final var ticket = redisTicketTracker.findBiljett(biljettId);
+        if (ticket == null) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
+                String.format(
+                    "No SignaturBiljett found for ticketId '%s' when finalizing signature.", biljettId
+                )
+            );
+        }
+
+        final var exists = csIntegrationService.certificateExists(ticket.getIntygsId());
+        if (Boolean.FALSE.equals(exists)) {
+            log.debug(CERTIFICATE_WITH_ID_DOES_NOT_EXIST_IN_CERTIFICATE_SERVICE, ticket.getIntygsId());
+            return null;
+        }
+
+        final var finalizedCertificateSignature = xmlUnderskriftService.finalizeSignatureForCS(ticket, signatur, certifikat);
+        finalizeCertificateSignService.finalizeSign(finalizedCertificateSignature.getCertificate());
+        return finalizedCertificateSignature.getSignaturBiljett();
     }
 
     @Override

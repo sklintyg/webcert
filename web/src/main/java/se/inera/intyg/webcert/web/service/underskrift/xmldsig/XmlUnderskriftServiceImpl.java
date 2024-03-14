@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.service.underskrift.xmldsig;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
@@ -27,6 +28,7 @@ import se.inera.intyg.infra.xmldsig.factory.PartialSignatureFactory;
 import se.inera.intyg.infra.xmldsig.model.IntygXMLDSignature;
 import se.inera.intyg.infra.xmldsig.service.PrepareSignatureService;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.web.csintegration.certificate.FinalizedCertificateSignature;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.underskrift.BaseXMLSignatureService;
 import se.inera.intyg.webcert.web.service.underskrift.CommonUnderskriftService;
@@ -36,6 +38,7 @@ import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
+@Slf4j
 @Service
 public class XmlUnderskriftServiceImpl extends BaseXMLSignatureService implements CommonUnderskriftService {
 
@@ -83,5 +86,15 @@ public class XmlUnderskriftServiceImpl extends BaseXMLSignatureService implement
             utkast.getRelationKod());
 
         return redisTicketTracker.updateStatus(sb.getTicketId(), sb.getStatus());
+    }
+
+    @Override
+    public FinalizedCertificateSignature finalizeSignatureForCS(SignaturBiljett ticket, byte[] signatur, String certifikat) {
+        final var finalizedCertificateSignature = finalizeXMLDSigSignatureForCS(certifikat, ticket, signatur);
+        redisTicketTracker.updateStatus(
+            finalizedCertificateSignature.getSignaturBiljett().getTicketId(),
+            finalizedCertificateSignature.getSignaturBiljett().getStatus()
+        );
+        return finalizedCertificateSignature;
     }
 }

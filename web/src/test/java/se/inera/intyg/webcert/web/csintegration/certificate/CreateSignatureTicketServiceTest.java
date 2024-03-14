@@ -62,9 +62,9 @@ class CreateSignatureTicketServiceTest {
 
     @Test
     void shallThrowIfSignMethodIsNotSupported() {
-        doReturn(AuthenticationMethod.NET_ID).when(user).getAuthenticationMethod();
+        doReturn(AuthenticationMethod.BANK_ID).when(user).getAuthenticationMethod();
         assertThrows(IllegalStateException.class,
-            () -> createSignatureTicketService.create(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.NETID_PLUGIN, TICKET_ID, false,
+            () -> createSignatureTicketService.create(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.GRP, TICKET_ID, false,
                 CERTIFICATE_XML));
     }
 
@@ -81,9 +81,39 @@ class CreateSignatureTicketServiceTest {
     }
 
     @Test
-    void shallReturnCreatedSignatureTicket() {
+    void shallReturnCreatedSignatureTicketForUserWithAuthenticationMethodFake() {
         final var expectedTicket = new SignaturBiljett();
         doReturn(AuthenticationMethod.FAKE).when(user).getAuthenticationMethod();
+        doReturn(expectedTicket).when(xmlUnderskriftService)
+            .skapaSigneringsBiljettMedDigest(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, Optional.empty(), SignMethod.FAKE, TICKET_ID, false,
+                CERTIFICATE_XML);
+
+        final var actualTicket = createSignatureTicketService.create(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE, TICKET_ID,
+            false,
+            CERTIFICATE_XML);
+
+        assertEquals(expectedTicket, actualTicket);
+    }
+
+    @Test
+    void shallReturnCreatedSignatureTicketForUserWithAuthenticationMethodSiths() {
+        final var expectedTicket = new SignaturBiljett();
+        doReturn(AuthenticationMethod.SITHS).when(user).getAuthenticationMethod();
+        doReturn(expectedTicket).when(xmlUnderskriftService)
+            .skapaSigneringsBiljettMedDigest(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, Optional.empty(), SignMethod.FAKE, TICKET_ID, false,
+                CERTIFICATE_XML);
+
+        final var actualTicket = createSignatureTicketService.create(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE, TICKET_ID,
+            false,
+            CERTIFICATE_XML);
+
+        assertEquals(expectedTicket, actualTicket);
+    }
+
+    @Test
+    void shallReturnCreatedSignatureTicketForUserWithAuthenticationMethodNetId() {
+        final var expectedTicket = new SignaturBiljett();
+        doReturn(AuthenticationMethod.NET_ID).when(user).getAuthenticationMethod();
         doReturn(expectedTicket).when(xmlUnderskriftService)
             .skapaSigneringsBiljettMedDigest(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, Optional.empty(), SignMethod.FAKE, TICKET_ID, false,
                 CERTIFICATE_XML);

@@ -38,20 +38,27 @@ public class CreateSignatureTicketService {
     public SignaturBiljett create(String certificateId, String certificateType, long version, SignMethod signMethod,
         String ticketID, boolean isWc2ClientRequest, String certificateXml) {
         final var user = webCertUserService.getUser();
-        if (user.getAuthenticationMethod().equals(AuthenticationMethod.FAKE)) {
-            final var ticket = xmlUnderskriftService.skapaSigneringsBiljettMedDigest(
-                certificateId, certificateType, version, Optional.empty(),
-                signMethod, ticketID, isWc2ClientRequest, certificateXml
-            );
-            return validatedTicket(ticket);
-        }
-        throw new IllegalStateException("AuthenticationMethod not supported '%s'");
-    }
+        final var ticket = getTicket(user.getAuthenticationMethod(), certificateId, certificateType, version,
+            signMethod, ticketID, isWc2ClientRequest, certificateXml);
 
-    private SignaturBiljett validatedTicket(SignaturBiljett ticket) {
         if (ticket == null) {
             throw new IllegalStateException("Unhandled authentication method, could not create SignaturBiljett");
         }
+
         return ticket;
+    }
+
+    private SignaturBiljett getTicket(AuthenticationMethod authenticationMethod, String certificateId, String certificateType, long version,
+        SignMethod signMethod, String ticketID, boolean isWc2ClientRequest, String certificateXml) {
+        switch (authenticationMethod) {
+            case FAKE:
+            case SITHS:
+            case NET_ID:
+                return xmlUnderskriftService.skapaSigneringsBiljettMedDigest(
+                    certificateId, certificateType, version, Optional.empty(),
+                    signMethod, ticketID, isWc2ClientRequest, certificateXml);
+            default:
+                throw new IllegalStateException("AuthenticationMethod not supported '%s'");
+        }
     }
 }

@@ -44,6 +44,7 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEn
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.web.csintegration.certificate.FinalizedCertificateSignature;
 import se.inera.intyg.webcert.web.service.underskrift.BaseSignatureService;
 import se.inera.intyg.webcert.web.service.underskrift.CommonUnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.grp.dto.IntygGRPSignature;
@@ -135,6 +136,11 @@ public class GrpUnderskriftServiceImpl extends BaseSignatureService implements C
         WebCertUser user) {
         SignaturBiljett sb = finalizePkcs7Signature(user, biljett, new String(signatur, Charset.forName("UTF-8")), utkast);
         return redisTicketTracker.updateStatus(sb.getTicketId(), sb.getStatus());
+    }
+
+    @Override
+    public FinalizedCertificateSignature finalizeSignatureForCS(SignaturBiljett ticket, byte[] signatur, String certifikat) {
+        return null;
     }
 
     // Used for BankID / Mobilt BankID.
