@@ -17,15 +17,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.csintegration.util;
+package se.inera.intyg.webcert.web.csintegration.certificate;
 
-public interface CertificateServiceProfile {
+import lombok.Builder;
+import lombok.Value;
+import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 
-    default boolean active() {
-        return false;
-    }
+@Value
+@Builder
+public class FinalizedCertificateSignature {
 
-    default boolean activeAndSupportsType(String type) {
-        return false;
-    }
+    Certificate certificate;
+    SignaturBiljett signaturBiljett;
 }

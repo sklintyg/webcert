@@ -1,0 +1,154 @@
+/*
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package se.inera.intyg.webcert.web.csintegration.certificate;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.ConcurrentModificationException;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlResponseDTO;
+import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
+import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
+
+@ExtendWith(MockitoExtension.class)
+class SignServiceForCSTest {
+
+    private static final String CERTIFICATE_ID = "certificateId";
+    private static final String CERTIFICATE_TYPE = "certificateType";
+    private static final String TICKET_ID = "ticketId";
+    private static final String CERTIFICATE_XML_DATA = "certificateXmlData";
+    @Mock
+    private CSIntegrationService csIntegrationService;
+    @Mock
+    private CSIntegrationRequestFactory csIntegrationRequestFactory;
+    @Mock
+    private FinalizeCertificateSignService finalizeCertificateSignService;
+
+    @Mock
+    private CreateSignatureTicketService createSignatureTicketService;
+    @Mock
+    private FakeSignatureServiceCS fakeSignatureServiceCS;
+
+    @InjectMocks
+    private SignServiceForCS signServiceForCS;
+
+
+    @Nested
+    class StartSigningProcess {
+
+        @Test
+        void shallReturnNullIfCertificateDontExistsInCertificateService() {
+            doReturn(false).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
+            assertNull(signServiceForCS.startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE, TICKET_ID, false));
+        }
+
+        @Test
+        void shallThrowExceptionIfVersionDontMatch() {
+            final var certificateXmlRequestDTO = GetCertificateXmlRequestDTO.builder().build();
+            doReturn(certificateXmlRequestDTO).when(csIntegrationRequestFactory).getCertificateXmlRequest();
+            doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
+            doReturn(GetCertificateXmlResponseDTO.builder()
+                .xml(CERTIFICATE_XML_DATA)
+                .version(1L)
+                .build()
+            ).when(csIntegrationService).getCertificateXml(certificateXmlRequestDTO, CERTIFICATE_ID);
+            assertThrows(ConcurrentModificationException.class,
+                () -> signServiceForCS.startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE,
+                    TICKET_ID, false));
+        }
+
+        @Test
+        void shallReturnSignaturBiljett() {
+            final var expectedTicket = new SignaturBiljett();
+            final var certificateXmlRequestDTO = GetCertificateXmlRequestDTO.builder().build();
+            doReturn(certificateXmlRequestDTO).when(csIntegrationRequestFactory).getCertificateXmlRequest();
+            doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
+            doReturn(
+                GetCertificateXmlResponseDTO.builder()
+                    .xml(CERTIFICATE_XML_DATA)
+                    .build()
+            ).when(csIntegrationService).getCertificateXml(certificateXmlRequestDTO, CERTIFICATE_ID);
+            doReturn(expectedTicket).when(createSignatureTicketService)
+                .create(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE, TICKET_ID, false,
+                    new String(Base64.getDecoder().decode(CERTIFICATE_XML_DATA), StandardCharsets.UTF_8));
+
+            final var actualTicket = signServiceForCS.startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE,
+                TICKET_ID, false);
+            assertEquals(expectedTicket, actualTicket);
+        }
+    }
+
+    @Nested
+    class FakeSignature {
+
+        @Test
+        void shallReturnNullIfCertificateDontExistsInCertificateService() {
+            doReturn(false).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
+            assertNull(signServiceForCS.fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, TICKET_ID));
+        }
+
+        @Test
+        void shallLogSignIntygWithProvidedCertificate() {
+            final var ticket = new SignaturBiljett();
+            final var certificate = new Certificate();
+            final var expectedResponse = FinalizedCertificateSignature.builder()
+                .signaturBiljett(ticket)
+                .certificate(certificate)
+                .build();
+
+            doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
+            doReturn(expectedResponse).when(fakeSignatureServiceCS)
+                .finalizeFakeSignature(TICKET_ID);
+
+            signServiceForCS.fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, TICKET_ID);
+            verify(finalizeCertificateSignService).finalizeSign(certificate);
+        }
+
+        @Test
+        void shallReturnSignaturBiljett() {
+            final var expectedTicket = new SignaturBiljett();
+            final var expectedResponse = FinalizedCertificateSignature.builder()
+                .signaturBiljett(expectedTicket)
+                .build();
+
+            doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
+            doReturn(expectedResponse).when(fakeSignatureServiceCS)
+                .finalizeFakeSignature(TICKET_ID);
+
+            final var actualTicket = signServiceForCS.fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, TICKET_ID);
+            assertEquals(expectedTicket, actualTicket);
+        }
+    }
+}

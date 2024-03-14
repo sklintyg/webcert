@@ -17,15 +17,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.csintegration.util;
+package se.inera.intyg.webcert.web.csintegration.integration.dto;
 
-public interface CertificateServiceProfile {
 
-    default boolean active() {
-        return false;
-    }
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import lombok.Builder;
+import lombok.Value;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlResponseDTO.GetCertificateXmlResponseDTOBuilder;
 
-    default boolean activeAndSupportsType(String type) {
-        return false;
+@JsonDeserialize(builder = GetCertificateXmlResponseDTOBuilder.class)
+@Value
+@Builder
+public class GetCertificateXmlResponseDTO {
+
+    String certificateId;
+    String xml;
+    long version;
+
+
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class GetCertificateXmlResponseDTOBuilder {
+
     }
 }

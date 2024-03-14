@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.web.csintegration.integration;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.Certificate;
@@ -27,10 +29,12 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServi
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientHelper;
 import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitHelper;
@@ -149,6 +153,15 @@ public class CSIntegrationRequestFactory {
             .build();
     }
 
+    public GetCertificateXmlRequestDTO getCertificateXmlRequest() {
+        return GetCertificateXmlRequestDTO.builder()
+            .unit(certificateServiceUnitHelper.getUnit())
+            .careUnit(certificateServiceUnitHelper.getCareUnit())
+            .careProvider(certificateServiceUnitHelper.getCareProvider())
+            .user(certificateServiceUserHelper.get())
+            .build();
+    }
+
     private Personnummer createPatientId(String patientId) {
         return Personnummer.createPersonnummer(patientId)
             .orElseThrow(() ->
@@ -156,5 +169,15 @@ public class CSIntegrationRequestFactory {
                     String.format("PatientId has wrong format: '%s'", patientId)
                 )
             );
+    }
+
+    public SignCertificateRequestDTO signCertificateRequest(String signatureXml) {
+        return SignCertificateRequestDTO.builder()
+            .unit(certificateServiceUnitHelper.getUnit())
+            .careUnit(certificateServiceUnitHelper.getCareUnit())
+            .careProvider(certificateServiceUnitHelper.getCareProvider())
+            .user(certificateServiceUserHelper.get())
+            .signatureXml(Base64.getEncoder().encodeToString(signatureXml.getBytes(StandardCharsets.UTF_8)))
+            .build();
     }
 }

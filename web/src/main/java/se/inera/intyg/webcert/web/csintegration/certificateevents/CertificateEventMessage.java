@@ -17,15 +17,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.csintegration.util;
+package se.inera.intyg.webcert.web.csintegration.certificateevents;
 
-public interface CertificateServiceProfile {
+import lombok.Builder;
+import lombok.Value;
 
-    default boolean active() {
-        return false;
-    }
+@Value
+@Builder
+public class CertificateEventMessage {
 
-    default boolean activeAndSupportsType(String type) {
-        return false;
-    }
+    String certificateId;
+    String eventType;
 }

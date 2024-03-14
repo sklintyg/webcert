@@ -86,6 +86,10 @@ public class ListIntygEntryConverter {
             return UtkastStatus.DRAFT_INCOMPLETE.toString();
         }
 
+        if (status == CertificateStatus.SIGNED) {
+            return UtkastStatus.SIGNED.toString();
+        }
+
         return null;
     }
 

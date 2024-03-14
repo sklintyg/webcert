@@ -41,6 +41,7 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MimeTypeUtils;
@@ -141,7 +142,7 @@ public class DssSignatureService {
     @Autowired
     public DssSignatureService(DssMetadataService dssMetadataService, DssSignMessageService dssSignMessageService,
         WebCertUserService userService, UtkastRepository utkastRepository, DssSignMessageIdpProvider dssSignMessageIdpProvider,
-        UnderskriftService underskriftService,
+        @Qualifier("signAggregator") UnderskriftService underskriftService,
         RedisTicketTracker redisTicketTracker, MonitoringLogService monitoringLogService, IntygModuleRegistry moduleRegistry) {
         this.dssSignMessageIdpProvider = dssSignMessageIdpProvider;
         objectFactoryDssCore = new se.inera.intyg.webcert.dss.xsd.dsscore.ObjectFactory();

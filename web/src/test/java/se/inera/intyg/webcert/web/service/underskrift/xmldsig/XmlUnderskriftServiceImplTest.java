@@ -35,6 +35,7 @@ import static se.inera.intyg.webcert.web.service.underskrift.testutil.Underskrif
 
 import java.nio.charset.Charset;
 import java.util.Base64;
+import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -119,11 +120,11 @@ public class XmlUnderskriftServiceImplTest {
 
     @Test
     public void testSigneringsBiljettMedDigest() {
-        when(utkastModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn("<xml/>");
         when(prepareSignatureService.prepareSignature(anyString(), anyString(), anyString())).thenReturn(buildIntygXMLSignature());
 
-        SignaturBiljett signaturBiljett = testee.skapaSigneringsBiljettMedDigest(INTYG_ID, INTYG_TYP, VERSION, "json", SignMethod.FAKE,
-            TICKET_ID, false);
+        SignaturBiljett signaturBiljett = testee.skapaSigneringsBiljettMedDigest(INTYG_ID, INTYG_TYP, VERSION, Optional.of("json"),
+            SignMethod.FAKE,
+            TICKET_ID, false, "<xml/>");
         assertNotNull(signaturBiljett);
         verify(redisTicketTracker, times(1)).trackBiljett(any(SignaturBiljett.class));
     }

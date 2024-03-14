@@ -17,15 +17,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.csintegration.util;
+package se.inera.intyg.webcert.web.csintegration.certificateevents;
 
-public interface CertificateServiceProfile {
+public class CertificateEventType {
 
-    default boolean active() {
-        return false;
+    private CertificateEventType() {
+        throw new IllegalStateException();
     }
 
-    default boolean activeAndSupportsType(String type) {
-        return false;
-    }
+    public static final String CERTIFICATE_SIGNED = "certificate-signed";
+
+    public static final String CERTIFICATE_ID = "certificateId";
+    public static final String EVENT_TYPE = "eventType";
 }
