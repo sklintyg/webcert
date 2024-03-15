@@ -575,9 +575,7 @@ class CSIntegrationRequestFactoryTest {
     @Nested
     class SignCertificateRequest {
 
-        private static final String CERTIFICATE_XML = "certificateXml";
         private static final String SIGNATURE_XML = "signatureXml";
-        private static final long VERSION = 1L;
 
         @BeforeEach
         void setup() {
@@ -620,6 +618,48 @@ class CSIntegrationRequestFactoryTest {
             final var actualRequest = csIntegrationRequestFactory.signCertificateRequest(SIGNATURE_XML);
             assertEquals(Base64.getEncoder().encodeToString(SIGNATURE_XML.getBytes(StandardCharsets.UTF_8)),
                 actualRequest.getSignatureXml());
+        }
+    }
+
+    @Nested
+    class SignCertificateWithoutSignatureRequest {
+
+        private static final String SIGNATURE_XML = "signatureXml";
+
+        @BeforeEach
+        void setup() {
+            when(certificateServiceUserHelper.get())
+                .thenReturn(USER);
+            when(certificateServiceUnitHelper.getUnit())
+                .thenReturn(UNIT);
+            when(certificateServiceUnitHelper.getCareUnit())
+                .thenReturn(CARE_UNIT);
+            when(certificateServiceUnitHelper.getCareProvider())
+                .thenReturn(CARE_PROVIDER);
+        }
+
+        @Test
+        void shouldSetUser() {
+            final var actualRequest = csIntegrationRequestFactory.signCertificateWithoutSignatureRequest();
+            assertEquals(USER, actualRequest.getUser());
+        }
+
+        @Test
+        void shouldSetUnit() {
+            final var actualRequest = csIntegrationRequestFactory.signCertificateWithoutSignatureRequest();
+            assertEquals(UNIT, actualRequest.getUnit());
+        }
+
+        @Test
+        void shouldSetCareUnit() {
+            final var actualRequest = csIntegrationRequestFactory.signCertificateWithoutSignatureRequest();
+            assertEquals(CARE_UNIT, actualRequest.getCareUnit());
+        }
+
+        @Test
+        void shouldSetCareProvider() {
+            final var actualRequest = csIntegrationRequestFactory.signCertificateWithoutSignatureRequest();
+            assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
         }
     }
 }

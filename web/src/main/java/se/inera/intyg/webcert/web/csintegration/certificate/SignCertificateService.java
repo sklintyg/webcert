@@ -37,4 +37,10 @@ public class SignCertificateService {
             csIntegrationRequestFactory.signCertificateRequest(signatureXml), certificateId, version
         );
     }
+
+    public Certificate signWithoutSignature(String certificateId, long version) {
+        return csIntegrationService.signCertificateWithoutSignature(
+            csIntegrationRequestFactory.signCertificateWithoutSignatureRequest(), certificateId, version
+        );
+    }
 }

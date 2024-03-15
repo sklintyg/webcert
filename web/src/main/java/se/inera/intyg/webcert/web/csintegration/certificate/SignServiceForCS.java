@@ -31,6 +31,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequest
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlResponseDTO;
 import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
+import se.inera.intyg.webcert.web.service.underskrift.grp.GrpUnderskriftServiceImpl;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
@@ -46,6 +47,7 @@ public class SignServiceForCS implements UnderskriftService {
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
     private final XmlUnderskriftServiceImpl xmlUnderskriftService;
+    private final GrpUnderskriftServiceImpl grpUnderskriftService;
     private final RedisTicketTracker redisTicketTracker;
     private final FakeSignatureServiceCS fakeSignatureServiceCS;
     private final CreateSignatureTicketService createSignatureTicketService;
@@ -97,15 +99,7 @@ public class SignServiceForCS implements UnderskriftService {
 
     @Override
     public SignaturBiljett netidSignature(String biljettId, byte[] signatur, String certifikat) {
-        final var ticket = redisTicketTracker.findBiljett(biljettId);
-        if (ticket == null) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
-                String.format(
-                    "No SignaturBiljett found for ticketId '%s' when finalizing signature.", biljettId
-                )
-            );
-        }
-
+        final var ticket = getTicket(biljettId);
         final var exists = csIntegrationService.certificateExists(ticket.getIntygsId());
         if (Boolean.FALSE.equals(exists)) {
             log.debug(CERTIFICATE_WITH_ID_DOES_NOT_EXIST_IN_CERTIFICATE_SERVICE, ticket.getIntygsId());
@@ -119,15 +113,36 @@ public class SignServiceForCS implements UnderskriftService {
 
     @Override
     public SignaturBiljett grpSignature(String biljettId, byte[] signatur) {
-        return null;
+        final var ticket = getTicket(biljettId);
+        final var exists = csIntegrationService.certificateExists(ticket.getIntygsId());
+        if (Boolean.FALSE.equals(exists)) {
+            log.debug(CERTIFICATE_WITH_ID_DOES_NOT_EXIST_IN_CERTIFICATE_SERVICE, ticket.getIntygsId());
+            return null;
+        }
+
+        final var finalizedCertificateSignature = grpUnderskriftService.finalizeSignatureForCS(ticket, signatur, null);
+        finalizeCertificateSignService.finalizeSign(finalizedCertificateSignature.getCertificate());
+        return finalizedCertificateSignature.getSignaturBiljett();
     }
 
     @Override
     public SignaturBiljett signeringsStatus(String ticketId) {
-        return null;
+        throw new IllegalStateException("");
     }
 
     private static String getDecodedXmlData(GetCertificateXmlResponseDTO certificateXml) {
         return new String(Base64.getDecoder().decode(certificateXml.getXml()), StandardCharsets.UTF_8);
+    }
+
+    private SignaturBiljett getTicket(String biljettId) {
+        final var ticket = redisTicketTracker.findBiljett(biljettId);
+        if (ticket == null) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
+                String.format(
+                    "No SignaturBiljett found for ticketId '%s' when finalizing signature.", biljettId
+                )
+            );
+        }
+        return ticket;
     }
 }

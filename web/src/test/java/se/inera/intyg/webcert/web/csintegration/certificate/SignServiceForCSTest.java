@@ -40,6 +40,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequest
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlResponseDTO;
+import se.inera.intyg.webcert.web.service.underskrift.grp.GrpUnderskriftServiceImpl;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
@@ -67,6 +68,8 @@ class SignServiceForCSTest {
     private FakeSignatureServiceCS fakeSignatureServiceCS;
     @Mock
     private XmlUnderskriftServiceImpl xmlUnderskriftService;
+    @Mock
+    private GrpUnderskriftServiceImpl grpUnderskriftService;
     @Mock
     private RedisTicketTracker redisTicketTracker;
 
@@ -217,5 +220,61 @@ class SignServiceForCSTest {
             assertEquals(expectedTicket, actualTicket);
         }
     }
-}
 
+    @Nested
+    class GrpSignature {
+
+        @Test
+        void shallThrowIfTicketFromRedisTrackerIsNull() {
+            doReturn(null).when(redisTicketTracker).findBiljett(TICKET_ID);
+            assertThrows(WebCertServiceException.class,
+                () -> signServiceForCS.grpSignature(TICKET_ID, SIGNATURE_IN_BYTE)
+            );
+        }
+
+        @Test
+        void shallReturnNullIfCertificateDontExistsInCertificateService() {
+            final var ticket = new SignaturBiljett();
+            ticket.setIntygsId(CERTIFICATE_ID);
+            doReturn(ticket).when(redisTicketTracker).findBiljett(TICKET_ID);
+            doReturn(false).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
+            assertNull(signServiceForCS.grpSignature(TICKET_ID, SIGNATURE_IN_BYTE));
+        }
+
+        @Test
+        void shallFinalizeSignWithCertificateFromCertificateService() {
+            final var certificate = new Certificate();
+            final var expectedTicket = new SignaturBiljett();
+            expectedTicket.setIntygsId(CERTIFICATE_ID);
+            final var expectedResponse = FinalizedCertificateSignature.builder()
+                .signaturBiljett(expectedTicket)
+                .certificate(certificate)
+                .build();
+
+            doReturn(expectedTicket).when(redisTicketTracker).findBiljett(TICKET_ID);
+            doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
+            doReturn(expectedResponse).when(grpUnderskriftService)
+                .finalizeSignatureForCS(expectedTicket, SIGNATURE_IN_BYTE, null);
+
+            signServiceForCS.grpSignature(TICKET_ID, SIGNATURE_IN_BYTE);
+            verify(finalizeCertificateSignService).finalizeSign(certificate);
+        }
+
+        @Test
+        void shallReturnSignaturBiljett() {
+            final var expectedTicket = new SignaturBiljett();
+            expectedTicket.setIntygsId(CERTIFICATE_ID);
+            final var expectedResponse = FinalizedCertificateSignature.builder()
+                .signaturBiljett(expectedTicket)
+                .build();
+
+            doReturn(expectedTicket).when(redisTicketTracker).findBiljett(TICKET_ID);
+            doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
+            doReturn(expectedResponse).when(grpUnderskriftService)
+                .finalizeSignatureForCS(expectedTicket, SIGNATURE_IN_BYTE, null);
+
+            final var actualTicket = signServiceForCS.grpSignature(TICKET_ID, SIGNATURE_IN_BYTE);
+            assertEquals(expectedTicket, actualTicket);
+        }
+    }
+}

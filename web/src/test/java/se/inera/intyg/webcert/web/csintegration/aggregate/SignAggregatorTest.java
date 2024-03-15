@@ -184,4 +184,50 @@ class SignAggregatorTest {
             assertEquals(expectedResult, actualResult);
         }
     }
+
+    @Nested
+    class GrpSignature {
+
+        @Test
+        void shallUseWebcertImplementationIfProfileNotActive() {
+            doReturn(false).when(certificateServiceProfile).active();
+
+            signCertificateAggregator.grpSignature(TICKED_ID, SIGN_BYTE);
+
+            verify(signatureServiceForWC, times(1)).grpSignature(TICKED_ID, SIGN_BYTE);
+        }
+
+        @Test
+        void shallUseWebcertImplementationIfCSReturnsNull() {
+            doReturn(true).when(certificateServiceProfile).active();
+            doReturn(null).when(signatureServiceForCS).grpSignature(TICKED_ID, SIGN_BYTE);
+
+            signCertificateAggregator.grpSignature(TICKED_ID, SIGN_BYTE);
+            verify(signatureServiceForWC, times(1)).grpSignature(TICKED_ID, SIGN_BYTE);
+        }
+
+
+        @Test
+        void shallUseCertificateServiceImplementationIfProfileIsActiveAndSignatureBiljettIsReturned() {
+            final var expectedResult = new SignaturBiljett();
+            doReturn(true).when(certificateServiceProfile).active();
+            doReturn(expectedResult).when(signatureServiceForCS).grpSignature(TICKED_ID, SIGN_BYTE);
+
+            final var actualResult = signCertificateAggregator.grpSignature(TICKED_ID, SIGN_BYTE);
+
+            verify(signatureServiceForWC, times(0)).grpSignature(TICKED_ID, SIGN_BYTE);
+            verify(signatureServiceForCS, times(1)).grpSignature(TICKED_ID, SIGN_BYTE);
+            assertEquals(expectedResult, actualResult);
+        }
+    }
+
+    @Nested
+    class SigneringsStatus {
+
+        @Test
+        void shallUseWebcertImplementation() {
+            signCertificateAggregator.signeringsStatus(TICKED_ID);
+            verify(signatureServiceForWC).signeringsStatus(TICKED_ID);
+        }
+    }
 }
