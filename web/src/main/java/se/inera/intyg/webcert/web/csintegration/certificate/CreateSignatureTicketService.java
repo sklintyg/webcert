@@ -58,7 +58,9 @@ public class CreateSignatureTicketService {
                     certificateId, certificateType, version, Optional.empty(),
                     signMethod, ticketID, isWc2ClientRequest, certificateXml);
             default:
-                throw new IllegalStateException("AuthenticationMethod not supported '%s'");
+                throw new IllegalStateException(
+                    String.format("AuthenticationMethod not supported '%s'", authenticationMethod)
+                );
         }
     }
 }
