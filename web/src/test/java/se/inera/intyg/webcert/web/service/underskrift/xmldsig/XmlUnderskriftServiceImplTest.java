@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift.xmldsig;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -34,6 +35,7 @@ import static se.inera.intyg.webcert.web.service.underskrift.testutil.Underskrif
 import static se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil.createVardperson;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Optional;
 import org.junit.Before;
@@ -45,6 +47,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.w3._2000._09.xmldsig_.ObjectFactory;
 import org.w3._2000._09.xmldsig_.SignatureType;
+import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
@@ -58,6 +61,8 @@ import se.inera.intyg.infra.xmldsig.service.XMLDSigServiceImpl;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.csintegration.certificate.FinalizedCertificateSignature;
+import se.inera.intyg.webcert.web.csintegration.certificate.SignCertificateService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
@@ -82,6 +87,7 @@ public class XmlUnderskriftServiceImplTest {
 
     private static final ValidationResponse failedValidationResult = ValidationResponse.ValidationResponseBuilder.aValidationResponse()
         .withSignatureValid(ValidationResult.INVALID).withReferencesValid(ValidationResult.NOT_CHCEKED).build();
+    private static final byte[] SIGNATUR_BYTES = "signatur".getBytes(StandardCharsets.UTF_8);
 
     @Mock
     private UtkastModelToXMLConverter utkastModelToXMLConverter;
@@ -103,6 +109,8 @@ public class XmlUnderskriftServiceImplTest {
 
     @Mock
     private UtkastRepository utkastRepository;
+    @Mock
+    private SignCertificateService signCertificateService;
 
     @Mock
     private IntygService intygService;
@@ -161,6 +169,29 @@ public class XmlUnderskriftServiceImplTest {
             ArgumentMatchers.isNull());
         verify(redisTicketTracker, times(1)).updateStatus(anyString(), eq(SignaturStatus.SIGNERAD));
         verify(intygService, times(1)).storeIntyg(any(Utkast.class));
+    }
+
+    @Test
+    public void testFinalizeSignatureWithValidSignatureForCs() {
+        final var certificate = new Certificate();
+        final var ticket = createSignaturBiljett(SignaturStatus.BEARBETAR);
+        final var expectedResponse = FinalizedCertificateSignature.builder()
+            .certificate(certificate)
+            .signaturBiljett(ticket)
+            .build();
+
+        when(xmldSigService.buildKeyInfoForCertificate(anyString())).thenReturn(new ObjectFactory().createKeyInfoType());
+        when(signCertificateService.sign(eq(ticket.getIntygsId()), anyString(), eq(ticket.getVersion()))).thenReturn(certificate);
+        when(redisTicketTracker.updateStatus(TICKET_ID, SignaturStatus.SIGNERAD))
+            .thenReturn(createSignaturBiljett(SignaturStatus.SIGNERAD));
+
+        final var actualResult = testee.finalizeSignatureForCS(
+            ticket,
+            SIGNATUR_BYTES,
+            "certifikat"
+        );
+        assertEquals(expectedResponse, actualResult);
+        verify(redisTicketTracker, times(1)).updateStatus(ticket.getTicketId(), SignaturStatus.SIGNERAD);
     }
 
     @Test(expected = WebCertServiceException.class)

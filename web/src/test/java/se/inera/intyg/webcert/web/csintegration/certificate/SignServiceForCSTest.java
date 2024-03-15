@@ -35,12 +35,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlResponseDTO;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
+import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
+import se.inera.intyg.webcert.web.service.underskrift.xmldsig.XmlUnderskriftServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
 class SignServiceForCSTest {
@@ -49,6 +52,8 @@ class SignServiceForCSTest {
     private static final String CERTIFICATE_TYPE = "certificateType";
     private static final String TICKET_ID = "ticketId";
     private static final String CERTIFICATE_XML_DATA = "certificateXmlData";
+    private static final byte[] SIGNATURE_IN_BYTE = "signature".getBytes(StandardCharsets.UTF_8);
+    private static final String SIGN_CERTIFICATE = "certificate";
     @Mock
     private CSIntegrationService csIntegrationService;
     @Mock
@@ -60,6 +65,10 @@ class SignServiceForCSTest {
     private CreateSignatureTicketService createSignatureTicketService;
     @Mock
     private FakeSignatureServiceCS fakeSignatureServiceCS;
+    @Mock
+    private XmlUnderskriftServiceImpl xmlUnderskriftService;
+    @Mock
+    private RedisTicketTracker redisTicketTracker;
 
     @InjectMocks
     private SignServiceForCS signServiceForCS;
@@ -120,7 +129,7 @@ class SignServiceForCSTest {
         }
 
         @Test
-        void shallLogSignIntygWithProvidedCertificate() {
+        void shallFinalizeSignWithCertificateFromCertificateService() {
             final var ticket = new SignaturBiljett();
             final var certificate = new Certificate();
             final var expectedResponse = FinalizedCertificateSignature.builder()
@@ -151,4 +160,62 @@ class SignServiceForCSTest {
             assertEquals(expectedTicket, actualTicket);
         }
     }
+
+    @Nested
+    class NetIdSignature {
+
+        @Test
+        void shallThrowIfTicketFromRedisTrackerIsNull() {
+            doReturn(null).when(redisTicketTracker).findBiljett(TICKET_ID);
+            assertThrows(WebCertServiceException.class,
+                () -> signServiceForCS.netidSignature(TICKET_ID, SIGNATURE_IN_BYTE, SIGN_CERTIFICATE)
+            );
+        }
+
+        @Test
+        void shallReturnNullIfCertificateDontExistsInCertificateService() {
+            final var ticket = new SignaturBiljett();
+            ticket.setIntygsId(CERTIFICATE_ID);
+            doReturn(ticket).when(redisTicketTracker).findBiljett(TICKET_ID);
+            doReturn(false).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
+            assertNull(signServiceForCS.netidSignature(TICKET_ID, SIGNATURE_IN_BYTE, SIGN_CERTIFICATE));
+        }
+
+        @Test
+        void shallFinalizeSignWithCertificateFromCertificateService() {
+            final var certificate = new Certificate();
+            final var expectedTicket = new SignaturBiljett();
+            expectedTicket.setIntygsId(CERTIFICATE_ID);
+            final var expectedResponse = FinalizedCertificateSignature.builder()
+                .signaturBiljett(expectedTicket)
+                .certificate(certificate)
+                .build();
+
+            doReturn(expectedTicket).when(redisTicketTracker).findBiljett(TICKET_ID);
+            doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
+            doReturn(expectedResponse).when(xmlUnderskriftService)
+                .finalizeSignatureForCS(expectedTicket, SIGNATURE_IN_BYTE, SIGN_CERTIFICATE);
+
+            signServiceForCS.netidSignature(TICKET_ID, SIGNATURE_IN_BYTE, SIGN_CERTIFICATE);
+            verify(finalizeCertificateSignService).finalizeSign(certificate);
+        }
+
+        @Test
+        void shallReturnSignaturBiljett() {
+            final var expectedTicket = new SignaturBiljett();
+            expectedTicket.setIntygsId(CERTIFICATE_ID);
+            final var expectedResponse = FinalizedCertificateSignature.builder()
+                .signaturBiljett(expectedTicket)
+                .build();
+
+            doReturn(expectedTicket).when(redisTicketTracker).findBiljett(TICKET_ID);
+            doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
+            doReturn(expectedResponse).when(xmlUnderskriftService)
+                .finalizeSignatureForCS(expectedTicket, SIGNATURE_IN_BYTE, SIGN_CERTIFICATE);
+
+            final var actualTicket = signServiceForCS.netidSignature(TICKET_ID, SIGNATURE_IN_BYTE, SIGN_CERTIFICATE);
+            assertEquals(expectedTicket, actualTicket);
+        }
+    }
 }
+
