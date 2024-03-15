@@ -18,18 +18,19 @@
  */
 package se.inera.intyg.webcert.web.service.facade.list;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.webcert.web.csintegration.aggregate.ListCertificatesAggregator;
 import se.inera.intyg.webcert.web.service.certificate.CertificateService;
 import se.inera.intyg.webcert.web.service.facade.list.config.GetStaffInfoFacadeService;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListInfo;
 import se.inera.intyg.webcert.web.service.facade.list.filter.CertificateFilterConverter;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-
-import java.util.stream.Collectors;
 
 @Service
 public class ListSignedCertificatesFacadeServiceImpl implements ListSignedCertificatesFacadeService {
@@ -42,17 +43,20 @@ public class ListSignedCertificatesFacadeServiceImpl implements ListSignedCertif
     private final CertificateListItemConverter certificateListItemConverter;
     private final GetStaffInfoFacadeService getStaffInfoFacadeService;
 
+    private final ListCertificatesAggregator listCertificatesAggregator;
+
     @Autowired
     public ListSignedCertificatesFacadeServiceImpl(WebCertUserService webCertUserService,
         CertificateService certificateService,
         CertificateFilterConverter certificateFilterConverter,
         CertificateListItemConverter certificateListItemConverter,
-        GetStaffInfoFacadeService getStaffInfoFacadeService) {
+        GetStaffInfoFacadeService getStaffInfoFacadeService, ListCertificatesAggregator listCertificatesAggregator) {
         this.webCertUserService = webCertUserService;
         this.certificateService = certificateService;
         this.certificateFilterConverter = certificateFilterConverter;
         this.certificateListItemConverter = certificateListItemConverter;
         this.getStaffInfoFacadeService = getStaffInfoFacadeService;
+        this.listCertificatesAggregator = listCertificatesAggregator;
     }
 
     @Override
@@ -63,13 +67,18 @@ public class ListSignedCertificatesFacadeServiceImpl implements ListSignedCertif
         final var units = getUnitsForCurrentUser();
         final var convertedFilter = certificateFilterConverter.convert(filter, user.getHsaId(), units);
 
-        final var listResponse = certificateService.listCertificatesForDoctor(convertedFilter);
-        final var convertedList = listResponse.getCertificates()
+        final var listFromWC = certificateService.listCertificatesForDoctor(convertedFilter);
+        final var convertedListFromWC = listFromWC.getCertificates()
             .stream()
             .map(certificateListItemConverter::convert)
             .collect(Collectors.toList());
 
-        return new ListInfo(listResponse.getTotalCount(), convertedList);
+        final var listFromCS = listCertificatesAggregator.listCertificatesForDoctor(filter);
+
+        final var mergedList = Stream.concat(convertedListFromWC.stream(), listFromCS.stream())
+            .collect(Collectors.toList());
+
+        return new ListInfo(mergedList.size(), mergedList);
     }
 
     private String[] getUnitsForCurrentUser() {

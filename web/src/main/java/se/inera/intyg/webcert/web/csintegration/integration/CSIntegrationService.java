@@ -58,6 +58,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateR
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateResponseDTO;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
+import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
@@ -72,16 +73,19 @@ public class CSIntegrationService {
     private final CertificateTypeInfoConverter certificateTypeInfoConverter;
     private final ListIntygEntryConverter listIntygEntryConverter;
 
+    private final CertificateListItemConverter certificateListItemConverter;
+
     private final RestTemplate restTemplate;
 
     @Value("${certificateservice.base.url}")
     private String baseUrl;
 
     public CSIntegrationService(CertificateTypeInfoConverter certificateTypeInfoConverter, ListIntygEntryConverter listIntygEntryConverter,
-        @Qualifier("csRestTemplate")
-        RestTemplate restTemplate) {
+        CertificateListItemConverter certificateListItemConverter, @Qualifier("csRestTemplate")
+    RestTemplate restTemplate) {
         this.certificateTypeInfoConverter = certificateTypeInfoConverter;
         this.listIntygEntryConverter = listIntygEntryConverter;
+        this.certificateListItemConverter = certificateListItemConverter;
         this.restTemplate = restTemplate;
     }
 
@@ -98,6 +102,21 @@ public class CSIntegrationService {
             .map(listIntygEntryConverter::convert)
             .collect(Collectors.toList());
     }
+
+    public List<CertificateListItem> listCertificatesForDoctor(GetUnitCertificatesRequestDTO request) {
+        final var url = baseUrl + UNIT_ENDPOINT_URL + "/certificates";
+        final var response = restTemplate.postForObject(url, request, GetListCertificatesResponseDTO.class);
+
+        if (response == null) {
+            throw new IllegalStateException("Response from certificate service was null when getting doctor certificate list");
+        }
+
+        return response.getCertificates()
+            .stream()
+            .map(certificateListItemConverter::convert)
+            .collect(Collectors.toList());
+    }
+
 
     public List<StaffListInfo> listCertificatesInfoForUnit(GetUnitCertificatesInfoRequestDTO request) {
         final var url = baseUrl + UNIT_ENDPOINT_URL + "/certificates/info";

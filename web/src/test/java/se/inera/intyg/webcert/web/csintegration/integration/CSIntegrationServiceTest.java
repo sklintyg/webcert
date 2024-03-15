@@ -73,6 +73,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateR
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateResponseDTO;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
+import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
@@ -107,6 +108,7 @@ class CSIntegrationServiceTest {
     private static final GetPatientCertificatesRequestDTO PATIENT_LIST_REQUEST = GetPatientCertificatesRequestDTO.builder().build();
     private static final GetUnitCertificatesRequestDTO UNIT_LIST_REQUEST = GetUnitCertificatesRequestDTO.builder().build();
     private static final ListIntygEntry CONVERTED_CERTIFICATE = new ListIntygEntry();
+    private static final CertificateListItem CONVERTED_LIST_ITEMS = new CertificateListItem();
     private static final ValidateCertificateRequestDTO VALIDATE_REQUEST = ValidateCertificateRequestDTO.builder()
         .certificate(CERTIFICATE)
         .build();
@@ -137,6 +139,9 @@ class CSIntegrationServiceTest {
 
     @Mock
     private ListIntygEntryConverter listIntygEntryConverter;
+
+    @Mock
+    private CertificateListItemConverter certificateListItemConverter;
 
     @InjectMocks
     private CSIntegrationService csIntegrationService;
@@ -726,7 +731,7 @@ class CSIntegrationServiceTest {
             final var captor = ArgumentCaptor.forClass(String.class);
             when(restTemplate.postForObject(anyString(), eq(SIGN_CERTIFICATE_REQUEST_DTO), eq(SignCertificateResponseDTO.class)))
                 .thenReturn(SIGN_CERTIFICATE_RESPONSE_DTO);
-            
+
             csIntegrationService.signCertificate(SIGN_CERTIFICATE_REQUEST_DTO, CERTIFICATE_ID, VERSION);
             verify(restTemplate).postForObject(captor.capture(), eq(SIGN_CERTIFICATE_REQUEST_DTO), eq(SignCertificateResponseDTO.class));
 
@@ -740,5 +745,47 @@ class CSIntegrationServiceTest {
             assertThrows(IllegalStateException.class,
                 () -> csIntegrationService.signCertificate(SIGN_CERTIFICATE_REQUEST_DTO, CERTIFICATE_ID, VERSION));
         }
+    }
+
+    @Nested
+    class ListForDoctor {
+
+        @BeforeEach
+        void setup() {
+            when(certificateListItemConverter.convert(CERTIFICATE))
+                .thenReturn(CONVERTED_LIST_ITEMS);
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(LIST_RESPONSE);
+        }
+
+        @Test
+        void shouldPreformPostUsingRequest() {
+            final var captor = ArgumentCaptor.forClass(GetUnitCertificatesRequestDTO.class);
+
+            csIntegrationService.listCertificatesForDoctor(UNIT_LIST_REQUEST);
+            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+
+            assertEquals(UNIT_LIST_REQUEST, captor.getValue());
+        }
+
+        @Test
+        void shouldReturnConvertedCertificates() {
+            final var response = csIntegrationService.listCertificatesForDoctor(UNIT_LIST_REQUEST);
+
+            assertEquals(List.of(CONVERTED_LIST_ITEMS), response);
+        }
+
+        @Test
+        void shouldSetUrlCorrect() {
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            csIntegrationService.listCertificatesForDoctor(UNIT_LIST_REQUEST);
+            verify(restTemplate).postForObject(captor.capture(), any(), any());
+
+            assertEquals("baseUrl/api/unit/certificates", captor.getValue());
+        }
+
+
     }
 }

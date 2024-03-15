@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
+import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItem;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 
@@ -49,5 +50,12 @@ public class ListCertificatesAggregator {
             return Collections.emptyList();
         }
         return csIntegrationService.listCertificatesForUnit(csIntegrationRequestFactory.getUnitCertificatesRequest(filter));
+    }
+
+    public List<CertificateListItem> listCertificatesForDoctor(ListFilter filter) {
+        if (!certificateServiceProfile.active()) {
+            return Collections.emptyList();
+        }
+        return csIntegrationService.listCertificatesForDoctor(csIntegrationRequestFactory.getUnitCertificatesRequest(filter));
     }
 }

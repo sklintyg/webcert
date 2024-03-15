@@ -35,13 +35,15 @@ import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
+import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItem;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 
 @ExtendWith(MockitoExtension.class)
 class ListCertificatesAggregatorTest {
 
-    private static final List<ListIntygEntry> FROM_CS = List.of(new ListIntygEntry());
+    private static final List<ListIntygEntry> LIST_INTYG_ENTRIES_FROM_CS = List.of(new ListIntygEntry());
+    private static final List<CertificateListItem> CERTIFICATE_LIST_ITEMS_FROM_CS = List.of(new CertificateListItem());
     private static final String PATIENT_ID = "PATIENT_ID";
     private static final ListFilter LIST_FILTER = new ListFilter();
     private static final GetPatientCertificatesRequestDTO REQUEST = GetPatientCertificatesRequestDTO.builder().build();
@@ -76,11 +78,11 @@ class ListCertificatesAggregatorTest {
             when(certificateServiceProfile.active())
                 .thenReturn(true);
             when(csIntegrationService.listCertificatesForPatient(REQUEST))
-                .thenReturn(FROM_CS);
+                .thenReturn(LIST_INTYG_ENTRIES_FROM_CS);
 
             final var response = listCertificatesAggregator.listCertificatesForPatient(PATIENT_ID);
 
-            assertEquals(FROM_CS, response);
+            assertEquals(LIST_INTYG_ENTRIES_FROM_CS, response);
         }
     }
 
@@ -101,11 +103,36 @@ class ListCertificatesAggregatorTest {
             when(certificateServiceProfile.active())
                 .thenReturn(true);
             when(csIntegrationService.listCertificatesForUnit(UNIT_REQUEST))
-                .thenReturn(FROM_CS);
+                .thenReturn(LIST_INTYG_ENTRIES_FROM_CS);
 
             final var response = listCertificatesAggregator.listCertificatesForUnit(LIST_FILTER);
 
-            assertEquals(FROM_CS, response);
+            assertEquals(LIST_INTYG_ENTRIES_FROM_CS, response);
+        }
+    }
+
+    @Nested
+    class DoctorCertificateList {
+
+        @Test
+        void shouldReturnEmptyListIfProfileIsNotActive() {
+            final var response = listCertificatesAggregator.listCertificatesForDoctor(LIST_FILTER);
+            assertEquals(Collections.emptyList(), response);
+            verifyNoInteractions(csIntegrationService);
+        }
+
+        @Test
+        void shouldReturnListFromAPIIfProfileIsActive() {
+            when(csIntegrationRequestFactory.getUnitCertificatesRequest(LIST_FILTER))
+                .thenReturn(UNIT_REQUEST);
+            when(certificateServiceProfile.active())
+                .thenReturn(true);
+            when(csIntegrationService.listCertificatesForDoctor(UNIT_REQUEST))
+                .thenReturn(CERTIFICATE_LIST_ITEMS_FROM_CS);
+
+            final var response = listCertificatesAggregator.listCertificatesForDoctor(LIST_FILTER);
+
+            assertEquals(CERTIFICATE_LIST_ITEMS_FROM_CS, response);
         }
     }
 }
