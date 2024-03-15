@@ -114,6 +114,7 @@ public class GrpUnderskriftServiceTest extends AuthoritiesConfigurationTestSetup
         doReturn(certificate).when(signCertificateService).signWithoutSignature(CERTIFICATE_ID, VERSION);
         final var actualResult = grpSignaturService.finalizeSignatureForCS(signaturBiljett, null, null);
 
+        verify(redisTicketTracker).updateStatus(signaturBiljett.getTicketId(), signaturBiljett.getStatus());
         assertEquals(expectedResult, actualResult);
         assertEquals(SignaturStatus.SIGNERAD, signaturBiljett.getStatus());
     }

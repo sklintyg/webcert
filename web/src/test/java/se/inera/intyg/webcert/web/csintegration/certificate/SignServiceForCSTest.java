@@ -277,4 +277,24 @@ class SignServiceForCSTest {
             assertEquals(expectedTicket, actualTicket);
         }
     }
+
+    @Nested
+    class SigneringsStatus {
+
+        @Test
+        void shallThrowIfTicketIsNull() {
+            doReturn(null).when(redisTicketTracker).findBiljett(TICKET_ID);
+            assertThrows(WebCertServiceException.class, () ->
+                signServiceForCS.signeringsStatus(TICKET_ID));
+        }
+
+        @Test
+        void shallReturnTicketFromRedisTracker() {
+            final var expectedTicket = new SignaturBiljett();
+            doReturn(expectedTicket).when(redisTicketTracker).findBiljett(TICKET_ID);
+
+            final var actualTicket = signServiceForCS.signeringsStatus(TICKET_ID);
+            assertEquals(expectedTicket, actualTicket);
+        }
+    }
 }

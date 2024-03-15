@@ -145,6 +145,12 @@ public class GrpUnderskriftServiceImpl extends BaseSignatureService implements C
     public FinalizedCertificateSignature finalizeSignatureForCS(SignaturBiljett ticket, byte[] signatur, String certifikat) {
         final var certificate = signCertificateService.signWithoutSignature(ticket.getIntygsId(), ticket.getVersion());
         ticket.setStatus(SignaturStatus.SIGNERAD);
+
+        redisTicketTracker.updateStatus(
+            ticket.getTicketId(),
+            ticket.getStatus()
+        );
+        
         return FinalizedCertificateSignature.builder()
             .certificate(certificate)
             .signaturBiljett(ticket)

@@ -127,7 +127,13 @@ public class SignServiceForCS implements UnderskriftService {
 
     @Override
     public SignaturBiljett signeringsStatus(String ticketId) {
-        throw new IllegalStateException("");
+        final var ticket = redisTicketTracker.findBiljett(ticketId);
+        if (ticket == null) {
+            log.error("No SignaturBiljett found for ticketId '{}'", ticketId);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
+                "No SignaturBiljett found for ticketId '" + ticketId + "'");
+        }
+        return ticket;
     }
 
     private static String getDecodedXmlData(GetCertificateXmlResponseDTO certificateXml) {
