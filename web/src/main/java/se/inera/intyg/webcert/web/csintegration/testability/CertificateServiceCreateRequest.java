@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Value;
+import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
@@ -38,6 +39,7 @@ public class CertificateServiceCreateRequest {
     HoSPersonal hosPerson;
     CertificateModelIdDTO certificateModelId;
     CreateCertificateFillType fillType;
+    CertificateStatus status;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class CertificateServiceCreateRequestBuilder {
