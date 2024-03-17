@@ -140,9 +140,6 @@ class CSIntegrationServiceTest {
     @Mock
     private ListIntygEntryConverter listIntygEntryConverter;
 
-    @Mock
-    private CertificateListItemConverter certificateListItemConverter;
-
     @InjectMocks
     private CSIntegrationService csIntegrationService;
 
@@ -745,47 +742,5 @@ class CSIntegrationServiceTest {
             assertThrows(IllegalStateException.class,
                 () -> csIntegrationService.signCertificate(SIGN_CERTIFICATE_REQUEST_DTO, CERTIFICATE_ID, VERSION));
         }
-    }
-
-    @Nested
-    class ListForDoctor {
-
-        @BeforeEach
-        void setup() {
-            when(certificateListItemConverter.convert(CERTIFICATE))
-                .thenReturn(CONVERTED_LIST_ITEMS);
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(LIST_RESPONSE);
-        }
-
-        @Test
-        void shouldPreformPostUsingRequest() {
-            final var captor = ArgumentCaptor.forClass(GetUnitCertificatesRequestDTO.class);
-
-            csIntegrationService.listCertificatesForDoctor(UNIT_LIST_REQUEST);
-            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
-
-            assertEquals(UNIT_LIST_REQUEST, captor.getValue());
-        }
-
-        @Test
-        void shouldReturnConvertedCertificates() {
-            final var response = csIntegrationService.listCertificatesForDoctor(UNIT_LIST_REQUEST);
-
-            assertEquals(List.of(CONVERTED_LIST_ITEMS), response);
-        }
-
-        @Test
-        void shouldSetUrlCorrect() {
-            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
-            final var captor = ArgumentCaptor.forClass(String.class);
-
-            csIntegrationService.listCertificatesForDoctor(UNIT_LIST_REQUEST);
-            verify(restTemplate).postForObject(captor.capture(), any(), any());
-
-            assertEquals("baseUrl/api/unit/certificates", captor.getValue());
-        }
-
-
     }
 }

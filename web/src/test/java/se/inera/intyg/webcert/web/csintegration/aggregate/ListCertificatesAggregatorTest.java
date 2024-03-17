@@ -35,17 +35,17 @@ import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
-import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItem;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
+import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 
 @ExtendWith(MockitoExtension.class)
 class ListCertificatesAggregatorTest {
 
     private static final List<ListIntygEntry> LIST_INTYG_ENTRIES_FROM_CS = List.of(new ListIntygEntry());
-    private static final List<CertificateListItem> CERTIFICATE_LIST_ITEMS_FROM_CS = List.of(new CertificateListItem());
     private static final String PATIENT_ID = "PATIENT_ID";
     private static final ListFilter LIST_FILTER = new ListFilter();
+    private static final QueryIntygParameter QUERY_INTYG_PARAMETER = new QueryIntygParameter();
     private static final GetPatientCertificatesRequestDTO REQUEST = GetPatientCertificatesRequestDTO.builder().build();
     private static final GetUnitCertificatesRequestDTO UNIT_REQUEST = GetUnitCertificatesRequestDTO.builder().build();
 
@@ -116,23 +116,23 @@ class ListCertificatesAggregatorTest {
 
         @Test
         void shouldReturnEmptyListIfProfileIsNotActive() {
-            final var response = listCertificatesAggregator.listCertificatesForDoctor(LIST_FILTER);
+            final var response = listCertificatesAggregator.listCertificatesForDoctor(QUERY_INTYG_PARAMETER);
             assertEquals(Collections.emptyList(), response);
             verifyNoInteractions(csIntegrationService);
         }
 
         @Test
         void shouldReturnListFromAPIIfProfileIsActive() {
-            when(csIntegrationRequestFactory.getUnitCertificatesRequest(LIST_FILTER))
+            when(csIntegrationRequestFactory.getUnitCertificatesRequest(QUERY_INTYG_PARAMETER))
                 .thenReturn(UNIT_REQUEST);
             when(certificateServiceProfile.active())
                 .thenReturn(true);
-            when(csIntegrationService.listCertificatesForDoctor(UNIT_REQUEST))
-                .thenReturn(CERTIFICATE_LIST_ITEMS_FROM_CS);
+            when(csIntegrationService.listCertificatesForUnit(UNIT_REQUEST))
+                .thenReturn(LIST_INTYG_ENTRIES_FROM_CS);
 
-            final var response = listCertificatesAggregator.listCertificatesForDoctor(LIST_FILTER);
+            final var response = listCertificatesAggregator.listCertificatesForDoctor(QUERY_INTYG_PARAMETER);
 
-            assertEquals(CERTIFICATE_LIST_ITEMS_FROM_CS, response);
+            assertEquals(LIST_INTYG_ENTRIES_FROM_CS, response);
         }
     }
 }

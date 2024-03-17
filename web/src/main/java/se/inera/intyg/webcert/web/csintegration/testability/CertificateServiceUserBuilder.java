@@ -19,13 +19,17 @@
 
 package se.inera.intyg.webcert.web.csintegration.testability;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
+import se.inera.intyg.common.support.services.BefattningService;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserDTO;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserRole;
+import se.inera.intyg.webcert.web.csintegration.user.PaTitleDTO;
 
 @Component
 public class CertificateServiceUserBuilder {
@@ -43,6 +47,11 @@ public class CertificateServiceUserBuilder {
         final var role = getRole(user.getRoles());
         return CertificateServiceUserDTO.builder()
             .id(hoSPersonal.getPersonId())
+            .firstName(user.getFornamn())
+            .lastName(user.getEfternamn())
+            .fullName(user.getEfternamn())
+            .specialities(user.getSpecialiseringar())
+            .paTitles(paTitles(user.getBefattningar()))
             .role(role)
             .blocked(false)
             .build();
@@ -56,5 +65,16 @@ public class CertificateServiceUserBuilder {
             return CertificateServiceUserRole.CARE_ADMIN;
         }
         return CertificateServiceUserRole.UNKNOWN;
+    }
+
+    private List<PaTitleDTO> paTitles(List<String> befattningar) {
+        return befattningar.stream()
+            .map(befattning ->
+                PaTitleDTO.builder()
+                    .code(befattning)
+                    .description(BefattningService.getDescriptionFromCode(befattning).orElse(befattning))
+                    .build()
+            )
+            .collect(Collectors.toList());
     }
 }

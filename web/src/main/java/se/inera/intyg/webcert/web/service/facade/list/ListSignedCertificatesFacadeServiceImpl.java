@@ -29,6 +29,7 @@ import se.inera.intyg.webcert.web.service.certificate.CertificateService;
 import se.inera.intyg.webcert.web.service.facade.list.config.GetStaffInfoFacadeService;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListInfo;
+import se.inera.intyg.webcert.web.service.facade.list.dto.ListType;
 import se.inera.intyg.webcert.web.service.facade.list.filter.CertificateFilterConverter;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
@@ -68,14 +69,18 @@ public class ListSignedCertificatesFacadeServiceImpl implements ListSignedCertif
         final var convertedFilter = certificateFilterConverter.convert(filter, user.getHsaId(), units);
 
         final var listFromWC = certificateService.listCertificatesForDoctor(convertedFilter);
-        final var convertedListFromWC = listFromWC.getCertificates()
-            .stream()
+        final var convertedListFromWC = listFromWC.getCertificates().stream()
             .map(certificateListItemConverter::convert)
             .collect(Collectors.toList());
 
-        final var listFromCS = listCertificatesAggregator.listCertificatesForDoctor(filter);
+        final var listFromCS = listCertificatesAggregator.listCertificatesForDoctor(convertedFilter).stream()
+            .map(item -> certificateListItemConverter.convert(item, ListType.CERTIFICATES))
+            .collect(Collectors.toList());
 
-        final var mergedList = Stream.concat(convertedListFromWC.stream(), listFromCS.stream())
+        final var mergedList = Stream.concat(
+                convertedListFromWC.stream(),
+                listFromCS.stream()
+            )
             .collect(Collectors.toList());
 
         return new ListInfo(mergedList.size(), mergedList);
