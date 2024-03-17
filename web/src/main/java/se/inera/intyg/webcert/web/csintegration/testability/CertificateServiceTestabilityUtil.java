@@ -56,6 +56,7 @@ public class CertificateServiceTestabilityUtil {
             .careProvider(convertToCareProvider(careUnit.getVardgivare()))
             .certificateModelId(certificateServiceCreateRequest.getCertificateModelId())
             .fillType(certificateServiceCreateRequest.getFillType())
+            .status(certificateServiceCreateRequest.getStatus())
             .build();
     }
 
@@ -75,6 +76,7 @@ public class CertificateServiceTestabilityUtil {
             .email(vardenhet.getEpost())
             .phoneNumber(vardenhet.getTelefonnummer())
             .zipCode(vardenhet.getPostnummer())
+            .workplaceCode(vardenhet.getArbetsplatsKod())
             .inactive(false)
             .build();
     }

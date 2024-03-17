@@ -74,6 +74,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateW
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateResponseDTO;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
+import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
@@ -108,6 +109,7 @@ class CSIntegrationServiceTest {
     private static final GetPatientCertificatesRequestDTO PATIENT_LIST_REQUEST = GetPatientCertificatesRequestDTO.builder().build();
     private static final GetUnitCertificatesRequestDTO UNIT_LIST_REQUEST = GetUnitCertificatesRequestDTO.builder().build();
     private static final ListIntygEntry CONVERTED_CERTIFICATE = new ListIntygEntry();
+    private static final CertificateListItem CONVERTED_LIST_ITEMS = new CertificateListItem();
     private static final ValidateCertificateRequestDTO VALIDATE_REQUEST = ValidateCertificateRequestDTO.builder()
         .certificate(CERTIFICATE)
         .build();

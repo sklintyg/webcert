@@ -58,7 +58,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 
 @ExtendWith(MockitoExtension.class)
-class CertificateListItemConverterImplTest {
+class CertificateListEntryConverterImplTest {
 
     final String UNIT_NAME = "UNIT_NAME";
     final String CARE_PROVIDER_NAME = "CARE_PROVIDER_NAME";

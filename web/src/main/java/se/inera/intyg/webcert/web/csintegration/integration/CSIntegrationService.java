@@ -72,15 +72,13 @@ public class CSIntegrationService {
 
     private final CertificateTypeInfoConverter certificateTypeInfoConverter;
     private final ListIntygEntryConverter listIntygEntryConverter;
-
     private final RestTemplate restTemplate;
 
     @Value("${certificateservice.base.url}")
     private String baseUrl;
 
     public CSIntegrationService(CertificateTypeInfoConverter certificateTypeInfoConverter, ListIntygEntryConverter listIntygEntryConverter,
-        @Qualifier("csRestTemplate")
-        RestTemplate restTemplate) {
+        @Qualifier("csRestTemplate") RestTemplate restTemplate) {
         this.certificateTypeInfoConverter = certificateTypeInfoConverter;
         this.listIntygEntryConverter = listIntygEntryConverter;
         this.restTemplate = restTemplate;

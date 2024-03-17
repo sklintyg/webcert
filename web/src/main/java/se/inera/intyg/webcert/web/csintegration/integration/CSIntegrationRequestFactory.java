@@ -26,6 +26,7 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesQueryCriteriaDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
@@ -41,6 +42,7 @@ import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatien
 import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitHelper;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserHelper;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
+import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 
 @Component
 @RequiredArgsConstructor
@@ -121,17 +123,12 @@ public class CSIntegrationRequestFactory {
 
     public GetUnitCertificatesRequestDTO getUnitCertificatesRequest(ListFilter filter) {
         final var queryCriteria = certificatesQueryCriteriaFactory.create(filter);
-        final var patient = queryCriteria.getPersonId() == null ? null
-            : certificateServicePatientHelper.get(createPatientId(queryCriteria.getPersonId().getId()));
+        return getUnitCertificatesRequestDTO(queryCriteria);
+    }
 
-        return GetUnitCertificatesRequestDTO.builder()
-            .patient(patient)
-            .unit(certificateServiceUnitHelper.getUnit())
-            .careUnit(certificateServiceUnitHelper.getCareUnit())
-            .careProvider(certificateServiceUnitHelper.getCareProvider())
-            .user(certificateServiceUserHelper.get())
-            .certificatesQueryCriteria(queryCriteria)
-            .build();
+    public GetUnitCertificatesRequestDTO getUnitCertificatesRequest(QueryIntygParameter filter) {
+        final var queryCriteria = certificatesQueryCriteriaFactory.create(filter);
+        return getUnitCertificatesRequestDTO(queryCriteria);
     }
 
     public GetUnitCertificatesInfoRequestDTO getUnitCertificatesInfoRequest() {
@@ -163,15 +160,6 @@ public class CSIntegrationRequestFactory {
             .build();
     }
 
-    private Personnummer createPatientId(String patientId) {
-        return Personnummer.createPersonnummer(patientId)
-            .orElseThrow(() ->
-                new IllegalArgumentException(
-                    String.format("PatientId has wrong format: '%s'", patientId)
-                )
-            );
-    }
-
     public SignCertificateRequestDTO signCertificateRequest(String signatureXml) {
         return SignCertificateRequestDTO.builder()
             .unit(certificateServiceUnitHelper.getUnit())
@@ -180,6 +168,29 @@ public class CSIntegrationRequestFactory {
             .user(certificateServiceUserHelper.get())
             .signatureXml(Base64.getEncoder().encodeToString(signatureXml.getBytes(StandardCharsets.UTF_8)))
             .build();
+    }
+
+    private GetUnitCertificatesRequestDTO getUnitCertificatesRequestDTO(CertificatesQueryCriteriaDTO queryCriteria) {
+        final var patient = queryCriteria.getPersonId() == null ? null
+            : certificateServicePatientHelper.get(createPatientId(queryCriteria.getPersonId().getId()));
+
+        return GetUnitCertificatesRequestDTO.builder()
+            .patient(patient)
+            .unit(certificateServiceUnitHelper.getUnit())
+            .careUnit(certificateServiceUnitHelper.getCareUnit())
+            .careProvider(certificateServiceUnitHelper.getCareProvider())
+            .user(certificateServiceUserHelper.get())
+            .certificatesQueryCriteria(queryCriteria)
+            .build();
+    }
+
+    private Personnummer createPatientId(String patientId) {
+        return Personnummer.createPersonnummer(patientId)
+            .orElseThrow(() ->
+                new IllegalArgumentException(
+                    String.format("PatientId has wrong format: '%s'", patientId)
+                )
+            );
     }
 
     public SignCertificateWithoutSignatureRequestDTO signCertificateWithoutSignatureRequest() {
