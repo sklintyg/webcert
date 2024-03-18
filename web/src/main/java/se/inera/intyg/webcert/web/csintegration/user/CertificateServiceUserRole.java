@@ -20,5 +20,5 @@
 package se.inera.intyg.webcert.web.csintegration.user;
 
 public enum CertificateServiceUserRole {
-    DOCTOR, MIDWIFE, DENTIST, NURSE, CARE_ADMIN, UNKNOWN
+    DOCTOR, MIDWIFE, DENTIST, NURSE, CARE_ADMIN, PRIVATE_DOCTOR, UNKNOWN
 }

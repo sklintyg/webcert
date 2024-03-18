@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,6 +33,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
+import se.inera.intyg.webcert.web.service.underskrift.grp.GrpUnderskriftServiceImpl;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.xmldsig.XmlUnderskriftServiceImpl;
@@ -45,8 +47,11 @@ class CreateSignatureTicketServiceTest {
     private static final String CERTIFICATE_TYPE = "certificateType";
     private static final String TICKET_ID = "ticketId";
     private static final String CERTIFICATE_XML = "certificateXml";
+    private static final String PERSON_ID = "personId";
     @Mock
     private XmlUnderskriftServiceImpl xmlUnderskriftService;
+    @Mock
+    private GrpUnderskriftServiceImpl grpUnderskriftService;
     @Mock
     private WebCertUserService webCertUserService;
 
@@ -58,14 +63,6 @@ class CreateSignatureTicketServiceTest {
     void setUp() {
         user = mock(WebCertUser.class);
         doReturn(user).when(webCertUserService).getUser();
-    }
-
-    @Test
-    void shallThrowIfSignMethodIsNotSupported() {
-        doReturn(AuthenticationMethod.BANK_ID).when(user).getAuthenticationMethod();
-        assertThrows(IllegalStateException.class,
-            () -> createSignatureTicketService.create(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.GRP, TICKET_ID, false,
-                CERTIFICATE_XML));
     }
 
     @Test
@@ -123,5 +120,50 @@ class CreateSignatureTicketServiceTest {
             CERTIFICATE_XML);
 
         assertEquals(expectedTicket, actualTicket);
+    }
+
+    @Test
+    void shallReturnCreatedSignatureTicketForUserWithAuthenticationMethodBankId() {
+        final var expectedTicket = new SignaturBiljett();
+        doReturn(AuthenticationMethod.BANK_ID).when(user).getAuthenticationMethod();
+        doReturn(expectedTicket).when(grpUnderskriftService)
+            .skapaSigneringsBiljettMedDigest(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, Optional.empty(), SignMethod.FAKE, TICKET_ID, false,
+                null);
+
+        final var actualTicket = createSignatureTicketService.create(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE, TICKET_ID,
+            false,
+            CERTIFICATE_XML);
+
+        assertEquals(expectedTicket, actualTicket);
+    }
+
+    @Test
+    void shallReturnCreatedSignatureTicketForUserWithAuthenticationMethodMobiltBankID() {
+        final var expectedTicket = new SignaturBiljett();
+        doReturn(AuthenticationMethod.MOBILT_BANK_ID).when(user).getAuthenticationMethod();
+        doReturn(expectedTicket).when(grpUnderskriftService)
+            .skapaSigneringsBiljettMedDigest(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, Optional.empty(), SignMethod.FAKE, TICKET_ID, false,
+                null);
+
+        final var actualTicket = createSignatureTicketService.create(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE, TICKET_ID,
+            false, CERTIFICATE_XML);
+
+        assertEquals(expectedTicket, actualTicket);
+    }
+
+    @Test
+    void shallStartGrpCollectPollerIfSignmethodGRP() {
+        final var expectedTicket = new SignaturBiljett();
+        expectedTicket.setSignMethod(SignMethod.GRP);
+        doReturn(AuthenticationMethod.MOBILT_BANK_ID).when(user).getAuthenticationMethod();
+        doReturn(PERSON_ID).when(user).getPersonId();
+        doReturn(expectedTicket).when(grpUnderskriftService)
+            .skapaSigneringsBiljettMedDigest(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, Optional.empty(), SignMethod.GRP, TICKET_ID, false,
+                null);
+
+        createSignatureTicketService.create(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.GRP, TICKET_ID,
+            false, CERTIFICATE_XML);
+
+        verify(grpUnderskriftService).startGrpCollectPoller(PERSON_ID, expectedTicket);
     }
 }

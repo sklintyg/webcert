@@ -22,6 +22,7 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doReturn;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,11 +32,15 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateWithoutSignatureRequestDTO;
 
 @ExtendWith(MockitoExtension.class)
 class SignCertificateServiceTest {
 
     private static final SignCertificateRequestDTO SIGN_CERTIFICATE_REQUEST = SignCertificateRequestDTO.builder().build();
+    private static final SignCertificateWithoutSignatureRequestDTO SIGN_CERTIFICATE_WITHOUT_SIGNATURE_REQUEST_DTO =
+        SignCertificateWithoutSignatureRequestDTO.builder()
+            .build();
     private static final String CERTIFICATE_ID = "certificateId";
     private static final String SIGNATURE_XML = "<signature></signature>";
     private static final long VERSION = 1L;
@@ -46,13 +51,34 @@ class SignCertificateServiceTest {
     @InjectMocks
     private SignCertificateService signCertificateService;
 
-    @Test
-    void shallReturnSignedCertificate() {
-        final var expectedCertificate = new Certificate();
-        doReturn(SIGN_CERTIFICATE_REQUEST).when(csIntegrationRequestFactory).signCertificateRequest(SIGNATURE_XML);
-        doReturn(expectedCertificate).when(csIntegrationService).signCertificate(SIGN_CERTIFICATE_REQUEST, CERTIFICATE_ID, VERSION);
+    @Nested
+    class Sign {
 
-        final var actualCertificate = signCertificateService.sign(CERTIFICATE_ID, SIGNATURE_XML, VERSION);
-        assertEquals(expectedCertificate, actualCertificate);
+        @Test
+        void shallReturnSignedCertificate() {
+            final var expectedCertificate = new Certificate();
+            doReturn(SIGN_CERTIFICATE_REQUEST).when(csIntegrationRequestFactory).signCertificateRequest(SIGNATURE_XML);
+            doReturn(expectedCertificate).when(csIntegrationService).signCertificate(SIGN_CERTIFICATE_REQUEST, CERTIFICATE_ID, VERSION);
+
+            final var actualCertificate = signCertificateService.sign(CERTIFICATE_ID, SIGNATURE_XML, VERSION);
+            assertEquals(expectedCertificate, actualCertificate);
+        }
+
+    }
+
+    @Nested
+    class SignWithoutSignature {
+
+        @Test
+        void shallReturnSignedCertificate() {
+            final var expectedCertificate = new Certificate();
+            doReturn(SIGN_CERTIFICATE_WITHOUT_SIGNATURE_REQUEST_DTO).when(csIntegrationRequestFactory)
+                .signCertificateWithoutSignatureRequest();
+            doReturn(expectedCertificate).when(csIntegrationService)
+                .signCertificateWithoutSignature(SIGN_CERTIFICATE_WITHOUT_SIGNATURE_REQUEST_DTO, CERTIFICATE_ID, VERSION);
+
+            final var actualCertificate = signCertificateService.signWithoutSignature(CERTIFICATE_ID, VERSION);
+            assertEquals(expectedCertificate, actualCertificate);
+        }
     }
 }

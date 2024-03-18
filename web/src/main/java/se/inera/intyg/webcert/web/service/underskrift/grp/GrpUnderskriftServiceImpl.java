@@ -45,6 +45,7 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.csintegration.certificate.FinalizedCertificateSignature;
+import se.inera.intyg.webcert.web.csintegration.certificate.SignCertificateService;
 import se.inera.intyg.webcert.web.service.underskrift.BaseSignatureService;
 import se.inera.intyg.webcert.web.service.underskrift.CommonUnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.grp.dto.IntygGRPSignature;
@@ -81,6 +82,8 @@ public class GrpUnderskriftServiceImpl extends BaseSignatureService implements C
 
     @Autowired
     private GrpCollectPollerFactory grpCollectPollerFactory;
+    @Autowired
+    private SignCertificateService signCertificateService;
 
     @Override
     public SignaturBiljett skapaSigneringsBiljettMedDigest(String intygsId, String intygsTyp, long version, Optional<String> intygJson,
@@ -140,7 +143,18 @@ public class GrpUnderskriftServiceImpl extends BaseSignatureService implements C
 
     @Override
     public FinalizedCertificateSignature finalizeSignatureForCS(SignaturBiljett ticket, byte[] signatur, String certifikat) {
-        return null;
+        final var certificate = signCertificateService.signWithoutSignature(ticket.getIntygsId(), ticket.getVersion());
+        ticket.setStatus(SignaturStatus.SIGNERAD);
+
+        redisTicketTracker.updateStatus(
+            ticket.getTicketId(),
+            ticket.getStatus()
+        );
+        
+        return FinalizedCertificateSignature.builder()
+            .certificate(certificate)
+            .signaturBiljett(ticket)
+            .build();
     }
 
     // Used for BankID / Mobilt BankID.

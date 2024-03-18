@@ -90,6 +90,8 @@ public class CertificateServiceUserHelper {
             case "LÄKARE":
             case "DOCTOR":
                 return CertificateServiceUserRole.DOCTOR;
+            case "PRIVATLÄKARE":
+                return CertificateServiceUserRole.PRIVATE_DOCTOR;
             case "TANDLAKARE":
             case "TANDLÄKARE":
             case "DENTIST":

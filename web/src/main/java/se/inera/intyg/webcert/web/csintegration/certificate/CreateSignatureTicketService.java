@@ -23,6 +23,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
+import se.inera.intyg.webcert.web.service.underskrift.grp.GrpUnderskriftServiceImpl;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.xmldsig.XmlUnderskriftServiceImpl;
@@ -33,6 +34,7 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 public class CreateSignatureTicketService {
 
     private final XmlUnderskriftServiceImpl xmlUnderskriftService;
+    private final GrpUnderskriftServiceImpl grpUnderskriftService;
     private final WebCertUserService webCertUserService;
 
     public SignaturBiljett create(String certificateId, String certificateType, long version, SignMethod signMethod,
@@ -43,6 +45,10 @@ public class CreateSignatureTicketService {
 
         if (ticket == null) {
             throw new IllegalStateException("Unhandled authentication method, could not create SignaturBiljett");
+        }
+
+        if (ticket.getSignMethod() == SignMethod.GRP) {
+            grpUnderskriftService.startGrpCollectPoller(user.getPersonId(), ticket);
         }
 
         return ticket;
@@ -57,6 +63,11 @@ public class CreateSignatureTicketService {
                 return xmlUnderskriftService.skapaSigneringsBiljettMedDigest(
                     certificateId, certificateType, version, Optional.empty(),
                     signMethod, ticketID, isWc2ClientRequest, certificateXml);
+            case BANK_ID:
+            case MOBILT_BANK_ID: {
+                return grpUnderskriftService.skapaSigneringsBiljettMedDigest(certificateId, certificateType, version,
+                    Optional.empty(), signMethod, ticketID, isWc2ClientRequest, null);
+            }
             default:
                 throw new IllegalStateException(
                     String.format("AuthenticationMethod not supported '%s'", authenticationMethod)

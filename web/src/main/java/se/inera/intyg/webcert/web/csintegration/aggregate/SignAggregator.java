@@ -83,11 +83,18 @@ public class SignAggregator implements UnderskriftService {
 
     @Override
     public SignaturBiljett grpSignature(String biljettId, byte[] signatur) {
-        return null;
+        if (!certificateServiceProfile.active()) {
+            return signServiceForWC.grpSignature(biljettId, signatur);
+        }
+
+        final var signaturBiljett = signServiceForCS.grpSignature(biljettId, signatur);
+
+        return signaturBiljett != null ? signaturBiljett
+            : signServiceForWC.grpSignature(biljettId, signatur);
     }
 
     @Override
     public SignaturBiljett signeringsStatus(String ticketId) {
-        return null;
+        return signServiceForWC.signeringsStatus(ticketId);
     }
 }

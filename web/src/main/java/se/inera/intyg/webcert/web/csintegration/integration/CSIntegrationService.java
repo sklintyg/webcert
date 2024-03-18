@@ -55,6 +55,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateR
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateWithoutSignatureRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateResponseDTO;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
@@ -264,6 +265,21 @@ public class CSIntegrationService {
         if (response == null) {
             throw new IllegalStateException(
                 String.format("Sign certificate request for '%s' returned empty response!", certificateId)
+            );
+        }
+
+        return response.getCertificate();
+    }
+
+    public Certificate signCertificateWithoutSignature(SignCertificateWithoutSignatureRequestDTO request, String certificateId,
+        long version) {
+        final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/signwithoutsignature/" + version;
+
+        final var response = restTemplate.postForObject(url, request, SignCertificateResponseDTO.class);
+
+        if (response == null) {
+            throw new IllegalStateException(
+                String.format("Sign certificate without signature request for '%s' returned empty response!", certificateId)
             );
         }
 
