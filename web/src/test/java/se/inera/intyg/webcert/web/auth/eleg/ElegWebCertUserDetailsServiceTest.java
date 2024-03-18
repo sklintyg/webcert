@@ -143,6 +143,15 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
     }
 
     @Test
+    public void shallSetFirstnameAndLastnameFromFullstandigtName() {
+        WebCertUser user = (WebCertUser) testee
+            .loadUserBySAML(new SAMLCredential(mock(NameID.class), assertionPrivatlakare, REMOTE_ENTITY_ID, LOCAL_ENTITY_ID));
+
+        assertEquals("Test", user.getFornamn());
+        assertEquals("Testsson", user.getEfternamn());
+    }
+
+    @Test
     public void testSuccessfulLoginSekretessMarkerad() {
         reset(puService);
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar(true));
@@ -242,6 +251,7 @@ public class ElegWebCertUserDetailsServiceTest extends BaseSAMLCredentialTest {
         PersonId personId = new PersonId();
         personId.setExtension(PERSON_ID);
         hoSPersonType.setPersonId(personId);
+        hoSPersonType.setFullstandigtNamn("Test Testsson");
 
         EnhetType vardEnhet = new EnhetType();
         vardEnhet.setEnhetsnamn("enhetsNamn");
