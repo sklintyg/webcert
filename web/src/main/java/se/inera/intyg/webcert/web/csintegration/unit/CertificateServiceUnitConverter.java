@@ -34,6 +34,7 @@ public class CertificateServiceUnitConverter {
             .city(unit.getCity())
             .phoneNumber(unit.getPhoneNumber())
             .email(unit.getEmail())
+            .workplaceCode(unit.getUnitId())
             .inactive(unit.getIsInactive() == null ? Boolean.FALSE : unit.getIsInactive())
             .build();
     }

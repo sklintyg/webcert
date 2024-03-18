@@ -113,6 +113,14 @@ class CertificateServiceUnitConverterTest {
     }
 
     @Test
+    void shouldConvertWorkplaceCodeFromUnitIdToHandlePrivateDoctors() {
+        final var unit = createUnit();
+        final var response = certificateServiceUnitConverter.convert(unit);
+
+        assertEquals(unit.getUnitId(), response.getWorkplaceCode());
+    }
+
+    @Test
     void shouldConvertInactiveAsFalseIfNull() {
         final var unit = Unit.builder().build();
         final var response = certificateServiceUnitConverter.convert(unit);

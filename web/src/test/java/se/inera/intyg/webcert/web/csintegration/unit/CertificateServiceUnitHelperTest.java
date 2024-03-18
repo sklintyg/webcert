@@ -22,7 +22,6 @@ package se.inera.intyg.webcert.web.csintegration.unit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -42,6 +41,7 @@ class CertificateServiceUnitHelperTest {
     private static final Unit careUnit = Unit.builder().build();
     private static final Unit careProvider = Unit.builder().build();
     private static final User user = User.builder()
+        .role("Läkare")
         .loggedInUnit(unit)
         .loggedInCareUnit(careUnit)
         .loggedInCareProvider(careProvider)
@@ -63,14 +63,10 @@ class CertificateServiceUnitHelperTest {
     @InjectMocks
     CertificateServiceUnitHelper certificateServiceUnitHelper;
 
-    @BeforeEach
-    void setUp() {
-        when(userService.getLoggedInUser())
-            .thenReturn(user);
-    }
-
     @Test
     void shouldReturnConvertedUnit() {
+        when(userService.getLoggedInUser())
+            .thenReturn(user);
         when(hsaOrganizationsService.getVardenhet(user.getLoggedInUnit().getUnitId()))
             .thenReturn(vardEnhet);
         when(certificateServiceVardenhetConverter.convert(vardEnhet))
@@ -78,26 +74,45 @@ class CertificateServiceUnitHelperTest {
         final var response = certificateServiceUnitHelper.getUnit();
 
         assertEquals(convertedUnit, response);
+    }
 
+    @Test
+    void shouldReturnConvertedUnitWhenPrivateDoctor() {
+        final var privateDoctor = User.builder()
+            .role("Privatläkare")
+            .loggedInUnit(unit)
+            .loggedInCareUnit(careUnit)
+            .loggedInCareProvider(careProvider)
+            .build();
+
+        when(userService.getLoggedInUser())
+            .thenReturn(privateDoctor);
+        when(certificateServiceUnitConverter.convert(careUnit))
+            .thenReturn(convertedUnit);
+        final var response = certificateServiceUnitHelper.getUnit();
+
+        assertEquals(convertedUnit, response);
     }
 
     @Test
     void shouldReturnConvertedCareUnit() {
+        when(userService.getLoggedInUser())
+            .thenReturn(user);
         when(certificateServiceUnitConverter.convert(careUnit))
             .thenReturn(convertedUnit);
         final var response = certificateServiceUnitHelper.getCareUnit();
 
         assertEquals(convertedUnit, response);
-
     }
 
     @Test
     void shouldReturnConvertedCareProvider() {
+        when(userService.getLoggedInUser())
+            .thenReturn(user);
         when(certificateServiceUnitConverter.convert(careProvider))
             .thenReturn(convertedUnit);
         final var response = certificateServiceUnitHelper.getCareProvider();
 
         assertEquals(convertedUnit, response);
-
     }
 }
