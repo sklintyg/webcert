@@ -206,7 +206,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         user.setHsaId(hosPerson.getHsaId().getExtension());
         user.setPersonId(hosPerson.getPersonId().getExtension());
         final var fullName = hosPerson.getFullstandigtNamn();
-        if (fullName.contains(SPACE)) {
+        if (fullName != null && fullName.contains(SPACE)) {
             user.setFornamn(fullName.substring(0, fullName.indexOf(SPACE)));
             user.setEfternamn(fullName.substring(fullName.indexOf(SPACE) + 1));
         }
