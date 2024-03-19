@@ -115,7 +115,7 @@ class CSIntegrationServiceTest {
     private static final PrintCertificateRequestDTO PRINT_REQUEST = PrintCertificateRequestDTO.builder().build();
     private static final PrintCertificateResponseDTO PRINT_RESPONSE = PrintCertificateResponseDTO.builder()
         .fileName("FILENAME")
-        .pdf(BYTES)
+        .pdfData(BYTES)
         .build();
 
     @Mock
@@ -658,7 +658,7 @@ class CSIntegrationServiceTest {
                 .thenReturn(PRINT_RESPONSE);
             final var response = csIntegrationService.printCertificate(ID, PRINT_REQUEST);
 
-            assertEquals(PRINT_RESPONSE.getPdf(), response.getPdfData());
+            assertEquals(PRINT_RESPONSE.getPdfData(), response.getPdfData());
         }
 
         @Test

@@ -31,7 +31,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificate
 public class PrintCertificateResponseDTO {
 
     String fileName;
-    byte[] pdf;
+    byte[] pdfData;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class PrintCertificateResponseDTOBuilder {

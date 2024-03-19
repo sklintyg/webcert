@@ -49,6 +49,7 @@ public class PrintCertificateFromCertificateService {
             csIntegrationRequestFactory.getCertificateRequest()
         );
 
+        log.debug("Getting pdf of certificate '{}', stored in certificate service", certificateId);
         final var response = csIntegrationService.printCertificate(
             certificateId,
             csIntegrationRequestFactory.getPrintCertificateRequest(
@@ -60,7 +61,6 @@ public class PrintCertificateFromCertificateService {
         pdlLogService.logPrinted(certificate);
         logMonitoring(certificate.getMetadata().getStatus(), certificateId, certificateType, isEmployerCopy);
 
-        log.debug("Getting pdf of certificate '{}', stored in certificate service", certificateId);
         return response;
     }
 

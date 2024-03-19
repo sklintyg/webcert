@@ -260,6 +260,6 @@ public class CSIntegrationService {
             return null;
         }
 
-        return new IntygPdf(response.getPdf(), response.getFileName());
+        return new IntygPdf(response.getPdfData(), response.getFileName());
     }
 }
