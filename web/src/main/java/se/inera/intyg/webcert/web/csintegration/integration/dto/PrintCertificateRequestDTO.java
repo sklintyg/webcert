@@ -38,6 +38,7 @@ public class PrintCertificateRequestDTO {
     CertificateServiceUnitDTO unit;
     CertificateServiceUnitDTO careUnit;
     CertificateServiceUnitDTO careProvider;
+    String additionalInfoText;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class PrintCertificateRequestDTOBuilder {

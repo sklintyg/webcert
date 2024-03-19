@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
+import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 
 @Slf4j
@@ -31,6 +32,7 @@ public class PrintCertificateFromCertificateService {
 
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+    private final PDLLogService pdlLogService;
 
     public IntygPdf print(String certificateId) {
         final var exists = csIntegrationService.certificateExists(certificateId);
@@ -39,10 +41,12 @@ public class PrintCertificateFromCertificateService {
             return null;
         }
 
-        log.debug("Getting pdf of certificate '{}', stored in certificate service", certificateId);
-        return csIntegrationService.printCertificate(
+        final var response = csIntegrationService.printCertificate(
             certificateId,
-            csIntegrationRequestFactory.getPrintCertificateRequest()
+            csIntegrationRequestFactory.getPrintCertificateRequest("Intyget är utskrivet från Webcert.")
         );
+
+        log.debug("Getting pdf of certificate '{}', stored in certificate service", certificateId);
+        return response;
     }
 }

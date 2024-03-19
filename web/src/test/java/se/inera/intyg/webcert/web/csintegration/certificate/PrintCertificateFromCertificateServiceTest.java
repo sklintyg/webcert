@@ -61,7 +61,7 @@ class PrintCertificateFromCertificateServiceTest {
 
     @Test
     void shouldReturnResponseFromCSIfCertificateExistInCS() {
-        when(csIntegrationRequestFactory.getPrintCertificateRequest())
+        when(csIntegrationRequestFactory.getPrintCertificateRequest(""))
             .thenReturn(REQUEST);
         when(csIntegrationService.certificateExists(ID))
             .thenReturn(true);

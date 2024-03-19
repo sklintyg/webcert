@@ -150,12 +150,13 @@ public class CSIntegrationRequestFactory {
             .build();
     }
 
-    public PrintCertificateRequestDTO getPrintCertificateRequest() {
+    public PrintCertificateRequestDTO getPrintCertificateRequest(String additionalInfoText) {
         return PrintCertificateRequestDTO.builder()
             .user(certificateServiceUserHelper.get())
             .unit(certificateServiceUnitHelper.getUnit())
             .careUnit(certificateServiceUnitHelper.getCareUnit())
             .careProvider(certificateServiceUnitHelper.getCareProvider())
+            .additionalInfoText(additionalInfoText)
             .build();
     }
 

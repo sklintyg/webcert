@@ -76,6 +76,7 @@ class CSIntegrationRequestFactoryTest {
     private static final CertificateServicePatientDTO PATIENT = CertificateServicePatientDTO.builder().build();
     private static final ListFilter LIST_FILTER = new ListFilter();
     private static final CertificatesQueryCriteriaDTO CERTIFICATES_QUERY_CRITERIA_DTO = CertificatesQueryCriteriaDTO.builder().build();
+    private static final String ADDITIONAL_INFO_TEXT = "ADDITIONAL_INFO_TEXT";
 
     static {
         CERTIFICATE.setMetadata(
@@ -547,26 +548,32 @@ class CSIntegrationRequestFactoryTest {
 
         @Test
         void shouldSetUser() {
-            final var actualRequest = csIntegrationRequestFactory.getPrintCertificateRequest();
+            final var actualRequest = csIntegrationRequestFactory.getPrintCertificateRequest(ADDITIONAL_INFO_TEXT);
             assertEquals(USER, actualRequest.getUser());
         }
 
         @Test
         void shouldSetUnit() {
-            final var actualRequest = csIntegrationRequestFactory.getPrintCertificateRequest();
+            final var actualRequest = csIntegrationRequestFactory.getPrintCertificateRequest(ADDITIONAL_INFO_TEXT);
             assertEquals(UNIT, actualRequest.getUnit());
         }
 
         @Test
         void shouldSetCareUnit() {
-            final var actualRequest = csIntegrationRequestFactory.getPrintCertificateRequest();
+            final var actualRequest = csIntegrationRequestFactory.getPrintCertificateRequest(ADDITIONAL_INFO_TEXT);
             assertEquals(CARE_UNIT, actualRequest.getCareUnit());
         }
 
         @Test
         void shouldSetCareProvider() {
-            final var actualRequest = csIntegrationRequestFactory.getPrintCertificateRequest();
+            final var actualRequest = csIntegrationRequestFactory.getPrintCertificateRequest(ADDITIONAL_INFO_TEXT);
             assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
+        }
+
+        @Test
+        void shouldSetAdditionalInfoText() {
+            final var actualRequest = csIntegrationRequestFactory.getPrintCertificateRequest(ADDITIONAL_INFO_TEXT);
+            assertEquals(ADDITIONAL_INFO_TEXT, actualRequest.getAdditionalInfoText());
         }
     }
 }
