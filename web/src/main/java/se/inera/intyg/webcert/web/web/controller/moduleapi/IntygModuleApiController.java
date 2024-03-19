@@ -36,10 +36,10 @@ import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.web.csintegration.aggregate.PrintCertificateAggregator;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateCompletionCopyRequest;
@@ -88,6 +88,9 @@ public class IntygModuleApiController extends AbstractApiController {
 
     @Autowired
     private ResourceLinkHelper resourceLinkHelper;
+
+    @Autowired
+    private PrintCertificateAggregator printCertificateAggregator;
 
     /**
      * Retrieves a signed intyg from intygstjänst.
@@ -145,13 +148,13 @@ public class IntygModuleApiController extends AbstractApiController {
             LOG.debug("Fetching signed intyg '{}' as PDF for employer", intygsId);
         }
 
-        IntygPdf intygPdfResponse = intygService.fetchIntygAsPdf(intygsId, intygsTyp, isEmployerCopy);
+        final var response = printCertificateAggregator.get(intygsId, intygsTyp, isEmployerCopy);
 
         final var userAgent = request.getHeader("User-Agent");
         final var contentDisposition = userAgent.matches(".*Trident/\\d+.*|.*MSIE \\d+.*")
-            ? buildPdfHeader(intygPdfResponse.getFilename()) : "inline";
+            ? buildPdfHeader(response.getFilename()) : "inline";
 
-        return Response.ok(intygPdfResponse.getPdfData()).header(CONTENT_DISPOSITION, contentDisposition).build();
+        return Response.ok(response.getPdfData()).header(CONTENT_DISPOSITION, contentDisposition).build();
     }
 
     private String buildPdfHeader(String pdfFileName) {

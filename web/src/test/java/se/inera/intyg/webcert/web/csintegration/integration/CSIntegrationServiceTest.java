@@ -65,6 +65,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertif
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateResponseDTO;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
@@ -108,6 +110,12 @@ class CSIntegrationServiceTest {
     private static final ValidationErrorDTO[] VALIDATION_ERRORS = {new ValidationErrorDTO()};
     private static final ValidateCertificateResponseDTO VALIDATE_RESPONSE = ValidateCertificateResponseDTO.builder()
         .validationErrors(VALIDATION_ERRORS)
+        .build();
+    private static final byte[] BYTES = new byte[0];
+    private static final PrintCertificateRequestDTO PRINT_REQUEST = PrintCertificateRequestDTO.builder().build();
+    private static final PrintCertificateResponseDTO PRINT_RESPONSE = PrintCertificateResponseDTO.builder()
+        .fileName("FILENAME")
+        .pdf(BYTES)
         .build();
 
     @Mock
@@ -621,6 +629,56 @@ class CSIntegrationServiceTest {
             verify(restTemplate).postForObject(captor.capture(), any(), any());
 
             assertEquals("baseUrl/api/certificate/ID/validate", captor.getValue());
+        }
+    }
+
+    @Nested
+    class PrintCertificate {
+
+        @BeforeEach
+        void setup() {
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+        }
+
+        @Test
+        void shouldPreformPostUsingRequest() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(PRINT_RESPONSE);
+            final var captor = ArgumentCaptor.forClass(PrintCertificateRequestDTO.class);
+
+            csIntegrationService.printCertificate(ID, PRINT_REQUEST);
+            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+
+            assertEquals(PRINT_REQUEST, captor.getValue());
+        }
+
+        @Test
+        void shouldReturnPdf() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(PRINT_RESPONSE);
+            final var response = csIntegrationService.printCertificate(ID, PRINT_REQUEST);
+
+            assertEquals(PRINT_RESPONSE.getPdf(), response.getPdfData());
+        }
+
+        @Test
+        void shouldReturnFileName() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(PRINT_RESPONSE);
+            final var response = csIntegrationService.printCertificate(ID, PRINT_REQUEST);
+
+            assertEquals(PRINT_RESPONSE.getFileName(), response.getFilename());
+        }
+
+        @Test
+        void shouldSetUrlCorrect() {
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            csIntegrationService.printCertificate(ID, PRINT_REQUEST);
+            verify(restTemplate).postForObject(captor.capture(), any(), any());
+
+            assertEquals("baseUrl/api/certificate/ID/pdf", captor.getValue());
         }
     }
 }
