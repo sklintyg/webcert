@@ -37,7 +37,7 @@ public class PrintCertificateAggregator {
             return intygService.fetchIntygAsPdf(certificateId, certificateType, isEmployerCopy);
         }
 
-        final var response = printCertificateFromCertificateService.print(certificateId);
+        final var response = printCertificateFromCertificateService.print(certificateId, certificateType, isEmployerCopy);
 
         return response != null
             ? response

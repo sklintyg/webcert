@@ -90,7 +90,7 @@ class PrintCertificateAggregatorTest {
 
         @Test
         void shouldReturnResponseFromCSIfCertificateDoesNotExistInCS() {
-            when(printCertificateFromCertificateService.print(ID))
+            when(printCertificateFromCertificateService.print(ID, TYPE, IS_EMPLOYER))
                 .thenReturn(responseFromCS);
 
             final var response = printCertificateAggregator.get(ID, TYPE, IS_EMPLOYER);

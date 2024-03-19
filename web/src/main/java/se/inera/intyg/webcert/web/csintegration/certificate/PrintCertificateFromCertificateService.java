@@ -21,10 +21,12 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -33,20 +35,46 @@ public class PrintCertificateFromCertificateService {
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
     private final PDLLogService pdlLogService;
+    private final MonitoringLogService monitoringLogService;
 
-    public IntygPdf print(String certificateId) {
+    public IntygPdf print(String certificateId, String certificateType, boolean isEmployerCopy) {
         final var exists = csIntegrationService.certificateExists(certificateId);
         if (Boolean.FALSE.equals(exists)) {
             log.debug("Certificate '{}' does not exist in certificate service", certificateId);
             return null;
         }
 
+        final var certificate = csIntegrationService.getCertificate(
+            certificateId,
+            csIntegrationRequestFactory.getCertificateRequest()
+        );
+
         final var response = csIntegrationService.printCertificate(
             certificateId,
-            csIntegrationRequestFactory.getPrintCertificateRequest("Intyget är utskrivet från Webcert.")
+            csIntegrationRequestFactory.getPrintCertificateRequest(
+                "Intyget är utskrivet från Webcert.",
+                certificate.getMetadata().getPatient().getPersonId().getId()
+            )
         );
+
+        pdlLogService.logPrinted(certificate);
+        logMonitoring(certificate.getMetadata().getStatus(), certificateId, certificateType, isEmployerCopy);
 
         log.debug("Getting pdf of certificate '{}', stored in certificate service", certificateId);
         return response;
+    }
+
+    private void logMonitoring(CertificateStatus status, String id, String type, boolean isEmployerCopy) {
+        if (status == CertificateStatus.UNSIGNED || status == CertificateStatus.LOCKED) {
+            monitoringLogService.logUtkastPrint(id, type);
+        }
+
+        if (status == CertificateStatus.REVOKED) {
+            monitoringLogService.logRevokedPrint(id, type);
+        }
+
+        if (status == CertificateStatus.SIGNED) {
+            monitoringLogService.logIntygPrintPdf(id, type, isEmployerCopy);
+        }
     }
 }
