@@ -70,6 +70,7 @@ public class IntygModuleApiController extends AbstractApiController {
     private static final Logger LOG = LoggerFactory.getLogger(IntygModuleApiController.class);
 
     private static final String CONTENT_DISPOSITION = "Content-Disposition";
+    private static final String MISSING_VITAL_ARGUMENTS_IN_PAYLOAD = "Missing vital arguments in payload";
 
     @Autowired
     private ArendeService arendeService;
@@ -191,7 +192,7 @@ public class IntygModuleApiController extends AbstractApiController {
         if (authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp)
             .features(AuthoritiesConstants.FEATURE_MAKULERA_INTYG_KRAVER_ANLEDNING).isVerified() && !param.isValid()) {
             LOG.warn("Request to revoke '{}' is not valid", intygsId);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Missing vital arguments in payload");
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, MISSING_VITAL_ARGUMENTS_IN_PAYLOAD);
         }
 
         IntygServiceResult result = intygService.revokeIntyg(intygsId, intygsTyp, param.getMessage(), param.getReason());
@@ -212,7 +213,7 @@ public class IntygModuleApiController extends AbstractApiController {
 
         if (!request.isValid()) {
             LOG.error("Request to create completion of '{}' is not valid", orgIntygsId);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Missing vital arguments in payload");
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, MISSING_VITAL_ARGUMENTS_IN_PAYLOAD);
         }
 
         String meddelandeId = arendeService.getLatestMeddelandeIdForCurrentCareUnit(orgIntygsId);
@@ -245,7 +246,7 @@ public class IntygModuleApiController extends AbstractApiController {
 
         if (!request.isValid()) {
             LOG.error("Request to create renewal of '{}' is not valid", orgIntygsId);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Missing vital arguments in payload");
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, MISSING_VITAL_ARGUMENTS_IN_PAYLOAD);
         }
 
         CreateRenewalCopyRequest serviceRequest = copyUtkastServiceHelper.createRenewalCopyRequest(orgIntygsId, intygsTyp, request);
@@ -277,7 +278,7 @@ public class IntygModuleApiController extends AbstractApiController {
 
         if (!request.isValid()) {
             LOG.error("Request to create utkast from certificate '{}' as template is not valid", orgIntygsId);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Missing vital arguments in payload");
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, MISSING_VITAL_ARGUMENTS_IN_PAYLOAD);
         }
         CreateUtkastFromTemplateRequest serviceRequest = copyUtkastServiceHelper.createUtkastFromDifferentIntygTypeRequest(orgIntygsId,
             newIntygsTyp, orgIntygsTyp, request);
@@ -309,7 +310,7 @@ public class IntygModuleApiController extends AbstractApiController {
 
         if (!request.isValid()) {
             LOG.error("Request to create replacement of '{}' is not valid", orgIntygsId);
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Missing vital arguments in payload");
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, MISSING_VITAL_ARGUMENTS_IN_PAYLOAD);
         }
 
         CreateReplacementCopyRequest serviceRequest = copyUtkastServiceHelper.createReplacementCopyRequest(orgIntygsId, intygsTyp, request);
