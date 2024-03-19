@@ -112,6 +112,7 @@ public class CreateCertificateTestabilityUtil {
                     .hosPerson(hosPersonal)
                     .certificateModelId(modelIdDTO.orElseThrow())
                     .fillType(createCertificateRequest.getFillType())
+                    .status(createCertificateRequest.getStatus())
                     .build()
             );
         }

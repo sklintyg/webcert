@@ -18,7 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift.grp;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -36,6 +38,7 @@ import se.funktionstjanster.grp.v1.GrpFault;
 import se.funktionstjanster.grp.v1.GrpServicePortType;
 import se.funktionstjanster.grp.v1.OrderResponseType;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
+import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -43,6 +46,8 @@ import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
+import se.inera.intyg.webcert.web.csintegration.certificate.FinalizedCertificateSignature;
+import se.inera.intyg.webcert.web.csintegration.certificate.SignCertificateService;
 import se.inera.intyg.webcert.web.service.underskrift.grp.factory.GrpCollectPollerFactory;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
@@ -63,6 +68,7 @@ public class GrpUnderskriftServiceTest extends AuthoritiesConfigurationTestSetup
     private static final String TX_ID = "webcert-tx-1";
     private static final String ORDER_REF = "order-ref-1";
     private static final Long PAGAENDE_SIG_ID = 1L;
+    private static final String CERTIFICATE_ID = "certificateId";
 
     @Mock
     WebCertUserService webCertUserService;
@@ -78,6 +84,8 @@ public class GrpUnderskriftServiceTest extends AuthoritiesConfigurationTestSetup
 
     @Mock
     GrpCollectPollerFactory grpCollectPollerFactory;
+    @Mock
+    SignCertificateService signCertificateService;
 
     @InjectMocks
     GrpUnderskriftServiceImpl grpSignaturService;
@@ -92,7 +100,26 @@ public class GrpUnderskriftServiceTest extends AuthoritiesConfigurationTestSetup
         verify(taskExecutor, times(1)).execute(any(GrpCollectPoller.class), any(Long.class));
     }
 
-//    @Test(expected = IllegalArgumentException.class)
+    @Test
+    public void shallFinalizeSignatureForCS() {
+        final var certificate = new Certificate();
+        final var signaturBiljett = new SignaturBiljett();
+        signaturBiljett.setIntygsId(CERTIFICATE_ID);
+        signaturBiljett.setVersion(VERSION);
+        final var expectedResult = FinalizedCertificateSignature.builder()
+            .certificate(certificate)
+            .signaturBiljett(signaturBiljett)
+            .build();
+
+        doReturn(certificate).when(signCertificateService).signWithoutSignature(CERTIFICATE_ID, VERSION);
+        final var actualResult = grpSignaturService.finalizeSignatureForCS(signaturBiljett, null, null);
+
+        verify(redisTicketTracker).updateStatus(signaturBiljett.getTicketId(), signaturBiljett.getStatus());
+        assertEquals(expectedResult, actualResult);
+        assertEquals(SignaturStatus.SIGNERAD, signaturBiljett.getStatus());
+    }
+
+    //    @Test(expected = IllegalArgumentException.class)
 //    public void testAuthenticateRequestFailsWhenUtkastIsNotFound() {
 //        when(utkastRepository.findOne(INTYG_ID)).thenReturn(null);
 //        try {

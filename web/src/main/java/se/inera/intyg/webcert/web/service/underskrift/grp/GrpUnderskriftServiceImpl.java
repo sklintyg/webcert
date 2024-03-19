@@ -44,6 +44,8 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEn
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.web.csintegration.certificate.FinalizedCertificateSignature;
+import se.inera.intyg.webcert.web.csintegration.certificate.SignCertificateService;
 import se.inera.intyg.webcert.web.service.underskrift.BaseSignatureService;
 import se.inera.intyg.webcert.web.service.underskrift.CommonUnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.grp.dto.IntygGRPSignature;
@@ -80,13 +82,16 @@ public class GrpUnderskriftServiceImpl extends BaseSignatureService implements C
 
     @Autowired
     private GrpCollectPollerFactory grpCollectPollerFactory;
+    @Autowired
+    private SignCertificateService signCertificateService;
 
     @Override
-    public SignaturBiljett skapaSigneringsBiljettMedDigest(String intygsId, String intygsTyp, long version, String intygJson,
-        SignMethod signMethod, String ticketId, boolean isWc2ClientRequest) {
-        String hash = createHash(intygJson);
+    public SignaturBiljett skapaSigneringsBiljettMedDigest(String intygsId, String intygsTyp, long version, Optional<String> intygJson,
+        SignMethod signMethod, String ticketId, boolean isWc2ClientRequest, String certificateXml) {
+        final var jsonData = intygJson.orElse(null);
+        final var hash = intygJson.map(this::createHash).orElse(null);
 
-        IntygGRPSignature intygGRPSignature = new IntygGRPSignature(intygJson, hash);
+        IntygGRPSignature intygGRPSignature = new IntygGRPSignature(jsonData, hash);
 
         SignaturBiljett biljett = SignaturBiljett.SignaturBiljettBuilder
             .aSignaturBiljett(UUID.randomUUID().toString(), SignaturTyp.PKCS7, signMethod)
@@ -134,6 +139,22 @@ public class GrpUnderskriftServiceImpl extends BaseSignatureService implements C
         WebCertUser user) {
         SignaturBiljett sb = finalizePkcs7Signature(user, biljett, new String(signatur, Charset.forName("UTF-8")), utkast);
         return redisTicketTracker.updateStatus(sb.getTicketId(), sb.getStatus());
+    }
+
+    @Override
+    public FinalizedCertificateSignature finalizeSignatureForCS(SignaturBiljett ticket, byte[] signatur, String certifikat) {
+        final var certificate = signCertificateService.signWithoutSignature(ticket.getIntygsId(), ticket.getVersion());
+        ticket.setStatus(SignaturStatus.SIGNERAD);
+
+        redisTicketTracker.updateStatus(
+            ticket.getTicketId(),
+            ticket.getStatus()
+        );
+        
+        return FinalizedCertificateSignature.builder()
+            .certificate(certificate)
+            .signaturBiljett(ticket)
+            .build();
     }
 
     // Used for BankID / Mobilt BankID.

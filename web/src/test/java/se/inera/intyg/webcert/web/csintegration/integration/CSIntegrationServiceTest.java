@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.csintegration.integration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -60,16 +61,22 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificat
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetListCertificatesResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateWithoutSignatureRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateResponseDTO;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
+import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
@@ -104,6 +111,7 @@ class CSIntegrationServiceTest {
     private static final GetPatientCertificatesRequestDTO PATIENT_LIST_REQUEST = GetPatientCertificatesRequestDTO.builder().build();
     private static final GetUnitCertificatesRequestDTO UNIT_LIST_REQUEST = GetUnitCertificatesRequestDTO.builder().build();
     private static final ListIntygEntry CONVERTED_CERTIFICATE = new ListIntygEntry();
+    private static final CertificateListItem CONVERTED_LIST_ITEMS = new CertificateListItem();
     private static final ValidateCertificateRequestDTO VALIDATE_REQUEST = ValidateCertificateRequestDTO.builder()
         .certificate(CERTIFICATE)
         .build();
@@ -111,6 +119,23 @@ class CSIntegrationServiceTest {
     private static final ValidateCertificateResponseDTO VALIDATE_RESPONSE = ValidateCertificateResponseDTO.builder()
         .validationErrors(VALIDATION_ERRORS)
         .build();
+
+    private static final String XML_DATA = "xmlData";
+    private static final GetCertificateXmlResponseDTO GET_CERTIFICIATE_XML_RESPONSE = GetCertificateXmlResponseDTO.builder()
+        .xml(XML_DATA)
+        .build();
+
+    private static final GetCertificateXmlRequestDTO GET_CERTIFICIATE_XML_REQUEST = GetCertificateXmlRequestDTO.builder().build();
+    private static final SignCertificateRequestDTO SIGN_CERTIFICATE_REQUEST_DTO = SignCertificateRequestDTO.builder().build();
+    private static final SignCertificateWithoutSignatureRequestDTO SIGN_CERTIFICATE_WITHOUT_SIGNATURE_REQUEST_DTO =
+        SignCertificateWithoutSignatureRequestDTO.builder()
+            .build();
+    private static final SignCertificateResponseDTO SIGN_CERTIFICATE_RESPONSE_DTO = SignCertificateResponseDTO.builder()
+        .certificate(CERTIFICATE)
+        .build();
+    private static final String CERTIFICATE_ID = "certificateId";
+    private static final long VERSION = 0L;
+
     private static final byte[] BYTES = new byte[0];
     private static final PrintCertificateRequestDTO PRINT_REQUEST = PrintCertificateRequestDTO.builder().build();
     private static final PrintCertificateResponseDTO PRINT_RESPONSE = PrintCertificateResponseDTO.builder()
@@ -629,6 +654,163 @@ class CSIntegrationServiceTest {
             verify(restTemplate).postForObject(captor.capture(), any(), any());
 
             assertEquals("baseUrl/api/certificate/ID/validate", captor.getValue());
+        }
+    }
+
+    @Nested
+    class GetCertificateXml {
+
+        @BeforeEach
+        void setup() {
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+        }
+
+        @Test
+        void shouldPreformPostUsingRequest() {
+            when(restTemplate.postForObject(anyString(), eq(GET_CERTIFICIATE_XML_REQUEST), eq(GetCertificateXmlResponseDTO.class)))
+                .thenReturn(GET_CERTIFICIATE_XML_RESPONSE);
+            final var captor = ArgumentCaptor.forClass(GetCertificateXmlRequestDTO.class);
+
+            csIntegrationService.getCertificateXml(GET_CERTIFICIATE_XML_REQUEST, CERTIFICATE_ID);
+            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+
+            assertEquals(GET_CERTIFICIATE_XML_REQUEST, captor.getValue());
+        }
+
+        @Test
+        void shouldReturnGetCertificateXmlResponseDTO() {
+            when(restTemplate.postForObject(anyString(), eq(GET_CERTIFICIATE_XML_REQUEST), eq(GetCertificateXmlResponseDTO.class)))
+                .thenReturn(GET_CERTIFICIATE_XML_RESPONSE);
+            final var response = csIntegrationService.getCertificateXml(GET_CERTIFICIATE_XML_REQUEST, CERTIFICATE_ID);
+
+            assertEquals(GET_CERTIFICIATE_XML_RESPONSE, response);
+        }
+
+        @Test
+        void shouldSetUrlCorrect() {
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            csIntegrationService.getCertificateXml(GET_CERTIFICIATE_XML_REQUEST, CERTIFICATE_ID);
+            verify(restTemplate).postForObject(captor.capture(), eq(GET_CERTIFICIATE_XML_REQUEST), eq(GetCertificateXmlResponseDTO.class));
+
+            assertEquals("baseUrl/api/certificate/" + CERTIFICATE_ID + "/xml", captor.getValue());
+        }
+
+        @Test
+        void shouldReturnNullIfResponseIsNull() {
+            when(restTemplate.postForObject(anyString(), eq(GET_CERTIFICIATE_XML_REQUEST), eq(GetCertificateXmlResponseDTO.class)))
+                .thenReturn(null);
+            assertNull(csIntegrationService.getCertificateXml(GET_CERTIFICIATE_XML_REQUEST, CERTIFICATE_ID));
+        }
+    }
+
+    @Nested
+    class SignCertificate {
+
+        @BeforeEach
+        void setup() {
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+        }
+
+        @Test
+        void shouldPreformPostUsingRequest() {
+            when(restTemplate.postForObject(anyString(), eq(SIGN_CERTIFICATE_REQUEST_DTO), eq(SignCertificateResponseDTO.class)))
+                .thenReturn(SIGN_CERTIFICATE_RESPONSE_DTO);
+            final var captor = ArgumentCaptor.forClass(SignCertificateRequestDTO.class);
+
+            csIntegrationService.signCertificate(SIGN_CERTIFICATE_REQUEST_DTO, CERTIFICATE_ID, VERSION);
+            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+
+            assertEquals(SIGN_CERTIFICATE_REQUEST_DTO, captor.getValue());
+        }
+
+        @Test
+        void shouldReturnCertificateFromSignCertificateResponseDTO() {
+            when(restTemplate.postForObject(anyString(), eq(SIGN_CERTIFICATE_REQUEST_DTO), eq(SignCertificateResponseDTO.class)))
+                .thenReturn(SIGN_CERTIFICATE_RESPONSE_DTO);
+            final var response = csIntegrationService.signCertificate(SIGN_CERTIFICATE_REQUEST_DTO, CERTIFICATE_ID, VERSION);
+
+            assertEquals(CERTIFICATE, response);
+        }
+
+        @Test
+        void shouldSetUrlCorrect() {
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(String.class);
+            when(restTemplate.postForObject(anyString(), eq(SIGN_CERTIFICATE_REQUEST_DTO), eq(SignCertificateResponseDTO.class)))
+                .thenReturn(SIGN_CERTIFICATE_RESPONSE_DTO);
+
+            csIntegrationService.signCertificate(SIGN_CERTIFICATE_REQUEST_DTO, CERTIFICATE_ID, VERSION);
+            verify(restTemplate).postForObject(captor.capture(), eq(SIGN_CERTIFICATE_REQUEST_DTO), eq(SignCertificateResponseDTO.class));
+
+            assertEquals("baseUrl/api/certificate/" + CERTIFICATE_ID + "/sign/" + VERSION, captor.getValue());
+        }
+
+        @Test
+        void shouldReturnNullIfResponseIsNull() {
+            when(restTemplate.postForObject(anyString(), eq(SIGN_CERTIFICATE_REQUEST_DTO), eq(SignCertificateResponseDTO.class)))
+                .thenReturn(null);
+            assertThrows(IllegalStateException.class,
+                () -> csIntegrationService.signCertificate(SIGN_CERTIFICATE_REQUEST_DTO, CERTIFICATE_ID, VERSION));
+        }
+    }
+
+    @Nested
+    class SignCertificateWithoutSignature {
+
+        @BeforeEach
+        void setup() {
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+        }
+
+        @Test
+        void shouldPreformPostUsingRequest() {
+            when(restTemplate.postForObject(anyString(), eq(SIGN_CERTIFICATE_WITHOUT_SIGNATURE_REQUEST_DTO),
+                eq(SignCertificateResponseDTO.class)))
+                .thenReturn(SIGN_CERTIFICATE_RESPONSE_DTO);
+            final var captor = ArgumentCaptor.forClass(SignCertificateRequestDTO.class);
+
+            csIntegrationService.signCertificateWithoutSignature(SIGN_CERTIFICATE_WITHOUT_SIGNATURE_REQUEST_DTO, CERTIFICATE_ID, VERSION);
+            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+
+            assertEquals(SIGN_CERTIFICATE_WITHOUT_SIGNATURE_REQUEST_DTO, captor.getValue());
+        }
+
+        @Test
+        void shouldReturnCertificateFromSignCertificateResponseDTO() {
+            when(restTemplate.postForObject(anyString(), eq(SIGN_CERTIFICATE_WITHOUT_SIGNATURE_REQUEST_DTO),
+                eq(SignCertificateResponseDTO.class)))
+                .thenReturn(SIGN_CERTIFICATE_RESPONSE_DTO);
+            final var response = csIntegrationService.signCertificateWithoutSignature(SIGN_CERTIFICATE_WITHOUT_SIGNATURE_REQUEST_DTO,
+                CERTIFICATE_ID, VERSION);
+
+            assertEquals(CERTIFICATE, response);
+        }
+
+        @Test
+        void shouldSetUrlCorrect() {
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(String.class);
+            when(restTemplate.postForObject(anyString(), eq(SIGN_CERTIFICATE_WITHOUT_SIGNATURE_REQUEST_DTO),
+                eq(SignCertificateResponseDTO.class)))
+                .thenReturn(SIGN_CERTIFICATE_RESPONSE_DTO);
+
+            csIntegrationService.signCertificateWithoutSignature(SIGN_CERTIFICATE_WITHOUT_SIGNATURE_REQUEST_DTO, CERTIFICATE_ID, VERSION);
+            verify(restTemplate).postForObject(captor.capture(), eq(SIGN_CERTIFICATE_WITHOUT_SIGNATURE_REQUEST_DTO),
+                eq(SignCertificateResponseDTO.class));
+
+            assertEquals("baseUrl/api/certificate/" + CERTIFICATE_ID + "/signwithoutsignature/" + VERSION, captor.getValue());
+        }
+
+        @Test
+        void shouldReturnNullIfResponseIsNull() {
+            when(restTemplate.postForObject(anyString(), eq(SIGN_CERTIFICATE_WITHOUT_SIGNATURE_REQUEST_DTO),
+                eq(SignCertificateResponseDTO.class)))
+                .thenReturn(null);
+            assertThrows(IllegalStateException.class,
+                () -> csIntegrationService.signCertificateWithoutSignature(SIGN_CERTIFICATE_WITHOUT_SIGNATURE_REQUEST_DTO, CERTIFICATE_ID,
+                    VERSION));
         }
     }
 

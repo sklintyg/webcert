@@ -31,6 +31,8 @@ public class CertificateServiceUnitHelper {
     private final CertificateServiceVardenhetConverter certificateServiceVardenhetConverter;
     private final HsaOrganizationsService hsaOrganizationsService;
 
+    private static final String PRIVATE_DOCTOR = "Privatläkare";
+
     public CertificateServiceUnitHelper(UserService userService, CertificateServiceUnitConverter certificateServiceUnitConverter,
         CertificateServiceVardenhetConverter certificateServiceVardenhetConverter, HsaOrganizationsService hsaOrganizationsService) {
         this.userService = userService;
@@ -51,6 +53,9 @@ public class CertificateServiceUnitHelper {
 
     public CertificateServiceUnitDTO getUnit() {
         final var user = userService.getLoggedInUser();
+        if (PRIVATE_DOCTOR.equalsIgnoreCase(user.getRole())) {
+            return certificateServiceUnitConverter.convert(user.getLoggedInCareUnit());
+        }
         final var unit = hsaOrganizationsService.getVardenhet(user.getLoggedInUnit().getUnitId());
         return certificateServiceVardenhetConverter.convert(unit);
     }

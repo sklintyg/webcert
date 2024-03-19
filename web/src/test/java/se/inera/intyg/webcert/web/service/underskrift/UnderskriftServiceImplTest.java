@@ -93,6 +93,7 @@ import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 import se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil;
 import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
 import se.inera.intyg.webcert.web.service.underskrift.validator.DraftModelToXmlValidator;
+import se.inera.intyg.webcert.web.service.underskrift.xmldsig.UtkastModelToXMLConverter;
 import se.inera.intyg.webcert.web.service.underskrift.xmldsig.XmlUnderskriftServiceImpl;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -151,6 +152,9 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
     @Mock
     private DraftModelToXmlValidator draftModelToXMLValidator;
 
+    @Mock
+    private UtkastModelToXMLConverter utkastModelToXMLConverter;
+
     @InjectMocks
     private UnderskriftServiceImpl testee;
 
@@ -195,8 +199,9 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
             .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", vardperson,
                 ENHET_ID, PERSON_ID)));
 
-        when(xmlUnderskriftService.skapaSigneringsBiljettMedDigest(anyString(), anyString(), anyLong(), anyString(), any(SignMethod.class),
-            anyString(), any(Boolean.class)))
+        when(xmlUnderskriftService.skapaSigneringsBiljettMedDigest(anyString(), anyString(), anyLong(), any(),
+            any(SignMethod.class),
+            anyString(), any(Boolean.class), any()))
             .thenReturn(createSignaturBiljett(SignaturStatus.BEARBETAR));
 
         when(draftModelToXMLValidator.validateDraftModelAsXml(any())).thenReturn(ValidateXmlResponse.createValidResponse());
@@ -238,8 +243,8 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
             .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, doiTyp, UtkastStatus.DRAFT_COMPLETE, "model", vardperson,
                 ENHET_ID, PERSON_ID, ersattandeIntygSkapad)));
 
-        when(xmlUnderskriftService.skapaSigneringsBiljettMedDigest(anyString(), anyString(), anyLong(), anyString(), any(SignMethod.class),
-            anyString(), any(Boolean.class)))
+        when(xmlUnderskriftService.skapaSigneringsBiljettMedDigest(anyString(), anyString(), anyLong(), any(), any(SignMethod.class),
+            anyString(), any(Boolean.class), any()))
             .thenReturn(createSignaturBiljett(SignaturStatus.BEARBETAR));
 
         when(utkastService.checkIfPersonHasExistingIntyg(any(), any(), any())).thenReturn(ImmutableMap.of(

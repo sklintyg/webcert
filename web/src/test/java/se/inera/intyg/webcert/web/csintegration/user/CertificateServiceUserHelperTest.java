@@ -206,6 +206,16 @@ class CertificateServiceUserHelperTest {
         }
 
         @Test
+        void shouldReturnUserWithRolePrivateDoctorFromPrivatlakare() {
+            when(user.getRole())
+                .thenReturn("Privatläkare");
+
+            final var response = certificateServiceUserHelper.get();
+
+            assertEquals(CertificateServiceUserRole.PRIVATE_DOCTOR, response.getRole());
+        }
+
+        @Test
         void shouldReturnUserWithRoleAdministratorFromAdministrator() {
             when(user.getRole())
                 .thenReturn("ADMINISTRATOR");

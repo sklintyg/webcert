@@ -18,25 +18,32 @@
  */
 package se.inera.intyg.webcert.web.csintegration.integration;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesQueryCriteriaDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateWithoutSignatureRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientHelper;
 import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitHelper;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserHelper;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
+import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 
 @Component
 @RequiredArgsConstructor
@@ -117,17 +124,12 @@ public class CSIntegrationRequestFactory {
 
     public GetUnitCertificatesRequestDTO getUnitCertificatesRequest(ListFilter filter) {
         final var queryCriteria = certificatesQueryCriteriaFactory.create(filter);
-        final var patient = queryCriteria.getPersonId() == null ? null
-            : certificateServicePatientHelper.get(createPatientId(queryCriteria.getPersonId().getId()));
+        return getUnitCertificatesRequestDTO(queryCriteria);
+    }
 
-        return GetUnitCertificatesRequestDTO.builder()
-            .patient(patient)
-            .unit(certificateServiceUnitHelper.getUnit())
-            .careUnit(certificateServiceUnitHelper.getCareUnit())
-            .careProvider(certificateServiceUnitHelper.getCareProvider())
-            .user(certificateServiceUserHelper.get())
-            .certificatesQueryCriteria(queryCriteria)
-            .build();
+    public GetUnitCertificatesRequestDTO getUnitCertificatesRequest(QueryIntygParameter filter) {
+        final var queryCriteria = certificatesQueryCriteriaFactory.create(filter);
+        return getUnitCertificatesRequestDTO(queryCriteria);
     }
 
     public GetUnitCertificatesInfoRequestDTO getUnitCertificatesInfoRequest() {
@@ -150,6 +152,39 @@ public class CSIntegrationRequestFactory {
             .build();
     }
 
+    public GetCertificateXmlRequestDTO getCertificateXmlRequest() {
+        return GetCertificateXmlRequestDTO.builder()
+            .unit(certificateServiceUnitHelper.getUnit())
+            .careUnit(certificateServiceUnitHelper.getCareUnit())
+            .careProvider(certificateServiceUnitHelper.getCareProvider())
+            .user(certificateServiceUserHelper.get())
+            .build();
+    }
+
+    public SignCertificateRequestDTO signCertificateRequest(String signatureXml) {
+        return SignCertificateRequestDTO.builder()
+            .unit(certificateServiceUnitHelper.getUnit())
+            .careUnit(certificateServiceUnitHelper.getCareUnit())
+            .careProvider(certificateServiceUnitHelper.getCareProvider())
+            .user(certificateServiceUserHelper.get())
+            .signatureXml(Base64.getEncoder().encodeToString(signatureXml.getBytes(StandardCharsets.UTF_8)))
+            .build();
+    }
+
+    private GetUnitCertificatesRequestDTO getUnitCertificatesRequestDTO(CertificatesQueryCriteriaDTO queryCriteria) {
+        final var patient = queryCriteria.getPersonId() == null ? null
+            : certificateServicePatientHelper.get(createPatientId(queryCriteria.getPersonId().getId()));
+
+        return GetUnitCertificatesRequestDTO.builder()
+            .patient(patient)
+            .unit(certificateServiceUnitHelper.getUnit())
+            .careUnit(certificateServiceUnitHelper.getCareUnit())
+            .careProvider(certificateServiceUnitHelper.getCareProvider())
+            .user(certificateServiceUserHelper.get())
+            .certificatesQueryCriteria(queryCriteria)
+            .build();
+    }
+
     public PrintCertificateRequestDTO getPrintCertificateRequest(String additionalInfoText, String patientId) {
         return PrintCertificateRequestDTO.builder()
             .user(certificateServiceUserHelper.get())
@@ -168,5 +203,14 @@ public class CSIntegrationRequestFactory {
                     String.format("PatientId has wrong format: '%s'", patientId)
                 )
             );
+    }
+
+    public SignCertificateWithoutSignatureRequestDTO signCertificateWithoutSignatureRequest() {
+        return SignCertificateWithoutSignatureRequestDTO.builder()
+            .unit(certificateServiceUnitHelper.getUnit())
+            .careUnit(certificateServiceUnitHelper.getCareUnit())
+            .careProvider(certificateServiceUnitHelper.getCareProvider())
+            .user(certificateServiceUserHelper.get())
+            .build();
     }
 }

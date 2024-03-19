@@ -42,10 +42,10 @@ import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpHeaders;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.xmldsig.service.FakeSignatureServiceImpl;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
@@ -80,6 +80,7 @@ public class SignatureApiController extends AbstractApiController {
     private ReactUriFactory reactUriFactory;
 
     @Autowired
+    @Qualifier("signAggregator")
     private UnderskriftService underskriftService;
 
     @Autowired
@@ -246,8 +247,6 @@ public class SignatureApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{ticketId}/signeringsstatus")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public SignaturStateDTO signeringsStatus(@PathParam("intygsTyp") String intygsTyp, @PathParam("ticketId") String ticketId) {
-        authoritiesValidator.given(getWebCertUserService().getUser(), intygsTyp).features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST)
-            .orThrow();
         SignaturBiljett sb = underskriftService.signeringsStatus(ticketId);
 
         return convertToSignatureStateDTO(sb);

@@ -57,6 +57,12 @@ public class PDLLogService {
         );
     }
 
+    public void logSign(Certificate certificate) {
+        logService.logSignIntyg(
+            logRequestFactory.createLogRequestFromCertificate(certificate)
+        );
+    }
+
     public void logPrinted(Certificate certificate) {
         final var status = certificate.getMetadata().getStatus();
         if (status == CertificateStatus.UNSIGNED || status == CertificateStatus.LOCKED) {

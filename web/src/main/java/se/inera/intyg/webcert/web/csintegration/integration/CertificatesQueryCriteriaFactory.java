@@ -27,6 +27,7 @@ import se.inera.intyg.webcert.web.csintegration.patient.PersonIdDTO;
 import se.inera.intyg.webcert.web.csintegration.patient.PersonIdType;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.service.facade.list.filter.ListFilterHelper;
+import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 
 @Component
 public class CertificatesQueryCriteriaFactory {
@@ -45,6 +46,16 @@ public class CertificatesQueryCriteriaFactory {
             .personId(personId(patientId))
             .issuedByStaffId(issuedByStaffId(staffId))
             .validForSign(validForSign(status))
+            .build();
+    }
+
+    public CertificatesQueryCriteriaDTO create(QueryIntygParameter filter) {
+        return CertificatesQueryCriteriaDTO.builder()
+            .from(filter.getSignedFrom())
+            .to(filter.getSignedTo())
+            .statuses(List.of(CertificateStatus.SIGNED))
+            .personId(personId(filter.getPatientId()))
+            .issuedByStaffId(issuedByStaffId(filter.getHsaId()))
             .build();
     }
 
@@ -72,7 +83,7 @@ public class CertificatesQueryCriteriaFactory {
     }
 
     private static PersonIdDTO personId(String patientId) {
-        return patientId.isBlank() ? null
+        return patientId == null || patientId.isBlank() ? null
             : PersonIdDTO.builder()
                 .id(patientId)
                 .type(PersonIdType.PERSONAL_IDENTITY_NUMBER)
@@ -80,6 +91,6 @@ public class CertificatesQueryCriteriaFactory {
     }
 
     private static String issuedByStaffId(String staffId) {
-        return staffId.isBlank() ? null : staffId;
+        return staffId == null || staffId.isBlank() ? null : staffId;
     }
 }

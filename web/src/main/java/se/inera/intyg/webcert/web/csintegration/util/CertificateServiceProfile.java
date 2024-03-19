@@ -21,7 +21,11 @@ package se.inera.intyg.webcert.web.csintegration.util;
 
 public interface CertificateServiceProfile {
 
-    boolean active();
+    default boolean active() {
+        return false;
+    }
 
-    boolean activeAndSupportsType(String type);
+    default boolean activeAndSupportsType(String type) {
+        return false;
+    }
 }

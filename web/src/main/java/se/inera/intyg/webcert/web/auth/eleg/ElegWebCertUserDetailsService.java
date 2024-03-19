@@ -205,7 +205,12 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
 
         user.setHsaId(hosPerson.getHsaId().getExtension());
         user.setPersonId(hosPerson.getPersonId().getExtension());
-        user.setNamn(hosPerson.getFullstandigtNamn());
+        final var fullName = hosPerson.getFullstandigtNamn();
+        if (fullName != null && fullName.contains(SPACE)) {
+            user.setFornamn(fullName.substring(0, fullName.indexOf(SPACE)));
+            user.setEfternamn(fullName.substring(fullName.indexOf(SPACE) + 1));
+        }
+        user.setNamn(fullName);
 
         // Forskrivarkod should be always be seven zeros
         user.setForskrivarkod("0000000");

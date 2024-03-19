@@ -22,6 +22,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -45,6 +47,7 @@ import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitHelpe
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserDTO;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserHelper;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
+import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 
 @ExtendWith(MockitoExtension.class)
 class CSIntegrationRequestFactoryTest {
@@ -75,6 +78,7 @@ class CSIntegrationRequestFactoryTest {
     private static final CertificateServiceUnitDTO CARE_PROVIDER = CertificateServiceUnitDTO.builder().build();
     private static final CertificateServicePatientDTO PATIENT = CertificateServicePatientDTO.builder().build();
     private static final ListFilter LIST_FILTER = new ListFilter();
+    private static final QueryIntygParameter QUERY_INTYG_PARAMETER = new QueryIntygParameter();
     private static final CertificatesQueryCriteriaDTO CERTIFICATES_QUERY_CRITERIA_DTO = CertificatesQueryCriteriaDTO.builder().build();
     private static final String ADDITIONAL_INFO_TEXT = "ADDITIONAL_INFO_TEXT";
 
@@ -378,7 +382,7 @@ class CSIntegrationRequestFactoryTest {
     }
 
     @Nested
-    class GetUnitCertificatesRequest {
+    class GetUnitCertificatesRequestFromListFilter {
 
         @BeforeEach
         void setup() {
@@ -433,6 +437,66 @@ class CSIntegrationRequestFactoryTest {
             when(certificatesQueryCriteriaFactory.create(LIST_FILTER)).thenReturn(queryCriteriaDTO);
             when(certificateServicePatientHelper.get(PERSONNUMMER)).thenReturn(PATIENT);
             final var actualRequest = csIntegrationRequestFactory.getUnitCertificatesRequest(LIST_FILTER);
+            assertEquals(PATIENT, actualRequest.getPatient());
+        }
+    }
+
+    @Nested
+    class GetUnitCertificatesRequestFromCriteriaIntygFilter {
+
+        @BeforeEach
+        void setup() {
+            when(certificateServiceUserHelper.get())
+                .thenReturn(USER);
+            when(certificateServiceUnitHelper.getUnit())
+                .thenReturn(UNIT);
+            when(certificateServiceUnitHelper.getCareUnit())
+                .thenReturn(CARE_UNIT);
+            when(certificateServiceUnitHelper.getCareProvider())
+                .thenReturn(CARE_PROVIDER);
+        }
+
+        @Test
+        void shouldSetUser() {
+            when(certificatesQueryCriteriaFactory.create(QUERY_INTYG_PARAMETER)).thenReturn(CERTIFICATES_QUERY_CRITERIA_DTO);
+            final var actualRequest = csIntegrationRequestFactory.getUnitCertificatesRequest(QUERY_INTYG_PARAMETER);
+            assertEquals(USER, actualRequest.getUser());
+        }
+
+        @Test
+        void shouldSetUnit() {
+            when(certificatesQueryCriteriaFactory.create(QUERY_INTYG_PARAMETER)).thenReturn(CERTIFICATES_QUERY_CRITERIA_DTO);
+            final var actualRequest = csIntegrationRequestFactory.getUnitCertificatesRequest(QUERY_INTYG_PARAMETER);
+            assertEquals(UNIT, actualRequest.getUnit());
+        }
+
+        @Test
+        void shouldSetCareUnit() {
+            when(certificatesQueryCriteriaFactory.create(QUERY_INTYG_PARAMETER)).thenReturn(CERTIFICATES_QUERY_CRITERIA_DTO);
+            final var actualRequest = csIntegrationRequestFactory.getUnitCertificatesRequest(QUERY_INTYG_PARAMETER);
+            assertEquals(CARE_UNIT, actualRequest.getCareUnit());
+        }
+
+        @Test
+        void shouldSetCareProvider() {
+            when(certificatesQueryCriteriaFactory.create(QUERY_INTYG_PARAMETER)).thenReturn(CERTIFICATES_QUERY_CRITERIA_DTO);
+            final var actualRequest = csIntegrationRequestFactory.getUnitCertificatesRequest(QUERY_INTYG_PARAMETER);
+            assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
+        }
+
+        @Test
+        void shouldSetPatientIfIdIsDefined() {
+            final var queryCriteriaDTO = CertificatesQueryCriteriaDTO.builder()
+                .personId(
+                    PersonIdDTO.builder()
+                        .id(PATIENT_ID)
+                        .type(PersonIdType.PERSONAL_IDENTITY_NUMBER)
+                        .build()
+                )
+                .build();
+            when(certificatesQueryCriteriaFactory.create(QUERY_INTYG_PARAMETER)).thenReturn(queryCriteriaDTO);
+            when(certificateServicePatientHelper.get(PERSONNUMMER)).thenReturn(PATIENT);
+            final var actualRequest = csIntegrationRequestFactory.getUnitCertificatesRequest(QUERY_INTYG_PARAMETER);
             assertEquals(PATIENT, actualRequest.getPatient());
         }
     }
@@ -582,6 +646,137 @@ class CSIntegrationRequestFactoryTest {
         void shouldSetPatient() {
             final var actualRequest = csIntegrationRequestFactory.getPrintCertificateRequest(ADDITIONAL_INFO_TEXT, PATIENT_ID);
             assertEquals(PATIENT, actualRequest.getPatient());
+        }
+    }
+
+    @Nested
+    class GetCertificateXmlRequest {
+
+        @BeforeEach
+        void setup() {
+            when(certificateServiceUserHelper.get())
+                .thenReturn(USER);
+            when(certificateServiceUnitHelper.getUnit())
+                .thenReturn(UNIT);
+            when(certificateServiceUnitHelper.getCareUnit())
+                .thenReturn(CARE_UNIT);
+            when(certificateServiceUnitHelper.getCareProvider())
+                .thenReturn(CARE_PROVIDER);
+        }
+
+        @Test
+        void shouldSetUser() {
+            final var actualRequest = csIntegrationRequestFactory.getCertificateXmlRequest();
+            assertEquals(USER, actualRequest.getUser());
+        }
+
+        @Test
+        void shouldSetUnit() {
+            final var actualRequest = csIntegrationRequestFactory.getCertificateXmlRequest();
+            assertEquals(UNIT, actualRequest.getUnit());
+        }
+
+        @Test
+        void shouldSetCareUnit() {
+            final var actualRequest = csIntegrationRequestFactory.getCertificateXmlRequest();
+            assertEquals(CARE_UNIT, actualRequest.getCareUnit());
+        }
+
+        @Test
+        void shouldSetCareProvider() {
+            final var actualRequest = csIntegrationRequestFactory.getCertificateXmlRequest();
+            assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
+        }
+    }
+
+    @Nested
+    class SignCertificateRequest {
+
+        private static final String SIGNATURE_XML = "signatureXml";
+
+        @BeforeEach
+        void setup() {
+            when(certificateServiceUserHelper.get())
+                .thenReturn(USER);
+            when(certificateServiceUnitHelper.getUnit())
+                .thenReturn(UNIT);
+            when(certificateServiceUnitHelper.getCareUnit())
+                .thenReturn(CARE_UNIT);
+            when(certificateServiceUnitHelper.getCareProvider())
+                .thenReturn(CARE_PROVIDER);
+        }
+
+        @Test
+        void shouldSetUser() {
+            final var actualRequest = csIntegrationRequestFactory.signCertificateRequest(SIGNATURE_XML);
+            assertEquals(USER, actualRequest.getUser());
+        }
+
+        @Test
+        void shouldSetUnit() {
+            final var actualRequest = csIntegrationRequestFactory.signCertificateRequest(SIGNATURE_XML);
+            assertEquals(UNIT, actualRequest.getUnit());
+        }
+
+        @Test
+        void shouldSetCareUnit() {
+            final var actualRequest = csIntegrationRequestFactory.signCertificateRequest(SIGNATURE_XML);
+            assertEquals(CARE_UNIT, actualRequest.getCareUnit());
+        }
+
+        @Test
+        void shouldSetCareProvider() {
+            final var actualRequest = csIntegrationRequestFactory.signCertificateRequest(SIGNATURE_XML);
+            assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
+        }
+
+        @Test
+        void shouldSetBase64EncodedSignatureXml() {
+            final var actualRequest = csIntegrationRequestFactory.signCertificateRequest(SIGNATURE_XML);
+            assertEquals(Base64.getEncoder().encodeToString(SIGNATURE_XML.getBytes(StandardCharsets.UTF_8)),
+                actualRequest.getSignatureXml());
+        }
+    }
+
+    @Nested
+    class SignCertificateWithoutSignatureRequest {
+
+        private static final String SIGNATURE_XML = "signatureXml";
+
+        @BeforeEach
+        void setup() {
+            when(certificateServiceUserHelper.get())
+                .thenReturn(USER);
+            when(certificateServiceUnitHelper.getUnit())
+                .thenReturn(UNIT);
+            when(certificateServiceUnitHelper.getCareUnit())
+                .thenReturn(CARE_UNIT);
+            when(certificateServiceUnitHelper.getCareProvider())
+                .thenReturn(CARE_PROVIDER);
+        }
+
+        @Test
+        void shouldSetUser() {
+            final var actualRequest = csIntegrationRequestFactory.signCertificateWithoutSignatureRequest();
+            assertEquals(USER, actualRequest.getUser());
+        }
+
+        @Test
+        void shouldSetUnit() {
+            final var actualRequest = csIntegrationRequestFactory.signCertificateWithoutSignatureRequest();
+            assertEquals(UNIT, actualRequest.getUnit());
+        }
+
+        @Test
+        void shouldSetCareUnit() {
+            final var actualRequest = csIntegrationRequestFactory.signCertificateWithoutSignatureRequest();
+            assertEquals(CARE_UNIT, actualRequest.getCareUnit());
+        }
+
+        @Test
+        void shouldSetCareProvider() {
+            final var actualRequest = csIntegrationRequestFactory.signCertificateWithoutSignatureRequest();
+            assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
         }
     }
 }
