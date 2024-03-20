@@ -62,7 +62,6 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertific
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateResponseDTO;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
-import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
@@ -73,6 +72,7 @@ public class CSIntegrationService {
     private static final String PATIENT_ENDPOINT_URL = "/api/patient";
     private static final String CERTIFICATE_TYPE_INFO_ENDPOINT_URL = "/api/certificatetypeinfo";
     private static final String UNIT_ENDPOINT_URL = "/api/unit";
+    public static final String NULL_RESPONSE_EXCEPTION = "Certificate service returned null response!";
 
     private final CertificateTypeInfoConverter certificateTypeInfoConverter;
     private final ListIntygEntryConverter listIntygEntryConverter;
@@ -177,7 +177,7 @@ public class CSIntegrationService {
         final var response = restTemplate.postForObject(url, request, CertificateServiceCreateCertificateResponseDTO.class);
 
         if (response == null) {
-            throw new IllegalStateException("Certificate service returned null response!");
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
         }
 
         return response.getCertificate();
@@ -201,7 +201,7 @@ public class CSIntegrationService {
         final var response = restTemplate.postForObject(url, request, ValidateCertificateResponseDTO.class);
 
         if (response == null) {
-            return null;
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
         }
 
         return response.getValidationErrors();
@@ -227,7 +227,7 @@ public class CSIntegrationService {
         final var response = restTemplate.getForObject(url, CertificateExistsResponseDTO.class);
 
         if (response == null) {
-            return false;
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
         }
 
         return Boolean.TRUE.equals(response.getExists());
@@ -296,7 +296,7 @@ public class CSIntegrationService {
         final var response = restTemplate.postForObject(url, request, PrintCertificateResponseDTO.class);
 
         if (response == null) {
-            return null;
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
         }
 
         return new IntygPdf(response.getPdfData(), response.getFileName());
