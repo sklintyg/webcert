@@ -50,11 +50,10 @@ public class CertificateServiceUnitHelper {
 
         if (user.getValdVardenhet() instanceof Mottagning) {
             final var mottagning = (Mottagning) user.getValdVardenhet();
-            final var parentUnitId = mottagning.getParentHsaId();
-
             final var chosenCareProvider = (Vardgivare) user.getValdVardgivare();
+
             final var parentUnit = chosenCareProvider.getVardenheter().stream()
-                .filter(unit -> hasMatch(parentUnitId, unit.getId()))
+                .filter(unit -> hasMatch(mottagning.getParentHsaId(), unit.getId()))
                 .findFirst()
                 .orElseThrow();
 
