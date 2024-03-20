@@ -49,13 +49,6 @@ class CertificateServiceUnitHelperTest {
     private static final String SUB_UNIT_ID = "SUB_UNIT_ID";
     private static final String SUB_UNIT_NAME = "SUB_UNIT_NAME";
 
-    private static final String NOT_CHOSEN_CARE_PROVIDER_ID = "NOT_CHOSEN_ID";
-    private static final String NOT_CHOSEN_CARE_PROVIDER_NAME = "NOT_CHOSEN_NAME";
-    private static final String NOT_CHOSEN_CARE_UNIT_ID = "CARE_UNIT_NOT_CHOSEN_ID";
-    private static final String NOT_CHOSEN_CARE_UNIT_NAME = "CARE_UNIT_NOT_CHOSEN_NAME";
-    private static final String NOT_CHOSEN_SUB_UNIT_ID = "SUB_UNIT_NOT_CHOSEN_ID";
-    private static final String NOT_CHOSEN_SUB_UNIT_NAME = "SUB_UNIT_NOT_CHOSEN_NAME";
-
     @Mock
     WebCertUserService webCertUserService;
 
@@ -70,34 +63,31 @@ class CertificateServiceUnitHelperTest {
 
     private final Vardenhet chosenCareUnit = new Vardenhet(CARE_UNIT_ID, CARE_UNIT_NAME);
     private final Vardgivare chosenCareProvider = new Vardgivare(CARE_PROVIDER_ID, CARE_PROVIDER_NAME);
-    private final Vardenhet chosenSubUnit = new Vardenhet(SUB_UNIT_ID, SUB_UNIT_NAME);
+    private final Mottagning chosenSubUnit = new Mottagning(SUB_UNIT_ID, SUB_UNIT_NAME);
 
     @BeforeEach
     void setup() {
         when(webCertUserService.getUser())
             .thenReturn(user);
 
-        when(user.getValdVardgivare())
-            .thenReturn(new Vardgivare(CARE_PROVIDER_ID, CARE_PROVIDER_NAME));
-
-        chosenCareUnit.setMottagningar(
-            List.of(
-                new Mottagning(SUB_UNIT_ID, SUB_UNIT_NAME),
-                new Mottagning(NOT_CHOSEN_SUB_UNIT_ID, NOT_CHOSEN_SUB_UNIT_NAME)
-            )
-        );
-
         chosenCareProvider.setVardenheter(
             List.of(
-                new Vardenhet(NOT_CHOSEN_CARE_UNIT_ID, NOT_CHOSEN_CARE_UNIT_NAME),
                 chosenCareUnit,
-                chosenSubUnit
+                new Vardenhet("NOT_IT", "NOT_IT")
             )
         );
+
+        chosenSubUnit.setParentHsaId(CARE_UNIT_ID);
     }
 
     @Nested
     class TestCareProvider {
+
+        @BeforeEach
+        void setup() {
+            when(user.getValdVardgivare())
+                .thenReturn(chosenCareProvider);
+        }
 
         @Test
         void shouldReturnLoggedInCareProviderId() {
@@ -120,12 +110,7 @@ class CertificateServiceUnitHelperTest {
         @BeforeEach
         void setup() {
             when(user.getValdVardenhet())
-                .thenReturn(new Vardenhet(CARE_UNIT_ID, CARE_UNIT_NAME));
-
-            when(user.getVardgivare()).thenReturn(List.of(
-                new Vardgivare(NOT_CHOSEN_CARE_PROVIDER_ID, NOT_CHOSEN_CARE_PROVIDER_NAME),
-                chosenCareProvider
-            ));
+                .thenReturn(chosenCareUnit);
         }
 
         @Test
@@ -155,16 +140,13 @@ class CertificateServiceUnitHelperTest {
         @BeforeEach
         void setup() {
             when(user.getValdVardenhet())
-                .thenReturn(new Vardenhet(SUB_UNIT_ID, SUB_UNIT_NAME));
-
-            when(user.getVardgivare()).thenReturn(List.of(
-                new Vardgivare(NOT_CHOSEN_CARE_PROVIDER_ID, NOT_CHOSEN_CARE_PROVIDER_NAME),
-                chosenCareProvider
-            ));
+                .thenReturn(chosenSubUnit);
         }
 
         @Test
         void shouldReturnConvertedCareUnitOfChosenSubUnitAsCareUnit() {
+            when(user.getValdVardgivare())
+                .thenReturn(chosenCareProvider);
             when(certificateServiceVardenhetConverter.convert(chosenCareUnit))
                 .thenReturn(CONVERTED_CARE_UNIT);
 

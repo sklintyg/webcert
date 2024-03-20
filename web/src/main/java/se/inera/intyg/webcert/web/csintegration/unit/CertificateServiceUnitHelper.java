@@ -19,13 +19,11 @@
 
 package se.inera.intyg.webcert.web.csintegration.unit;
 
-import java.util.List;
 import org.springframework.stereotype.Component;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.AbstractVardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @Component
 public class CertificateServiceUnitHelper {
@@ -49,55 +47,29 @@ public class CertificateServiceUnitHelper {
 
     public CertificateServiceUnitDTO getCareUnit() {
         final var user = webCertUserService.getUser();
-        final var chosenCareProvider = getChosenCareProvider();
 
-        final var units = chosenCareProvider.getVardenheter();
+        if (user.getValdVardenhet() instanceof Mottagning) {
+            final var mottagning = (Mottagning) user.getValdVardenhet();
+            final var parentUnitId = mottagning.getParentHsaId();
 
-        final var chosenUnit = units.stream()
-            .filter(unit -> hasMatchInUnit(unit, user) || hasMatchInSubUnits(unit.getMottagningar(), user.getValdVardenhet().getId()))
-            .findFirst()
-            .orElseThrow();
+            final var chosenCareProvider = (Vardgivare) user.getValdVardgivare();
+            final var parentUnit = chosenCareProvider.getVardenheter().stream()
+                .filter(unit -> hasMatch(parentUnitId, unit.getId()))
+                .findFirst()
+                .orElseThrow();
 
-        return certificateServiceVardenhetConverter.convert(chosenUnit);
+            return certificateServiceVardenhetConverter.convert(parentUnit);
+        }
+
+        return certificateServiceVardenhetConverter.convert((AbstractVardenhet) user.getValdVardenhet());
     }
 
     public CertificateServiceUnitDTO getUnit() {
         final var user = webCertUserService.getUser();
-        final var chosenCareProvider = getChosenCareProvider();
-        final var units = chosenCareProvider.getVardenheter();
-
-        final var chosenUnit = units.stream()
-            .filter(unit -> hasMatchInUnit(unit, user))
-            .findFirst()
-            .orElseThrow();
-
-        return certificateServiceVardenhetConverter.convert(chosenUnit);
-    }
-
-    private Vardgivare getChosenCareProvider() {
-        final var user = webCertUserService.getUser();
-        return user.getVardgivare().stream()
-            .filter(careProvider -> hasMatchInCareProvider(careProvider, user))
-            .findFirst()
-            .orElseThrow();
-    }
-
-    private static boolean hasMatchInCareProvider(Vardgivare careProvider, WebCertUser user) {
-        return hasMatch(careProvider.getId(), user.getValdVardgivare().getId());
-    }
-
-    private static boolean hasMatchInUnit(Vardenhet unit, WebCertUser user) {
-        return hasMatch(unit.getId(), user.getValdVardenhet().getId());
+        return certificateServiceVardenhetConverter.convert((AbstractVardenhet) user.getValdVardenhet());
     }
 
     private static boolean hasMatch(String id1, String id2) {
         return id1.equalsIgnoreCase(id2);
-    }
-
-    private boolean hasMatchInSubUnits(List<Mottagning> units, String loggedInUnitId) {
-        if (units == null) {
-            return false;
-        }
-        return units.stream().anyMatch(unit -> hasMatch(unit.getId(), loggedInUnitId));
     }
 }
