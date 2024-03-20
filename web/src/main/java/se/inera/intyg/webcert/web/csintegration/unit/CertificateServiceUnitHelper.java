@@ -19,44 +19,86 @@
 
 package se.inera.intyg.webcert.web.csintegration.unit;
 
+import java.util.List;
+import java.util.Objects;
 import org.springframework.stereotype.Component;
-import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
-import se.inera.intyg.webcert.web.service.facade.user.UserService;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @Component
 public class CertificateServiceUnitHelper {
 
-    private final UserService userService;
-    private final CertificateServiceUnitConverter certificateServiceUnitConverter;
+    private final WebCertUserService webCertUserService;
     private final CertificateServiceVardenhetConverter certificateServiceVardenhetConverter;
-    private final HsaOrganizationsService hsaOrganizationsService;
 
-    private static final String PRIVATE_DOCTOR = "Privatläkare";
-
-    public CertificateServiceUnitHelper(UserService userService, CertificateServiceUnitConverter certificateServiceUnitConverter,
-        CertificateServiceVardenhetConverter certificateServiceVardenhetConverter, HsaOrganizationsService hsaOrganizationsService) {
-        this.userService = userService;
-        this.certificateServiceUnitConverter = certificateServiceUnitConverter;
+    public CertificateServiceUnitHelper(WebCertUserService webCertUserService,
+        CertificateServiceVardenhetConverter certificateServiceVardenhetConverter) {
+        this.webCertUserService = webCertUserService;
         this.certificateServiceVardenhetConverter = certificateServiceVardenhetConverter;
-        this.hsaOrganizationsService = hsaOrganizationsService;
     }
 
     public CertificateServiceUnitDTO getCareProvider() {
-        final var user = userService.getLoggedInUser();
-        return certificateServiceUnitConverter.convert(user.getLoggedInCareProvider());
+        final var user = webCertUserService.getUser();
+        return CertificateServiceUnitDTO.builder()
+            .id(user.getValdVardgivare().getId())
+            .name(user.getValdVardgivare().getNamn())
+            .build();
     }
 
     public CertificateServiceUnitDTO getCareUnit() {
-        final var user = userService.getLoggedInUser();
-        return certificateServiceUnitConverter.convert(user.getLoggedInCareUnit());
+        final var user = webCertUserService.getUser();
+        final var chosenCareProvider = getChosenCareProvider();
+
+        final var units = chosenCareProvider.getVardenheter();
+
+        final var chosenUnit = units.stream()
+            .filter(unit -> hasMatchInUnit(unit, user) || hasMatchInSubUnits(unit.getMottagningar(), user.getValdVardenhet().getId()))
+            .findFirst()
+            .orElseThrow();
+
+        return certificateServiceVardenhetConverter.convert(chosenUnit);
     }
 
     public CertificateServiceUnitDTO getUnit() {
-        final var user = userService.getLoggedInUser();
-        if (PRIVATE_DOCTOR.equalsIgnoreCase(user.getRole())) {
-            return certificateServiceUnitConverter.convert(user.getLoggedInCareUnit());
+        final var user = webCertUserService.getUser();
+        final var chosenCareProvider = getChosenCareProvider();
+        final var units = chosenCareProvider.getVardenheter();
+
+        final var chosenUnit = units.stream()
+            .filter(unit -> hasMatchInUnit(unit, user))
+            .findFirst()
+            .orElseThrow();
+
+        return certificateServiceVardenhetConverter.convert(chosenUnit);
+    }
+
+    private Vardgivare getChosenCareProvider() {
+        final var user = webCertUserService.getUser();
+        return user.getVardgivare().stream()
+            .filter(careProvider -> hasMatchInCareProvider(careProvider, user))
+            .findFirst()
+            .orElseThrow();
+    }
+
+    private static boolean hasMatchInCareProvider(Vardgivare careProvider, WebCertUser user) {
+        return hasMatch(careProvider.getId(), user.getValdVardgivare().getId());
+    }
+
+    private static boolean hasMatchInUnit(Vardenhet unit, WebCertUser user) {
+        return hasMatch(unit.getId(), user.getValdVardenhet().getId());
+    }
+
+    private static boolean hasMatch(String id1, String id2) {
+        return Objects.equals(id1, id2);
+    }
+
+    private boolean hasMatchInSubUnits(List<Mottagning> units, String loggedInUnitId) {
+        if (units == null) {
+            return false;
         }
-        final var unit = hsaOrganizationsService.getVardenhet(user.getLoggedInUnit().getUnitId());
-        return certificateServiceVardenhetConverter.convert(unit);
+        return units.stream().anyMatch(unit -> unit.getId().equalsIgnoreCase(loggedInUnitId));
     }
 }
