@@ -20,7 +20,6 @@
 package se.inera.intyg.webcert.web.csintegration.unit;
 
 import java.util.List;
-import java.util.Objects;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
@@ -92,7 +91,7 @@ public class CertificateServiceUnitHelper {
     }
 
     private static boolean hasMatch(String id1, String id2) {
-        return Objects.equals(id1, id2);
+        return id1.equalsIgnoreCase(id2);
     }
 
     private boolean hasMatchInSubUnits(List<Mottagning> units, String loggedInUnitId) {
