@@ -104,7 +104,7 @@ class CertificateServiceUserHelperTest {
         @BeforeEach
         void setup() {
             final var role = new Role();
-            role.setDesc(AuthoritiesConstants.ROLE_LAKARE);
+            role.setName(AuthoritiesConstants.ROLE_LAKARE);
             roles.put("FIRST", role);
             when(webCertUser.getRoles())
                 .thenReturn(roles);
@@ -310,10 +310,10 @@ class CertificateServiceUserHelperTest {
             }
         }
 
-        private void addRole(String roleDescription) {
+        private void addRole(String roleName) {
             roles.remove("FIRST");
             final var role = new Role();
-            role.setDesc(roleDescription);
+            role.setName(roleName);
             roles.put("ROLE", role);
         }
     }

@@ -87,7 +87,7 @@ public class CertificateServiceUserHelper {
             throw new IllegalStateException("User has no roles");
         }
 
-        return convertRole(roles.values().stream().findFirst().orElseThrow().getDesc());
+        return convertRole(roles.values().stream().findFirst().orElseThrow().getName());
     }
 
     private CertificateServiceUserRole convertRole(String role) {
