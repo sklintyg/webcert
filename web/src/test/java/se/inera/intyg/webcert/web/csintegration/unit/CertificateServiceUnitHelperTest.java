@@ -111,13 +111,12 @@ class CertificateServiceUnitHelperTest {
         void setup() {
             when(user.getValdVardenhet())
                 .thenReturn(chosenCareUnit);
+            when(certificateServiceVardenhetConverter.convert(chosenCareUnit))
+                .thenReturn(CONVERTED_CARE_UNIT);
         }
 
         @Test
         void shouldReturnConvertedChosenCareUnitAsCareUnit() {
-            when(certificateServiceVardenhetConverter.convert(chosenCareUnit))
-                .thenReturn(CONVERTED_CARE_UNIT);
-
             final var response = certificateServiceUnitHelper.getCareUnit();
 
             assertEquals(CONVERTED_CARE_UNIT, response);
@@ -125,9 +124,6 @@ class CertificateServiceUnitHelperTest {
 
         @Test
         void shouldReturnConvertedChosenCareUnitAsUnit() {
-            when(certificateServiceVardenhetConverter.convert(chosenCareUnit))
-                .thenReturn(CONVERTED_CARE_UNIT);
-
             final var response = certificateServiceUnitHelper.getUnit();
 
             assertEquals(CONVERTED_CARE_UNIT, response);
