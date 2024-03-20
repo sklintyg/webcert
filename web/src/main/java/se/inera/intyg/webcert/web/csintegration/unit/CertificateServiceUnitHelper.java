@@ -98,6 +98,6 @@ public class CertificateServiceUnitHelper {
         if (units == null) {
             return false;
         }
-        return units.stream().anyMatch(unit -> unit.getId().equalsIgnoreCase(loggedInUnitId));
+        return units.stream().anyMatch(unit -> hasMatch(unit.getId(), loggedInUnitId));
     }
 }
