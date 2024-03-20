@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.csintegration.user;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -103,8 +104,8 @@ class CertificateServiceUserHelperTest {
         @BeforeEach
         void setup() {
             final var role = new Role();
-            role.setDesc("FIRST");
-            roles.put("DOCTOR", role);
+            role.setDesc(AuthoritiesConstants.ROLE_LAKARE);
+            roles.put("FIRST", role);
             when(webCertUser.getRoles())
                 .thenReturn(roles);
         }
@@ -190,16 +191,7 @@ class CertificateServiceUserHelperTest {
 
             @Test
             void shouldReturnUserWithRoleDoctorFromDoctor() {
-                addRole("DOCTOR");
-
-                final var response = certificateServiceUserHelper.get();
-
-                assertEquals(CertificateServiceUserRole.DOCTOR, response.getRole());
-            }
-
-            @Test
-            void shouldReturnUserWithRoleDoctorFromLakare() {
-                addRole("LAKARE");
+                addRole(AuthoritiesConstants.ROLE_LAKARE);
 
                 final var response = certificateServiceUserHelper.get();
 
@@ -208,7 +200,7 @@ class CertificateServiceUserHelperTest {
 
             @Test
             void shouldReturnUserWithRolePrivateDoctorFromPrivatlakare() {
-                addRole("Privatläkare");
+                addRole(AuthoritiesConstants.ROLE_PRIVATLAKARE);
 
                 final var response = certificateServiceUserHelper.get();
 
@@ -217,34 +209,16 @@ class CertificateServiceUserHelperTest {
 
             @Test
             void shouldReturnUserWithRoleAdministratorFromAdministrator() {
-                addRole("ADMINISTRATOR");
+                addRole(AuthoritiesConstants.ROLE_ADMIN);
 
                 final var response = certificateServiceUserHelper.get();
 
                 assertEquals(CertificateServiceUserRole.CARE_ADMIN, response.getRole());
-            }
-
-            @Test
-            void shouldReturnUserWithRoleAdministratorFromVardadmin() {
-                addRole("VARDADMIN");
-
-                final var response = certificateServiceUserHelper.get();
-
-                assertEquals(CertificateServiceUserRole.CARE_ADMIN, response.getRole());
-            }
-
-            @Test
-            void shouldReturnUserWithRoleNurseFromNurse() {
-                addRole("NURSE");
-
-                final var response = certificateServiceUserHelper.get();
-
-                assertEquals(CertificateServiceUserRole.NURSE, response.getRole());
             }
 
             @Test
             void shouldReturnUserWithRoleNurseFromSjukskoterska() {
-                addRole("SJUKSKOTERSKA");
+                addRole(AuthoritiesConstants.ROLE_SJUKSKOTERSKA);
 
                 final var response = certificateServiceUserHelper.get();
 
@@ -252,35 +226,8 @@ class CertificateServiceUserHelperTest {
             }
 
             @Test
-            void shouldReturnUserWithRoleMidwifeFromMidwife() {
-                addRole("MIDWIFE");
-
-                final var response = certificateServiceUserHelper.get();
-
-                assertEquals(CertificateServiceUserRole.MIDWIFE, response.getRole());
-            }
-
-            @Test
-            void shouldReturnUserWithRoleMidwfeFromBarnmorska() {
-                addRole("BARNMORSKA");
-
-                final var response = certificateServiceUserHelper.get();
-
-                assertEquals(CertificateServiceUserRole.MIDWIFE, response.getRole());
-            }
-
-            @Test
-            void shouldReturnUserWithRoleDentistFromDentist() {
-                addRole("DENTIST");
-
-                final var response = certificateServiceUserHelper.get();
-
-                assertEquals(CertificateServiceUserRole.DENTIST, response.getRole());
-            }
-
-            @Test
             void shouldReturnUserWithRoleDentistFromTandlakare() {
-                addRole("TANDLAKARE");
+                addRole(AuthoritiesConstants.ROLE_TANDLAKARE);
 
                 final var response = certificateServiceUserHelper.get();
 
@@ -288,12 +235,10 @@ class CertificateServiceUserHelperTest {
             }
 
             @Test
-            void shouldReturnUserWithRoleUnknown() {
+            void shouldThrowExceptionIfUnknownRole() {
                 addRole("");
 
-                final var response = certificateServiceUserHelper.get();
-
-                assertEquals(CertificateServiceUserRole.UNKNOWN, response.getRole());
+                assertThrows(IllegalArgumentException.class, () -> certificateServiceUserHelper.get());
             }
         }
 

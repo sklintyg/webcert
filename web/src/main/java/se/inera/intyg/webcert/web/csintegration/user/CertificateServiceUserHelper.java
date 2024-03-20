@@ -45,10 +45,10 @@ public class CertificateServiceUserHelper {
             .firstName(webCertUser.getFornamn())
             .lastName(webCertUser.getEfternamn())
             .fullName(webCertUser.getNamn())
-            .role(getRole(webCertUser))
             .blocked(isBlocked(webCertUser))
             .paTitles(paTitles(webCertUser.getBefattningar()))
             .specialities(webCertUser.getSpecialiseringar())
+            .role(getRole(webCertUser))
             .build();
     }
 
@@ -92,29 +92,18 @@ public class CertificateServiceUserHelper {
 
     private CertificateServiceUserRole convertRole(String role) {
         switch (role.toUpperCase()) {
-            case "LAKARE":
-            case "LÄKARE":
-            case "DOCTOR":
+            case AuthoritiesConstants.ROLE_LAKARE:
                 return CertificateServiceUserRole.DOCTOR;
-            case "PRIVATLÄKARE":
+            case AuthoritiesConstants.ROLE_PRIVATLAKARE:
                 return CertificateServiceUserRole.PRIVATE_DOCTOR;
-            case "TANDLAKARE":
-            case "TANDLÄKARE":
-            case "DENTIST":
+            case AuthoritiesConstants.ROLE_TANDLAKARE:
                 return CertificateServiceUserRole.DENTIST;
-            case "SJUKSKOTERSKA":
-            case "SJUKSKÖTERSKA":
-            case "NURSE":
-                return CertificateServiceUserRole.NURSE;
-            case "BARNMORSKA":
-            case "MIDWIFE":
-                return CertificateServiceUserRole.MIDWIFE;
-            case "VARDADMIN":
-            case "VÅRDADMINISTRATÖR":
-            case "ADMINISTRATOR":
+            case AuthoritiesConstants.ROLE_ADMIN:
                 return CertificateServiceUserRole.CARE_ADMIN;
+            case AuthoritiesConstants.ROLE_SJUKSKOTERSKA:
+                return CertificateServiceUserRole.NURSE;
             default:
-                return CertificateServiceUserRole.UNKNOWN;
+                throw new IllegalArgumentException("Role is not recognized: " + role);
         }
     }
 }

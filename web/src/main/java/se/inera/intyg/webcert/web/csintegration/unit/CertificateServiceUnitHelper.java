@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.csintegration.unit;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.AbstractVardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
@@ -26,16 +27,11 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 @Component
+@RequiredArgsConstructor
 public class CertificateServiceUnitHelper {
 
     private final WebCertUserService webCertUserService;
     private final CertificateServiceVardenhetConverter certificateServiceVardenhetConverter;
-
-    public CertificateServiceUnitHelper(WebCertUserService webCertUserService,
-        CertificateServiceVardenhetConverter certificateServiceVardenhetConverter) {
-        this.webCertUserService = webCertUserService;
-        this.certificateServiceVardenhetConverter = certificateServiceVardenhetConverter;
-    }
 
     public CertificateServiceUnitDTO getCareProvider() {
         final var user = webCertUserService.getUser();
