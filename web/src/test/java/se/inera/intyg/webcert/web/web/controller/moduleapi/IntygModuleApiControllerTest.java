@@ -20,14 +20,12 @@ package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
 import static javax.ws.rs.core.Response.Status.OK;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
@@ -62,6 +60,7 @@ import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.RequestOrigin;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.web.csintegration.aggregate.PrintCertificateAggregator;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
@@ -107,7 +106,9 @@ public class IntygModuleApiControllerTest {
     private static Patient patient;
 
     @Mock
-    private IntygService intygService;
+    IntygService intygService;
+    @Mock
+    private PrintCertificateAggregator printCertificateAggregator;
     @Mock
     private CopyUtkastService copyUtkastService;
     @Mock
@@ -161,11 +162,9 @@ public class IntygModuleApiControllerTest {
         final var request = new MockHttpServletRequest();
         request.addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; Touch; rv:11.0) like Gecko");
 
-        when(intygService.fetchIntygAsPdf(CERTIFICATE_ID, intygType, false)).thenReturn(pdfResponse);
+        when(printCertificateAggregator.get(CERTIFICATE_ID, intygType, false)).thenReturn(pdfResponse);
 
         Response response = moduleApiController.getIntygAsPdf(intygType, CERTIFICATE_ID, request);
-
-        verify(intygService).fetchIntygAsPdf(CERTIFICATE_ID, intygType, false);
 
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(PDF_DATA, response.getEntity());
@@ -182,11 +181,9 @@ public class IntygModuleApiControllerTest {
         request.addHeader("User-Agent",
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36");
 
-        when(intygService.fetchIntygAsPdf(CERTIFICATE_ID, intygType, false)).thenReturn(pdfResponse);
+        when(printCertificateAggregator.get(CERTIFICATE_ID, intygType, false)).thenReturn(pdfResponse);
 
         Response response = moduleApiController.getIntygAsPdf(intygType, CERTIFICATE_ID, request);
-
-        verify(intygService).fetchIntygAsPdf(CERTIFICATE_ID, intygType, false);
 
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(PDF_DATA, response.getEntity());
@@ -202,11 +199,9 @@ public class IntygModuleApiControllerTest {
         final var request = new MockHttpServletRequest();
         request.addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; Touch; rv:11.0) like Gecko");
 
-        when(intygService.fetchIntygAsPdf(CERTIFICATE_ID, intygType, true)).thenReturn(pdfResponse);
+        when(printCertificateAggregator.get(CERTIFICATE_ID, intygType, true)).thenReturn(pdfResponse);
 
         Response response = moduleApiController.getIntygAsPdfForEmployer(intygType, CERTIFICATE_ID, request);
-
-        verify(intygService).fetchIntygAsPdf(CERTIFICATE_ID, intygType, true);
 
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(PDF_DATA, response.getEntity());
@@ -223,11 +218,9 @@ public class IntygModuleApiControllerTest {
         request.addHeader("User-Agent",
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36");
 
-        when(intygService.fetchIntygAsPdf(CERTIFICATE_ID, intygType, true)).thenReturn(pdfResponse);
+        when(printCertificateAggregator.get(CERTIFICATE_ID, intygType, true)).thenReturn(pdfResponse);
 
         Response response = moduleApiController.getIntygAsPdfForEmployer(intygType, CERTIFICATE_ID, request);
-
-        verify(intygService).fetchIntygAsPdf(CERTIFICATE_ID, intygType, true);
 
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(PDF_DATA, response.getEntity());
@@ -243,13 +236,13 @@ public class IntygModuleApiControllerTest {
 
         IntygContentHolder content = mock(IntygContentHolder.class);
         when(content.getContents()).thenReturn(intygContent);
-        when(intygService.fetchIntygDataWithRelations(eq(CERTIFICATE_ID), eq(intygsTyp))).thenReturn(content);
+        when(intygService.fetchIntygDataWithRelations(CERTIFICATE_ID, intygsTyp)).thenReturn(content);
 
         Response response = moduleApiController.getIntyg(intygsTyp, CERTIFICATE_ID);
 
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(intygContent, ((IntygContentHolder) response.getEntity()).getContents());
-        verify(intygService).fetchIntygDataWithRelations(eq(CERTIFICATE_ID), eq(intygsTyp));
+        verify(intygService).fetchIntygDataWithRelations(CERTIFICATE_ID, intygsTyp);
     }
 
     @Test
@@ -261,13 +254,13 @@ public class IntygModuleApiControllerTest {
 
         IntygContentHolder content = mock(IntygContentHolder.class);
         when(content.getContents()).thenReturn(intygContent);
-        when(intygService.fetchIntygDataWithRelations(eq(CERTIFICATE_ID), eq(intygsTyp))).thenReturn(content);
+        when(intygService.fetchIntygDataWithRelations(CERTIFICATE_ID, intygsTyp)).thenReturn(content);
 
         Response response = moduleApiController.getIntyg(intygsTyp, CERTIFICATE_ID);
 
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(intygContent, ((IntygContentHolder) response.getEntity()).getContents());
-        verify(intygService).fetchIntygDataWithRelations(eq(CERTIFICATE_ID), eq(intygsTyp));
+        verify(intygService).fetchIntygDataWithRelations(CERTIFICATE_ID, intygsTyp);
     }
 
     @Test
@@ -277,13 +270,13 @@ public class IntygModuleApiControllerTest {
 
         setupUser("", intygType, false, true, AuthoritiesConstants.FEATURE_SKICKA_INTYG);
 
-        when(intygService.sendIntyg(eq(CERTIFICATE_ID), eq(intygType), eq(recipient), eq(false))).thenReturn(IntygServiceResult.OK);
+        when(intygService.sendIntyg(CERTIFICATE_ID, intygType, recipient, false)).thenReturn(IntygServiceResult.OK);
 
         SendSignedIntygParameter param = new SendSignedIntygParameter();
         param.setRecipient(recipient);
         Response response = moduleApiController.sendSignedIntyg(intygType, CERTIFICATE_ID, param);
 
-        verify(intygService).sendIntyg(eq(CERTIFICATE_ID), eq(intygType), eq(recipient), eq(false));
+        verify(intygService).sendIntyg(CERTIFICATE_ID, intygType, recipient, false);
         assertEquals(OK.getStatusCode(), response.getStatus());
         assertEquals(IntygServiceResult.OK, response.getEntity());
     }

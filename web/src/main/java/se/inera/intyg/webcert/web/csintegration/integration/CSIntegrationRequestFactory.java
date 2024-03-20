@@ -34,6 +34,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXm
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateWithoutSignatureRequestDTO;
@@ -181,6 +182,17 @@ public class CSIntegrationRequestFactory {
             .careProvider(certificateServiceUnitHelper.getCareProvider())
             .user(certificateServiceUserHelper.get())
             .certificatesQueryCriteria(queryCriteria)
+            .build();
+    }
+
+    public PrintCertificateRequestDTO getPrintCertificateRequest(String additionalInfoText, String patientId) {
+        return PrintCertificateRequestDTO.builder()
+            .user(certificateServiceUserHelper.get())
+            .unit(certificateServiceUnitHelper.getUnit())
+            .careUnit(certificateServiceUnitHelper.getCareUnit())
+            .careProvider(certificateServiceUnitHelper.getCareProvider())
+            .patient(certificateServicePatientHelper.get(createPatientId(patientId)))
+            .additionalInfoText(additionalInfoText)
             .build();
     }
 

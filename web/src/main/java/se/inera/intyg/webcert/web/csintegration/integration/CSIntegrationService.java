@@ -51,6 +51,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertif
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateRequestDTO;
@@ -59,6 +61,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateW
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateResponseDTO;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
@@ -69,6 +72,7 @@ public class CSIntegrationService {
     private static final String PATIENT_ENDPOINT_URL = "/api/patient";
     private static final String CERTIFICATE_TYPE_INFO_ENDPOINT_URL = "/api/certificatetypeinfo";
     private static final String UNIT_ENDPOINT_URL = "/api/unit";
+    public static final String NULL_RESPONSE_EXCEPTION = "Certificate service returned null response!";
 
     private final CertificateTypeInfoConverter certificateTypeInfoConverter;
     private final ListIntygEntryConverter listIntygEntryConverter;
@@ -173,7 +177,7 @@ public class CSIntegrationService {
         final var response = restTemplate.postForObject(url, request, CertificateServiceCreateCertificateResponseDTO.class);
 
         if (response == null) {
-            throw new IllegalStateException("Certificate service returned null response!");
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
         }
 
         return response.getCertificate();
@@ -197,7 +201,7 @@ public class CSIntegrationService {
         final var response = restTemplate.postForObject(url, request, ValidateCertificateResponseDTO.class);
 
         if (response == null) {
-            return null;
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
         }
 
         return response.getValidationErrors();
@@ -223,7 +227,7 @@ public class CSIntegrationService {
         final var response = restTemplate.getForObject(url, CertificateExistsResponseDTO.class);
 
         if (response == null) {
-            return false;
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
         }
 
         return Boolean.TRUE.equals(response.getExists());
@@ -284,5 +288,17 @@ public class CSIntegrationService {
         }
 
         return response.getCertificate();
+    }
+
+    public IntygPdf printCertificate(String certificateId, PrintCertificateRequestDTO request) {
+        final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/pdf";
+
+        final var response = restTemplate.postForObject(url, request, PrintCertificateResponseDTO.class);
+
+        if (response == null) {
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
+        }
+
+        return new IntygPdf(response.getPdfData(), response.getFileName());
     }
 }

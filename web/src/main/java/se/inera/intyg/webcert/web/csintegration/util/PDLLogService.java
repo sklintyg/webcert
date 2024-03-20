@@ -22,6 +22,7 @@ package se.inera.intyg.webcert.web.csintegration.util;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
 
@@ -60,5 +61,26 @@ public class PDLLogService {
         logService.logSignIntyg(
             logRequestFactory.createLogRequestFromCertificate(certificate)
         );
+    }
+
+    public void logPrinted(Certificate certificate) {
+        final var status = certificate.getMetadata().getStatus();
+        if (status == CertificateStatus.UNSIGNED || status == CertificateStatus.LOCKED) {
+            logService.logPrintIntygAsDraft(
+                logRequestFactory.createLogRequestFromCertificate(certificate)
+            );
+        }
+
+        if (status == CertificateStatus.REVOKED) {
+            logService.logPrintRevokedIntygAsPDF(
+                logRequestFactory.createLogRequestFromCertificate(certificate)
+            );
+        }
+
+        if (status == CertificateStatus.SIGNED) {
+            logService.logPrintIntygAsPDF(
+                logRequestFactory.createLogRequestFromCertificate(certificate)
+            );
+        }
     }
 }

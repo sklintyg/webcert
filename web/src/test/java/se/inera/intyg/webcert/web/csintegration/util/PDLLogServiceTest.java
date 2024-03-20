@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -30,6 +31,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.CertificateStatus;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
@@ -102,6 +105,74 @@ class PDLLogServiceTest {
         verify(logService).logDeleteIntyg(captor.capture());
 
         assertEquals(expectedLogRequest, captor.getValue());
+    }
+
+    @Nested
+    class Print {
+
+        @Test
+        void shouldLogForDraft() {
+            final var expectedLogRequest = LogRequest.builder().build();
+            final var captor = ArgumentCaptor.forClass(LogRequest.class);
+            final var metadata = CertificateMetadata.builder()
+                .status(CertificateStatus.UNSIGNED)
+                .build();
+            CERTIFICATE.setMetadata(metadata);
+            doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE);
+
+            pdlLogService.logPrinted(CERTIFICATE);
+
+            verify(logService).logPrintIntygAsDraft(captor.capture());
+            assertEquals(expectedLogRequest, captor.getValue());
+        }
+
+        @Test
+        void shouldLogForLockedDraft() {
+            final var expectedLogRequest = LogRequest.builder().build();
+            final var captor = ArgumentCaptor.forClass(LogRequest.class);
+            final var metadata = CertificateMetadata.builder()
+                .status(CertificateStatus.LOCKED)
+                .build();
+            CERTIFICATE.setMetadata(metadata);
+            doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE);
+
+            pdlLogService.logPrinted(CERTIFICATE);
+
+            verify(logService).logPrintIntygAsDraft(captor.capture());
+            assertEquals(expectedLogRequest, captor.getValue());
+        }
+
+        @Test
+        void shouldLogForSigned() {
+            final var expectedLogRequest = LogRequest.builder().build();
+            final var captor = ArgumentCaptor.forClass(LogRequest.class);
+            final var metadata = CertificateMetadata.builder()
+                .status(CertificateStatus.SIGNED)
+                .build();
+            CERTIFICATE.setMetadata(metadata);
+            doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE);
+
+            pdlLogService.logPrinted(CERTIFICATE);
+
+            verify(logService).logPrintIntygAsPDF(captor.capture());
+            assertEquals(expectedLogRequest, captor.getValue());
+        }
+
+        @Test
+        void shouldLogForRevoked() {
+            final var expectedLogRequest = LogRequest.builder().build();
+            final var captor = ArgumentCaptor.forClass(LogRequest.class);
+            final var metadata = CertificateMetadata.builder()
+                .status(CertificateStatus.REVOKED)
+                .build();
+            CERTIFICATE.setMetadata(metadata);
+            doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE);
+
+            pdlLogService.logPrinted(CERTIFICATE);
+
+            verify(logService).logPrintRevokedIntygAsPDF(captor.capture());
+            assertEquals(expectedLogRequest, captor.getValue());
+        }
     }
 
     @Test
