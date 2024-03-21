@@ -20,10 +20,7 @@
 package se.inera.intyg.webcert.web.csintegration.unit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
@@ -101,62 +98,5 @@ class CertificateServiceVardenhetConverterTest {
     void shallConvertWorkplaceCode() {
         final var unit = certificateServiceVardenhetConverter.convert(this.unit);
         assertEquals(EXPECTED_WORKPLACE_CODE, unit.getWorkplaceCode());
-    }
-
-    @Test
-    void shallConvertInactiveToTrue() {
-        final var activeUnit = new Vardenhet();
-        activeUnit.setStart(LocalDateTime.now().minusDays(1));
-        activeUnit.setEnd(LocalDateTime.now().plusDays(1));
-        final var unit = certificateServiceVardenhetConverter.convert(activeUnit);
-        assertTrue(unit.getInactive());
-    }
-
-    @Test
-    void shallConvertInactiveToFalse() {
-        final var inactiveUnit = new Vardenhet();
-        inactiveUnit.setStart(LocalDateTime.now().plusDays(1));
-        inactiveUnit.setEnd(LocalDateTime.now().plusDays(2));
-        final var unit = certificateServiceVardenhetConverter.convert(inactiveUnit);
-        assertFalse(unit.getInactive());
-    }
-
-    @Test
-    void shallConvertInactiveToTrueIfStartDateAndEndDateIsNull() {
-        final var activeUnit = new Vardenhet();
-        final var unit = certificateServiceVardenhetConverter.convert(activeUnit);
-        assertTrue(unit.getInactive());
-    }
-
-    @Test
-    void shallConvertInactiveToTrueIfStartDateIsNullAndEndDateIsAfterNow() {
-        final var activeUnit = new Vardenhet();
-        activeUnit.setEnd(LocalDateTime.now().plusDays(1));
-        final var unit = certificateServiceVardenhetConverter.convert(activeUnit);
-        assertTrue(unit.getInactive());
-    }
-
-    @Test
-    void shallConvertInactiveToFalseIfStartDateIsNullAndEndDateIsBeforeNow() {
-        final var inactiveUnit = new Vardenhet();
-        inactiveUnit.setEnd(LocalDateTime.now().minusDays(1));
-        final var unit = certificateServiceVardenhetConverter.convert(inactiveUnit);
-        assertFalse(unit.getInactive());
-    }
-
-    @Test
-    void shallConvertInactiveToTrueIfStartDateIsBeforeNowAndEndDateIsNull() {
-        final var activeUnit = new Vardenhet();
-        activeUnit.setStart(LocalDateTime.now().minusDays(1));
-        final var unit = certificateServiceVardenhetConverter.convert(activeUnit);
-        assertTrue(unit.getInactive());
-    }
-
-    @Test
-    void shallConvertInactiveToFalseIfStartDateIsAfterNowAndEndDateIsNull() {
-        final var inactiveUnit = new Vardenhet();
-        inactiveUnit.setStart(LocalDateTime.now().plusDays(1));
-        final var unit = certificateServiceVardenhetConverter.convert(inactiveUnit);
-        assertFalse(unit.getInactive());
     }
 }

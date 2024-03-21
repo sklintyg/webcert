@@ -19,14 +19,13 @@
 
 package se.inera.intyg.webcert.web.csintegration.unit;
 
-import java.time.LocalDateTime;
 import org.springframework.stereotype.Component;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.AbstractVardenhet;
 
 @Component
 public class CertificateServiceVardenhetConverter {
 
-    public CertificateServiceUnitDTO convert(Vardenhet unit) {
+    public CertificateServiceUnitDTO convert(AbstractVardenhet unit) {
         return CertificateServiceUnitDTO.builder()
             .id(unit.getId())
             .name(unit.getNamn())
@@ -35,27 +34,8 @@ public class CertificateServiceVardenhetConverter {
             .city(unit.getPostort())
             .phoneNumber(unit.getTelefonnummer())
             .email(unit.getEpost())
-            .inactive(isActive(unit.getStart(), unit.getEnd()))
+            .inactive(false) // TODO: Fix when implementing djupintegration
             .workplaceCode(unit.getArbetsplatskod())
             .build();
-    }
-
-    private static boolean isActive(LocalDateTime fromDate, LocalDateTime toDate) {
-        final var now = LocalDateTime.now();
-        final var alwaysActive = fromDate == null && toDate == null;
-
-        if (alwaysActive) {
-            return true;
-        }
-
-        if (fromDate == null) {
-            return toDate.isAfter(now);
-        }
-
-        if (toDate == null) {
-            return fromDate.isBefore(now);
-        }
-
-        return fromDate.isBefore(now) && toDate.isAfter(now);
     }
 }
