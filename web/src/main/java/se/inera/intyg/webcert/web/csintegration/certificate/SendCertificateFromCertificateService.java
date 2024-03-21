@@ -46,6 +46,7 @@ public class SendCertificateFromCertificateService implements SendCertificateFac
             return null;
         }
 
+        log.debug("Sending certificate '{}' using Certificate Service", certificateId);
         final var certificate = csIntegrationService.sendCertificate(
             certificateId, csIntegrationRequestFactory.sendCertificateRequest()
         );
@@ -54,7 +55,6 @@ public class SendCertificateFromCertificateService implements SendCertificateFac
             throw new IllegalStateException("Received null when trying to send certificate using Certificate Service");
         }
 
-        log.debug("Sending certificate '{}' using Certificate Service", certificateId);
         monitoringLogService.logIntygSent(
             certificate.getMetadata().getId(),
             certificate.getMetadata().getType(),

@@ -28,7 +28,7 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 import se.inera.intyg.webcert.web.service.receiver.CertificateReceiverService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygReceiver;
 
-@Service
+@Service("sendCertificateFromWebcert")
 public class SendCertificateFacadeServiceImpl implements SendCertificateFacadeService {
 
     private final IntygService intygService;
