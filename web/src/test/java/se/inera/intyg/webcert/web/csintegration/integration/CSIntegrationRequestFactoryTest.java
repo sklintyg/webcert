@@ -741,8 +741,6 @@ class CSIntegrationRequestFactoryTest {
     @Nested
     class SignCertificateWithoutSignatureRequest {
 
-        private static final String SIGNATURE_XML = "signatureXml";
-
         @BeforeEach
         void setup() {
             when(certificateServiceUserHelper.get())
@@ -776,6 +774,46 @@ class CSIntegrationRequestFactoryTest {
         @Test
         void shouldSetCareProvider() {
             final var actualRequest = csIntegrationRequestFactory.signCertificateWithoutSignatureRequest();
+            assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
+        }
+    }
+
+    @Nested
+    class SendCertificateRequest {
+
+        @BeforeEach
+        void setup() {
+            when(certificateServiceUserHelper.get())
+                .thenReturn(USER);
+            when(certificateServiceUnitHelper.getUnit())
+                .thenReturn(UNIT);
+            when(certificateServiceUnitHelper.getCareUnit())
+                .thenReturn(CARE_UNIT);
+            when(certificateServiceUnitHelper.getCareProvider())
+                .thenReturn(CARE_PROVIDER);
+        }
+
+        @Test
+        void shouldSetUser() {
+            final var actualRequest = csIntegrationRequestFactory.sendCertificateRequest();
+            assertEquals(USER, actualRequest.getUser());
+        }
+
+        @Test
+        void shouldSetUnit() {
+            final var actualRequest = csIntegrationRequestFactory.sendCertificateRequest();
+            assertEquals(UNIT, actualRequest.getUnit());
+        }
+
+        @Test
+        void shouldSetCareUnit() {
+            final var actualRequest = csIntegrationRequestFactory.sendCertificateRequest();
+            assertEquals(CARE_UNIT, actualRequest.getCareUnit());
+        }
+
+        @Test
+        void shouldSetCareProvider() {
+            final var actualRequest = csIntegrationRequestFactory.sendCertificateRequest();
             assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
         }
     }

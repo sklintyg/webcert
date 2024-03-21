@@ -36,6 +36,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertifica
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SendCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateWithoutSignatureRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateRequestDTO;
@@ -203,6 +204,15 @@ public class CSIntegrationRequestFactory {
                     String.format("PatientId has wrong format: '%s'", patientId)
                 )
             );
+    }
+
+    public SendCertificateRequestDTO sendCertificateRequest() {
+        return SendCertificateRequestDTO.builder()
+            .unit(certificateServiceUnitHelper.getUnit())
+            .careUnit(certificateServiceUnitHelper.getCareUnit())
+            .careProvider(certificateServiceUnitHelper.getCareProvider())
+            .user(certificateServiceUserHelper.get())
+            .build();
     }
 
     public SignCertificateWithoutSignatureRequestDTO signCertificateWithoutSignatureRequest() {

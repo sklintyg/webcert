@@ -70,6 +70,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertifica
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SendCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SendCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateWithoutSignatureRequestDTO;
@@ -139,6 +141,10 @@ class CSIntegrationServiceTest {
     private static final PrintCertificateResponseDTO PRINT_RESPONSE = PrintCertificateResponseDTO.builder()
         .fileName("FILENAME")
         .pdfData(BYTES)
+        .build();
+    private static final SendCertificateRequestDTO SEND_REQUEST = SendCertificateRequestDTO.builder().build();
+    private static final SendCertificateResponseDTO SEND_RESPONSE = SendCertificateResponseDTO.builder()
+        .certificate(CERTIFICATE)
         .build();
 
     @Mock
@@ -898,6 +904,60 @@ class CSIntegrationServiceTest {
                 verify(restTemplate).postForObject(captor.capture(), any(), any());
 
                 assertEquals("baseUrl/api/certificate/ID/pdf", captor.getValue());
+            }
+        }
+    }
+
+    @Nested
+    class SendCertificate {
+
+        @BeforeEach
+        void setup() {
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+        }
+
+        @Test
+        void shouldThrowExceptionIfNullResponse() {
+            assertThrows(
+                IllegalStateException.class, () -> csIntegrationService.sendCertificate(ID, SEND_REQUEST)
+            );
+        }
+
+        @Nested
+        class HasResponse {
+
+            @BeforeEach
+            void setup() {
+                when(restTemplate.postForObject(anyString(), any(), any()))
+                    .thenReturn(SEND_RESPONSE);
+            }
+
+            @Test
+            void shouldPreformPostUsingRequest() {
+                final var captor = ArgumentCaptor.forClass(SendCertificateRequestDTO.class);
+
+                csIntegrationService.sendCertificate(ID, SEND_REQUEST);
+                verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+
+                assertEquals(SEND_REQUEST, captor.getValue());
+            }
+
+            @Test
+            void shouldReturnCertificate() {
+                final var response = csIntegrationService.sendCertificate(ID, SEND_REQUEST);
+
+                assertEquals(SEND_RESPONSE.getCertificate(), response);
+            }
+
+            @Test
+            void shouldSetUrlCorrect() {
+                ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+                final var captor = ArgumentCaptor.forClass(String.class);
+
+                csIntegrationService.sendCertificate(ID, SEND_REQUEST);
+                verify(restTemplate).postForObject(captor.capture(), any(), any());
+
+                assertEquals("baseUrl/api/certificate/ID/send", captor.getValue());
             }
         }
     }

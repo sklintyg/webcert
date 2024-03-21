@@ -119,6 +119,7 @@ public class CertificateController {
     @Autowired
     private GetCertificateResourceLinks getCertificateResourceLinks;
     @Autowired
+    @Qualifier("sendCertificateAggregator")
     private SendCertificateFacadeService sendCertificateFacadeService;
     @Autowired
     private ComplementCertificateFacadeService complementCertificateFacadeService;

@@ -83,4 +83,10 @@ public class PDLLogService {
             );
         }
     }
+
+    public void logSent(Certificate certificate) {
+        logService.logSendIntygToRecipient(
+            logRequestFactory.createLogRequestFromCertificate(certificate)
+        );
+    }
 }

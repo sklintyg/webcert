@@ -188,4 +188,16 @@ class PDLLogServiceTest {
 
         assertEquals(expectedLogRequest, captor.getValue());
     }
+
+    @Test
+    void shouldLogSentCertificate() {
+        final var expectedLogRequest = LogRequest.builder().build();
+        final var captor = ArgumentCaptor.forClass(LogRequest.class);
+        doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE);
+
+        pdlLogService.logSent(CERTIFICATE);
+
+        verify(logService).logSendIntygToRecipient(captor.capture());
+        assertEquals(expectedLogRequest, captor.getValue());
+    }
 }
