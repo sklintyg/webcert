@@ -42,6 +42,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequest
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SendCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 @ExtendWith(MockitoExtension.class)
@@ -136,6 +137,11 @@ class SendCertificateFromCertificateServiceTest {
             void shouldMonitorLogSent() {
                 sendCertificateFromCertificateService.sendCertificate(ID);
                 verify(monitoringLogService).logIntygSent(ID, TYPE, RECIPIENT_ID);
+            }
+
+            @Test
+            void shouldReturnOK() {
+                assertEquals(IntygServiceResult.OK.toString(), sendCertificateFromCertificateService.sendCertificate(ID));
             }
         }
 

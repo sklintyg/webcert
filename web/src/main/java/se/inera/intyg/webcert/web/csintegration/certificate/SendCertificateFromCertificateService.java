@@ -26,6 +26,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequest
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.facade.SendCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 @Slf4j
@@ -63,6 +64,6 @@ public class SendCertificateFromCertificateService implements SendCertificateFac
         );
         pdlLogService.logSent(certificate);
 
-        return certificate.getMetadata().getId();
+        return IntygServiceResult.OK.toString();
     }
 }
