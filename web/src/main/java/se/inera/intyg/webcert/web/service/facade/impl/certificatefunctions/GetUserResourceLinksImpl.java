@@ -214,7 +214,7 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
     }
 
     private boolean hasAccessToSignedCertificatesList(WebCertUser user) {
-        return (isOriginNormal(user.getOrigin()) || isOriginUthopp(user.getOrigin())) && isUserDoctor(user);
+        return (isOriginNormal(user.getOrigin()) || isOriginUthopp(user.getOrigin())) && isUserDoctorOrNurse(user);
     }
 
     private boolean isLogOutAvailable(WebCertUser user) {
@@ -229,8 +229,8 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
         return "UTHOPP".equals(origin);
     }
 
-    private boolean isUserDoctor(WebCertUser user) {
-        return user.isPrivatLakare() || user.isLakare();
+    private boolean isUserDoctorOrNurse(WebCertUser user) {
+        return user.isPrivatLakare() || user.isLakare() || user.isSjukskoterska();
     }
 
     private boolean shouldWarnForMissingSubscription(WebCertUser user) {

@@ -136,14 +136,21 @@ class GetUserResourceLinksImplTest {
 
         @Test
         void shallIncludeSignedCertificatesListIfOriginIsNormal() {
-            final var user = getUserWithOriginAndRole("NORMAL", true);
+            final var user = getUserWithOriginAndRole("NORMAL", true, false);
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.ACCESS_SIGNED_CERTIFICATES_LIST);
+        }
+
+        @Test
+        void shallIncludeSignedCertificatesListIfRoleIsNurse() {
+            final var user = getUserWithOriginAndRole("NORMAL", false, true);
             final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.ACCESS_SIGNED_CERTIFICATES_LIST);
         }
 
         @Test
         void shallIncludeSignedCertificatesListIfOriginIsUthopp() {
-            final var user = getUserWithOriginAndRole("UTHOPP", true);
+            final var user = getUserWithOriginAndRole("UTHOPP", true, false);
             final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.ACCESS_SIGNED_CERTIFICATES_LIST);
         }
@@ -157,7 +164,7 @@ class GetUserResourceLinksImplTest {
 
         @Test
         void shallNotIncludeSignedCertificatesListIfUserIsNotDoctor() {
-            final var user = getUserWithOriginAndRole("NORMAL", false);
+            final var user = getUserWithOriginAndRole("NORMAL", false, false);
             final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.ACCESS_SIGNED_CERTIFICATES_LIST);
         }
@@ -439,10 +446,13 @@ class GetUserResourceLinksImplTest {
         return user;
     }
 
-    WebCertUser getUserWithOriginAndRole(String origin, boolean isDoctor) {
+    WebCertUser getUserWithOriginAndRole(String origin, boolean isDoctor, boolean isNurse) {
         final var user = mock(WebCertUser.class);
         when(user.getOrigin()).thenReturn(origin);
         when(user.isLakare()).thenReturn(isDoctor);
+        if (!isDoctor) {
+            when(user.isSjukskoterska()).thenReturn(isNurse);
+        }
         return user;
     }
 
