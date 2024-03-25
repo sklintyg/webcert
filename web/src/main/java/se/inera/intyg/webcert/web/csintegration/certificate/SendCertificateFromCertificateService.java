@@ -43,6 +43,7 @@ public class SendCertificateFromCertificateService implements SendCertificateFac
         log.debug("Attempting to send certificate '{}' using Certificate Service", certificateId);
 
         if (Boolean.FALSE.equals(csIntegrationService.certificateExists(certificateId))) {
+            log.debug("Certificate with id '{}' does not exist in certificate service", certificateId);
             return null;
         }
 

@@ -26,6 +26,7 @@ import se.inera.intyg.common.support.facade.model.link.ResourceLink;
 import se.inera.intyg.common.support.facade.model.link.ResourceLinkTypeEnum;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItemStatus;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
@@ -44,7 +45,7 @@ public class ListIntygEntryConverter {
         listIntygEntry.setVersion(metadata.getVersion());
 
         listIntygEntry.setTestIntyg(metadata.isTestCertificate());
-        listIntygEntry.setStatus(convertStatus(metadata.getStatus(), metadata.isValidForSign()));
+        listIntygEntry.setStatus(convertStatus(metadata.getStatus(), metadata.isValidForSign(), metadata.isSent()));
         listIntygEntry.setStatusName(metadata.getStatus().name());
 
         listIntygEntry.setPatientId(createPatientId(metadata.getPatient().getPersonId().getId()));
@@ -78,12 +79,16 @@ public class ListIntygEntryConverter {
         return null;
     }
 
-    public String convertStatus(CertificateStatus status, boolean validForSign) {
+    public String convertStatus(CertificateStatus status, boolean validForSign, boolean isSent) {
         if (status == CertificateStatus.UNSIGNED) {
             if (validForSign) {
                 return UtkastStatus.DRAFT_COMPLETE.toString();
             }
             return UtkastStatus.DRAFT_INCOMPLETE.toString();
+        }
+
+        if (isSent) {
+            return CertificateListItemStatus.SENT.toString();
         }
 
         if (status == CertificateStatus.SIGNED) {

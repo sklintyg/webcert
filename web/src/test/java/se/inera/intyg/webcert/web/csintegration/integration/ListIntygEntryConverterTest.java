@@ -114,6 +114,16 @@ class ListIntygEntryConverterTest {
     }
 
     @Test
+    void shouldConvertStatusSent() {
+        final var certificate = CertificateFacadeTestHelper.createCertificateTypeWithVersion("type",
+            CertificateStatus.SIGNED, true, "typeVersion");
+        certificate.getMetadata().setSent(true);
+
+        final var response = listIntygEntryConverter.convert(certificate);
+        assertEquals("SENT", response.getStatus());
+    }
+
+    @Test
     void shouldConvertStatusName() {
         final var response = listIntygEntryConverter.convert(CERTIFICATE);
         assertEquals(CERTIFICATE.getMetadata().getStatus().name(), response.getStatusName());
