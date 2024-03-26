@@ -23,25 +23,18 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.RevokeCertificateRequestDTO.RevokeCertificateRequestDTOBuilder;
-import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientDTO;
-import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitDTO;
-import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.RevokeInformationDTO.RevokeInformationDTOBuilder;
 
-@JsonDeserialize(builder = RevokeCertificateRequestDTOBuilder.class)
+@JsonDeserialize(builder = RevokeInformationDTOBuilder.class)
 @Value
 @Builder
-public class RevokeCertificateRequestDTO {
+public class RevokeInformationDTO {
 
-    CertificateServiceUserDTO user;
-    CertificateServicePatientDTO patient;
-    CertificateServiceUnitDTO careUnit;
-    CertificateServiceUnitDTO unit;
-    CertificateServiceUnitDTO careProvider;
-    RevokeInformationDTO revoked;
+    String reason;
+    String message;
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class RevokeCertificateRequestDTOBuilder {
+    public static class RevokeInformationDTOBuilder {
 
     }
 }

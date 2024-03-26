@@ -862,13 +862,13 @@ class CSIntegrationRequestFactoryTest {
         @Test
         void shouldSetRevokedReason() {
             final var actualRequest = csIntegrationRequestFactory.revokeCertificateRequest(REVOKED_REASON, REVOKED_MESSAGE);
-            assertEquals(REVOKED_REASON, actualRequest.getRevokedReason());
+            assertEquals(REVOKED_REASON, actualRequest.getRevoked().getReason());
         }
 
         @Test
         void shouldSetRevokedMessage() {
             final var actualRequest = csIntegrationRequestFactory.revokeCertificateRequest(REVOKED_REASON, REVOKED_MESSAGE);
-            assertEquals(REVOKED_MESSAGE, actualRequest.getRevokedMessage());
+            assertEquals(REVOKED_MESSAGE, actualRequest.getRevoked().getMessage());
         }
     }
 }
