@@ -78,7 +78,7 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
     private CertificateListItem convertListItem(ListIntygEntry listIntygEntry, ListType listType) {
         final var listItem = new CertificateListItem();
         final var certificateListItemStatus = listType == ListType.CERTIFICATES
-            ? getCertificateListItemStatus(false)
+            ? getCertificateListItemStatus(listIntygEntry.getStatus().equals(SENT))
             : getCertificateListItemStatus(listIntygEntry.getStatus(), listIntygEntry.getRelations());
         final var patientListInfo = getPatientListInfo(listIntygEntry);
         final var convertedLinks = resourceLinkListHelper.get(listIntygEntry, certificateListItemStatus);
@@ -250,7 +250,7 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
     }
 
     private boolean isAllowedToForward(List<ResourceLinkDTO> links) {
-        return links.stream().anyMatch((link) ->
+        return links.stream().anyMatch(link ->
             link.getType() == ResourceLinkTypeDTO.FORWARD_CERTIFICATE || link.getType() == ResourceLinkTypeDTO.FORWARD_QUESTION
         );
     }
