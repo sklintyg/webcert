@@ -96,7 +96,7 @@ class RevokeCertificateFromCertificateServiceTest {
         }
 
         @Nested
-        class CertificateIsDeletedFromCS {
+        class CertificateIsRevokedFromCS {
 
             @BeforeEach
             void setup() {

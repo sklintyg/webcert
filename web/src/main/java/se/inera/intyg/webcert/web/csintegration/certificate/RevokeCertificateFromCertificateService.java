@@ -55,7 +55,7 @@ public class RevokeCertificateFromCertificateService implements RevokeCertificat
         );
 
         if (response == null) {
-            throw new IllegalStateException("Received null when trying to delete certificate from Certificate Service");
+            throw new IllegalStateException("Received null when trying to revoke certificate from Certificate Service");
         }
 
         log.debug("Certificate with id '{}' was revoked using certificate service", certificateId);
