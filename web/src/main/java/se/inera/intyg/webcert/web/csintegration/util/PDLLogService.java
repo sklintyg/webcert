@@ -89,4 +89,10 @@ public class PDLLogService {
             logRequestFactory.createLogRequestFromCertificate(certificate)
         );
     }
+
+    public void logRevoke(Certificate certificate) {
+        logService.logRevokeIntyg(
+            logRequestFactory.createLogRequestFromCertificate(certificate)
+        );
+    }
 }

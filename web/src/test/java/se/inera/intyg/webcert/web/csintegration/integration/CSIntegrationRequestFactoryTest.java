@@ -81,6 +81,8 @@ class CSIntegrationRequestFactoryTest {
     private static final QueryIntygParameter QUERY_INTYG_PARAMETER = new QueryIntygParameter();
     private static final CertificatesQueryCriteriaDTO CERTIFICATES_QUERY_CRITERIA_DTO = CertificatesQueryCriteriaDTO.builder().build();
     private static final String ADDITIONAL_INFO_TEXT = "ADDITIONAL_INFO_TEXT";
+    private static final String REVOKED_REASON = "REVOKED_REASON";
+    private static final String REVOKED_MESSAGE = "REVOKED_MESSAGE";
 
     static {
         CERTIFICATE.setMetadata(
@@ -815,6 +817,58 @@ class CSIntegrationRequestFactoryTest {
         void shouldSetCareProvider() {
             final var actualRequest = csIntegrationRequestFactory.sendCertificateRequest();
             assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
+        }
+    }
+
+    @Nested
+    class RevokeCertificateRequest {
+
+        @BeforeEach
+        void setup() {
+            when(certificateServiceUserHelper.get())
+                .thenReturn(USER);
+            when(certificateServiceUnitHelper.getUnit())
+                .thenReturn(UNIT);
+            when(certificateServiceUnitHelper.getCareUnit())
+                .thenReturn(CARE_UNIT);
+            when(certificateServiceUnitHelper.getCareProvider())
+                .thenReturn(CARE_PROVIDER);
+        }
+
+        @Test
+        void shouldSetUser() {
+            final var actualRequest = csIntegrationRequestFactory.revokeCertificateRequest(REVOKED_REASON, REVOKED_MESSAGE);
+            assertEquals(USER, actualRequest.getUser());
+        }
+
+        @Test
+        void shouldSetUnit() {
+            final var actualRequest = csIntegrationRequestFactory.revokeCertificateRequest(REVOKED_REASON, REVOKED_MESSAGE);
+            assertEquals(UNIT, actualRequest.getUnit());
+        }
+
+        @Test
+        void shouldSetCareUnit() {
+            final var actualRequest = csIntegrationRequestFactory.revokeCertificateRequest(REVOKED_REASON, REVOKED_MESSAGE);
+            assertEquals(CARE_UNIT, actualRequest.getCareUnit());
+        }
+
+        @Test
+        void shouldSetCareProvider() {
+            final var actualRequest = csIntegrationRequestFactory.revokeCertificateRequest(REVOKED_REASON, REVOKED_MESSAGE);
+            assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
+        }
+
+        @Test
+        void shouldSetRevokedReason() {
+            final var actualRequest = csIntegrationRequestFactory.revokeCertificateRequest(REVOKED_REASON, REVOKED_MESSAGE);
+            assertEquals(REVOKED_REASON, actualRequest.getRevokedReason());
+        }
+
+        @Test
+        void shouldSetRevokedMessage() {
+            final var actualRequest = csIntegrationRequestFactory.revokeCertificateRequest(REVOKED_REASON, REVOKED_MESSAGE);
+            assertEquals(REVOKED_MESSAGE, actualRequest.getRevokedMessage());
         }
     }
 }

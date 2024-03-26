@@ -53,6 +53,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertifica
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.RevokeCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.RevokeCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SendCertificateRequestDTO;
@@ -308,6 +310,18 @@ public class CSIntegrationService {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/send";
 
         final var response = restTemplate.postForObject(url, request, SendCertificateResponseDTO.class);
+
+        if (response == null) {
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
+        }
+
+        return response.getCertificate();
+    }
+
+    public Certificate revokeCertificate(String certificateId, RevokeCertificateRequestDTO request) {
+        final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/revoke";
+
+        final var response = restTemplate.postForObject(url, request, RevokeCertificateResponseDTO.class);
 
         if (response == null) {
             throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
