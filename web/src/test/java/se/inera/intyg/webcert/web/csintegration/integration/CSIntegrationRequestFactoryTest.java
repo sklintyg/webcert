@@ -81,7 +81,10 @@ class CSIntegrationRequestFactoryTest {
     private static final QueryIntygParameter QUERY_INTYG_PARAMETER = new QueryIntygParameter();
     private static final CertificatesQueryCriteriaDTO CERTIFICATES_QUERY_CRITERIA_DTO = CertificatesQueryCriteriaDTO.builder().build();
     private static final String ADDITIONAL_INFO_TEXT = "ADDITIONAL_INFO_TEXT";
-    private static final String REVOKED_REASON = "REVOKED_REASON";
+    private static final String REASON_INCORRECT_PATIENT_CONVERTED = "INCORRECT_PATIENT";
+    private static final String REASON_INCORRECT_PATIENT_NOT_CONVERTED = "FEL_PATIENT";
+    private static final String REASON_OTHER_SERIOUS_ERROR_NOT_CONVERTED = "ANNAT_ALLVARLIGT_FEL";
+    private static final String REASON_OTHER_SERIOUS_ERROR_CONVERTED = "OTHER_SERIOUS_ERROR";
     private static final String REVOKED_MESSAGE = "REVOKED_MESSAGE";
 
     static {
@@ -821,7 +824,7 @@ class CSIntegrationRequestFactoryTest {
     }
 
     @Nested
-    class RevokeCertificateRequest {
+    class ValidRevokeCertificateRequest {
 
         @BeforeEach
         void setup() {
@@ -837,38 +840,73 @@ class CSIntegrationRequestFactoryTest {
 
         @Test
         void shouldSetUser() {
-            final var actualRequest = csIntegrationRequestFactory.revokeCertificateRequest(REVOKED_REASON, REVOKED_MESSAGE);
+            final var actualRequest = csIntegrationRequestFactory.revokeCertificateRequest(
+                REASON_INCORRECT_PATIENT_NOT_CONVERTED, REVOKED_MESSAGE);
             assertEquals(USER, actualRequest.getUser());
         }
 
         @Test
         void shouldSetUnit() {
-            final var actualRequest = csIntegrationRequestFactory.revokeCertificateRequest(REVOKED_REASON, REVOKED_MESSAGE);
+            final var actualRequest = csIntegrationRequestFactory.revokeCertificateRequest(
+                REASON_INCORRECT_PATIENT_NOT_CONVERTED, REVOKED_MESSAGE);
             assertEquals(UNIT, actualRequest.getUnit());
         }
 
         @Test
         void shouldSetCareUnit() {
-            final var actualRequest = csIntegrationRequestFactory.revokeCertificateRequest(REVOKED_REASON, REVOKED_MESSAGE);
+            final var actualRequest = csIntegrationRequestFactory.revokeCertificateRequest(
+                REASON_INCORRECT_PATIENT_NOT_CONVERTED, REVOKED_MESSAGE);
             assertEquals(CARE_UNIT, actualRequest.getCareUnit());
         }
 
         @Test
         void shouldSetCareProvider() {
-            final var actualRequest = csIntegrationRequestFactory.revokeCertificateRequest(REVOKED_REASON, REVOKED_MESSAGE);
+            final var actualRequest = csIntegrationRequestFactory.revokeCertificateRequest(
+                REASON_INCORRECT_PATIENT_NOT_CONVERTED, REVOKED_MESSAGE);
             assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
         }
 
         @Test
         void shouldSetRevokedReason() {
-            final var actualRequest = csIntegrationRequestFactory.revokeCertificateRequest(REVOKED_REASON, REVOKED_MESSAGE);
-            assertEquals(REVOKED_REASON, actualRequest.getRevoked().getReason());
+            final var actualRequest = csIntegrationRequestFactory.revokeCertificateRequest(
+                REASON_INCORRECT_PATIENT_NOT_CONVERTED, REVOKED_MESSAGE);
+            assertEquals(REASON_INCORRECT_PATIENT_CONVERTED, actualRequest.getRevoked().getReason());
         }
 
         @Test
+        void shouldConvertRevokedReasonIncorrectPatientToEnglish() {
+            final var actualRequest = csIntegrationRequestFactory.revokeCertificateRequest(
+                REASON_INCORRECT_PATIENT_NOT_CONVERTED, REVOKED_MESSAGE);
+            assertEquals(REASON_INCORRECT_PATIENT_CONVERTED, actualRequest.getRevoked().getReason());
+        }
+
+        @Test
+        void shouldConvertRevokedReasonOtherSeriousErrorToEnglish() {
+            final var actualRequest = csIntegrationRequestFactory.revokeCertificateRequest(
+                REASON_OTHER_SERIOUS_ERROR_NOT_CONVERTED, REVOKED_MESSAGE);
+            assertEquals(REASON_OTHER_SERIOUS_ERROR_CONVERTED, actualRequest.getRevoked().getReason());
+        }
+
+
+        @Test
         void shouldSetRevokedMessage() {
-            final var actualRequest = csIntegrationRequestFactory.revokeCertificateRequest(REVOKED_REASON, REVOKED_MESSAGE);
+            final var actualRequest = csIntegrationRequestFactory.revokeCertificateRequest(
+                REASON_INCORRECT_PATIENT_NOT_CONVERTED, REVOKED_MESSAGE);
             assertEquals(REVOKED_MESSAGE, actualRequest.getRevoked().getMessage());
+        }
+    }
+
+    @Nested
+    class InvalidRevokeCertificateRequest {
+
+        @Test
+        void shouldThrowIllegalArgumentIfInvalidReason() {
+            final var illegalArgumentException = assertThrows(IllegalArgumentException.class,
+                () -> csIntegrationRequestFactory.revokeCertificateRequest("", REVOKED_MESSAGE));
+
+            assertEquals("Invalid revoke reason. Reason must be either 'FEL_PATIENT' or 'ANNAT_ALLVARLIGT_FEL'",
+                illegalArgumentException.getMessage());
+
         }
     }
 }
