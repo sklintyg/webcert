@@ -19,13 +19,9 @@
 
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
-import static se.inera.intyg.webcert.web.csintegration.certificateevents.CertificateEventType.CERTIFICATE_SIGNED;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.webcert.web.csintegration.certificateevents.CertificateEventMessage;
-import se.inera.intyg.webcert.web.csintegration.certificateevents.CertificateEventService;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -37,7 +33,6 @@ public class FinalizeCertificateSignService {
     private final PDLLogService pdlLogService;
     private final WebCertUserService webCertUserService;
     private final MonitoringLogService monitoringLogService;
-    private final CertificateEventService certificateEventService;
 
     public void finalizeSign(Certificate certificate) {
         final var user = webCertUserService.getUser();
@@ -52,13 +47,6 @@ public class FinalizeCertificateSignService {
 
         pdlLogService.logSign(
             certificate
-        );
-
-        certificateEventService.send(
-            CertificateEventMessage.builder()
-                .certificateId(certificate.getMetadata().getId())
-                .eventType(CERTIFICATE_SIGNED)
-                .build()
         );
     }
 }
