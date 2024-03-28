@@ -124,6 +124,16 @@ class ListIntygEntryConverterTest {
     }
 
     @Test
+    void shouldConvertStatusRevoked() {
+        final var certificate = CertificateFacadeTestHelper.createCertificateTypeWithVersion("type",
+            CertificateStatus.REVOKED, true, "typeVersion");
+        certificate.getMetadata().setSent(true);
+
+        final var response = listIntygEntryConverter.convert(certificate);
+        assertEquals("CANCELLED", response.getStatus());
+    }
+
+    @Test
     void shouldConvertStatusName() {
         final var response = listIntygEntryConverter.convert(CERTIFICATE);
         assertEquals(CERTIFICATE.getMetadata().getStatus().name(), response.getStatusName());

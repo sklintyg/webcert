@@ -200,4 +200,16 @@ class PDLLogServiceTest {
         verify(logService).logSendIntygToRecipient(captor.capture());
         assertEquals(expectedLogRequest, captor.getValue());
     }
+
+    @Test
+    void shouldLogRevokeCertificate() {
+        final var expectedLogRequest = LogRequest.builder().build();
+        final var captor = ArgumentCaptor.forClass(LogRequest.class);
+        doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE);
+
+        pdlLogService.logRevoke(CERTIFICATE);
+
+        verify(logService).logRevokeIntyg(captor.capture());
+        assertEquals(expectedLogRequest, captor.getValue());
+    }
 }

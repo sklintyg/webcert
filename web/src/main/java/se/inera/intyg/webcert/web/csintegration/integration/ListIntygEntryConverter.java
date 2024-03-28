@@ -87,6 +87,10 @@ public class ListIntygEntryConverter {
             return UtkastStatus.DRAFT_INCOMPLETE.toString();
         }
 
+        if (status == CertificateStatus.REVOKED) {
+            return "CANCELLED";
+        }
+        
         if (isSent) {
             return CertificateListItemStatus.SENT.toString();
         }

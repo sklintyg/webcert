@@ -70,6 +70,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertifica
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.RevokeCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.RevokeCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SendCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SendCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateRequestDTO;
@@ -144,6 +146,10 @@ class CSIntegrationServiceTest {
         .build();
     private static final SendCertificateRequestDTO SEND_REQUEST = SendCertificateRequestDTO.builder().build();
     private static final SendCertificateResponseDTO SEND_RESPONSE = SendCertificateResponseDTO.builder()
+        .certificate(CERTIFICATE)
+        .build();
+    private static final RevokeCertificateRequestDTO REVOKE_REQUEST = RevokeCertificateRequestDTO.builder().build();
+    private static final RevokeCertificateResponseDTO REVOKE_RESPONSE = RevokeCertificateResponseDTO.builder()
         .certificate(CERTIFICATE)
         .build();
 
@@ -958,6 +964,60 @@ class CSIntegrationServiceTest {
                 verify(restTemplate).postForObject(captor.capture(), any(), any());
 
                 assertEquals("baseUrl/api/certificate/ID/send", captor.getValue());
+            }
+        }
+    }
+
+    @Nested
+    class RevokeCertificate {
+
+        @BeforeEach
+        void setup() {
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+        }
+
+        @Test
+        void shouldThrowExceptionIfNullResponse() {
+            assertThrows(
+                IllegalStateException.class, () -> csIntegrationService.revokeCertificate(ID, REVOKE_REQUEST)
+            );
+        }
+
+        @Nested
+        class HasResponse {
+
+            @BeforeEach
+            void setup() {
+                when(restTemplate.postForObject(anyString(), any(), any()))
+                    .thenReturn(REVOKE_RESPONSE);
+            }
+
+            @Test
+            void shouldPreformPostUsingRequest() {
+                final var captor = ArgumentCaptor.forClass(RevokeCertificateRequestDTO.class);
+
+                csIntegrationService.revokeCertificate(ID, REVOKE_REQUEST);
+                verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+
+                assertEquals(REVOKE_REQUEST, captor.getValue());
+            }
+
+            @Test
+            void shouldReturnCertificate() {
+                final var response = csIntegrationService.revokeCertificate(ID, REVOKE_REQUEST);
+
+                assertEquals(REVOKE_RESPONSE.getCertificate(), response);
+            }
+
+            @Test
+            void shouldSetUrlCorrect() {
+                ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+                final var captor = ArgumentCaptor.forClass(String.class);
+
+                csIntegrationService.revokeCertificate(ID, REVOKE_REQUEST);
+                verify(restTemplate).postForObject(captor.capture(), any(), any());
+
+                assertEquals("baseUrl/api/certificate/ID/revoke", captor.getValue());
             }
         }
     }
