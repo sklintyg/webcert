@@ -230,7 +230,7 @@ public class CSIntegrationRequestFactory {
         return RevokeCertificateRequestDTO.builder()
             .revoked(
                 RevokeInformationDTO.builder()
-                    .reason(reason)
+                    .reason(convertReason(reason))
                     .message(message)
                     .build()
             )
@@ -239,5 +239,16 @@ public class CSIntegrationRequestFactory {
             .careProvider(certificateServiceUnitHelper.getCareProvider())
             .user(certificateServiceUserHelper.get())
             .build();
+    }
+
+    private String convertReason(String reason) {
+        switch (reason) {
+            case "FEL_PATIENT":
+                return "INCORRECT_PATIENT";
+            case "ANNAT_ALLVARLIGT_FEL":
+                return "OTHER_SERIOUS_ERROR";
+            default:
+                throw new IllegalArgumentException("Invalid revoke reason. Reason must be either 'FEL_PATIENT' or 'ANNAT_ALLVARLIGT_FEL'");
+        }
     }
 }
