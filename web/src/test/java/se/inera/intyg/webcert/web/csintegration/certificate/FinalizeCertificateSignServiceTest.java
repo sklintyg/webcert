@@ -24,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
-import static se.inera.intyg.webcert.web.csintegration.certificateevents.CertificateEventType.CERTIFICATE_SIGNED;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -37,8 +36,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
-import se.inera.intyg.webcert.web.csintegration.certificateevents.CertificateEventMessage;
-import se.inera.intyg.webcert.web.csintegration.certificateevents.CertificateEventService;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -57,9 +54,6 @@ class FinalizeCertificateSignServiceTest {
     private WebCertUserService webCertUserService;
     @Mock
     private MonitoringLogService monitoringLogService;
-    @Mock
-    private CertificateEventService certificateEventService;
-
     @InjectMocks
     private FinalizeCertificateSignService finalizeCertificateSignService;
 
@@ -138,29 +132,6 @@ class FinalizeCertificateSignServiceTest {
             verify(pdlLogService).logSign(certificateArgumentCaptor.capture());
 
             assertEquals(CERTIFICATE, certificateArgumentCaptor.getValue());
-        }
-    }
-
-    @Nested
-    class NotificationTests {
-
-        private final ArgumentCaptor<CertificateEventMessage> argumentCaptor = ArgumentCaptor.forClass(
-            CertificateEventMessage.class);
-
-        @Test
-        void shouldSendNotificationCertificateMessageWithCertificateId() {
-            finalizeCertificateSignService.finalizeSign(CERTIFICATE);
-            verify(certificateEventService).send(argumentCaptor.capture());
-
-            assertEquals(ID, argumentCaptor.getValue().getCertificateId());
-        }
-
-        @Test
-        void shouldSendNotificationCertificateMessageWithEventTypeCertificateSigned() {
-            finalizeCertificateSignService.finalizeSign(CERTIFICATE);
-            verify(certificateEventService).send(argumentCaptor.capture());
-
-            assertEquals(CERTIFICATE_SIGNED, argumentCaptor.getValue().getEventType());
         }
     }
 }
