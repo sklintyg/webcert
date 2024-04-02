@@ -226,6 +226,15 @@ class CertificateServiceUserHelperTest {
             }
 
             @Test
+            void shouldReturnUserWithRoleMidwifeFromBarnmorska() {
+                addRole(AuthoritiesConstants.ROLE_BARNMORSKA);
+
+                final var response = certificateServiceUserHelper.get();
+
+                assertEquals(CertificateServiceUserRole.MIDWIFE, response.getRole());
+            }
+
+            @Test
             void shouldReturnUserWithRoleDentistFromTandlakare() {
                 addRole(AuthoritiesConstants.ROLE_TANDLAKARE);
 
