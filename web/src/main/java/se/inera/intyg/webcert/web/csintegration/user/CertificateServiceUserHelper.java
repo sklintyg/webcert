@@ -102,6 +102,8 @@ public class CertificateServiceUserHelper {
                 return CertificateServiceUserRole.CARE_ADMIN;
             case AuthoritiesConstants.ROLE_SJUKSKOTERSKA:
                 return CertificateServiceUserRole.NURSE;
+            case AuthoritiesConstants.ROLE_BARNMORSKA:
+                return CertificateServiceUserRole.MIDWIFE;
             default:
                 throw new IllegalArgumentException("Role is not recognized: " + role);
         }
