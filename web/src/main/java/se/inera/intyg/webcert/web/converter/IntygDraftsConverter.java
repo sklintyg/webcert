@@ -185,6 +185,7 @@ public class IntygDraftsConverter {
         entry.setUpdatedSignedBy(source.getSkapadAv().getFullstandigtNamn());
         entry.setUpdatedSignedById(source.getSkapadAv().getPersonalId().toString());
         entry.setLastUpdated(source.getSigneringstidpunkt());
+        entry.setSigned(source.getSigneringstidpunkt());
         entry.setPatientId(personnummer);
         entry.setVardenhetId(source.getSkapadAv().getEnhet().getEnhetsId().getExtension());
         entry.setVardgivarId(source.getSkapadAv().getEnhet().getVardgivare().getVardgivareId().getExtension());
