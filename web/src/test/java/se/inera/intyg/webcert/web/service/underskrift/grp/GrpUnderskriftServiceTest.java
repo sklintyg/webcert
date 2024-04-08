@@ -18,7 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift.grp;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -31,25 +33,20 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import se.funktionstjanster.grp.v1.AuthenticateRequestType;
-import se.funktionstjanster.grp.v1.GrpFault;
-import se.funktionstjanster.grp.v1.GrpServicePortType;
-import se.funktionstjanster.grp.v1.OrderResponseType;
+import se.funktionstjanster.grp.v2.AuthenticateRequestTypeV23;
+import se.funktionstjanster.grp.v2.GrpException;
+import se.funktionstjanster.grp.v2.GrpServicePortType;
+import se.funktionstjanster.grp.v2.OrderResponseTypeV23;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
-import se.inera.intyg.common.support.model.UtkastStatus;
-import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.infra.security.common.model.Privilege;
-import se.inera.intyg.infra.security.common.model.Role;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
+import se.inera.intyg.webcert.web.csintegration.certificate.FinalizedCertificateSignature;
+import se.inera.intyg.webcert.web.csintegration.certificate.SignCertificateService;
 import se.inera.intyg.webcert.web.service.underskrift.grp.factory.GrpCollectPollerFactory;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
-import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 /**
  * Created by eriklupander on 2015-08-25.
@@ -62,94 +59,59 @@ public class GrpUnderskriftServiceTest extends AuthoritiesConfigurationTestSetup
     private static final String PERSON_ID = "19121212-1212";
     private static final String TX_ID = "webcert-tx-1";
     private static final String ORDER_REF = "order-ref-1";
-    private static final Long PAGAENDE_SIG_ID = 1L;
-
-    @Mock
-    WebCertUserService webCertUserService;
+    private static final String CERTIFICATE_ID = "certificateId";
 
     @Mock
     RedisTicketTracker redisTicketTracker;
-
     @Mock
     GrpServicePortType grpService;
-
     @Mock
     ThreadPoolTaskExecutor taskExecutor;
-
     @Mock
     GrpCollectPollerFactory grpCollectPollerFactory;
+    @Mock
+    SignCertificateService signCertificateService;
 
     @InjectMocks
     GrpUnderskriftServiceImpl grpSignaturService;
 
-
     @Test
-    public void testSuccessfulAuthenticationRequest() throws GrpFault {
+    public void testSuccessfulAuthenticationRequest() throws GrpException {
         when(grpCollectPollerFactory.getInstance()).thenReturn(mock(GrpCollectPoller.class));
-        when(grpService.authenticate(any(AuthenticateRequestType.class))).thenReturn(buildOrderResponse());
+        when(grpService.authenticate(any(AuthenticateRequestTypeV23.class))).thenReturn(buildOrderResponse());
 
         grpSignaturService.startGrpCollectPoller(PERSON_ID, buildSignaturBiljett());
-        verify(taskExecutor, times(1)).execute(any(GrpCollectPoller.class), any(Long.class));
+        verify(taskExecutor, times(1)).execute(any(GrpCollectPoller.class));
     }
 
-//    @Test(expected = IllegalArgumentException.class)
-//    public void testAuthenticateRequestFailsWhenUtkastIsNotFound() {
-//        when(utkastRepository.findOne(INTYG_ID)).thenReturn(null);
-//        try {
-//            grpSignaturService.startGrpAuthentication(INTYG_ID, VERSION);
-//        } finally {
-//            verify(taskExecutor, times(0)).execute(any(GrpCollectPoller.class), any(Long.class));
-//        }
-//    }
-//
-//    @Test(expected = IllegalArgumentException.class)
-//    public void testAuthenticateRequestFailsWhenNoWebCertUserIsFound() {
-//        when(utkastRepository.findOne(INTYG_ID)).thenReturn(buildUtkast());
-//        when(webCertUserService.getUser()).thenReturn(null);
-//        try {
-//            grpSignaturService.startGrpAuthentication(INTYG_ID, VERSION);
-//        } finally {
-//            verify(taskExecutor, times(0)).execute(any(GrpCollectPoller.class), any(Long.class));
-//        }
-//    }
-//
-//    @Test(expected = IllegalArgumentException.class)
-//    public void testAuthenticateRequestFailsWhenWebCertUserHasNoPersonId() {
-//
-//        when(utkastRepository.findOne(INTYG_ID)).thenReturn(buildUtkast());
-//        when(webCertUserService.getUser()).thenReturn(createUser());
-//
-//        try {
-//            grpSignaturService.startGrpAuthentication(INTYG_ID, VERSION);
-//        } finally {
-//            verify(taskExecutor, times(0)).execute(any(GrpCollectPoller.class), any(Long.class));
-//        }
-//    }
-//
-//    @Test(expected = RuntimeException.class)
-//    public void testAuthenticateRequestThrowsExceptionWhenGrpCallFails() throws GrpFault {
-//        when(webCertUserService.getUser()).thenReturn(webCertUser);
-//        when(utkastRepository.findOne(INTYG_ID)).thenReturn(buildUtkast());
-//        when(signaturService.createDraftHash(INTYG_ID, VERSION)).thenReturn(buildSignaturBiljett());
-//        when(grpService.authenticate(any(AuthenticateRequestType.class))).thenThrow(new GrpFault("grp-fault"));
-//
-//        try {
-//            grpSignaturService.startGrpAuthentication(INTYG_ID, VERSION);
-//        } finally {
-//            verify(redisTicketTracker, times(1)).updateStatus(TX_ID, SignaturStatus.OKAND);
-//            verify(taskExecutor, times(0)).execute(any(GrpCollectPoller.class), any(Long.class));
-//        }
-//    }
+    @Test
+    public void shallFinalizeSignatureForCS() {
+        final var certificate = new Certificate();
+        final var signaturBiljett = new SignaturBiljett();
+        signaturBiljett.setIntygsId(CERTIFICATE_ID);
+        signaturBiljett.setVersion(VERSION);
+        final var expectedResult = FinalizedCertificateSignature.builder()
+            .certificate(certificate)
+            .signaturBiljett(signaturBiljett)
+            .build();
 
-    private OrderResponseType buildOrderResponse() {
-        OrderResponseType resp = new OrderResponseType();
+        doReturn(certificate).when(signCertificateService).signWithoutSignature(CERTIFICATE_ID, VERSION);
+        final var actualResult = grpSignaturService.finalizeSignatureForCS(signaturBiljett, null, null);
+
+        verify(redisTicketTracker).updateStatus(signaturBiljett.getTicketId(), signaturBiljett.getStatus());
+        assertEquals(expectedResult, actualResult);
+        assertEquals(SignaturStatus.SIGNERAD, signaturBiljett.getStatus());
+    }
+
+    private OrderResponseTypeV23 buildOrderResponse() {
+        OrderResponseTypeV23 resp = new OrderResponseTypeV23();
         resp.setTransactionId(TX_ID);
         resp.setOrderRef(ORDER_REF);
         return resp;
     }
 
     private SignaturBiljett buildSignaturBiljett() {
-        SignaturBiljett ticket = SignaturBiljett.SignaturBiljettBuilder
+        return SignaturBiljett.SignaturBiljettBuilder
             .aSignaturBiljett(TX_ID, SignaturTyp.PKCS7, SignMethod.GRP)
             .withHash("hash")
             .withSkapad(LocalDateTime.now())
@@ -157,26 +119,6 @@ public class GrpUnderskriftServiceTest extends AuthoritiesConfigurationTestSetup
             .withVersion(VERSION)
             .withIntygsId(INTYG_ID)
             .build();
-        return ticket;
-    }
-
-    private Utkast buildUtkast() {
-        Utkast utkast = new Utkast();
-        utkast.setIntygsId(INTYG_ID);
-        utkast.setIntygsTyp("fk7263");
-        utkast.setStatus(UtkastStatus.DRAFT_COMPLETE);
-        utkast.setVersion(VERSION);
-        return utkast;
-    }
-
-    private WebCertUser createUser() {
-        Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
-
-        WebCertUser user = new WebCertUser();
-        user.setRoles(AuthoritiesResolverUtil.toMap(role));
-        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
-
-        return user;
     }
 
 }
