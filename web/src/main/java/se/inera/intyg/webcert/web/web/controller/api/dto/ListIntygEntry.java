@@ -275,7 +275,7 @@ public class ListIntygEntry {
             + ", intygTypeName='" + intygTypeName + '\''
             + ", status='" + status + '\''
             + ", statusName='" + statusName + '\''
-            + ", lastUpdatedSigned=" + lastUpdated
+            + ", lastUpdated=" + lastUpdated
             + ", updatedSignedBy='" + updatedSignedBy + '\''
             + ", updatedSignedById='" + updatedSignedById + '\''
             + ", vidarebefordrad=" + vidarebefordrad
