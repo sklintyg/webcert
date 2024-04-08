@@ -67,10 +67,11 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
     @Value("${cgi.grp.displayName}")
     private String displayName;
 
+    @Value("${cgi.grp.polling.interval:3000}")
+    private long pollingInterval;
+
     private String orderRef;
     private String ticketId;
-    private static final long DEFAULT_SLEEP_MS = 3000L;
-    private long ms = DEFAULT_SLEEP_MS;
     private SecurityContext securityContext;
 
     private final RedisTicketTracker redisTicketTracker;
@@ -132,7 +133,7 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
                     return;
                 }
 
-                sleepMs(ms);
+                sleepMs(pollingInterval);
             }
         } finally {
             // Since this poller thread will be returned to its thread pool, we make sure we clean up the security
@@ -212,7 +213,7 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
      * Use this for unit-testing purposes only.
      */
     void setMs(long ms) {
-        this.ms = ms;
+        this.pollingInterval = ms;
     }
 
     @Override
