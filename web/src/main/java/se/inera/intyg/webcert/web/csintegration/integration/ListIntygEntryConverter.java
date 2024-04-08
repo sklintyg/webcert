@@ -54,7 +54,8 @@ public class ListIntygEntryConverter {
 
         listIntygEntry.setUpdatedSignedBy(metadata.getIssuedBy().getFullName());
         listIntygEntry.setUpdatedSignedById(metadata.getIssuedBy().getPersonId());
-        listIntygEntry.setLastUpdatedSigned(metadata.getCreated());
+        listIntygEntry.setLastUpdated(metadata.getModified());
+        listIntygEntry.setSigned(metadata.getSigned());
         listIntygEntry.setVardenhetId(metadata.getCareUnit().getUnitId());
         listIntygEntry.setVardgivarId(metadata.getCareProvider().getUnitId());
         listIntygEntry.setVidarebefordrad(metadata.isForwarded());
@@ -90,7 +91,7 @@ public class ListIntygEntryConverter {
         if (status == CertificateStatus.REVOKED) {
             return "CANCELLED";
         }
-        
+
         if (isSent) {
             return CertificateListItemStatus.SENT.toString();
         }

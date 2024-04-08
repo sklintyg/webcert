@@ -44,8 +44,8 @@ public class IntygDraftsConverter {
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygDraftsConverter.class);
 
-    private static final Comparator<ListIntygEntry> INTYG_ENTRY_DATE_COMPARATOR_DESC = (ie1, ie2) -> ie2.getLastUpdatedSigned()
-        .compareTo(ie1.getLastUpdatedSigned());
+    private static final Comparator<ListIntygEntry> INTYG_ENTRY_DATE_COMPARATOR_DESC = (ie1, ie2) -> ie2.getLastUpdated()
+        .compareTo(ie1.getLastUpdated());
 
     private static final Comparator<IntygsStatus> INTYG_STATUS_COMPARATOR = (c1, c2) -> c1.getTidpunkt().compareTo(c2.getTidpunkt());
 
@@ -85,7 +85,7 @@ public class IntygDraftsConverter {
         entry.setSource(IntygSource.WC);
         entry.setUpdatedSignedBy(resolvedSignedBy(utkast));
         entry.setUpdatedSignedById(resolvedSignedById(utkast));
-        entry.setLastUpdatedSigned(utkast.getSenastSparadDatum());
+        entry.setLastUpdated(utkast.getSenastSparadDatum());
         entry.setPatientId(utkast.getPatientPersonnummer());
         entry.setVidarebefordrad(utkast.getVidarebefordrad());
         entry.setStatus(resolveStatus(utkast));
@@ -184,7 +184,7 @@ public class IntygDraftsConverter {
 
         entry.setUpdatedSignedBy(source.getSkapadAv().getFullstandigtNamn());
         entry.setUpdatedSignedById(source.getSkapadAv().getPersonalId().toString());
-        entry.setLastUpdatedSigned(source.getSigneringstidpunkt());
+        entry.setLastUpdated(source.getSigneringstidpunkt());
         entry.setPatientId(personnummer);
         entry.setVardenhetId(source.getSkapadAv().getEnhet().getEnhetsId().getExtension());
         entry.setVardgivarId(source.getSkapadAv().getEnhet().getVardgivare().getVardgivareId().getExtension());

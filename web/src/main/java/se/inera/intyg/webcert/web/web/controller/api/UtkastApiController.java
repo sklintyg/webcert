@@ -371,7 +371,7 @@ public class UtkastApiController extends AbstractApiController {
                 break;
             case "senasteSparadDatum":
             default:
-                comparator = Comparator.comparing(ListIntygEntry::getLastUpdatedSigned);
+                comparator = Comparator.comparing(ListIntygEntry::getLastUpdated);
                 break;
         }
 

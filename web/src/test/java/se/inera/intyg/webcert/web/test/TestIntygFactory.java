@@ -60,7 +60,7 @@ public final class TestIntygFactory {
 
         it.setIntygId(id);
         it.setUpdatedSignedBy("A Person");
-        it.setLastUpdatedSigned(signedDate);
+        it.setLastUpdated(signedDate);
         it.setIntygType("Type 1");
         it.setSource(intygSource);
 

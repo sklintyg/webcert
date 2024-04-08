@@ -18,6 +18,14 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl.list;
 
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import se.inera.intyg.infra.certificate.dto.CertificateListEntry;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
@@ -28,7 +36,11 @@ import se.inera.intyg.infra.security.common.model.RequestOrigin;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.model.Status;
-import se.inera.intyg.webcert.web.service.facade.list.config.dto.*;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColumnType;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterBooleanValue;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterNumberValue;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterTextValue;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterValue;
 import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItem;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.service.facade.list.dto.PatientListInfo;
@@ -37,14 +49,6 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
-
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static org.mockito.Mockito.when;
 
 class ListTestHelper {
 
@@ -202,7 +206,7 @@ class ListTestHelper {
         listIntygEntry.setIntygTypeName("CERTIFICATE_TYPE_NAME");
         listIntygEntry.setStatus(status);
         listIntygEntry.setPatientId(createPnr(patientId));
-        listIntygEntry.setLastUpdatedSigned(LocalDateTime.now());
+        listIntygEntry.setLastUpdated(LocalDateTime.now());
         listIntygEntry.setVidarebefordrad(forwarded);
         listIntygEntry.setAvliden(includePatientStatuses);
         listIntygEntry.setSekretessmarkering(includePatientStatuses);

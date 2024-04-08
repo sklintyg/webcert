@@ -46,7 +46,8 @@ public class ListIntygEntry {
     @JsonIgnore
     private String statusName;
 
-    private LocalDateTime lastUpdatedSigned;
+    private LocalDateTime lastUpdated;
+    private LocalDateTime signed;
 
     private String updatedSignedBy;
     private String updatedSignedById;
@@ -68,6 +69,13 @@ public class ListIntygEntry {
 
     private boolean isTestIntyg = false;
 
+    public LocalDateTime getSigned() {
+        return signed;
+    }
+
+    public void setSigned(LocalDateTime signed) {
+        this.signed = signed;
+    }
 
     public String getIntygId() {
         return intygId;
@@ -125,12 +133,12 @@ public class ListIntygEntry {
         this.statusName = statusName;
     }
 
-    public LocalDateTime getLastUpdatedSigned() {
-        return lastUpdatedSigned;
+    public LocalDateTime getLastUpdated() {
+        return lastUpdated;
     }
 
-    public void setLastUpdatedSigned(LocalDateTime lastUpdatedSigned) {
-        this.lastUpdatedSigned = lastUpdatedSigned;
+    public void setLastUpdated(LocalDateTime lastUpdated) {
+        this.lastUpdated = lastUpdated;
     }
 
     public String getUpdatedSignedBy() {
@@ -243,7 +251,7 @@ public class ListIntygEntry {
             && Objects.equals(patientId, that.patientId) && source == that.source && Objects.equals(intygType,
             that.intygType) && Objects.equals(intygTypeVersion, that.intygTypeVersion) && Objects.equals(intygTypeName,
             that.intygTypeName) && Objects.equals(status, that.status) && Objects.equals(statusName, that.statusName)
-            && Objects.equals(lastUpdatedSigned, that.lastUpdatedSigned) && Objects.equals(updatedSignedBy,
+            && Objects.equals(lastUpdated, that.lastUpdated) && Objects.equals(updatedSignedBy,
             that.updatedSignedBy) && Objects.equals(updatedSignedById, that.updatedSignedById) && Objects.equals(
             vardenhetId, that.vardenhetId) && Objects.equals(vardgivarId, that.vardgivarId) && Objects.equals(relations,
             that.relations) && Objects.equals(links, that.links);
@@ -251,7 +259,7 @@ public class ListIntygEntry {
 
     @Override
     public int hashCode() {
-        return Objects.hash(intygId, patientId, source, intygType, intygTypeVersion, intygTypeName, status, statusName, lastUpdatedSigned,
+        return Objects.hash(intygId, patientId, source, intygType, intygTypeVersion, intygTypeName, status, statusName, lastUpdated,
             updatedSignedBy, updatedSignedById, vidarebefordrad, version, vardenhetId, vardgivarId, relations, sekretessmarkering, avliden,
             links, isTestIntyg);
     }
@@ -267,7 +275,7 @@ public class ListIntygEntry {
             + ", intygTypeName='" + intygTypeName + '\''
             + ", status='" + status + '\''
             + ", statusName='" + statusName + '\''
-            + ", lastUpdatedSigned=" + lastUpdatedSigned
+            + ", lastUpdatedSigned=" + lastUpdated
             + ", updatedSignedBy='" + updatedSignedBy + '\''
             + ", updatedSignedById='" + updatedSignedById + '\''
             + ", vidarebefordrad=" + vidarebefordrad

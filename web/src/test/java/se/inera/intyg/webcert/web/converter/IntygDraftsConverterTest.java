@@ -29,9 +29,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import org.junit.Test;
-
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.StatusKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
@@ -95,7 +93,7 @@ public class IntygDraftsConverterTest {
         assertEquals(type, ref.getIntygType());
         assertEquals("DRAFT_COMPLETE", ref.getStatus());
         assertEquals(updatedSignedBy, ref.getUpdatedSignedBy());
-        assertEquals(modfied, ref.getLastUpdatedSigned());
+        assertEquals(modfied, ref.getLastUpdated());
     }
 
     @Test

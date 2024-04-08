@@ -190,7 +190,7 @@ class CertificateListEntryConverterImplTest {
             final var listIntygEntry = ListTestHelper.createListIntygEntry(UtkastStatus.DRAFT_COMPLETE.toString(), true, true);
             final var result = certificateListItemConverter.convert(listIntygEntry, LIST_TYPE);
 
-            assertEquals(listIntygEntry.getLastUpdatedSigned(), result.getValue(ListColumnType.SAVED));
+            assertEquals(listIntygEntry.getLastUpdated(), result.getValue(ListColumnType.SAVED));
         }
 
         @Test
