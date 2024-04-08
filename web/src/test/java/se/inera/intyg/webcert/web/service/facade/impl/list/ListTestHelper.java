@@ -206,7 +206,7 @@ class ListTestHelper {
         listIntygEntry.setIntygTypeName("CERTIFICATE_TYPE_NAME");
         listIntygEntry.setStatus(status);
         listIntygEntry.setPatientId(createPnr(patientId));
-        listIntygEntry.setLastUpdated(LocalDateTime.now());
+        listIntygEntry.setLastUpdatedSigned(LocalDateTime.now());
         listIntygEntry.setVidarebefordrad(forwarded);
         listIntygEntry.setAvliden(includePatientStatuses);
         listIntygEntry.setSekretessmarkering(includePatientStatuses);

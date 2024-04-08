@@ -44,8 +44,8 @@ public class IntygDraftsConverter {
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygDraftsConverter.class);
 
-    private static final Comparator<ListIntygEntry> INTYG_ENTRY_DATE_COMPARATOR_DESC = (ie1, ie2) -> ie2.getLastUpdated()
-        .compareTo(ie1.getLastUpdated());
+    private static final Comparator<ListIntygEntry> INTYG_ENTRY_DATE_COMPARATOR_DESC = (ie1, ie2) -> ie2.getLastUpdatedSigned()
+        .compareTo(ie1.getLastUpdatedSigned());
 
     private static final Comparator<IntygsStatus> INTYG_STATUS_COMPARATOR = (c1, c2) -> c1.getTidpunkt().compareTo(c2.getTidpunkt());
 
