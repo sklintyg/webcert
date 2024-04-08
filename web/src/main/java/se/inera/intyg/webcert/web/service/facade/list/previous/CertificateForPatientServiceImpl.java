@@ -160,7 +160,7 @@ public class CertificateForPatientServiceImpl implements CertificateForPatientSe
         return Stream.concat(
                 certificatesFromIT.stream().filter(fromIT -> keepITCertificate(certificatesFromWC, fromIT)),
                 certificatesFromWC.stream().filter(fromWC -> keepWCCertificate(certificatesFromIT, fromWC)))
-            .sorted(comparing(ListIntygEntry::getLastUpdated, reverseOrder()))
+            .sorted(comparing(ListIntygEntry::getLastUpdatedSigned, reverseOrder()))
             .collect(Collectors.toList());
     }
 

@@ -47,6 +47,8 @@ public class ListIntygEntry {
     private String statusName;
 
     private LocalDateTime lastUpdated;
+    private LocalDateTime lastUpdatedSigned;
+
     private LocalDateTime signed;
 
     private String updatedSignedBy;
@@ -75,6 +77,14 @@ public class ListIntygEntry {
 
     public void setSigned(LocalDateTime signed) {
         this.signed = signed;
+    }
+
+    public void setLastUpdatedSigned(LocalDateTime lastUpdatedSigned) {
+        this.lastUpdatedSigned = lastUpdatedSigned;
+    }
+
+    public LocalDateTime getLastUpdatedSigned() {
+        return lastUpdatedSigned;
     }
 
     public String getIntygId() {
@@ -251,17 +261,18 @@ public class ListIntygEntry {
             && Objects.equals(patientId, that.patientId) && source == that.source && Objects.equals(intygType,
             that.intygType) && Objects.equals(intygTypeVersion, that.intygTypeVersion) && Objects.equals(intygTypeName,
             that.intygTypeName) && Objects.equals(status, that.status) && Objects.equals(statusName, that.statusName)
-            && Objects.equals(lastUpdated, that.lastUpdated) && Objects.equals(updatedSignedBy,
+            && Objects.equals(lastUpdatedSigned, that.lastUpdatedSigned) && Objects.equals(updatedSignedBy,
             that.updatedSignedBy) && Objects.equals(updatedSignedById, that.updatedSignedById) && Objects.equals(
             vardenhetId, that.vardenhetId) && Objects.equals(vardgivarId, that.vardgivarId) && Objects.equals(relations,
-            that.relations) && Objects.equals(links, that.links);
+            that.relations) && Objects.equals(links, that.links) && Objects.equals(lastUpdated, that.lastUpdated)
+            && Objects.equals(signed, that.signed);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(intygId, patientId, source, intygType, intygTypeVersion, intygTypeName, status, statusName, lastUpdated,
+        return Objects.hash(intygId, patientId, source, intygType, intygTypeVersion, intygTypeName, status, statusName, lastUpdatedSigned,
             updatedSignedBy, updatedSignedById, vidarebefordrad, version, vardenhetId, vardgivarId, relations, sekretessmarkering, avliden,
-            links, isTestIntyg);
+            links, isTestIntyg, lastUpdated, signed);
     }
 
     @Override
@@ -275,7 +286,7 @@ public class ListIntygEntry {
             + ", intygTypeName='" + intygTypeName + '\''
             + ", status='" + status + '\''
             + ", statusName='" + statusName + '\''
-            + ", lastUpdated=" + lastUpdated
+            + ", lastUpdatedSigned=" + lastUpdatedSigned
             + ", updatedSignedBy='" + updatedSignedBy + '\''
             + ", updatedSignedById='" + updatedSignedById + '\''
             + ", vidarebefordrad=" + vidarebefordrad
@@ -287,6 +298,8 @@ public class ListIntygEntry {
             + ", avliden=" + avliden
             + ", links=" + links
             + ", isTestIntyg=" + isTestIntyg
+            + ", lastUpdated=" + lastUpdated
+            + ", signed=" + signed
             + '}';
     }
 }
