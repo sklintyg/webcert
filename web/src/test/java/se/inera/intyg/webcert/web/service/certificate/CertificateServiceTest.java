@@ -83,6 +83,14 @@ public class CertificateServiceTest {
     }
 
     @Test
+    public void shouldReturnListOfEmptyCertificatesIfErrorGettingCertificatesFromIT() {
+        Mockito.when(itIntegrationService.getCertificatesForDoctor(null, null)).thenReturn(null);
+        var certificateListResponse = certificateService.listCertificatesForDoctor(null);
+        verify(logService, times(0)).logListIntyg(any(), any());
+        assertTrue(certificateListResponse.getCertificates().isEmpty());
+    }
+
+    @Test
     public void decoratePatientWithAllFlags() {
         testDecorateWithPatientFlags(true, false);
     }

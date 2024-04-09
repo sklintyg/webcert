@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.certificate;
 
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -82,6 +83,7 @@ public class CertificateServiceImpl implements CertificateService {
             LOGGER.error("Could not get list of signed certificates for unit from IT", ex);
             CertificateListResponse certificateListResponse = new CertificateListResponse();
             certificateListResponse.setErrorFromIT(true);
+            certificateListResponse.setCertificates(Collections.emptyList());
             return certificateListResponse;
         }
     }
