@@ -94,6 +94,8 @@ public class IntygDraftsConverterTest {
         assertEquals("DRAFT_COMPLETE", ref.getStatus());
         assertEquals(updatedSignedBy, ref.getUpdatedSignedBy());
         assertEquals(modfied, ref.getLastUpdatedSigned());
+        assertEquals(modfied, ref.getSigned());
+        assertEquals(modfied, ref.getLastUpdated());
     }
 
     @Test
