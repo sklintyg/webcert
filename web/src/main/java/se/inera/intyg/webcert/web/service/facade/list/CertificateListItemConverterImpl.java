@@ -85,8 +85,10 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
 
         listItem.addValue(ListColumnType.CERTIFICATE_TYPE_NAME, listIntygEntry.getIntygTypeName());
         listItem.addValue(ListColumnType.STATUS, convertStatus(certificateListItemStatus));
-        listItem.addValue(listType == ListType.CERTIFICATES ? ListColumnType.SIGNED : ListColumnType.SAVED,
-            listIntygEntry.getLastUpdatedSigned());
+        listItem.addValue(
+            listType == ListType.CERTIFICATES ? ListColumnType.SIGNED : ListColumnType.SAVED,
+            listType == ListType.CERTIFICATES ? listIntygEntry.getSigned() : listIntygEntry.getLastUpdated()
+        );
         listItem.addValue(ListColumnType.PATIENT_ID, patientListInfo);
         listItem.addValue(listType == ListType.DRAFTS ? ListColumnType.SAVED_BY : ListColumnType.SAVED_SIGNED_BY,
             listIntygEntry.getUpdatedSignedBy()

@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.service.facade;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import se.inera.intyg.common.support.facade.builder.CertificateBuilder;
 import se.inera.intyg.common.support.facade.model.Certificate;
@@ -62,6 +63,8 @@ public class CertificateFacadeTestHelper {
             .type(certificateType)
             .typeVersion(typeVersion)
             .status(status)
+            .signed(LocalDateTime.now())
+            .modified(LocalDateTime.now().plusDays(5))
             .patient(
                 Patient.builder()
                     .personId(

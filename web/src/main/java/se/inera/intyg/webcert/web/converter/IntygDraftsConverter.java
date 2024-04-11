@@ -86,6 +86,7 @@ public class IntygDraftsConverter {
         entry.setUpdatedSignedBy(resolvedSignedBy(utkast));
         entry.setUpdatedSignedById(resolvedSignedById(utkast));
         entry.setLastUpdatedSigned(utkast.getSenastSparadDatum());
+        entry.setLastUpdated(utkast.getSenastSparadDatum());
         entry.setPatientId(utkast.getPatientPersonnummer());
         entry.setVidarebefordrad(utkast.getVidarebefordrad());
         entry.setStatus(resolveStatus(utkast));
@@ -185,6 +186,7 @@ public class IntygDraftsConverter {
         entry.setUpdatedSignedBy(source.getSkapadAv().getFullstandigtNamn());
         entry.setUpdatedSignedById(source.getSkapadAv().getPersonalId().toString());
         entry.setLastUpdatedSigned(source.getSigneringstidpunkt());
+        entry.setSigned(source.getSigneringstidpunkt());
         entry.setPatientId(personnummer);
         entry.setVardenhetId(source.getSkapadAv().getEnhet().getEnhetsId().getExtension());
         entry.setVardgivarId(source.getSkapadAv().getEnhet().getVardgivare().getVardgivareId().getExtension());
