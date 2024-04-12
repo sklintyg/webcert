@@ -28,7 +28,7 @@ import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.common.support.facade.model.Staff;
-import se.inera.intyg.common.support.facade.model.config.CertificateDataConfigSickLeavePeriod;
+import se.inera.intyg.common.support.facade.model.config.CertificateDataConfigCheckboxDateRangeList;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
@@ -277,7 +277,7 @@ public class CertificateFacadeTestHelper {
 
         final var sickLeavePeriod = CertificateDataElement.builder()
             .config(
-                CertificateDataConfigSickLeavePeriod.builder().build()
+                CertificateDataConfigCheckboxDateRangeList.builder().build()
             )
             .value(
                 CertificateDataValueDateRangeList.builder()
