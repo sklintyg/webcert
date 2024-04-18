@@ -19,18 +19,34 @@
 
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.webcert.web.csintegration.certificate.CreateDraftCertificateFromCS;
+import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
+import se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3.CreateDraftCertificateFromWC;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.CreateDraftCertificateResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class CreateDraftCertificateAggregator {
 
-    public CreateDraftCertificateResponseType create(Intyg utkastsParams, IntygUser user) {
+    private final CreateDraftCertificateFromWC createDraftCertificateFromWC;
+    private final CreateDraftCertificateFromCS createDraftCertificateFromCS;
+    private final CertificateServiceProfile certificateServiceProfile;
 
-        return null;
+
+    public CreateDraftCertificateResponseType create(Intyg utkastsParams, IntygUser user) {
+        if (!certificateServiceProfile.active()) {
+            return createDraftCertificateFromWC.create(utkastsParams, user);
+        }
+
+        final var createDraftCertificateResponseType = createDraftCertificateFromCS.create(utkastsParams, user);
+
+        return createDraftCertificateResponseType != null
+            ? createDraftCertificateResponseType : createDraftCertificateFromWC.create(utkastsParams, user);
     }
 }
