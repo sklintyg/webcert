@@ -27,7 +27,7 @@ import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificaterespo
 @Service
 public class CreateDraftCertificateFromCS {
 
-    public CreateDraftCertificateResponseType create(Intyg utkastParams, IntygUser user) {
+    public CreateDraftCertificateResponseType create(Intyg certificate, IntygUser user) {
         return null;
     }
 }

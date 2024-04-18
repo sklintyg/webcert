@@ -69,17 +69,17 @@ public class CreateDraftCertificateFromWC {
     private final CreateDraftCertificateValidator validator;
 
 
-    public CreateDraftCertificateResponseType create(Intyg utkastsParams, IntygUser user) {
-        final var resultValidator = validator.validateCertificateErrors(utkastsParams, user);
+    public CreateDraftCertificateResponseType create(Intyg certificate, IntygUser user) {
+        final var resultValidator = validator.validateCertificateErrors(certificate, user);
         if (resultValidator.hasErrors()) {
             return createApplicationErrorResponse(resultValidator);
         }
-        final var intygsTyp = moduleRegistry.getModuleIdFromExternalId(utkastsParams.getTypAvIntyg().getCode());
+        final var intygsTyp = moduleRegistry.getModuleIdFromExternalId(certificate.getTypAvIntyg().getCode());
         // Default to use latest version, since there is no info in request specifying version
         final var latestIntygTypeVersion = intygTextsService.getLatestVersion(intygsTyp);
 
         final var personnummer = Personnummer.createPersonnummer(
-                utkastsParams.getPatient().getPersonId().getExtension())
+                certificate.getPatient().getPersonId().getExtension())
             .orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
                 "Failed to create valid personnummer for createDraft request"));
 
@@ -102,7 +102,7 @@ public class CreateDraftCertificateFromWC {
             return createErrorResponse(validateDraftCreationResponse.getMessage(), ErrorIdType.APPLICATION_ERROR);
         }
 
-        final var invokingUnitHsaId = utkastsParams.getSkapadAv().getEnhet().getEnhetsId().getExtension();
+        final var invokingUnitHsaId = certificate.getSkapadAv().getEnhet().getEnhetsId().getExtension();
 
         if (authoritiesValidator.given(user, intygsTyp).features(AuthoritiesConstants.FEATURE_TAK_KONTROLL).isVerified()) {
             // Check if invoking health care unit has required TAK
@@ -113,7 +113,7 @@ public class CreateDraftCertificateFromWC {
                 return createErrorResponse(error, ErrorIdType.APPLICATION_ERROR);
             }
         }
-        final var utkast = createNewDraft(utkastsParams, latestIntygTypeVersion, user);
+        final var utkast = createNewDraft(certificate, latestIntygTypeVersion, user);
         return createSuccessResponse(utkast.getIntygsId(), invokingUnitHsaId, validateDraftCreationResponse);
     }
 
