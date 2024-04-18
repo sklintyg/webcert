@@ -18,6 +18,9 @@
  */
 package se.inera.intyg.webcert.web.csintegration.integration;
 
+import static se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3.CreateDraftCertificateResponseFactory.createErrorResponse;
+import static se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3.CreateDraftCertificateResponseFactory.createSuccessResponse;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -69,8 +72,7 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.CreateDraftCertificateResponseType;
-import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
-import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
+import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 
 @Service
 public class CSIntegrationService {
@@ -194,14 +196,10 @@ public class CSIntegrationService {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL;
         try {
             final var response = restTemplate.postForObject(url, request, CertificateServiceCreateCertificateResponseDTO.class);
-            final var createDraftCertificateResponseType = new CreateDraftCertificateResponseType();
-            return createDraftCertificateResponseType;
+            assert response != null;
+            return createSuccessResponse(response.getCertificate().getMetadata().getId(), request.getUnit().getId());
         } catch (Exception exception) {
-            final var createDraftCertificateResponseType = new CreateDraftCertificateResponseType();
-            final var resultType = new ResultType();
-            resultType.setResultCode(ResultCodeType.ERROR);
-            resultType.setResultText(exception.getMessage());
-            return createDraftCertificateResponseType;
+            return createErrorResponse(exception.getMessage(), ErrorIdType.VALIDATION_ERROR);
         }
     }
 

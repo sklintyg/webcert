@@ -96,6 +96,7 @@ public class CSIntegrationRequestFactory {
                     createPatientId(certificate.getPatient().getPersonId().getExtension())
                 )
             )
+            .externalReference(certificate.getRef())
             .certificateModelId(modelId)
             .build();
     }

@@ -35,10 +35,6 @@ public class CertificateServiceUnitHelper {
     private final WebCertUserService webCertUserService;
     private final CertificateServiceVardenhetConverter certificateServiceVardenhetConverter;
 
-    private IntygUser getUser(Optional<IntygUser> optionalUser) {
-        return optionalUser.orElseGet(webCertUserService::getUser);
-    }
-
     public CertificateServiceUnitDTO getCareProvider() {
         return getCareProvider(Optional.empty());
     }
@@ -85,5 +81,9 @@ public class CertificateServiceUnitHelper {
 
     private static boolean hasMatch(String id1, String id2) {
         return id1.equalsIgnoreCase(id2);
+    }
+
+    private IntygUser getUser(Optional<IntygUser> optionalUser) {
+        return optionalUser.orElseGet(webCertUserService::getUser);
     }
 }

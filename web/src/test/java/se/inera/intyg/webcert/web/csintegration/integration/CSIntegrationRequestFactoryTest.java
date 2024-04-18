@@ -24,6 +24,7 @@ import static org.mockito.Mockito.when;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -35,6 +36,7 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesQueryCriteriaDTO;
@@ -48,6 +50,7 @@ import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserDTO;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserHelper;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
 
 @ExtendWith(MockitoExtension.class)
 class CSIntegrationRequestFactoryTest {
@@ -209,6 +212,75 @@ class CSIntegrationRequestFactoryTest {
         void shouldSetCertificateModel() {
             final var actualRequest = csIntegrationRequestFactory.createCertificateRequest(CERTIFICATE_MODEL_ID, PATIENT_ID);
             assertEquals(CERTIFICATE_MODEL_ID, actualRequest.getCertificateModelId());
+        }
+    }
+
+    @Nested
+    class CreateDraftCertificateRequest {
+
+        private static final String HSA_ID = "hsaId";
+        private static final String EXPECTED_REF = "expectedRef";
+        private final IntygUser intygUser = new IntygUser(HSA_ID);
+        private final Intyg intyg = new Intyg();
+
+        @BeforeEach
+        void setup() {
+            intyg.setPatient(new se.riv.clinicalprocess.healthcond.certificate.v3.Patient());
+            intyg.getPatient().setPersonId(new se.riv.clinicalprocess.healthcond.certificate.types.v3.PersonId());
+            intyg.getPatient().getPersonId().setExtension(PATIENT_ID);
+            intyg.setRef(EXPECTED_REF);
+            when(certificateServiceUserHelper.get(Optional.of(intygUser)))
+                .thenReturn(USER);
+            when(certificateServicePatientHelper.get(PERSONNUMMER))
+                .thenReturn(PATIENT);
+            when(certificateServiceUnitHelper.getUnit(Optional.of(intygUser)))
+                .thenReturn(UNIT);
+            when(certificateServiceUnitHelper.getCareUnit(Optional.of(intygUser)))
+                .thenReturn(CARE_UNIT);
+            when(certificateServiceUnitHelper.getCareProvider(Optional.of(intygUser)))
+                .thenReturn(CARE_PROVIDER);
+        }
+
+        @Test
+        void shouldSetUser() {
+            final var actualRequest = csIntegrationRequestFactory.createDraftCertificateRequest(CERTIFICATE_MODEL_ID, intyg, intygUser);
+            assertEquals(USER, actualRequest.getUser());
+        }
+
+        @Test
+        void shouldSetUnit() {
+            final var actualRequest = csIntegrationRequestFactory.createDraftCertificateRequest(CERTIFICATE_MODEL_ID, intyg, intygUser);
+            assertEquals(UNIT, actualRequest.getUnit());
+        }
+
+        @Test
+        void shouldSetCareUnit() {
+            final var actualRequest = csIntegrationRequestFactory.createDraftCertificateRequest(CERTIFICATE_MODEL_ID, intyg, intygUser);
+            assertEquals(CARE_UNIT, actualRequest.getCareUnit());
+        }
+
+        @Test
+        void shouldSetCareProvider() {
+            final var actualRequest = csIntegrationRequestFactory.createDraftCertificateRequest(CERTIFICATE_MODEL_ID, intyg, intygUser);
+            assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
+        }
+
+        @Test
+        void shouldSetPatient() {
+            final var actualRequest = csIntegrationRequestFactory.createDraftCertificateRequest(CERTIFICATE_MODEL_ID, intyg, intygUser);
+            assertEquals(PATIENT, actualRequest.getPatient());
+        }
+
+        @Test
+        void shouldSetCertificateModel() {
+            final var actualRequest = csIntegrationRequestFactory.createDraftCertificateRequest(CERTIFICATE_MODEL_ID, intyg, intygUser);
+            assertEquals(CERTIFICATE_MODEL_ID, actualRequest.getCertificateModelId());
+        }
+
+        @Test
+        void shouldSetExternalReference() {
+            final var actualRequest = csIntegrationRequestFactory.createDraftCertificateRequest(CERTIFICATE_MODEL_ID, intyg, intygUser);
+            assertEquals(EXPECTED_REF, actualRequest.getExternalReference());
         }
     }
 

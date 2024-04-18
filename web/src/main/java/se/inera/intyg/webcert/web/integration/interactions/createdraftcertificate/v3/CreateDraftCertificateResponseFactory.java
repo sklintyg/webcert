@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.integration.interactions.createdraftcertifica
 
 import se.inera.intyg.common.support.integration.converter.util.ResultTypeUtil;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.CreateDraftCertificateResponseType;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 
 public class CreateDraftCertificateResponseFactory {
@@ -33,6 +34,17 @@ public class CreateDraftCertificateResponseFactory {
         final var result = ResultTypeUtil.errorResult(errorType, errorMsg);
         final var response = new CreateDraftCertificateResponseType();
         response.setResult(result);
+        return response;
+    }
+
+    public static CreateDraftCertificateResponseType createSuccessResponse(String certificateId, String invokingUnitHsaId) {
+        final var intygId = new IntygId();
+        intygId.setRoot(invokingUnitHsaId);
+        intygId.setExtension(certificateId);
+
+        final var response = new CreateDraftCertificateResponseType();
+        response.setResult(ResultTypeUtil.okResult());
+        response.setIntygsId(intygId);
         return response;
     }
 }
