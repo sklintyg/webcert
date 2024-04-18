@@ -66,7 +66,7 @@ public class CreateDraftCertificateFromCS {
         final var personId = Personnummer.createPersonnummer(personIdExtension)
             .orElseThrow(() -> new IllegalArgumentException(
                 String.format("Cannot create Personnummer object with invalid personId '%s'", personIdExtension)));
-
+        
         final var sekretessStatus = patientDetailsResolver.getSekretessStatus(personId);
 
         if (sekretessStatus == SekretessStatus.UNDEFINED) {

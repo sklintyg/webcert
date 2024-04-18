@@ -20,12 +20,14 @@
 package se.inera.intyg.webcert.web.csintegration.user;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.services.BefattningService;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -37,15 +39,23 @@ public class CertificateServiceUserHelper {
     private final WebCertUserService webCertUserService;
     private final AuthoritiesHelper authoritiesHelper;
 
+    private IntygUser getUser(Optional<IntygUser> optionalUser) {
+        return optionalUser.orElseGet(webCertUserService::getUser);
+    }
+
     public CertificateServiceUserDTO get() {
-        final var webCertUser = webCertUserService.getUser();
+        return get(Optional.empty());
+    }
+
+    public CertificateServiceUserDTO get(Optional<IntygUser> optionalUser) {
+        final var webCertUser = getUser(optionalUser);
 
         return CertificateServiceUserDTO.builder()
             .id(webCertUser.getHsaId())
             .firstName(webCertUser.getFornamn())
             .lastName(webCertUser.getEfternamn())
             .fullName(webCertUser.getNamn())
-            .blocked(isBlocked(webCertUser))
+//            .blocked(isBlocked(webCertUser))
             .paTitles(paTitles(webCertUser.getBefattningar()))
             .specialities(webCertUser.getSpecialiseringar())
             .role(getRole(webCertUser))
@@ -75,13 +85,14 @@ public class CertificateServiceUserHelper {
         return true;
     }
 
+
     private boolean hasSubscription(WebCertUser webCertUser) {
         final var careProviderId = webCertUser.getValdVardgivare().getId();
 
         return !webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscription().contains(careProviderId);
     }
 
-    private CertificateServiceUserRole getRole(WebCertUser webCertUser) {
+    private CertificateServiceUserRole getRole(IntygUser webCertUser) {
         final var roles = webCertUser.getRoles();
         if (roles == null || roles.values().isEmpty()) {
             throw new IllegalStateException("User has no roles");

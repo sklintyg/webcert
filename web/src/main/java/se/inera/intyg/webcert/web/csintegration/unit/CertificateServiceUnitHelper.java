@@ -19,11 +19,13 @@
 
 package se.inera.intyg.webcert.web.csintegration.unit;
 
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.AbstractVardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
+import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 @Component
@@ -33,8 +35,16 @@ public class CertificateServiceUnitHelper {
     private final WebCertUserService webCertUserService;
     private final CertificateServiceVardenhetConverter certificateServiceVardenhetConverter;
 
+    private IntygUser getUser(Optional<IntygUser> optionalUser) {
+        return optionalUser.orElseGet(webCertUserService::getUser);
+    }
+
     public CertificateServiceUnitDTO getCareProvider() {
-        final var user = webCertUserService.getUser();
+        return getCareProvider(Optional.empty());
+    }
+
+    public CertificateServiceUnitDTO getCareProvider(Optional<IntygUser> optionalUser) {
+        final var user = getUser(optionalUser);
         return CertificateServiceUnitDTO.builder()
             .id(user.getValdVardgivare().getId())
             .name(user.getValdVardgivare().getNamn())
@@ -42,9 +52,14 @@ public class CertificateServiceUnitHelper {
     }
 
     public CertificateServiceUnitDTO getCareUnit() {
-        final var user = webCertUserService.getUser();
+        return getCareUnit(Optional.empty());
+    }
 
-        if (user.getValdVardenhet() instanceof Mottagning) {
+    public CertificateServiceUnitDTO getCareUnit(Optional<IntygUser> optionalUser) {
+        final var user = getUser(optionalUser);
+        final var vardenhet = (AbstractVardenhet) user.getValdVardenhet();
+
+        if (vardenhet instanceof Mottagning) {
             final var mottagning = (Mottagning) user.getValdVardenhet();
             final var chosenCareProvider = (Vardgivare) user.getValdVardgivare();
 
@@ -54,13 +69,17 @@ public class CertificateServiceUnitHelper {
                 .orElseThrow();
 
             return certificateServiceVardenhetConverter.convert(parentUnit);
+        } else {
+            return certificateServiceVardenhetConverter.convert(vardenhet);
         }
-
-        return certificateServiceVardenhetConverter.convert((AbstractVardenhet) user.getValdVardenhet());
     }
 
     public CertificateServiceUnitDTO getUnit() {
-        final var user = webCertUserService.getUser();
+        return getUnit(Optional.empty());
+    }
+
+    public CertificateServiceUnitDTO getUnit(Optional<IntygUser> optionalUser) {
+        final var user = getUser(optionalUser);
         return certificateServiceVardenhetConverter.convert((AbstractVardenhet) user.getValdVardenhet());
     }
 

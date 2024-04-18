@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.csintegration.integration;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.Certificate;
@@ -86,6 +87,10 @@ public class CSIntegrationRequestFactory {
 
     public CreateCertificateRequestDTO createDraftCertificateRequest(CertificateModelIdDTO modelId, Intyg certificate, IntygUser user) {
         return CreateCertificateRequestDTO.builder()
+            .unit(certificateServiceUnitHelper.getUnit(Optional.ofNullable(user)))
+            .careUnit(certificateServiceUnitHelper.getCareUnit(Optional.ofNullable(user)))
+            .careProvider(certificateServiceUnitHelper.getCareProvider(Optional.ofNullable(user)))
+            .user(certificateServiceUserHelper.get(Optional.ofNullable(user)))
             .patient(
                 certificateServicePatientHelper.get(
                     createPatientId(certificate.getPatient().getPersonId().getExtension())
