@@ -16,18 +16,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3;
 
+package se.inera.intyg.webcert.web.csintegration.certificate;
+
+import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.security.common.model.IntygUser;
-import se.inera.intyg.webcert.web.integration.validators.ResultValidator;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.CreateDraftCertificateResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
 
-public interface CreateDraftCertificateValidator {
+@Service
+public class CreateDraftCertificateFromCS {
 
-    ResultValidator validate(Intyg intyg);
-
-    ResultValidator validateApplicationErrors(Intyg intyg, IntygUser user);
-
-    ResultValidator validateCertificateErrors(Intyg intyg, IntygUser user);
-
+    public CreateDraftCertificateResponseType create(Intyg utkastParams, IntygUser user) {
+        return null;
+    }
 }

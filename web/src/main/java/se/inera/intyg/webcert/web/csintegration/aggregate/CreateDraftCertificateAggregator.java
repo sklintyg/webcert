@@ -16,18 +16,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3;
 
+package se.inera.intyg.webcert.web.csintegration.aggregate;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.security.common.model.IntygUser;
-import se.inera.intyg.webcert.web.integration.validators.ResultValidator;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.CreateDraftCertificateResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
 
-public interface CreateDraftCertificateValidator {
+@Slf4j
+@Service
+public class CreateDraftCertificateAggregator {
 
-    ResultValidator validate(Intyg intyg);
+    public CreateDraftCertificateResponseType create(Intyg utkastsParams, IntygUser user) {
 
-    ResultValidator validateApplicationErrors(Intyg intyg, IntygUser user);
-
-    ResultValidator validateCertificateErrors(Intyg intyg, IntygUser user);
-
+        return null;
+    }
 }
