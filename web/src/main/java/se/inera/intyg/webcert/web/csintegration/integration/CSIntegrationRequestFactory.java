@@ -86,15 +86,11 @@ public class CSIntegrationRequestFactory {
 
     public CreateCertificateRequestDTO createDraftCertificateRequest(CertificateModelIdDTO modelId, Intyg certificate, IntygUser user) {
         return CreateCertificateRequestDTO.builder()
-            .unit()
-            .careUnit()
-            .careProvider()
             .patient(
                 certificateServicePatientHelper.get(
                     createPatientId(certificate.getPatient().getPersonId().getExtension())
                 )
             )
-            .user()
             .certificateModelId(modelId)
             .build();
     }

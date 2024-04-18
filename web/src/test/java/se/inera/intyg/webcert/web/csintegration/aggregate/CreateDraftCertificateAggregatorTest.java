@@ -24,7 +24,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -36,13 +35,11 @@ import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3.CreateDraftCertificateFromWC;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.CreateDraftCertificateResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
-import se.riv.clinicalprocess.healthcond.certificate.types.v3.TypAvIntyg;
 
 @ExtendWith(MockitoExtension.class)
 class CreateDraftCertificateAggregatorTest {
 
-    private static final String CERTIFICATE_TYPE = "CERTIFICATE_TYPE";
-    private Intyg intyg;
+    private static final Intyg UTKAST_PARAMS = new Intyg();
     private static final String HSA_ID = "HSA_ID";
     private static final IntygUser USER = new IntygUser(HSA_ID);
     @Mock
@@ -54,38 +51,47 @@ class CreateDraftCertificateAggregatorTest {
     @InjectMocks
     private CreateDraftCertificateAggregator createDraftCertificateAggregator;
 
-    @BeforeEach
-    void setUp() {
-        intyg = new Intyg();
-        intyg.setTypAvIntyg(new TypAvIntyg());
-        intyg.getTypAvIntyg().setCode(CERTIFICATE_TYPE);
-    }
-
     @Test
     void shouldReturnResponseFromCSIfProfileActiveAndSupportsType() {
         final var expectedResult = new CreateDraftCertificateResponseType();
-        when(certificateServiceProfile.activeAndSupportsType(CERTIFICATE_TYPE))
+        when(certificateServiceProfile.active())
             .thenReturn(true);
-        when(createDraftCertificateFromCS.create(intyg, USER))
+        when(createDraftCertificateFromCS.create(UTKAST_PARAMS, USER))
             .thenReturn(expectedResult);
 
-        final var response = createDraftCertificateAggregator.create(intyg, USER);
-        verify(createDraftCertificateFromCS, times(1)).create(intyg, USER);
+        final var response = createDraftCertificateAggregator.create(UTKAST_PARAMS, USER);
+        verify(createDraftCertificateFromCS, times(1)).create(UTKAST_PARAMS, USER);
 
         assertEquals(expectedResult, response);
     }
 
     @Test
-    void shouldReturnResponseFromWCIfProfileNotActiveAndNotSupportsType() {
+    void shouldReturnCertificateIdFromWCIfCSProfileIsNotActive() {
         final var expectedResult = new CreateDraftCertificateResponseType();
-        when(certificateServiceProfile.activeAndSupportsType(CERTIFICATE_TYPE))
+        when(certificateServiceProfile.active())
             .thenReturn(false);
-        when(createDraftCertificateFromWC.create(intyg, USER))
+        when(createDraftCertificateFromWC.create(UTKAST_PARAMS, USER))
             .thenReturn(expectedResult);
 
-        final var response = createDraftCertificateAggregator.create(intyg, USER);
-        verify(createDraftCertificateFromWC, times(1)).create(intyg, USER);
-        verify(createDraftCertificateFromCS, times(0)).create(intyg, USER);
+        final var response = createDraftCertificateAggregator.create(UTKAST_PARAMS, USER);
+        verify(createDraftCertificateFromWC, times(1)).create(UTKAST_PARAMS, USER);
+        verify(createDraftCertificateFromCS, times(0)).create(UTKAST_PARAMS, USER);
+
+        assertEquals(expectedResult, response);
+    }
+
+    @Test
+    void shouldReturnCertificateIdFromWCIIfCSProfileIsActiveButReturnsNull() {
+        final var expectedResult = new CreateDraftCertificateResponseType();
+        when(certificateServiceProfile.active())
+            .thenReturn(true);
+        when(createDraftCertificateFromWC.create(UTKAST_PARAMS, USER))
+            .thenReturn(expectedResult);
+
+        final var response = createDraftCertificateAggregator.create(UTKAST_PARAMS, USER);
+
+        verify(createDraftCertificateFromWC, times(1)).create(UTKAST_PARAMS, USER);
+        verify(createDraftCertificateFromCS, times(1)).create(UTKAST_PARAMS, USER);
 
         assertEquals(expectedResult, response);
     }
