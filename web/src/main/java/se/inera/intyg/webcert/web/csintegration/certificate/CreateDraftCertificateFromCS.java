@@ -20,25 +20,48 @@
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3.CreateDraftCertificateResponseFactory;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.CreateDraftCertificateResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CreateDraftCertificateFromCS {
 
     private final PatientDetailsResolver patientDetailsResolver;
-
+    private final CSIntegrationService csIntegrationService;
+    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
 
     public CreateDraftCertificateResponseType create(Intyg certificate, IntygUser user) {
+        final var applicationError = validatePatient(certificate);
+        if (applicationError != null) {
+            return applicationError;
+        }
 
+        final var modelId = csIntegrationService.certificateTypeExists(certificate.getTypAvIntyg().getCode());
+        if (modelId.isEmpty()) {
+            log.debug("Certificate type '{}' does not exist in certificate service", certificate.getTypAvIntyg().getCode());
+            return null;
+        }
+
+        return csIntegrationService.createDraftCertificate(
+            csIntegrationRequestFactory.createDraftCertificateRequest(
+                modelId.get(), certificate, user
+            )
+        );
+    }
+
+    private CreateDraftCertificateResponseType validatePatient(Intyg certificate) {
         final var personIdExtension = certificate.getPatient().getPersonId().getExtension();
         final var personId = Personnummer.createPersonnummer(personIdExtension)
             .orElseThrow(() -> new IllegalArgumentException(
@@ -51,7 +74,6 @@ public class CreateDraftCertificateFromCS {
                 "Information om skyddade personuppgifter kunde inte hämtas. Intyget kan inte utfärdas"
                     + " för patient när uppgift om skyddade personuppgifter ej är tillgänglig.", ErrorIdType.APPLICATION_ERROR);
         }
-
         return null;
     }
 

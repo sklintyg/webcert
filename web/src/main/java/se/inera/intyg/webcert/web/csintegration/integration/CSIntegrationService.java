@@ -68,6 +68,9 @@ import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.CreateDraftCertificateResponseType;
+import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
+import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
 @Service
 public class CSIntegrationService {
@@ -185,6 +188,21 @@ public class CSIntegrationService {
         }
 
         return response.getCertificate();
+    }
+
+    public CreateDraftCertificateResponseType createDraftCertificate(CreateCertificateRequestDTO request) {
+        final var url = baseUrl + CERTIFICATE_ENDPOINT_URL;
+        try {
+            final var response = restTemplate.postForObject(url, request, CertificateServiceCreateCertificateResponseDTO.class);
+            final var createDraftCertificateResponseType = new CreateDraftCertificateResponseType();
+            return createDraftCertificateResponseType;
+        } catch (Exception exception) {
+            final var createDraftCertificateResponseType = new CreateDraftCertificateResponseType();
+            final var resultType = new ResultType();
+            resultType.setResultCode(ResultCodeType.ERROR);
+            resultType.setResultText(exception.getMessage());
+            return createDraftCertificateResponseType;
+        }
     }
 
     public Certificate getCertificate(String certificateId, GetCertificateRequestDTO request) {

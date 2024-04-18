@@ -23,6 +23,7 @@ import java.util.Base64;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoRequestDTO;
@@ -47,6 +48,7 @@ import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitHelpe
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserHelper;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
 
 @Component
 @RequiredArgsConstructor
@@ -78,6 +80,21 @@ public class CSIntegrationRequestFactory {
                 )
             )
             .user(certificateServiceUserHelper.get())
+            .certificateModelId(modelId)
+            .build();
+    }
+
+    public CreateCertificateRequestDTO createDraftCertificateRequest(CertificateModelIdDTO modelId, Intyg certificate, IntygUser user) {
+        return CreateCertificateRequestDTO.builder()
+            .unit()
+            .careUnit()
+            .careProvider()
+            .patient(
+                certificateServicePatientHelper.get(
+                    createPatientId(certificate.getPatient().getPersonId().getExtension())
+                )
+            )
+            .user()
             .certificateModelId(modelId)
             .build();
     }
