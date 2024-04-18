@@ -28,6 +28,8 @@ import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3.CreateDraftCertificateResponseFactory;
+import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
+import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.CreateDraftCertificateResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
@@ -41,6 +43,7 @@ public class CreateDraftCertificateFromCS {
     private final PatientDetailsResolver patientDetailsResolver;
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+    private final IntegreradeEnheterRegistry integreradeEnheterRegistry;
 
     public CreateDraftCertificateResponseType create(Intyg certificate, IntygUser user) {
         final var applicationError = validatePatient(certificate);
@@ -54,6 +57,8 @@ public class CreateDraftCertificateFromCS {
             return null;
         }
 
+        integreradeEnheterRegistry.putIntegreradEnhet(getIntegreradEnhetEntry(user), false, true);
+        
         return csIntegrationService.createDraftCertificate(
             csIntegrationRequestFactory.createDraftCertificateRequest(
                 modelId.get(), certificate, user
@@ -61,12 +66,17 @@ public class CreateDraftCertificateFromCS {
         );
     }
 
+    private static IntegreradEnhetEntry getIntegreradEnhetEntry(IntygUser user) {
+        return new IntegreradEnhetEntry(user.getValdVardenhet().getId(),
+            user.getValdVardenhet().getNamn(), user.getValdVardgivare().getId(), user.getValdVardgivare().getNamn());
+    }
+
     private CreateDraftCertificateResponseType validatePatient(Intyg certificate) {
         final var personIdExtension = certificate.getPatient().getPersonId().getExtension();
         final var personId = Personnummer.createPersonnummer(personIdExtension)
             .orElseThrow(() -> new IllegalArgumentException(
                 String.format("Cannot create Personnummer object with invalid personId '%s'", personIdExtension)));
-        
+
         final var sekretessStatus = patientDetailsResolver.getSekretessStatus(personId);
 
         if (sekretessStatus == SekretessStatus.UNDEFINED) {

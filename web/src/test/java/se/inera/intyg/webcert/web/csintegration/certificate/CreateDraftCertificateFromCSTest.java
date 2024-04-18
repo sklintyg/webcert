@@ -24,6 +24,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
@@ -32,6 +35,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
@@ -39,6 +43,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequest
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
+import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
+import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.CreateDraftCertificateResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
@@ -54,7 +60,10 @@ class CreateDraftCertificateFromCSTest {
     private static final String HSA_ID = "HSA_ID";
     private static final String VALID_PERSON_ID = "191212121212";
     private static final String CERTIFICATE_TYPE = "certificateType";
+    private static final String ID = "id";
 
+    @Mock
+    private IntegreradeEnheterRegistry integreradeEnheterRegistry;
     @Mock
     private PatientDetailsResolver patientDetailsResolver;
     @Mock
@@ -97,10 +106,13 @@ class CreateDraftCertificateFromCSTest {
     void shouldReturnCreateDraftCertificateResponseType() {
         final var expectedResult = new CreateDraftCertificateResponseType();
         final var certificate = getCertificate(VALID_PERSON_ID);
-        final var user = new IntygUser(HSA_ID);
+        final var user = mock(IntygUser.class);
         final var modelIdDTO = CertificateModelIdDTO.builder().build();
         final var request = CreateCertificateRequestDTO.builder().build();
 
+        final var vardenhet = new Vardenhet();
+        when(user.getValdVardenhet()).thenReturn(vardenhet);
+        when(user.getValdVardgivare()).thenReturn(vardenhet);
         when(csIntegrationService.certificateTypeExists(certificate.getTypAvIntyg().getCode()))
             .thenReturn(Optional.of(modelIdDTO));
         when(csIntegrationRequestFactory.createDraftCertificateRequest(modelIdDTO, certificate, user)).thenReturn(request);
@@ -108,6 +120,27 @@ class CreateDraftCertificateFromCSTest {
 
         final var result = createDraftCertificateFromCS.create(certificate, user);
         assertEquals(expectedResult, result);
+    }
+
+    @Test
+    void shouldPutIntegreradEnhetToRegistry() {
+        final var expectedResult = new CreateDraftCertificateResponseType();
+        final var certificate = getCertificate(VALID_PERSON_ID);
+        final var user = mock(IntygUser.class);
+        final var modelIdDTO = CertificateModelIdDTO.builder().build();
+        final var request = CreateCertificateRequestDTO.builder().build();
+
+        final var vardenhet = new Vardenhet();
+        when(user.getValdVardenhet()).thenReturn(vardenhet);
+        when(user.getValdVardgivare()).thenReturn(vardenhet);
+        when(csIntegrationService.certificateTypeExists(certificate.getTypAvIntyg().getCode()))
+            .thenReturn(Optional.of(modelIdDTO));
+        when(csIntegrationRequestFactory.createDraftCertificateRequest(modelIdDTO, certificate, user)).thenReturn(request);
+        when(csIntegrationService.createDraftCertificate(request)).thenReturn(expectedResult);
+
+        createDraftCertificateFromCS.create(certificate, user);
+
+        verify(integreradeEnheterRegistry).putIntegreradEnhet(any(IntegreradEnhetEntry.class), eq(false), eq(true));
     }
 
     private static Intyg getCertificate(String extension) {
