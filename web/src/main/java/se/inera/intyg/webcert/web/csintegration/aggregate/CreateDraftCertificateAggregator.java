@@ -40,13 +40,9 @@ public class CreateDraftCertificateAggregator {
 
 
     public CreateDraftCertificateResponseType create(Intyg utkastsParams, IntygUser user) {
-        if (!certificateServiceProfile.active()) {
-            return createDraftCertificateFromWC.create(utkastsParams, user);
+        if (certificateServiceProfile.activeAndSupportsType(utkastsParams.getTypAvIntyg().getCode())) {
+            return createDraftCertificateFromCS.create(utkastsParams, user);
         }
-
-        final var createDraftCertificateResponseType = createDraftCertificateFromCS.create(utkastsParams, user);
-
-        return createDraftCertificateResponseType != null
-            ? createDraftCertificateResponseType : createDraftCertificateFromWC.create(utkastsParams, user);
+        return createDraftCertificateFromWC.create(utkastsParams, user);
     }
 }
