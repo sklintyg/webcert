@@ -19,12 +19,13 @@
 
 package se.inera.intyg.webcert.web.csintegration.user;
 
+import static se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserUtil.convertRole;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.services.BefattningService;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 
 @Component
@@ -33,7 +34,6 @@ public class CertificateServiceIntegrationUserHelper {
 
 
     public CertificateServiceUserDTO get(IntygUser user) {
-
         return CertificateServiceUserDTO.builder()
             .id(user.getHsaId())
             .firstName(user.getFornamn())
@@ -58,31 +58,12 @@ public class CertificateServiceIntegrationUserHelper {
     }
 
 
-    private CertificateServiceUserRole getRole(IntygUser webCertUser) {
-        final var roles = webCertUser.getRoles();
+    private CertificateServiceUserRole getRole(IntygUser user) {
+        final var roles = user.getRoles();
         if (roles == null || roles.values().isEmpty()) {
             throw new IllegalStateException("User has no roles");
         }
 
         return convertRole(roles.values().stream().findFirst().orElseThrow().getName());
-    }
-
-    private CertificateServiceUserRole convertRole(String role) {
-        switch (role.toUpperCase()) {
-            case AuthoritiesConstants.ROLE_LAKARE:
-                return CertificateServiceUserRole.DOCTOR;
-            case AuthoritiesConstants.ROLE_PRIVATLAKARE:
-                return CertificateServiceUserRole.PRIVATE_DOCTOR;
-            case AuthoritiesConstants.ROLE_TANDLAKARE:
-                return CertificateServiceUserRole.DENTIST;
-            case AuthoritiesConstants.ROLE_ADMIN:
-                return CertificateServiceUserRole.CARE_ADMIN;
-            case AuthoritiesConstants.ROLE_SJUKSKOTERSKA:
-                return CertificateServiceUserRole.NURSE;
-            case AuthoritiesConstants.ROLE_BARNMORSKA:
-                return CertificateServiceUserRole.MIDWIFE;
-            default:
-                throw new IllegalArgumentException("Role is not recognized: " + role);
-        }
     }
 }
