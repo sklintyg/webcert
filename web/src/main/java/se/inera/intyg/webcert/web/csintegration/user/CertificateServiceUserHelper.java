@@ -26,7 +26,6 @@ import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.services.BefattningService;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -74,15 +73,14 @@ public class CertificateServiceUserHelper {
 
         return true;
     }
-
-
+    
     private boolean hasSubscription(WebCertUser webCertUser) {
         final var careProviderId = webCertUser.getValdVardgivare().getId();
 
         return !webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscription().contains(careProviderId);
     }
 
-    private CertificateServiceUserRole getRole(IntygUser webCertUser) {
+    private CertificateServiceUserRole getRole(WebCertUser webCertUser) {
         final var roles = webCertUser.getRoles();
         if (roles == null || roles.values().isEmpty()) {
             throw new IllegalStateException("User has no roles");
