@@ -22,8 +22,9 @@ package se.inera.intyg.webcert.web.integration.interactions.createdraftcertifica
 import static se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3.CreateDraftCertificateResponseFactory.createErrorResponse;
 
 import com.google.common.base.Joiner;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.integration.converter.util.ResultTypeUtil;
@@ -55,18 +56,24 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class CreateDraftCertificateFromWC {
 
-    private final IntygModuleRegistry moduleRegistry;
-    private final IntygTextsService intygTextsService;
-    private final AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
-    private final UtkastService utkastService;
-    private final CreateNewDraftRequestBuilder draftRequestBuilder;
-    // TakService was loaded with lazy annotation
-    private final TakService takService;
-    private final IntegreradeEnheterRegistry integreradeEnheterRegistry;
-    private final CreateDraftCertificateValidator validator;
+    @Autowired
+    private IntygModuleRegistry moduleRegistry;
+    @Autowired
+    private IntygTextsService intygTextsService;
+    private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
+    @Autowired
+    private UtkastService utkastService;
+    @Autowired
+    private CreateNewDraftRequestBuilder draftRequestBuilder;
+    @Lazy
+    @Autowired
+    private TakService takService;
+    @Autowired
+    private IntegreradeEnheterRegistry integreradeEnheterRegistry;
+    @Autowired
+    private CreateDraftCertificateValidator validator;
 
 
     public CreateDraftCertificateResponseType create(Intyg certificate, IntygUser user) {

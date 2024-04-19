@@ -46,7 +46,7 @@ public class CreateDraftCertificateFromCS {
     private final IntegreradeEnheterRegistry integreradeEnheterRegistry;
 
     public CreateDraftCertificateResponseType create(Intyg certificate, IntygUser user) {
-        final var applicationError = validatePatient(certificate);
+        final var applicationError = validatePUIntegration(certificate);
         if (applicationError != null) {
             return applicationError;
         }
@@ -58,7 +58,7 @@ public class CreateDraftCertificateFromCS {
         }
 
         integreradeEnheterRegistry.putIntegreradEnhet(getIntegreradEnhetEntry(user), false, true);
-        
+
         return csIntegrationService.createDraftCertificate(
             csIntegrationRequestFactory.createDraftCertificateRequest(
                 modelId.get(), certificate, user
@@ -71,7 +71,7 @@ public class CreateDraftCertificateFromCS {
             user.getValdVardenhet().getNamn(), user.getValdVardgivare().getId(), user.getValdVardgivare().getNamn());
     }
 
-    private CreateDraftCertificateResponseType validatePatient(Intyg certificate) {
+    private CreateDraftCertificateResponseType validatePUIntegration(Intyg certificate) {
         final var personIdExtension = certificate.getPatient().getPersonId().getExtension();
         final var personId = Personnummer.createPersonnummer(personIdExtension)
             .orElseThrow(() -> new IllegalArgumentException(
