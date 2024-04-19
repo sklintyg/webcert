@@ -20,16 +20,15 @@ package se.inera.intyg.webcert.web.auth.eleg;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.saml.SAMLCredential;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 
 /**
  * Helper service for determining the login method based on the "LoginMethod" SAML attribute.
- *
+ * <p>
  * See {@link se.inera.intyg.webcert.web.auth.eleg.ElegLoginMethod} for known LoginMethod codes.
- *
+ * <p>
  * Created by eriklupander on 2015-08-24.
  */
 @Service
@@ -37,17 +36,20 @@ public class ElegAuthenticationMethodResolverImpl implements ElegAuthenticationM
 
     private static final Logger LOG = LoggerFactory.getLogger(ElegAuthenticationMethodResolverImpl.class);
 
-    @Autowired(required = false)
-    private ElegAuthenticationAttributeHelper elegAuthenticationAttributeHelper;
+    private final ElegAuthenticationAttributeHelper elegAuthenticationAttributeHelper;
+
+    public ElegAuthenticationMethodResolverImpl(ElegAuthenticationAttributeHelper elegAuthenticationAttributeHelper) {
+        this.elegAuthenticationAttributeHelper = elegAuthenticationAttributeHelper;
+    }
 
     @Override
     public AuthenticationMethod resolveAuthenticationMethod(SAMLCredential samlCredential) {
         String loginMethod = elegAuthenticationAttributeHelper.getAttribute(samlCredential, CgiElegAssertion.LOGIN_METHOD);
 
-        if (loginMethod == null || loginMethod.trim().length() == 0) {
+        if (loginMethod == null || loginMethod.trim().isEmpty()) {
             throw new IllegalArgumentException(
                 "Cannot process SAML ticket for e-leg. Null or empty LoginMethod attribute on Assertion. "
-                    + "Must be one of ccp8,ccp10,ccp11,ccp12 or ccp13");
+                    + "Must be one of ccp8,ccp10,ccp11,ccp12,ccp13,ccp19 or ccp28");
         }
 
         return resolveAuthenticationMethod(loginMethod);
@@ -59,7 +61,7 @@ public class ElegAuthenticationMethodResolverImpl implements ElegAuthenticationM
         try {
             loginMethodEnum = ElegLoginMethod.valueOf(loginMethod.toUpperCase());
         } catch (IllegalArgumentException e) {
-            LOG.warn("Cannot resolve AuthenticationMethod from SAML attribute 'LoginMethod': " + loginMethod);
+            LOG.warn("Cannot resolve AuthenticationMethod from SAML attribute 'LoginMethod': {}", loginMethod);
             throw new IllegalArgumentException("Could not parse AuthenticationMethod from SAML attribute 'LoginMethod': " + loginMethod);
         }
         switch (loginMethodEnum) {
@@ -76,6 +78,8 @@ public class ElegAuthenticationMethodResolverImpl implements ElegAuthenticationM
 
             case CCP11:
             case CCP13:
+            case CCP19:
+            case CCP28:
                 return AuthenticationMethod.MOBILT_BANK_ID;
         }
         throw new IllegalArgumentException("Could not parse AuthenticationMethod from SAML attribute 'LoginMethod': " + loginMethod);

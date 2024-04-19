@@ -18,28 +18,28 @@
  */
 package se.inera.intyg.webcert.web.auth.eleg;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.saml.SAMLCredential;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.webcert.web.auth.common.BaseSAMLCredentialTest;
 
-/**
- * Created by eriklupander on 2015-08-26.
- */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ElegAuthenticationMethodResolverTest extends BaseSAMLCredentialTest {
 
     private static final String MOBILT_BANK_ID_LOGIN_METHOD = "ccp11";
+    private static final String MOBILT_BANK_ID_STATIC_QR_CODE = "ccp19";
+    private static final String MOBILT_BANK_ID_NON_STATIC_QR_CODE = "ccp28";
     private static final String BANK_ID_LOGIN_METHOD = "ccp10";
     private static final String NET_ID_LOGIN_METHOD = "ccp8";
     private static final String INDETERMINATE_LOGIN_METHOD = "";
@@ -49,9 +49,9 @@ public class ElegAuthenticationMethodResolverTest extends BaseSAMLCredentialTest
     private ElegAuthenticationAttributeHelper elegAuthenticationAttributeHelper;
 
     @InjectMocks
-    private ElegAuthenticationMethodResolverImpl testee;
+    private ElegAuthenticationMethodResolverImpl elegAuthenticationMethodResolver;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws Exception {
         bootstrapSamlAssertions();
 
@@ -60,40 +60,59 @@ public class ElegAuthenticationMethodResolverTest extends BaseSAMLCredentialTest
     @Test
     public void testBankID() {
         when(elegAuthenticationAttributeHelper.getAttribute(any(SAMLCredential.class), anyString())).thenReturn(BANK_ID_LOGIN_METHOD);
-        AuthenticationMethod authMetod = testee.resolveAuthenticationMethod(buildPrivatlakareSamlCredential());
+        AuthenticationMethod authMetod = elegAuthenticationMethodResolver.resolveAuthenticationMethod(buildPrivatlakareSamlCredential());
         assertEquals(AuthenticationMethod.BANK_ID, authMetod);
     }
 
     @Test
-    public void testMobiltBankID() {
+    public void testMobiltBankIDCCP11() {
         when(elegAuthenticationAttributeHelper.getAttribute(any(SAMLCredential.class), anyString()))
             .thenReturn(MOBILT_BANK_ID_LOGIN_METHOD);
-        AuthenticationMethod authMetod = testee.resolveAuthenticationMethod(buildPrivatlakareSamlCredential());
+        AuthenticationMethod authMetod = elegAuthenticationMethodResolver.resolveAuthenticationMethod(buildPrivatlakareSamlCredential());
+        assertEquals(AuthenticationMethod.MOBILT_BANK_ID, authMetod);
+    }
+
+    @Test
+    public void testMobiltBankIDCCP19() {
+        when(elegAuthenticationAttributeHelper.getAttribute(any(SAMLCredential.class), anyString()))
+            .thenReturn(MOBILT_BANK_ID_STATIC_QR_CODE);
+        AuthenticationMethod authMetod = elegAuthenticationMethodResolver.resolveAuthenticationMethod(buildPrivatlakareSamlCredential());
+        assertEquals(AuthenticationMethod.MOBILT_BANK_ID, authMetod);
+    }
+
+    @Test
+    public void testMobiltBankIDCCP28() {
+        when(elegAuthenticationAttributeHelper.getAttribute(any(SAMLCredential.class), anyString()))
+            .thenReturn(MOBILT_BANK_ID_NON_STATIC_QR_CODE);
+        AuthenticationMethod authMetod = elegAuthenticationMethodResolver.resolveAuthenticationMethod(buildPrivatlakareSamlCredential());
         assertEquals(AuthenticationMethod.MOBILT_BANK_ID, authMetod);
     }
 
     @Test
     public void testNetID() {
         when(elegAuthenticationAttributeHelper.getAttribute(any(SAMLCredential.class), anyString())).thenReturn(NET_ID_LOGIN_METHOD);
-        AuthenticationMethod authMetod = testee.resolveAuthenticationMethod(buildPrivatlakareSamlCredential());
+        AuthenticationMethod authMetod = elegAuthenticationMethodResolver.resolveAuthenticationMethod(buildPrivatlakareSamlCredential());
         assertEquals(AuthenticationMethod.NET_ID, authMetod);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testNoIssuerThrowsException() {
         when(elegAuthenticationAttributeHelper.getAttribute(any(SAMLCredential.class), anyString())).thenReturn(null);
-        testee.resolveAuthenticationMethod(buildPrivatlakareSamlCredential());
+        assertThrows(IllegalArgumentException.class, () ->
+            elegAuthenticationMethodResolver.resolveAuthenticationMethod(buildPrivatlakareSamlCredential()));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testIndeterminateIssuerThrowsException() {
         when(elegAuthenticationAttributeHelper.getAttribute(any(SAMLCredential.class), anyString())).thenReturn(INDETERMINATE_LOGIN_METHOD);
-        testee.resolveAuthenticationMethod(buildPrivatlakareSamlCredential());
+        assertThrows(IllegalArgumentException.class, () ->
+            elegAuthenticationMethodResolver.resolveAuthenticationMethod(buildPrivatlakareSamlCredential()));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testUnknwonIssuerThrowsException() {
         when(elegAuthenticationAttributeHelper.getAttribute(any(SAMLCredential.class), anyString())).thenReturn(UNKNOWN_LOGIN_METHOD);
-        testee.resolveAuthenticationMethod(buildPrivatlakareSamlCredential());
+        assertThrows(IllegalArgumentException.class, () ->
+            elegAuthenticationMethodResolver.resolveAuthenticationMethod(buildPrivatlakareSamlCredential()));
     }
 }
