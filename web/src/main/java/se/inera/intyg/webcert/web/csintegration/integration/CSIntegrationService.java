@@ -67,8 +67,10 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateR
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateWithoutSignatureRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.CreateDraftCertificateResponseType;
@@ -86,15 +88,19 @@ public class CSIntegrationService {
     private final CertificateTypeInfoConverter certificateTypeInfoConverter;
     private final ListIntygEntryConverter listIntygEntryConverter;
     private final RestTemplate restTemplate;
+    private final PDLLogService pdlLogService;
+    private final MonitoringLogService monitoringLogService;
 
     @Value("${certificateservice.base.url}")
     private String baseUrl;
 
     public CSIntegrationService(CertificateTypeInfoConverter certificateTypeInfoConverter, ListIntygEntryConverter listIntygEntryConverter,
-        @Qualifier("csRestTemplate") RestTemplate restTemplate) {
+        @Qualifier("csRestTemplate") RestTemplate restTemplate, PDLLogService pdlLogService, MonitoringLogService monitoringLogService) {
         this.certificateTypeInfoConverter = certificateTypeInfoConverter;
         this.listIntygEntryConverter = listIntygEntryConverter;
         this.restTemplate = restTemplate;
+        this.pdlLogService = pdlLogService;
+        this.monitoringLogService = monitoringLogService;
     }
 
     public List<ListIntygEntry> listCertificatesForUnit(GetUnitCertificatesRequestDTO request) {
@@ -196,8 +202,24 @@ public class CSIntegrationService {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL;
         try {
             final var response = restTemplate.postForObject(url, request, CertificateServiceCreateCertificateResponseDTO.class);
-            assert response != null;
-            return createSuccessResponse(response.getCertificate().getMetadata().getId(), request.getUnit().getId());
+
+            if (response == null) {
+                throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
+            }
+
+            pdlLogService.logCreated(response.getCertificate());
+            monitoringLogService.logUtkastCreated(
+                response.getCertificate().getMetadata().getId(),
+                response.getCertificate().getMetadata().getType(),
+                response.getCertificate().getMetadata().getUnit().getUnitId(),
+                response.getCertificate().getMetadata().getIssuedBy().getPersonId(),
+                0
+            );
+
+            return createSuccessResponse(
+                response.getCertificate().getMetadata().getId(),
+                response.getCertificate().getMetadata().getUnit().getUnitId()
+            );
         } catch (Exception exception) {
             return createErrorResponse(exception.getMessage(), ErrorIdType.VALIDATION_ERROR);
         }

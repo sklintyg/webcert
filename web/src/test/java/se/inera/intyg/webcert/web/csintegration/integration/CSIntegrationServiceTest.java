@@ -26,6 +26,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.Collections;
@@ -48,6 +49,7 @@ import org.springframework.web.client.RestTemplate;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.Staff;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateExistsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
@@ -79,7 +81,9 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateR
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateWithoutSignatureRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.CreateDraftCertificateResponseType;
@@ -157,6 +161,11 @@ class CSIntegrationServiceTest {
     private static final RevokeCertificateResponseDTO REVOKE_RESPONSE = RevokeCertificateResponseDTO.builder()
         .certificate(CERTIFICATE)
         .build();
+
+    @Mock
+    private PDLLogService pdlLogService;
+    @Mock
+    private MonitoringLogService monitoringLogService;
 
     @Mock
     private RestTemplate restTemplate;
@@ -274,6 +283,31 @@ class CSIntegrationServiceTest {
 
         private static final String EXPECTED_ID = "expectedId";
         private static final String EXPECTED_EXCEPTION_MESSAGE = "expectedExceptionMessage";
+        private static final String EXPECTED_UNIT_ID = "expectedUnitId";
+        private static final String CERTIFICATE_TYPE = "certificateType";
+        private static final String HSA_ID = "hsaId";
+        private Certificate certificate;
+
+        @BeforeEach
+        void setUp() {
+            certificate = new Certificate();
+            certificate.setMetadata(
+                CertificateMetadata.builder()
+                    .id(EXPECTED_ID)
+                    .type(CERTIFICATE_TYPE)
+                    .unit(
+                        Unit.builder()
+                            .unitId(EXPECTED_UNIT_ID)
+                            .build()
+                    )
+                    .issuedBy(
+                        Staff.builder()
+                            .personId(HSA_ID)
+                            .build()
+                    )
+                    .build()
+            );
+        }
 
         @Test
         void shouldReturnErrorResponseIfExceptionIsThrown() {
@@ -299,16 +333,74 @@ class CSIntegrationServiceTest {
         }
 
         @Test
-        void shouldReturnCreateDraftCertificateResponseTypeWithIntygsId() {
-            CERTIFICATE.setMetadata(CertificateMetadata.builder()
-                .id(EXPECTED_ID)
-                .build()
-            );
+        void shouldReturnCreateDraftCertificateResponseTypeWithCorrectCertificateId() {
             when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(CREATE_RESPONSE);
+                .thenReturn(
+                    CertificateServiceCreateCertificateResponseDTO.builder()
+                        .certificate(certificate)
+                        .build()
+                );
             final var response = csIntegrationService.createDraftCertificate(CREATE_CERTIFICATE_REQUEST);
 
-            assertEquals(CREATE_DRAFT_CERTIFICATE_RESPONSE_TYPE.getIntygsId(), response.getIntygsId());
+            assertEquals(EXPECTED_ID, response.getIntygsId().getExtension());
+        }
+
+        @Test
+        void shouldReturnCreateDraftCertificateResponseTypeWithCorrectUnitId() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(
+                    CertificateServiceCreateCertificateResponseDTO.builder()
+                        .certificate(certificate)
+                        .build()
+                );
+            final var response = csIntegrationService.createDraftCertificate(CREATE_CERTIFICATE_REQUEST);
+
+            assertEquals(EXPECTED_UNIT_ID, response.getIntygsId().getRoot());
+        }
+
+        @Test
+        void shouldPdlLogIfCertificateCreated() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(
+                    CertificateServiceCreateCertificateResponseDTO.builder()
+                        .certificate(certificate)
+                        .build()
+                );
+
+            csIntegrationService.createDraftCertificate(CREATE_CERTIFICATE_REQUEST);
+
+            verify(pdlLogService).logCreated(certificate);
+        }
+
+        @Test
+        void shouldMonitorLogIfCertificateCreated() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(
+                    CertificateServiceCreateCertificateResponseDTO.builder()
+                        .certificate(certificate)
+                        .build()
+                );
+
+            csIntegrationService.createDraftCertificate(CREATE_CERTIFICATE_REQUEST);
+
+            verify(monitoringLogService).logUtkastCreated(
+                certificate.getMetadata().getId(),
+                certificate.getMetadata().getType(),
+                certificate.getMetadata().getUnit().getUnitId(),
+                certificate.getMetadata().getIssuedBy().getPersonId(),
+                0
+            );
+        }
+
+
+        @Test
+        void shouldNotLogIfCertificateNotCreated() {
+            when(restTemplate.postForObject(anyString(), any(), any())).thenReturn(null);
+
+            csIntegrationService.createDraftCertificate(CREATE_CERTIFICATE_REQUEST);
+
+            verifyNoInteractions(monitoringLogService);
+            verifyNoInteractions(pdlLogService);
         }
 
         @Test

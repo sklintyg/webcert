@@ -55,7 +55,7 @@ public class CertificateServiceUserHelper {
             .firstName(webCertUser.getFornamn())
             .lastName(webCertUser.getEfternamn())
             .fullName(webCertUser.getNamn())
-//            .blocked(isBlocked(webCertUser))
+            .blocked(false)
             .paTitles(paTitles(webCertUser.getBefattningar()))
             .specialities(webCertUser.getSpecialiseringar())
             .role(getRole(webCertUser))
