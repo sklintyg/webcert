@@ -61,5 +61,15 @@ public enum ElegLoginMethod {
     /**
      * Mobilt BankID (Telia, future).
      */
-    CCP13
+    CCP13,
+
+    /**
+     * Mobilt BankID (statisk QR-kod).
+     */
+    CCP19,
+
+    /**
+     * Mobilt BankID (rörlig QR-kod).
+     */
+    CCP28
 }
