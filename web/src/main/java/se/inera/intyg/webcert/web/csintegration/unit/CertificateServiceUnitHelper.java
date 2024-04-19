@@ -65,9 +65,8 @@ public class CertificateServiceUnitHelper {
                 .orElseThrow();
 
             return certificateServiceVardenhetConverter.convert(parentUnit);
-        } else {
-            return certificateServiceVardenhetConverter.convert(vardenhet);
         }
+        return certificateServiceVardenhetConverter.convert(vardenhet);
     }
 
     public CertificateServiceUnitDTO getUnit() {
