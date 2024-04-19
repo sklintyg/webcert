@@ -24,28 +24,22 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.services.BefattningService;
-import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
-import se.inera.intyg.infra.security.common.model.UserOriginType;
-import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @Component
 @RequiredArgsConstructor
-public class CertificateServiceUserHelper {
+public class CertificateServiceIntegrationUserHelper {
 
-    private final WebCertUserService webCertUserService;
-    private final AuthoritiesHelper authoritiesHelper;
 
-    public CertificateServiceUserDTO get() {
-        final var user = webCertUserService.getUser();
+    public CertificateServiceUserDTO get(IntygUser user) {
+
         return CertificateServiceUserDTO.builder()
             .id(user.getHsaId())
             .firstName(user.getFornamn())
             .lastName(user.getEfternamn())
             .fullName(user.getNamn())
-            .blocked(isBlocked(user))
+            .blocked(false)
             .paTitles(paTitles(user.getBefattningar()))
             .specialities(user.getSpecialiseringar())
             .role(getRole(user))
@@ -63,24 +57,6 @@ public class CertificateServiceUserHelper {
             .collect(Collectors.toList());
     }
 
-    private boolean isBlocked(WebCertUser webCertUser) {
-        if (!webCertUser.getOrigin().equals(UserOriginType.NORMAL.name())) {
-            return false;
-        }
-
-        if (hasSubscription(webCertUser)) {
-            return authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL);
-        }
-
-        return true;
-    }
-
-
-    private boolean hasSubscription(WebCertUser webCertUser) {
-        final var careProviderId = webCertUser.getValdVardgivare().getId();
-
-        return !webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscription().contains(careProviderId);
-    }
 
     private CertificateServiceUserRole getRole(IntygUser webCertUser) {
         final var roles = webCertUser.getRoles();

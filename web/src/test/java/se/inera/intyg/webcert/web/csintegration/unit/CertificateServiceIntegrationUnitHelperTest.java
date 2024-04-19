@@ -33,14 +33,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
-import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.infra.security.common.model.IntygUser;
 
 @ExtendWith(MockitoExtension.class)
-class CertificateServiceUnitHelperTest {
+class CertificateServiceIntegrationUnitHelperTest {
 
     private static final CertificateServiceUnitDTO CONVERTED_UNIT = CertificateServiceUnitDTO.builder().build();
     private static final CertificateServiceUnitDTO CONVERTED_CARE_UNIT = CertificateServiceUnitDTO.builder().build();
+
 
     private static final String CARE_PROVIDER_ID = "CARE_PROVIDER_ID";
     private static final String CARE_PROVIDER_NAME = "CARE_PROVIDER_NAME";
@@ -49,28 +49,21 @@ class CertificateServiceUnitHelperTest {
     private static final String SUB_UNIT_ID = "SUB_UNIT_ID";
     private static final String SUB_UNIT_NAME = "SUB_UNIT_NAME";
 
-    @Mock
-    WebCertUserService webCertUserService;
+    private final Vardenhet chosenCareUnit = new Vardenhet(CARE_UNIT_ID, CARE_UNIT_NAME);
+    private final Vardgivare chosenCareProvider = new Vardgivare(CARE_PROVIDER_ID, CARE_PROVIDER_NAME);
+    private final Mottagning chosenSubUnit = new Mottagning(SUB_UNIT_ID, SUB_UNIT_NAME);
 
     @Mock
-    WebCertUser user;
+    IntygUser intygUser;
 
     @Mock
     CertificateServiceVardenhetConverter certificateServiceVardenhetConverter;
 
     @InjectMocks
-    CertificateServiceUnitHelper certificateServiceUnitHelper;
-
-    private final Vardenhet chosenCareUnit = new Vardenhet(CARE_UNIT_ID, CARE_UNIT_NAME);
-    private final Vardgivare chosenCareProvider = new Vardgivare(CARE_PROVIDER_ID, CARE_PROVIDER_NAME);
-    private final Mottagning chosenSubUnit = new Mottagning(SUB_UNIT_ID, SUB_UNIT_NAME);
-
+    CertificateServiceIntegrationUnitHelper certificateServiceIntegrationUnitHelper;
 
     @BeforeEach
     void setup() {
-        when(webCertUserService.getUser())
-            .thenReturn(user);
-
         chosenCareProvider.setVardenheter(
             List.of(
                 chosenCareUnit,
@@ -86,20 +79,20 @@ class CertificateServiceUnitHelperTest {
 
         @BeforeEach
         void setup() {
-            when(user.getValdVardgivare())
+            when(intygUser.getValdVardgivare())
                 .thenReturn(chosenCareProvider);
         }
 
         @Test
         void shouldReturnLoggedInCareProviderId() {
-            final var response = certificateServiceUnitHelper.getCareProvider();
+            final var response = certificateServiceIntegrationUnitHelper.getCareProvider(intygUser);
 
             assertEquals(CARE_PROVIDER_ID, response.getId());
         }
 
         @Test
         void shouldReturnLoggedInCareProviderName() {
-            final var response = certificateServiceUnitHelper.getCareProvider();
+            final var response = certificateServiceIntegrationUnitHelper.getCareProvider(intygUser);
 
             assertEquals(CARE_PROVIDER_NAME, response.getName());
         }
@@ -110,7 +103,7 @@ class CertificateServiceUnitHelperTest {
 
         @BeforeEach
         void setup() {
-            when(user.getValdVardenhet())
+            when(intygUser.getValdVardenhet())
                 .thenReturn(chosenCareUnit);
             when(certificateServiceVardenhetConverter.convert(chosenCareUnit))
                 .thenReturn(CONVERTED_CARE_UNIT);
@@ -118,14 +111,14 @@ class CertificateServiceUnitHelperTest {
 
         @Test
         void shouldReturnConvertedChosenCareUnitAsCareUnit() {
-            final var response = certificateServiceUnitHelper.getCareUnit();
+            final var response = certificateServiceIntegrationUnitHelper.getCareUnit(intygUser);
 
             assertEquals(CONVERTED_CARE_UNIT, response);
         }
 
         @Test
         void shouldReturnConvertedChosenCareUnitAsUnit() {
-            final var response = certificateServiceUnitHelper.getUnit();
+            final var response = certificateServiceIntegrationUnitHelper.getUnit(intygUser);
 
             assertEquals(CONVERTED_CARE_UNIT, response);
         }
@@ -136,18 +129,18 @@ class CertificateServiceUnitHelperTest {
 
         @BeforeEach
         void setup() {
-            when(user.getValdVardenhet())
+            when(intygUser.getValdVardenhet())
                 .thenReturn(chosenSubUnit);
         }
 
         @Test
         void shouldReturnConvertedCareUnitOfChosenSubUnitAsCareUnit() {
-            when(user.getValdVardgivare())
+            when(intygUser.getValdVardgivare())
                 .thenReturn(chosenCareProvider);
             when(certificateServiceVardenhetConverter.convert(chosenCareUnit))
                 .thenReturn(CONVERTED_CARE_UNIT);
 
-            final var response = certificateServiceUnitHelper.getCareUnit();
+            final var response = certificateServiceIntegrationUnitHelper.getCareUnit(intygUser);
 
             assertEquals(CONVERTED_CARE_UNIT, response);
         }
@@ -157,11 +150,9 @@ class CertificateServiceUnitHelperTest {
             when(certificateServiceVardenhetConverter.convert(chosenSubUnit))
                 .thenReturn(CONVERTED_UNIT);
 
-            final var response = certificateServiceUnitHelper.getUnit();
+            final var response = certificateServiceIntegrationUnitHelper.getUnit(intygUser);
 
             assertEquals(CONVERTED_UNIT, response);
         }
     }
-
-
 }

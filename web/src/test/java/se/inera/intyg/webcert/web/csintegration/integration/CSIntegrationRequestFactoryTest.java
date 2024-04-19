@@ -24,7 +24,6 @@ import static org.mockito.Mockito.when;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -44,8 +43,10 @@ import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatien
 import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientHelper;
 import se.inera.intyg.webcert.web.csintegration.patient.PersonIdDTO;
 import se.inera.intyg.webcert.web.csintegration.patient.PersonIdType;
+import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceIntegrationUnitHelper;
 import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitDTO;
 import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitHelper;
+import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceIntegrationUserHelper;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserDTO;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserHelper;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
@@ -57,6 +58,10 @@ class CSIntegrationRequestFactoryTest {
 
     @Mock
     CertificateServiceUnitHelper certificateServiceUnitHelper;
+    @Mock
+    CertificateServiceIntegrationUnitHelper certificateServiceIntegrationUnitHelper;
+    @Mock
+    CertificateServiceIntegrationUserHelper certificateServiceIntegrationUserHelper;
     @Mock
     CertificateServiceUserHelper certificateServiceUserHelper;
     @Mock
@@ -229,15 +234,15 @@ class CSIntegrationRequestFactoryTest {
             intyg.getPatient().setPersonId(new se.riv.clinicalprocess.healthcond.certificate.types.v3.PersonId());
             intyg.getPatient().getPersonId().setExtension(PATIENT_ID);
             intyg.setRef(EXPECTED_REF);
-            when(certificateServiceUserHelper.get(Optional.of(intygUser)))
+            when(certificateServiceIntegrationUserHelper.get(intygUser))
                 .thenReturn(USER);
             when(certificateServicePatientHelper.get(PERSONNUMMER))
                 .thenReturn(PATIENT);
-            when(certificateServiceUnitHelper.getUnit(Optional.of(intygUser)))
+            when(certificateServiceIntegrationUnitHelper.getUnit(intygUser))
                 .thenReturn(UNIT);
-            when(certificateServiceUnitHelper.getCareUnit(Optional.of(intygUser)))
+            when(certificateServiceIntegrationUnitHelper.getCareUnit(intygUser))
                 .thenReturn(CARE_UNIT);
-            when(certificateServiceUnitHelper.getCareProvider(Optional.of(intygUser)))
+            when(certificateServiceIntegrationUnitHelper.getCareProvider(intygUser))
                 .thenReturn(CARE_PROVIDER);
         }
 
