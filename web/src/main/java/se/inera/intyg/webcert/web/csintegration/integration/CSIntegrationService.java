@@ -36,6 +36,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
+import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateExistsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceCreateCertificateResponseDTO;
@@ -198,7 +199,7 @@ public class CSIntegrationService {
         return response.getCertificate();
     }
 
-    public CreateDraftCertificateResponseType createDraftCertificate(CreateCertificateRequestDTO request) {
+    public CreateDraftCertificateResponseType createDraftCertificate(CreateCertificateRequestDTO request, IntygUser user) {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL;
         try {
             final var response = restTemplate.postForObject(url, request, CertificateServiceCreateCertificateResponseDTO.class);
@@ -207,7 +208,7 @@ public class CSIntegrationService {
                 throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
             }
 
-            pdlLogService.logCreated(response.getCertificate());
+            pdlLogService.logCreatedWithIntygUser(response.getCertificate(), user);
             monitoringLogService.logUtkastCreated(
                 response.getCertificate().getMetadata().getId(),
                 response.getCertificate().getMetadata().getType(),

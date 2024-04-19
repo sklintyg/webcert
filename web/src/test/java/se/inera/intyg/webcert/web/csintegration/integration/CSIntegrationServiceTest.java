@@ -51,6 +51,7 @@ import se.inera.intyg.common.support.facade.model.Staff;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
+import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateExistsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceCreateCertificateResponseDTO;
@@ -161,6 +162,7 @@ class CSIntegrationServiceTest {
     private static final RevokeCertificateResponseDTO REVOKE_RESPONSE = RevokeCertificateResponseDTO.builder()
         .certificate(CERTIFICATE)
         .build();
+    private static final IntygUser USER = new IntygUser("hsaId");
 
     @Mock
     private PDLLogService pdlLogService;
@@ -314,7 +316,7 @@ class CSIntegrationServiceTest {
             when(restTemplate.postForObject(anyString(), any(), any()))
                 .thenThrow(new IllegalStateException(EXPECTED_EXCEPTION_MESSAGE));
 
-            final var response = csIntegrationService.createDraftCertificate(CREATE_CERTIFICATE_REQUEST);
+            final var response = csIntegrationService.createDraftCertificate(CREATE_CERTIFICATE_REQUEST, USER);
             assertEquals(EXPECTED_EXCEPTION_MESSAGE, response.getResult().getResultText());
             assertEquals(ErrorIdType.VALIDATION_ERROR, response.getResult().getErrorId());
             assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
@@ -326,7 +328,7 @@ class CSIntegrationServiceTest {
                 .thenReturn(CREATE_RESPONSE);
             final var captor = ArgumentCaptor.forClass(CreateCertificateRequestDTO.class);
 
-            csIntegrationService.createDraftCertificate(CREATE_CERTIFICATE_REQUEST);
+            csIntegrationService.createDraftCertificate(CREATE_CERTIFICATE_REQUEST, USER);
             verify(restTemplate).postForObject(anyString(), captor.capture(), any());
 
             assertEquals(CREATE_CERTIFICATE_REQUEST, captor.getValue());
@@ -340,7 +342,7 @@ class CSIntegrationServiceTest {
                         .certificate(certificate)
                         .build()
                 );
-            final var response = csIntegrationService.createDraftCertificate(CREATE_CERTIFICATE_REQUEST);
+            final var response = csIntegrationService.createDraftCertificate(CREATE_CERTIFICATE_REQUEST, USER);
 
             assertEquals(EXPECTED_ID, response.getIntygsId().getExtension());
         }
@@ -353,7 +355,7 @@ class CSIntegrationServiceTest {
                         .certificate(certificate)
                         .build()
                 );
-            final var response = csIntegrationService.createDraftCertificate(CREATE_CERTIFICATE_REQUEST);
+            final var response = csIntegrationService.createDraftCertificate(CREATE_CERTIFICATE_REQUEST, USER);
 
             assertEquals(EXPECTED_UNIT_ID, response.getIntygsId().getRoot());
         }
@@ -367,9 +369,9 @@ class CSIntegrationServiceTest {
                         .build()
                 );
 
-            csIntegrationService.createDraftCertificate(CREATE_CERTIFICATE_REQUEST);
+            csIntegrationService.createDraftCertificate(CREATE_CERTIFICATE_REQUEST, USER);
 
-            verify(pdlLogService).logCreated(certificate);
+            verify(pdlLogService).logCreatedWithIntygUser(certificate, USER);
         }
 
         @Test
@@ -381,7 +383,7 @@ class CSIntegrationServiceTest {
                         .build()
                 );
 
-            csIntegrationService.createDraftCertificate(CREATE_CERTIFICATE_REQUEST);
+            csIntegrationService.createDraftCertificate(CREATE_CERTIFICATE_REQUEST, USER);
 
             verify(monitoringLogService).logUtkastCreated(
                 certificate.getMetadata().getId(),
@@ -397,7 +399,7 @@ class CSIntegrationServiceTest {
         void shouldNotLogIfCertificateNotCreated() {
             when(restTemplate.postForObject(anyString(), any(), any())).thenReturn(null);
 
-            csIntegrationService.createDraftCertificate(CREATE_CERTIFICATE_REQUEST);
+            csIntegrationService.createDraftCertificate(CREATE_CERTIFICATE_REQUEST, USER);
 
             verifyNoInteractions(monitoringLogService);
             verifyNoInteractions(pdlLogService);
@@ -410,7 +412,7 @@ class CSIntegrationServiceTest {
             when(restTemplate.postForObject(anyString(), any(), any()))
                 .thenReturn(CREATE_RESPONSE);
 
-            csIntegrationService.createDraftCertificate(CREATE_CERTIFICATE_REQUEST);
+            csIntegrationService.createDraftCertificate(CREATE_CERTIFICATE_REQUEST, USER);
             verify(restTemplate).postForObject(captor.capture(), any(), any());
 
             assertEquals("baseUrl/api/certificate", captor.getValue());

@@ -58,9 +58,9 @@ class CreateDraftCertificateFromCSTest {
 
     private static final String INVALID_PERSON_ID = "INVALID";
     private static final String HSA_ID = "HSA_ID";
+    private static final IntygUser USER = new IntygUser(HSA_ID);
     private static final String VALID_PERSON_ID = "191212121212";
     private static final String CERTIFICATE_TYPE = "certificateType";
-    private static final String ID = "id";
 
     @Mock
     private IntegreradeEnheterRegistry integreradeEnheterRegistry;
@@ -89,7 +89,7 @@ class CreateDraftCertificateFromCSTest {
 
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.UNDEFINED);
 
-        final var result = createDraftCertificateFromCS.create(certificate, new IntygUser(HSA_ID));
+        final var result = createDraftCertificateFromCS.create(certificate, USER);
 
         assertTrue(result.getResult().getResultText().contains("Information om skyddade personuppgifter kunde inte hämtas."));
         assertEquals(ErrorIdType.APPLICATION_ERROR, result.getResult().getErrorId());
@@ -99,7 +99,7 @@ class CreateDraftCertificateFromCSTest {
     void shouldReturnNullIfCertificateTypeDontExists() {
         final var certificate = getCertificate(VALID_PERSON_ID);
         when(csIntegrationService.certificateTypeExists(certificate.getTypAvIntyg().getCode())).thenReturn(Optional.empty());
-        assertNull(createDraftCertificateFromCS.create(certificate, new IntygUser(HSA_ID)));
+        assertNull(createDraftCertificateFromCS.create(certificate, USER));
     }
 
     @Test
@@ -116,7 +116,7 @@ class CreateDraftCertificateFromCSTest {
         when(csIntegrationService.certificateTypeExists(certificate.getTypAvIntyg().getCode()))
             .thenReturn(Optional.of(modelIdDTO));
         when(csIntegrationRequestFactory.createDraftCertificateRequest(modelIdDTO, certificate, user)).thenReturn(request);
-        when(csIntegrationService.createDraftCertificate(request)).thenReturn(expectedResult);
+        when(csIntegrationService.createDraftCertificate(request, user)).thenReturn(expectedResult);
 
         final var result = createDraftCertificateFromCS.create(certificate, user);
         assertEquals(expectedResult, result);
@@ -136,7 +136,7 @@ class CreateDraftCertificateFromCSTest {
         when(csIntegrationService.certificateTypeExists(certificate.getTypAvIntyg().getCode()))
             .thenReturn(Optional.of(modelIdDTO));
         when(csIntegrationRequestFactory.createDraftCertificateRequest(modelIdDTO, certificate, user)).thenReturn(request);
-        when(csIntegrationService.createDraftCertificate(request)).thenReturn(expectedResult);
+        when(csIntegrationService.createDraftCertificate(request, user)).thenReturn(expectedResult);
 
         createDraftCertificateFromCS.create(certificate, user);
 

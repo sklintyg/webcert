@@ -60,9 +60,8 @@ public class CreateDraftCertificateFromCS {
         integreradeEnheterRegistry.putIntegreradEnhet(getIntegreradEnhetEntry(user), false, true);
 
         return csIntegrationService.createDraftCertificate(
-            csIntegrationRequestFactory.createDraftCertificateRequest(
-                modelId.get(), certificate, user
-            )
+            csIntegrationRequestFactory.createDraftCertificateRequest(modelId.get(), certificate, user),
+            user
         );
     }
 
