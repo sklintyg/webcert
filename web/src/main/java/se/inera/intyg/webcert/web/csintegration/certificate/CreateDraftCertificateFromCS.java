@@ -83,10 +83,7 @@ public class CreateDraftCertificateFromCS implements CreateDraftCertificate {
                 0
             );
 
-            return createSuccessResponse(
-                createdCertificate.getMetadata().getId(),
-                createdCertificate.getMetadata().getUnit().getUnitId()
-            );
+            return createSuccessResponse(createdCertificate.getMetadata().getId(), createdCertificate.getMetadata().getUnit().getUnitId());
         } catch (Exception exception) {
             return createErrorResponse(exception.getMessage(), ErrorIdType.VALIDATION_ERROR);
         }
