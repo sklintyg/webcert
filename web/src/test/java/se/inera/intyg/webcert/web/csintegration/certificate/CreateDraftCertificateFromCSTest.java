@@ -46,6 +46,7 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
@@ -111,10 +112,10 @@ class CreateDraftCertificateFromCSTest {
     void shouldThrowIfPersonIdCouldNotBeCreated() {
         final var certificate = getIntyg(INVALID_PERSON_ID);
         final var user = new IntygUser(HSA_ID);
-        final var illegalArgumentException = assertThrows(IllegalArgumentException.class,
+        final var webCertServiceException = assertThrows(WebCertServiceException.class,
             () -> createDraftCertificateFromCS.create(certificate, user));
 
-        assertTrue(illegalArgumentException.getMessage().contains("Cannot create Personnummer object with invalid personId"));
+        assertTrue(webCertServiceException.getMessage().contains("Cannot create Personnummer object with invalid personId"));
     }
 
     @Test
@@ -256,7 +257,7 @@ class CreateDraftCertificateFromCSTest {
         when(csIntegrationService.createCertificate(request)).thenThrow(IllegalArgumentException.class);
 
         createDraftCertificateFromCS.create(certificate, user);
-        
+
         verifyNoInteractions(pdlLogService);
         verifyNoInteractions(monitoringLogService);
     }

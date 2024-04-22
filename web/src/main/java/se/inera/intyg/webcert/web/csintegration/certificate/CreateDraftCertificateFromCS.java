@@ -29,6 +29,8 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
@@ -47,6 +49,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 @RequiredArgsConstructor
 public class CreateDraftCertificateFromCS implements CreateDraftCertificate {
 
+    private static final int NO_PREFILL_ELEMENTS = 0;
     private final PatientDetailsResolver patientDetailsResolver;
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
@@ -80,7 +83,7 @@ public class CreateDraftCertificateFromCS implements CreateDraftCertificate {
                 createdCertificate.getMetadata().getType(),
                 createdCertificate.getMetadata().getUnit().getUnitId(),
                 createdCertificate.getMetadata().getIssuedBy().getPersonId(),
-                0
+                NO_PREFILL_ELEMENTS
             );
 
             return createSuccessResponse(createdCertificate.getMetadata().getId(), createdCertificate.getMetadata().getUnit().getUnitId());
@@ -97,8 +100,10 @@ public class CreateDraftCertificateFromCS implements CreateDraftCertificate {
     private Optional<CreateDraftCertificateResponseType> validatePUIntegration(Intyg certificate) {
         final var personIdExtension = certificate.getPatient().getPersonId().getExtension();
         final var personId = Personnummer.createPersonnummer(personIdExtension)
-            .orElseThrow(() -> new IllegalArgumentException(
-                String.format("Cannot create Personnummer object with invalid personId '%s'", personIdExtension)));
+            .orElseThrow(() -> new WebCertServiceException(
+                WebCertServiceErrorCodeEnum.PU_PROBLEM,
+                String.format("Cannot create Personnummer object with invalid personId '%s'", personIdExtension))
+            );
 
         final var sekretessStatus = patientDetailsResolver.getSekretessStatus(personId);
 

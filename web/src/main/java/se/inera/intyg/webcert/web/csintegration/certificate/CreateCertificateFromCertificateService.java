@@ -35,6 +35,7 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 @RequiredArgsConstructor
 public class CreateCertificateFromCertificateService implements CreateCertificateFacadeService {
 
+    private static final int NO_PREFILL_ELEMENTS = 0;
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
     private final PDLLogService pdlLogService;
@@ -69,9 +70,9 @@ public class CreateCertificateFromCertificateService implements CreateCertificat
             response.getMetadata().getType(),
             response.getMetadata().getUnit().getUnitId(),
             response.getMetadata().getIssuedBy().getPersonId(),
-            0
+            NO_PREFILL_ELEMENTS
         );
-        
+
         log.debug("Created certificate using certificate service of type '{}' and version '{}'",
             modelId.getType(),
             modelId.getVersion()
