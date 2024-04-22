@@ -70,6 +70,11 @@ public class CreateDraftCertificateValidatorImpl extends BaseCreateDraftCertific
         }
 
         validateTypAvIntyg(errors, intyg.getTypAvIntyg());
+
+        if (errors.hasErrors()) {
+            return errors;
+        }
+        
         validateSekretessmarkeringOchIntygsTyp(errors, personnummer, intyg.getTypAvIntyg(), user);
         validateCreateForAvlidenPatientAllowed(errors, personnummer, intyg.getTypAvIntyg().getCode());
         return errors;

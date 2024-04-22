@@ -194,7 +194,6 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
 
     @Test
     public void testPuServiceLooksUpPatientForTsBas() throws ModuleNotFoundException {
-//        when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(buildPersonSvar());
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
         when(moduleRegistry.getIntygModule(eq(TsBasEntryPoint.MODULE_ID))).thenReturn(buildIntygModule(TSBAS, false));
         when(moduleRegistry.moduleExists(eq(TsBasEntryPoint.MODULE_ID))).thenReturn(true);
@@ -324,7 +323,7 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     }
 
     @Test
-    public void shouldReturnErrorWhenInvalidPersonIdIsProvided() throws ModuleNotFoundException {
+    public void shouldReturnErrorWhenInvalidPersonIdIsProvided() {
         final var user = buildUser();
         final var certificate = buildIntyg(LUSE, "lastName", "firstName",
             "fullName", "unitId", "unitName", true);

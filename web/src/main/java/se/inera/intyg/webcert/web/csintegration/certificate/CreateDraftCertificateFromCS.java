@@ -59,15 +59,15 @@ public class CreateDraftCertificateFromCS implements CreateDraftCertificate {
 
     @Override
     public CreateDraftCertificateResponseType create(Intyg certificate, IntygUser user) {
-        final var applicationError = validatePUIntegration(certificate);
-        if (applicationError.isPresent()) {
-            return applicationError.get();
-        }
-
         final var modelId = csIntegrationService.certificateTypeExists(certificate.getTypAvIntyg().getCode());
         if (modelId.isEmpty()) {
             log.debug("Certificate type '{}' does not exist in certificate service", certificate.getTypAvIntyg().getCode());
             return null;
+        }
+        
+        final var applicationError = validatePUIntegration(certificate);
+        if (applicationError.isPresent()) {
+            return applicationError.get();
         }
 
         integreradeEnheterRegistry.putIntegreradEnhet(getIntegreradEnhetEntry(user), false, true);
