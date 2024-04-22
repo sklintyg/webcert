@@ -32,6 +32,7 @@ import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
+import se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3.CreateDraftCertificate;
 import se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3.CreateDraftCertificateResponseFactory;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
@@ -44,7 +45,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CreateDraftCertificateFromCS {
+public class CreateDraftCertificateFromCS implements CreateDraftCertificate {
 
     private final PatientDetailsResolver patientDetailsResolver;
     private final CSIntegrationService csIntegrationService;
@@ -53,6 +54,7 @@ public class CreateDraftCertificateFromCS {
     private final PDLLogService pdlLogService;
     private final MonitoringLogService monitoringLogService;
 
+    @Override
     public CreateDraftCertificateResponseType create(Intyg certificate, IntygUser user) {
         final var applicationError = validatePUIntegration(certificate);
         if (applicationError.isPresent()) {

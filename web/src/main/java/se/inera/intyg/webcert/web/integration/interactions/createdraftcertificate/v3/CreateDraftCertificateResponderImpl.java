@@ -24,9 +24,9 @@ import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
-import se.inera.intyg.webcert.web.csintegration.aggregate.CreateDraftCertificateAggregator;
 import se.inera.intyg.webcert.web.integration.util.HoSPersonHelper;
 import se.inera.intyg.webcert.web.integration.validators.ResultValidator;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
@@ -51,7 +51,8 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
     private WebcertUserDetailsService webcertUserDetailsService;
 
     @Autowired
-    private CreateDraftCertificateAggregator createDraftCertificateAggregator;
+    @Qualifier("createDraftCertificateAggregator")
+    private CreateDraftCertificate createDraftCertificateAggregator;
 
     @Override
     public CreateDraftCertificateResponseType createDraftCertificate(String logicalAddress, CreateDraftCertificateType parameters) {

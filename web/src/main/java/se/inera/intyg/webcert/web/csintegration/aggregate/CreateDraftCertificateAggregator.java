@@ -19,26 +19,33 @@
 
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.security.common.model.IntygUser;
-import se.inera.intyg.webcert.web.csintegration.certificate.CreateDraftCertificateFromCS;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
-import se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3.CreateDraftCertificateFromWC;
+import se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3.CreateDraftCertificate;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.CreateDraftCertificateResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
-public class CreateDraftCertificateAggregator {
+public class CreateDraftCertificateAggregator implements CreateDraftCertificate {
 
-    private final CreateDraftCertificateFromWC createDraftCertificateFromWC;
-    private final CreateDraftCertificateFromCS createDraftCertificateFromCS;
+    private final CreateDraftCertificate createDraftCertificateFromWC;
+    private final CreateDraftCertificate createDraftCertificateFromCS;
     private final CertificateServiceProfile certificateServiceProfile;
 
+    public CreateDraftCertificateAggregator(
+        @Qualifier("createDraftCertificateFromWC") CreateDraftCertificate createDraftCertificateFromWC,
+        @Qualifier("createDraftCertificateFromCS") CreateDraftCertificate createDraftCertificateFromCS,
+        CertificateServiceProfile certificateServiceProfile) {
+        this.createDraftCertificateFromWC = createDraftCertificateFromWC;
+        this.createDraftCertificateFromCS = createDraftCertificateFromCS;
+        this.certificateServiceProfile = certificateServiceProfile;
+    }
 
+    @Override
     public CreateDraftCertificateResponseType create(Intyg certificate, IntygUser user) {
         if (!certificateServiceProfile.active()) {
             return createDraftCertificateFromWC.create(certificate, user);

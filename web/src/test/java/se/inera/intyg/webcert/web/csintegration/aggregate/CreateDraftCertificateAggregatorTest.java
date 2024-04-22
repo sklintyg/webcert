@@ -24,15 +24,14 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.infra.security.common.model.IntygUser;
-import se.inera.intyg.webcert.web.csintegration.certificate.CreateDraftCertificateFromCS;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
-import se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3.CreateDraftCertificateFromWC;
+import se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3.CreateDraftCertificate;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.CreateDraftCertificateResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
 
@@ -43,13 +42,21 @@ class CreateDraftCertificateAggregatorTest {
     private static final String HSA_ID = "HSA_ID";
     private static final IntygUser USER = new IntygUser(HSA_ID);
     @Mock
-    private CreateDraftCertificateFromWC createDraftCertificateFromWC;
+    private CreateDraftCertificate createDraftCertificateFromWC;
     @Mock
-    private CreateDraftCertificateFromCS createDraftCertificateFromCS;
+    private CreateDraftCertificate createDraftCertificateFromCS;
     @Mock
     private CertificateServiceProfile certificateServiceProfile;
-    @InjectMocks
-    private CreateDraftCertificateAggregator createDraftCertificateAggregator;
+    private CreateDraftCertificate createDraftCertificateAggregator;
+
+    @BeforeEach
+    void setUp() {
+        createDraftCertificateAggregator = new CreateDraftCertificateAggregator(
+            createDraftCertificateFromWC,
+            createDraftCertificateFromCS,
+            certificateServiceProfile
+        );
+    }
 
     @Test
     void shouldReturnResponseFromCSIfProfileActiveAndSupportsType() {

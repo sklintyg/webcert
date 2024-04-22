@@ -56,7 +56,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
 @Slf4j
 @Service
-public class CreateDraftCertificateFromWC {
+public class CreateDraftCertificateFromWC implements CreateDraftCertificate {
 
     @Autowired
     private IntygModuleRegistry moduleRegistry;
@@ -76,6 +76,7 @@ public class CreateDraftCertificateFromWC {
     private CreateDraftCertificateValidator validator;
 
 
+    @Override
     public CreateDraftCertificateResponseType create(Intyg certificate, IntygUser user) {
         final var resultValidator = validator.validateCertificateErrors(certificate, user);
         if (resultValidator.hasErrors()) {
