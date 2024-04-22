@@ -26,7 +26,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.Collections;
@@ -49,7 +48,6 @@ import org.springframework.web.client.RestTemplate;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.Staff;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
-import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateExistsResponseDTO;
@@ -87,9 +85,6 @@ import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
-import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.CreateDraftCertificateResponseType;
-import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
-import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 
 @ExtendWith(MockitoExtension.class)
 class CSIntegrationServiceTest {
@@ -107,8 +102,6 @@ class CSIntegrationServiceTest {
         CertificateServiceCreateCertificateResponseDTO.builder()
             .certificate(CERTIFICATE)
             .build();
-    private static final CreateDraftCertificateResponseType CREATE_DRAFT_CERTIFICATE_RESPONSE_TYPE =
-        new CreateDraftCertificateResponseType();
     private static final GetCertificateRequestDTO GET_CERTIFICATE_REQUEST = GetCertificateRequestDTO.builder().build();
     private static final CertificateServiceGetCertificateResponseDTO GET_RESPONSE = CertificateServiceGetCertificateResponseDTO.builder()
         .certificate(CERTIFICATE)
@@ -274,145 +267,6 @@ class CSIntegrationServiceTest {
                 .thenReturn(CREATE_RESPONSE);
 
             csIntegrationService.createCertificate(CREATE_CERTIFICATE_REQUEST);
-            verify(restTemplate).postForObject(captor.capture(), any(), any());
-
-            assertEquals("baseUrl/api/certificate", captor.getValue());
-        }
-    }
-
-    @Nested
-    class CreateDraftCertificate {
-
-        private static final String EXPECTED_ID = "expectedId";
-        private static final String EXPECTED_EXCEPTION_MESSAGE = "expectedExceptionMessage";
-        private static final String EXPECTED_UNIT_ID = "expectedUnitId";
-        private static final String CERTIFICATE_TYPE = "certificateType";
-        private static final String HSA_ID = "hsaId";
-        private Certificate certificate;
-
-        @BeforeEach
-        void setUp() {
-            certificate = new Certificate();
-            certificate.setMetadata(
-                CertificateMetadata.builder()
-                    .id(EXPECTED_ID)
-                    .type(CERTIFICATE_TYPE)
-                    .unit(
-                        Unit.builder()
-                            .unitId(EXPECTED_UNIT_ID)
-                            .build()
-                    )
-                    .issuedBy(
-                        Staff.builder()
-                            .personId(HSA_ID)
-                            .build()
-                    )
-                    .build()
-            );
-        }
-
-        @Test
-        void shouldReturnErrorResponseIfExceptionIsThrown() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenThrow(new IllegalStateException(EXPECTED_EXCEPTION_MESSAGE));
-
-            final var response = csIntegrationService.createDraftCertificate(CREATE_CERTIFICATE_REQUEST, USER);
-            assertEquals(EXPECTED_EXCEPTION_MESSAGE, response.getResult().getResultText());
-            assertEquals(ErrorIdType.VALIDATION_ERROR, response.getResult().getErrorId());
-            assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
-        }
-
-        @Test
-        void shouldPreformPostUsingRequest() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(CREATE_RESPONSE);
-            final var captor = ArgumentCaptor.forClass(CreateCertificateRequestDTO.class);
-
-            csIntegrationService.createDraftCertificate(CREATE_CERTIFICATE_REQUEST, USER);
-            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
-
-            assertEquals(CREATE_CERTIFICATE_REQUEST, captor.getValue());
-        }
-
-        @Test
-        void shouldReturnCreateDraftCertificateResponseTypeWithCorrectCertificateId() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(
-                    CertificateServiceCreateCertificateResponseDTO.builder()
-                        .certificate(certificate)
-                        .build()
-                );
-            final var response = csIntegrationService.createDraftCertificate(CREATE_CERTIFICATE_REQUEST, USER);
-
-            assertEquals(EXPECTED_ID, response.getIntygsId().getExtension());
-        }
-
-        @Test
-        void shouldReturnCreateDraftCertificateResponseTypeWithCorrectUnitId() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(
-                    CertificateServiceCreateCertificateResponseDTO.builder()
-                        .certificate(certificate)
-                        .build()
-                );
-            final var response = csIntegrationService.createDraftCertificate(CREATE_CERTIFICATE_REQUEST, USER);
-
-            assertEquals(EXPECTED_UNIT_ID, response.getIntygsId().getRoot());
-        }
-
-        @Test
-        void shouldPdlLogIfCertificateCreated() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(
-                    CertificateServiceCreateCertificateResponseDTO.builder()
-                        .certificate(certificate)
-                        .build()
-                );
-
-            csIntegrationService.createDraftCertificate(CREATE_CERTIFICATE_REQUEST, USER);
-
-            verify(pdlLogService).logCreatedWithIntygUser(certificate, USER);
-        }
-
-        @Test
-        void shouldMonitorLogIfCertificateCreated() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(
-                    CertificateServiceCreateCertificateResponseDTO.builder()
-                        .certificate(certificate)
-                        .build()
-                );
-
-            csIntegrationService.createDraftCertificate(CREATE_CERTIFICATE_REQUEST, USER);
-
-            verify(monitoringLogService).logUtkastCreated(
-                certificate.getMetadata().getId(),
-                certificate.getMetadata().getType(),
-                certificate.getMetadata().getUnit().getUnitId(),
-                certificate.getMetadata().getIssuedBy().getPersonId(),
-                0
-            );
-        }
-
-
-        @Test
-        void shouldNotLogIfCertificateNotCreated() {
-            when(restTemplate.postForObject(anyString(), any(), any())).thenReturn(null);
-
-            csIntegrationService.createDraftCertificate(CREATE_CERTIFICATE_REQUEST, USER);
-
-            verifyNoInteractions(monitoringLogService);
-            verifyNoInteractions(pdlLogService);
-        }
-
-        @Test
-        void shouldSetUrlCorrect() {
-            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
-            final var captor = ArgumentCaptor.forClass(String.class);
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(CREATE_RESPONSE);
-
-            csIntegrationService.createDraftCertificate(CREATE_CERTIFICATE_REQUEST, USER);
             verify(restTemplate).postForObject(captor.capture(), any(), any());
 
             assertEquals("baseUrl/api/certificate", captor.getValue());

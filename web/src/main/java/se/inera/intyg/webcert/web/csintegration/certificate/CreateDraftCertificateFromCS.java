@@ -19,6 +19,9 @@
 
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
+import static se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3.CreateDraftCertificateResponseFactory.createErrorResponse;
+import static se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3.CreateDraftCertificateResponseFactory.createSuccessResponse;
+
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,9 +31,11 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
+import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3.CreateDraftCertificateResponseFactory;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.CreateDraftCertificateResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
@@ -45,6 +50,8 @@ public class CreateDraftCertificateFromCS {
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
     private final IntegreradeEnheterRegistry integreradeEnheterRegistry;
+    private final PDLLogService pdlLogService;
+    private final MonitoringLogService monitoringLogService;
 
     public CreateDraftCertificateResponseType create(Intyg certificate, IntygUser user) {
         final var applicationError = validatePUIntegration(certificate);
@@ -60,10 +67,27 @@ public class CreateDraftCertificateFromCS {
 
         integreradeEnheterRegistry.putIntegreradEnhet(getIntegreradEnhetEntry(user), false, true);
 
-        return csIntegrationService.createDraftCertificate(
-            csIntegrationRequestFactory.createDraftCertificateRequest(modelId.get(), certificate, user),
-            user
-        );
+        try {
+            final var createdCertificate = csIntegrationService.createCertificate(
+                csIntegrationRequestFactory.createDraftCertificateRequest(modelId.get(), certificate, user)
+            );
+
+            pdlLogService.logCreatedWithIntygUser(createdCertificate, user);
+            monitoringLogService.logUtkastCreated(
+                createdCertificate.getMetadata().getId(),
+                createdCertificate.getMetadata().getType(),
+                createdCertificate.getMetadata().getUnit().getUnitId(),
+                createdCertificate.getMetadata().getIssuedBy().getPersonId(),
+                0
+            );
+
+            return createSuccessResponse(
+                createdCertificate.getMetadata().getId(),
+                createdCertificate.getMetadata().getUnit().getUnitId()
+            );
+        } catch (Exception exception) {
+            return createErrorResponse(exception.getMessage(), ErrorIdType.VALIDATION_ERROR);
+        }
     }
 
     private static IntegreradEnhetEntry getIntegreradEnhetEntry(IntygUser user) {

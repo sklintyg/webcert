@@ -18,9 +18,6 @@
  */
 package se.inera.intyg.webcert.web.csintegration.integration;
 
-import static se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3.CreateDraftCertificateResponseFactory.createErrorResponse;
-import static se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3.CreateDraftCertificateResponseFactory.createSuccessResponse;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -36,7 +33,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
-import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateExistsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceCreateCertificateResponseDTO;
@@ -68,14 +64,10 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateR
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateWithoutSignatureRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
-import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
-import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.CreateDraftCertificateResponseType;
-import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 
 @Service
 public class CSIntegrationService {
@@ -89,19 +81,15 @@ public class CSIntegrationService {
     private final CertificateTypeInfoConverter certificateTypeInfoConverter;
     private final ListIntygEntryConverter listIntygEntryConverter;
     private final RestTemplate restTemplate;
-    private final PDLLogService pdlLogService;
-    private final MonitoringLogService monitoringLogService;
 
     @Value("${certificateservice.base.url}")
     private String baseUrl;
 
     public CSIntegrationService(CertificateTypeInfoConverter certificateTypeInfoConverter, ListIntygEntryConverter listIntygEntryConverter,
-        @Qualifier("csRestTemplate") RestTemplate restTemplate, PDLLogService pdlLogService, MonitoringLogService monitoringLogService) {
+        @Qualifier("csRestTemplate") RestTemplate restTemplate) {
         this.certificateTypeInfoConverter = certificateTypeInfoConverter;
         this.listIntygEntryConverter = listIntygEntryConverter;
         this.restTemplate = restTemplate;
-        this.pdlLogService = pdlLogService;
-        this.monitoringLogService = monitoringLogService;
     }
 
     public List<ListIntygEntry> listCertificatesForUnit(GetUnitCertificatesRequestDTO request) {
@@ -197,33 +185,6 @@ public class CSIntegrationService {
         }
 
         return response.getCertificate();
-    }
-
-    public CreateDraftCertificateResponseType createDraftCertificate(CreateCertificateRequestDTO request, IntygUser user) {
-        final var url = baseUrl + CERTIFICATE_ENDPOINT_URL;
-        try {
-            final var response = restTemplate.postForObject(url, request, CertificateServiceCreateCertificateResponseDTO.class);
-
-            if (response == null) {
-                throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
-            }
-
-            pdlLogService.logCreatedWithIntygUser(response.getCertificate(), user);
-            monitoringLogService.logUtkastCreated(
-                response.getCertificate().getMetadata().getId(),
-                response.getCertificate().getMetadata().getType(),
-                response.getCertificate().getMetadata().getUnit().getUnitId(),
-                response.getCertificate().getMetadata().getIssuedBy().getPersonId(),
-                0
-            );
-
-            return createSuccessResponse(
-                response.getCertificate().getMetadata().getId(),
-                response.getCertificate().getMetadata().getUnit().getUnitId()
-            );
-        } catch (Exception exception) {
-            return createErrorResponse(exception.getMessage(), ErrorIdType.VALIDATION_ERROR);
-        }
     }
 
     public Certificate getCertificate(String certificateId, GetCertificateRequestDTO request) {

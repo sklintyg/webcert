@@ -27,14 +27,21 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType.VALIDATION_ERROR;
 
 import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.Staff;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -43,10 +50,11 @@ import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequest
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
-import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.CreateDraftCertificateResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.TypAvIntyg;
@@ -61,7 +69,13 @@ class CreateDraftCertificateFromCSTest {
     private static final IntygUser USER = new IntygUser(HSA_ID);
     private static final String VALID_PERSON_ID = "191212121212";
     private static final String CERTIFICATE_TYPE = "certificateType";
-
+    private static final Certificate CERTIFICATE = new Certificate();
+    private static final String EXPECTED_ID = "EXPECTED_ID";
+    private static final String EXPECTED_UNIT_ID = "EXPECTED_UNIT_ID";
+    @Mock
+    private PDLLogService pdlLogService;
+    @Mock
+    private MonitoringLogService monitoringLogService;
     @Mock
     private IntegreradeEnheterRegistry integreradeEnheterRegistry;
     @Mock
@@ -73,9 +87,29 @@ class CreateDraftCertificateFromCSTest {
     @InjectMocks
     private CreateDraftCertificateFromCS createDraftCertificateFromCS;
 
+    @BeforeEach
+    void setUp() {
+        CERTIFICATE.setMetadata(
+            CertificateMetadata.builder()
+                .id(EXPECTED_ID)
+                .type(CERTIFICATE_TYPE)
+                .unit(
+                    Unit.builder()
+                        .unitId(EXPECTED_UNIT_ID)
+                        .build()
+                )
+                .issuedBy(
+                    Staff.builder()
+                        .personId(HSA_ID)
+                        .build()
+                )
+                .build()
+        );
+    }
+
     @Test
     void shouldThrowIfPersonIdCouldNotBeCreated() {
-        final var certificate = getCertificate(INVALID_PERSON_ID);
+        final var certificate = getIntyg(INVALID_PERSON_ID);
         final var user = new IntygUser(HSA_ID);
         final var illegalArgumentException = assertThrows(IllegalArgumentException.class,
             () -> createDraftCertificateFromCS.create(certificate, user));
@@ -85,7 +119,7 @@ class CreateDraftCertificateFromCSTest {
 
     @Test
     void shouldReturnErrorResponseIfSekretessStatusIsUndefined() {
-        final var certificate = getCertificate(VALID_PERSON_ID);
+        final var certificate = getIntyg(VALID_PERSON_ID);
 
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.UNDEFINED);
 
@@ -97,15 +131,14 @@ class CreateDraftCertificateFromCSTest {
 
     @Test
     void shouldReturnNullIfCertificateTypeDontExists() {
-        final var certificate = getCertificate(VALID_PERSON_ID);
+        final var certificate = getIntyg(VALID_PERSON_ID);
         when(csIntegrationService.certificateTypeExists(certificate.getTypAvIntyg().getCode())).thenReturn(Optional.empty());
         assertNull(createDraftCertificateFromCS.create(certificate, USER));
     }
 
     @Test
-    void shouldReturnCreateDraftCertificateResponseType() {
-        final var expectedResult = new CreateDraftCertificateResponseType();
-        final var certificate = getCertificate(VALID_PERSON_ID);
+    void shouldReturnSuccessResponseWithCertificateIdIfNoErrorsFromCertificateService() {
+        final var certificate = getIntyg(VALID_PERSON_ID);
         final var user = mock(IntygUser.class);
         final var modelIdDTO = CertificateModelIdDTO.builder().build();
         final var request = CreateCertificateRequestDTO.builder().build();
@@ -116,16 +149,34 @@ class CreateDraftCertificateFromCSTest {
         when(csIntegrationService.certificateTypeExists(certificate.getTypAvIntyg().getCode()))
             .thenReturn(Optional.of(modelIdDTO));
         when(csIntegrationRequestFactory.createDraftCertificateRequest(modelIdDTO, certificate, user)).thenReturn(request);
-        when(csIntegrationService.createDraftCertificate(request, user)).thenReturn(expectedResult);
+        when(csIntegrationService.createCertificate(request)).thenReturn(CERTIFICATE);
 
         final var result = createDraftCertificateFromCS.create(certificate, user);
-        assertEquals(expectedResult, result);
+        assertEquals(EXPECTED_ID, result.getIntygsId().getExtension());
+    }
+
+    @Test
+    void shouldReturnErrorResponseIfCertificateServiceThrows() {
+        final var certificate = getIntyg(VALID_PERSON_ID);
+        final var user = mock(IntygUser.class);
+        final var modelIdDTO = CertificateModelIdDTO.builder().build();
+        final var request = CreateCertificateRequestDTO.builder().build();
+
+        final var vardenhet = new Vardenhet();
+        when(user.getValdVardenhet()).thenReturn(vardenhet);
+        when(user.getValdVardgivare()).thenReturn(vardenhet);
+        when(csIntegrationService.certificateTypeExists(certificate.getTypAvIntyg().getCode()))
+            .thenReturn(Optional.of(modelIdDTO));
+        when(csIntegrationRequestFactory.createDraftCertificateRequest(modelIdDTO, certificate, user)).thenReturn(request);
+        when(csIntegrationService.createCertificate(request)).thenThrow(IllegalArgumentException.class);
+
+        final var result = createDraftCertificateFromCS.create(certificate, user);
+        assertEquals(VALIDATION_ERROR, result.getResult().getErrorId());
     }
 
     @Test
     void shouldPutIntegreradEnhetToRegistry() {
-        final var expectedResult = new CreateDraftCertificateResponseType();
-        final var certificate = getCertificate(VALID_PERSON_ID);
+        final var certificate = getIntyg(VALID_PERSON_ID);
         final var user = mock(IntygUser.class);
         final var modelIdDTO = CertificateModelIdDTO.builder().build();
         final var request = CreateCertificateRequestDTO.builder().build();
@@ -136,20 +187,88 @@ class CreateDraftCertificateFromCSTest {
         when(csIntegrationService.certificateTypeExists(certificate.getTypAvIntyg().getCode()))
             .thenReturn(Optional.of(modelIdDTO));
         when(csIntegrationRequestFactory.createDraftCertificateRequest(modelIdDTO, certificate, user)).thenReturn(request);
-        when(csIntegrationService.createDraftCertificate(request, user)).thenReturn(expectedResult);
+        when(csIntegrationService.createCertificate(request)).thenReturn(CERTIFICATE);
 
         createDraftCertificateFromCS.create(certificate, user);
 
         verify(integreradeEnheterRegistry).putIntegreradEnhet(any(IntegreradEnhetEntry.class), eq(false), eq(true));
     }
 
-    private static Intyg getCertificate(String extension) {
-        final var certificate = new Intyg();
-        certificate.setPatient(new Patient());
-        certificate.getPatient().setPersonId(new PersonId());
-        certificate.getPatient().getPersonId().setExtension(extension);
-        certificate.setTypAvIntyg(new TypAvIntyg());
-        certificate.getTypAvIntyg().setCode(CERTIFICATE_TYPE);
-        return certificate;
+    @Test
+    void shouldPdlLogIfNoErrorsFromCertificateService() {
+        final var certificate = getIntyg(VALID_PERSON_ID);
+        final var user = mock(IntygUser.class);
+        final var modelIdDTO = CertificateModelIdDTO.builder().build();
+        final var request = CreateCertificateRequestDTO.builder().build();
+
+        final var vardenhet = new Vardenhet();
+        when(user.getValdVardenhet()).thenReturn(vardenhet);
+        when(user.getValdVardgivare()).thenReturn(vardenhet);
+        when(csIntegrationService.certificateTypeExists(certificate.getTypAvIntyg().getCode()))
+            .thenReturn(Optional.of(modelIdDTO));
+        when(csIntegrationRequestFactory.createDraftCertificateRequest(modelIdDTO, certificate, user)).thenReturn(request);
+        when(csIntegrationService.createCertificate(request)).thenReturn(CERTIFICATE);
+
+        createDraftCertificateFromCS.create(certificate, user);
+
+        verify(pdlLogService).logCreatedWithIntygUser(CERTIFICATE, user);
+    }
+
+    @Test
+    void shouldMonitorLogIfNoErrorsFromCertificateService() {
+        final var certificate = getIntyg(VALID_PERSON_ID);
+        final var user = mock(IntygUser.class);
+        final var modelIdDTO = CertificateModelIdDTO.builder().build();
+        final var request = CreateCertificateRequestDTO.builder().build();
+
+        final var vardenhet = new Vardenhet();
+        when(user.getValdVardenhet()).thenReturn(vardenhet);
+        when(user.getValdVardgivare()).thenReturn(vardenhet);
+        when(csIntegrationService.certificateTypeExists(certificate.getTypAvIntyg().getCode()))
+            .thenReturn(Optional.of(modelIdDTO));
+        when(csIntegrationRequestFactory.createDraftCertificateRequest(modelIdDTO, certificate, user)).thenReturn(request);
+        when(csIntegrationService.createCertificate(request)).thenReturn(CERTIFICATE);
+
+        createDraftCertificateFromCS.create(certificate, user);
+
+        verify(monitoringLogService).logUtkastCreated(
+            CERTIFICATE.getMetadata().getId(),
+            CERTIFICATE.getMetadata().getType(),
+            CERTIFICATE.getMetadata().getUnit().getUnitId(),
+            CERTIFICATE.getMetadata().getIssuedBy().getPersonId(),
+            0
+        );
+    }
+
+    @Test
+    void shouldNotLogIfCertificateServiceThrows() {
+        final var certificate = getIntyg(VALID_PERSON_ID);
+        final var user = mock(IntygUser.class);
+        final var modelIdDTO = CertificateModelIdDTO.builder().build();
+        final var request = CreateCertificateRequestDTO.builder().build();
+
+        final var vardenhet = new Vardenhet();
+        when(user.getValdVardenhet()).thenReturn(vardenhet);
+        when(user.getValdVardgivare()).thenReturn(vardenhet);
+        when(csIntegrationService.certificateTypeExists(certificate.getTypAvIntyg().getCode()))
+            .thenReturn(Optional.of(modelIdDTO));
+        when(csIntegrationRequestFactory.createDraftCertificateRequest(modelIdDTO, certificate, user)).thenReturn(request);
+        when(csIntegrationService.createCertificate(request)).thenThrow(IllegalArgumentException.class);
+
+        createDraftCertificateFromCS.create(certificate, user);
+        
+        verifyNoInteractions(pdlLogService);
+        verifyNoInteractions(monitoringLogService);
+    }
+
+
+    private static Intyg getIntyg(String extension) {
+        final var intyg = new Intyg();
+        intyg.setPatient(new Patient());
+        intyg.getPatient().setPersonId(new PersonId());
+        intyg.getPatient().getPersonId().setExtension(extension);
+        intyg.setTypAvIntyg(new TypAvIntyg());
+        intyg.getTypAvIntyg().setCode(CERTIFICATE_TYPE);
+        return intyg;
     }
 }
