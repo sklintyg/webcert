@@ -49,6 +49,7 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.Staff;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
+import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateExistsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceCreateCertificateResponseDTO;
@@ -79,7 +80,9 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateR
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateWithoutSignatureRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
@@ -152,6 +155,12 @@ class CSIntegrationServiceTest {
     private static final RevokeCertificateResponseDTO REVOKE_RESPONSE = RevokeCertificateResponseDTO.builder()
         .certificate(CERTIFICATE)
         .build();
+    private static final IntygUser USER = new IntygUser("hsaId");
+
+    @Mock
+    private PDLLogService pdlLogService;
+    @Mock
+    private MonitoringLogService monitoringLogService;
 
     @Mock
     private RestTemplate restTemplate;

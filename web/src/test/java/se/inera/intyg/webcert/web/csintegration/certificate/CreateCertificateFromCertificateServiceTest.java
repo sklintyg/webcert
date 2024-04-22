@@ -37,17 +37,22 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.Staff;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.facade.impl.CreateCertificateException;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 @ExtendWith(MockitoExtension.class)
 class CreateCertificateFromCertificateServiceTest {
 
+    @Mock
+    MonitoringLogService monitoringLogService;
     @Mock
     CSIntegrationService csIntegrationService;
     @Mock
@@ -59,6 +64,9 @@ class CreateCertificateFromCertificateServiceTest {
 
     private static final Certificate CERTIFICATE = new Certificate();
     private static final String CERTIFICATE_ID = "ID";
+    private static final String CERTIFICATE_TYPE = "certificateType";
+    private static final String UNIT_ID = "unitId";
+    private static final String HSA_ID = "hsaId";
     private static final String PATIENT_ID = "s191212121212";
     private static final String TYPE = "TYPE";
     private static final String VERSION = "VERSION";
@@ -72,6 +80,17 @@ class CreateCertificateFromCertificateServiceTest {
         CERTIFICATE.setMetadata(
             CertificateMetadata.builder()
                 .id(CERTIFICATE_ID)
+                .type(CERTIFICATE_TYPE)
+                .unit(
+                    Unit.builder()
+                        .unitId(UNIT_ID)
+                        .build()
+                )
+                .issuedBy(
+                    Staff.builder()
+                        .personId(HSA_ID)
+                        .build()
+                )
                 .build()
         );
     }
@@ -137,6 +156,18 @@ class CreateCertificateFromCertificateServiceTest {
             createCertificateFromCertificateService.create(TYPE, PATIENT_ID);
 
             verify(pdlLogService, times(1)).logCreated(CERTIFICATE);
+        }
+
+        @Test
+        void shouldPerformMonitorLogForCreateCertificate() throws CreateCertificateException {
+            doReturn(REQUEST).when(csIntegrationRequestFactory).createCertificateRequest(CERTIFICATE_MODEL_ID, PATIENT_ID);
+            doReturn(CERTIFICATE).when(csIntegrationService).createCertificate(REQUEST);
+
+            createCertificateFromCertificateService.create(TYPE, PATIENT_ID);
+
+            verify(monitoringLogService, times(1)).logUtkastCreated(
+                CERTIFICATE_ID, CERTIFICATE_TYPE, UNIT_ID, HSA_ID, 0
+            );
         }
 
         @Test

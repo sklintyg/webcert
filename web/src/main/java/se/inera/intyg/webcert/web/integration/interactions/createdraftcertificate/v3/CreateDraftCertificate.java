@@ -16,18 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3;
 
 import se.inera.intyg.infra.security.common.model.IntygUser;
-import se.inera.intyg.webcert.web.integration.validators.ResultValidator;
+import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.CreateDraftCertificateResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
 
-public interface CreateDraftCertificateValidator {
+public interface CreateDraftCertificate {
 
-    ResultValidator validate(Intyg intyg);
-
-    ResultValidator validateApplicationErrors(Intyg intyg, IntygUser user);
-
-    ResultValidator validateCertificateErrors(Intyg intyg, IntygUser user);
-
+    CreateDraftCertificateResponseType create(Intyg certificate, IntygUser user);
 }

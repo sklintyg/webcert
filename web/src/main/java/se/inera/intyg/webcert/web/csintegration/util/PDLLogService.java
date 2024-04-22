@@ -23,7 +23,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
+import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.web.service.log.LogService;
+import se.inera.intyg.webcert.web.service.log.dto.LogUser;
 import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
 
 @Service
@@ -36,6 +38,19 @@ public class PDLLogService {
     public void logCreated(Certificate certificate) {
         logService.logCreateIntyg(
             logRequestFactory.createLogRequestFromCertificate(certificate)
+        );
+    }
+
+    public void logCreatedWithIntygUser(Certificate certificate, IntygUser user) {
+        logService.logCreateIntyg(
+            logRequestFactory.createLogRequestFromCertificate(certificate),
+            new LogUser.Builder(user.getHsaId(), user.getValdVardenhet().getId(), user.getValdVardgivare().getId())
+                .userName(user.getNamn())
+                .userAssignment(user.getSelectedMedarbetarUppdragNamn())
+                .userTitle(user.getTitel())
+                .enhetsNamn(user.getValdVardenhet().getNamn())
+                .vardgivareNamn(user.getValdVardgivare().getNamn())
+                .build()
         );
     }
 

@@ -43,6 +43,7 @@ public class CreateCertificateRequestDTO {
     CertificateModelIdDTO certificateModelId;
     CreateCertificateFillType fillType;
     CertificateStatus status;
+    String externalReference;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class CreateCertificateRequestDTOBuilder {

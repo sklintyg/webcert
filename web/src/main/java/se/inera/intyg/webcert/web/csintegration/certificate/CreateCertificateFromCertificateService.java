@@ -28,15 +28,18 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModel
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.facade.CreateCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.impl.CreateCertificateException;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 @Slf4j
 @Service("createCertificateFromCS")
 @RequiredArgsConstructor
 public class CreateCertificateFromCertificateService implements CreateCertificateFacadeService {
 
+    private static final int NO_PREFILL_ELEMENTS = 0;
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
     private final PDLLogService pdlLogService;
+    private final MonitoringLogService monitoringLogService;
 
     @Override
     public String create(String certificateType, String patientId) throws CreateCertificateException {
@@ -62,6 +65,14 @@ public class CreateCertificateFromCertificateService implements CreateCertificat
         );
 
         pdlLogService.logCreated(response);
+        monitoringLogService.logUtkastCreated(
+            response.getMetadata().getId(),
+            response.getMetadata().getType(),
+            response.getMetadata().getUnit().getUnitId(),
+            response.getMetadata().getIssuedBy().getPersonId(),
+            NO_PREFILL_ELEMENTS
+        );
+
         log.debug("Created certificate using certificate service of type '{}' and version '{}'",
             modelId.getType(),
             modelId.getVersion()
