@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -47,8 +48,8 @@ public class CreateDraftCertificateFromCS {
 
     public CreateDraftCertificateResponseType create(Intyg certificate, IntygUser user) {
         final var applicationError = validatePUIntegration(certificate);
-        if (applicationError != null) {
-            return applicationError;
+        if (applicationError.isPresent()) {
+            return applicationError.get();
         }
 
         final var modelId = csIntegrationService.certificateTypeExists(certificate.getTypAvIntyg().getCode());
@@ -70,7 +71,7 @@ public class CreateDraftCertificateFromCS {
             user.getValdVardenhet().getNamn(), user.getValdVardgivare().getId(), user.getValdVardgivare().getNamn());
     }
 
-    private CreateDraftCertificateResponseType validatePUIntegration(Intyg certificate) {
+    private Optional<CreateDraftCertificateResponseType> validatePUIntegration(Intyg certificate) {
         final var personIdExtension = certificate.getPatient().getPersonId().getExtension();
         final var personId = Personnummer.createPersonnummer(personIdExtension)
             .orElseThrow(() -> new IllegalArgumentException(
@@ -79,11 +80,13 @@ public class CreateDraftCertificateFromCS {
         final var sekretessStatus = patientDetailsResolver.getSekretessStatus(personId);
 
         if (sekretessStatus == SekretessStatus.UNDEFINED) {
-            return CreateDraftCertificateResponseFactory.createErrorResponse(
-                "Information om skyddade personuppgifter kunde inte hämtas. Intyget kan inte utfärdas"
-                    + " för patient när uppgift om skyddade personuppgifter ej är tillgänglig.", ErrorIdType.APPLICATION_ERROR);
+            return Optional.of(
+                CreateDraftCertificateResponseFactory.createErrorResponse(
+                    "Information om skyddade personuppgifter kunde inte hämtas. Intyget kan inte utfärdas"
+                        + " för patient när uppgift om skyddade personuppgifter ej är tillgänglig.", ErrorIdType.APPLICATION_ERROR)
+            );
         }
-        return null;
+        return Optional.empty();
     }
 
 }
