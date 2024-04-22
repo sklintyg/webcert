@@ -49,8 +49,4 @@ public class CertificateServiceUnitHelper {
         final var user = webCertUserService.getUser();
         return certificateServiceVardenhetConverter.convert((AbstractVardenhet) user.getValdVardenhet());
     }
-
-    private static boolean hasMatch(String id1, String id2) {
-        return id1.equalsIgnoreCase(id2);
-    }
 }
