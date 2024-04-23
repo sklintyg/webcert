@@ -29,6 +29,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType.APPLICATION_ERROR;
 import static se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType.VALIDATION_ERROR;
 
 import java.util.Optional;
@@ -38,6 +39,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpServerErrorException;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.Staff;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
@@ -47,6 +50,7 @@ import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.web.csintegration.exception.HandleApiErrorService;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
@@ -73,6 +77,8 @@ class CreateDraftCertificateFromCSTest {
     private static final Certificate CERTIFICATE = new Certificate();
     private static final String EXPECTED_ID = "EXPECTED_ID";
     private static final String EXPECTED_UNIT_ID = "EXPECTED_UNIT_ID";
+    @Mock
+    private HandleApiErrorService handleApiErrorService;
     @Mock
     private PDLLogService pdlLogService;
     @Mock
@@ -164,7 +170,7 @@ class CreateDraftCertificateFromCSTest {
     }
 
     @Test
-    void shouldReturnErrorResponseIfCertificateServiceThrows() {
+    void shouldReturnApplicationErrorIfNotHttpServerErrorException() {
         final var certificate = getIntyg(VALID_PERSON_ID);
         final var user = mock(IntygUser.class);
         final var modelIdDTO = CertificateModelIdDTO.builder().build();
@@ -177,6 +183,25 @@ class CreateDraftCertificateFromCSTest {
             .thenReturn(Optional.of(modelIdDTO));
         when(csIntegrationRequestFactory.createDraftCertificateRequest(modelIdDTO, certificate, user)).thenReturn(request);
         when(csIntegrationService.createCertificate(request)).thenThrow(IllegalArgumentException.class);
+
+        final var result = createDraftCertificateFromCS.create(certificate, user);
+        assertEquals(APPLICATION_ERROR, result.getResult().getErrorId());
+    }
+
+    @Test
+    void shouldReturnValidationErrorIfHttpServerErrorException() {
+        final var certificate = getIntyg(VALID_PERSON_ID);
+        final var user = mock(IntygUser.class);
+        final var modelIdDTO = CertificateModelIdDTO.builder().build();
+        final var request = CreateCertificateRequestDTO.builder().build();
+
+        final var vardenhet = new Vardenhet();
+        when(user.getValdVardenhet()).thenReturn(vardenhet);
+        when(user.getValdVardgivare()).thenReturn(vardenhet);
+        when(csIntegrationService.certificateTypeExists(certificate.getTypAvIntyg().getCode()))
+            .thenReturn(Optional.of(modelIdDTO));
+        when(csIntegrationRequestFactory.createDraftCertificateRequest(modelIdDTO, certificate, user)).thenReturn(request);
+        when(csIntegrationService.createCertificate(request)).thenThrow(new HttpServerErrorException(HttpStatus.FORBIDDEN));
 
         final var result = createDraftCertificateFromCS.create(certificate, user);
         assertEquals(VALIDATION_ERROR, result.getResult().getErrorId());
