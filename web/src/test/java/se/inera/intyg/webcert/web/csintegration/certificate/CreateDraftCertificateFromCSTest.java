@@ -112,6 +112,10 @@ class CreateDraftCertificateFromCSTest {
     void shouldThrowIfPersonIdCouldNotBeCreated() {
         final var certificate = getIntyg(INVALID_PERSON_ID);
         final var user = new IntygUser(HSA_ID);
+        final var modelIdDTO = Optional.of(CertificateModelIdDTO.builder().build());
+
+        when(csIntegrationService.certificateTypeExists(certificate.getTypAvIntyg().getCode()))
+            .thenReturn(modelIdDTO);
         final var webCertServiceException = assertThrows(WebCertServiceException.class,
             () -> createDraftCertificateFromCS.create(certificate, user));
 
@@ -121,7 +125,10 @@ class CreateDraftCertificateFromCSTest {
     @Test
     void shouldReturnErrorResponseIfSekretessStatusIsUndefined() {
         final var certificate = getIntyg(VALID_PERSON_ID);
+        final var modelIdDTO = Optional.of(CertificateModelIdDTO.builder().build());
 
+        when(csIntegrationService.certificateTypeExists(certificate.getTypAvIntyg().getCode()))
+            .thenReturn(modelIdDTO);
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.UNDEFINED);
 
         final var result = createDraftCertificateFromCS.create(certificate, USER);
