@@ -25,9 +25,11 @@ import static se.inera.intyg.webcert.web.integration.interactions.createdraftcer
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
@@ -92,10 +94,25 @@ public class CreateDraftCertificateFromCS implements CreateDraftCertificate {
 
             return createSuccessResponse(createdCertificate.getMetadata().getId(), createdCertificate.getMetadata().getUnit().getUnitId());
         } catch (HttpServerErrorException | HttpClientErrorException exception) {
-            return createErrorResponse(handleApiErrorService.handle(exception.getResponseBodyAsString()), ErrorIdType.VALIDATION_ERROR);
+            final var errorType = getErrorType(exception);
+            final var errorReason = handleApiErrorService.handle(exception.getResponseBodyAsString());
+            logErrorResponse(errorType, errorReason, user.getHsaId(), user.getValdVardenhet().getId());
+            return createErrorResponse(errorReason, errorType);
         } catch (Exception exception) {
+            logErrorResponse(ErrorIdType.APPLICATION_ERROR, exception.getMessage(), user.getHsaId(), user.getValdVardenhet().getId());
             return createErrorResponse(exception.getMessage(), ErrorIdType.APPLICATION_ERROR);
         }
+    }
+
+    private void logErrorResponse(ErrorIdType errorType, String errorReason, String userId, String unitId) {
+        if (errorType.equals(ErrorIdType.VALIDATION_ERROR)) {
+            log.warn("User '{}' on unit '{}' with error type '{}' received error: '{}'", userId, unitId, errorType.value(), errorReason);
+        }
+        log.error("User '{}' on unit '{}' with error type '{}' received error: '{}'", userId, unitId, errorType.value(), errorReason);
+    }
+
+    private static ErrorIdType getErrorType(HttpStatusCodeException exception) {
+        return exception.getStatusCode().equals(HttpStatus.FORBIDDEN) ? ErrorIdType.VALIDATION_ERROR : ErrorIdType.APPLICATION_ERROR;
     }
 
     private static IntegreradEnhetEntry getIntegreradEnhetEntry(IntygUser user) {
