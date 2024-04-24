@@ -39,8 +39,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.HttpClientErrorException;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.Staff;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
@@ -201,7 +202,9 @@ class CreateDraftCertificateFromCSTest {
         when(csIntegrationService.certificateTypeExists(certificate.getTypAvIntyg().getCode()))
             .thenReturn(Optional.of(modelIdDTO));
         when(csIntegrationRequestFactory.createDraftCertificateRequest(modelIdDTO, certificate, user)).thenReturn(request);
-        when(csIntegrationService.createCertificate(request)).thenThrow(new HttpServerErrorException(HttpStatus.FORBIDDEN));
+        when(csIntegrationService.createCertificate(request)).thenThrow(
+            HttpClientErrorException.create("", HttpStatus.FORBIDDEN, "", HttpHeaders.EMPTY, null, null)
+        );
 
         final var result = createDraftCertificateFromCS.create(certificate, user);
         assertEquals(VALIDATION_ERROR, result.getResult().getErrorId());

@@ -25,11 +25,8 @@ import static se.inera.intyg.webcert.web.integration.interactions.createdraftcer
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.HttpClientErrorException.Forbidden;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
@@ -93,26 +90,29 @@ public class CreateDraftCertificateFromCS implements CreateDraftCertificate {
             );
 
             return createSuccessResponse(createdCertificate.getMetadata().getId(), createdCertificate.getMetadata().getUnit().getUnitId());
-        } catch (HttpServerErrorException | HttpClientErrorException exception) {
-            final var errorType = getErrorType(exception);
+        } catch (Forbidden exception) {
             final var errorReason = handleApiErrorService.handle(exception.getResponseBodyAsString());
-            logErrorResponse(errorType, errorReason, user.getHsaId(), user.getValdVardenhet().getId());
-            return createErrorResponse(errorReason, errorType);
+            log.warn(
+                String.format(
+                    "User '%s' on unit '%s' received error when creating draft: '%s'",
+                    user.getHsaId(),
+                    user.getValdVardenhet(),
+                    errorReason
+                ),
+                exception
+            );
+            return createErrorResponse(errorReason, ErrorIdType.VALIDATION_ERROR);
         } catch (Exception exception) {
-            logErrorResponse(ErrorIdType.APPLICATION_ERROR, exception.getMessage(), user.getHsaId(), user.getValdVardenhet().getId());
-            return createErrorResponse(exception.getMessage(), ErrorIdType.APPLICATION_ERROR);
+            log.error(
+                String.format(
+                    "User '%s' on unit '%s' could not create draft",
+                    user.getHsaId(),
+                    user.getValdVardenhet()
+                ),
+                exception
+            );
+            return createErrorResponse("Internal error. Could not create draft", ErrorIdType.APPLICATION_ERROR);
         }
-    }
-
-    private void logErrorResponse(ErrorIdType errorType, String errorReason, String userId, String unitId) {
-        if (errorType.equals(ErrorIdType.VALIDATION_ERROR)) {
-            log.warn("User '{}' on unit '{}' with error type '{}' received error: '{}'", userId, unitId, errorType.value(), errorReason);
-        }
-        log.error("User '{}' on unit '{}' with error type '{}' received error: '{}'", userId, unitId, errorType.value(), errorReason);
-    }
-
-    private static ErrorIdType getErrorType(HttpStatusCodeException exception) {
-        return exception.getStatusCode().equals(HttpStatus.FORBIDDEN) ? ErrorIdType.VALIDATION_ERROR : ErrorIdType.APPLICATION_ERROR;
     }
 
     private static IntegreradEnhetEntry getIntegreradEnhetEntry(IntygUser user) {
