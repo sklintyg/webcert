@@ -26,11 +26,13 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException.Forbidden;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.web.csintegration.exception.HandleApiErrorService;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
@@ -56,6 +58,7 @@ public class CreateDraftCertificateFromCS implements CreateDraftCertificate {
     private final IntegreradeEnheterRegistry integreradeEnheterRegistry;
     private final PDLLogService pdlLogService;
     private final MonitoringLogService monitoringLogService;
+    private final HandleApiErrorService handleApiErrorService;
 
     @Override
     public CreateDraftCertificateResponseType create(Intyg certificate, IntygUser user) {
@@ -64,7 +67,7 @@ public class CreateDraftCertificateFromCS implements CreateDraftCertificate {
             log.debug("Certificate type '{}' does not exist in certificate service", certificate.getTypAvIntyg().getCode());
             return null;
         }
-        
+
         final var applicationError = validatePUIntegration(certificate);
         if (applicationError.isPresent()) {
             return applicationError.get();
@@ -87,8 +90,28 @@ public class CreateDraftCertificateFromCS implements CreateDraftCertificate {
             );
 
             return createSuccessResponse(createdCertificate.getMetadata().getId(), createdCertificate.getMetadata().getUnit().getUnitId());
+        } catch (Forbidden exception) {
+            final var errorReason = handleApiErrorService.handle(exception.getResponseBodyAsString());
+            log.warn(
+                String.format(
+                    "User '%s' on unit '%s' received error when creating draft: '%s'",
+                    user.getHsaId(),
+                    user.getValdVardenhet(),
+                    errorReason
+                ),
+                exception
+            );
+            return createErrorResponse(errorReason, ErrorIdType.VALIDATION_ERROR);
         } catch (Exception exception) {
-            return createErrorResponse(exception.getMessage(), ErrorIdType.VALIDATION_ERROR);
+            log.error(
+                String.format(
+                    "User '%s' on unit '%s' could not create draft",
+                    user.getHsaId(),
+                    user.getValdVardenhet()
+                ),
+                exception
+            );
+            return createErrorResponse("Internal error. Could not create draft", ErrorIdType.APPLICATION_ERROR);
         }
     }
 
