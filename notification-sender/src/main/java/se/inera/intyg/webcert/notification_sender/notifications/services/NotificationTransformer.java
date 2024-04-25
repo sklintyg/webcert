@@ -23,6 +23,7 @@ import static se.inera.intyg.webcert.notification_sender.notifications.routes.No
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.USER_ID;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import org.apache.camel.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,11 +33,13 @@ import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
+import se.inera.intyg.common.support.xml.XmlMarshallerHelper;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing.NotificationResultMessageCreator;
 import se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing.NotificationResultMessageSender;
 import se.inera.intyg.webcert.notification_sender.notifications.services.v3.CertificateStatusUpdateForCareCreator;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 
 public class NotificationTransformer {
 
@@ -66,28 +69,40 @@ public class NotificationTransformer {
 
         final var notificationMessage = message.getBody(NotificationMessage.class);
 
-        final var certificateTypeVersion = resolveIntygTypeVersion(notificationMessage.getIntygsTyp(),
-            message, notificationMessage.getUtkast());
-
         try {
             message.setHeader(NotificationRouteHeaders.VERSION, getSchemaVersion(notificationMessage));
             message.setHeader(NotificationRouteHeaders.LOGISK_ADRESS, notificationMessage.getLogiskAdress());
             message.setHeader(NotificationRouteHeaders.INTYGS_ID, notificationMessage.getIntygsId());
             message.setHeader(NotificationRouteHeaders.HANDELSE, notificationMessage.getHandelse().value());
 
-            final var statusUpdateForCare = certificateStatusUpdateForCareCreator.create(notificationMessage, certificateTypeVersion);
+            final var statusUpdateForCare = getStatusUpdateForCare(notificationMessage, message);
             message.setBody(statusUpdateForCare);
         } catch (Exception e) {
-            handleExceptions(message, notificationMessage, certificateTypeVersion, e);
+            handleExceptions(message, notificationMessage, e);
             throw e;
         }
     }
 
-    private void handleExceptions(Message message, NotificationMessage notificationMessage, String certificateTypeVersion, Exception e)
+    private CertificateStatusUpdateForCareType getStatusUpdateForCare(NotificationMessage notificationMessage, Message message)
+        throws ModuleNotFoundException, IOException, ModuleException {
+        if (notificationMessage.getStatusUpdateXml() != null) {
+            final var element = XmlMarshallerHelper.unmarshal(
+                new String(notificationMessage.getStatusUpdateXml(), StandardCharsets.UTF_8)
+            );
+            return (CertificateStatusUpdateForCareType) element.getValue();
+        }
+
+        final var certificateTypeVersion = resolveIntygTypeVersion(notificationMessage.getIntygsTyp(),
+            message, notificationMessage.getUtkast());
+        return certificateStatusUpdateForCareCreator.create(notificationMessage, certificateTypeVersion);
+    }
+
+    private void handleExceptions(Message message, NotificationMessage notificationMessage, Exception e)
         throws ModuleNotFoundException, IOException, ModuleException {
         LOG.error("Failure transforming notification [certificateId: " + notificationMessage.getIntygsId() + ", eventType: "
             + notificationMessage.getHandelse().value() + ", timestamp: " + notificationMessage.getHandelseTid() + "]", e);
-
+        final var certificateTypeVersion = resolveIntygTypeVersion(notificationMessage.getIntygsTyp(),
+            message, notificationMessage.getUtkast());
         final var correlationId = message.getHeader(CORRELATION_ID, String.class);
         final var userId = message.getHeader(USER_ID, String.class);
         final var resultMessage = notificationResultMessageCreator

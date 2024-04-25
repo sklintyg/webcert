@@ -22,6 +22,7 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
@@ -39,6 +40,7 @@ public class RevokeCertificateFromCertificateService implements RevokeCertificat
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
     private final PDLLogService pdlLogService;
     private final MonitoringLogService monitoringLogService;
+    private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
 
     @Override
     public Certificate revokeCertificate(String certificateId, String reason, String message) {
@@ -49,20 +51,21 @@ public class RevokeCertificateFromCertificateService implements RevokeCertificat
         }
 
         log.debug("Revoking certificate with id '{}' using certificate service", certificateId);
-        final var response = csIntegrationService.revokeCertificate(
+        final var certificate = csIntegrationService.revokeCertificate(
             certificateId,
             csIntegrationRequestFactory.revokeCertificateRequest(reason, message)
         );
 
-        if (response == null) {
+        if (certificate == null) {
             throw new IllegalStateException("Received null when trying to revoke certificate from Certificate Service");
         }
 
         log.debug("Certificate with id '{}' was revoked using certificate service", certificateId);
-        pdlLogService.logRevoke(response);
-        monitorLog(response, reason, message);
+        pdlLogService.logRevoke(certificate);
+        monitorLog(certificate, reason, message);
+        publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.MAKULE);
 
-        return response;
+        return certificate;
     }
 
     private void monitorLog(Certificate certificate, String reason, String message) {

@@ -35,6 +35,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRecipient;
@@ -54,6 +55,8 @@ class SendCertificateFromCertificateServiceTest {
     private static final String TYPE = "TYPE";
     private static final String RECIPIENT_ID = "FKASSA";
 
+    @Mock
+    PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
     @Mock
     CSIntegrationService csIntegrationService;
 
@@ -137,6 +140,12 @@ class SendCertificateFromCertificateServiceTest {
             void shouldMonitorLogSent() {
                 sendCertificateFromCertificateService.sendCertificate(ID);
                 verify(monitoringLogService).logIntygSent(ID, TYPE, RECIPIENT_ID);
+            }
+
+            @Test
+            void shouldPublishCertificateStatusUpdate() {
+                sendCertificateFromCertificateService.sendCertificate(ID);
+                verify(publishCertificateStatusUpdateService).publish(CERTIFICATE, HandelsekodEnum.SKICKA);
             }
 
             @Test

@@ -36,6 +36,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
@@ -62,6 +63,8 @@ class DeleteCertificateFromCertificateServiceTest {
     @Mock
     PDLLogService pdlLogService;
 
+    @Mock
+    PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
     @Mock
     MonitoringLogService monitoringLogService;
 
@@ -140,6 +143,12 @@ class DeleteCertificateFromCertificateServiceTest {
             void shouldMonitorLogDelete() {
                 deleteCertificateFromCertificateService.deleteCertificate(ID, VERSION);
                 verify(monitoringLogService).logUtkastDeleted(ID, TYPE);
+            }
+
+            @Test
+            void shouldPublishCertificateStatusUpdateService() {
+                deleteCertificateFromCertificateService.deleteCertificate(ID, VERSION);
+                verify(publishCertificateStatusUpdateService).publish(CERTIFICATE, HandelsekodEnum.RADERA);
             }
         }
 

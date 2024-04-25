@@ -22,6 +22,7 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
@@ -38,6 +39,7 @@ public class SaveCertificateInCertificateService implements SaveCertificateFacad
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
     private final PDLLogService pdlLogService;
     private final MonitoringLogService monitoringLogService;
+    private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
 
     @Override
     public long saveCertificate(Certificate certificate, boolean pdlLog) {
@@ -63,6 +65,8 @@ public class SaveCertificateInCertificateService implements SaveCertificateFacad
                 certificate.getMetadata().getType()
             );
         }
+
+        publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.ANDRAT);
 
         return savedCertificate.getMetadata().getVersion();
     }

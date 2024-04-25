@@ -42,6 +42,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.Staff;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
@@ -78,6 +79,8 @@ class CreateDraftCertificateFromCSTest {
     private static final Certificate CERTIFICATE = new Certificate();
     private static final String EXPECTED_ID = "EXPECTED_ID";
     private static final String EXPECTED_UNIT_ID = "EXPECTED_UNIT_ID";
+    @Mock
+    private PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
     @Mock
     private HandleApiErrorService handleApiErrorService;
     @Mock
@@ -273,6 +276,30 @@ class CreateDraftCertificateFromCSTest {
             CERTIFICATE.getMetadata().getUnit().getUnitId(),
             CERTIFICATE.getMetadata().getIssuedBy().getPersonId(),
             0
+        );
+    }
+
+    @Test
+    void shouldPublishCertificateStatusUpdate() {
+        final var certificate = getIntyg(VALID_PERSON_ID);
+        final var user = mock(IntygUser.class);
+        final var modelIdDTO = CertificateModelIdDTO.builder().build();
+        final var request = CreateCertificateRequestDTO.builder().build();
+
+        final var vardenhet = new Vardenhet();
+        when(user.getValdVardenhet()).thenReturn(vardenhet);
+        when(user.getValdVardgivare()).thenReturn(vardenhet);
+        when(csIntegrationService.certificateTypeExists(certificate.getTypAvIntyg().getCode()))
+            .thenReturn(Optional.of(modelIdDTO));
+        when(csIntegrationRequestFactory.createDraftCertificateRequest(modelIdDTO, certificate, user)).thenReturn(request);
+        when(csIntegrationService.createCertificate(request)).thenReturn(CERTIFICATE);
+
+        createDraftCertificateFromCS.create(certificate, user);
+
+        verify(publishCertificateStatusUpdateService).publish(
+            CERTIFICATE,
+            HandelsekodEnum.SKAPAT,
+            Optional.of(user)
         );
     }
 

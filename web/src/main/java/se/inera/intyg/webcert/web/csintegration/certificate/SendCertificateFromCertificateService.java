@@ -22,6 +22,7 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
@@ -38,6 +39,7 @@ public class SendCertificateFromCertificateService implements SendCertificateFac
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
     private final PDLLogService pdlLogService;
     private final MonitoringLogService monitoringLogService;
+    private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
 
     @Override
     public String sendCertificate(String certificateId) {
@@ -63,6 +65,7 @@ public class SendCertificateFromCertificateService implements SendCertificateFac
             certificate.getMetadata().getRecipient().getId()
         );
         pdlLogService.logSent(certificate);
+        publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKICKA);
 
         return IntygServiceResult.OK.toString();
     }

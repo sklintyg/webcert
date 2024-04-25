@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.service.notification;
 import java.util.List;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
@@ -113,4 +114,6 @@ public interface NotificationService {
      * @return a list of all matching notifications.
      */
     List<Handelse> findNotifications(IntygWithNotificationsRequest request);
+
+    void send(NotificationMessage notificationMessage, String enhetsId, String intygTypeVersion);
 }

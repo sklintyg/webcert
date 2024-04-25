@@ -36,6 +36,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.Staff;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
@@ -51,6 +52,8 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 @ExtendWith(MockitoExtension.class)
 class CreateCertificateFromCertificateServiceTest {
 
+    @Mock
+    PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
     @Mock
     MonitoringLogService monitoringLogService;
     @Mock
@@ -167,6 +170,18 @@ class CreateCertificateFromCertificateServiceTest {
 
             verify(monitoringLogService, times(1)).logUtkastCreated(
                 CERTIFICATE_ID, CERTIFICATE_TYPE, UNIT_ID, HSA_ID, 0
+            );
+        }
+
+        @Test
+        void shouldPublishCertificateStatusUpdateService() throws CreateCertificateException {
+            doReturn(REQUEST).when(csIntegrationRequestFactory).createCertificateRequest(CERTIFICATE_MODEL_ID, PATIENT_ID);
+            doReturn(CERTIFICATE).when(csIntegrationService).createCertificate(REQUEST);
+
+            createCertificateFromCertificateService.create(TYPE, PATIENT_ID);
+
+            verify(publishCertificateStatusUpdateService, times(1)).publish(
+                CERTIFICATE, HandelsekodEnum.SKAPAT
             );
         }
 

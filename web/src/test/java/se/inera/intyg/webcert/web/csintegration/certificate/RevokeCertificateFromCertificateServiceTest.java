@@ -35,6 +35,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
@@ -54,6 +55,8 @@ class RevokeCertificateFromCertificateServiceTest {
     private static final Certificate CERTIFICATE = new Certificate();
     private static final String TYPE = "TYPE";
 
+    @Mock
+    PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
     @Mock
     CSIntegrationService csIntegrationService;
 
@@ -140,6 +143,12 @@ class RevokeCertificateFromCertificateServiceTest {
             void shouldMonitorLogRevokeCertificate() {
                 revokeCertificateFromCertificateService.revokeCertificate(ID, REASON, MESSAGE);
                 verify(monitoringLogService).logIntygRevoked(ID, TYPE, REASON, MESSAGE);
+            }
+
+            @Test
+            void shouldPublishCertificateStatusUpdate() {
+                revokeCertificateFromCertificateService.revokeCertificate(ID, REASON, MESSAGE);
+                verify(publishCertificateStatusUpdateService).publish(CERTIFICATE, HandelsekodEnum.MAKULE);
             }
         }
 

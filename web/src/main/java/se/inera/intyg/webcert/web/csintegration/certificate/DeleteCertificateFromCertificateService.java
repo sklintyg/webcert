@@ -22,6 +22,7 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
@@ -37,6 +38,7 @@ public class DeleteCertificateFromCertificateService implements DeleteCertificat
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
     private final PDLLogService pdlLogService;
     private final MonitoringLogService monitoringLogService;
+    private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
 
     @Override
     public boolean deleteCertificate(String certificateId, long version) {
@@ -57,7 +59,8 @@ public class DeleteCertificateFromCertificateService implements DeleteCertificat
         log.debug("Deleted certificate '{}' from Certificate Service", certificateId);
         monitoringLogService.logUtkastDeleted(certificate.getMetadata().getId(), certificate.getMetadata().getType());
         pdlLogService.logDeleted(certificate);
-
+        publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.RADERA);
+        
         return true;
     }
 }

@@ -549,7 +549,8 @@ public class NotificationServiceImpl implements NotificationService {
         return null;
     }
 
-    private void send(NotificationMessage notificationMessage, String enhetsId, String intygTypeVersion) {
+    @Override
+    public void send(NotificationMessage notificationMessage, String enhetsId, String intygTypeVersion) {
         if (Objects.isNull(jmsTemplateForAggregation)) {
             LOGGER.warn("Can not notify listeners! The JMS transport is not initialized.");
             return;

@@ -22,6 +22,7 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
@@ -40,6 +41,7 @@ public class CreateCertificateFromCertificateService implements CreateCertificat
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
     private final PDLLogService pdlLogService;
     private final MonitoringLogService monitoringLogService;
+    private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
 
     @Override
     public String create(String certificateType, String patientId) throws CreateCertificateException {
@@ -60,24 +62,26 @@ public class CreateCertificateFromCertificateService implements CreateCertificat
     }
 
     private String createCertificate(String patientId, CertificateModelIdDTO modelId) {
-        final var response = csIntegrationService.createCertificate(
+        final var certificate = csIntegrationService.createCertificate(
             csIntegrationRequestFactory.createCertificateRequest(modelId, patientId)
         );
 
-        pdlLogService.logCreated(response);
+        pdlLogService.logCreated(certificate);
         monitoringLogService.logUtkastCreated(
-            response.getMetadata().getId(),
-            response.getMetadata().getType(),
-            response.getMetadata().getUnit().getUnitId(),
-            response.getMetadata().getIssuedBy().getPersonId(),
+            certificate.getMetadata().getId(),
+            certificate.getMetadata().getType(),
+            certificate.getMetadata().getUnit().getUnitId(),
+            certificate.getMetadata().getIssuedBy().getPersonId(),
             NO_PREFILL_ELEMENTS
         );
+
+        publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKAPAT);
 
         log.debug("Created certificate using certificate service of type '{}' and version '{}'",
             modelId.getType(),
             modelId.getVersion()
         );
 
-        return response.getMetadata().getId();
+        return certificate.getMetadata().getId();
     }
 }
