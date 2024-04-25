@@ -45,7 +45,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
 import se.inera.intyg.infra.xmldsig.model.ValidationResponse;
 import se.inera.intyg.infra.xmldsig.model.ValidationResult;
-import se.inera.intyg.infra.xmldsig.service.FakeSignatureServiceImpl;
+import se.inera.intyg.infra.xmldsig.service.FakeSignatureService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.dss.DssMetadataService;
@@ -62,7 +62,7 @@ public class SignatureApiControllerTest {
     @Mock
     private MonitoringLogService mockMonitoringService;
     @Mock
-    private FakeSignatureServiceImpl mockFakeSignatureServiceImpl;
+    private FakeSignatureService fakeSignatureService;
     @Mock
     private DssMetadataService dssMetadataService;
     @Mock

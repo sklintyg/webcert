@@ -46,7 +46,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpHeaders;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
-import se.inera.intyg.infra.xmldsig.service.FakeSignatureServiceImpl;
+import se.inera.intyg.infra.xmldsig.service.FakeSignatureService;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
@@ -87,7 +87,7 @@ public class SignatureApiController extends AbstractApiController {
     private MonitoringLogService monitoringLogService;
 
     @Autowired(required = false)
-    private FakeSignatureServiceImpl fakeSignatureService;
+    private FakeSignatureService fakeSignatureService;
 
     @Autowired
     private DssMetadataService dssMetadataService;
