@@ -23,7 +23,7 @@ import java.security.cert.CertificateEncodingException;
 import java.util.Base64;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.infra.xmldsig.service.FakeSignatureServiceImpl;
+import se.inera.intyg.infra.xmldsig.service.FakeSignatureService;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.underskrift.BaseXMLSignatureService;
@@ -32,7 +32,7 @@ import se.inera.intyg.webcert.web.service.underskrift.BaseXMLSignatureService;
 @RequiredArgsConstructor
 public class FakeSignatureServiceCS extends BaseXMLSignatureService {
 
-    private final FakeSignatureServiceImpl fakeSignatureService;
+    private final FakeSignatureService fakeSignatureService;
 
     public FinalizedCertificateSignature finalizeFakeSignature(String ticketId) {
         final var ticket = redisTicketTracker.findBiljett(ticketId);
