@@ -47,7 +47,8 @@ public final class AuthConstants {
     public static final List<String> ELEG_AUTHN_CLASSES = List.of(
         "urn:oasis:names:tc:SAML:2.0:ac:classes:SoftwarePKI",
         "urn:oasis:names:tc:SAML:2.0:ac:classes:SmartcardPKI",
-        "urn:oasis:names:tc:SAML:2.0:ac:classes:MobileTwofactorContract");
+        "urn:oasis:names:tc:SAML:2.0:ac:classes:MobileTwofactorContract",
+        "http://id.elegnamnden.se/loa/1.0/loa3");
 
     public static final String URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_UNSPECIFIED = "urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified";
 
