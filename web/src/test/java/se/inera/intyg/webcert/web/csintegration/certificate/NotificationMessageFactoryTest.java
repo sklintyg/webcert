@@ -46,7 +46,7 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.DatePeriodType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
-class NotificationMessageMapperTest {
+class NotificationMessageFactoryTest {
 
     private static final String ID = "id1";
     private static final String TYPE_1 = "type1";
@@ -58,7 +58,7 @@ class NotificationMessageMapperTest {
     private Certificate certificate;
     private String xmlRepresentation;
     private HandelsekodEnum eventType;
-    private NotificationMessageMapper converter;
+    private NotificationMessageFactory converter;
     private RegisterCertificateType registerCertificateType;
 
     @BeforeEach
@@ -81,7 +81,7 @@ class NotificationMessageMapperTest {
         certificate = new Certificate();
         certificate.setMetadata(metadata);
         eventType = HandelsekodEnum.SIGNAT;
-        converter = new NotificationMessageMapper();
+        converter = new NotificationMessageFactory();
         registerCertificateType = new RegisterCertificateType();
         registerCertificateType.setIntyg(EXPECTED_INTYG);
         final var marshall = marshall(registerCertificateType);
@@ -90,37 +90,37 @@ class NotificationMessageMapperTest {
 
     @Test
     void shallConvertId() {
-        final var result = converter.map(certificate, xmlRepresentation, eventType);
+        final var result = converter.create(certificate, xmlRepresentation, eventType);
         assertEquals(ID, result.getIntygsId());
     }
 
     @Test
     void shallConvertType() {
-        final var result = converter.map(certificate, xmlRepresentation, eventType);
+        final var result = converter.create(certificate, xmlRepresentation, eventType);
         assertEquals(TYPE_1, result.getIntygsTyp());
     }
 
     @Test
     void shallSetCurrentTimestamp() {
-        final var result = converter.map(certificate, xmlRepresentation, eventType);
+        final var result = converter.create(certificate, xmlRepresentation, eventType);
         assertNotNull(result.getHandelseTid());
     }
 
     @Test
     void shallConvertEventType() {
-        final var result = converter.map(certificate, xmlRepresentation, eventType);
+        final var result = converter.create(certificate, xmlRepresentation, eventType);
         assertEquals(eventType, result.getHandelse());
     }
 
     @Test
     void shallConvertUnitId() {
-        final var result = converter.map(certificate, xmlRepresentation, eventType);
+        final var result = converter.create(certificate, xmlRepresentation, eventType);
         assertEquals(UNIT_ID, result.getLogiskAdress());
     }
 
     @Test
     void shallConvertFragorOchSvar() {
-        final var result = converter.map(certificate, xmlRepresentation, eventType);
+        final var result = converter.create(certificate, xmlRepresentation, eventType);
         assertEquals(FragorOchSvar.getEmpty().getAntalFragor(), result.getFragaSvar().getAntalFragor());
         assertEquals(FragorOchSvar.getEmpty().getAntalSvar(), result.getFragaSvar().getAntalSvar());
         assertEquals(FragorOchSvar.getEmpty().getAntalHanteradeSvar(), result.getFragaSvar().getAntalHanteradeSvar());
@@ -129,7 +129,7 @@ class NotificationMessageMapperTest {
 
     @Test
     void shallConvertMottagnaFragor() {
-        final var result = converter.map(certificate, xmlRepresentation, eventType);
+        final var result = converter.create(certificate, xmlRepresentation, eventType);
         assertEquals(ArendeCount.getEmpty().getBesvarade(), result.getMottagnaFragor().getBesvarade());
         assertEquals(ArendeCount.getEmpty().getHanterade(), result.getMottagnaFragor().getHanterade());
         assertEquals(ArendeCount.getEmpty().getEjBesvarade(), result.getMottagnaFragor().getEjBesvarade());
@@ -138,7 +138,7 @@ class NotificationMessageMapperTest {
 
     @Test
     void shallConvertSkickadeFragor() {
-        final var result = converter.map(certificate, xmlRepresentation, eventType);
+        final var result = converter.create(certificate, xmlRepresentation, eventType);
         assertEquals(ArendeCount.getEmpty().getBesvarade(), result.getSkickadeFragor().getBesvarade());
         assertEquals(ArendeCount.getEmpty().getHanterade(), result.getSkickadeFragor().getHanterade());
         assertEquals(ArendeCount.getEmpty().getEjBesvarade(), result.getSkickadeFragor().getEjBesvarade());
@@ -147,13 +147,13 @@ class NotificationMessageMapperTest {
 
     @Test
     void shallConvertSchemaVersion() {
-        final var result = converter.map(certificate, xmlRepresentation, eventType);
+        final var result = converter.create(certificate, xmlRepresentation, eventType);
         assertEquals(SchemaVersion.VERSION_3, result.getVersion());
     }
 
     @Test
     void shallConvertExternalReference() {
-        final var result = converter.map(certificate, xmlRepresentation, eventType);
+        final var result = converter.create(certificate, xmlRepresentation, eventType);
         assertEquals(EXTERNAL_REF, result.getReference());
     }
 
@@ -162,35 +162,35 @@ class NotificationMessageMapperTest {
 
         @Test
         void shallIncludeIntygIdInStatusUpdateXml() {
-            final var result = converter.map(certificate, xmlRepresentation, eventType);
+            final var result = converter.create(certificate, xmlRepresentation, eventType);
             final var careType = unmarshall(result.getStatusUpdateXml());
             assertEquals(EXPECTED_INTYG.getIntygsId().getExtension(), careType.getIntyg().getIntygsId().getExtension());
         }
 
         @Test
         void shallIncludeHandelseInStatusUpdateXml() {
-            final var result = converter.map(certificate, xmlRepresentation, eventType);
+            final var result = converter.create(certificate, xmlRepresentation, eventType);
             final var careType = unmarshall(result.getStatusUpdateXml());
             assertEquals(eventType.value(), careType.getHandelse().getHandelsekod().getCode());
         }
 
         @Test
         void shallIncludeHandelseCodeSystemInStatusUpdateXml() {
-            final var result = converter.map(certificate, xmlRepresentation, eventType);
+            final var result = converter.create(certificate, xmlRepresentation, eventType);
             final var careType = unmarshall(result.getStatusUpdateXml());
             assertEquals(KV_HANDELSE_CODE_SYSTEM, careType.getHandelse().getHandelsekod().getCodeSystem());
         }
 
         @Test
         void shallIncludeHandelseTidpunktInStatusUpdateXml() {
-            final var result = converter.map(certificate, xmlRepresentation, eventType);
+            final var result = converter.create(certificate, xmlRepresentation, eventType);
             final var careType = unmarshall(result.getStatusUpdateXml());
             assertNotNull(careType.getHandelse().getTidpunkt());
         }
 
         @Test
         void shallIncludeHanteratAvInStatusUpdateXml() {
-            final var result = converter.map(certificate, xmlRepresentation, eventType);
+            final var result = converter.create(certificate, xmlRepresentation, eventType);
             final var careType = unmarshall(result.getStatusUpdateXml());
             assertEquals(PERSON_ID, careType.getHanteratAv().getExtension());
         }

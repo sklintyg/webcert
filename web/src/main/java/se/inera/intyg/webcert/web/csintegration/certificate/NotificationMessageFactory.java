@@ -31,9 +31,9 @@ import se.inera.intyg.common.support.modules.support.api.notification.SchemaVers
 
 @Component
 @RequiredArgsConstructor
-public class NotificationMessageMapper {
+public class NotificationMessageFactory {
 
-    public NotificationMessage map(Certificate certificate, String encodedXmlRepresentation, HandelsekodEnum eventType) {
+    public NotificationMessage create(Certificate certificate, String encodedXmlRepresentation, HandelsekodEnum eventType) {
         final var now = LocalDateTime.now();
         final var notificationMessage = new NotificationMessage(
             certificate.getMetadata().getId(),

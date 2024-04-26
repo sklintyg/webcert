@@ -60,7 +60,7 @@ class PublishCertificateStatusUpdateServiceTest {
     @Mock
     private NotificationService notificationService;
     @Mock
-    private NotificationMessageMapper notificationMessageMapper;
+    private NotificationMessageFactory notificationMessageFactory;
     @Mock
     private IntegreradeEnheterRegistry integreradeEnheterRegistry;
     @Mock
@@ -169,8 +169,8 @@ class PublishCertificateStatusUpdateServiceTest {
             final var expectedMessage = new NotificationMessage();
             final var argumentCaptor = ArgumentCaptor.forClass(NotificationMessage.class);
 
-            doReturn(expectedMessage).when(notificationMessageMapper)
-                .map(certificate, getCertificateXmlResponse.getXml(), HandelsekodEnum.SKAPAT);
+            doReturn(expectedMessage).when(notificationMessageFactory)
+                .create(certificate, getCertificateXmlResponse.getXml(), HandelsekodEnum.SKAPAT);
 
             publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKAPAT);
             verify(notificationService).send(argumentCaptor.capture(), eq(UNIT_ID), eq(TYPE_VERSION));
@@ -181,8 +181,8 @@ class PublishCertificateStatusUpdateServiceTest {
         @Test
         void shallCallNotificationServiceWithUnitIdFromIssuingUnit() {
             final var argumentCaptor = ArgumentCaptor.forClass(String.class);
-            doReturn(new NotificationMessage()).when(notificationMessageMapper)
-                .map(certificate, getCertificateXmlResponse.getXml(), HandelsekodEnum.SKAPAT);
+            doReturn(new NotificationMessage()).when(notificationMessageFactory)
+                .create(certificate, getCertificateXmlResponse.getXml(), HandelsekodEnum.SKAPAT);
 
             publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKAPAT);
             verify(notificationService).send(any(NotificationMessage.class), argumentCaptor.capture(), eq(TYPE_VERSION));
@@ -193,8 +193,8 @@ class PublishCertificateStatusUpdateServiceTest {
         @Test
         void shallCallNotificationServiceWithTypeVersionFromCertificate() {
             final var argumentCaptor = ArgumentCaptor.forClass(String.class);
-            doReturn(new NotificationMessage()).when(notificationMessageMapper)
-                .map(certificate, getCertificateXmlResponse.getXml(), HandelsekodEnum.SKAPAT);
+            doReturn(new NotificationMessage()).when(notificationMessageFactory)
+                .create(certificate, getCertificateXmlResponse.getXml(), HandelsekodEnum.SKAPAT);
 
             publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKAPAT);
             verify(notificationService).send(any(NotificationMessage.class), eq(UNIT_ID), argumentCaptor.capture());

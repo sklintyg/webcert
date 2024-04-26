@@ -38,7 +38,7 @@ public class PublishCertificateStatusUpdateService {
     private final IntegreradeEnheterRegistry integreradeEnheterRegistry;
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
-    private final NotificationMessageMapper notificationMessageMapper;
+    private final NotificationMessageFactory notificationMessageFactory;
     private final NotificationService notificationService;
 
     public void publish(Certificate certificate, HandelsekodEnum eventType) {
@@ -55,7 +55,7 @@ public class PublishCertificateStatusUpdateService {
             certificate.getMetadata().getId()
         );
 
-        final var notificationMessage = notificationMessageMapper.map(
+        final var notificationMessage = notificationMessageFactory.create(
             certificate,
             certificateXmlResponse.getXml(),
             eventType
