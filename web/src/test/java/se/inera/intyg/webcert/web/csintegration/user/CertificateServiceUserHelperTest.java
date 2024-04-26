@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.csintegration.user;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -48,6 +49,7 @@ import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionInfo;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 @ExtendWith(MockitoExtension.class)
 class CertificateServiceUserHelperTest {
@@ -67,6 +69,7 @@ class CertificateServiceUserHelperTest {
 
     private static WebCertUser webCertUser;
     private static SubscriptionInfo subscription;
+    private IntegrationParameters parameters;
 
 
     @Mock
@@ -316,6 +319,37 @@ class CertificateServiceUserHelperTest {
                 final var response = certificateServiceUserHelper.get();
 
                 assertEquals(expectedPaTitles, response.getPaTitles());
+            }
+        }
+
+        @Nested
+        class IsSjfTest {
+
+            @BeforeEach
+            void setUp() {
+                parameters = mock(IntegrationParameters.class);
+            }
+
+            @Test
+            void shouldSetSjfToTrue() {
+                when(webCertUser.getParameters()).thenReturn(parameters);
+                when(parameters.isSjf()).thenReturn(true);
+                final var response = certificateServiceUserHelper.get();
+                assertTrue(response.getSjf());
+            }
+
+            @Test
+            void shouldSetSjfToFalse() {
+                when(webCertUser.getParameters()).thenReturn(parameters);
+                when(parameters.isSjf()).thenReturn(false);
+                final var response = certificateServiceUserHelper.get();
+                assertFalse(response.getSjf());
+            }
+
+            @Test
+            void shouldSetSjfToNull() {
+                final var response = certificateServiceUserHelper.get();
+                assertNull(response.getSjf());
             }
         }
 

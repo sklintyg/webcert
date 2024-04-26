@@ -1,0 +1,71 @@
+/*
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package se.inera.intyg.webcert.web.csintegration.certificate;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.integration.IntegrationService;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirectToIntyg;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class IntegrationServiceForCS implements IntegrationService {
+
+    private final CSIntegrationService csIntegrationService;
+    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+    private final MonitoringLogService monitoringLogService;
+    private final LogSjfService logSjfService;
+
+    @Override
+    public PrepareRedirectToIntyg prepareRedirectToIntyg(String certificateType, String certificateId, WebCertUser user) {
+        return prepareRedirectToIntyg(certificateType, certificateId, user, null);
+    }
+
+    @Override
+    public PrepareRedirectToIntyg prepareRedirectToIntyg(String certificateType, String certificateId, WebCertUser user,
+        Personnummer prepareBeforeAlternateSsn) {
+        final var exists = csIntegrationService.certificateExists(certificateId);
+        if (Boolean.FALSE.equals(exists)) {
+            log.debug("Certificate with id '{}' does not exist in certificate service", certificateId);
+            return null;
+        }
+
+        final var certificate = csIntegrationService.getCertificate(
+            certificateId,
+            csIntegrationRequestFactory.getCertificateRequest()
+        );
+
+        if (user.getParameters().isSjf()) {
+            logSjfService.log(certificate, user);
+        }
+
+        // TODO: Logga och uppdatera om patientens info behöver uppdateras (intyget är ett draft)
+        // TODO: Skicka med externalReference om det inte är redan satt och vi får med det som uthoppsparameter
+
+        return null;
+    }
+}

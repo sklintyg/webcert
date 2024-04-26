@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.web.controller.integration.dto;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * @author Magnus Ekstrand on 2017-10-12.
@@ -65,6 +66,24 @@ public class PrepareRedirectToIntyg implements Serializable {
             + ", intygId='" + intygId + '\''
             + ", utkast=" + utkast
             + "}";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final PrepareRedirectToIntyg that = (PrepareRedirectToIntyg) o;
+        return utkast == that.utkast && Objects.equals(intygTyp, that.intygTyp) && Objects.equals(intygTypeVersion,
+            that.intygTypeVersion) && Objects.equals(intygId, that.intygId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(intygTyp, intygTypeVersion, intygId, utkast);
     }
 
     public String getIntygTypeVersion() {

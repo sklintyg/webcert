@@ -42,11 +42,17 @@ public class CertificateServiceUnitHelper {
     public CertificateServiceUnitDTO getCareUnit() {
         final var user = webCertUserService.getUser();
         final var unit = CertificateServiceUnitUtil.getUnit(user);
-        return certificateServiceVardenhetConverter.convert(unit);
+        return certificateServiceVardenhetConverter.convert(
+            unit,
+            user.getParameters() != null && user.getParameters().isInactiveUnit()
+        );
     }
 
     public CertificateServiceUnitDTO getUnit() {
         final var user = webCertUserService.getUser();
-        return certificateServiceVardenhetConverter.convert((AbstractVardenhet) user.getValdVardenhet());
+        return certificateServiceVardenhetConverter.convert(
+            (AbstractVardenhet) user.getValdVardenhet(),
+            user.getParameters() != null && user.getParameters().isInactiveUnit()
+        );
     }
 }

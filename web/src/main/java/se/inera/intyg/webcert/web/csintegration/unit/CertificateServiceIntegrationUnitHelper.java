@@ -39,10 +39,10 @@ public class CertificateServiceIntegrationUnitHelper {
 
     public CertificateServiceUnitDTO getCareUnit(IntygUser user) {
         final var unit = CertificateServiceUnitUtil.getUnit(user);
-        return certificateServiceVardenhetConverter.convert(unit);
+        return certificateServiceVardenhetConverter.convert(unit, false);
     }
 
     public CertificateServiceUnitDTO getUnit(IntygUser user) {
-        return certificateServiceVardenhetConverter.convert((AbstractVardenhet) user.getValdVardenhet());
+        return certificateServiceVardenhetConverter.convert((AbstractVardenhet) user.getValdVardenhet(), false);
     }
 }

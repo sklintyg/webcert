@@ -49,6 +49,7 @@ public class CertificateServiceUserHelper {
             .blocked(isBlocked(user))
             .paTitles(paTitles(user.getBefattningar()))
             .specialities(user.getSpecialiseringar())
+            .sjf(user.getParameters() != null ? user.getParameters().isSjf() : null)
             .role(getRole(user))
             .build();
     }

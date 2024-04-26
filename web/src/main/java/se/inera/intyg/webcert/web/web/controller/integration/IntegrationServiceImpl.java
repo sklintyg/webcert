@@ -38,7 +38,7 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirect
 /**
  * @author Magnus Ekstrand on 2017-10-24.
  */
-@Service
+@Service("integrationServiceForWC")
 public abstract class IntegrationServiceImpl implements IntegrationService {
 
     protected AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();

@@ -39,7 +39,9 @@ public class UserIntegrationController extends BaseIntegrationController {
     private static final String[] GRANTED_ROLES = new String[]{
         AuthoritiesConstants.ROLE_LAKARE,
         AuthoritiesConstants.ROLE_ADMIN,
-        AuthoritiesConstants.ROLE_TANDLAKARE
+        AuthoritiesConstants.ROLE_TANDLAKARE,
+        AuthoritiesConstants.ROLE_BARNMORSKA,
+        AuthoritiesConstants.ROLE_SJUKSKOTERSKA,
     };
 
     @GET

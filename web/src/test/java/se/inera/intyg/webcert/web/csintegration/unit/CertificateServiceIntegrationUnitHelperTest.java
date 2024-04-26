@@ -105,7 +105,7 @@ class CertificateServiceIntegrationUnitHelperTest {
         void setup() {
             when(intygUser.getValdVardenhet())
                 .thenReturn(chosenCareUnit);
-            when(certificateServiceVardenhetConverter.convert(chosenCareUnit))
+            when(certificateServiceVardenhetConverter.convert(chosenCareUnit, false))
                 .thenReturn(CONVERTED_CARE_UNIT);
         }
 
@@ -137,7 +137,7 @@ class CertificateServiceIntegrationUnitHelperTest {
         void shouldReturnConvertedCareUnitOfChosenSubUnitAsCareUnit() {
             when(intygUser.getValdVardgivare())
                 .thenReturn(chosenCareProvider);
-            when(certificateServiceVardenhetConverter.convert(chosenCareUnit))
+            when(certificateServiceVardenhetConverter.convert(chosenCareUnit, false))
                 .thenReturn(CONVERTED_CARE_UNIT);
 
             final var response = certificateServiceIntegrationUnitHelper.getCareUnit(intygUser);
@@ -147,7 +147,7 @@ class CertificateServiceIntegrationUnitHelperTest {
 
         @Test
         void shouldReturnConvertedChosenSubUnitAsUnit() {
-            when(certificateServiceVardenhetConverter.convert(chosenSubUnit))
+            when(certificateServiceVardenhetConverter.convert(chosenSubUnit, false))
                 .thenReturn(CONVERTED_UNIT);
 
             final var response = certificateServiceIntegrationUnitHelper.getUnit(intygUser);
