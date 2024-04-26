@@ -772,6 +772,48 @@ class CSIntegrationRequestFactoryTest {
     }
 
     @Nested
+    class GetCertificateXmlRequestWithIntygUser {
+
+        private final IntygUser intygUser = new IntygUser("employeeHsaId");
+
+        @BeforeEach
+        void setup() {
+            when(certificateServiceIntegrationUserHelper.get(intygUser))
+                .thenReturn(USER);
+            when(certificateServiceIntegrationUnitHelper.getUnit(intygUser))
+                .thenReturn(UNIT);
+            when(certificateServiceIntegrationUnitHelper.getCareUnit(intygUser))
+                .thenReturn(CARE_UNIT);
+            when(certificateServiceIntegrationUnitHelper.getCareProvider(intygUser))
+                .thenReturn(CARE_PROVIDER);
+        }
+
+        @Test
+        void shouldSetUser() {
+            final var actualRequest = csIntegrationRequestFactory.getCertificateXmlRequest(intygUser);
+            assertEquals(USER, actualRequest.getUser());
+        }
+
+        @Test
+        void shouldSetUnit() {
+            final var actualRequest = csIntegrationRequestFactory.getCertificateXmlRequest(intygUser);
+            assertEquals(UNIT, actualRequest.getUnit());
+        }
+
+        @Test
+        void shouldSetCareUnit() {
+            final var actualRequest = csIntegrationRequestFactory.getCertificateXmlRequest(intygUser);
+            assertEquals(CARE_UNIT, actualRequest.getCareUnit());
+        }
+
+        @Test
+        void shouldSetCareProvider() {
+            final var actualRequest = csIntegrationRequestFactory.getCertificateXmlRequest(intygUser);
+            assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
+        }
+    }
+
+    @Nested
     class SignCertificateRequest {
 
         private static final String SIGNATURE_XML = "signatureXml";

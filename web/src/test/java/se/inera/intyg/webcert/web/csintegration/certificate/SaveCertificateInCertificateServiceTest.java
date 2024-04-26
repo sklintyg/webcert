@@ -31,6 +31,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
@@ -42,6 +43,8 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 @ExtendWith(MockitoExtension.class)
 class SaveCertificateInCertificateServiceTest {
 
+    @Mock
+    PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
     @Mock
     CSIntegrationService csIntegrationService;
     @Mock
@@ -120,6 +123,12 @@ class SaveCertificateInCertificateServiceTest {
         void shouldPerformMonitorLogForUtkastEdited() {
             saveCertificateInCertificateService.saveCertificate(CERTIFICATE, PDL_LOG);
             verify(monitoringLogService, times(1)).logUtkastEdited(CERTIFICATE_ID, CERTIFICATE_TYPE);
+        }
+
+        @Test
+        void shouldPublishCertificateStatusUpdate() {
+            saveCertificateInCertificateService.saveCertificate(CERTIFICATE, PDL_LOG);
+            verify(publishCertificateStatusUpdateService, times(1)).publish(CERTIFICATE, HandelsekodEnum.ANDRAT);
         }
     }
 }

@@ -186,6 +186,15 @@ public class CSIntegrationRequestFactory {
             .build();
     }
 
+    public GetCertificateXmlRequestDTO getCertificateXmlRequest(IntygUser user) {
+        return GetCertificateXmlRequestDTO.builder()
+            .unit(certificateServiceIntegrationUnitHelper.getUnit(user))
+            .careUnit(certificateServiceIntegrationUnitHelper.getCareUnit(user))
+            .careProvider(certificateServiceIntegrationUnitHelper.getCareProvider(user))
+            .user(certificateServiceIntegrationUserHelper.get(user))
+            .build();
+    }
+
     public SignCertificateRequestDTO signCertificateRequest(String signatureXml) {
         return SignCertificateRequestDTO.builder()
             .unit(certificateServiceUnitHelper.getUnit())

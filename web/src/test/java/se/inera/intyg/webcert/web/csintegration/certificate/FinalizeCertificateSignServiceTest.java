@@ -33,6 +33,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
@@ -48,6 +49,8 @@ class FinalizeCertificateSignServiceTest {
     private static final String AUTH_SCHEME = "authScheme";
     private static final String ID = "id";
     private static final String TYPE = "type";
+    @Mock
+    private PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
     @Mock
     private PDLLogService pdlLogService;
     @Mock
@@ -132,6 +135,16 @@ class FinalizeCertificateSignServiceTest {
             verify(pdlLogService).logSign(certificateArgumentCaptor.capture());
 
             assertEquals(CERTIFICATE, certificateArgumentCaptor.getValue());
+        }
+    }
+
+    @Nested
+    class PublishCertificateStatusForCare {
+
+        @Test
+        void shouldPublishCertificateStatusUpdate() {
+            finalizeCertificateSignService.finalizeSign(CERTIFICATE);
+            verify(publishCertificateStatusUpdateService).publish(CERTIFICATE, HandelsekodEnum.SIGNAT);
         }
     }
 }

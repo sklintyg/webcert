@@ -27,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException.Forbidden;
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
@@ -59,6 +60,7 @@ public class CreateDraftCertificateFromCS implements CreateDraftCertificate {
     private final PDLLogService pdlLogService;
     private final MonitoringLogService monitoringLogService;
     private final HandleApiErrorService handleApiErrorService;
+    private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
 
     @Override
     public CreateDraftCertificateResponseType create(Intyg certificate, IntygUser user) {
@@ -88,6 +90,8 @@ public class CreateDraftCertificateFromCS implements CreateDraftCertificate {
                 createdCertificate.getMetadata().getIssuedBy().getPersonId(),
                 NO_PREFILL_ELEMENTS
             );
+
+            publishCertificateStatusUpdateService.publish(createdCertificate, HandelsekodEnum.SKAPAT, Optional.of(user));
 
             return createSuccessResponse(createdCertificate.getMetadata().getId(), createdCertificate.getMetadata().getUnit().getUnitId());
         } catch (Forbidden exception) {

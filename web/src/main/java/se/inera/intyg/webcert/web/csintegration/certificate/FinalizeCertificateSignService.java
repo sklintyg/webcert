@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
@@ -33,6 +34,7 @@ public class FinalizeCertificateSignService {
     private final PDLLogService pdlLogService;
     private final WebCertUserService webCertUserService;
     private final MonitoringLogService monitoringLogService;
+    private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
 
     public void finalizeSign(Certificate certificate) {
         final var user = webCertUserService.getUser();
@@ -48,5 +50,7 @@ public class FinalizeCertificateSignService {
         pdlLogService.logSign(
             certificate
         );
+
+        publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SIGNAT);
     }
 }
