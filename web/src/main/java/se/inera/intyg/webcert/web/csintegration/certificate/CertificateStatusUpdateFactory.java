@@ -50,7 +50,7 @@ public class CertificateStatusUpdateFactory {
     }
 
     public static byte[] create(String encodedXmlRepresentation, HandelsekodEnum eventType,
-        LocalDateTime now, String issuingUserHsaId) {
+        LocalDateTime now, String handledByHsaId) {
         final var request = getRegisterCertificateType(encodedXmlRepresentation);
 
         final var certificateStatusUpdateForCareType = new CertificateStatusUpdateForCareType();
@@ -61,7 +61,7 @@ public class CertificateStatusUpdateFactory {
         certificateStatusUpdateForCareType.setSkickadeFragor(NotificationTypeConverter.toArenden(ArendeCount.getEmpty()));
         certificateStatusUpdateForCareType.setMottagnaFragor(NotificationTypeConverter.toArenden(ArendeCount.getEmpty()));
         certificateStatusUpdateForCareType.setHanteratAv(
-            NotificationRedeliveryUtil.getIIType(new HsaId(), issuingUserHsaId, HSA_ID_OID)
+            NotificationRedeliveryUtil.getIIType(new HsaId(), handledByHsaId, HSA_ID_OID)
         );
 
         final var factory = new ObjectFactory();

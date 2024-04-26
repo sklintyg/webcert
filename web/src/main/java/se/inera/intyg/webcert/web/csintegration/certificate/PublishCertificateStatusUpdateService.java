@@ -57,13 +57,13 @@ public class PublishCertificateStatusUpdateService {
             certificate.getMetadata().getId()
         );
 
-        final var issuingUser = intygUser.orElse(webCertUserService.getUser());
+        final var handledByUser = intygUser.orElse(webCertUserService.getUser());
 
         final var notificationMessage = notificationMessageFactory.create(
             certificate,
             certificateXmlResponse.getXml(),
             eventType,
-            issuingUser.getHsaId()
+            handledByUser.getHsaId()
         );
 
         notificationService.send(
