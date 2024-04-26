@@ -33,7 +33,8 @@ import se.inera.intyg.common.support.modules.support.api.notification.SchemaVers
 @RequiredArgsConstructor
 public class NotificationMessageFactory {
 
-    public NotificationMessage create(Certificate certificate, String encodedXmlRepresentation, HandelsekodEnum eventType) {
+    public NotificationMessage create(Certificate certificate, String encodedXmlRepresentation, HandelsekodEnum eventType,
+        String issuingUserHsaId) {
         final var now = LocalDateTime.now();
         final var notificationMessage = new NotificationMessage(
             certificate.getMetadata().getId(),
@@ -50,7 +51,7 @@ public class NotificationMessageFactory {
         );
 
         notificationMessage.setStatusUpdateXml(
-            CertificateStatusUpdateFactory.create(certificate, encodedXmlRepresentation, eventType, now)
+            CertificateStatusUpdateFactory.create(encodedXmlRepresentation, eventType, now, issuingUserHsaId)
         );
         return notificationMessage;
     }

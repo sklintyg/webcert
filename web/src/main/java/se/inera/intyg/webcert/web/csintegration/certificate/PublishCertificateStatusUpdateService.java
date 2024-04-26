@@ -30,6 +30,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlRequestDTO;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +41,7 @@ public class PublishCertificateStatusUpdateService {
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
     private final NotificationMessageFactory notificationMessageFactory;
     private final NotificationService notificationService;
+    private final WebCertUserService webCertUserService;
 
     public void publish(Certificate certificate, HandelsekodEnum eventType) {
         publish(certificate, eventType, Optional.empty());
@@ -55,10 +57,13 @@ public class PublishCertificateStatusUpdateService {
             certificate.getMetadata().getId()
         );
 
+        final var issuingUser = intygUser.orElse(webCertUserService.getUser());
+
         final var notificationMessage = notificationMessageFactory.create(
             certificate,
             certificateXmlResponse.getXml(),
-            eventType
+            eventType,
+            issuingUser.getHsaId()
         );
 
         notificationService.send(

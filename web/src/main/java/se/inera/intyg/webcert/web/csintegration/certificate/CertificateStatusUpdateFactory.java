@@ -31,7 +31,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import org.w3._2002._06.xmldsig_filter2.XPathType;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
-import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.support.xml.XmlMarshallerHelper;
 import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationTypeConverter;
@@ -50,10 +49,10 @@ public class CertificateStatusUpdateFactory {
         throw new IllegalStateException("Utility class");
     }
 
-    public static byte[] create(Certificate certificate, String encodedXmlRepresentation, HandelsekodEnum eventType,
-        LocalDateTime now) {
+    public static byte[] create(String encodedXmlRepresentation, HandelsekodEnum eventType,
+        LocalDateTime now, String issuingUserHsaId) {
         final var request = getRegisterCertificateType(encodedXmlRepresentation);
-        
+
         final var certificateStatusUpdateForCareType = new CertificateStatusUpdateForCareType();
         certificateStatusUpdateForCareType.setIntyg(request.getIntyg());
         certificateStatusUpdateForCareType.setHandelse(
@@ -62,7 +61,7 @@ public class CertificateStatusUpdateFactory {
         certificateStatusUpdateForCareType.setSkickadeFragor(NotificationTypeConverter.toArenden(ArendeCount.getEmpty()));
         certificateStatusUpdateForCareType.setMottagnaFragor(NotificationTypeConverter.toArenden(ArendeCount.getEmpty()));
         certificateStatusUpdateForCareType.setHanteratAv(
-            NotificationRedeliveryUtil.getIIType(new HsaId(), certificate.getMetadata().getIssuedBy().getPersonId(), HSA_ID_OID)
+            NotificationRedeliveryUtil.getIIType(new HsaId(), issuingUserHsaId, HSA_ID_OID)
         );
 
         final var factory = new ObjectFactory();
