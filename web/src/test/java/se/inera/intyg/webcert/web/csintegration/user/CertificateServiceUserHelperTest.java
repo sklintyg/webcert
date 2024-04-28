@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.csintegration.user;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -332,24 +331,24 @@ class CertificateServiceUserHelperTest {
 
             @Test
             void shouldSetSjfToTrue() {
-                when(webCertUser.getParameters()).thenReturn(parameters);
-                when(parameters.isSjf()).thenReturn(true);
+                webCertUser.setParameters(parameters);
+                when(webCertUser.isSjfActive()).thenReturn(true);
                 final var response = certificateServiceUserHelper.get();
                 assertTrue(response.getSjf());
             }
 
             @Test
             void shouldSetSjfToFalse() {
-                when(webCertUser.getParameters()).thenReturn(parameters);
-                when(parameters.isSjf()).thenReturn(false);
+                webCertUser.setParameters(parameters);
+                when(webCertUser.isSjfActive()).thenReturn(false);
                 final var response = certificateServiceUserHelper.get();
                 assertFalse(response.getSjf());
             }
 
             @Test
-            void shouldSetSjfToNull() {
+            void shouldSetSjfToFalseIfParametersNull() {
                 final var response = certificateServiceUserHelper.get();
-                assertNull(response.getSjf());
+                assertFalse(response.getSjf());
             }
         }
 

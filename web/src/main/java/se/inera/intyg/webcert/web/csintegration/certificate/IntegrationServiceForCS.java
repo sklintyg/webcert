@@ -59,7 +59,7 @@ public class IntegrationServiceForCS implements IntegrationService {
             csIntegrationRequestFactory.getCertificateRequest()
         );
 
-        if (user.getParameters().isSjf()) {
+        if (user.isSjfActive()) {
             logSjfService.log(certificate, user);
         }
 

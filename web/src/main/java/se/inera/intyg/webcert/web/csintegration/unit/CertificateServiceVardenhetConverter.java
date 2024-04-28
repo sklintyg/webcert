@@ -25,7 +25,7 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.AbstractVardenhet;
 @Component
 public class CertificateServiceVardenhetConverter {
 
-    public CertificateServiceUnitDTO convert(AbstractVardenhet unit, boolean inactiveUnit) {
+    public CertificateServiceUnitDTO convert(AbstractVardenhet unit, boolean isUnitInactive) {
         return CertificateServiceUnitDTO.builder()
             .id(unit.getId())
             .name(unit.getNamn())
@@ -34,7 +34,7 @@ public class CertificateServiceVardenhetConverter {
             .city(unit.getPostort())
             .phoneNumber(unit.getTelefonnummer())
             .email(unit.getEpost())
-            .inactive(inactiveUnit)
+            .inactive(isUnitInactive)
             .workplaceCode(unit.getArbetsplatskod())
             .build();
     }

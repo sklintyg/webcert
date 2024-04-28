@@ -44,7 +44,7 @@ public class CertificateServiceUnitHelper {
         final var unit = CertificateServiceUnitUtil.getUnit(user);
         return certificateServiceVardenhetConverter.convert(
             unit,
-            user.getParameters() != null && user.getParameters().isInactiveUnit()
+            user.isUnitInactive()
         );
     }
 
@@ -52,7 +52,7 @@ public class CertificateServiceUnitHelper {
         final var user = webCertUserService.getUser();
         return certificateServiceVardenhetConverter.convert(
             (AbstractVardenhet) user.getValdVardenhet(),
-            user.getParameters() != null && user.getParameters().isInactiveUnit()
+            user.isUnitInactive()
         );
     }
 }

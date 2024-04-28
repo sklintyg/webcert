@@ -161,4 +161,12 @@ public class WebCertUser extends IntygUser {
     public void setLaunchFromOrigin(String launchFromOrigin) {
         this.launchFromOrigin = launchFromOrigin;
     }
+
+    public boolean isSjfActive() {
+        return parameters != null && parameters.isSjf();
+    }
+
+    public boolean isUnitInactive() {
+        return parameters != null && parameters.isInactiveUnit();
+    }
 }
