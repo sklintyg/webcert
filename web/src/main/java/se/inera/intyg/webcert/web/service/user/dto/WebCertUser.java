@@ -169,4 +169,5 @@ public class WebCertUser extends IntygUser {
     public boolean isUnitInactive() {
         return parameters != null && parameters.isInactiveUnit();
     }
+
 }

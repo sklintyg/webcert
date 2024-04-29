@@ -38,6 +38,7 @@ public class IntegrationServiceForCS implements IntegrationService {
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
     private final MonitoringLogService monitoringLogService;
+    private final AlternateSsnEvaluator alternateSsnEvaluator;
     private final LogSjfService logSjfService;
 
     @Override
@@ -61,6 +62,11 @@ public class IntegrationServiceForCS implements IntegrationService {
 
         if (user.isSjfActive()) {
             logSjfService.log(certificate, user);
+        }
+
+        if (alternateSsnEvaluator.eligibleForUpdate(certificate, user)) {
+            monitoringLogService.logUtkastPatientDetailsUpdated(certificateId, certificateType);
+            user.getParameters().setBeforeAlternateSsn(prepareBeforeAlternateSsn.getOriginalPnr());
         }
 
         // TODO: Logga och uppdatera om patientens info behöver uppdateras (intyget är ett draft)
