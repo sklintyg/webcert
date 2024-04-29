@@ -57,7 +57,7 @@ public class PublishCertificateStatusUpdateService {
             certificate.getMetadata().getId()
         );
 
-        final var handledByUser = intygUser.orElse(webCertUserService.getUser());
+        final var handledByUser = intygUser.orElseGet(webCertUserService::getUser);
 
         final var notificationMessage = notificationMessageFactory.create(
             certificate,
