@@ -56,7 +56,6 @@ import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.facade.util.AngularClientUtil;
 import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
@@ -117,10 +116,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
     private CommonAuthoritiesResolver commonAuthoritiesResolver;
 
     @Autowired
-    private ReferensService referensService;
-
-    @Autowired
-    @Qualifier("intygIntegrationServiceImpl")
+    @Qualifier("integrationCertificateAggregator")
     private IntegrationService integrationService;
 
     @Autowired
@@ -347,9 +343,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
     protected Response handleRedirectToIntyg(UriInfo uriInfo, String intygTyp, String intygId, String enhetId, WebCertUser user) {
         try {
 
-            // Persist reference
-            handleReference(intygId, user.getParameters().getReference());
-
             if (Strings.nullToEmpty(enhetId).trim().isEmpty()) {
 
                 // If ENHET isn't set but the user only has one possible enhet that can be selected, we auto-select that one
@@ -405,14 +398,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
                 return buildNoContentErrorResponse(uriInfo);
             } else {
                 throw e;
-            }
-        }
-    }
-
-    private void handleReference(String intygId, String referens) {
-        if (referens != null) {
-            if (!referensService.referensExists(intygId)) {
-                referensService.saveReferens(intygId, referens);
             }
         }
     }

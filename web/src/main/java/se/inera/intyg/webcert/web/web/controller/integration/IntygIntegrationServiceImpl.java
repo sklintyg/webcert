@@ -18,11 +18,9 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integration;
 
+import com.google.common.base.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.google.common.base.Strings;
-
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -36,7 +34,7 @@ import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest
 /**
  * @author Magnus Ekstrand on 2017-10-09.
  */
-@Service
+@Service("integrationServiceForWC")
 public class IntygIntegrationServiceImpl extends IntegrationServiceImpl {
 
     @Autowired

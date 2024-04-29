@@ -33,15 +33,15 @@ public class AlternateSsnEvaluator {
             return false;
         }
 
-        if (!alternateSsnProvidedAndDoesNotMatchPatientIdOnCertificate(certificate, user)) {
+        if (alternateSsnProvidedAndDoesMatchPatientIdOnCertificate(certificate, user)) {
             return false;
         }
 
         return certificate.getLinks().stream().anyMatch(link -> link.getType().equals(ResourceLinkTypeEnum.EDIT_CERTIFICATE));
     }
 
-    private static boolean alternateSsnProvidedAndDoesNotMatchPatientIdOnCertificate(Certificate certificate, WebCertUser user) {
+    private static boolean alternateSsnProvidedAndDoesMatchPatientIdOnCertificate(Certificate certificate, WebCertUser user) {
         return user.getParameters() != null && user.getParameters().getAlternateSsn() != null && !user.getParameters().getAlternateSsn()
-            .isBlank() && !user.getParameters().getAlternateSsn().equals(certificate.getMetadata().getPatient().getPersonId().getId());
+            .isBlank() && user.getParameters().getAlternateSsn().equals(certificate.getMetadata().getPatient().getPersonId().getId());
     }
 }

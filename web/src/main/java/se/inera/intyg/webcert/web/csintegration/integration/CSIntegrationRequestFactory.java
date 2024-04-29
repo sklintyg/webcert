@@ -113,18 +113,23 @@ public class CSIntegrationRequestFactory {
             .build();
     }
 
-    public SaveCertificateRequestDTO saveRequest(Certificate certificate) {
+    public SaveCertificateRequestDTO saveRequest(Certificate certificate, String personId) {
+        return saveRequest(certificate, personId, null);
+    }
+
+    public SaveCertificateRequestDTO saveRequest(Certificate certificate, String personId, String externalReference) {
         return SaveCertificateRequestDTO.builder()
             .unit(certificateServiceUnitHelper.getUnit())
             .careUnit(certificateServiceUnitHelper.getCareUnit())
             .careProvider(certificateServiceUnitHelper.getCareProvider())
             .patient(
                 certificateServicePatientHelper.get(
-                    createPatientId(certificate.getMetadata().getPatient().getPersonId().getId())
+                    createPatientId(personId)
                 )
             )
             .user(certificateServiceUserHelper.get())
             .certificate(certificate)
+            .externalReference(externalReference)
             .build();
     }
 

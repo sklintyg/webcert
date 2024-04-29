@@ -30,6 +30,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
+import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastServiceImpl;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
@@ -38,7 +39,7 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirect
 /**
  * @author Magnus Ekstrand on 2017-10-24.
  */
-@Service("integrationServiceForWC")
+@Service
 public abstract class IntegrationServiceImpl implements IntegrationService {
 
     protected AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
@@ -51,6 +52,8 @@ public abstract class IntegrationServiceImpl implements IntegrationService {
 
     @Autowired
     private UtkastRepository utkastRepository;
+    @Autowired
+    private ReferensService referensService;
 
     // api
 
@@ -63,6 +66,7 @@ public abstract class IntegrationServiceImpl implements IntegrationService {
     public PrepareRedirectToIntyg prepareRedirectToIntyg(
         final String intygTyp, final String intygId,
         final WebCertUser user, final Personnummer prepareBeforeAlternateSsn) {
+        handleReference(intygId, user.getParameters().getReference());
 
         Utkast utkast = utkastRepository.findById(intygId).orElse(null);
 
@@ -73,6 +77,14 @@ public abstract class IntegrationServiceImpl implements IntegrationService {
         ensurePreparation(intygTypeInfo.getIntygType(), intygId, utkast, user, prepareBeforeAlternateSsn);
 
         return createPrepareRedirectToIntyg(intygTypeInfo, UtkastServiceImpl.isUtkast(utkast));
+    }
+
+    private void handleReference(String intygId, String referens) {
+        if (referens != null) {
+            if (!referensService.referensExists(intygId)) {
+                referensService.saveReferens(intygId, referens);
+            }
+        }
     }
 
     // protected scope

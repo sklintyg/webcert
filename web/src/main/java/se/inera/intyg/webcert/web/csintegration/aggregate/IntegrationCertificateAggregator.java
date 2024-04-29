@@ -27,7 +27,7 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.IntegrationService;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirectToIntyg;
 
-@Service
+@Service("integrationCertificateAggregator")
 public class IntegrationCertificateAggregator implements IntegrationService {
 
     private final CertificateServiceProfile certificateServiceProfile;
@@ -36,7 +36,7 @@ public class IntegrationCertificateAggregator implements IntegrationService {
 
     public IntegrationCertificateAggregator(CertificateServiceProfile certificateServiceProfile,
         @Qualifier("integrationServiceForWC") IntegrationService integrationServiceForWC,
-        IntegrationService integrationServiceForCS) {
+        @Qualifier("integrationServiceForCS") IntegrationService integrationServiceForCS) {
         this.certificateServiceProfile = certificateServiceProfile;
         this.integrationServiceForWC = integrationServiceForWC;
         this.integrationServiceForCS = integrationServiceForCS;

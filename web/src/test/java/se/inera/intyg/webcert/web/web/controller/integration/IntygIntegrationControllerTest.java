@@ -21,13 +21,9 @@ package se.inera.intyg.webcert.web.web.controller.integration;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.AdditionalMatchers.or;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -43,7 +39,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import org.junit.jupiter.api.BeforeEach;
@@ -67,7 +62,6 @@ import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.RequestOrigin;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
-import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.facade.util.AngularClientUtil;
@@ -99,9 +93,6 @@ public class IntygIntegrationControllerTest {
     private CommonAuthoritiesResolver authoritiesResolver;
 
     @Mock
-    private ReferensService referensService;
-
-    @Mock
     private IntygModuleRegistry moduleRegistry;
 
     @Spy
@@ -121,46 +112,6 @@ public class IntygIntegrationControllerTest {
     private Cache redisCacheLaunchId;
     @InjectMocks
     private IntygIntegrationController intygIntegrationController;
-
-    @Test
-    public void referenceGetsPersistedCorrectly() {
-        final var ref = "referens";
-        final var parameters = new IntegrationParameters(ref, null, ALTERNATE_SSN, null, null, null, null,
-            null, null, false, false, false, false, null);
-
-        final var user = createDefaultUser();
-        user.setParameters(parameters);
-
-        uriInfo = mock(UriInfo.class);
-        final var uriBuilder = UriBuilder.fromUri("https://wc.localtest.me/visa/xxxx-yyyyy-zzzzz-qqqqq/saved");
-        when(uriInfo.getBaseUriBuilder()).thenReturn(uriBuilder);
-        when(integrationService.prepareRedirectToIntyg(any(), any(), any())).thenReturn(createPrepareRedirectToIntyg());
-        when(referensService.referensExists(eq(INTYGSID))).thenReturn(false);
-        when(angularClientUtil.useAngularClient(any(WebCertUser.class))).thenReturn(true);
-
-        final var res = intygIntegrationController.handleRedirectToIntyg(uriInfo, INTYGSTYP, INTYGSID, ENHETSID, user);
-
-        assertEquals(Status.SEE_OTHER.getStatusCode(), res.getStatus());
-
-        verify(referensService).saveReferens(eq(INTYGSID), eq(ref));
-    }
-
-    @Test
-    public void referenceNotPersistedIfNotSupplied() {
-        final var user = createDefaultUserWithIntegrationParameters();
-
-        uriInfo = mock(UriInfo.class);
-        final var uriBuilder = UriBuilder.fromUri("https://wc.localtest.me/visa/xxxx-yyyyy-zzzzz-qqqqq/saved");
-        when(uriInfo.getBaseUriBuilder()).thenReturn(uriBuilder);
-        when(integrationService.prepareRedirectToIntyg(any(), any(), any())).thenReturn(createPrepareRedirectToIntyg());
-        when(angularClientUtil.useAngularClient(any(WebCertUser.class))).thenReturn(true);
-
-        final var res = intygIntegrationController.handleRedirectToIntyg(uriInfo, INTYGSTYP, INTYGSID, ENHETSID, user);
-
-        assertEquals(Status.SEE_OTHER.getStatusCode(), res.getStatus());
-
-        verify(referensService, times(0)).saveReferens(eq(INTYGSID), or(isNull(), any()));
-    }
 
     @Test
     public void invalidParametersShouldNotFailOnNullPatientInfo() {

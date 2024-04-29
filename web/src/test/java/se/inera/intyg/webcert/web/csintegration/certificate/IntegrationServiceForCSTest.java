@@ -19,28 +19,37 @@
 
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirectToIntyg;
 
 @ExtendWith(MockitoExtension.class)
 class IntegrationServiceForCSTest {
 
     private static final String CERTIFICATE_ID = "certificateId";
     private static final String CERTIFICATE_TYPE = "certificateType";
+    private static final String TYPE_VERSION = "typeVersion";
+    private static final String PERSON_ID = "191212121212";
+    private static final Personnummer PERSONAL_NUMBER = Personnummer.createPersonnummer(PERSON_ID).orElseThrow();
+    private static final GetCertificateRequestDTO GET_CERTIFICATE_REQUEST_DTO = GetCertificateRequestDTO.builder().build();
     @Mock
     private CSIntegrationRequestFactory csIntegrationRequestFactory;
     @Mock
@@ -49,8 +58,24 @@ class IntegrationServiceForCSTest {
     private LogSjfService logSjfService;
     @Mock
     private CSIntegrationService csIntegrationService;
+    @Mock
+    private CertificateDetailsUpdateService certificateDetailsUpdateService;
     @InjectMocks
     private IntegrationServiceForCS integrationServiceForCS;
+
+    private Certificate certificate;
+
+    @BeforeEach
+    void setUp() {
+        certificate = new Certificate();
+        certificate.setMetadata(
+            CertificateMetadata.builder()
+                .id(CERTIFICATE_ID)
+                .type(CERTIFICATE_TYPE)
+                .typeVersion(TYPE_VERSION)
+                .build()
+        );
+    }
 
     @Test
     void shallReturnNullIfCertificateDontExistInCS() {
@@ -60,11 +85,9 @@ class IntegrationServiceForCSTest {
 
     @Test
     void shallLogSjfIfActive() {
-        final var getCertificateRequestDTO = GetCertificateRequestDTO.builder().build();
-        final var certificate = new Certificate();
         doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
-        doReturn(getCertificateRequestDTO).when(csIntegrationRequestFactory).getCertificateRequest();
-        doReturn(certificate).when(csIntegrationService).getCertificate(CERTIFICATE_ID, getCertificateRequestDTO);
+        doReturn(GET_CERTIFICATE_REQUEST_DTO).when(csIntegrationRequestFactory).getCertificateRequest();
+        doReturn(certificate).when(csIntegrationService).getCertificate(CERTIFICATE_ID, GET_CERTIFICATE_REQUEST_DTO);
         doReturn(true).when(user).isSjfActive();
 
         integrationServiceForCS.prepareRedirectToIntyg(CERTIFICATE_TYPE, CERTIFICATE_ID, user);
@@ -73,14 +96,39 @@ class IntegrationServiceForCSTest {
 
     @Test
     void shallNotLogSjfIfNotActive() {
-        final var getCertificateRequestDTO = GetCertificateRequestDTO.builder().build();
-        final var certificate = new Certificate();
         doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
-        doReturn(getCertificateRequestDTO).when(csIntegrationRequestFactory).getCertificateRequest();
-        doReturn(certificate).when(csIntegrationService).getCertificate(CERTIFICATE_ID, getCertificateRequestDTO);
+        doReturn(GET_CERTIFICATE_REQUEST_DTO).when(csIntegrationRequestFactory).getCertificateRequest();
+        doReturn(certificate).when(csIntegrationService).getCertificate(CERTIFICATE_ID, GET_CERTIFICATE_REQUEST_DTO);
         doReturn(false).when(user).isSjfActive();
 
         integrationServiceForCS.prepareRedirectToIntyg(CERTIFICATE_TYPE, CERTIFICATE_ID, user);
         verifyNoInteractions(logSjfService);
+    }
+
+    @Test
+    void shallCallCertificateDetailsUpdateService() {
+        doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
+        doReturn(GET_CERTIFICATE_REQUEST_DTO).when(csIntegrationRequestFactory).getCertificateRequest();
+        doReturn(certificate).when(csIntegrationService).getCertificate(CERTIFICATE_ID, GET_CERTIFICATE_REQUEST_DTO);
+        doReturn(false).when(user).isSjfActive();
+
+        integrationServiceForCS.prepareRedirectToIntyg(CERTIFICATE_TYPE, CERTIFICATE_ID, user, PERSONAL_NUMBER);
+        verify(certificateDetailsUpdateService).update(certificate, user, PERSONAL_NUMBER);
+    }
+
+    @Test
+    void shallReturnPrepareRedirectToIntyg() {
+        final var expectedRedirect = new PrepareRedirectToIntyg();
+        expectedRedirect.setIntygTyp(CERTIFICATE_TYPE);
+        expectedRedirect.setIntygId(CERTIFICATE_ID);
+        expectedRedirect.setIntygTypeVersion(TYPE_VERSION);
+
+        doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
+        doReturn(GET_CERTIFICATE_REQUEST_DTO).when(csIntegrationRequestFactory).getCertificateRequest();
+        doReturn(certificate).when(csIntegrationService).getCertificate(CERTIFICATE_ID, GET_CERTIFICATE_REQUEST_DTO);
+        doReturn(false).when(user).isSjfActive();
+
+        final var actualRedirect = integrationServiceForCS.prepareRedirectToIntyg(CERTIFICATE_TYPE, CERTIFICATE_ID, user, PERSONAL_NUMBER);
+        assertEquals(expectedRedirect, actualRedirect);
     }
 }

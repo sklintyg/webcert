@@ -22,10 +22,10 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
-import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.IntegrationService;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirectToIntyg;
@@ -37,8 +37,7 @@ public class IntegrationServiceForCS implements IntegrationService {
 
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
-    private final MonitoringLogService monitoringLogService;
-    private final AlternateSsnEvaluator alternateSsnEvaluator;
+    private final CertificateDetailsUpdateService certificateDetailsUpdateService;
     private final LogSjfService logSjfService;
 
     @Override
@@ -64,14 +63,16 @@ public class IntegrationServiceForCS implements IntegrationService {
             logSjfService.log(certificate, user);
         }
 
-        if (alternateSsnEvaluator.shouldUpdate(certificate, user)) {
-            monitoringLogService.logUtkastPatientDetailsUpdated(certificateId, certificateType);
-            user.getParameters().setBeforeAlternateSsn(prepareBeforeAlternateSsn.getOriginalPnr());
-        }
+        certificateDetailsUpdateService.update(certificate, user, prepareBeforeAlternateSsn);
 
-        // TODO: Logga och uppdatera om patientens info behöver uppdateras (intyget är ett draft)
-        // TODO: Skicka med externalReference om det inte är redan satt och vi får med det som uthoppsparameter
+        return createPrepareRedirectToIntyg(certificate);
+    }
 
-        return null;
+    private static PrepareRedirectToIntyg createPrepareRedirectToIntyg(Certificate certificate) {
+        final var redirectToIntyg = new PrepareRedirectToIntyg();
+        redirectToIntyg.setIntygId(certificate.getMetadata().getId());
+        redirectToIntyg.setIntygTyp(certificate.getMetadata().getType());
+        redirectToIntyg.setIntygTypeVersion(certificate.getMetadata().getTypeVersion());
+        return redirectToIntyg;
     }
 }
