@@ -28,7 +28,7 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 @Component
 public class AlternateSsnEvaluator {
 
-    public boolean eligibleForUpdate(Certificate certificate, WebCertUser user) {
+    public boolean shouldUpdate(Certificate certificate, WebCertUser user) {
         if (!CertificateStatus.UNSIGNED.equals(certificate.getMetadata().getStatus())) {
             return false;
         }

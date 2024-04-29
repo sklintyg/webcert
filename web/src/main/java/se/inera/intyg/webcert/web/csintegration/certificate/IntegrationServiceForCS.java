@@ -64,7 +64,7 @@ public class IntegrationServiceForCS implements IntegrationService {
             logSjfService.log(certificate, user);
         }
 
-        if (alternateSsnEvaluator.eligibleForUpdate(certificate, user)) {
+        if (alternateSsnEvaluator.shouldUpdate(certificate, user)) {
             monitoringLogService.logUtkastPatientDetailsUpdated(certificateId, certificateType);
             user.getParameters().setBeforeAlternateSsn(prepareBeforeAlternateSsn.getOriginalPnr());
         }

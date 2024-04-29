@@ -70,7 +70,7 @@ class AlternateSsnEvaluatorTest {
     @Test
     void shallReturnFalseIfCertificateIsNotDraft() {
         doReturn(CertificateStatus.SIGNED).when(certificateMetadata).getStatus();
-        assertFalse(alternateSsnEvaluator.eligibleForUpdate(certificate, webCertUser));
+        assertFalse(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
     }
 
     @Nested
@@ -88,7 +88,7 @@ class AlternateSsnEvaluatorTest {
             doReturn("personId-2").when(integrationParameters).getAlternateSsn();
             doReturn(List.of(ResourceLink.builder().type(ResourceLinkTypeEnum.EDIT_CERTIFICATE).build())).when(certificate).getLinks();
 
-            assertTrue(alternateSsnEvaluator.eligibleForUpdate(certificate, webCertUser));
+            assertTrue(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
         }
 
         @Test
@@ -97,7 +97,7 @@ class AlternateSsnEvaluatorTest {
             doReturn(integrationParameters).when(webCertUser).getParameters();
             doReturn("personId-1").when(integrationParameters).getAlternateSsn();
 
-            assertFalse(alternateSsnEvaluator.eligibleForUpdate(certificate, webCertUser));
+            assertFalse(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
         }
 
         @Test
@@ -105,7 +105,7 @@ class AlternateSsnEvaluatorTest {
             doReturn(integrationParameters).when(webCertUser).getParameters();
             doReturn(null).when(integrationParameters).getAlternateSsn();
 
-            assertFalse(alternateSsnEvaluator.eligibleForUpdate(certificate, webCertUser));
+            assertFalse(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
         }
 
 
@@ -114,12 +114,12 @@ class AlternateSsnEvaluatorTest {
             doReturn(integrationParameters).when(webCertUser).getParameters();
             doReturn("").when(integrationParameters).getAlternateSsn();
 
-            assertFalse(alternateSsnEvaluator.eligibleForUpdate(certificate, webCertUser));
+            assertFalse(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
         }
 
         @Test
         void shouldReturnFalseWhenIntegrationParametersIsNull() {
-            assertFalse(alternateSsnEvaluator.eligibleForUpdate(certificate, webCertUser));
+            assertFalse(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
         }
     }
 
@@ -137,13 +137,13 @@ class AlternateSsnEvaluatorTest {
         @Test
         void shallReturnTrueIfUserHasRightToEdit() {
             doReturn(List.of(ResourceLink.builder().type(ResourceLinkTypeEnum.EDIT_CERTIFICATE).build())).when(certificate).getLinks();
-            assertTrue(alternateSsnEvaluator.eligibleForUpdate(certificate, webCertUser));
+            assertTrue(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
         }
 
         @Test
         void shallReturnFalseIfUserDontHaveRightToEdit() {
             doReturn(List.of(ResourceLink.builder().type(ResourceLinkTypeEnum.SEND_CERTIFICATE).build())).when(certificate).getLinks();
-            assertFalse(alternateSsnEvaluator.eligibleForUpdate(certificate, webCertUser));
+            assertFalse(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
         }
     }
 }
