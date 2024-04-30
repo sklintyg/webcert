@@ -498,4 +498,33 @@ public class IntygIntegrationControllerTest {
                 redirectToIntyg.getMetadata().get(HttpHeaders.LOCATION).get(0).toString());
         }
     }
+
+    @Nested
+    class GrantedRoleTest {
+
+        @Test
+        void shouldReturnLakare() {
+            assertEquals(AuthoritiesConstants.ROLE_LAKARE, intygIntegrationController.getGrantedRoles()[0]);
+        }
+
+        @Test
+        void shouldReturnAdmin() {
+            assertEquals(AuthoritiesConstants.ROLE_TANDLAKARE, intygIntegrationController.getGrantedRoles()[1]);
+        }
+
+        @Test
+        void shouldReturnTandlakare() {
+            assertEquals(AuthoritiesConstants.ROLE_ADMIN, intygIntegrationController.getGrantedRoles()[2]);
+        }
+
+        @Test
+        void shouldReturnBarnmorska() {
+            assertEquals(AuthoritiesConstants.ROLE_SJUKSKOTERSKA, intygIntegrationController.getGrantedRoles()[3]);
+        }
+
+        @Test
+        void shouldReturnSjukskoterska() {
+            assertEquals(AuthoritiesConstants.ROLE_BARNMORSKA, intygIntegrationController.getGrantedRoles()[4]);
+        }
+    }
 }
