@@ -20,5 +20,5 @@
 package se.inera.intyg.webcert.web.csintegration.user;
 
 public enum AccessScopeType {
-    WITHIN_CARE_UNIT, WITHIN_CARE_PROVIDER, ALL_UNITS
+    WITHIN_CARE_UNIT, WITHIN_CARE_PROVIDER, ALL_CARE_PROVIDERS
 }

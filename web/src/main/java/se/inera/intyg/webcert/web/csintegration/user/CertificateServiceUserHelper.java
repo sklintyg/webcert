@@ -57,7 +57,7 @@ public class CertificateServiceUserHelper {
 
     private AccessScopeType getAccessScope(WebCertUser user) {
         if (user.getOrigin().equals(INTEGRATED) && user.isSjfActive()) {
-            return AccessScopeType.ALL_UNITS;
+            return AccessScopeType.ALL_CARE_PROVIDERS;
         }
         if (user.getOrigin().equals(INTEGRATED)) {
             return AccessScopeType.WITHIN_CARE_PROVIDER;

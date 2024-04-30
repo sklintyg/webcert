@@ -337,7 +337,7 @@ class CertificateServiceUserHelperTest {
                     webCertUser.setParameters(parameters);
                     when(webCertUser.isSjfActive()).thenReturn(true);
                     final var response = certificateServiceUserHelper.get();
-                    assertEquals(AccessScopeType.ALL_UNITS, response.getAccessScope());
+                    assertEquals(AccessScopeType.ALL_CARE_PROVIDERS, response.getAccessScope());
                 }
 
                 @Test
