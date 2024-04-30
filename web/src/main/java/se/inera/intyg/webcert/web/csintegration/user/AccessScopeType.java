@@ -19,31 +19,6 @@
 
 package se.inera.intyg.webcert.web.csintegration.user;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import java.util.List;
-import lombok.Builder;
-import lombok.Value;
-import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserDTO.CertificateServiceUserDTOBuilder;
-
-@JsonDeserialize(builder = CertificateServiceUserDTOBuilder.class)
-@Value
-@Builder
-public class CertificateServiceUserDTO {
-
-    String id;
-    String firstName;
-    String lastName;
-    String middleName;
-    String fullName;
-    CertificateServiceUserRole role;
-    List<PaTitleDTO> paTitles;
-    List<String> specialities;
-    Boolean blocked;
-    AccessScopeType accessScope;
-
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class CertificateServiceUserDTOBuilder {
-
-    }
+public enum AccessScopeType {
+    WITHIN_CARE_UNIT, WITHIN_CARE_PROVIDER, ALL_UNITS
 }

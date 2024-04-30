@@ -36,6 +36,7 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 @RequiredArgsConstructor
 public class CertificateServiceUserHelper {
 
+    private static final String INTEGRATED = "DJUPINTEGRATION";
     private final WebCertUserService webCertUserService;
     private final AuthoritiesHelper authoritiesHelper;
 
@@ -49,9 +50,20 @@ public class CertificateServiceUserHelper {
             .blocked(isBlocked(user))
             .paTitles(paTitles(user.getBefattningar()))
             .specialities(user.getSpecialiseringar())
-            .sjf(user.isSjfActive())
+            .accessScope(getAccessScope(user))
             .role(getRole(user))
             .build();
+    }
+
+    private AccessScopeType getAccessScope(WebCertUser user) {
+        if (user.getOrigin().equals(INTEGRATED) && user.isSjfActive()) {
+            return AccessScopeType.ALL_UNITS;
+        }
+        if (user.getOrigin().equals(INTEGRATED)) {
+            return AccessScopeType.WITHIN_CARE_PROVIDER;
+        }
+
+        return AccessScopeType.WITHIN_CARE_UNIT;
     }
 
     private List<PaTitleDTO> paTitles(List<String> befattningar) {

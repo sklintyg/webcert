@@ -80,31 +80,313 @@ class CertificateServiceUserHelperTest {
     @InjectMocks
     CertificateServiceUserHelper certificateServiceUserHelper;
 
-    @BeforeEach
-    void setup() {
-        webCertUser = mock(WebCertUser.class);
-        subscription = mock(SubscriptionInfo.class);
+    @Nested
+    class DeepIntegratedTests {
 
-        when(webCertUser.getHsaId())
-            .thenReturn(ID);
+        @BeforeEach
+        void setup() {
+            webCertUser = mock(WebCertUser.class);
+            subscription = mock(SubscriptionInfo.class);
 
-        when(webCertUserService.getUser())
-            .thenReturn(webCertUser);
+            when(webCertUser.getHsaId())
+                .thenReturn(ID);
 
-        when(webCertUser.getOrigin())
-            .thenReturn("DJUPINTEGRATION");
+            when(webCertUserService.getUser())
+                .thenReturn(webCertUser);
 
-        when(webCertUser.getSpecialiseringar())
-            .thenReturn(SPECIALITIES);
+            when(webCertUser.getOrigin())
+                .thenReturn("DJUPINTEGRATION");
+
+            when(webCertUser.getSpecialiseringar())
+                .thenReturn(SPECIALITIES);
+        }
+
+        @Nested
+        class HasRole {
+
+            private final Map<String, Role> roles = new HashMap<>();
+
+            @BeforeEach
+            void setup() {
+                final var role = new Role();
+                role.setName(AuthoritiesConstants.ROLE_LAKARE);
+                roles.put("FIRST", role);
+                when(webCertUser.getRoles())
+                    .thenReturn(roles);
+            }
+
+            @Test
+            void shouldReturnUserWithId() {
+                final var response = certificateServiceUserHelper.get();
+
+                assertEquals(ID, response.getId());
+            }
+
+            @Test
+            void shouldReturnUserWithSpecialities() {
+                final var response = certificateServiceUserHelper.get();
+
+                assertEquals(SPECIALITIES, response.getSpecialities());
+            }
+
+            @Nested
+            class Blocked {
+
+                @Test
+                void shouldReturnBlockedFalseIfOriginIsNotNormal() {
+                    final var response = certificateServiceUserHelper.get();
+
+                    assertFalse(response.getBlocked());
+                }
+
+                @Nested
+                class OriginNormal {
+
+                    @BeforeEach
+                    void setup() {
+                        final var careProvider = mock(SelectableVardenhet.class);
+                        when(webCertUser.getOrigin())
+                            .thenReturn("NORMAL");
+
+                        when(webCertUser.getSubscriptionInfo())
+                            .thenReturn(subscription);
+
+                        when(careProvider.getId())
+                            .thenReturn(CARE_PROVIDER_ID);
+                        when(webCertUser.getValdVardgivare())
+                            .thenReturn(careProvider);
+                    }
+
+                    @Test
+                    void shouldReturnBlockedFalseIfSubscriptionExistsAndNotBlocked() {
+                        when(subscription.getCareProvidersMissingSubscription())
+                            .thenReturn(HAS_SUBSCRIPTION);
+                        when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL)).thenReturn(false);
+
+                        final var response = certificateServiceUserHelper.get();
+
+                        assertFalse(response.getBlocked());
+                    }
+
+                    @Test
+                    void shouldReturnBlockedTrueIfSubscriptionIsMissing() {
+                        when(subscription.getCareProvidersMissingSubscription())
+                            .thenReturn(HAS_NOT_SUBSCRIPTION);
+
+                        final var response = certificateServiceUserHelper.get();
+
+                        assertTrue(response.getBlocked());
+                    }
+
+                    @Test
+                    void shouldReturnBlockedTrueIfBlocked() {
+                        when(subscription.getCareProvidersMissingSubscription())
+                            .thenReturn(HAS_SUBSCRIPTION);
+                        when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL)).thenReturn(true);
+
+                        final var response = certificateServiceUserHelper.get();
+
+                        assertTrue(response.getBlocked());
+                    }
+                }
+            }
+
+            @Nested
+            class TestRole {
+
+                @Test
+                void shouldReturnUserWithRoleDoctorFromDoctor() {
+                    addRole(AuthoritiesConstants.ROLE_LAKARE);
+
+                    final var response = certificateServiceUserHelper.get();
+
+                    assertEquals(CertificateServiceUserRole.DOCTOR, response.getRole());
+                }
+
+                @Test
+                void shouldReturnUserWithRolePrivateDoctorFromPrivatlakare() {
+                    addRole(AuthoritiesConstants.ROLE_PRIVATLAKARE);
+
+                    final var response = certificateServiceUserHelper.get();
+
+                    assertEquals(CertificateServiceUserRole.PRIVATE_DOCTOR, response.getRole());
+                }
+
+                @Test
+                void shouldReturnUserWithRoleAdministratorFromAdministrator() {
+                    addRole(AuthoritiesConstants.ROLE_ADMIN);
+
+                    final var response = certificateServiceUserHelper.get();
+
+                    assertEquals(CertificateServiceUserRole.CARE_ADMIN, response.getRole());
+                }
+
+                @Test
+                void shouldReturnUserWithRoleNurseFromSjukskoterska() {
+                    addRole(AuthoritiesConstants.ROLE_SJUKSKOTERSKA);
+
+                    final var response = certificateServiceUserHelper.get();
+
+                    assertEquals(CertificateServiceUserRole.NURSE, response.getRole());
+                }
+
+                @Test
+                void shouldReturnUserWithRoleMidwifeFromBarnmorska() {
+                    addRole(AuthoritiesConstants.ROLE_BARNMORSKA);
+
+                    final var response = certificateServiceUserHelper.get();
+
+                    assertEquals(CertificateServiceUserRole.MIDWIFE, response.getRole());
+                }
+
+                @Test
+                void shouldReturnUserWithRoleDentistFromTandlakare() {
+                    addRole(AuthoritiesConstants.ROLE_TANDLAKARE);
+
+                    final var response = certificateServiceUserHelper.get();
+
+                    assertEquals(CertificateServiceUserRole.DENTIST, response.getRole());
+                }
+
+                @Test
+                void shouldThrowExceptionIfUnknownRole() {
+                    addRole("");
+
+                    assertThrows(IllegalArgumentException.class, () -> certificateServiceUserHelper.get());
+                }
+            }
+
+            @Nested
+            class PaTitles {
+
+                @Test
+                void shouldReturnPaTitlesWhenDescriptionExists() {
+                    final var expectedPaTitles = List.of(
+                        PaTitleDTO.builder()
+                            .code(CODE_ONE)
+                            .description(DESCRIPTION_ONE)
+                            .build(),
+                        PaTitleDTO.builder()
+                            .code(CODE_TWO)
+                            .description(DESCRIPTION_TWO)
+                            .build()
+                    );
+
+                    when(webCertUser.getBefattningar())
+                        .thenReturn(PA_TITLES);
+
+                    try (MockedStatic<BefattningService> utilities = Mockito.mockStatic(BefattningService.class)) {
+                        utilities.when(() -> BefattningService.getDescriptionFromCode(CODE_ONE)).thenReturn(Optional.of(DESCRIPTION_ONE));
+                        utilities.when(() -> BefattningService.getDescriptionFromCode(CODE_TWO)).thenReturn(Optional.of(DESCRIPTION_TWO));
+
+                        final var response = certificateServiceUserHelper.get();
+
+                        assertEquals(expectedPaTitles, response.getPaTitles());
+                    }
+                }
+
+                @Test
+                void shouldReturnPaTitlesWhenDescriptionDoesntExists() {
+                    final var expectedPaTitles = List.of(
+                        PaTitleDTO.builder()
+                            .code(CODE_ONE)
+                            .description(CODE_ONE)
+                            .build(),
+                        PaTitleDTO.builder()
+                            .code(CODE_TWO)
+                            .description(CODE_TWO)
+                            .build()
+                    );
+
+                    when(webCertUser.getBefattningar())
+                        .thenReturn(PA_TITLES);
+
+                    try (MockedStatic<BefattningService> utilities = Mockito.mockStatic(BefattningService.class)) {
+                        utilities.when(() -> BefattningService.getDescriptionFromCode(CODE_ONE)).thenReturn(Optional.empty());
+                        utilities.when(() -> BefattningService.getDescriptionFromCode(CODE_TWO)).thenReturn(Optional.empty());
+
+                        final var response = certificateServiceUserHelper.get();
+
+                        assertEquals(expectedPaTitles, response.getPaTitles());
+                    }
+                }
+
+                @Test
+                void shouldReturnEmptyPaTitles() {
+                    final var expectedPaTitles = Collections.emptyList();
+
+                    when(webCertUser.getBefattningar())
+                        .thenReturn(Collections.emptyList());
+
+                    final var response = certificateServiceUserHelper.get();
+
+                    assertEquals(expectedPaTitles, response.getPaTitles());
+                }
+            }
+
+            @Nested
+            class AccessScopeTests {
+
+                @BeforeEach
+                void setUp() {
+                    parameters = mock(IntegrationParameters.class);
+                }
+
+                @Test
+                void shouldSetAccessTokenToAllUnits() {
+                    webCertUser.setParameters(parameters);
+                    when(webCertUser.isSjfActive()).thenReturn(true);
+                    final var response = certificateServiceUserHelper.get();
+                    assertEquals(AccessScopeType.ALL_UNITS, response.getAccessScope());
+                }
+
+                @Test
+                void shouldSetAccessTokenToWithinCareProvider() {
+                    webCertUser.setParameters(parameters);
+                    when(webCertUser.isSjfActive()).thenReturn(false);
+                    final var response = certificateServiceUserHelper.get();
+                    assertEquals(AccessScopeType.WITHIN_CARE_PROVIDER, response.getAccessScope());
+                }
+            }
+
+            private void addRole(String roleName) {
+                roles.remove("FIRST");
+                final var role = new Role();
+                role.setName(roleName);
+                roles.put("ROLE", role);
+            }
+        }
     }
 
     @Nested
-    class HasRole {
+    class NotDeepIntegrationTest {
 
         private final Map<String, Role> roles = new HashMap<>();
 
         @BeforeEach
         void setup() {
+            webCertUser = mock(WebCertUser.class);
+            subscription = mock(SubscriptionInfo.class);
+            final var careProvider = mock(SelectableVardenhet.class);
+
+            when(webCertUser.getHsaId())
+                .thenReturn(ID);
+
+            when(webCertUserService.getUser())
+                .thenReturn(webCertUser);
+
+            when(webCertUser.getOrigin())
+                .thenReturn("NORMAL");
+
+            when(webCertUser.getSpecialiseringar())
+                .thenReturn(SPECIALITIES);
+
+            when(webCertUser.getValdVardgivare())
+                .thenReturn(careProvider);
+
+            when(webCertUser.getSubscriptionInfo())
+                .thenReturn(subscription);
+
             final var role = new Role();
             role.setName(AuthoritiesConstants.ROLE_LAKARE);
             roles.put("FIRST", role);
@@ -112,217 +394,8 @@ class CertificateServiceUserHelperTest {
                 .thenReturn(roles);
         }
 
-        @Test
-        void shouldReturnUserWithId() {
-            final var response = certificateServiceUserHelper.get();
-
-            assertEquals(ID, response.getId());
-        }
-
-        @Test
-        void shouldReturnUserWithSpecialities() {
-            final var response = certificateServiceUserHelper.get();
-
-            assertEquals(SPECIALITIES, response.getSpecialities());
-        }
-
         @Nested
-        class Blocked {
-
-            @Test
-            void shouldReturnBlockedFalseIfOriginIsNotNormal() {
-                final var response = certificateServiceUserHelper.get();
-
-                assertFalse(response.getBlocked());
-            }
-
-            @Nested
-            class OriginNormal {
-
-                @BeforeEach
-                void setup() {
-                    final var careProvider = mock(SelectableVardenhet.class);
-                    when(webCertUser.getOrigin())
-                        .thenReturn("NORMAL");
-
-                    when(webCertUser.getSubscriptionInfo())
-                        .thenReturn(subscription);
-
-                    when(careProvider.getId())
-                        .thenReturn(CARE_PROVIDER_ID);
-                    when(webCertUser.getValdVardgivare())
-                        .thenReturn(careProvider);
-                }
-
-                @Test
-                void shouldReturnBlockedFalseIfSubscriptionExistsAndNotBlocked() {
-                    when(subscription.getCareProvidersMissingSubscription())
-                        .thenReturn(HAS_SUBSCRIPTION);
-                    when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL)).thenReturn(false);
-
-                    final var response = certificateServiceUserHelper.get();
-
-                    assertFalse(response.getBlocked());
-                }
-
-                @Test
-                void shouldReturnBlockedTrueIfSubscriptionIsMissing() {
-                    when(subscription.getCareProvidersMissingSubscription())
-                        .thenReturn(HAS_NOT_SUBSCRIPTION);
-
-                    final var response = certificateServiceUserHelper.get();
-
-                    assertTrue(response.getBlocked());
-                }
-
-                @Test
-                void shouldReturnBlockedTrueIfBlocked() {
-                    when(subscription.getCareProvidersMissingSubscription())
-                        .thenReturn(HAS_SUBSCRIPTION);
-                    when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL)).thenReturn(true);
-
-                    final var response = certificateServiceUserHelper.get();
-
-                    assertTrue(response.getBlocked());
-                }
-            }
-        }
-
-        @Nested
-        class TestRole {
-
-            @Test
-            void shouldReturnUserWithRoleDoctorFromDoctor() {
-                addRole(AuthoritiesConstants.ROLE_LAKARE);
-
-                final var response = certificateServiceUserHelper.get();
-
-                assertEquals(CertificateServiceUserRole.DOCTOR, response.getRole());
-            }
-
-            @Test
-            void shouldReturnUserWithRolePrivateDoctorFromPrivatlakare() {
-                addRole(AuthoritiesConstants.ROLE_PRIVATLAKARE);
-
-                final var response = certificateServiceUserHelper.get();
-
-                assertEquals(CertificateServiceUserRole.PRIVATE_DOCTOR, response.getRole());
-            }
-
-            @Test
-            void shouldReturnUserWithRoleAdministratorFromAdministrator() {
-                addRole(AuthoritiesConstants.ROLE_ADMIN);
-
-                final var response = certificateServiceUserHelper.get();
-
-                assertEquals(CertificateServiceUserRole.CARE_ADMIN, response.getRole());
-            }
-
-            @Test
-            void shouldReturnUserWithRoleNurseFromSjukskoterska() {
-                addRole(AuthoritiesConstants.ROLE_SJUKSKOTERSKA);
-
-                final var response = certificateServiceUserHelper.get();
-
-                assertEquals(CertificateServiceUserRole.NURSE, response.getRole());
-            }
-
-            @Test
-            void shouldReturnUserWithRoleMidwifeFromBarnmorska() {
-                addRole(AuthoritiesConstants.ROLE_BARNMORSKA);
-
-                final var response = certificateServiceUserHelper.get();
-
-                assertEquals(CertificateServiceUserRole.MIDWIFE, response.getRole());
-            }
-
-            @Test
-            void shouldReturnUserWithRoleDentistFromTandlakare() {
-                addRole(AuthoritiesConstants.ROLE_TANDLAKARE);
-
-                final var response = certificateServiceUserHelper.get();
-
-                assertEquals(CertificateServiceUserRole.DENTIST, response.getRole());
-            }
-
-            @Test
-            void shouldThrowExceptionIfUnknownRole() {
-                addRole("");
-
-                assertThrows(IllegalArgumentException.class, () -> certificateServiceUserHelper.get());
-            }
-        }
-
-        @Nested
-        class PaTitles {
-
-            @Test
-            void shouldReturnPaTitlesWhenDescriptionExists() {
-                final var expectedPaTitles = List.of(
-                    PaTitleDTO.builder()
-                        .code(CODE_ONE)
-                        .description(DESCRIPTION_ONE)
-                        .build(),
-                    PaTitleDTO.builder()
-                        .code(CODE_TWO)
-                        .description(DESCRIPTION_TWO)
-                        .build()
-                );
-
-                when(webCertUser.getBefattningar())
-                    .thenReturn(PA_TITLES);
-
-                try (MockedStatic<BefattningService> utilities = Mockito.mockStatic(BefattningService.class)) {
-                    utilities.when(() -> BefattningService.getDescriptionFromCode(CODE_ONE)).thenReturn(Optional.of(DESCRIPTION_ONE));
-                    utilities.when(() -> BefattningService.getDescriptionFromCode(CODE_TWO)).thenReturn(Optional.of(DESCRIPTION_TWO));
-
-                    final var response = certificateServiceUserHelper.get();
-
-                    assertEquals(expectedPaTitles, response.getPaTitles());
-                }
-            }
-
-            @Test
-            void shouldReturnPaTitlesWhenDescriptionDoesntExists() {
-                final var expectedPaTitles = List.of(
-                    PaTitleDTO.builder()
-                        .code(CODE_ONE)
-                        .description(CODE_ONE)
-                        .build(),
-                    PaTitleDTO.builder()
-                        .code(CODE_TWO)
-                        .description(CODE_TWO)
-                        .build()
-                );
-
-                when(webCertUser.getBefattningar())
-                    .thenReturn(PA_TITLES);
-
-                try (MockedStatic<BefattningService> utilities = Mockito.mockStatic(BefattningService.class)) {
-                    utilities.when(() -> BefattningService.getDescriptionFromCode(CODE_ONE)).thenReturn(Optional.empty());
-                    utilities.when(() -> BefattningService.getDescriptionFromCode(CODE_TWO)).thenReturn(Optional.empty());
-
-                    final var response = certificateServiceUserHelper.get();
-
-                    assertEquals(expectedPaTitles, response.getPaTitles());
-                }
-            }
-
-            @Test
-            void shouldReturnEmptyPaTitles() {
-                final var expectedPaTitles = Collections.emptyList();
-
-                when(webCertUser.getBefattningar())
-                    .thenReturn(Collections.emptyList());
-
-                final var response = certificateServiceUserHelper.get();
-
-                assertEquals(expectedPaTitles, response.getPaTitles());
-            }
-        }
-
-        @Nested
-        class IsSjfTest {
+        class AccessScopeTests {
 
             @BeforeEach
             void setUp() {
@@ -330,33 +403,11 @@ class CertificateServiceUserHelperTest {
             }
 
             @Test
-            void shouldSetSjfToTrue() {
+            void shouldSetAccessTokenToWithinCareUnit() {
                 webCertUser.setParameters(parameters);
-                when(webCertUser.isSjfActive()).thenReturn(true);
                 final var response = certificateServiceUserHelper.get();
-                assertTrue(response.getSjf());
+                assertEquals(AccessScopeType.WITHIN_CARE_UNIT, response.getAccessScope());
             }
-
-            @Test
-            void shouldSetSjfToFalse() {
-                webCertUser.setParameters(parameters);
-                when(webCertUser.isSjfActive()).thenReturn(false);
-                final var response = certificateServiceUserHelper.get();
-                assertFalse(response.getSjf());
-            }
-
-            @Test
-            void shouldSetSjfToFalseIfParametersNull() {
-                final var response = certificateServiceUserHelper.get();
-                assertFalse(response.getSjf());
-            }
-        }
-
-        private void addRole(String roleName) {
-            roles.remove("FIRST");
-            final var role = new Role();
-            role.setName(roleName);
-            roles.put("ROLE", role);
         }
     }
 }
