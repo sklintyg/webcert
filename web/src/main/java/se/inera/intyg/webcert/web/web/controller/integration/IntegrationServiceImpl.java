@@ -80,10 +80,8 @@ public abstract class IntegrationServiceImpl implements IntegrationService {
     }
 
     private void handleReference(String intygId, String referens) {
-        if (referens != null) {
-            if (!referensService.referensExists(intygId)) {
-                referensService.saveReferens(intygId, referens);
-            }
+        if (referens != null && !referensService.referensExists(intygId)) {
+            referensService.saveReferens(intygId, referens);
         }
     }
 

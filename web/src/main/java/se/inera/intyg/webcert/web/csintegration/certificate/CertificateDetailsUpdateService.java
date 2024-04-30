@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
@@ -36,6 +37,7 @@ public class CertificateDetailsUpdateService {
     private final MonitoringLogService monitoringLogService;
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+    private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
 
     public void update(Certificate certificate, WebCertUser user, Personnummer beforeAlternateSsn) {
         final var shouldUpdatePatientDetails = alternateSsnEvaluator.shouldUpdate(certificate, user);
@@ -60,6 +62,7 @@ public class CertificateDetailsUpdateService {
                 certificate.getMetadata().getId(),
                 certificate.getMetadata().getType()
             );
+            publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.ANDRAT);
             user.getParameters().setBeforeAlternateSsn(beforeAlternateSsn.getOriginalPnr());
         }
     }

@@ -31,6 +31,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
@@ -55,6 +56,8 @@ class CertificateDetailsUpdateServiceTest {
     private Certificate certificate;
     private static final WebCertUser WEBCERT_USER = new WebCertUser();
     private static final Personnummer PERSONAL_NUMBER = Personnummer.createPersonnummer(PERSON_ID).orElseThrow();
+    @Mock
+    private PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
     @Mock
     private IntegrationParameters integrationParameters;
     @Mock
@@ -117,6 +120,24 @@ class CertificateDetailsUpdateServiceTest {
             doReturn(true).when(alternateSsnEvaluator).shouldUpdate(certificate, webCertUser);
             certificateDetailsUpdateService.update(certificate, webCertUser, PERSONAL_NUMBER);
             assertEquals(PERSONAL_NUMBER.getOriginalPnr(), webCertUser.getParameters().getBeforeAlternateSsn());
+        }
+    }
+
+    @Nested
+    class PublishEventTest {
+
+        @Test
+        void shallPublishStatusUpdate() {
+            doReturn(true).when(alternateSsnEvaluator).shouldUpdate(certificate, WEBCERT_USER);
+            certificateDetailsUpdateService.update(certificate, WEBCERT_USER, PERSONAL_NUMBER);
+            verify(publishCertificateStatusUpdateService).publish(certificate, HandelsekodEnum.ANDRAT);
+        }
+
+        @Test
+        void shallNotPublishStatusUpdate() {
+            doReturn(false).when(alternateSsnEvaluator).shouldUpdate(certificate, WEBCERT_USER);
+            certificateDetailsUpdateService.update(certificate, WEBCERT_USER, PERSONAL_NUMBER);
+            verifyNoInteractions(publishCertificateStatusUpdateService);
         }
     }
 
