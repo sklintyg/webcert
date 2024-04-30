@@ -42,6 +42,7 @@ public class CertificateServiceIntegrationUserHelper {
             .paTitles(paTitles(user.getBefattningar()))
             .specialities(user.getSpecialiseringar())
             .role(getRole(user))
+            .accessScope(AccessScopeType.WITHIN_CARE_PROVIDER)
             .build();
     }
 
@@ -55,7 +56,7 @@ public class CertificateServiceIntegrationUserHelper {
             )
             .collect(Collectors.toList());
     }
-    
+
     private CertificateServiceUserRole getRole(IntygUser user) {
         final var roles = user.getRoles();
         if (roles == null || roles.values().isEmpty()) {

@@ -241,6 +241,11 @@ class CertificateServiceIntegrationUserHelperTest {
             }
         }
 
+        @Test
+        void shallIncludeAccessScope() {
+            assertEquals(AccessScopeType.WITHIN_CARE_PROVIDER, certificateServiceIntegrationUserHelper.get(intygUser).getAccessScope());
+        }
+
         private void addRole(String roleName) {
             roles.remove("FIRST");
             final var role = new Role();
