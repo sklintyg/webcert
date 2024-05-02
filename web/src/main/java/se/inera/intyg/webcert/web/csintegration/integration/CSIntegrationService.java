@@ -46,6 +46,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificat
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetExternalTypeVersionRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetListCertificatesResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoRequestDTO;
@@ -75,6 +76,7 @@ public class CSIntegrationService {
     private static final String CERTIFICATE_ENDPOINT_URL = "/api/certificate";
     private static final String PATIENT_ENDPOINT_URL = "/api/patient";
     private static final String CERTIFICATE_TYPE_INFO_ENDPOINT_URL = "/api/certificatetypeinfo";
+    private static final String CERTIFICATE_EXTERNAL_TYPE_INFO_ENDPOINT_URL = "/api/certificateexternaltypeinfo";
     private static final String UNIT_ENDPOINT_URL = "/api/unit";
     public static final String NULL_RESPONSE_EXCEPTION = "Certificate service returned null response!";
 
@@ -214,6 +216,21 @@ public class CSIntegrationService {
     public Optional<CertificateModelIdDTO> certificateTypeExists(String certificateType) {
         final var url = baseUrl + CERTIFICATE_TYPE_INFO_ENDPOINT_URL + "/" + certificateType + "/exists";
         final var response = restTemplate.getForObject(url, CertificateTypeExistsResponseDTO.class);
+
+        if (response == null
+            || response.getCertificateModelId() == null
+            || response.getCertificateModelId().getType() == null
+            || response.getCertificateModelId().getVersion() == null) {
+            return Optional.empty();
+        }
+
+        return Optional.of(response.getCertificateModelId());
+    }
+
+    public Optional<CertificateModelIdDTO> certificateExternalTypeExists(
+        GetExternalTypeVersionRequestDTO requestDTO) {
+        final var url = baseUrl + CERTIFICATE_EXTERNAL_TYPE_INFO_ENDPOINT_URL + "/exists";
+        final var response = restTemplate.postForObject(url, requestDTO, CertificateTypeExistsResponseDTO.class);
 
         if (response == null
             || response.getCertificateModelId() == null

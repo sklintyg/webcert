@@ -56,7 +56,9 @@ import se.inera.intyg.webcert.web.csintegration.exception.HandleApiErrorService;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CodeDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetExternalTypeVersionRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
@@ -75,10 +77,17 @@ class CreateDraftCertificateFromCSTest {
     private static final String HSA_ID = "HSA_ID";
     private static final IntygUser USER = new IntygUser(HSA_ID);
     private static final String VALID_PERSON_ID = "191212121212";
-    private static final String CERTIFICATE_TYPE = "certificateType";
+    private static final String CODE = "code";
     private static final Certificate CERTIFICATE = new Certificate();
     private static final String EXPECTED_ID = "EXPECTED_ID";
     private static final String EXPECTED_UNIT_ID = "EXPECTED_UNIT_ID";
+    private static final String CODE_SYSTEM = "codeSystem";
+    private static final CodeDTO CODE_DTO = CodeDTO.builder()
+        .code(CODE)
+        .codeSystem(CODE_SYSTEM)
+        .build();
+    private static final GetExternalTypeVersionRequestDTO EXTERNAL_TYPE_VERSION_REQUEST_DTO = GetExternalTypeVersionRequestDTO.builder()
+        .code(CODE_DTO).build();
     @Mock
     private PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
     @Mock
@@ -103,7 +112,7 @@ class CreateDraftCertificateFromCSTest {
         CERTIFICATE.setMetadata(
             CertificateMetadata.builder()
                 .id(EXPECTED_ID)
-                .type(CERTIFICATE_TYPE)
+                .type(CODE)
                 .unit(
                     Unit.builder()
                         .unitId(EXPECTED_UNIT_ID)
@@ -124,8 +133,7 @@ class CreateDraftCertificateFromCSTest {
         final var user = new IntygUser(HSA_ID);
         final var modelIdDTO = Optional.of(CertificateModelIdDTO.builder().build());
 
-        when(csIntegrationService.certificateTypeExists(certificate.getTypAvIntyg().getCode()))
-            .thenReturn(modelIdDTO);
+        when(csIntegrationService.certificateExternalTypeExists(EXTERNAL_TYPE_VERSION_REQUEST_DTO)).thenReturn(modelIdDTO);
         final var webCertServiceException = assertThrows(WebCertServiceException.class,
             () -> createDraftCertificateFromCS.create(certificate, user));
 
@@ -136,9 +144,7 @@ class CreateDraftCertificateFromCSTest {
     void shouldReturnErrorResponseIfSekretessStatusIsUndefined() {
         final var certificate = getIntyg(VALID_PERSON_ID);
         final var modelIdDTO = Optional.of(CertificateModelIdDTO.builder().build());
-
-        when(csIntegrationService.certificateTypeExists(certificate.getTypAvIntyg().getCode()))
-            .thenReturn(modelIdDTO);
+        when(csIntegrationService.certificateExternalTypeExists(EXTERNAL_TYPE_VERSION_REQUEST_DTO)).thenReturn(modelIdDTO);
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.UNDEFINED);
 
         final var result = createDraftCertificateFromCS.create(certificate, USER);
@@ -150,7 +156,7 @@ class CreateDraftCertificateFromCSTest {
     @Test
     void shouldReturnNullIfCertificateTypeDontExists() {
         final var certificate = getIntyg(VALID_PERSON_ID);
-        when(csIntegrationService.certificateTypeExists(certificate.getTypAvIntyg().getCode())).thenReturn(Optional.empty());
+        when(csIntegrationService.certificateExternalTypeExists(EXTERNAL_TYPE_VERSION_REQUEST_DTO)).thenReturn(Optional.empty());
         assertNull(createDraftCertificateFromCS.create(certificate, USER));
     }
 
@@ -164,8 +170,7 @@ class CreateDraftCertificateFromCSTest {
         final var vardenhet = new Vardenhet();
         when(user.getValdVardenhet()).thenReturn(vardenhet);
         when(user.getValdVardgivare()).thenReturn(vardenhet);
-        when(csIntegrationService.certificateTypeExists(certificate.getTypAvIntyg().getCode()))
-            .thenReturn(Optional.of(modelIdDTO));
+        when(csIntegrationService.certificateExternalTypeExists(EXTERNAL_TYPE_VERSION_REQUEST_DTO)).thenReturn(Optional.of(modelIdDTO));
         when(csIntegrationRequestFactory.createDraftCertificateRequest(modelIdDTO, certificate, user)).thenReturn(request);
         when(csIntegrationService.createCertificate(request)).thenReturn(CERTIFICATE);
 
@@ -183,8 +188,7 @@ class CreateDraftCertificateFromCSTest {
         final var vardenhet = new Vardenhet();
         when(user.getValdVardenhet()).thenReturn(vardenhet);
         when(user.getValdVardgivare()).thenReturn(vardenhet);
-        when(csIntegrationService.certificateTypeExists(certificate.getTypAvIntyg().getCode()))
-            .thenReturn(Optional.of(modelIdDTO));
+        when(csIntegrationService.certificateExternalTypeExists(EXTERNAL_TYPE_VERSION_REQUEST_DTO)).thenReturn(Optional.of(modelIdDTO));
         when(csIntegrationRequestFactory.createDraftCertificateRequest(modelIdDTO, certificate, user)).thenReturn(request);
         when(csIntegrationService.createCertificate(request)).thenThrow(IllegalArgumentException.class);
 
@@ -202,8 +206,7 @@ class CreateDraftCertificateFromCSTest {
         final var vardenhet = new Vardenhet();
         when(user.getValdVardenhet()).thenReturn(vardenhet);
         when(user.getValdVardgivare()).thenReturn(vardenhet);
-        when(csIntegrationService.certificateTypeExists(certificate.getTypAvIntyg().getCode()))
-            .thenReturn(Optional.of(modelIdDTO));
+        when(csIntegrationService.certificateExternalTypeExists(EXTERNAL_TYPE_VERSION_REQUEST_DTO)).thenReturn(Optional.of(modelIdDTO));
         when(csIntegrationRequestFactory.createDraftCertificateRequest(modelIdDTO, certificate, user)).thenReturn(request);
         when(csIntegrationService.createCertificate(request)).thenThrow(
             HttpClientErrorException.create("", HttpStatus.FORBIDDEN, "", HttpHeaders.EMPTY, null, null)
@@ -223,8 +226,7 @@ class CreateDraftCertificateFromCSTest {
         final var vardenhet = new Vardenhet();
         when(user.getValdVardenhet()).thenReturn(vardenhet);
         when(user.getValdVardgivare()).thenReturn(vardenhet);
-        when(csIntegrationService.certificateTypeExists(certificate.getTypAvIntyg().getCode()))
-            .thenReturn(Optional.of(modelIdDTO));
+        when(csIntegrationService.certificateExternalTypeExists(EXTERNAL_TYPE_VERSION_REQUEST_DTO)).thenReturn(Optional.of(modelIdDTO));
         when(csIntegrationRequestFactory.createDraftCertificateRequest(modelIdDTO, certificate, user)).thenReturn(request);
         when(csIntegrationService.createCertificate(request)).thenReturn(CERTIFICATE);
 
@@ -243,8 +245,7 @@ class CreateDraftCertificateFromCSTest {
         final var vardenhet = new Vardenhet();
         when(user.getValdVardenhet()).thenReturn(vardenhet);
         when(user.getValdVardgivare()).thenReturn(vardenhet);
-        when(csIntegrationService.certificateTypeExists(certificate.getTypAvIntyg().getCode()))
-            .thenReturn(Optional.of(modelIdDTO));
+        when(csIntegrationService.certificateExternalTypeExists(EXTERNAL_TYPE_VERSION_REQUEST_DTO)).thenReturn(Optional.of(modelIdDTO));
         when(csIntegrationRequestFactory.createDraftCertificateRequest(modelIdDTO, certificate, user)).thenReturn(request);
         when(csIntegrationService.createCertificate(request)).thenReturn(CERTIFICATE);
 
@@ -263,8 +264,7 @@ class CreateDraftCertificateFromCSTest {
         final var vardenhet = new Vardenhet();
         when(user.getValdVardenhet()).thenReturn(vardenhet);
         when(user.getValdVardgivare()).thenReturn(vardenhet);
-        when(csIntegrationService.certificateTypeExists(certificate.getTypAvIntyg().getCode()))
-            .thenReturn(Optional.of(modelIdDTO));
+        when(csIntegrationService.certificateExternalTypeExists(EXTERNAL_TYPE_VERSION_REQUEST_DTO)).thenReturn(Optional.of(modelIdDTO));
         when(csIntegrationRequestFactory.createDraftCertificateRequest(modelIdDTO, certificate, user)).thenReturn(request);
         when(csIntegrationService.createCertificate(request)).thenReturn(CERTIFICATE);
 
@@ -289,8 +289,7 @@ class CreateDraftCertificateFromCSTest {
         final var vardenhet = new Vardenhet();
         when(user.getValdVardenhet()).thenReturn(vardenhet);
         when(user.getValdVardgivare()).thenReturn(vardenhet);
-        when(csIntegrationService.certificateTypeExists(certificate.getTypAvIntyg().getCode()))
-            .thenReturn(Optional.of(modelIdDTO));
+        when(csIntegrationService.certificateExternalTypeExists(EXTERNAL_TYPE_VERSION_REQUEST_DTO)).thenReturn(Optional.of(modelIdDTO));
         when(csIntegrationRequestFactory.createDraftCertificateRequest(modelIdDTO, certificate, user)).thenReturn(request);
         when(csIntegrationService.createCertificate(request)).thenReturn(CERTIFICATE);
 
@@ -313,8 +312,7 @@ class CreateDraftCertificateFromCSTest {
         final var vardenhet = new Vardenhet();
         when(user.getValdVardenhet()).thenReturn(vardenhet);
         when(user.getValdVardgivare()).thenReturn(vardenhet);
-        when(csIntegrationService.certificateTypeExists(certificate.getTypAvIntyg().getCode()))
-            .thenReturn(Optional.of(modelIdDTO));
+        when(csIntegrationService.certificateExternalTypeExists(EXTERNAL_TYPE_VERSION_REQUEST_DTO)).thenReturn(Optional.of(modelIdDTO));
         when(csIntegrationRequestFactory.createDraftCertificateRequest(modelIdDTO, certificate, user)).thenReturn(request);
         when(csIntegrationService.createCertificate(request)).thenThrow(IllegalArgumentException.class);
 
@@ -331,7 +329,8 @@ class CreateDraftCertificateFromCSTest {
         intyg.getPatient().setPersonId(new PersonId());
         intyg.getPatient().getPersonId().setExtension(extension);
         intyg.setTypAvIntyg(new TypAvIntyg());
-        intyg.getTypAvIntyg().setCode(CERTIFICATE_TYPE);
+        intyg.getTypAvIntyg().setCode(CODE);
+        intyg.getTypAvIntyg().setCodeSystem(CODE_SYSTEM);
         return intyg;
     }
 }

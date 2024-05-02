@@ -64,6 +64,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificat
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetExternalTypeVersionRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetListCertificatesResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoRequestDTO;
@@ -356,6 +357,95 @@ class CSIntegrationServiceTest {
             verify(restTemplate).getForObject(captor.capture(), any());
 
             assertEquals("baseUrl/api/certificatetypeinfo/fk7211/exists", captor.getValue());
+        }
+    }
+
+    @Nested
+    class CertificateExternalTypeExists {
+
+        private final GetExternalTypeVersionRequestDTO GET_EXTERNAL_TYPE_VERSION_REQUEST_DTO = GetExternalTypeVersionRequestDTO.builder()
+            .build();
+
+        @Test
+        void shouldReturnModelIdFromResponse() {
+            final var expectedResponse = CertificateTypeExistsResponseDTO.builder()
+                .certificateModelId(
+                    CertificateModelIdDTO.builder()
+                        .type("type")
+                        .version("version")
+                        .build()
+                )
+                .build();
+
+            when(restTemplate.postForObject(anyString(), eq(GET_EXTERNAL_TYPE_VERSION_REQUEST_DTO), any()))
+                .thenReturn(expectedResponse);
+
+            final var response = csIntegrationService.certificateExternalTypeExists(GET_EXTERNAL_TYPE_VERSION_REQUEST_DTO);
+
+            assertEquals(expectedResponse.getCertificateModelId(), response.orElse(null));
+        }
+
+        @Test
+        void shouldReturnNullIfTypeIsMissing() {
+            final var expectedResponse = CertificateTypeExistsResponseDTO.builder()
+                .certificateModelId(
+                    CertificateModelIdDTO.builder()
+                        .version("version")
+                        .build()
+                )
+                .build();
+
+            when(restTemplate.postForObject(anyString(), eq(GET_EXTERNAL_TYPE_VERSION_REQUEST_DTO), any()))
+                .thenReturn(expectedResponse);
+
+            final var response = csIntegrationService.certificateExternalTypeExists(GET_EXTERNAL_TYPE_VERSION_REQUEST_DTO);
+
+            assertTrue(response.isEmpty());
+        }
+
+        @Test
+        void shouldReturnNullIfVersionIsMissing() {
+            final var expectedResponse = CertificateTypeExistsResponseDTO.builder()
+                .certificateModelId(
+                    CertificateModelIdDTO.builder()
+                        .type("type")
+                        .build()
+                )
+                .build();
+
+            when(restTemplate.postForObject(anyString(), eq(GET_EXTERNAL_TYPE_VERSION_REQUEST_DTO), any()))
+                .thenReturn(expectedResponse);
+
+            final var response = csIntegrationService.certificateExternalTypeExists(GET_EXTERNAL_TYPE_VERSION_REQUEST_DTO);
+
+            assertTrue(response.isEmpty());
+        }
+
+        @Test
+        void shouldReturnNullIfObjectIsEmpty() {
+            final var expectedResponse = CertificateTypeExistsResponseDTO.builder()
+                .certificateModelId(
+                    CertificateModelIdDTO.builder().build()
+                )
+                .build();
+
+            when(restTemplate.postForObject(anyString(), eq(GET_EXTERNAL_TYPE_VERSION_REQUEST_DTO), any()))
+                .thenReturn(expectedResponse);
+
+            final var response = csIntegrationService.certificateExternalTypeExists(GET_EXTERNAL_TYPE_VERSION_REQUEST_DTO);
+
+            assertTrue(response.isEmpty());
+        }
+
+        @Test
+        void shouldSetUrlCorrect() {
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            csIntegrationService.certificateExternalTypeExists(GET_EXTERNAL_TYPE_VERSION_REQUEST_DTO);
+            verify(restTemplate).postForObject(captor.capture(), eq(GET_EXTERNAL_TYPE_VERSION_REQUEST_DTO), any());
+
+            assertEquals("baseUrl/api/certificateexternaltypeinfo/exists", captor.getValue());
         }
     }
 
