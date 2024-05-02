@@ -38,6 +38,7 @@ public class ReplaceCertificateFromCertificateService implements ReplaceCertific
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
     private final PDLLogService pdlLogService;
     private final MonitoringLogService monitoringLogService;
+    private final IntegratedUnitHelper integratedUnitHelper;
     private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
 
     @Override
@@ -67,6 +68,8 @@ public class ReplaceCertificateFromCertificateService implements ReplaceCertific
         if (replacingCertificate == null) {
             throw new IllegalStateException("Received null when trying to replace certificate from Certificate Service");
         }
+
+        integratedUnitHelper.registerUnit();
 
         log.debug("Replaced certificate '{}' from Certificate Service", certificateId);
         monitoringLogService.logIntygCopiedReplacement(replacingCertificate.getMetadata().getId(), certificateId);

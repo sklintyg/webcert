@@ -67,6 +67,9 @@ class ReplaceCertificateFromCertificateServiceTest {
     PDLLogService pdlLogService;
 
     @Mock
+    IntegratedUnitHelper integratedUnitHelper;
+
+    @Mock
     MonitoringLogService monitoringLogService;
 
     @Mock
@@ -182,6 +185,12 @@ class ReplaceCertificateFromCertificateServiceTest {
             void shouldMonitorLogReplace() {
                 replaceCertificateFromCertificateService.replaceCertificate(ID);
                 verify(monitoringLogService).logIntygCopiedReplacement(NEW_ID, ID);
+            }
+
+            @Test
+            void shouldRegisterUnit() {
+                replaceCertificateFromCertificateService.replaceCertificate(ID);
+                verify(integratedUnitHelper).registerUnit();
             }
         }
     }
