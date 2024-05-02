@@ -45,11 +45,15 @@ import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ReplaceCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 @ExtendWith(MockitoExtension.class)
 class ReplaceCertificateFromCertificateServiceTest {
 
     private static final ReplaceCertificateRequestDTO REQUEST = ReplaceCertificateRequestDTO.builder().build();
+    private static final String EXTERNAL_REFERENCE = "EXTERNAL_REFERENCE";
     private static final String PATIENT_ID = "PATIENT_ID";
     private static final String ID = "ID";
     private static final String NEW_ID = "NEW_ID";
@@ -71,6 +75,15 @@ class ReplaceCertificateFromCertificateServiceTest {
 
     @Mock
     MonitoringLogService monitoringLogService;
+
+    @Mock
+    WebCertUserService webCertUserService;
+
+    @Mock
+    IntegrationParameters parameters;
+
+    @Mock
+    WebCertUser user;
 
     @Mock
     PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
@@ -130,7 +143,7 @@ class ReplaceCertificateFromCertificateServiceTest {
             when(csIntegrationService.getCertificate(anyString(), any()))
                 .thenReturn(CERTIFICATE);
 
-            when(csIntegrationRequestFactory.replaceCertificateRequest(PATIENT_ID))
+            when(csIntegrationRequestFactory.replaceCertificateRequest(PATIENT_ID, EXTERNAL_REFERENCE))
                 .thenReturn(REQUEST);
         }
 
@@ -141,6 +154,15 @@ class ReplaceCertificateFromCertificateServiceTest {
             void setup() {
                 when(csIntegrationService.replaceCertificate(ID, REQUEST))
                     .thenReturn(REPLACED_CERTIFICATE);
+
+                when(parameters.getReference())
+                    .thenReturn(EXTERNAL_REFERENCE);
+
+                when(user.getParameters())
+                    .thenReturn(parameters);
+
+                when(webCertUserService.getUser())
+                    .thenReturn(user);
             }
 
             @Test

@@ -38,6 +38,7 @@ public class ReplaceCertificateRequestDTO {
     CertificateServiceUnitDTO unit;
     CertificateServiceUnitDTO careUnit;
     CertificateServiceUnitDTO careProvider;
+    String externalReference;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class ReplaceCertificateRequestDTOBuilder {

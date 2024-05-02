@@ -28,6 +28,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.facade.ReplaceCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 @Slf4j
 @Service("replaceCertificateFromCertificateService")
@@ -40,6 +41,7 @@ public class ReplaceCertificateFromCertificateService implements ReplaceCertific
     private final MonitoringLogService monitoringLogService;
     private final IntegratedUnitRegistryHelper integratedUnitRegistryHelper;
     private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+    private final WebCertUserService webCertUserService;
 
     @Override
     public String replaceCertificate(String certificateId) {
@@ -62,7 +64,10 @@ public class ReplaceCertificateFromCertificateService implements ReplaceCertific
 
         final var replacingCertificate = csIntegrationService.replaceCertificate(
             certificateId,
-            csIntegrationRequestFactory.replaceCertificateRequest(certificateToReplace.getMetadata().getPatient().getPersonId().getId())
+            csIntegrationRequestFactory.replaceCertificateRequest(
+                certificateToReplace.getMetadata().getPatient().getPersonId().getId(),
+                webCertUserService.getUser().getParameters() != null ? webCertUserService.getUser().getParameters().getReference() : null
+            )
         );
 
         if (replacingCertificate == null) {

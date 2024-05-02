@@ -264,13 +264,14 @@ public class CSIntegrationRequestFactory {
             .build();
     }
 
-    public ReplaceCertificateRequestDTO replaceCertificateRequest(String patientId) {
+    public ReplaceCertificateRequestDTO replaceCertificateRequest(String patientId, String externalReference) {
         return ReplaceCertificateRequestDTO.builder()
             .unit(certificateServiceUnitHelper.getUnit())
             .careUnit(certificateServiceUnitHelper.getCareUnit())
             .careProvider(certificateServiceUnitHelper.getCareProvider())
             .user(certificateServiceUserHelper.get())
             .patient(certificateServicePatientHelper.get(createPatientId(patientId)))
+            .externalReference(externalReference)
             .build();
     }
 
