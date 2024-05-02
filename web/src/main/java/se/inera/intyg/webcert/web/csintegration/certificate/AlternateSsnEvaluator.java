@@ -44,10 +44,6 @@ public class AlternateSsnEvaluator {
             return false;
         }
 
-        if (Personnummer.createPersonnummer(user.getParameters().getAlternateSsn()).orElse(null) == null) {
-            return false;
-        }
-
         return certificate.getLinks().stream()
             .filter(link -> link.getType().equals(ResourceLinkTypeEnum.EDIT_CERTIFICATE))
             .findFirst()
@@ -61,6 +57,8 @@ public class AlternateSsnEvaluator {
 
     private static boolean alternateSsnProvided(WebCertUser user) {
         return user.getParameters() == null
-            || (user.getParameters().getAlternateSsn() == null || user.getParameters().getAlternateSsn().isBlank());
+            || (user.getParameters().getAlternateSsn() == null
+            || user.getParameters().getAlternateSsn().isBlank())
+            || Personnummer.createPersonnummer(user.getParameters().getAlternateSsn()).isEmpty();
     }
 }

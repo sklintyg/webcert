@@ -53,7 +53,9 @@ class CertificateDetailsUpdateServiceTest {
     private static final String PERSON_ID = "191212121212";
     private static final String ALTERNATE_SSN = "alternateSsn";
     private static final String EXTERNAL_REFERENCE = "externalReference";
+    private static final SaveCertificateRequestDTO SAVE_CERTIFICATE_REQUEST_DTO = SaveCertificateRequestDTO.builder().build();
     private Certificate certificate;
+    private Certificate savedCertificate;
     private static final WebCertUser WEBCERT_USER = new WebCertUser();
     private static final Personnummer PERSONAL_NUMBER = Personnummer.createPersonnummer(PERSON_ID).orElseThrow();
     @Mock
@@ -91,6 +93,7 @@ class CertificateDetailsUpdateServiceTest {
                 )
                 .build()
         );
+        savedCertificate = certificate;
         WEBCERT_USER.setParameters(integrationParameters);
     }
 
@@ -100,7 +103,12 @@ class CertificateDetailsUpdateServiceTest {
         @Test
         void shallMonitorlogIfPatientDetailsAreUpdated() {
             doReturn(true).when(alternateSsnEvaluator).shouldUpdate(certificate, WEBCERT_USER);
+            doReturn(ALTERNATE_SSN).when(integrationParameters).getAlternateSsn();
+            doReturn(SAVE_CERTIFICATE_REQUEST_DTO).when(csIntegrationRequestFactory).saveRequest(certificate, ALTERNATE_SSN, null);
+            doReturn(savedCertificate).when(csIntegrationService).saveCertificate(SAVE_CERTIFICATE_REQUEST_DTO);
+
             certificateDetailsUpdateService.update(certificate, WEBCERT_USER, PERSONAL_NUMBER);
+
             verify(monitoringLogService).logUtkastPatientDetailsUpdated(CERTIFICATE_ID, CERTIFICATE_TYPE);
         }
 
@@ -114,10 +122,15 @@ class CertificateDetailsUpdateServiceTest {
         @Test
         void shallSetBeforeAlternateSsnOnUser() {
             final var webCertUser = new WebCertUser();
-            webCertUser.setParameters(new IntegrationParameters("", "", "",
+            webCertUser.setParameters(new IntegrationParameters("", "", ALTERNATE_SSN,
                 "", "", "", "", "", "", false,
                 false, false, true, null));
+
             doReturn(true).when(alternateSsnEvaluator).shouldUpdate(certificate, webCertUser);
+            doReturn(SAVE_CERTIFICATE_REQUEST_DTO).when(csIntegrationRequestFactory)
+                .saveRequest(certificate, ALTERNATE_SSN, null);
+            doReturn(savedCertificate).when(csIntegrationService).saveCertificate(SAVE_CERTIFICATE_REQUEST_DTO);
+
             certificateDetailsUpdateService.update(certificate, webCertUser, PERSONAL_NUMBER);
             assertEquals(PERSONAL_NUMBER.getOriginalPnr(), webCertUser.getParameters().getBeforeAlternateSsn());
         }
@@ -125,10 +138,15 @@ class CertificateDetailsUpdateServiceTest {
         @Test
         void shallSetBeforeAlternateSsnOnUserFromCertificate() {
             final var webCertUser = new WebCertUser();
-            webCertUser.setParameters(new IntegrationParameters("", "", "",
+            webCertUser.setParameters(new IntegrationParameters("", "", ALTERNATE_SSN,
                 "", "", "", "", "", "", false,
                 false, false, true, null));
+
             doReturn(true).when(alternateSsnEvaluator).shouldUpdate(certificate, webCertUser);
+            doReturn(SAVE_CERTIFICATE_REQUEST_DTO).when(csIntegrationRequestFactory)
+                .saveRequest(certificate, ALTERNATE_SSN, null);
+            doReturn(savedCertificate).when(csIntegrationService).saveCertificate(SAVE_CERTIFICATE_REQUEST_DTO);
+
             certificateDetailsUpdateService.update(certificate, webCertUser, null);
             assertEquals(certificate.getMetadata().getPatient().getPersonId().getId(), webCertUser.getParameters().getBeforeAlternateSsn());
         }
@@ -140,6 +158,10 @@ class CertificateDetailsUpdateServiceTest {
         @Test
         void shallPublishStatusUpdate() {
             doReturn(true).when(alternateSsnEvaluator).shouldUpdate(certificate, WEBCERT_USER);
+            doReturn(ALTERNATE_SSN).when(integrationParameters).getAlternateSsn();
+            doReturn(SAVE_CERTIFICATE_REQUEST_DTO).when(csIntegrationRequestFactory).saveRequest(certificate, ALTERNATE_SSN, null);
+            doReturn(savedCertificate).when(csIntegrationService).saveCertificate(SAVE_CERTIFICATE_REQUEST_DTO);
+
             certificateDetailsUpdateService.update(certificate, WEBCERT_USER, PERSONAL_NUMBER);
             verify(publishCertificateStatusUpdateService).publish(certificate, HandelsekodEnum.ANDRAT);
         }
@@ -147,7 +169,9 @@ class CertificateDetailsUpdateServiceTest {
         @Test
         void shallNotPublishStatusUpdate() {
             doReturn(false).when(alternateSsnEvaluator).shouldUpdate(certificate, WEBCERT_USER);
+
             certificateDetailsUpdateService.update(certificate, WEBCERT_USER, PERSONAL_NUMBER);
+
             verifyNoInteractions(publishCertificateStatusUpdateService);
         }
     }
@@ -157,21 +181,24 @@ class CertificateDetailsUpdateServiceTest {
 
         @Test
         void shallSaveCertificateIfPatientDetailsAreUpdated() {
-            final var saveCertificateRequestDTO = SaveCertificateRequestDTO.builder().build();
             doReturn(ALTERNATE_SSN).when(integrationParameters).getAlternateSsn();
-            doReturn(saveCertificateRequestDTO).when(csIntegrationRequestFactory).saveRequest(certificate, ALTERNATE_SSN, null);
+            doReturn(SAVE_CERTIFICATE_REQUEST_DTO).when(csIntegrationRequestFactory).saveRequest(certificate, ALTERNATE_SSN, null);
+            doReturn(savedCertificate).when(csIntegrationService).saveCertificate(SAVE_CERTIFICATE_REQUEST_DTO);
             doReturn(true).when(alternateSsnEvaluator).shouldUpdate(certificate, WEBCERT_USER);
+
             certificateDetailsUpdateService.update(certificate, WEBCERT_USER, PERSONAL_NUMBER);
-            verify(csIntegrationService).saveCertificate(saveCertificateRequestDTO);
+            verify(csIntegrationService).saveCertificate(SAVE_CERTIFICATE_REQUEST_DTO);
         }
 
         @Test
         void shallSaveCertificateIfExternalReferenceIsMissingOnCertificateAndProvidedInIntegrationParameters() {
             certificate.getMetadata().setExternalReference(null);
             final var saveCertificateRequestDTO = SaveCertificateRequestDTO.builder().build();
+
             doReturn(EXTERNAL_REFERENCE).when(integrationParameters).getReference();
             doReturn(saveCertificateRequestDTO).when(csIntegrationRequestFactory).saveRequest(certificate, PERSON_ID, EXTERNAL_REFERENCE);
             doReturn(false).when(alternateSsnEvaluator).shouldUpdate(certificate, WEBCERT_USER);
+
             certificateDetailsUpdateService.update(certificate, WEBCERT_USER, PERSONAL_NUMBER);
             verify(csIntegrationService).saveCertificate(saveCertificateRequestDTO);
         }
@@ -180,6 +207,7 @@ class CertificateDetailsUpdateServiceTest {
         void shallNotSaveCertificateIfExternalReferenceIsNotMissingOnCertificate() {
             certificate.getMetadata().setExternalReference(EXTERNAL_REFERENCE);
             doReturn(false).when(alternateSsnEvaluator).shouldUpdate(certificate, WEBCERT_USER);
+
             certificateDetailsUpdateService.update(certificate, WEBCERT_USER, PERSONAL_NUMBER);
             verifyNoInteractions(csIntegrationService);
         }
@@ -190,6 +218,7 @@ class CertificateDetailsUpdateServiceTest {
             certificate.getMetadata().setExternalReference(null);
             doReturn(null).when(integrationParameters).getReference();
             doReturn(false).when(alternateSsnEvaluator).shouldUpdate(certificate, WEBCERT_USER);
+
             certificateDetailsUpdateService.update(certificate, WEBCERT_USER, PERSONAL_NUMBER);
             verifyNoInteractions(csIntegrationService);
         }
@@ -199,6 +228,7 @@ class CertificateDetailsUpdateServiceTest {
             certificate.getMetadata().setExternalReference(null);
             doReturn("").when(integrationParameters).getReference();
             doReturn(false).when(alternateSsnEvaluator).shouldUpdate(certificate, WEBCERT_USER);
+
             certificateDetailsUpdateService.update(certificate, WEBCERT_USER, PERSONAL_NUMBER);
             verifyNoInteractions(csIntegrationService);
         }

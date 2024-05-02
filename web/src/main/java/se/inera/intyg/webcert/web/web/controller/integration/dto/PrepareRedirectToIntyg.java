@@ -31,15 +31,4 @@ public class PrepareRedirectToIntyg implements Serializable {
     private String intygTypeVersion;
     private String intygId;
     private boolean utkast;
-
-
-    @Override
-    public String toString() {
-        return "PrepareRedirectToIntyg {"
-            + "intygTyp='" + intygTyp + '\''
-            + "intygTypeVersion='" + intygTypeVersion + '\''
-            + ", intygId='" + intygId + '\''
-            + ", utkast=" + utkast
-            + "}";
-    }
 }

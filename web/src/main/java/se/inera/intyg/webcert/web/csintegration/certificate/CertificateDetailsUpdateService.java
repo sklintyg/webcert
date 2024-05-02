@@ -43,28 +43,30 @@ public class CertificateDetailsUpdateService {
         final var shouldUpdatePatientDetails = alternateSsnEvaluator.shouldUpdate(certificate, user);
         final var shouldSetExternalReference = shouldSetExternalReference(user, certificate);
 
-        if (shouldSetExternalReference || shouldUpdatePatientDetails) {
-            csIntegrationService.saveCertificate(
-                csIntegrationRequestFactory.saveRequest(
-                    certificate,
-                    shouldUpdatePatientDetails
-                        ? user.getParameters().getAlternateSsn()
-                        : certificate.getMetadata().getPatient().getPersonId().getId(),
-                    shouldSetExternalReference
-                        ? user.getParameters().getReference()
-                        : null
-                )
-            );
+        if (!shouldSetExternalReference && !shouldUpdatePatientDetails) {
+            return;
         }
+
+        final var savedCertificate = csIntegrationService.saveCertificate(
+            csIntegrationRequestFactory.saveRequest(
+                certificate,
+                shouldUpdatePatientDetails
+                    ? user.getParameters().getAlternateSsn()
+                    : certificate.getMetadata().getPatient().getPersonId().getId(),
+                shouldSetExternalReference
+                    ? user.getParameters().getReference()
+                    : null
+            )
+        );
 
         if (shouldUpdatePatientDetails) {
             monitoringLogService.logUtkastPatientDetailsUpdated(
-                certificate.getMetadata().getId(),
-                certificate.getMetadata().getType()
+                savedCertificate.getMetadata().getId(),
+                savedCertificate.getMetadata().getType()
             );
-            publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.ANDRAT);
+            publishCertificateStatusUpdateService.publish(savedCertificate, HandelsekodEnum.ANDRAT);
             user.getParameters().setBeforeAlternateSsn(beforeAlternateSsn != null ? beforeAlternateSsn.getOriginalPnr()
-                : certificate.getMetadata().getPatient().getPersonId().getId());
+                : savedCertificate.getMetadata().getPatient().getPersonId().getId());
         }
     }
 

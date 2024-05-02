@@ -47,11 +47,11 @@ class AlternateSsnEvaluatorTest {
     private static final Patient PATIENT = Patient.builder()
         .personId(
             PersonId.builder()
-                .id("personId-1")
+                .id("191212121212")
                 .build()
         )
         .build();
-    private static final String VALID_PERSONAL_NUMER = "191212121212";
+    private static final String VALID_PERSONAL_NUMER = "201212121212";
     @Mock
     private IntegrationParameters integrationParameters;
     @Mock
@@ -116,7 +116,7 @@ class AlternateSsnEvaluatorTest {
         void shouldReturnFalseWhenAlternateSsnIsProvidedAndMatchesPatientId() {
             doReturn(PATIENT).when(certificateMetadata).getPatient();
             doReturn(integrationParameters).when(webCertUser).getParameters();
-            doReturn("personId-1").when(integrationParameters).getAlternateSsn();
+            doReturn("191212121212").when(integrationParameters).getAlternateSsn();
 
             assertFalse(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
         }
@@ -142,21 +142,28 @@ class AlternateSsnEvaluatorTest {
         void shouldReturnFalseWhenIntegrationParametersIsNull() {
             assertFalse(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
         }
+
+        @Test
+        void shallReturnFalseIfAlternateSsnIsInvalidFormat() {
+            doReturn(integrationParameters).when(webCertUser).getParameters();
+            doReturn("invalidPersonal").when(integrationParameters).getAlternateSsn();
+            assertFalse(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
+        }
     }
 
     @Nested
-    class CertificateIsDraftAndAlernateSsnIsNotMatching {
+    class CertificateIsDraftAndAlternateSsnIsNotMatching {
 
         @BeforeEach
         void setUp() {
             doReturn(CertificateStatus.UNSIGNED).when(certificateMetadata).getStatus();
             doReturn(PATIENT).when(certificateMetadata).getPatient();
             doReturn(integrationParameters).when(webCertUser).getParameters();
+            doReturn(VALID_PERSONAL_NUMER).when(integrationParameters).getAlternateSsn();
         }
 
         @Test
         void shallReturnTrueIfUserHasRightToEditAndEnabledIsTrue() {
-            doReturn(VALID_PERSONAL_NUMER).when(integrationParameters).getAlternateSsn();
             doReturn(List.of(
                 ResourceLink.builder()
                     .type(ResourceLinkTypeEnum.EDIT_CERTIFICATE)
@@ -168,7 +175,6 @@ class AlternateSsnEvaluatorTest {
 
         @Test
         void shallReturnFalseIfUserHasRightToEditAndEnabledIsFalse() {
-            doReturn(VALID_PERSONAL_NUMER).when(integrationParameters).getAlternateSsn();
             doReturn(List.of(
                 ResourceLink.builder()
                     .type(ResourceLinkTypeEnum.EDIT_CERTIFICATE)
@@ -180,14 +186,7 @@ class AlternateSsnEvaluatorTest {
 
         @Test
         void shallReturnFalseIfUserDontHaveRightToEdit() {
-            doReturn(VALID_PERSONAL_NUMER).when(integrationParameters).getAlternateSsn();
             doReturn(List.of(ResourceLink.builder().type(ResourceLinkTypeEnum.SEND_CERTIFICATE).build())).when(certificate).getLinks();
-            assertFalse(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
-        }
-
-        @Test
-        void shallReturnFalseIfAlternateSsnIsInvalidFormat() {
-            doReturn("invalidPersonal").when(integrationParameters).getAlternateSsn();
             assertFalse(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
         }
     }
