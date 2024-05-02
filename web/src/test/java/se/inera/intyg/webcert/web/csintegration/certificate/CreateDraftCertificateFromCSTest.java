@@ -24,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -47,7 +46,6 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.Staff;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
@@ -58,8 +56,6 @@ import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
-import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
-import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
@@ -88,7 +84,7 @@ class CreateDraftCertificateFromCSTest {
     @Mock
     private MonitoringLogService monitoringLogService;
     @Mock
-    private IntegreradeEnheterRegistry integreradeEnheterRegistry;
+    private IntegratedUnitRegistryHelper integratedUnitRegistryHelper;
     @Mock
     private PatientDetailsResolver patientDetailsResolver;
     @Mock
@@ -161,9 +157,6 @@ class CreateDraftCertificateFromCSTest {
         final var modelIdDTO = CertificateModelIdDTO.builder().build();
         final var request = CreateCertificateRequestDTO.builder().build();
 
-        final var vardenhet = new Vardenhet();
-        when(user.getValdVardenhet()).thenReturn(vardenhet);
-        when(user.getValdVardgivare()).thenReturn(vardenhet);
         when(csIntegrationService.certificateTypeExists(certificate.getTypAvIntyg().getCode()))
             .thenReturn(Optional.of(modelIdDTO));
         when(csIntegrationRequestFactory.createDraftCertificateRequest(modelIdDTO, certificate, user)).thenReturn(request);
@@ -180,9 +173,6 @@ class CreateDraftCertificateFromCSTest {
         final var modelIdDTO = CertificateModelIdDTO.builder().build();
         final var request = CreateCertificateRequestDTO.builder().build();
 
-        final var vardenhet = new Vardenhet();
-        when(user.getValdVardenhet()).thenReturn(vardenhet);
-        when(user.getValdVardgivare()).thenReturn(vardenhet);
         when(csIntegrationService.certificateTypeExists(certificate.getTypAvIntyg().getCode()))
             .thenReturn(Optional.of(modelIdDTO));
         when(csIntegrationRequestFactory.createDraftCertificateRequest(modelIdDTO, certificate, user)).thenReturn(request);
@@ -199,9 +189,6 @@ class CreateDraftCertificateFromCSTest {
         final var modelIdDTO = CertificateModelIdDTO.builder().build();
         final var request = CreateCertificateRequestDTO.builder().build();
 
-        final var vardenhet = new Vardenhet();
-        when(user.getValdVardenhet()).thenReturn(vardenhet);
-        when(user.getValdVardgivare()).thenReturn(vardenhet);
         when(csIntegrationService.certificateTypeExists(certificate.getTypAvIntyg().getCode()))
             .thenReturn(Optional.of(modelIdDTO));
         when(csIntegrationRequestFactory.createDraftCertificateRequest(modelIdDTO, certificate, user)).thenReturn(request);
@@ -220,9 +207,6 @@ class CreateDraftCertificateFromCSTest {
         final var modelIdDTO = CertificateModelIdDTO.builder().build();
         final var request = CreateCertificateRequestDTO.builder().build();
 
-        final var vardenhet = new Vardenhet();
-        when(user.getValdVardenhet()).thenReturn(vardenhet);
-        when(user.getValdVardgivare()).thenReturn(vardenhet);
         when(csIntegrationService.certificateTypeExists(certificate.getTypAvIntyg().getCode()))
             .thenReturn(Optional.of(modelIdDTO));
         when(csIntegrationRequestFactory.createDraftCertificateRequest(modelIdDTO, certificate, user)).thenReturn(request);
@@ -230,7 +214,7 @@ class CreateDraftCertificateFromCSTest {
 
         createDraftCertificateFromCS.create(certificate, user);
 
-        verify(integreradeEnheterRegistry).putIntegreradEnhet(any(IntegreradEnhetEntry.class), eq(false), eq(true));
+        verify(integratedUnitRegistryHelper).addUnit(user);
     }
 
     @Test
@@ -240,9 +224,6 @@ class CreateDraftCertificateFromCSTest {
         final var modelIdDTO = CertificateModelIdDTO.builder().build();
         final var request = CreateCertificateRequestDTO.builder().build();
 
-        final var vardenhet = new Vardenhet();
-        when(user.getValdVardenhet()).thenReturn(vardenhet);
-        when(user.getValdVardgivare()).thenReturn(vardenhet);
         when(csIntegrationService.certificateTypeExists(certificate.getTypAvIntyg().getCode()))
             .thenReturn(Optional.of(modelIdDTO));
         when(csIntegrationRequestFactory.createDraftCertificateRequest(modelIdDTO, certificate, user)).thenReturn(request);
@@ -260,9 +241,6 @@ class CreateDraftCertificateFromCSTest {
         final var modelIdDTO = CertificateModelIdDTO.builder().build();
         final var request = CreateCertificateRequestDTO.builder().build();
 
-        final var vardenhet = new Vardenhet();
-        when(user.getValdVardenhet()).thenReturn(vardenhet);
-        when(user.getValdVardgivare()).thenReturn(vardenhet);
         when(csIntegrationService.certificateTypeExists(certificate.getTypAvIntyg().getCode()))
             .thenReturn(Optional.of(modelIdDTO));
         when(csIntegrationRequestFactory.createDraftCertificateRequest(modelIdDTO, certificate, user)).thenReturn(request);
@@ -286,9 +264,6 @@ class CreateDraftCertificateFromCSTest {
         final var modelIdDTO = CertificateModelIdDTO.builder().build();
         final var request = CreateCertificateRequestDTO.builder().build();
 
-        final var vardenhet = new Vardenhet();
-        when(user.getValdVardenhet()).thenReturn(vardenhet);
-        when(user.getValdVardgivare()).thenReturn(vardenhet);
         when(csIntegrationService.certificateTypeExists(certificate.getTypAvIntyg().getCode()))
             .thenReturn(Optional.of(modelIdDTO));
         when(csIntegrationRequestFactory.createDraftCertificateRequest(modelIdDTO, certificate, user)).thenReturn(request);
@@ -310,9 +285,6 @@ class CreateDraftCertificateFromCSTest {
         final var modelIdDTO = CertificateModelIdDTO.builder().build();
         final var request = CreateCertificateRequestDTO.builder().build();
 
-        final var vardenhet = new Vardenhet();
-        when(user.getValdVardenhet()).thenReturn(vardenhet);
-        when(user.getValdVardgivare()).thenReturn(vardenhet);
         when(csIntegrationService.certificateTypeExists(certificate.getTypAvIntyg().getCode()))
             .thenReturn(Optional.of(modelIdDTO));
         when(csIntegrationRequestFactory.createDraftCertificateRequest(modelIdDTO, certificate, user)).thenReturn(request);

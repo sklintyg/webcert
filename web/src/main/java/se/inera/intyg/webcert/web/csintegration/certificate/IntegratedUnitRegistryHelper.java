@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
@@ -28,13 +29,12 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 @Component
 @RequiredArgsConstructor
-public class IntegratedUnitHelper {
+public class IntegratedUnitRegistryHelper {
 
     private final WebCertUserService webCertUserService;
     private final IntegreradeEnheterRegistry integreradeEnheterRegistry;
 
-    public void registerUnit() {
-        final var user = webCertUserService.getUser();
+    public void addUnit(IntygUser user) {
         if (user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.toString())) {
             integreradeEnheterRegistry.putIntegreradEnhet(
                 new IntegreradEnhetEntry(
@@ -46,6 +46,10 @@ public class IntegratedUnitHelper {
                 false,
                 true);
         }
+    }
+
+    public void addUnit() {
+        addUnit(webCertUserService.getUser());
     }
 
 }
