@@ -42,26 +42,28 @@ public class ReplaceCertificateFromCertificateService implements ReplaceCertific
     public String replaceCertificate(String certificateId) {
         log.debug("Attempting to replace certificate '{}' from Certificate Service", certificateId);
 
-        final var certificateToReplace = csIntegrationService.getCertificate(certificateId,
-            csIntegrationRequestFactory.getCertificateRequest());
+        final var certificateToReplace = csIntegrationService.getCertificate(
+            certificateId,
+            csIntegrationRequestFactory.getCertificateRequest()
+        );
         if (certificateToReplace == null) {
             log.debug("Certificate '{}' does not exist in certificate service", certificateId);
             return null;
         }
 
-        final var certificate = csIntegrationService.replaceCertificate(
+        final var replacingCertificate = csIntegrationService.replaceCertificate(
             certificateId,
             csIntegrationRequestFactory.replaceCertificateRequest(certificateToReplace.getMetadata().getPatient().getPersonId().getId())
         );
 
-        if (certificate == null) {
+        if (replacingCertificate == null) {
             throw new IllegalStateException("Received null when trying to replace certificate from Certificate Service");
         }
 
         log.debug("Replaced certificate '{}' from Certificate Service", certificateId);
-        monitoringLogService.logIntygCopiedReplacement(certificate.getMetadata().getId(), certificateId);
-        pdlLogService.logCreated(certificate);
+        monitoringLogService.logIntygCopiedReplacement(replacingCertificate.getMetadata().getId(), certificateId);
+        pdlLogService.logCreated(replacingCertificate);
 
-        return certificate.getMetadata().getId();
+        return replacingCertificate.getMetadata().getId();
     }
 }
