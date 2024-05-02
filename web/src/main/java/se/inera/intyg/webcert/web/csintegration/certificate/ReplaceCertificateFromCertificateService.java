@@ -22,6 +22,7 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
@@ -37,18 +38,25 @@ public class ReplaceCertificateFromCertificateService implements ReplaceCertific
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
     private final PDLLogService pdlLogService;
     private final MonitoringLogService monitoringLogService;
+    private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
 
     @Override
     public String replaceCertificate(String certificateId) {
         log.debug("Attempting to replace certificate '{}' from Certificate Service", certificateId);
+
+        if (Boolean.FALSE.equals(csIntegrationService.certificateExists(certificateId))) {
+            log.debug("Certificate '{}' does not exist in certificate service", certificateId);
+            return null;
+        }
 
         final var certificateToReplace = csIntegrationService.getCertificate(
             certificateId,
             csIntegrationRequestFactory.getCertificateRequest()
         );
         if (certificateToReplace == null) {
-            log.debug("Certificate '{}' does not exist in certificate service", certificateId);
-            return null;
+            throw new IllegalStateException(
+                String.format("Certificate service returned null when getting certificate '%s'", certificateId)
+            );
         }
 
         final var replacingCertificate = csIntegrationService.replaceCertificate(
@@ -63,6 +71,7 @@ public class ReplaceCertificateFromCertificateService implements ReplaceCertific
         log.debug("Replaced certificate '{}' from Certificate Service", certificateId);
         monitoringLogService.logIntygCopiedReplacement(replacingCertificate.getMetadata().getId(), certificateId);
         pdlLogService.logCreated(replacingCertificate);
+        publishCertificateStatusUpdateService.publish(replacingCertificate, HandelsekodEnum.SKAPAT);
 
         return replacingCertificate.getMetadata().getId();
     }

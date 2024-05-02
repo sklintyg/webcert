@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
@@ -34,6 +35,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
@@ -67,6 +69,9 @@ class ReplaceCertificateFromCertificateServiceTest {
     @Mock
     MonitoringLogService monitoringLogService;
 
+    @Mock
+    PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+
     @InjectMocks
     ReplaceCertificateFromCertificateService replaceCertificateFromCertificateService;
 
@@ -75,6 +80,14 @@ class ReplaceCertificateFromCertificateServiceTest {
         final var response = replaceCertificateFromCertificateService.replaceCertificate(ID);
 
         assertNull(response);
+    }
+
+    @Test
+    void shouldThrowErrorIfCertificateReturnedFromCSIsNull() {
+        when(csIntegrationService.certificateExists(anyString()))
+            .thenReturn(true);
+
+        assertThrows(IllegalStateException.class, () -> replaceCertificateFromCertificateService.replaceCertificate(ID));
     }
 
     @Nested
@@ -107,6 +120,9 @@ class ReplaceCertificateFromCertificateServiceTest {
                     .build()
                 )
                 .build());
+
+            when(csIntegrationService.certificateExists(anyString()))
+                .thenReturn(true);
 
             when(csIntegrationService.getCertificate(anyString(), any()))
                 .thenReturn(CERTIFICATE);
@@ -154,6 +170,12 @@ class ReplaceCertificateFromCertificateServiceTest {
                 replaceCertificateFromCertificateService.replaceCertificate(ID);
                 verify(pdlLogService).logCreated(REPLACED_CERTIFICATE);
 
+            }
+
+            @Test
+            void shouldPublishCreated() {
+                replaceCertificateFromCertificateService.replaceCertificate(ID);
+                verify(publishCertificateStatusUpdateService).publish(REPLACED_CERTIFICATE, HandelsekodEnum.SKAPAT);
             }
 
             @Test
