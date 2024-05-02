@@ -121,6 +121,17 @@ class CertificateDetailsUpdateServiceTest {
             certificateDetailsUpdateService.update(certificate, webCertUser, PERSONAL_NUMBER);
             assertEquals(PERSONAL_NUMBER.getOriginalPnr(), webCertUser.getParameters().getBeforeAlternateSsn());
         }
+
+        @Test
+        void shallSetBeforeAlternateSsnOnUserFromCertificate() {
+            final var webCertUser = new WebCertUser();
+            webCertUser.setParameters(new IntegrationParameters("", "", "",
+                "", "", "", "", "", "", false,
+                false, false, true, null));
+            doReturn(true).when(alternateSsnEvaluator).shouldUpdate(certificate, webCertUser);
+            certificateDetailsUpdateService.update(certificate, webCertUser, null);
+            assertEquals(certificate.getMetadata().getPatient().getPersonId().getId(), webCertUser.getParameters().getBeforeAlternateSsn());
+        }
     }
 
     @Nested

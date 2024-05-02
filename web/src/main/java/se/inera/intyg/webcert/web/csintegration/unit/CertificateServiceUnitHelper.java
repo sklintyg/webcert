@@ -41,10 +41,10 @@ public class CertificateServiceUnitHelper {
 
     public CertificateServiceUnitDTO getCareUnit() {
         final var user = webCertUserService.getUser();
-        final var unit = CertificateServiceUnitUtil.getUnit(user);
+        final var careUnit = CertificateServiceUnitUtil.getCareUnit(user);
         return certificateServiceVardenhetConverter.convert(
-            unit,
-            user.isUnitInactive()
+            careUnit,
+            false
         );
     }
 

@@ -243,7 +243,7 @@ class CertificateServiceIntegrationUserHelperTest {
 
         @Test
         void shallIncludeAccessScope() {
-            assertEquals(AccessScopeType.WITHIN_CARE_PROVIDER, certificateServiceIntegrationUserHelper.get(intygUser).getAccessScope());
+            assertEquals(AccessScopeType.WITHIN_CARE_UNIT, certificateServiceIntegrationUserHelper.get(intygUser).getAccessScope());
         }
 
         private void addRole(String roleName) {

@@ -51,6 +51,7 @@ class AlternateSsnEvaluatorTest {
                 .build()
         )
         .build();
+    private static final String VALID_PERSONAL_NUMER = "191212121212";
     @Mock
     private IntegrationParameters integrationParameters;
     @Mock
@@ -85,8 +86,28 @@ class AlternateSsnEvaluatorTest {
         void shallReturnTrueWhenAlternateSsnIsProvidedAndDoesNotMatchPatientId() {
             doReturn(PATIENT).when(certificateMetadata).getPatient();
             doReturn(integrationParameters).when(webCertUser).getParameters();
-            doReturn("personId-2").when(integrationParameters).getAlternateSsn();
-            doReturn(List.of(ResourceLink.builder().type(ResourceLinkTypeEnum.EDIT_CERTIFICATE).build())).when(certificate).getLinks();
+            doReturn(VALID_PERSONAL_NUMER).when(integrationParameters).getAlternateSsn();
+            doReturn(List.of(
+                ResourceLink.builder()
+                    .type(ResourceLinkTypeEnum.EDIT_CERTIFICATE)
+                    .enabled(true)
+                    .build())
+            ).when(certificate).getLinks();
+
+            assertTrue(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
+        }
+
+        @Test
+        void shallReturnTrueWhenAlternateSsnIsProvidedAndDoesNotMatchPatientIdWithoutDash() {
+            doReturn(PATIENT).when(certificateMetadata).getPatient();
+            doReturn(integrationParameters).when(webCertUser).getParameters();
+            doReturn(VALID_PERSONAL_NUMER).when(integrationParameters).getAlternateSsn();
+            doReturn(List.of(
+                ResourceLink.builder()
+                    .type(ResourceLinkTypeEnum.EDIT_CERTIFICATE)
+                    .enabled(true)
+                    .build())
+            ).when(certificate).getLinks();
 
             assertTrue(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
         }
@@ -131,18 +152,42 @@ class AlternateSsnEvaluatorTest {
             doReturn(CertificateStatus.UNSIGNED).when(certificateMetadata).getStatus();
             doReturn(PATIENT).when(certificateMetadata).getPatient();
             doReturn(integrationParameters).when(webCertUser).getParameters();
-            doReturn("personId-2").when(integrationParameters).getAlternateSsn();
         }
 
         @Test
-        void shallReturnTrueIfUserHasRightToEdit() {
-            doReturn(List.of(ResourceLink.builder().type(ResourceLinkTypeEnum.EDIT_CERTIFICATE).build())).when(certificate).getLinks();
+        void shallReturnTrueIfUserHasRightToEditAndEnabledIsTrue() {
+            doReturn(VALID_PERSONAL_NUMER).when(integrationParameters).getAlternateSsn();
+            doReturn(List.of(
+                ResourceLink.builder()
+                    .type(ResourceLinkTypeEnum.EDIT_CERTIFICATE)
+                    .enabled(true)
+                    .build())
+            ).when(certificate).getLinks();
             assertTrue(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
         }
 
         @Test
+        void shallReturnFalseIfUserHasRightToEditAndEnabledIsFalse() {
+            doReturn(VALID_PERSONAL_NUMER).when(integrationParameters).getAlternateSsn();
+            doReturn(List.of(
+                ResourceLink.builder()
+                    .type(ResourceLinkTypeEnum.EDIT_CERTIFICATE)
+                    .enabled(false)
+                    .build())
+            ).when(certificate).getLinks();
+            assertFalse(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
+        }
+
+        @Test
         void shallReturnFalseIfUserDontHaveRightToEdit() {
+            doReturn(VALID_PERSONAL_NUMER).when(integrationParameters).getAlternateSsn();
             doReturn(List.of(ResourceLink.builder().type(ResourceLinkTypeEnum.SEND_CERTIFICATE).build())).when(certificate).getLinks();
+            assertFalse(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
+        }
+
+        @Test
+        void shallReturnFalseIfAlternateSsnIsInvalidFormat() {
+            doReturn("invalidPersonal").when(integrationParameters).getAlternateSsn();
             assertFalse(alternateSsnEvaluator.shouldUpdate(certificate, webCertUser));
         }
     }

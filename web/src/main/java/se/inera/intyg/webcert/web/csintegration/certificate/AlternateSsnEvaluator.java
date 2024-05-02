@@ -22,7 +22,9 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
+import se.inera.intyg.common.support.facade.model.link.ResourceLink;
 import se.inera.intyg.common.support.facade.model.link.ResourceLinkTypeEnum;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @Component
@@ -37,11 +39,24 @@ public class AlternateSsnEvaluator {
             return false;
         }
 
-        if (user.getParameters().getAlternateSsn().equals(certificate.getMetadata().getPatient().getPersonId().getId())) {
+        if (removeDash(user.getParameters().getAlternateSsn()).equals(
+            removeDash(certificate.getMetadata().getPatient().getPersonId().getId()))) {
             return false;
         }
 
-        return certificate.getLinks().stream().anyMatch(link -> link.getType().equals(ResourceLinkTypeEnum.EDIT_CERTIFICATE));
+        if (Personnummer.createPersonnummer(user.getParameters().getAlternateSsn()).orElse(null) == null) {
+            return false;
+        }
+
+        return certificate.getLinks().stream()
+            .filter(link -> link.getType().equals(ResourceLinkTypeEnum.EDIT_CERTIFICATE))
+            .findFirst()
+            .map(ResourceLink::isEnabled)
+            .orElse(false);
+    }
+
+    private String removeDash(String value) {
+        return value.replace("-", "");
     }
 
     private static boolean alternateSsnProvided(WebCertUser user) {

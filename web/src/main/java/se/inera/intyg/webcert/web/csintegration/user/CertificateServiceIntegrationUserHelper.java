@@ -42,7 +42,7 @@ public class CertificateServiceIntegrationUserHelper {
             .paTitles(paTitles(user.getBefattningar()))
             .specialities(user.getSpecialiseringar())
             .role(getRole(user))
-            .accessScope(AccessScopeType.WITHIN_CARE_PROVIDER)
+            .accessScope(AccessScopeType.WITHIN_CARE_UNIT)
             .build();
     }
 
