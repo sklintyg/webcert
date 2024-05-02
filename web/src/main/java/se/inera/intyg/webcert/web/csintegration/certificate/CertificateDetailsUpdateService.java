@@ -55,6 +55,7 @@ public class CertificateDetailsUpdateService {
                         : null
                 )
             );
+            publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.ANDRAT);
         }
 
         if (shouldUpdatePatientDetails) {
@@ -62,7 +63,6 @@ public class CertificateDetailsUpdateService {
                 certificate.getMetadata().getId(),
                 certificate.getMetadata().getType()
             );
-            publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.ANDRAT);
             user.getParameters().setBeforeAlternateSsn(beforeAlternateSsn.getOriginalPnr());
         }
     }
