@@ -49,7 +49,6 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.Staff;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
-import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateExistsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceCreateCertificateResponseDTO;
@@ -71,6 +70,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertifica
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ReplaceCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ReplaceCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.RevokeCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.RevokeCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SendCertificateRequestDTO;
@@ -80,9 +81,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateR
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateWithoutSignatureRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
-import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
@@ -102,7 +101,11 @@ class CSIntegrationServiceTest {
         CertificateServiceCreateCertificateResponseDTO.builder()
             .certificate(CERTIFICATE)
             .build();
+    private static final ReplaceCertificateRequestDTO REPLACE_CERTIFICATE_REQUEST = ReplaceCertificateRequestDTO.builder().build();
     private static final GetCertificateRequestDTO GET_CERTIFICATE_REQUEST = GetCertificateRequestDTO.builder().build();
+    public static final ReplaceCertificateResponseDTO REPLACE_CERTIFICATE_RESPONSE = ReplaceCertificateResponseDTO.builder()
+        .certificate(CERTIFICATE)
+        .build();
     private static final CertificateServiceGetCertificateResponseDTO GET_RESPONSE = CertificateServiceGetCertificateResponseDTO.builder()
         .certificate(CERTIFICATE)
         .build();
@@ -155,12 +158,6 @@ class CSIntegrationServiceTest {
     private static final RevokeCertificateResponseDTO REVOKE_RESPONSE = RevokeCertificateResponseDTO.builder()
         .certificate(CERTIFICATE)
         .build();
-    private static final IntygUser USER = new IntygUser("hsaId");
-
-    @Mock
-    private PDLLogService pdlLogService;
-    @Mock
-    private MonitoringLogService monitoringLogService;
 
     @Mock
     private RestTemplate restTemplate;
@@ -270,6 +267,58 @@ class CSIntegrationServiceTest {
             verify(restTemplate).postForObject(captor.capture(), any(), any());
 
             assertEquals("baseUrl/api/certificate", captor.getValue());
+        }
+    }
+
+    @Nested
+    class ReplaceCertificate {
+
+        @Test
+        void shouldThrowExceptionIfResponseIsNull() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(null);
+
+            assertThrows(IllegalStateException.class,
+                () -> csIntegrationService.replaceCertificate(CERTIFICATE_ID, REPLACE_CERTIFICATE_REQUEST)
+            );
+        }
+
+        @Nested
+        class WithResponse {
+
+            @BeforeEach
+            void setUp() {
+                when(restTemplate.postForObject(anyString(), any(), any()))
+                    .thenReturn(REPLACE_CERTIFICATE_RESPONSE);
+            }
+
+            @Test
+            void shouldPreformPostUsingRequest() {
+                final var captor = ArgumentCaptor.forClass(ReplaceCertificateRequestDTO.class);
+
+                csIntegrationService.replaceCertificate(CERTIFICATE_ID, REPLACE_CERTIFICATE_REQUEST);
+                verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+
+                assertEquals(REPLACE_CERTIFICATE_REQUEST, captor.getValue());
+            }
+
+            @Test
+            void shouldReturnCertificate() {
+                final var response = csIntegrationService.replaceCertificate(CERTIFICATE_ID, REPLACE_CERTIFICATE_REQUEST);
+
+                assertEquals(CERTIFICATE, response);
+            }
+
+            @Test
+            void shouldSetUrlCorrect() {
+                ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+                final var captor = ArgumentCaptor.forClass(String.class);
+
+                csIntegrationService.replaceCertificate(CERTIFICATE_ID, REPLACE_CERTIFICATE_REQUEST);
+                verify(restTemplate).postForObject(captor.capture(), any(), any());
+
+                assertEquals("baseUrl/api/certificate/certificateId/replace", captor.getValue());
+            }
         }
     }
 

@@ -22,46 +22,46 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
-import se.inera.intyg.webcert.web.service.facade.DeleteCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.facade.ReplaceCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 @Slf4j
-@Service("deleteCertificateFromCertificateService")
+@Service("replaceCertificateFromCertificateService")
 @RequiredArgsConstructor
-public class DeleteCertificateFromCertificateService implements DeleteCertificateFacadeService {
+public class ReplaceCertificateFromCertificateService implements ReplaceCertificateFacadeService {
 
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
     private final PDLLogService pdlLogService;
     private final MonitoringLogService monitoringLogService;
-    private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
 
     @Override
-    public boolean deleteCertificate(String certificateId, long version) {
-        log.debug("Attempting to delete certificate '{}' with version '{}' from Certificate Service", certificateId, version);
+    public String replaceCertificate(String certificateId) {
+        log.debug("Attempting to replace certificate '{}' from Certificate Service", certificateId);
 
-        if (Boolean.FALSE.equals(csIntegrationService.certificateExists(certificateId))) {
+        final var certificateToReplace = csIntegrationService.getCertificate(certificateId,
+            csIntegrationRequestFactory.getCertificateRequest());
+        if (certificateToReplace == null) {
             log.debug("Certificate '{}' does not exist in certificate service", certificateId);
-            return false;
+            return null;
         }
 
-        final var certificate = csIntegrationService.deleteCertificate(
-            certificateId, version, csIntegrationRequestFactory.deleteCertificateRequest()
+        final var certificate = csIntegrationService.replaceCertificate(
+            certificateId,
+            csIntegrationRequestFactory.replaceCertificateRequest(certificateToReplace.getMetadata().getPatient().getPersonId().getId())
         );
 
         if (certificate == null) {
-            throw new IllegalStateException("Received null when trying to delete certificate from Certificate Service");
+            throw new IllegalStateException("Received null when trying to replace certificate from Certificate Service");
         }
 
-        log.debug("Deleted certificate '{}' from Certificate Service", certificateId);
-        monitoringLogService.logUtkastDeleted(certificate.getMetadata().getId(), certificate.getMetadata().getType());
-        pdlLogService.logDeleted(certificate);
-        publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.RADERA);
+        log.debug("Replaced certificate '{}' from Certificate Service", certificateId);
+        monitoringLogService.logIntygCopiedReplacement(certificate.getMetadata().getId(), certificateId);
+        pdlLogService.logCreated(certificate);
 
-        return true;
+        return certificate.getMetadata().getId();
     }
 }

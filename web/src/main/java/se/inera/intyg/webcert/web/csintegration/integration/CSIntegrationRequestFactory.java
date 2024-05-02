@@ -36,6 +36,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertif
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ReplaceCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.RevokeCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.RevokeInformationDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateRequestDTO;
@@ -230,15 +231,6 @@ public class CSIntegrationRequestFactory {
             .build();
     }
 
-    private Personnummer createPatientId(String patientId) {
-        return Personnummer.createPersonnummer(patientId)
-            .orElseThrow(() ->
-                new IllegalArgumentException(
-                    String.format("PatientId has wrong format: '%s'", patientId)
-                )
-            );
-    }
-
     public SendCertificateRequestDTO sendCertificateRequest() {
         return SendCertificateRequestDTO.builder()
             .unit(certificateServiceUnitHelper.getUnit())
@@ -272,6 +264,16 @@ public class CSIntegrationRequestFactory {
             .build();
     }
 
+    public ReplaceCertificateRequestDTO replaceCertificateRequest(String patientId) {
+        return ReplaceCertificateRequestDTO.builder()
+            .unit(certificateServiceUnitHelper.getUnit())
+            .careUnit(certificateServiceUnitHelper.getCareUnit())
+            .careProvider(certificateServiceUnitHelper.getCareProvider())
+            .user(certificateServiceUserHelper.get())
+            .patient(certificateServicePatientHelper.get(createPatientId(patientId)))
+            .build();
+    }
+
     private String convertReason(String reason) {
         switch (reason) {
             case "FEL_PATIENT":
@@ -281,5 +283,14 @@ public class CSIntegrationRequestFactory {
             default:
                 throw new IllegalArgumentException("Invalid revoke reason. Reason must be either 'FEL_PATIENT' or 'ANNAT_ALLVARLIGT_FEL'");
         }
+    }
+
+    private Personnummer createPatientId(String patientId) {
+        return Personnummer.createPersonnummer(patientId)
+            .orElseThrow(() ->
+                new IllegalArgumentException(
+                    String.format("PatientId has wrong format: '%s'", patientId)
+                )
+            );
     }
 }

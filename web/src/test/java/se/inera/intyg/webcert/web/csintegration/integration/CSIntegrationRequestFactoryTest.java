@@ -1016,6 +1016,54 @@ class CSIntegrationRequestFactoryTest {
     }
 
     @Nested
+    class ReplaceCertificateRequest {
+
+        @BeforeEach
+        void setup() {
+            when(certificateServiceUserHelper.get())
+                .thenReturn(USER);
+            when(certificateServicePatientHelper.get(PERSONNUMMER))
+                .thenReturn(PATIENT);
+            when(certificateServiceUnitHelper.getUnit())
+                .thenReturn(UNIT);
+            when(certificateServiceUnitHelper.getCareUnit())
+                .thenReturn(CARE_UNIT);
+            when(certificateServiceUnitHelper.getCareProvider())
+                .thenReturn(CARE_PROVIDER);
+        }
+
+        @Test
+        void shouldSetUser() {
+            final var actualRequest = csIntegrationRequestFactory.replaceCertificateRequest(PATIENT_ID);
+            assertEquals(USER, actualRequest.getUser());
+        }
+
+        @Test
+        void shouldSetUnit() {
+            final var actualRequest = csIntegrationRequestFactory.replaceCertificateRequest(PATIENT_ID);
+            assertEquals(UNIT, actualRequest.getUnit());
+        }
+
+        @Test
+        void shouldSetCareUnit() {
+            final var actualRequest = csIntegrationRequestFactory.replaceCertificateRequest(PATIENT_ID);
+            assertEquals(CARE_UNIT, actualRequest.getCareUnit());
+        }
+
+        @Test
+        void shouldSetCareProvider() {
+            final var actualRequest = csIntegrationRequestFactory.replaceCertificateRequest(PATIENT_ID);
+            assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
+        }
+
+        @Test
+        void shouldSetPatient() {
+            final var actualRequest = csIntegrationRequestFactory.replaceCertificateRequest(PATIENT_ID);
+            assertEquals(PATIENT, actualRequest.getPatient());
+        }
+    }
+
+    @Nested
     class InvalidRevokeCertificateRequest {
 
         @Test
