@@ -39,8 +39,6 @@ import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3.CreateDraftCertificate;
 import se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3.CreateDraftCertificateResponseFactory;
-import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
-import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.CreateDraftCertificateResponseType;
@@ -56,7 +54,7 @@ public class CreateDraftCertificateFromCS implements CreateDraftCertificate {
     private final PatientDetailsResolver patientDetailsResolver;
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
-    private final IntegreradeEnheterRegistry integreradeEnheterRegistry;
+    private final IntegratedUnitRegistryHelper integratedUnitRegistryHelper;
     private final PDLLogService pdlLogService;
     private final MonitoringLogService monitoringLogService;
     private final HandleApiErrorService handleApiErrorService;
@@ -75,7 +73,7 @@ public class CreateDraftCertificateFromCS implements CreateDraftCertificate {
             return applicationError.get();
         }
 
-        integreradeEnheterRegistry.putIntegreradEnhet(getIntegreradEnhetEntry(user), false, true);
+        integratedUnitRegistryHelper.addUnit(user);
 
         try {
             final var createdCertificate = csIntegrationService.createCertificate(
@@ -117,11 +115,6 @@ public class CreateDraftCertificateFromCS implements CreateDraftCertificate {
             );
             return createErrorResponse("Internal error. Could not create draft", ErrorIdType.APPLICATION_ERROR);
         }
-    }
-
-    private static IntegreradEnhetEntry getIntegreradEnhetEntry(IntygUser user) {
-        return new IntegreradEnhetEntry(user.getValdVardenhet().getId(),
-            user.getValdVardenhet().getNamn(), user.getValdVardgivare().getId(), user.getValdVardgivare().getNamn());
     }
 
     private Optional<CreateDraftCertificateResponseType> validatePUIntegration(Intyg certificate) {

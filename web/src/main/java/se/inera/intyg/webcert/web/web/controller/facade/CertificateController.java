@@ -106,6 +106,7 @@ public class CertificateController {
     @Qualifier("revokeCertificateAggregator")
     private RevokeCertificateFacadeService revokeCertificateFacadeService;
     @Autowired
+    @Qualifier("replaceCertificateAggregator")
     private ReplaceCertificateFacadeService replaceCertificateFacadeService;
     @Autowired
     private CopyCertificateFacadeService copyCertificateFacadeService;

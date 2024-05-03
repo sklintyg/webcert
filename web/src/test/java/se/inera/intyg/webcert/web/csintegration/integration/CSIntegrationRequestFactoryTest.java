@@ -79,6 +79,7 @@ class CSIntegrationRequestFactoryTest {
         .build();
     private static final Certificate CERTIFICATE = new Certificate();
     private static final String PATIENT_ID = "191212121212";
+    private static final String EXTERNAL_REFERENCE = "REF";
     private static final Personnummer PERSONNUMMER = Personnummer.createPersonnummer(PATIENT_ID).orElseThrow();
     private static final CertificateServiceUserDTO USER = CertificateServiceUserDTO.builder().build();
     private static final CertificateServiceUnitDTO UNIT = CertificateServiceUnitDTO.builder().build();
@@ -1028,6 +1029,60 @@ class CSIntegrationRequestFactoryTest {
             final var actualRequest = csIntegrationRequestFactory.revokeCertificateRequest(
                 REASON_INCORRECT_PATIENT_NOT_CONVERTED, REVOKED_MESSAGE);
             assertEquals(REVOKED_MESSAGE, actualRequest.getRevoked().getMessage());
+        }
+    }
+
+    @Nested
+    class ReplaceCertificateRequest {
+
+        @BeforeEach
+        void setup() {
+            when(certificateServiceUserHelper.get())
+                .thenReturn(USER);
+            when(certificateServicePatientHelper.get(PERSONNUMMER))
+                .thenReturn(PATIENT);
+            when(certificateServiceUnitHelper.getUnit())
+                .thenReturn(UNIT);
+            when(certificateServiceUnitHelper.getCareUnit())
+                .thenReturn(CARE_UNIT);
+            when(certificateServiceUnitHelper.getCareProvider())
+                .thenReturn(CARE_PROVIDER);
+        }
+
+        @Test
+        void shouldSetUser() {
+            final var actualRequest = csIntegrationRequestFactory.replaceCertificateRequest(PATIENT_ID, EXTERNAL_REFERENCE);
+            assertEquals(USER, actualRequest.getUser());
+        }
+
+        @Test
+        void shouldSetUnit() {
+            final var actualRequest = csIntegrationRequestFactory.replaceCertificateRequest(PATIENT_ID, EXTERNAL_REFERENCE);
+            assertEquals(UNIT, actualRequest.getUnit());
+        }
+
+        @Test
+        void shouldSetCareUnit() {
+            final var actualRequest = csIntegrationRequestFactory.replaceCertificateRequest(PATIENT_ID, EXTERNAL_REFERENCE);
+            assertEquals(CARE_UNIT, actualRequest.getCareUnit());
+        }
+
+        @Test
+        void shouldSetCareProvider() {
+            final var actualRequest = csIntegrationRequestFactory.replaceCertificateRequest(PATIENT_ID, EXTERNAL_REFERENCE);
+            assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
+        }
+
+        @Test
+        void shouldSetPatient() {
+            final var actualRequest = csIntegrationRequestFactory.replaceCertificateRequest(PATIENT_ID, EXTERNAL_REFERENCE);
+            assertEquals(PATIENT, actualRequest.getPatient());
+        }
+
+        @Test
+        void shouldSetExternalReference() {
+            final var actualRequest = csIntegrationRequestFactory.replaceCertificateRequest(PATIENT_ID, EXTERNAL_REFERENCE);
+            assertEquals(EXTERNAL_REFERENCE, actualRequest.getExternalReference());
         }
     }
 
