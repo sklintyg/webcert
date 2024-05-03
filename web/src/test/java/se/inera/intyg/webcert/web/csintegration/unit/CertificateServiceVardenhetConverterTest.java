@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.web.csintegration.unit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,49 +55,55 @@ class CertificateServiceVardenhetConverterTest {
 
     @Test
     void shallConvertUnitId() {
-        final var unit = certificateServiceVardenhetConverter.convert(this.unit);
+        final var unit = certificateServiceVardenhetConverter.convert(this.unit, false);
         assertEquals(EXPECTED_UNIT_ID, unit.getId());
     }
 
     @Test
     void shallConvertUnitName() {
-        final var unit = certificateServiceVardenhetConverter.convert(this.unit);
+        final var unit = certificateServiceVardenhetConverter.convert(this.unit, false);
         assertEquals(EXPECTED_UNIT_NAME, unit.getName());
     }
 
     @Test
     void shallConvertPostalAddress() {
-        final var unit = certificateServiceVardenhetConverter.convert(this.unit);
+        final var unit = certificateServiceVardenhetConverter.convert(this.unit, false);
         assertEquals(EXPECTED_ADDRESS, unit.getAddress());
     }
 
     @Test
     void shallConvertPostalCode() {
-        final var unit = certificateServiceVardenhetConverter.convert(this.unit);
+        final var unit = certificateServiceVardenhetConverter.convert(this.unit, false);
         assertEquals(EXPECTED_ZIP_CODE, unit.getZipCode());
     }
 
     @Test
     void shallConvertPostalCity() {
-        final var unit = certificateServiceVardenhetConverter.convert(this.unit);
+        final var unit = certificateServiceVardenhetConverter.convert(this.unit, false);
         assertEquals(EXPECTED_CITY, unit.getCity());
     }
 
     @Test
     void shallConvertTelephoneNumber() {
-        final var unit = certificateServiceVardenhetConverter.convert(this.unit);
+        final var unit = certificateServiceVardenhetConverter.convert(this.unit, false);
         assertEquals(EXPECTED_PHONE_NUMBER, unit.getPhoneNumber());
     }
 
     @Test
     void shallConvertEmail() {
-        final var unit = certificateServiceVardenhetConverter.convert(this.unit);
+        final var unit = certificateServiceVardenhetConverter.convert(this.unit, false);
         assertEquals(EXPECTED_MAIL, unit.getEmail());
     }
 
     @Test
     void shallConvertWorkplaceCode() {
-        final var unit = certificateServiceVardenhetConverter.convert(this.unit);
+        final var unit = certificateServiceVardenhetConverter.convert(this.unit, false);
         assertEquals(EXPECTED_WORKPLACE_CODE, unit.getWorkplaceCode());
+    }
+
+    @Test
+    void shallConvertInactiveUnit() {
+        final var unit = certificateServiceVardenhetConverter.convert(this.unit, true);
+        assertTrue(unit.getInactive());
     }
 }

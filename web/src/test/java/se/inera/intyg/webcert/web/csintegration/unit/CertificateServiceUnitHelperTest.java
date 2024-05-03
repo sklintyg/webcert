@@ -35,6 +35,7 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 @ExtendWith(MockitoExtension.class)
 class CertificateServiceUnitHelperTest {
@@ -48,6 +49,9 @@ class CertificateServiceUnitHelperTest {
     private static final String CARE_UNIT_NAME = "CARE_UNIT_NAME";
     private static final String SUB_UNIT_ID = "SUB_UNIT_ID";
     private static final String SUB_UNIT_NAME = "SUB_UNIT_NAME";
+
+    @Mock
+    IntegrationParameters integrationParameters;
 
     @Mock
     WebCertUserService webCertUserService;
@@ -70,7 +74,6 @@ class CertificateServiceUnitHelperTest {
     void setup() {
         when(webCertUserService.getUser())
             .thenReturn(user);
-
         chosenCareProvider.setVardenheter(
             List.of(
                 chosenCareUnit,
@@ -110,9 +113,11 @@ class CertificateServiceUnitHelperTest {
 
         @BeforeEach
         void setup() {
+            when(user.getParameters()).thenReturn(integrationParameters);
+            when(integrationParameters.isInactiveUnit()).thenReturn(false);
             when(user.getValdVardenhet())
                 .thenReturn(chosenCareUnit);
-            when(certificateServiceVardenhetConverter.convert(chosenCareUnit))
+            when(certificateServiceVardenhetConverter.convert(chosenCareUnit, user.getParameters().isInactiveUnit()))
                 .thenReturn(CONVERTED_CARE_UNIT);
         }
 
@@ -138,13 +143,15 @@ class CertificateServiceUnitHelperTest {
         void setup() {
             when(user.getValdVardenhet())
                 .thenReturn(chosenSubUnit);
+            when(user.getParameters()).thenReturn(integrationParameters);
+            when(integrationParameters.isInactiveUnit()).thenReturn(false);
         }
 
         @Test
         void shouldReturnConvertedCareUnitOfChosenSubUnitAsCareUnit() {
             when(user.getValdVardgivare())
                 .thenReturn(chosenCareProvider);
-            when(certificateServiceVardenhetConverter.convert(chosenCareUnit))
+            when(certificateServiceVardenhetConverter.convert(chosenCareUnit, user.getParameters().isInactiveUnit()))
                 .thenReturn(CONVERTED_CARE_UNIT);
 
             final var response = certificateServiceUnitHelper.getCareUnit();
@@ -154,7 +161,7 @@ class CertificateServiceUnitHelperTest {
 
         @Test
         void shouldReturnConvertedChosenSubUnitAsUnit() {
-            when(certificateServiceVardenhetConverter.convert(chosenSubUnit))
+            when(certificateServiceVardenhetConverter.convert(chosenSubUnit, user.getParameters().isInactiveUnit()))
                 .thenReturn(CONVERTED_UNIT);
 
             final var response = certificateServiceUnitHelper.getUnit();
@@ -162,6 +169,4 @@ class CertificateServiceUnitHelperTest {
             assertEquals(CONVERTED_UNIT, response);
         }
     }
-
-
 }

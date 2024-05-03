@@ -30,7 +30,7 @@ import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
 import se.inera.intyg.webcert.web.service.utkast.util.CopyUtkastServiceHelper;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 
-@Service
+@Service("replaceCertificateFromWebcert")
 public class ReplaceCertificateFacadeServiceImpl implements ReplaceCertificateFacadeService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ReplaceCertificateFacadeServiceImpl.class);

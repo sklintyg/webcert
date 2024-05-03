@@ -32,7 +32,6 @@ import se.inera.intyg.infra.security.common.model.IntygUser;
 @RequiredArgsConstructor
 public class CertificateServiceIntegrationUserHelper {
 
-
     public CertificateServiceUserDTO get(IntygUser user) {
         return CertificateServiceUserDTO.builder()
             .id(user.getHsaId())
@@ -43,6 +42,7 @@ public class CertificateServiceIntegrationUserHelper {
             .paTitles(paTitles(user.getBefattningar()))
             .specialities(user.getSpecialiseringar())
             .role(getRole(user))
+            .accessScope(AccessScopeType.WITHIN_CARE_UNIT)
             .build();
     }
 
@@ -56,7 +56,6 @@ public class CertificateServiceIntegrationUserHelper {
             )
             .collect(Collectors.toList());
     }
-
 
     private CertificateServiceUserRole getRole(IntygUser user) {
         final var roles = user.getRoles();

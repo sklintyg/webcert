@@ -56,7 +56,6 @@ import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.facade.util.AngularClientUtil;
 import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
@@ -101,7 +100,9 @@ public class IntygIntegrationController extends BaseIntegrationController {
     private static final String[] GRANTED_ROLES = new String[]{
         AuthoritiesConstants.ROLE_LAKARE,
         AuthoritiesConstants.ROLE_TANDLAKARE,
-        AuthoritiesConstants.ROLE_ADMIN
+        AuthoritiesConstants.ROLE_ADMIN,
+        AuthoritiesConstants.ROLE_SJUKSKOTERSKA,
+        AuthoritiesConstants.ROLE_BARNMORSKA,
     };
 
     private String urlIntygFragmentTemplate;
@@ -117,10 +118,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
     private CommonAuthoritiesResolver commonAuthoritiesResolver;
 
     @Autowired
-    private ReferensService referensService;
-
-    @Autowired
-    @Qualifier("intygIntegrationServiceImpl")
+    @Qualifier("integrationCertificateAggregator")
     private IntegrationService integrationService;
 
     @Autowired
@@ -347,22 +345,11 @@ public class IntygIntegrationController extends BaseIntegrationController {
     protected Response handleRedirectToIntyg(UriInfo uriInfo, String intygTyp, String intygId, String enhetId, WebCertUser user) {
         try {
 
-            // Persist reference
-            handleReference(intygId, user.getParameters().getReference());
-
             if (Strings.nullToEmpty(enhetId).trim().isEmpty()) {
-
-                // If ENHET isn't set but the user only has one possible enhet that can be selected, we auto-select that one
-                // explicitly and proceed down the filter chain. Typically, that unit should already have been selected by
-                // the UserDetailsService that built the Principal, but better safe than sorry...
-
-                // Call service
-                PrepareRedirectToIntyg prepareRedirectInfo = integrationService.prepareRedirectToIntyg(intygTyp, intygId, user);
-
                 if (userHasExactlyOneSelectableVardenhet(user)) {
                     user.changeValdVardenhet(user.getVardgivare().get(0).getVardenheter().get(0).getId());
                     updateUserWithActiveFeatures(user);
-
+                    PrepareRedirectToIntyg prepareRedirectInfo = integrationService.prepareRedirectToIntyg(intygTyp, intygId, user);
                     LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygTyp);
                     return buildRedirectResponse(uriInfo, prepareRedirectInfo, user);
                 }
@@ -371,7 +358,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
                 user.getParameters().getState().setRedirectToEnhetsval(true);
 
                 LOG.warn("Deep integration request does not contain an 'enhet', redirecting to enhet selection page!");
-                return buildChooseUnitResponse(uriInfo, prepareRedirectInfo);
+                return buildChooseUnitResponse(uriInfo, intygId);
 
             } else {
                 if (user.changeValdVardenhet(enhetId)) {
@@ -409,14 +396,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
         }
     }
 
-    private void handleReference(String intygId, String referens) {
-        if (referens != null) {
-            if (!referensService.referensExists(intygId)) {
-                referensService.saveReferens(intygId, referens);
-            }
-        }
-    }
-
     private Response buildNoContentErrorResponse(UriInfo uriInfo) {
         return buildErrorResponse(uriInfo, "integration.nocontent");
     }
@@ -434,10 +413,10 @@ public class IntygIntegrationController extends BaseIntegrationController {
         return Response.temporaryRedirect(location).build();
     }
 
-    private Response buildChooseUnitResponse(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg) {
+    private Response buildChooseUnitResponse(UriInfo uriInfo, String certificateId) {
         UriBuilder uriBuilder = uriInfo.getBaseUriBuilder().replacePath(getUrlBaseTemplate());
 
-        String destinationUrl = getDestinationUrl(uriInfo, prepareRedirectToIntyg);
+        String destinationUrl = getDestinationUrl(uriInfo, certificateId);
         String urlFragment = "/integration-enhetsval";
 
         URI location = uriBuilder.queryParam("destination", destinationUrl).fragment(urlFragment).build();
@@ -467,13 +446,8 @@ public class IntygIntegrationController extends BaseIntegrationController {
         return uriBuilder.fragment(urlFragmentTemplate).buildFromMap(urlParams);
     }
 
-    private String getDestinationUrl(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg) {
-        String intygId = prepareRedirectToIntyg.getIntygId();
-        String intygTyp = prepareRedirectToIntyg.getIntygTyp();
-        String intygTypeVersion = prepareRedirectToIntyg.getIntygTypeVersion();
-
-        String urlPath = String.format("/visa/intyg/%s/%s/%s/resume", intygTyp, intygTypeVersion, intygId);
-
+    private String getDestinationUrl(UriInfo uriInfo, String certificateId) {
+        String urlPath = String.format("/visa/intyg/%s/%s/%s/resume", "intygVersion", "intygTypeVersion", certificateId);
         try {
             // get the builder without any existing query params
             UriBuilder uriBuilder = uriInfo.getRequestUriBuilder().replacePath(urlPath).replaceQuery(null);

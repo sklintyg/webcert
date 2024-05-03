@@ -30,7 +30,7 @@ public class CertificateServiceUnitUtil {
         throw new IllegalStateException("Utility class");
     }
 
-    public static AbstractVardenhet getUnit(IntygUser user) {
+    public static AbstractVardenhet getCareUnit(IntygUser user) {
         final var vardenhet = (AbstractVardenhet) user.getValdVardenhet();
 
         if (vardenhet instanceof Mottagning) {

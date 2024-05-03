@@ -45,6 +45,7 @@ public class DeleteCertificateFromCertificateService implements DeleteCertificat
         log.debug("Attempting to delete certificate '{}' with version '{}' from Certificate Service", certificateId, version);
 
         if (Boolean.FALSE.equals(csIntegrationService.certificateExists(certificateId))) {
+            log.debug("Certificate '{}' does not exist in certificate service", certificateId);
             return false;
         }
 
@@ -60,7 +61,7 @@ public class DeleteCertificateFromCertificateService implements DeleteCertificat
         monitoringLogService.logUtkastDeleted(certificate.getMetadata().getId(), certificate.getMetadata().getType());
         pdlLogService.logDeleted(certificate);
         publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.RADERA);
-        
+
         return true;
     }
 }

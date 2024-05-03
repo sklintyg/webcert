@@ -33,6 +33,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.Patient;
+import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
@@ -63,12 +65,23 @@ class SaveCertificateInCertificateServiceTest {
     private static final SaveCertificateRequestDTO REQUEST = SaveCertificateRequestDTO.builder().build();
     private static final long VERSION_FROM_CS = 99L;
 
+    private static final String ID = "patientId";
+
     static {
         CERTIFICATE.setMetadata(
             CertificateMetadata.builder()
                 .id(CERTIFICATE_ID)
                 .type(CERTIFICATE_TYPE)
                 .version(VERSION_FROM_CS)
+                .patient(
+                    Patient.builder()
+                        .personId(
+                            PersonId.builder()
+                                .id(ID)
+                                .build()
+                        )
+                        .build()
+                )
                 .build()
         );
     }
@@ -96,7 +109,7 @@ class SaveCertificateInCertificateServiceTest {
                 .thenReturn(true);
             when(csIntegrationService.saveCertificate(REQUEST))
                 .thenReturn(CERTIFICATE);
-            when(csIntegrationRequestFactory.saveRequest(CERTIFICATE))
+            when(csIntegrationRequestFactory.saveRequest(CERTIFICATE, ID))
                 .thenReturn(REQUEST);
         }
 

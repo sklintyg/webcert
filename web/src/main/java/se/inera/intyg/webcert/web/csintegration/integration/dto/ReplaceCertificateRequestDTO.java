@@ -23,27 +23,25 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateRequestDTO.SaveCertificateRequestDTOBuilder;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ReplaceCertificateRequestDTO.ReplaceCertificateRequestDTOBuilder;
 import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientDTO;
 import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitDTO;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserDTO;
 
-@JsonDeserialize(builder = SaveCertificateRequestDTOBuilder.class)
+@JsonDeserialize(builder = ReplaceCertificateRequestDTOBuilder.class)
 @Value
 @Builder
-public class SaveCertificateRequestDTO {
+public class ReplaceCertificateRequestDTO {
 
     CertificateServiceUserDTO user;
     CertificateServicePatientDTO patient;
-    CertificateServiceUnitDTO careUnit;
     CertificateServiceUnitDTO unit;
+    CertificateServiceUnitDTO careUnit;
     CertificateServiceUnitDTO careProvider;
-    Certificate certificate;
     String externalReference;
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class SaveCertificateRequestDTOBuilder {
+    public static class ReplaceCertificateRequestDTOBuilder {
 
     }
 }
