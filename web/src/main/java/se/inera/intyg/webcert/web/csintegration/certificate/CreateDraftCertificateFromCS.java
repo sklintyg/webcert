@@ -36,8 +36,6 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.csintegration.exception.HandleApiErrorService;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CodeDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetExternalTypeVersionRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3.CreateDraftCertificate;
 import se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3.CreateDraftCertificateResponseFactory;
@@ -67,16 +65,9 @@ public class CreateDraftCertificateFromCS implements CreateDraftCertificate {
     @Override
     public CreateDraftCertificateResponseType create(Intyg certificate, IntygUser user) {
         final var modelId = csIntegrationService.certificateExternalTypeExists(
-            GetExternalTypeVersionRequestDTO.builder()
-                .code(
-                    CodeDTO.builder()
-                        .code(certificate.getTypAvIntyg().getCode())
-                        .codeSystem(certificate.getTypAvIntyg().getCodeSystem())
-                        .build()
-                )
-                .build()
+            certificate.getTypAvIntyg().getCodeSystem(), certificate.getTypAvIntyg().getCode()
         );
-        
+
         if (modelId.isEmpty()) {
             log.debug("Certificate type '{}' does not exist in certificate service", certificate.getTypAvIntyg().getCode());
             return null;
