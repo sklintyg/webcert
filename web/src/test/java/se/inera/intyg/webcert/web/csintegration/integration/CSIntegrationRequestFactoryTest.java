@@ -1087,6 +1087,60 @@ class CSIntegrationRequestFactoryTest {
     }
 
     @Nested
+    class RenewCertificateRequest {
+
+        @BeforeEach
+        void setup() {
+            when(certificateServiceUserHelper.get())
+                .thenReturn(USER);
+            when(certificateServicePatientHelper.get(PERSONNUMMER))
+                .thenReturn(PATIENT);
+            when(certificateServiceUnitHelper.getUnit())
+                .thenReturn(UNIT);
+            when(certificateServiceUnitHelper.getCareUnit())
+                .thenReturn(CARE_UNIT);
+            when(certificateServiceUnitHelper.getCareProvider())
+                .thenReturn(CARE_PROVIDER);
+        }
+
+        @Test
+        void shouldSetUser() {
+            final var actualRequest = csIntegrationRequestFactory.renewCertificateRequest(PATIENT_ID, EXTERNAL_REFERENCE);
+            assertEquals(USER, actualRequest.getUser());
+        }
+
+        @Test
+        void shouldSetUnit() {
+            final var actualRequest = csIntegrationRequestFactory.renewCertificateRequest(PATIENT_ID, EXTERNAL_REFERENCE);
+            assertEquals(UNIT, actualRequest.getUnit());
+        }
+
+        @Test
+        void shouldSetCareUnit() {
+            final var actualRequest = csIntegrationRequestFactory.renewCertificateRequest(PATIENT_ID, EXTERNAL_REFERENCE);
+            assertEquals(CARE_UNIT, actualRequest.getCareUnit());
+        }
+
+        @Test
+        void shouldSetCareProvider() {
+            final var actualRequest = csIntegrationRequestFactory.renewCertificateRequest(PATIENT_ID, EXTERNAL_REFERENCE);
+            assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
+        }
+
+        @Test
+        void shouldSetPatient() {
+            final var actualRequest = csIntegrationRequestFactory.renewCertificateRequest(PATIENT_ID, EXTERNAL_REFERENCE);
+            assertEquals(PATIENT, actualRequest.getPatient());
+        }
+
+        @Test
+        void shouldSetExternalReference() {
+            final var actualRequest = csIntegrationRequestFactory.replaceCertificateRequest(PATIENT_ID, EXTERNAL_REFERENCE);
+            assertEquals(EXTERNAL_REFERENCE, actualRequest.getExternalReference());
+        }
+    }
+
+    @Nested
     class InvalidRevokeCertificateRequest {
 
         @Test

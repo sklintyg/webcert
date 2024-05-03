@@ -71,6 +71,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertifica
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.RenewCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.RenewCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ReplaceCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ReplaceCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.RevokeCertificateRequestDTO;
@@ -157,6 +159,10 @@ class CSIntegrationServiceTest {
         .build();
     private static final RevokeCertificateRequestDTO REVOKE_REQUEST = RevokeCertificateRequestDTO.builder().build();
     private static final RevokeCertificateResponseDTO REVOKE_RESPONSE = RevokeCertificateResponseDTO.builder()
+        .certificate(CERTIFICATE)
+        .build();
+    private static final RenewCertificateRequestDTO RENEW_CERTIFICATE_REQUEST = RenewCertificateRequestDTO.builder().build();
+    private static final RenewCertificateResponseDTO RENEW_CERTIFICATE_RESPONSE = RenewCertificateResponseDTO.builder()
         .certificate(CERTIFICATE)
         .build();
 
@@ -319,6 +325,58 @@ class CSIntegrationServiceTest {
                 verify(restTemplate).postForObject(captor.capture(), any(), any());
 
                 assertEquals("baseUrl/api/certificate/certificateId/replace", captor.getValue());
+            }
+        }
+    }
+
+    @Nested
+    class RenewCertificate {
+
+        @Test
+        void shouldThrowExceptionIfResponseIsNull() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(null);
+
+            assertThrows(IllegalStateException.class,
+                () -> csIntegrationService.renewCertificate(CERTIFICATE_ID, RENEW_CERTIFICATE_REQUEST)
+            );
+        }
+
+        @Nested
+        class WithResponse {
+
+            @BeforeEach
+            void setUp() {
+                when(restTemplate.postForObject(anyString(), any(), any()))
+                    .thenReturn(RENEW_CERTIFICATE_RESPONSE);
+            }
+
+            @Test
+            void shouldPreformPostUsingRequest() {
+                final var captor = ArgumentCaptor.forClass(RenewCertificateRequestDTO.class);
+
+                csIntegrationService.renewCertificate(CERTIFICATE_ID, RENEW_CERTIFICATE_REQUEST);
+                verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+
+                assertEquals(RENEW_CERTIFICATE_REQUEST, captor.getValue());
+            }
+
+            @Test
+            void shouldReturnCertificate() {
+                final var response = csIntegrationService.renewCertificate(CERTIFICATE_ID, RENEW_CERTIFICATE_REQUEST);
+
+                assertEquals(CERTIFICATE, response);
+            }
+
+            @Test
+            void shouldSetUrlCorrect() {
+                ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+                final var captor = ArgumentCaptor.forClass(String.class);
+
+                csIntegrationService.renewCertificate(CERTIFICATE_ID, RENEW_CERTIFICATE_REQUEST);
+                verify(restTemplate).postForObject(captor.capture(), any(), any());
+
+                assertEquals("baseUrl/api/certificate/certificateId/renew", captor.getValue());
             }
         }
     }
