@@ -34,6 +34,7 @@ import org.springframework.web.client.RestTemplate;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateExistsResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateExternalTypeExistsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceCreateCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceGetCertificateResponseDTO;
@@ -228,6 +229,20 @@ public class CSIntegrationService {
     public Optional<CertificateModelIdDTO> certificateTypeExists(String certificateType) {
         final var url = baseUrl + CERTIFICATE_TYPE_INFO_ENDPOINT_URL + "/" + certificateType + "/exists";
         final var response = restTemplate.getForObject(url, CertificateTypeExistsResponseDTO.class);
+
+        if (response == null
+            || response.getCertificateModelId() == null
+            || response.getCertificateModelId().getType() == null
+            || response.getCertificateModelId().getVersion() == null) {
+            return Optional.empty();
+        }
+
+        return Optional.of(response.getCertificateModelId());
+    }
+
+    public Optional<CertificateModelIdDTO> certificateExternalTypeExists(String codeSystem, String code) {
+        final var url = baseUrl + CERTIFICATE_TYPE_INFO_ENDPOINT_URL + "/" + codeSystem + "/" + code + "/exists";
+        final var response = restTemplate.getForObject(url, CertificateExternalTypeExistsResponseDTO.class);
 
         if (response == null
             || response.getCertificateModelId() == null

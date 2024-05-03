@@ -23,17 +23,17 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateTypeExistsResponseDTO.CertificateTypeExistsResponseDTOBuilder;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateExternalTypeExistsResponseDTO.CertificateExternalTypeExistsResponseDTOBuilder;
 
-@JsonDeserialize(builder = CertificateTypeExistsResponseDTOBuilder.class)
+@JsonDeserialize(builder = CertificateExternalTypeExistsResponseDTOBuilder.class)
 @Value
 @Builder
-public class CertificateTypeExistsResponseDTO {
+public class CertificateExternalTypeExistsResponseDTO {
 
     CertificateModelIdDTO certificateModelId;
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class CertificateTypeExistsResponseDTOBuilder {
+    public static class CertificateExternalTypeExistsResponseDTOBuilder {
 
     }
 }

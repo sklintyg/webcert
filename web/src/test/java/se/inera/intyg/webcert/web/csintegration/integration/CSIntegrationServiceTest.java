@@ -50,6 +50,7 @@ import se.inera.intyg.common.support.facade.model.Staff;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateExistsResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateExternalTypeExistsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceCreateCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceGetCertificateResponseDTO;
@@ -405,6 +406,96 @@ class CSIntegrationServiceTest {
             verify(restTemplate).getForObject(captor.capture(), any());
 
             assertEquals("baseUrl/api/certificatetypeinfo/fk7211/exists", captor.getValue());
+        }
+    }
+
+    @Nested
+    class CertificateExternalTypeExists {
+
+
+        private static final String CODE_SYSTEM = "codeSystem";
+        private static final String CODE = "code";
+
+        @Test
+        void shouldReturnModelIdFromResponse() {
+            final var expectedResponse = CertificateExternalTypeExistsResponseDTO.builder()
+                .certificateModelId(
+                    CertificateModelIdDTO.builder()
+                        .type("type")
+                        .version("version")
+                        .build()
+                )
+                .build();
+
+            when(restTemplate.getForObject(anyString(), any()))
+                .thenReturn(expectedResponse);
+
+            final var response = csIntegrationService.certificateExternalTypeExists(CODE_SYSTEM, CODE);
+
+            assertEquals(expectedResponse.getCertificateModelId(), response.orElse(null));
+        }
+
+        @Test
+        void shouldReturnNullIfTypeIsMissing() {
+            final var expectedResponse = CertificateExternalTypeExistsResponseDTO.builder()
+                .certificateModelId(
+                    CertificateModelIdDTO.builder()
+                        .version("version")
+                        .build()
+                )
+                .build();
+
+            when(restTemplate.getForObject(anyString(), any()))
+                .thenReturn(expectedResponse);
+
+            final var response = csIntegrationService.certificateExternalTypeExists(CODE_SYSTEM, CODE);
+
+            assertTrue(response.isEmpty());
+        }
+
+        @Test
+        void shouldReturnNullIfVersionIsMissing() {
+            final var expectedResponse = CertificateExternalTypeExistsResponseDTO.builder()
+                .certificateModelId(
+                    CertificateModelIdDTO.builder()
+                        .type("type")
+                        .build()
+                )
+                .build();
+
+            when(restTemplate.getForObject(anyString(), any()))
+                .thenReturn(expectedResponse);
+
+            final var response = csIntegrationService.certificateExternalTypeExists(CODE_SYSTEM, CODE);
+
+            assertTrue(response.isEmpty());
+        }
+
+        @Test
+        void shouldReturnNullIfObjectIsEmpty() {
+            final var expectedResponse = CertificateExternalTypeExistsResponseDTO.builder()
+                .certificateModelId(
+                    CertificateModelIdDTO.builder().build()
+                )
+                .build();
+
+            when(restTemplate.getForObject(anyString(), any()))
+                .thenReturn(expectedResponse);
+
+            final var response = csIntegrationService.certificateExternalTypeExists(CODE_SYSTEM, CODE);
+
+            assertTrue(response.isEmpty());
+        }
+
+        @Test
+        void shouldSetUrlCorrect() {
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            csIntegrationService.certificateExternalTypeExists(CODE_SYSTEM, CODE);
+            verify(restTemplate).getForObject(captor.capture(), any());
+
+            assertEquals("baseUrl/api/certificatetypeinfo/" + CODE_SYSTEM + "/" + CODE + "/exists", captor.getValue());
         }
     }
 
