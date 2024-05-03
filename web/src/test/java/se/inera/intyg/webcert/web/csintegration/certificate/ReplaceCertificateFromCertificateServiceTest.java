@@ -54,6 +54,7 @@ class ReplaceCertificateFromCertificateServiceTest {
 
     private static final ReplaceCertificateRequestDTO REQUEST = ReplaceCertificateRequestDTO.builder().build();
     private static final String EXTERNAL_REFERENCE = "EXTERNAL_REFERENCE";
+    private static final String ALTERNATE_SSN = "ALTERNATE_SSN";
     private static final String PATIENT_ID = "PATIENT_ID";
     private static final String ID = "ID";
     private static final String NEW_ID = "NEW_ID";
@@ -143,7 +144,7 @@ class ReplaceCertificateFromCertificateServiceTest {
             when(csIntegrationService.getCertificate(anyString(), any()))
                 .thenReturn(CERTIFICATE);
 
-            when(csIntegrationRequestFactory.replaceCertificateRequest(PATIENT_ID, EXTERNAL_REFERENCE))
+            when(csIntegrationRequestFactory.replaceCertificateRequest(anyString(), anyString()))
                 .thenReturn(REQUEST);
         }
 
@@ -170,6 +171,20 @@ class ReplaceCertificateFromCertificateServiceTest {
                 final var response = replaceCertificateFromCertificateService.replaceCertificate(ID);
 
                 assertEquals(NEW_ID, response);
+            }
+
+            @Test
+            void shouldCallRequestFactoryWithExternalReferenceAndPatientIdIfAlternateSsnIsNotSet() {
+                replaceCertificateFromCertificateService.replaceCertificate(ID);
+                verify(csIntegrationRequestFactory).replaceCertificateRequest(PATIENT_ID, EXTERNAL_REFERENCE);
+            }
+
+            @Test
+            void shouldCallRequestFactoryWithAlternateSsnIsSet() {
+                when(parameters.getAlternateSsn())
+                    .thenReturn(ALTERNATE_SSN);
+                replaceCertificateFromCertificateService.replaceCertificate(ID);
+                verify(csIntegrationRequestFactory).replaceCertificateRequest(ALTERNATE_SSN, EXTERNAL_REFERENCE);
             }
 
             @Test

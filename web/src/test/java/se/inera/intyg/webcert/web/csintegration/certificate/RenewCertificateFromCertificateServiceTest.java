@@ -54,6 +54,7 @@ class RenewCertificateFromCertificateServiceTest {
 
     private static final RenewCertificateRequestDTO REQUEST = RenewCertificateRequestDTO.builder().build();
     private static final String EXTERNAL_REFERENCE = "EXTERNAL_REFERENCE";
+    private static final String ALTERNATE_SSN = "ALTERNATE_SSN";
     private static final String PATIENT_ID = "PATIENT_ID";
     private static final String ID = "ID";
     private static final String NEW_ID = "NEW_ID";
@@ -143,7 +144,7 @@ class RenewCertificateFromCertificateServiceTest {
             when(csIntegrationService.getCertificate(anyString(), any()))
                 .thenReturn(CERTIFICATE);
 
-            when(csIntegrationRequestFactory.renewCertificateRequest(PATIENT_ID, EXTERNAL_REFERENCE))
+            when(csIntegrationRequestFactory.renewCertificateRequest(anyString(), anyString()))
                 .thenReturn(REQUEST);
         }
 
@@ -163,6 +164,20 @@ class RenewCertificateFromCertificateServiceTest {
 
                 when(webCertUserService.getUser())
                     .thenReturn(user);
+            }
+
+            @Test
+            void shouldCallRequestFactoryWithExternalReferenceAndPatientIdIfAlternateSsnIsNotSet() {
+                renewCertificateFromCertificateService.renewCertificate(ID);
+                verify(csIntegrationRequestFactory).renewCertificateRequest(PATIENT_ID, EXTERNAL_REFERENCE);
+            }
+
+            @Test
+            void shouldCallRequestFactoryWithAlternateSsnIsSet() {
+                when(parameters.getAlternateSsn())
+                    .thenReturn(ALTERNATE_SSN);
+                renewCertificateFromCertificateService.renewCertificate(ID);
+                verify(csIntegrationRequestFactory).renewCertificateRequest(ALTERNATE_SSN, EXTERNAL_REFERENCE);
             }
 
             @Test
