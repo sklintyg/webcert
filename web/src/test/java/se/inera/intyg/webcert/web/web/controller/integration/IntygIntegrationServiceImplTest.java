@@ -24,8 +24,11 @@ import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
@@ -61,6 +64,7 @@ import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
+import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
@@ -75,6 +79,7 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirect
 @RunWith(MockitoJUnitRunner.class)
 public class IntygIntegrationServiceImplTest {
 
+    private static final String REFERENS = "referens";
     private final String ALTERNATE_SSN = "19010101-0101";
 
     private final String INTYGSTYP = "lisjp";
@@ -88,6 +93,9 @@ public class IntygIntegrationServiceImplTest {
     private final String VARDGIVARENAMN_USER = "Vardgivare1";
     private final String VARDGIVAREID_UTKAST = "vg2";
     private final String VARDGIVARENAMN_UTKAST = "Vardgivare2";
+
+    @Mock
+    private ReferensService referensService;
 
     @Mock
     private MonitoringLogService monitoringLog;
@@ -117,6 +125,33 @@ public class IntygIntegrationServiceImplTest {
         when(intygService.getIntygTypeInfo(any(String.class), any(Utkast.class))).thenReturn(intygTypeInfo);
     }
 
+    @Test
+    public void shallStoreReferenceIfProvidedAndNotYetAdded() {
+        final var user = createDefaultUser();
+        final var integrationParameters = mock(IntegrationParameters.class);
+        user.setParameters(integrationParameters);
+
+        doReturn(Optional.of(createUtkast())).when(utkastRepository).findById(anyString());
+        doReturn(REFERENS).when(integrationParameters).getReference();
+        doReturn(false).when(referensService).referensExists(INTYGSID);
+
+        testee.prepareRedirectToIntyg(INTYGSTYP, INTYGSID, user);
+        verify(referensService).saveReferens(INTYGSID, REFERENS);
+    }
+
+
+    @Test
+    public void shallNotStoreReferenceIfNotProvided() {
+        final var user = createDefaultUser();
+        final var integrationParameters = mock(IntegrationParameters.class);
+        user.setParameters(integrationParameters);
+
+        doReturn(Optional.of(createUtkast())).when(utkastRepository).findById(anyString());
+        doReturn(null).when(integrationParameters).getReference();
+
+        testee.prepareRedirectToIntyg(INTYGSTYP, INTYGSID, user);
+        verifyNoInteractions(referensService);
+    }
 
     @Test
     public void prepareRedirectToIntygSuccess() {

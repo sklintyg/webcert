@@ -40,6 +40,7 @@ public class SaveCertificateRequestDTO {
     CertificateServiceUnitDTO unit;
     CertificateServiceUnitDTO careProvider;
     Certificate certificate;
+    String externalReference;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class SaveCertificateRequestDTOBuilder {
