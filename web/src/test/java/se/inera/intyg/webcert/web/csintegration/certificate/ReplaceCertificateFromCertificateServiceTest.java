@@ -212,7 +212,7 @@ class ReplaceCertificateFromCertificateServiceTest {
             @Test
             void shouldRegisterUnit() {
                 replaceCertificateFromCertificateService.replaceCertificate(ID);
-                verify(integratedUnitRegistryHelper).addUnit();
+                verify(integratedUnitRegistryHelper).addUnitForCopy(CERTIFICATE, REPLACED_CERTIFICATE);
             }
         }
     }

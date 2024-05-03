@@ -74,7 +74,7 @@ public class ReplaceCertificateFromCertificateService implements ReplaceCertific
             throw new IllegalStateException("Received null when trying to replace certificate from Certificate Service");
         }
 
-        integratedUnitRegistryHelper.addUnit();
+        integratedUnitRegistryHelper.addUnitForCopy(certificateToReplace, replacingCertificate);
 
         log.debug("Replaced certificate '{}' from Certificate Service", certificateId);
         monitoringLogService.logIntygCopiedReplacement(replacingCertificate.getMetadata().getId(), certificateId);

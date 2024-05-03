@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -32,6 +33,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
@@ -46,6 +50,12 @@ class IntegratedUnitRegistryHelperTest {
     private static final String CARE_PROVIDER_ID = "CARE_PROVIDER_ID";
     private static final String CARE_PROVIDER_NAME = "CARE_PROVIDER_NAME";
 
+    private static final String COPY_UNIT_ID = "COPY_UNIT_ID";
+    private static final String COPY_UNIT_NAME = "COPY_UNIT_NAME";
+    private static final String COPY_CARE_PROVIDER_ID = "COPY_CARE_PROVIDER_ID";
+    private static final String COPY_CARE_PROVIDER_NAME = "COPY_CARE_PROVIDER_NAME";
+    private static final String TYPE = "TYPE";
+
     @Mock
     WebCertUserService webCertUserService;
 
@@ -59,76 +69,158 @@ class IntegratedUnitRegistryHelperTest {
     IntegratedUnitRegistryHelper integratedUnitRegistryHelper;
 
     @Nested
-    class NoUser {
+    class AddUnit {
+
+        @Nested
+        class NoUser {
+
+            @BeforeEach
+            void setup() {
+                when(webCertUserService.getUser())
+                    .thenReturn(webCertUser);
+            }
+
+            @Test
+            void shouldAddIfDeepIntegration() {
+                when(webCertUser.getValdVardenhet())
+                    .thenReturn(new Vardenhet(UNIT_ID, UNIT_NAME));
+                when(webCertUser.getValdVardgivare())
+                    .thenReturn(new Vardenhet(CARE_PROVIDER_ID, CARE_PROVIDER_NAME));
+                final var expectedEntry = new IntegreradEnhetEntry(
+                    UNIT_ID,
+                    UNIT_NAME,
+                    CARE_PROVIDER_ID,
+                    CARE_PROVIDER_NAME
+                );
+                when(webCertUser.getOrigin())
+                    .thenReturn("DJUPINTEGRATION");
+
+                integratedUnitRegistryHelper.addUnit();
+
+                verify(enheterRegistry).putIntegreradEnhet(expectedEntry, false, true);
+            }
+
+            @Test
+            void shouldNotAddIfNotDeepIntegration() {
+                when(webCertUser.getOrigin())
+                    .thenReturn("NORMAL");
+
+                integratedUnitRegistryHelper.addUnit();
+
+                verify(enheterRegistry, times(0)).putIntegreradEnhet(any(), anyBoolean(), anyBoolean());
+            }
+        }
+
+        @Nested
+        class HasUser {
+
+            @Test
+            void shouldAddIfDeepIntegration() {
+                when(webCertUser.getValdVardenhet())
+                    .thenReturn(new Vardenhet(UNIT_ID, UNIT_NAME));
+                when(webCertUser.getValdVardgivare())
+                    .thenReturn(new Vardenhet(CARE_PROVIDER_ID, CARE_PROVIDER_NAME));
+                final var expectedEntry = new IntegreradEnhetEntry(
+                    UNIT_ID,
+                    UNIT_NAME,
+                    CARE_PROVIDER_ID,
+                    CARE_PROVIDER_NAME
+                );
+                when(webCertUser.getOrigin())
+                    .thenReturn("DJUPINTEGRATION");
+
+                integratedUnitRegistryHelper.addUnit(webCertUser);
+
+                verify(enheterRegistry).putIntegreradEnhet(expectedEntry, false, true);
+            }
+
+            @Test
+            void shouldNotAddIfNotDeepIntegration() {
+                when(webCertUser.getOrigin())
+                    .thenReturn("NORMAL");
+
+                integratedUnitRegistryHelper.addUnit(webCertUser);
+
+                verify(enheterRegistry, times(0)).putIntegreradEnhet(any(), anyBoolean(), anyBoolean());
+            }
+        }
+    }
+
+    @Nested
+    class AddUnitForCopy {
 
         @BeforeEach
-        void beforeAll() {
+        void setup() {
             when(webCertUserService.getUser())
                 .thenReturn(webCertUser);
         }
 
         @Test
-        void shouldAddIfDeepIntegration() {
-            when(webCertUser.getValdVardenhet())
-                .thenReturn(new Vardenhet(UNIT_ID, UNIT_NAME));
-            when(webCertUser.getValdVardgivare())
-                .thenReturn(new Vardenhet(CARE_PROVIDER_ID, CARE_PROVIDER_NAME));
-            final var expectedEntry = new IntegreradEnhetEntry(
-                UNIT_ID,
-                UNIT_NAME,
-                CARE_PROVIDER_ID,
-                CARE_PROVIDER_NAME
-            );
+        void shouldAddUnitDataFromCopyUsingRegistryIfDeepIntegration() {
             when(webCertUser.getOrigin())
                 .thenReturn("DJUPINTEGRATION");
 
-            integratedUnitRegistryHelper.addUnit();
-
-            verify(enheterRegistry).putIntegreradEnhet(expectedEntry, false, true);
-        }
-
-        @Test
-        void shouldNotAddIfNotDeepIntegration() {
-            when(webCertUser.getOrigin())
-                .thenReturn("NORMAL");
-
-            integratedUnitRegistryHelper.addUnit();
-
-            verify(enheterRegistry, times(0)).putIntegreradEnhet(any(), anyBoolean(), anyBoolean());
-        }
-    }
-
-    @Nested
-    class HasUser {
-
-        @Test
-        void shouldAddIfDeepIntegration() {
-            when(webCertUser.getValdVardenhet())
-                .thenReturn(new Vardenhet(UNIT_ID, UNIT_NAME));
-            when(webCertUser.getValdVardgivare())
-                .thenReturn(new Vardenhet(CARE_PROVIDER_ID, CARE_PROVIDER_NAME));
-            final var expectedEntry = new IntegreradEnhetEntry(
-                UNIT_ID,
-                UNIT_NAME,
-                CARE_PROVIDER_ID,
-                CARE_PROVIDER_NAME
+            final var copy = new Certificate();
+            copy.setMetadata(
+                CertificateMetadata.builder()
+                    .careUnit(
+                        Unit.builder()
+                            .unitId(COPY_UNIT_ID)
+                            .unitName(COPY_UNIT_NAME)
+                            .build()
+                    )
+                    .careProvider(
+                        Unit.builder()
+                            .unitName(COPY_CARE_PROVIDER_NAME)
+                            .unitId(COPY_CARE_PROVIDER_ID)
+                            .build()
+                    )
+                    .type(TYPE)
+                    .build()
             );
-            when(webCertUser.getOrigin())
-                .thenReturn("DJUPINTEGRATION");
 
-            integratedUnitRegistryHelper.addUnit(webCertUser);
+            final var original = new Certificate();
+            original.setMetadata(
+                CertificateMetadata.builder()
+                    .careUnit(
+                        Unit.builder()
+                            .unitId(UNIT_ID)
+                            .unitName(UNIT_NAME)
+                            .build()
+                    )
+                    .careProvider(
+                        Unit.builder()
+                            .unitName(CARE_PROVIDER_NAME)
+                            .unitId(CARE_PROVIDER_ID)
+                            .build()
+                    )
+                    .type(TYPE)
+                    .build()
+            );
 
-            verify(enheterRegistry).putIntegreradEnhet(expectedEntry, false, true);
+            final var expectedEntry = new IntegreradEnhetEntry(
+                COPY_UNIT_ID,
+                COPY_UNIT_NAME,
+                COPY_CARE_PROVIDER_ID,
+                COPY_CARE_PROVIDER_NAME
+            );
+
+            integratedUnitRegistryHelper.addUnitForCopy(original, copy);
+
+            verify(enheterRegistry).addIfSameVardgivareButDifferentUnits(UNIT_ID, expectedEntry, TYPE);
         }
-
+        
         @Test
-        void shouldNotAddIfNotDeepIntegration() {
+        void shouldNotAddUnitDataFromCopyUsingRegistryIfNotDeepIntegration() {
             when(webCertUser.getOrigin())
                 .thenReturn("NORMAL");
 
-            integratedUnitRegistryHelper.addUnit(webCertUser);
+            final var copy = new Certificate();
+            final var original = new Certificate();
 
-            verify(enheterRegistry, times(0)).putIntegreradEnhet(any(), anyBoolean(), anyBoolean());
+            integratedUnitRegistryHelper.addUnitForCopy(original, copy);
+
+            verify(enheterRegistry, times(0)).addIfSameVardgivareButDifferentUnits(anyString(), any(), anyString());
         }
     }
 }
