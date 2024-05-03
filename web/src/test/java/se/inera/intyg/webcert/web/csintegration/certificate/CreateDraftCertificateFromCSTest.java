@@ -155,9 +155,6 @@ class CreateDraftCertificateFromCSTest {
         final var modelIdDTO = CertificateModelIdDTO.builder().build();
         final var request = CreateCertificateRequestDTO.builder().build();
 
-        final var vardenhet = new Vardenhet();
-        when(user.getValdVardenhet()).thenReturn(vardenhet);
-        when(user.getValdVardgivare()).thenReturn(vardenhet);
         when(csIntegrationService.certificateExternalTypeExists(CODE_SYSTEM, CODE)).thenReturn(Optional.of(modelIdDTO));
         when(csIntegrationRequestFactory.createDraftCertificateRequest(modelIdDTO, certificate, user)).thenReturn(request);
         when(csIntegrationService.createCertificate(request)).thenReturn(CERTIFICATE);
@@ -173,9 +170,6 @@ class CreateDraftCertificateFromCSTest {
         final var modelIdDTO = CertificateModelIdDTO.builder().build();
         final var request = CreateCertificateRequestDTO.builder().build();
 
-        final var vardenhet = new Vardenhet();
-        when(user.getValdVardenhet()).thenReturn(vardenhet);
-        when(user.getValdVardgivare()).thenReturn(vardenhet);
         when(csIntegrationService.certificateExternalTypeExists(CODE_SYSTEM, CODE)).thenReturn(Optional.of(modelIdDTO));
         when(csIntegrationRequestFactory.createDraftCertificateRequest(modelIdDTO, certificate, user)).thenReturn(request);
         when(csIntegrationService.createCertificate(request)).thenThrow(IllegalArgumentException.class);
@@ -191,9 +185,6 @@ class CreateDraftCertificateFromCSTest {
         final var modelIdDTO = CertificateModelIdDTO.builder().build();
         final var request = CreateCertificateRequestDTO.builder().build();
 
-        final var vardenhet = new Vardenhet();
-        when(user.getValdVardenhet()).thenReturn(vardenhet);
-        when(user.getValdVardgivare()).thenReturn(vardenhet);
         when(csIntegrationService.certificateExternalTypeExists(CODE_SYSTEM, CODE)).thenReturn(Optional.of(modelIdDTO));
         when(csIntegrationRequestFactory.createDraftCertificateRequest(modelIdDTO, certificate, user)).thenReturn(request);
         when(csIntegrationService.createCertificate(request)).thenThrow(
@@ -211,9 +202,6 @@ class CreateDraftCertificateFromCSTest {
         final var modelIdDTO = CertificateModelIdDTO.builder().build();
         final var request = CreateCertificateRequestDTO.builder().build();
 
-        final var vardenhet = new Vardenhet();
-        when(user.getValdVardenhet()).thenReturn(vardenhet);
-        when(user.getValdVardgivare()).thenReturn(vardenhet);
         when(csIntegrationService.certificateExternalTypeExists(CODE_SYSTEM, CODE)).thenReturn(Optional.of(modelIdDTO));
         when(csIntegrationRequestFactory.createDraftCertificateRequest(modelIdDTO, certificate, user)).thenReturn(request);
         when(csIntegrationService.createCertificate(request)).thenReturn(CERTIFICATE);
@@ -230,9 +218,6 @@ class CreateDraftCertificateFromCSTest {
         final var modelIdDTO = CertificateModelIdDTO.builder().build();
         final var request = CreateCertificateRequestDTO.builder().build();
 
-        final var vardenhet = new Vardenhet();
-        when(user.getValdVardenhet()).thenReturn(vardenhet);
-        when(user.getValdVardgivare()).thenReturn(vardenhet);
         when(csIntegrationService.certificateExternalTypeExists(CODE_SYSTEM, CODE)).thenReturn(Optional.of(modelIdDTO));
         when(csIntegrationRequestFactory.createDraftCertificateRequest(modelIdDTO, certificate, user)).thenReturn(request);
         when(csIntegrationService.createCertificate(request)).thenReturn(CERTIFICATE);
@@ -249,9 +234,6 @@ class CreateDraftCertificateFromCSTest {
         final var modelIdDTO = CertificateModelIdDTO.builder().build();
         final var request = CreateCertificateRequestDTO.builder().build();
 
-        final var vardenhet = new Vardenhet();
-        when(user.getValdVardenhet()).thenReturn(vardenhet);
-        when(user.getValdVardgivare()).thenReturn(vardenhet);
         when(csIntegrationService.certificateExternalTypeExists(CODE_SYSTEM, CODE)).thenReturn(Optional.of(modelIdDTO));
         when(csIntegrationRequestFactory.createDraftCertificateRequest(modelIdDTO, certificate, user)).thenReturn(request);
         when(csIntegrationService.createCertificate(request)).thenReturn(CERTIFICATE);
@@ -274,9 +256,6 @@ class CreateDraftCertificateFromCSTest {
         final var modelIdDTO = CertificateModelIdDTO.builder().build();
         final var request = CreateCertificateRequestDTO.builder().build();
 
-        final var vardenhet = new Vardenhet();
-        when(user.getValdVardenhet()).thenReturn(vardenhet);
-        when(user.getValdVardgivare()).thenReturn(vardenhet);
         when(csIntegrationService.certificateExternalTypeExists(CODE_SYSTEM, CODE)).thenReturn(Optional.of(modelIdDTO));
         when(csIntegrationRequestFactory.createDraftCertificateRequest(modelIdDTO, certificate, user)).thenReturn(request);
         when(csIntegrationService.createCertificate(request)).thenReturn(CERTIFICATE);
@@ -297,9 +276,6 @@ class CreateDraftCertificateFromCSTest {
         final var modelIdDTO = CertificateModelIdDTO.builder().build();
         final var request = CreateCertificateRequestDTO.builder().build();
 
-        final var vardenhet = new Vardenhet();
-        when(user.getValdVardenhet()).thenReturn(vardenhet);
-        when(user.getValdVardgivare()).thenReturn(vardenhet);
         when(csIntegrationService.certificateExternalTypeExists(CODE_SYSTEM, CODE)).thenReturn(Optional.of(modelIdDTO));
         when(csIntegrationRequestFactory.createDraftCertificateRequest(modelIdDTO, certificate, user)).thenReturn(request);
         when(csIntegrationService.createCertificate(request)).thenThrow(IllegalArgumentException.class);
