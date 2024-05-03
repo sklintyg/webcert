@@ -23,9 +23,9 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateExternalTypeExistsResponseDTO.CertificateExternalTypeExistsResponseBuilder;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateExternalTypeExistsResponseDTO.CertificateExternalTypeExistsResponseDTOBuilder;
 
-@JsonDeserialize(builder = CertificateExternalTypeExistsResponseBuilder.class)
+@JsonDeserialize(builder = CertificateExternalTypeExistsResponseDTOBuilder.class)
 @Value
 @Builder
 public class CertificateExternalTypeExistsResponseDTO {
@@ -33,7 +33,7 @@ public class CertificateExternalTypeExistsResponseDTO {
     CertificateModelIdDTO certificateModelId;
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class CertificateExternalTypeExistsResponseBuilder {
+    public static class CertificateExternalTypeExistsResponseDTOBuilder {
 
     }
 }
