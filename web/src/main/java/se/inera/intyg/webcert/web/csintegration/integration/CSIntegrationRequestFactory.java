@@ -52,6 +52,7 @@ import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceIntegrati
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserHelper;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
 
 @Component
@@ -270,25 +271,25 @@ public class CSIntegrationRequestFactory {
             .build();
     }
 
-    public ReplaceCertificateRequestDTO replaceCertificateRequest(String patientId, String externalReference) {
+    public ReplaceCertificateRequestDTO replaceCertificateRequest(String patientId, IntegrationParameters integrationParameters) {
         return ReplaceCertificateRequestDTO.builder()
             .unit(certificateServiceUnitHelper.getUnit())
             .careUnit(certificateServiceUnitHelper.getCareUnit())
             .careProvider(certificateServiceUnitHelper.getCareProvider())
             .user(certificateServiceUserHelper.get())
-            .patient(certificateServicePatientHelper.get(createPatientId(patientId)))
-            .externalReference(externalReference)
+            .patient(certificateServicePatientHelper.get(getPatientId(patientId, integrationParameters)))
+            .externalReference(getExternalReference(integrationParameters))
             .build();
     }
 
-    public RenewCertificateRequestDTO renewCertificateRequest(String patientId, String externalReference) {
+    public RenewCertificateRequestDTO renewCertificateRequest(String patientId, IntegrationParameters integrationParameters) {
         return RenewCertificateRequestDTO.builder()
             .unit(certificateServiceUnitHelper.getUnit())
             .careUnit(certificateServiceUnitHelper.getCareUnit())
             .careProvider(certificateServiceUnitHelper.getCareProvider())
             .user(certificateServiceUserHelper.get())
-            .patient(certificateServicePatientHelper.get(createPatientId(patientId)))
-            .externalReference(externalReference)
+            .patient(certificateServicePatientHelper.get(getPatientId(patientId, integrationParameters)))
+            .externalReference(getExternalReference(integrationParameters))
             .build();
     }
 
@@ -310,5 +311,20 @@ public class CSIntegrationRequestFactory {
                     String.format("PatientId has wrong format: '%s'", patientId)
                 )
             );
+    }
+
+    private boolean isAlternateSSNDefined(IntegrationParameters integrationParameters) {
+        return integrationParameters != null && integrationParameters.getAlternateSsn() != null && !integrationParameters.getAlternateSsn()
+            .isEmpty();
+    }
+
+    private String getExternalReference(IntegrationParameters integrationParameters) {
+        return integrationParameters == null ? null : integrationParameters.getReference();
+    }
+
+    private Personnummer getPatientId(String patientId, IntegrationParameters integrationParameters) {
+        return isAlternateSSNDefined(integrationParameters)
+            ? createPatientId(integrationParameters.getAlternateSsn())
+            : createPatientId(patientId);
     }
 }

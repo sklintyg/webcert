@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
@@ -53,8 +52,6 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
 class RenewCertificateFromCertificateServiceTest {
 
     private static final RenewCertificateRequestDTO REQUEST = RenewCertificateRequestDTO.builder().build();
-    private static final String EXTERNAL_REFERENCE = "EXTERNAL_REFERENCE";
-    private static final String ALTERNATE_SSN = "ALTERNATE_SSN";
     private static final String PATIENT_ID = "PATIENT_ID";
     private static final String ID = "ID";
     private static final String NEW_ID = "NEW_ID";
@@ -99,14 +96,6 @@ class RenewCertificateFromCertificateServiceTest {
         assertNull(response);
     }
 
-    @Test
-    void shouldThrowErrorIfCertificateReturnedFromCSIsNull() {
-        when(csIntegrationService.certificateExists(anyString()))
-            .thenReturn(true);
-
-        assertThrows(IllegalStateException.class, () -> renewCertificateFromCertificateService.renewCertificate(ID));
-    }
-
     @Nested
     class CertificateExistsInCS {
 
@@ -144,7 +133,7 @@ class RenewCertificateFromCertificateServiceTest {
             when(csIntegrationService.getCertificate(anyString(), any()))
                 .thenReturn(CERTIFICATE);
 
-            when(csIntegrationRequestFactory.renewCertificateRequest(anyString(), anyString()))
+            when(csIntegrationRequestFactory.renewCertificateRequest(anyString(), any()))
                 .thenReturn(REQUEST);
         }
 
@@ -156,9 +145,6 @@ class RenewCertificateFromCertificateServiceTest {
                 when(csIntegrationService.renewCertificate(ID, REQUEST))
                     .thenReturn(RENEWD_CERTIFICATE);
 
-                when(parameters.getReference())
-                    .thenReturn(EXTERNAL_REFERENCE);
-
                 when(user.getParameters())
                     .thenReturn(parameters);
 
@@ -167,17 +153,9 @@ class RenewCertificateFromCertificateServiceTest {
             }
 
             @Test
-            void shouldCallRequestFactoryWithExternalReferenceAndPatientIdIfAlternateSsnIsNotSet() {
+            void shouldCallRequestFactory() {
                 renewCertificateFromCertificateService.renewCertificate(ID);
-                verify(csIntegrationRequestFactory).renewCertificateRequest(PATIENT_ID, EXTERNAL_REFERENCE);
-            }
-
-            @Test
-            void shouldCallRequestFactoryWithAlternateSsnIsSet() {
-                when(parameters.getAlternateSsn())
-                    .thenReturn(ALTERNATE_SSN);
-                renewCertificateFromCertificateService.renewCertificate(ID);
-                verify(csIntegrationRequestFactory).renewCertificateRequest(ALTERNATE_SSN, EXTERNAL_REFERENCE);
+                verify(csIntegrationRequestFactory).renewCertificateRequest(PATIENT_ID, parameters);
             }
 
             @Test

@@ -29,7 +29,6 @@ import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.facade.RenewCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 @Slf4j
 @Service("renewCertificateFromCertificateService")
@@ -57,19 +56,12 @@ public class RenewCertificateFromCertificateService implements RenewCertificateF
             certificateId,
             csIntegrationRequestFactory.getCertificateRequest()
         );
-        if (certificateToRenew == null) {
-            throw new IllegalStateException(
-                String.format("Certificate service returned null when getting certificate '%s'", certificateId)
-            );
-        }
 
-        final var integrationParameters = webCertUserService.getUser().getParameters();
         final var renewalCertificate = csIntegrationService.renewCertificate(
             certificateId,
             csIntegrationRequestFactory.renewCertificateRequest(
-                isAlternateSSNDefined(integrationParameters) ? integrationParameters.getAlternateSsn()
-                    : certificateToRenew.getMetadata().getPatient().getPersonId().getId(),
-                integrationParameters != null ? integrationParameters.getReference() : null
+                certificateToRenew.getMetadata().getPatient().getPersonId().getId(),
+                webCertUserService.getUser().getParameters()
             )
         );
 
@@ -85,10 +77,5 @@ public class RenewCertificateFromCertificateService implements RenewCertificateF
         publishCertificateStatusUpdateService.publish(renewalCertificate, HandelsekodEnum.SKAPAT);
 
         return renewalCertificate.getMetadata().getId();
-    }
-
-    private static boolean isAlternateSSNDefined(IntegrationParameters integrationParameters) {
-        return integrationParameters != null && integrationParameters.getAlternateSsn() != null && !integrationParameters.getAlternateSsn()
-            .isEmpty();
     }
 }

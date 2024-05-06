@@ -29,7 +29,6 @@ import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.facade.ReplaceCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 @Slf4j
 @Service("replaceCertificateFromCertificateService")
@@ -57,19 +56,12 @@ public class ReplaceCertificateFromCertificateService implements ReplaceCertific
             certificateId,
             csIntegrationRequestFactory.getCertificateRequest()
         );
-        if (certificateToReplace == null) {
-            throw new IllegalStateException(
-                String.format("Certificate service returned null when getting certificate '%s'", certificateId)
-            );
-        }
 
-        final var integrationParameters = webCertUserService.getUser().getParameters();
         final var replacingCertificate = csIntegrationService.replaceCertificate(
             certificateId,
             csIntegrationRequestFactory.replaceCertificateRequest(
-                isAlternateSSNDefined(integrationParameters) ? integrationParameters.getAlternateSsn()
-                    : certificateToReplace.getMetadata().getPatient().getPersonId().getId(),
-                webCertUserService.getUser().getParameters() != null ? webCertUserService.getUser().getParameters().getReference() : null
+                certificateToReplace.getMetadata().getPatient().getPersonId().getId(),
+                webCertUserService.getUser().getParameters()
             )
         );
 
@@ -85,10 +77,5 @@ public class ReplaceCertificateFromCertificateService implements ReplaceCertific
         publishCertificateStatusUpdateService.publish(replacingCertificate, HandelsekodEnum.SKAPAT);
 
         return replacingCertificate.getMetadata().getId();
-    }
-
-    private static boolean isAlternateSSNDefined(IntegrationParameters integrationParameters) {
-        return integrationParameters != null && integrationParameters.getAlternateSsn() != null && !integrationParameters.getAlternateSsn()
-            .isEmpty();
     }
 }
