@@ -53,6 +53,12 @@ class RenewCertificateFromCertificateServiceTest {
 
     private static final RenewCertificateRequestDTO REQUEST = RenewCertificateRequestDTO.builder().build();
     private static final String PATIENT_ID = "PATIENT_ID";
+    private static final Patient PATIENT = Patient.builder()
+        .personId(
+            PersonId.builder()
+                .id(PATIENT_ID)
+                .build()
+        ).build();
     private static final String ID = "ID";
     private static final String NEW_ID = "NEW_ID";
     private static final Certificate CERTIFICATE = new Certificate();
@@ -104,27 +110,13 @@ class RenewCertificateFromCertificateServiceTest {
             CERTIFICATE.setMetadata(CertificateMetadata.builder()
                 .id(ID)
                 .type(TYPE)
-                .patient(Patient.builder()
-                    .personId(
-                        PersonId.builder()
-                            .id(PATIENT_ID)
-                            .build()
-                    )
-                    .build()
-                )
+                .patient(PATIENT)
                 .build());
 
             RENEWD_CERTIFICATE.setMetadata(CertificateMetadata.builder()
                 .id(NEW_ID)
                 .type(TYPE)
-                .patient(Patient.builder()
-                    .personId(
-                        PersonId.builder()
-                            .id(PATIENT_ID)
-                            .build()
-                    )
-                    .build()
-                )
+                .patient(PATIENT)
                 .build());
 
             when(csIntegrationService.certificateExists(anyString()))
@@ -133,7 +125,7 @@ class RenewCertificateFromCertificateServiceTest {
             when(csIntegrationService.getCertificate(anyString(), any()))
                 .thenReturn(CERTIFICATE);
 
-            when(csIntegrationRequestFactory.renewCertificateRequest(anyString(), any()))
+            when(csIntegrationRequestFactory.renewCertificateRequest(any(), any()))
                 .thenReturn(REQUEST);
         }
 
@@ -155,7 +147,7 @@ class RenewCertificateFromCertificateServiceTest {
             @Test
             void shouldCallRequestFactory() {
                 renewCertificateFromCertificateService.renewCertificate(ID);
-                verify(csIntegrationRequestFactory).renewCertificateRequest(PATIENT_ID, parameters);
+                verify(csIntegrationRequestFactory).renewCertificateRequest(PATIENT, parameters);
             }
 
             @Test

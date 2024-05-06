@@ -60,7 +60,7 @@ public class ReplaceCertificateFromCertificateService implements ReplaceCertific
         final var replacingCertificate = csIntegrationService.replaceCertificate(
             certificateId,
             csIntegrationRequestFactory.replaceCertificateRequest(
-                certificateToReplace.getMetadata().getPatient().getPersonId().getId(),
+                certificateToReplace.getMetadata().getPatient(),
                 webCertUserService.getUser().getParameters()
             )
         );

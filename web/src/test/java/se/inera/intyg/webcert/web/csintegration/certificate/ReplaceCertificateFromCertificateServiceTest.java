@@ -53,6 +53,13 @@ class ReplaceCertificateFromCertificateServiceTest {
 
     private static final ReplaceCertificateRequestDTO REQUEST = ReplaceCertificateRequestDTO.builder().build();
     private static final String PATIENT_ID = "PATIENT_ID";
+    private static final Patient PATIENT = Patient.builder()
+        .personId(
+            PersonId.builder()
+                .id(PATIENT_ID)
+                .build()
+        )
+        .build();
     private static final String ID = "ID";
     private static final String NEW_ID = "NEW_ID";
     private static final Certificate CERTIFICATE = new Certificate();
@@ -104,27 +111,13 @@ class ReplaceCertificateFromCertificateServiceTest {
             CERTIFICATE.setMetadata(CertificateMetadata.builder()
                 .id(ID)
                 .type(TYPE)
-                .patient(Patient.builder()
-                    .personId(
-                        PersonId.builder()
-                            .id(PATIENT_ID)
-                            .build()
-                    )
-                    .build()
-                )
+                .patient(PATIENT)
                 .build());
 
             REPLACED_CERTIFICATE.setMetadata(CertificateMetadata.builder()
                 .id(NEW_ID)
                 .type(TYPE)
-                .patient(Patient.builder()
-                    .personId(
-                        PersonId.builder()
-                            .id(PATIENT_ID)
-                            .build()
-                    )
-                    .build()
-                )
+                .patient(PATIENT)
                 .build());
 
             when(csIntegrationService.certificateExists(anyString()))
@@ -133,7 +126,7 @@ class ReplaceCertificateFromCertificateServiceTest {
             when(csIntegrationService.getCertificate(anyString(), any()))
                 .thenReturn(CERTIFICATE);
 
-            when(csIntegrationRequestFactory.replaceCertificateRequest(anyString(), any()))
+            when(csIntegrationRequestFactory.replaceCertificateRequest(any(), any()))
                 .thenReturn(REQUEST);
         }
 
@@ -162,7 +155,7 @@ class ReplaceCertificateFromCertificateServiceTest {
             @Test
             void shouldCallRequestFactory() {
                 replaceCertificateFromCertificateService.replaceCertificate(ID);
-                verify(csIntegrationRequestFactory).replaceCertificateRequest(PATIENT_ID, parameters);
+                verify(csIntegrationRequestFactory).replaceCertificateRequest(PATIENT, parameters);
             }
 
             @Test

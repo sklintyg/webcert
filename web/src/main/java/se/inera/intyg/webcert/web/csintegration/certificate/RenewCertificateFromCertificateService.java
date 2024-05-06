@@ -60,7 +60,7 @@ public class RenewCertificateFromCertificateService implements RenewCertificateF
         final var renewalCertificate = csIntegrationService.renewCertificate(
             certificateId,
             csIntegrationRequestFactory.renewCertificateRequest(
-                certificateToRenew.getMetadata().getPatient().getPersonId().getId(),
+                certificateToRenew.getMetadata().getPatient(),
                 webCertUserService.getUser().getParameters()
             )
         );
