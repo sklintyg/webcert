@@ -43,25 +43,32 @@ public class PublishCertificateStatusUpdateService {
     private final NotificationService notificationService;
     private final WebCertUserService webCertUserService;
 
-    public void publish(Certificate certificate, HandelsekodEnum eventType) {
-        publish(certificate, eventType, Optional.empty());
+    public void publish(Certificate certificate, HandelsekodEnum eventType, String xml) {
+        publish(certificate, eventType, Optional.empty(), Optional.of(xml));
     }
 
-    public void publish(Certificate certificate, HandelsekodEnum eventType, Optional<IntygUser> intygUser) {
+    public void publish(Certificate certificate, HandelsekodEnum eventType) {
+        publish(certificate, eventType, Optional.empty(), Optional.empty());
+    }
+
+    public void publish(Certificate certificate, HandelsekodEnum eventType, Optional<IntygUser> intygUser, Optional<String> xml) {
         if (unitIsNotIntegrated(certificate)) {
             return;
         }
 
-        final var certificateXmlResponse = csIntegrationService.getCertificateXml(
-            getRequest(intygUser),
-            certificate.getMetadata().getId()
+        final var certificateXml = xml.orElseGet(
+            () -> csIntegrationService.getCertificateXml(
+                    getRequest(intygUser),
+                    certificate.getMetadata().getId()
+                )
+                .getXml()
         );
 
         final var handledByUser = intygUser.orElseGet(webCertUserService::getUser);
 
         final var notificationMessage = notificationMessageFactory.create(
             certificate,
-            certificateXmlResponse.getXml(),
+            certificateXml,
             eventType,
             handledByUser.getHsaId()
         );

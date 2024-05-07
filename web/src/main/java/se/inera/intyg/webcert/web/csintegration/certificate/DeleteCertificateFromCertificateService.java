@@ -49,6 +49,10 @@ public class DeleteCertificateFromCertificateService implements DeleteCertificat
             return false;
         }
 
+        final var certificateXml = csIntegrationService.getCertificateXml(
+            csIntegrationRequestFactory.getCertificateXmlRequest(), certificateId
+        );
+
         final var certificate = csIntegrationService.deleteCertificate(
             certificateId, version, csIntegrationRequestFactory.deleteCertificateRequest()
         );
@@ -60,7 +64,7 @@ public class DeleteCertificateFromCertificateService implements DeleteCertificat
         log.debug("Deleted certificate '{}' from Certificate Service", certificateId);
         monitoringLogService.logUtkastDeleted(certificate.getMetadata().getId(), certificate.getMetadata().getType());
         pdlLogService.logDeleted(certificate);
-        publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.RADERA);
+        publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.RADERA, certificateXml.getXml());
 
         return true;
     }

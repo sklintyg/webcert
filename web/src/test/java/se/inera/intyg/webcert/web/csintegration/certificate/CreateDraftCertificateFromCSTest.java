@@ -265,8 +265,8 @@ class CreateDraftCertificateFromCSTest {
         verify(publishCertificateStatusUpdateService).publish(
             CERTIFICATE,
             HandelsekodEnum.SKAPAT,
-            Optional.of(user)
-        );
+            Optional.of(user),
+            Optional.empty());
     }
 
     @Test
