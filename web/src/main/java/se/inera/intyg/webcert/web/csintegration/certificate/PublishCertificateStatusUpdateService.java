@@ -57,11 +57,7 @@ public class PublishCertificateStatusUpdateService {
         }
 
         final var certificateXml = xml.orElseGet(
-            () -> csIntegrationService.getCertificateXml(
-                    getRequest(intygUser),
-                    certificate.getMetadata().getId()
-                )
-                .getXml()
+            () -> csIntegrationService.getCertificateXml(getRequest(intygUser), certificate.getMetadata().getId()).getXml()
         );
 
         final var handledByUser = intygUser.orElseGet(webCertUserService::getUser);
