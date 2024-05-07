@@ -65,10 +65,6 @@ public class RenewCertificateFromCertificateService implements RenewCertificateF
             )
         );
 
-        if (renewalCertificate == null) {
-            throw new IllegalStateException("Received null when trying to renew certificate from Certificate Service");
-        }
-
         integratedUnitRegistryHelper.addUnitForCopy(certificateToRenew, renewalCertificate);
 
         log.debug("Renewed certificate '{}' from Certificate Service", certificateId);
