@@ -42,6 +42,8 @@ import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
@@ -53,6 +55,11 @@ class DeleteCertificateFromCertificateServiceTest {
     private static final int VERSION = 10;
     private static final Certificate CERTIFICATE = new Certificate();
     private static final String TYPE = "TYPE";
+    private static final String XML_DATA = "xmlData";
+    private static final GetCertificateXmlResponseDTO XML_RESPONSE_DTO = GetCertificateXmlResponseDTO.builder()
+        .xml(XML_DATA)
+        .build();
+    private static final GetCertificateXmlRequestDTO XML_REQUEST_DTO = GetCertificateXmlRequestDTO.builder().build();
 
     @Mock
     CSIntegrationService csIntegrationService;
@@ -91,6 +98,12 @@ class DeleteCertificateFromCertificateServiceTest {
 
             when(csIntegrationService.certificateExists(ID))
                 .thenReturn(true);
+
+            when(csIntegrationService.getCertificateXml(XML_REQUEST_DTO, ID))
+                .thenReturn(XML_RESPONSE_DTO);
+
+            when(csIntegrationRequestFactory.getCertificateXmlRequest())
+                .thenReturn(XML_REQUEST_DTO);
 
             when(csIntegrationRequestFactory.deleteCertificateRequest())
                 .thenReturn(REQUEST);
@@ -146,9 +159,9 @@ class DeleteCertificateFromCertificateServiceTest {
             }
 
             @Test
-            void shouldPublishCertificateStatusUpdateService() {
+            void shouldCallPublishCertificateStatusServiceWithXmlData() {
                 deleteCertificateFromCertificateService.deleteCertificate(ID, VERSION);
-                verify(publishCertificateStatusUpdateService).publish(CERTIFICATE, HandelsekodEnum.RADERA);
+                verify(publishCertificateStatusUpdateService).publish(CERTIFICATE, HandelsekodEnum.RADERA, XML_DATA);
             }
         }
 
@@ -156,6 +169,5 @@ class DeleteCertificateFromCertificateServiceTest {
         void shouldThrowExceptionIfReturnedCertificateIsNull() {
             assertThrows(IllegalStateException.class, () -> deleteCertificateFromCertificateService.deleteCertificate(ID, VERSION));
         }
-
     }
 }
