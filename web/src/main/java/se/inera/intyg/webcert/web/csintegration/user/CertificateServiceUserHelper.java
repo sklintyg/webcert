@@ -84,7 +84,8 @@ public class CertificateServiceUserHelper {
         }
 
         if (hasSubscription(webCertUser)) {
-            return authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL);
+            final var units = List.of(webCertUser.getValdVardgivare().getId(), webCertUser.getValdVardenhet().getId());
+            return authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL, units);
         }
 
         return true;
