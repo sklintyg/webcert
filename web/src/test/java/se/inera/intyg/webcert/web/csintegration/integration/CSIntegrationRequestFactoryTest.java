@@ -41,6 +41,7 @@ import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesQueryCriteriaDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientDTO;
 import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientHelper;
 import se.inera.intyg.webcert.web.csintegration.patient.PersonIdDTO;
@@ -84,10 +85,13 @@ class CSIntegrationRequestFactoryTest {
     private static final String PATIENT_ID = "191212121212";
     private static final String RESERVE_ID = "194011306125";
     private static final String ALTERNATE_PATIENT_ID = "201212121212";
+    private static final String COORDINATION_NUMBER_PATIENT_ID = "191212721212";
     private static final String EXTERNAL_REFERENCE = "REF";
     private static final Personnummer PERSONNUMMER = Personnummer.createPersonnummer(PATIENT_ID).orElseThrow();
     private static final Personnummer ALTERNATE_PERSONNUMMER = Personnummer.createPersonnummer(ALTERNATE_PATIENT_ID).orElseThrow();
     private static final Personnummer RESERVE_PERSONNUMMER = Personnummer.createPersonnummer(RESERVE_ID).orElseThrow();
+    private static final Personnummer COORDINATION_PERSONNUMMER = Personnummer.createPersonnummer(COORDINATION_NUMBER_PATIENT_ID)
+        .orElseThrow();
     private static final CertificateServiceUserDTO USER = CertificateServiceUserDTO.builder().build();
     private static final CertificateServiceUnitDTO UNIT = CertificateServiceUnitDTO.builder().build();
     private static final CertificateServiceUnitDTO CARE_UNIT = CertificateServiceUnitDTO.builder().build();
@@ -1225,6 +1229,46 @@ class CSIntegrationRequestFactoryTest {
             assertEquals("Invalid revoke reason. Reason must be either 'FEL_PATIENT' or 'ANNAT_ALLVARLIGT_FEL'",
                 illegalArgumentException.getMessage());
 
+        }
+    }
+
+    @Nested
+    class GetCitizenCertificateRequest {
+
+        @Test
+        void shouldReturnGetCitizenCertificateRequestDTOWithOfTypePersonalIdentityNumber() {
+            final var expectedRequest = GetCitizenCertificateRequestDTO.builder()
+                .personId(
+                    PersonIdDTO.builder()
+                        .type(PersonIdType.PERSONAL_IDENTITY_NUMBER)
+                        .id(PERSONNUMMER.getOriginalPnr())
+                        .build()
+                )
+                .build();
+
+            final var citizenCertificateRequest = csIntegrationRequestFactory.getCitizenCertificateRequest(PATIENT_ID);
+            assertEquals(expectedRequest, citizenCertificateRequest);
+        }
+
+        @Test
+        void shouldReturnGetCitizenCertificateRequestDTOWithOfTypeCoordinationNumber() {
+            final var expectedRequest = GetCitizenCertificateRequestDTO.builder()
+                .personId(
+                    PersonIdDTO.builder()
+                        .type(PersonIdType.COORDINATION_NUMBER)
+                        .id(COORDINATION_PERSONNUMMER.getOriginalPnr())
+                        .build()
+                )
+                .build();
+
+            final var citizenCertificateRequest = csIntegrationRequestFactory.getCitizenCertificateRequest(COORDINATION_NUMBER_PATIENT_ID);
+            assertEquals(expectedRequest, citizenCertificateRequest);
+        }
+
+        @Test
+        void shouldThrowIfInvalidPersonId() {
+            assertThrows(IllegalArgumentException.class,
+                () -> csIntegrationRequestFactory.getCitizenCertificateRequest("invalidPersonId"));
         }
     }
 }

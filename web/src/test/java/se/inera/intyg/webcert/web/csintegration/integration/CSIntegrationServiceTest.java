@@ -46,6 +46,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.CertificateText;
 import se.inera.intyg.common.support.facade.model.Staff;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
@@ -64,6 +65,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificat
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetListCertificatesResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoRequestDTO;
@@ -87,6 +90,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertific
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionDTO;
 
 @ExtendWith(MockitoExtension.class)
 class CSIntegrationServiceTest {
@@ -106,11 +110,21 @@ class CSIntegrationServiceTest {
             .build();
     private static final ReplaceCertificateRequestDTO REPLACE_CERTIFICATE_REQUEST = ReplaceCertificateRequestDTO.builder().build();
     private static final GetCertificateRequestDTO GET_CERTIFICATE_REQUEST = GetCertificateRequestDTO.builder().build();
+    private static final GetCitizenCertificateRequestDTO GET_CITIZEN_CERTIFICATE_REQUEST_DTO = GetCitizenCertificateRequestDTO.builder()
+        .build();
     public static final ReplaceCertificateResponseDTO REPLACE_CERTIFICATE_RESPONSE = ReplaceCertificateResponseDTO.builder()
         .certificate(CERTIFICATE)
         .build();
     private static final CertificateServiceGetCertificateResponseDTO GET_RESPONSE = CertificateServiceGetCertificateResponseDTO.builder()
         .certificate(CERTIFICATE)
+        .build();
+
+    private static final List<CertificateText> CERTIFICATE_TEXTS = List.of(CertificateText.builder().build());
+    private static final List<AvailableFunctionDTO> AVAILABLE_FUNCTIONS = List.of(new AvailableFunctionDTO());
+    private static final GetCitizenCertificateResponseDTO GET_CITIZEN_CERTIFICATE_RESPONSE_DTO = GetCitizenCertificateResponseDTO.builder()
+        .certificate(CERTIFICATE)
+        .texts(CERTIFICATE_TEXTS)
+        .availableFunctions(AVAILABLE_FUNCTIONS)
         .build();
     private static final String ID = "ID";
     private static final DeleteCertificateRequestDTO DELETE_CERTIFICATE_REQUEST = DeleteCertificateRequestDTO.builder().build();
@@ -1226,6 +1240,45 @@ class CSIntegrationServiceTest {
 
                 assertEquals("baseUrl/api/certificate/ID/revoke", captor.getValue());
             }
+        }
+    }
+
+    @Nested
+    class GetCitizenCertificate {
+
+        @Test
+        void shouldPreformPostUsingRequest() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(GET_CITIZEN_CERTIFICATE_RESPONSE_DTO);
+            final var captor = ArgumentCaptor.forClass(GetCitizenCertificateRequestDTO.class);
+
+            csIntegrationService.getCitizenCertificate(GET_CITIZEN_CERTIFICATE_REQUEST_DTO, ID);
+            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+
+            assertEquals(GET_CITIZEN_CERTIFICATE_REQUEST_DTO, captor.getValue());
+        }
+
+        @Test
+        void shouldReturnGetCitizenCertificateResponseDTO() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(GET_CITIZEN_CERTIFICATE_RESPONSE_DTO);
+            final var response = csIntegrationService.getCitizenCertificate(GET_CITIZEN_CERTIFICATE_REQUEST_DTO, ID);
+
+            assertEquals(GET_CITIZEN_CERTIFICATE_RESPONSE_DTO, response);
+        }
+
+
+        @Test
+        void shouldSetUrlCorrect() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(GET_CITIZEN_CERTIFICATE_RESPONSE_DTO);
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            csIntegrationService.getCitizenCertificate(GET_CITIZEN_CERTIFICATE_REQUEST_DTO, CERTIFICATE_ID);
+            verify(restTemplate).postForObject(captor.capture(), any(), any());
+
+            assertEquals("baseUrl/api/citizen/" + CERTIFICATE_ID, captor.getValue());
         }
     }
 }
