@@ -30,7 +30,7 @@ import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
 import se.inera.intyg.webcert.web.service.utkast.util.CopyUtkastServiceHelper;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 
-@Service
+@Service("renewCertificateFromWebcert")
 public class RenewCertificateFacadeServiceImpl implements RenewCertificateFacadeService {
 
     private static final Logger LOG = LoggerFactory.getLogger(RenewCertificateFacadeServiceImpl.class);

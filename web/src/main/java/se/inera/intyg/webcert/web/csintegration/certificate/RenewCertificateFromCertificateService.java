@@ -26,52 +26,52 @@ import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
-import se.inera.intyg.webcert.web.service.facade.ReplaceCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.facade.RenewCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 @Slf4j
-@Service("replaceCertificateFromCertificateService")
+@Service("renewCertificateFromCertificateService")
 @RequiredArgsConstructor
-public class ReplaceCertificateFromCertificateService implements ReplaceCertificateFacadeService {
+public class RenewCertificateFromCertificateService implements RenewCertificateFacadeService {
 
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
     private final PDLLogService pdlLogService;
     private final MonitoringLogService monitoringLogService;
+    private final WebCertUserService webCertUserService;
     private final IntegratedUnitRegistryHelper integratedUnitRegistryHelper;
     private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
-    private final WebCertUserService webCertUserService;
 
     @Override
-    public String replaceCertificate(String certificateId) {
-        log.debug("Attempting to replace certificate '{}' from Certificate Service", certificateId);
+    public String renewCertificate(String certificateId) {
+        log.debug("Attempting to renew certificate '{}' from Certificate Service", certificateId);
 
         if (Boolean.FALSE.equals(csIntegrationService.certificateExists(certificateId))) {
             log.debug("Certificate '{}' does not exist in certificate service", certificateId);
             return null;
         }
 
-        final var certificateToReplace = csIntegrationService.getCertificate(
+        final var certificateToRenew = csIntegrationService.getCertificate(
             certificateId,
             csIntegrationRequestFactory.getCertificateRequest()
         );
 
-        final var replacingCertificate = csIntegrationService.replaceCertificate(
+        final var renewalCertificate = csIntegrationService.renewCertificate(
             certificateId,
-            csIntegrationRequestFactory.replaceCertificateRequest(
-                certificateToReplace.getMetadata().getPatient(),
+            csIntegrationRequestFactory.renewCertificateRequest(
+                certificateToRenew.getMetadata().getPatient(),
                 webCertUserService.getUser().getParameters()
             )
         );
 
-        integratedUnitRegistryHelper.addUnitForCopy(certificateToReplace, replacingCertificate);
+        integratedUnitRegistryHelper.addUnitForCopy(certificateToRenew, renewalCertificate);
 
-        log.debug("Replaced certificate '{}' from Certificate Service", certificateId);
-        monitoringLogService.logIntygCopiedReplacement(replacingCertificate.getMetadata().getId(), certificateId);
-        pdlLogService.logCreated(replacingCertificate);
-        publishCertificateStatusUpdateService.publish(replacingCertificate, HandelsekodEnum.SKAPAT);
+        log.debug("Renewed certificate '{}' from Certificate Service", certificateId);
+        monitoringLogService.logIntygCopiedRenewal(renewalCertificate.getMetadata().getId(), certificateId);
+        pdlLogService.logCreated(renewalCertificate);
+        publishCertificateStatusUpdateService.publish(renewalCertificate, HandelsekodEnum.SKAPAT);
 
-        return replacingCertificate.getMetadata().getId();
+        return renewalCertificate.getMetadata().getId();
     }
 }

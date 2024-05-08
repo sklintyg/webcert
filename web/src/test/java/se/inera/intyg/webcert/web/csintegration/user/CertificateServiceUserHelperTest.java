@@ -70,7 +70,6 @@ class CertificateServiceUserHelperTest {
     private static SubscriptionInfo subscription;
     private IntegrationParameters parameters;
 
-
     @Mock
     WebCertUserService webCertUserService;
 
@@ -127,6 +126,42 @@ class CertificateServiceUserHelperTest {
                 final var response = certificateServiceUserHelper.get();
 
                 assertEquals(SPECIALITIES, response.getSpecialities());
+            }
+
+            @Test
+            void shouldSetAllowCopyTrueIfParametersAreNull() {
+                final var user = certificateServiceUserHelper.get();
+
+                assertTrue(user.getAllowCopy());
+            }
+
+            @Nested
+            class AllowCopy {
+
+                @BeforeEach
+                void setUp() {
+                    parameters = mock(IntegrationParameters.class);
+                    when(webCertUser.getParameters())
+                        .thenReturn(parameters);
+                }
+
+                @Test
+                void shouldSetAllowCopyTrueIfFornyaOkSetToTrue() {
+                    when(parameters.isFornyaOk())
+                        .thenReturn(true);
+                    final var user = certificateServiceUserHelper.get();
+
+                    assertTrue(user.getAllowCopy());
+                }
+
+                @Test
+                void shouldSetAllowCopyFalseIfFornyaOkSetToFalse() {
+                    when(parameters.isFornyaOk())
+                        .thenReturn(false);
+                    final var user = certificateServiceUserHelper.get();
+
+                    assertFalse(user.getAllowCopy());
+                }
             }
 
             @Nested

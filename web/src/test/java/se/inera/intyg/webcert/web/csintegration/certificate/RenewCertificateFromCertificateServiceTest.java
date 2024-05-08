@@ -41,7 +41,7 @@ import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.ReplaceCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.RenewCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -49,21 +49,20 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 @ExtendWith(MockitoExtension.class)
-class ReplaceCertificateFromCertificateServiceTest {
+class RenewCertificateFromCertificateServiceTest {
 
-    private static final ReplaceCertificateRequestDTO REQUEST = ReplaceCertificateRequestDTO.builder().build();
+    private static final RenewCertificateRequestDTO REQUEST = RenewCertificateRequestDTO.builder().build();
     private static final String PATIENT_ID = "PATIENT_ID";
     private static final Patient PATIENT = Patient.builder()
         .personId(
             PersonId.builder()
                 .id(PATIENT_ID)
                 .build()
-        )
-        .build();
+        ).build();
     private static final String ID = "ID";
     private static final String NEW_ID = "NEW_ID";
     private static final Certificate CERTIFICATE = new Certificate();
-    private static final Certificate REPLACED_CERTIFICATE = new Certificate();
+    private static final Certificate RENEWD_CERTIFICATE = new Certificate();
     private static final String TYPE = "TYPE";
 
     @Mock
@@ -94,11 +93,11 @@ class ReplaceCertificateFromCertificateServiceTest {
     PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
 
     @InjectMocks
-    ReplaceCertificateFromCertificateService replaceCertificateFromCertificateService;
+    RenewCertificateFromCertificateService renewCertificateFromCertificateService;
 
     @Test
     void shouldReturnNullIfCertificateDoesNotExistInCS() {
-        final var response = replaceCertificateFromCertificateService.replaceCertificate(ID);
+        final var response = renewCertificateFromCertificateService.renewCertificate(ID);
 
         assertNull(response);
     }
@@ -114,7 +113,7 @@ class ReplaceCertificateFromCertificateServiceTest {
                 .patient(PATIENT)
                 .build());
 
-            REPLACED_CERTIFICATE.setMetadata(CertificateMetadata.builder()
+            RENEWD_CERTIFICATE.setMetadata(CertificateMetadata.builder()
                 .id(NEW_ID)
                 .type(TYPE)
                 .patient(PATIENT)
@@ -126,17 +125,17 @@ class ReplaceCertificateFromCertificateServiceTest {
             when(csIntegrationService.getCertificate(anyString(), any()))
                 .thenReturn(CERTIFICATE);
 
-            when(csIntegrationRequestFactory.replaceCertificateRequest(any(), any()))
+            when(csIntegrationRequestFactory.renewCertificateRequest(any(), any()))
                 .thenReturn(REQUEST);
         }
 
         @Nested
-        class CertificateIsReplacedFromCS {
+        class CertificateIsRenewedFromCS {
 
             @BeforeEach
             void setup() {
-                when(csIntegrationService.replaceCertificate(ID, REQUEST))
-                    .thenReturn(REPLACED_CERTIFICATE);
+                when(csIntegrationService.renewCertificate(ID, REQUEST))
+                    .thenReturn(RENEWD_CERTIFICATE);
 
                 when(user.getParameters())
                     .thenReturn(parameters);
@@ -146,59 +145,59 @@ class ReplaceCertificateFromCertificateServiceTest {
             }
 
             @Test
+            void shouldCallRequestFactory() {
+                renewCertificateFromCertificateService.renewCertificate(ID);
+                verify(csIntegrationRequestFactory).renewCertificateRequest(PATIENT, parameters);
+            }
+
+            @Test
             void shouldReturnNullIfCertificateIdIfExistInCS() {
-                final var response = replaceCertificateFromCertificateService.replaceCertificate(ID);
+                final var response = renewCertificateFromCertificateService.renewCertificate(ID);
 
                 assertEquals(NEW_ID, response);
             }
 
             @Test
-            void shouldCallRequestFactory() {
-                replaceCertificateFromCertificateService.replaceCertificate(ID);
-                verify(csIntegrationRequestFactory).replaceCertificateRequest(PATIENT, parameters);
-            }
-
-            @Test
-            void shouldCallReplaceWithId() {
+            void shouldCallRenewWithId() {
                 final var captor = ArgumentCaptor.forClass(String.class);
-                replaceCertificateFromCertificateService.replaceCertificate(ID);
+                renewCertificateFromCertificateService.renewCertificate(ID);
 
-                verify(csIntegrationService).replaceCertificate(captor.capture(), any(ReplaceCertificateRequestDTO.class));
+                verify(csIntegrationService).renewCertificate(captor.capture(), any(RenewCertificateRequestDTO.class));
                 assertEquals(ID, captor.getValue());
             }
 
             @Test
-            void shouldCallReplaceWithRequest() {
-                final var captor = ArgumentCaptor.forClass(ReplaceCertificateRequestDTO.class);
-                replaceCertificateFromCertificateService.replaceCertificate(ID);
+            void shouldCallRenewWithRequest() {
+                final var captor = ArgumentCaptor.forClass(RenewCertificateRequestDTO.class);
+                renewCertificateFromCertificateService.renewCertificate(ID);
 
-                verify(csIntegrationService).replaceCertificate(anyString(), captor.capture());
+                verify(csIntegrationService).renewCertificate(anyString(), captor.capture());
                 assertEquals(REQUEST, captor.getValue());
             }
 
             @Test
             void shouldPdlLogCreated() {
-                replaceCertificateFromCertificateService.replaceCertificate(ID);
-                verify(pdlLogService).logCreated(REPLACED_CERTIFICATE);
+                renewCertificateFromCertificateService.renewCertificate(ID);
+                verify(pdlLogService).logCreated(RENEWD_CERTIFICATE);
 
             }
 
             @Test
             void shouldPublishCreated() {
-                replaceCertificateFromCertificateService.replaceCertificate(ID);
-                verify(publishCertificateStatusUpdateService).publish(REPLACED_CERTIFICATE, HandelsekodEnum.SKAPAT);
+                renewCertificateFromCertificateService.renewCertificate(ID);
+                verify(publishCertificateStatusUpdateService).publish(RENEWD_CERTIFICATE, HandelsekodEnum.SKAPAT);
             }
 
             @Test
-            void shouldMonitorLogReplace() {
-                replaceCertificateFromCertificateService.replaceCertificate(ID);
-                verify(monitoringLogService).logIntygCopiedReplacement(NEW_ID, ID);
+            void shouldMonitorLogRenew() {
+                renewCertificateFromCertificateService.renewCertificate(ID);
+                verify(monitoringLogService).logIntygCopiedRenewal(NEW_ID, ID);
             }
 
             @Test
             void shouldRegisterUnit() {
-                replaceCertificateFromCertificateService.replaceCertificate(ID);
-                verify(integratedUnitRegistryHelper).addUnitForCopy(CERTIFICATE, REPLACED_CERTIFICATE);
+                renewCertificateFromCertificateService.renewCertificate(ID);
+                verify(integratedUnitRegistryHelper).addUnitForCopy(CERTIFICATE, RENEWD_CERTIFICATE);
             }
         }
     }
