@@ -81,7 +81,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoD
 public class CSIntegrationService {
 
     private static final String CERTIFICATE_ENDPOINT_URL = "/api/certificate";
-    private static final String CITIZEN_ENDPOINT_URL = "/api/citizen";
+    private static final String CITIZEN_ENDPOINT_URL = "/api/citizen/certificate";
     private static final String PATIENT_ENDPOINT_URL = "/api/patient";
     private static final String CERTIFICATE_TYPE_INFO_ENDPOINT_URL = "/api/certificatetypeinfo";
     private static final String UNIT_ENDPOINT_URL = "/api/unit";

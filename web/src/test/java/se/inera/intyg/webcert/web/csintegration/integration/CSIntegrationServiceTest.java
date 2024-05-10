@@ -1278,7 +1278,7 @@ class CSIntegrationServiceTest {
             csIntegrationService.getCitizenCertificate(GET_CITIZEN_CERTIFICATE_REQUEST_DTO, CERTIFICATE_ID);
             verify(restTemplate).postForObject(captor.capture(), any(), any());
 
-            assertEquals("baseUrl/api/citizen/" + CERTIFICATE_ID, captor.getValue());
+            assertEquals("baseUrl/api/citizen/certificate/" + CERTIFICATE_ID, captor.getValue());
         }
     }
 }
