@@ -20,10 +20,12 @@ package se.inera.intyg.webcert.web.csintegration.integration;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.Patient;
+import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
@@ -33,6 +35,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificat
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
@@ -47,6 +50,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateR
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateWithoutSignatureRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientHelper;
+import se.inera.intyg.webcert.web.csintegration.patient.PersonIdDTO;
+import se.inera.intyg.webcert.web.csintegration.patient.PersonIdType;
 import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceIntegrationUnitHelper;
 import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitHelper;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceIntegrationUserHelper;
@@ -331,5 +336,21 @@ public class CSIntegrationRequestFactory {
         return isAlternateSSNDefined(integrationParameters)
             ? createPatientId(integrationParameters.getAlternateSsn())
             : createPatientId(patient.getPersonId().getId());
+    }
+
+    public GetCitizenCertificateRequestDTO getCitizenCertificateRequest(String personId) {
+        final var patientId = createPatientId(personId);
+        return GetCitizenCertificateRequestDTO.builder()
+            .personId(
+                PersonIdDTO.builder()
+                    .id(patientId.getOriginalPnr())
+                    .type(isCoordinationNumber(patientId) ? PersonIdType.COORDINATION_NUMBER : PersonIdType.PERSONAL_IDENTITY_NUMBER)
+                    .build()
+            )
+            .build();
+    }
+
+    private boolean isCoordinationNumber(Personnummer personId) {
+        return SamordningsnummerValidator.isSamordningsNummer(Optional.of(personId));
     }
 }

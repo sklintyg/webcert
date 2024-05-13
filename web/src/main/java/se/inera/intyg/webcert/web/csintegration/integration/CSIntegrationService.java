@@ -41,12 +41,15 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServi
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateTypeExistsResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CitizenCertificateExistsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetListCertificatesResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoRequestDTO;
@@ -78,6 +81,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoD
 public class CSIntegrationService {
 
     private static final String CERTIFICATE_ENDPOINT_URL = "/api/certificate";
+    private static final String CITIZEN_ENDPOINT_URL = "/api/citizen/certificate";
     private static final String PATIENT_ENDPOINT_URL = "/api/patient";
     private static final String CERTIFICATE_TYPE_INFO_ENDPOINT_URL = "/api/certificatetypeinfo";
     private static final String UNIT_ENDPOINT_URL = "/api/unit";
@@ -280,6 +284,18 @@ public class CSIntegrationService {
         return Boolean.TRUE.equals(response.getExists());
     }
 
+    public Boolean citizenCertificateExists(String certificateId) {
+        final var url = baseUrl + CITIZEN_ENDPOINT_URL + "/" + certificateId + "/exists";
+
+        final var response = restTemplate.getForObject(url, CitizenCertificateExistsResponseDTO.class);
+
+        if (response == null) {
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
+        }
+
+        return Boolean.TRUE.equals(response.getExists());
+    }
+
     public Certificate saveCertificate(SaveCertificateRequestDTO request) {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + request.getCertificate().getMetadata().getId();
         final var headers = new HttpHeaders();
@@ -371,5 +387,17 @@ public class CSIntegrationService {
         }
 
         return response.getCertificate();
+    }
+
+    public GetCitizenCertificateResponseDTO getCitizenCertificate(GetCitizenCertificateRequestDTO request, String certificateId) {
+        final var url = baseUrl + CITIZEN_ENDPOINT_URL + "/" + certificateId;
+
+        final var response = restTemplate.postForObject(url, request, GetCitizenCertificateResponseDTO.class);
+
+        if (response == null) {
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
+        }
+
+        return response;
     }
 }
