@@ -115,8 +115,9 @@ class CSIntegrationServiceTest {
     private static final GetCertificateRequestDTO GET_CERTIFICATE_REQUEST = GetCertificateRequestDTO.builder().build();
     private static final GetCitizenCertificateRequestDTO GET_CITIZEN_CERTIFICATE_REQUEST_DTO = GetCitizenCertificateRequestDTO.builder()
         .build();
-    private static final GetCitizenCertificatePdfRequestDTO GET_CITIZEN_CERTIFICATE_PDF_REQUEST_DTO = GetCitizenCertificatePdfRequestDTO.builder()
-        .build();
+    private static final GetCitizenCertificatePdfRequestDTO GET_CITIZEN_CERTIFICATE_PDF_REQUEST_DTO =
+        GetCitizenCertificatePdfRequestDTO.builder()
+            .build();
     public static final ReplaceCertificateResponseDTO REPLACE_CERTIFICATE_RESPONSE = ReplaceCertificateResponseDTO.builder()
         .certificate(CERTIFICATE)
         .build();
@@ -134,10 +135,11 @@ class CSIntegrationServiceTest {
 
     private static final String FILE_NAME = "fileName";
     private static final byte[] PDF_DATA = "pdfData".getBytes(StandardCharsets.UTF_8);
-    private static final GetCitizenCertificatePdfResponseDTO GET_CITIZEN_CERTIFICATE_PDF_RESPONSE_DTO = GetCitizenCertificatePdfResponseDTO.builder()
-        .filename(FILE_NAME)
-        .pdfData(PDF_DATA)
-        .build();
+    private static final GetCitizenCertificatePdfResponseDTO GET_CITIZEN_CERTIFICATE_PDF_RESPONSE_DTO =
+        GetCitizenCertificatePdfResponseDTO.builder()
+            .filename(FILE_NAME)
+            .pdfData(PDF_DATA)
+            .build();
     private static final String ID = "ID";
     private static final DeleteCertificateRequestDTO DELETE_CERTIFICATE_REQUEST = DeleteCertificateRequestDTO.builder().build();
     private static final ParameterizedTypeReference<DeleteCertificateResponseDTO> DELETE_RESPONSE
