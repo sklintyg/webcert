@@ -41,6 +41,7 @@ import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesQueryCriteriaDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificatePdfRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientDTO;
 import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientHelper;
@@ -1236,7 +1237,7 @@ class CSIntegrationRequestFactoryTest {
     class GetCitizenCertificateRequest {
 
         @Test
-        void shouldReturnGetCitizenCertificateRequestDTOWithOfTypePersonalIdentityNumber() {
+        void shouldReturnGetCitizenCertificateRequestWithTypePersonalIdentityNumber() {
             final var expectedRequest = GetCitizenCertificateRequestDTO.builder()
                 .personId(
                     PersonIdDTO.builder()
@@ -1251,7 +1252,7 @@ class CSIntegrationRequestFactoryTest {
         }
 
         @Test
-        void shouldReturnGetCitizenCertificateRequestDTOWithOfTypeCoordinationNumber() {
+        void shouldReturnGetCitizenCertificateRequestWithTypeCoordinationNumber() {
             final var expectedRequest = GetCitizenCertificateRequestDTO.builder()
                 .personId(
                     PersonIdDTO.builder()
@@ -1263,6 +1264,53 @@ class CSIntegrationRequestFactoryTest {
 
             final var citizenCertificateRequest = csIntegrationRequestFactory.getCitizenCertificateRequest(COORDINATION_NUMBER_PATIENT_ID);
             assertEquals(expectedRequest, citizenCertificateRequest);
+        }
+
+        @Test
+        void shouldThrowIfInvalidPersonId() {
+            assertThrows(IllegalArgumentException.class,
+                () -> csIntegrationRequestFactory.getCitizenCertificateRequest("invalidPersonId"));
+        }
+    }
+
+    @Nested
+    class GetCitizenCertificatePdfRequest {
+
+        @Test
+        void shouldReturnGetCitizenCertificatePdfRequestWithTypePersonalIdentityNumber() {
+            final var expectedRequest = GetCitizenCertificatePdfRequestDTO.builder()
+                .personId(
+                    PersonIdDTO.builder()
+                        .type(PersonIdType.PERSONAL_IDENTITY_NUMBER)
+                        .id(PERSONNUMMER.getOriginalPnr())
+                        .build()
+                )
+                .build();
+
+            final var citizenCertificateRequest = csIntegrationRequestFactory.getCitizenCertificatePdfRequest(PATIENT_ID);
+            assertEquals(expectedRequest, citizenCertificateRequest);
+        }
+
+        @Test
+        void shouldReturnGetCitizenCertificateRequestWithTypeCoordinationNumber() {
+            final var expectedRequest = GetCitizenCertificatePdfRequestDTO.builder()
+                .personId(
+                    PersonIdDTO.builder()
+                        .type(PersonIdType.COORDINATION_NUMBER)
+                        .id(COORDINATION_PERSONNUMMER.getOriginalPnr())
+                        .build()
+                )
+                .build();
+
+            final var citizenCertificateRequest = csIntegrationRequestFactory.getCitizenCertificatePdfRequest(
+                COORDINATION_NUMBER_PATIENT_ID);
+            assertEquals(expectedRequest, citizenCertificateRequest);
+        }
+
+        @Test
+        void shouldReturnGetCitizenCertificatePdfRequestWithAdditonalInfo() {
+            final var citizenCertificateRequest = csIntegrationRequestFactory.getCitizenCertificatePdfRequest(PATIENT_ID);
+            assertEquals("Utskriven från 1177 intyg", citizenCertificateRequest.getAdditionalInfo());
         }
 
         @Test

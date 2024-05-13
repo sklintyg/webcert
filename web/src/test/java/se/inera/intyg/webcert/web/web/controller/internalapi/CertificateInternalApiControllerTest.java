@@ -31,7 +31,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.csintegration.aggregate.CertificateInternalAggregator;
-import se.inera.intyg.webcert.web.service.facade.internalapi.service.GetCertificatePdfService;
+import se.inera.intyg.webcert.web.csintegration.aggregate.GetCertificateInternalPdfAggregator;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetCertificateIntegrationRequestDTO;
@@ -47,8 +47,10 @@ class CertificateInternalApiControllerTest {
         EXPECTED_PDF_DATA
     );
     private static final String CERTIFICATE_ID = "certificateId";
+    private static final String CUSTOMIZATION_ID = "customizationId";
+    private static final String PERSON_ID = "personId";
     @Mock
-    private GetCertificatePdfService getCertificatePdfService;
+    private GetCertificateInternalPdfAggregator getCertificateInternalPdfAggregator;
 
     @Mock
     private CertificateInternalAggregator certificateInternalAggregator;
@@ -82,13 +84,16 @@ class CertificateInternalApiControllerTest {
     @Nested
     class GetPdfData {
 
-        private final CertificatePdfRequestDTO printCertificateRequest = new CertificatePdfRequestDTO();
+        private final CertificatePdfRequestDTO printCertificateRequest = CertificatePdfRequestDTO.builder()
+            .customizationId(CUSTOMIZATION_ID)
+            .personId(PERSON_ID)
+            .build();
 
         @BeforeEach
         void setUp() {
             doReturn(EXPECTED_PDL_RESPONSE)
-                .when(getCertificatePdfService)
-                .get(printCertificateRequest.getCustomizationId(), CERTIFICATE_ID);
+                .when(getCertificateInternalPdfAggregator)
+                .get(CUSTOMIZATION_ID, CERTIFICATE_ID, PERSON_ID);
         }
 
         @Test

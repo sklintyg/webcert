@@ -29,10 +29,11 @@ import se.inera.intyg.common.support.modules.support.ApplicationOrigin;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.PdfResponse;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.webcert.web.web.controller.internalapi.CertificatePdfService;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfResponseDTO;
 
-@Service
-public class GetCertificatePdfService {
+@Service("getCertificateInternalPdfFromWC")
+public class GetCertificatePdfService implements CertificatePdfService {
 
     private final GetRequiredFieldsForCertificatePdfService getRequiredFieldsForCertificatePdfService;
     private final IntygModuleRegistry moduleRegistry;
@@ -46,7 +47,8 @@ public class GetCertificatePdfService {
         this.moduleRegistry = moduleRegistry;
     }
 
-    public CertificatePdfResponseDTO get(String customizationId, String certificateId) {
+    @Override
+    public CertificatePdfResponseDTO get(String customizationId, String certificateId, String personId) {
         final var requiredFieldsForCertificatePdf = getRequiredFieldsForCertificatePdfService.get(certificateId);
 
         final var moduleApi = getModuleApi(

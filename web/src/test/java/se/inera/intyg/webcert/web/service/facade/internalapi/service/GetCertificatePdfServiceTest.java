@@ -83,7 +83,7 @@ class GetCertificatePdfServiceTest {
         when(getRequiredFieldsForCertificatePdfService.get(CERTIFICATE_ID))
             .thenReturn(REQUIRED_FIELDS_FOR_CERTIFICATE_PDF);
         when(moduleApi.pdf(any(), any(), any(), any())).thenReturn(PDF_RESPONSE);
-        final var result = getCertificatePdfService.get(null, CERTIFICATE_ID);
+        final var result = getCertificatePdfService.get(null, CERTIFICATE_ID, null);
         assertEquals(EXPECTED_CERTIFICATE_PDF_RESPONSE, result);
     }
 
@@ -105,7 +105,7 @@ class GetCertificatePdfServiceTest {
             when(moduleRegistry.getModuleApi(moduleRegistryArgumentCaptor.capture(),
                 eq(CERTIFICATE_TYPE_VERSION)))
                 .thenReturn(moduleApi);
-            getCertificatePdfService.get(null, CERTIFICATE_ID);
+            getCertificatePdfService.get(null, CERTIFICATE_ID, null);
 
             assertEquals(CERTIFICATE_TYPE, moduleRegistryArgumentCaptor.getValue());
         }
@@ -115,7 +115,7 @@ class GetCertificatePdfServiceTest {
             when(moduleRegistry.getModuleApi(eq(CERTIFICATE_TYPE),
                 moduleRegistryArgumentCaptor.capture()))
                 .thenReturn(moduleApi);
-            getCertificatePdfService.get(null, CERTIFICATE_ID);
+            getCertificatePdfService.get(null, CERTIFICATE_ID, null);
 
             assertEquals(CERTIFICATE_TYPE_VERSION, moduleRegistryArgumentCaptor.getValue());
         }
@@ -133,7 +133,7 @@ class GetCertificatePdfServiceTest {
             when(getRequiredFieldsForCertificatePdfService.get(stringArgumentCaptor.capture()))
                 .thenReturn(REQUIRED_FIELDS_FOR_CERTIFICATE_PDF);
             when(moduleApi.pdf(any(), anyList(), any(), any())).thenReturn(PDF_RESPONSE);
-            getCertificatePdfService.get(null, CERTIFICATE_ID);
+            getCertificatePdfService.get(null, CERTIFICATE_ID, null);
 
             assertEquals(CERTIFICATE_ID, stringArgumentCaptor.getValue());
         }
@@ -155,7 +155,7 @@ class GetCertificatePdfServiceTest {
         void shouldUseJsonModelFromRequiredFields() throws ModuleException {
             final var stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
             when(moduleApi.pdf(stringArgumentCaptor.capture(), any(), any(), any())).thenReturn(PDF_RESPONSE);
-            getCertificatePdfService.get(null, CERTIFICATE_ID);
+            getCertificatePdfService.get(null, CERTIFICATE_ID, null);
             assertEquals(INTERNAL_JSON_MODEL, stringArgumentCaptor.getValue());
         }
 
@@ -163,7 +163,7 @@ class GetCertificatePdfServiceTest {
         void shouldUseStatusesFromRequiredFields() throws ModuleException {
             final var listArgumentCaptor = ArgumentCaptor.forClass(List.class);
             when(moduleApi.pdf(any(), listArgumentCaptor.capture(), any(), any())).thenReturn(PDF_RESPONSE);
-            getCertificatePdfService.get(null, CERTIFICATE_ID);
+            getCertificatePdfService.get(null, CERTIFICATE_ID, null);
             assertNotNull(listArgumentCaptor.getValue());
         }
 
@@ -171,7 +171,7 @@ class GetCertificatePdfServiceTest {
         void shouldUseStatusFromRequiredFields() throws ModuleException {
             final var statusArgumentCaptor = ArgumentCaptor.forClass(UtkastStatus.class);
             when(moduleApi.pdf(any(), anyList(), any(), statusArgumentCaptor.capture())).thenReturn(PDF_RESPONSE);
-            getCertificatePdfService.get(null, CERTIFICATE_ID);
+            getCertificatePdfService.get(null, CERTIFICATE_ID, null);
             assertEquals(UtkastStatus.SIGNED, statusArgumentCaptor.getValue());
         }
 
@@ -180,7 +180,7 @@ class GetCertificatePdfServiceTest {
         void shouldUseOriginMinaIntyg() throws ModuleException {
             final var originArgumentCaptor = ArgumentCaptor.forClass(ApplicationOrigin.class);
             when(moduleApi.pdf(any(), anyList(), originArgumentCaptor.capture(), any())).thenReturn(PDF_RESPONSE);
-            getCertificatePdfService.get(null, CERTIFICATE_ID);
+            getCertificatePdfService.get(null, CERTIFICATE_ID, null);
             assertEquals(ApplicationOrigin.MINA_INTYG, originArgumentCaptor.getValue());
         }
 
@@ -188,21 +188,21 @@ class GetCertificatePdfServiceTest {
         @Test
         void shouldCallPdfEmployerIfCorrectCustomizeIdWasProvidedFromRequest() throws ModuleException {
             when(moduleApi.pdfEmployer(any(), anyList(), any(), anyList(), any())).thenReturn(PDF_RESPONSE);
-            getCertificatePdfService.get(CUSTOMIZE_ID, CERTIFICATE_ID);
+            getCertificatePdfService.get(CUSTOMIZE_ID, CERTIFICATE_ID, null);
             verify(moduleApi).pdfEmployer(any(), anyList(), any(), anyList(), any());
         }
 
         @Test
         void shouldCallPdfIfWrongCustomizeIdWasProvidedFromRequest() throws ModuleException {
             when(moduleApi.pdf(any(), anyList(), any(), any())).thenReturn(PDF_RESPONSE);
-            getCertificatePdfService.get(WRONG_CUSTOMIZAITON_ID, CERTIFICATE_ID);
+            getCertificatePdfService.get(WRONG_CUSTOMIZAITON_ID, CERTIFICATE_ID, null);
             verify(moduleApi).pdf(any(), anyList(), any(), any());
         }
 
         @Test
         void shouldCallPdfIfNoCustomizeIdWasProvidedFromRequest() throws ModuleException {
             when(moduleApi.pdf(any(), anyList(), any(), any())).thenReturn(PDF_RESPONSE);
-            getCertificatePdfService.get(null, CERTIFICATE_ID);
+            getCertificatePdfService.get(null, CERTIFICATE_ID, null);
             verify(moduleApi).pdf(any(), anyList(), any(), any());
         }
     }
