@@ -19,44 +19,17 @@
 
 package se.inera.intyg.webcert.web.web.controller.internalapi.dto;
 
-import java.util.Objects;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class CertificatePdfRequestDTO {
 
     private String customizationId;
-
-    public CertificatePdfRequestDTO() {
-    }
-
-    public CertificatePdfRequestDTO(String customizationId) {
-        this.customizationId = customizationId;
-    }
-
-    public String getCustomizationId() {
-        return customizationId;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        final CertificatePdfRequestDTO that = (CertificatePdfRequestDTO) o;
-        return Objects.equals(customizationId, that.customizationId);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(customizationId);
-    }
-
-    @Override
-    public String toString() {
-        return "PrintCertificateRequestDTO{"
-            + "customizationId='" + customizationId + '\''
-            + '}';
-    }
+    private String personId;
 }
