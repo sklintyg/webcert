@@ -54,6 +54,7 @@ public class CertificateServiceUserBuilder {
             .paTitles(paTitles(user.getBefattningar()))
             .role(role)
             .blocked(false)
+            .allowCopy(true)
             .build();
     }
 
