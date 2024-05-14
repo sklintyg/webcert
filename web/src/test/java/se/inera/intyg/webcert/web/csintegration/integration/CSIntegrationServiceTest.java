@@ -132,7 +132,6 @@ class CSIntegrationServiceTest {
         .texts(CERTIFICATE_TEXTS)
         .availableFunctions(AVAILABLE_FUNCTIONS)
         .build();
-
     private static final String FILE_NAME = "fileName";
     private static final byte[] PDF_DATA = "pdfData".getBytes(StandardCharsets.UTF_8);
     private static final GetCitizenCertificatePdfResponseDTO GET_CITIZEN_CERTIFICATE_PDF_RESPONSE_DTO =
