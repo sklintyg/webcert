@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.csintegration.user;
 
+import static java.util.Optional.ofNullable;
 import static se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserUtil.convertRole;
 
 import java.util.List;
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.services.BefattningService;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -84,7 +86,9 @@ public class CertificateServiceUserHelper {
         }
 
         if (hasSubscription(webCertUser)) {
-            return webCertUser.getFeatures().get(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL).getGlobal();
+            return ofNullable(webCertUser.getFeatures().get(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL))
+                .filter(Feature::getGlobal)
+                .isPresent();
         }
 
         return true;

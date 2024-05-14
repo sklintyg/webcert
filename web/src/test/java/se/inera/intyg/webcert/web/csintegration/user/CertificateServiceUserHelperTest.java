@@ -42,8 +42,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.services.BefattningService;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
-import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionInfo;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -72,9 +72,6 @@ class CertificateServiceUserHelperTest {
 
     @Mock
     WebCertUserService webCertUserService;
-
-    @Mock
-    AuthoritiesHelper authoritiesHelper;
 
     @InjectMocks
     CertificateServiceUserHelper certificateServiceUserHelper;
@@ -177,26 +174,25 @@ class CertificateServiceUserHelperTest {
                 @Nested
                 class OriginNormal {
 
+                    Feature feature;
+
                     @BeforeEach
                     void setup() {
+                        feature = mock(Feature.class);
                         final var careProvider = mock(SelectableVardenhet.class);
-                        when(webCertUser.getOrigin())
-                            .thenReturn("NORMAL");
 
-                        when(webCertUser.getSubscriptionInfo())
-                            .thenReturn(subscription);
-
-                        when(careProvider.getId())
-                            .thenReturn(CARE_PROVIDER_ID);
-                        when(webCertUser.getValdVardgivare())
-                            .thenReturn(careProvider);
+                        when(webCertUser.getSubscriptionInfo()).thenReturn(subscription);
+                        when(webCertUser.getOrigin()).thenReturn("NORMAL");
+                        when(webCertUser.getValdVardgivare()).thenReturn(careProvider);
+                        when(careProvider.getId()).thenReturn(CARE_PROVIDER_ID);
                     }
 
                     @Test
                     void shouldReturnBlockedFalseIfSubscriptionExistsAndNotBlocked() {
-                        when(subscription.getCareProvidersMissingSubscription())
-                            .thenReturn(HAS_SUBSCRIPTION);
-                        when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL)).thenReturn(false);
+                        when(subscription.getCareProvidersMissingSubscription()).thenReturn(HAS_SUBSCRIPTION);
+                        when(feature.getGlobal()).thenReturn(false);
+                        when(webCertUser.getFeatures())
+                            .thenReturn(Map.of(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL, feature));
 
                         final var response = certificateServiceUserHelper.get();
 
@@ -215,9 +211,10 @@ class CertificateServiceUserHelperTest {
 
                     @Test
                     void shouldReturnBlockedTrueIfBlocked() {
-                        when(subscription.getCareProvidersMissingSubscription())
-                            .thenReturn(HAS_SUBSCRIPTION);
-                        when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL)).thenReturn(true);
+                        when(subscription.getCareProvidersMissingSubscription()).thenReturn(HAS_SUBSCRIPTION);
+                        when(feature.getGlobal()).thenReturn(true);
+                        when(webCertUser.getFeatures())
+                            .thenReturn(Map.of(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL, feature));
 
                         final var response = certificateServiceUserHelper.get();
 
