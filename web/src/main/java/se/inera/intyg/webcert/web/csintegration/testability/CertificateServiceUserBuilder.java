@@ -55,6 +55,7 @@ public class CertificateServiceUserBuilder {
             .role(role)
             .blocked(false)
             .allowCopy(true)
+            .healthCareProfessionalLicence(user.getLegitimeradeYrkesgrupper())
             .build();
     }
 

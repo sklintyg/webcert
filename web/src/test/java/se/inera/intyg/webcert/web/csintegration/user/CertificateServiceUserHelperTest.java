@@ -65,6 +65,8 @@ class CertificateServiceUserHelperTest {
     private static final String CODE_TWO = "CODE_TWO";
     private static final String DESCRIPTION_TWO = "DESCRIPTION_TWO";
     private static final List<String> PA_TITLES = List.of(CODE_ONE, CODE_TWO);
+    private static final String DOCTOR = "doctor";
+    private static final List<String> LEGITIMATE_PROFEESIONAL_ROLES = List.of(DOCTOR);
 
     private static WebCertUser webCertUser;
     private static SubscriptionInfo subscription;
@@ -98,6 +100,9 @@ class CertificateServiceUserHelperTest {
 
             when(webCertUser.getSpecialiseringar())
                 .thenReturn(SPECIALITIES);
+
+            when(webCertUser.getLegitimeradeYrkesgrupper())
+                .thenReturn(LEGITIMATE_PROFEESIONAL_ROLES);
         }
 
         @Nested
@@ -288,6 +293,16 @@ class CertificateServiceUserHelperTest {
                     addRole("");
 
                     assertThrows(IllegalArgumentException.class, () -> certificateServiceUserHelper.get());
+                }
+            }
+
+            @Nested
+            class HealthCareProfessionalLicenceTests {
+
+                @Test
+                void shouldIncludeHealthCareProfessionalLicence() {
+                    final var response = certificateServiceUserHelper.get();
+                    assertEquals(LEGITIMATE_PROFEESIONAL_ROLES, response.getHealthCareProfessionalLicence());
                 }
             }
 

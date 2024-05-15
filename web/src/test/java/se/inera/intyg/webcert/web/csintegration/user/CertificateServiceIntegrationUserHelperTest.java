@@ -48,6 +48,7 @@ class CertificateServiceIntegrationUserHelperTest {
 
     private static final String ID = "ID";
     private static final List<String> SPECIALITIES = List.of("SpecialityOne", "SpecialityTwo");
+    private static final List<String> PROFESSIONAL_LICENCES = List.of("RoleOne", "RoleTwo");
     private static final String CODE_ONE = "CODE_ONE";
     private static final String DESCRIPTION_ONE = "DESCRIPTION_ONE";
     private static final String CODE_TWO = "CODE_TWO";
@@ -244,6 +245,15 @@ class CertificateServiceIntegrationUserHelperTest {
         @Test
         void shallIncludeAccessScope() {
             assertEquals(AccessScopeType.WITHIN_CARE_UNIT, certificateServiceIntegrationUserHelper.get(intygUser).getAccessScope());
+        }
+
+        @Test
+        void shallIncludeHealthCareProfessionalLicence() {
+            when(intygUser.getLegitimeradeYrkesgrupper())
+                .thenReturn(PROFESSIONAL_LICENCES);
+
+            assertEquals(PROFESSIONAL_LICENCES,
+                certificateServiceIntegrationUserHelper.get(intygUser).getHealthCareProfessionalLicence());
         }
 
         private void addRole(String roleName) {
