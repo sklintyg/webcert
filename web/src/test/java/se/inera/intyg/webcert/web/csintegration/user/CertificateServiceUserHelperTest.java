@@ -297,12 +297,12 @@ class CertificateServiceUserHelperTest {
             }
 
             @Nested
-            class LegitimateProfessionalRolesTests {
+            class HealthCareProfessionalLicenceTests {
 
                 @Test
-                void shouldIncludeLegitimateProfessionalRoles() {
+                void shouldIncludeHealthCareProfessionalLicence() {
                     final var response = certificateServiceUserHelper.get();
-                    assertEquals(LEGITIMATE_PROFEESIONAL_ROLES, response.getLegitimateProfessionalRoles());
+                    assertEquals(LEGITIMATE_PROFEESIONAL_ROLES, response.getHealthCareProfessionalLicence());
                 }
             }
 

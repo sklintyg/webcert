@@ -48,7 +48,7 @@ class CertificateServiceIntegrationUserHelperTest {
 
     private static final String ID = "ID";
     private static final List<String> SPECIALITIES = List.of("SpecialityOne", "SpecialityTwo");
-    private static final List<String> LEGITIMATE_PROFESSIONAL_ROLES = List.of("RoleOne", "RoleTwo");
+    private static final List<String> PROFESSIONAL_LICENCES = List.of("RoleOne", "RoleTwo");
     private static final String CODE_ONE = "CODE_ONE";
     private static final String DESCRIPTION_ONE = "DESCRIPTION_ONE";
     private static final String CODE_TWO = "CODE_TWO";
@@ -248,12 +248,12 @@ class CertificateServiceIntegrationUserHelperTest {
         }
 
         @Test
-        void shallIncludeLegitimateProfessionalRoles() {
+        void shallIncludeHealthCareProfessionalLicence() {
             when(intygUser.getLegitimeradeYrkesgrupper())
-                .thenReturn(LEGITIMATE_PROFESSIONAL_ROLES);
-            
-            assertEquals(LEGITIMATE_PROFESSIONAL_ROLES,
-                certificateServiceIntegrationUserHelper.get(intygUser).getLegitimateProfessionalRoles());
+                .thenReturn(PROFESSIONAL_LICENCES);
+
+            assertEquals(PROFESSIONAL_LICENCES,
+                certificateServiceIntegrationUserHelper.get(intygUser).getHealthCareProfessionalLicence());
         }
 
         private void addRole(String roleName) {
