@@ -31,7 +31,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
-import se.inera.intyg.webcert.web.web.controller.internalapi.CertificateInteralApi;
+import se.inera.intyg.webcert.web.web.controller.internalapi.GetCertificateInteralApi;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetCertificateResponse;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,16 +40,16 @@ class CertificateInternalAggregatorTest {
     private static final String CERTIFICATE_ID = "certificateId";
     private static final String PERSON_ID = "personId";
     @Mock
-    private CertificateInteralApi cercertificateInternalServiceFromWC;
+    private GetCertificateInteralApi cercertificateInternalServiceFromWC;
     @Mock
-    private CertificateInteralApi certificateInternalServiceFromCS;
+    private GetCertificateInteralApi certificateInternalServiceFromCS;
     @Mock
     private CertificateServiceProfile certificateServiceProfile;
-    private CertificateInternalAggregator certificateInternalAggregator;
+    private GetCertificateInternalAggregator certificateInternalAggregator;
 
     @BeforeEach
     void setUp() {
-        certificateInternalAggregator = new CertificateInternalAggregator(
+        certificateInternalAggregator = new GetCertificateInternalAggregator(
             certificateServiceProfile,
             cercertificateInternalServiceFromWC,
             certificateInternalServiceFromCS

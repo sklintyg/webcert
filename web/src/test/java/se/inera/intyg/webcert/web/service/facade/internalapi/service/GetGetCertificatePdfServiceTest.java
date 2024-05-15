@@ -48,7 +48,7 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfR
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.RequiredFieldsForCertificatePdf;
 
 @ExtendWith(MockitoExtension.class)
-class GetCertificatePdfServiceTest {
+class GetGetCertificatePdfServiceTest {
 
     private static final String CERTIFICATE_TYPE_VERSION = "certificateTypeVersion";
     private static final String CERTIFICATE_TYPE = "certificateType";
@@ -74,7 +74,7 @@ class GetCertificatePdfServiceTest {
     @Mock
     private IntygModuleRegistryImpl moduleRegistry;
     @InjectMocks
-    private GetCertificatePdfService getCertificatePdfService;
+    private GetGetCertificatePdfService getCertificatePdfService;
 
     @Test
     void shouldReturnPdfResponse() throws ModuleNotFoundException, ModuleException {

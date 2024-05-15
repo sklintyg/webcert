@@ -51,7 +51,7 @@ class GetCertificateInternalPdfFromCSTest {
     @Mock
     private CSIntegrationRequestFactory csIntegrationRequestFactory;
     @InjectMocks
-    private GetCertificateInternalPdfFromCS getCertificateInternalPdfFromCS;
+    private GetGetCertificateInternalPdfFromCS getCertificateInternalPdfFromCS;
 
     @Test
     void shallReturnNullIfCertificateDontExistInCertificateService() {

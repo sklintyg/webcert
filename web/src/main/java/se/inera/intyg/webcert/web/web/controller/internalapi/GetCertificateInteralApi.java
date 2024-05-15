@@ -19,9 +19,9 @@
 
 package se.inera.intyg.webcert.web.web.controller.internalapi;
 
-import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetCertificateResponse;
 
-public interface CertificatePdfService {
+public interface GetCertificateInteralApi {
 
-    CertificatePdfResponseDTO get(String customizationId, String certificateId, String personId);
+    GetCertificateResponse get(String certificateId, String personId);
 }

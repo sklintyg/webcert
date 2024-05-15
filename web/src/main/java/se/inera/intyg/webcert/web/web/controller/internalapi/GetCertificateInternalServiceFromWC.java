@@ -26,8 +26,8 @@ import se.inera.intyg.webcert.web.service.facade.internalapi.service.GetAvailabl
 import se.inera.intyg.webcert.web.service.facade.internalapi.service.GetTextsForCertificateService;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetCertificateResponse;
 
-@Service("certificateInternalServiceFromWC")
-public class CertificateInternalServiceFromWC implements CertificateInteralApi {
+@Service("getCertificateInternalServiceFromWC")
+public class GetCertificateInternalServiceFromWC implements GetCertificateInteralApi {
 
     private final GetCertificateFacadeService getCertificateFacadeService;
     private final GetTextsForCertificateService getTextsForCertificateService;
@@ -36,7 +36,7 @@ public class CertificateInternalServiceFromWC implements CertificateInteralApi {
     private static final boolean SHOULD_NOT_PDL_LOG = false;
     private static final boolean SHOULD_NOT_VALIDATE_ACCESS = false;
 
-    public CertificateInternalServiceFromWC(
+    public GetCertificateInternalServiceFromWC(
         @Qualifier("getCertificateFromWC") GetCertificateFacadeService getCertificateFacadeService,
         GetTextsForCertificateService getTextsForCertificateService,
         GetAvailableFunctionsForCertificateService getAvailableFunctionsForCertificateService) {

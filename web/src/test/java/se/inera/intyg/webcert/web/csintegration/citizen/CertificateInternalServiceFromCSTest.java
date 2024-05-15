@@ -51,7 +51,7 @@ class CertificateInternalServiceFromCSTest {
     @Mock
     private CSIntegrationRequestFactory csIntegrationRequestFactory;
     @InjectMocks
-    private CertificateInternalServiceFromCS certificateInternalServiceFromCS;
+    private GetCertificateInternalServiceFromCS certificateInternalServiceFromCS;
 
     @Test
     void shallReturnNullIfCertificateDontExistInCertificateService() {

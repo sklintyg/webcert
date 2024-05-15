@@ -24,13 +24,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
-import se.inera.intyg.webcert.web.web.controller.internalapi.CertificateInteralApi;
+import se.inera.intyg.webcert.web.web.controller.internalapi.GetCertificateInteralApi;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetCertificateResponse;
 
 @Slf4j
 @RequiredArgsConstructor
-@Service("certificateInternalServiceFromCS")
-public class CertificateInternalServiceFromCS implements CertificateInteralApi {
+@Service("getCertificateInternalServiceFromCS")
+public class GetCertificateInternalServiceFromCS implements GetCertificateInteralApi {
 
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;

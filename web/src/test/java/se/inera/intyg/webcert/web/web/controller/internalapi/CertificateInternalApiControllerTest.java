@@ -30,8 +30,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.webcert.web.csintegration.aggregate.CertificateInternalAggregator;
-import se.inera.intyg.webcert.web.csintegration.aggregate.GetCertificateInternalPdfAggregator;
+import se.inera.intyg.webcert.web.csintegration.aggregate.GetCertificateInternalAggregator;
+import se.inera.intyg.webcert.web.csintegration.aggregate.GetGetCertificateInternalPdfAggregator;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetCertificateIntegrationRequestDTO;
@@ -50,10 +50,10 @@ class CertificateInternalApiControllerTest {
     private static final String CUSTOMIZATION_ID = "customizationId";
     private static final String PERSON_ID = "personId";
     @Mock
-    private GetCertificateInternalPdfAggregator getCertificateInternalPdfAggregator;
+    private GetGetCertificateInternalPdfAggregator getCertificateInternalPdfAggregator;
 
     @Mock
-    private CertificateInternalAggregator certificateInternalAggregator;
+    private GetCertificateInternalAggregator certificateInternalAggregator;
 
     @InjectMocks
     private CertificateInternalApiController certificateInternalApiController;

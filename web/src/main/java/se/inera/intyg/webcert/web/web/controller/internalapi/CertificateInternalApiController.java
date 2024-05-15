@@ -38,14 +38,14 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetCertificateR
 @Api(value = "/internalapi/certificate", produces = MediaType.APPLICATION_JSON)
 public class CertificateInternalApiController {
 
-    private final CertificateInteralApi certificateInternalAggregator;
-    private final CertificatePdfService getCertificateInternalPdfAggregator;
+    private final GetCertificateInteralApi getCertificateInternalAggregator;
+    private final GetCertificatePdfService getCertificateInternalPdfAggregator;
     private static final String UTF_8_CHARSET = ";charset=utf-8";
 
     public CertificateInternalApiController(
-        @Qualifier("certificateInternalAggregator") CertificateInteralApi certificateInternalAggregator,
-        @Qualifier("getCertificateInternalPdfAggregator") CertificatePdfService getCertificateInternalPdfAggregator) {
-        this.certificateInternalAggregator = certificateInternalAggregator;
+        @Qualifier("getCertificateInternalAggregator") GetCertificateInteralApi getCertificateInternalAggregator,
+        @Qualifier("getCertificateInternalPdfAggregator") GetCertificatePdfService getCertificateInternalPdfAggregator) {
+        this.getCertificateInternalAggregator = getCertificateInternalAggregator;
         this.getCertificateInternalPdfAggregator = getCertificateInternalPdfAggregator;
     }
 
@@ -56,7 +56,7 @@ public class CertificateInternalApiController {
     @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public GetCertificateResponse getCertificate(@RequestBody GetCertificateIntegrationRequestDTO request,
         @PathParam("certificateId") String certificateId) {
-        return certificateInternalAggregator.get(certificateId, request.getPersonId());
+        return getCertificateInternalAggregator.get(certificateId, request.getPersonId());
     }
 
     @POST

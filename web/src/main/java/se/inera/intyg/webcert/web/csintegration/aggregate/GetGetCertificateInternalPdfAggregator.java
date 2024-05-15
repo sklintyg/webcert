@@ -23,19 +23,19 @@ package se.inera.intyg.webcert.web.csintegration.aggregate;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
-import se.inera.intyg.webcert.web.web.controller.internalapi.CertificatePdfService;
+import se.inera.intyg.webcert.web.web.controller.internalapi.GetCertificatePdfService;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfResponseDTO;
 
 @Service("getCertificateInternalPdfAggregator")
-public class GetCertificateInternalPdfAggregator implements CertificatePdfService {
+public class GetGetCertificateInternalPdfAggregator implements GetCertificatePdfService {
 
     private final CertificateServiceProfile certificateServiceProfile;
-    private final CertificatePdfService getCertificateInternalPdfFromWC;
-    private final CertificatePdfService getCertificateInternalPdfFromCS;
+    private final GetCertificatePdfService getCertificateInternalPdfFromWC;
+    private final GetCertificatePdfService getCertificateInternalPdfFromCS;
 
-    public GetCertificateInternalPdfAggregator(CertificateServiceProfile certificateServiceProfile,
-        @Qualifier("getCertificateInternalPdfFromWC") CertificatePdfService getCertificateInternalPdfFromWC,
-        @Qualifier("getCertificateInternalPdfFromCS") CertificatePdfService getCertificateInternalPdfFromCS) {
+    public GetGetCertificateInternalPdfAggregator(CertificateServiceProfile certificateServiceProfile,
+        @Qualifier("getCertificateInternalPdfFromWC") GetCertificatePdfService getCertificateInternalPdfFromWC,
+        @Qualifier("getCertificateInternalPdfFromCS") GetCertificatePdfService getCertificateInternalPdfFromCS) {
         this.certificateServiceProfile = certificateServiceProfile;
         this.getCertificateInternalPdfFromWC = getCertificateInternalPdfFromWC;
         this.getCertificateInternalPdfFromCS = getCertificateInternalPdfFromCS;

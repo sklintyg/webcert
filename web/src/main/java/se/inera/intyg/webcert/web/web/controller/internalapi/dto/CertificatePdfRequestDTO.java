@@ -19,17 +19,22 @@
 
 package se.inera.intyg.webcert.web.web.controller.internalapi.dto;
 
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Value;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfRequestDTO.CertificatePdfRequestDTOBuilder;
 
-@Data
+@JsonDeserialize(builder = CertificatePdfRequestDTOBuilder.class)
+@Value
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class CertificatePdfRequestDTO {
 
-    private String customizationId;
-    private String personId;
+    String customizationId;
+    String personId;
+
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class CertificatePdfRequestDTOBuilder {
+
+    }
 }
