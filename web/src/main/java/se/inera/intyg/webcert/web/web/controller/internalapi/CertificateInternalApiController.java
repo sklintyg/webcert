@@ -29,7 +29,6 @@ import javax.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.RequestBody;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
-import se.inera.intyg.webcert.web.service.facade.internalapi.service.GetCertificatePdfService;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetCertificateIntegrationRequestDTO;
@@ -39,14 +38,15 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetCertificateR
 @Api(value = "/internalapi/certificate", produces = MediaType.APPLICATION_JSON)
 public class CertificateInternalApiController {
 
-    private final GetCertificatePdfService getCertificatePdfService;
-    private final CertificateInteralApi certificateInternalAggregator;
+    private final GetCertificateInteralApi getCertificateInternalAggregator;
+    private final GetCertificatePdfService getCertificateInternalPdfAggregator;
     private static final String UTF_8_CHARSET = ";charset=utf-8";
 
-    public CertificateInternalApiController(GetCertificatePdfService getCertificatePdfService,
-        @Qualifier("certificateInternalAggregator") CertificateInteralApi certificateInternalAggregator) {
-        this.getCertificatePdfService = getCertificatePdfService;
-        this.certificateInternalAggregator = certificateInternalAggregator;
+    public CertificateInternalApiController(
+        @Qualifier("getCertificateInternalAggregator") GetCertificateInteralApi getCertificateInternalAggregator,
+        @Qualifier("getCertificateInternalPdfAggregator") GetCertificatePdfService getCertificateInternalPdfAggregator) {
+        this.getCertificateInternalAggregator = getCertificateInternalAggregator;
+        this.getCertificateInternalPdfAggregator = getCertificateInternalPdfAggregator;
     }
 
     @POST
@@ -56,7 +56,7 @@ public class CertificateInternalApiController {
     @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public GetCertificateResponse getCertificate(@RequestBody GetCertificateIntegrationRequestDTO request,
         @PathParam("certificateId") String certificateId) {
-        return certificateInternalAggregator.get(certificateId, request.getPersonId());
+        return getCertificateInternalAggregator.get(certificateId, request.getPersonId());
     }
 
     @POST
@@ -66,9 +66,10 @@ public class CertificateInternalApiController {
     @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public CertificatePdfResponseDTO getPdfData(@RequestBody CertificatePdfRequestDTO request,
         @PathParam("certificateId") String certificateId) {
-        return getCertificatePdfService.get(
+        return getCertificateInternalPdfAggregator.get(
             request.getCustomizationId(),
-            certificateId
+            certificateId,
+            request.getPersonId()
         );
     }
 }

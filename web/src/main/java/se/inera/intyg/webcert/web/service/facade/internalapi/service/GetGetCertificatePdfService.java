@@ -31,8 +31,8 @@ import se.inera.intyg.common.support.modules.support.api.dto.PdfResponse;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfResponseDTO;
 
-@Service
-public class GetCertificatePdfService {
+@Service("getCertificateInternalPdfFromWC")
+public class GetGetCertificatePdfService implements se.inera.intyg.webcert.web.web.controller.internalapi.GetCertificatePdfService {
 
     private final GetRequiredFieldsForCertificatePdfService getRequiredFieldsForCertificatePdfService;
     private final IntygModuleRegistry moduleRegistry;
@@ -40,13 +40,14 @@ public class GetCertificatePdfService {
     private static final String DONT_DISPLAY_DIAGNOSIS_ID = "!diagnoser";
     private static final List<String> OPTIONAL_FIELDS = List.of(DONT_DISPLAY_DIAGNOSIS_ID, "!onskarFormedlaDiagnos");
 
-    public GetCertificatePdfService(GetRequiredFieldsForCertificatePdfService getRequiredFieldsForCertificatePdfService,
+    public GetGetCertificatePdfService(GetRequiredFieldsForCertificatePdfService getRequiredFieldsForCertificatePdfService,
         IntygModuleRegistry moduleRegistry) {
         this.getRequiredFieldsForCertificatePdfService = getRequiredFieldsForCertificatePdfService;
         this.moduleRegistry = moduleRegistry;
     }
 
-    public CertificatePdfResponseDTO get(String customizationId, String certificateId) {
+    @Override
+    public CertificatePdfResponseDTO get(String customizationId, String certificateId, String personId) {
         final var requiredFieldsForCertificatePdf = getRequiredFieldsForCertificatePdfService.get(certificateId);
 
         final var moduleApi = getModuleApi(

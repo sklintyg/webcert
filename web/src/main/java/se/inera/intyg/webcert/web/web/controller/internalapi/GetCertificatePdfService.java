@@ -17,24 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.web.controller.internalapi.dto;
+package se.inera.intyg.webcert.web.web.controller.internalapi;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import lombok.Builder;
-import lombok.Value;
-import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfRequestDTO.CertificatePdfRequestDTOBuilder;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfResponseDTO;
 
-@JsonDeserialize(builder = CertificatePdfRequestDTOBuilder.class)
-@Value
-@Builder
-public class CertificatePdfRequestDTO {
+public interface GetCertificatePdfService {
 
-    String customizationId;
-    String personId;
-
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class CertificatePdfRequestDTOBuilder {
-
-    }
+    CertificatePdfResponseDTO get(String customizationId, String certificateId, String personId);
 }

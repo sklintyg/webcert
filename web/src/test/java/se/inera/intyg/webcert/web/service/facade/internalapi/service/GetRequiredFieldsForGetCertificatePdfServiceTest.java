@@ -59,7 +59,7 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
 @ExtendWith(MockitoExtension.class)
-class GetRequiredFieldsForCertificatePdfServiceTest {
+class GetRequiredFieldsForGetCertificatePdfServiceTest {
 
     private static final String CERTIFICATE_ID = "certificateId";
     private static final String CERTIFICATE_TYPE = "certificateType";

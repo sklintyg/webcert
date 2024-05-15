@@ -48,6 +48,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificat
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificatePdfRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificatePdfResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetListCertificatesResponseDTO;
@@ -393,6 +395,19 @@ public class CSIntegrationService {
         final var url = baseUrl + CITIZEN_ENDPOINT_URL + "/" + certificateId;
 
         final var response = restTemplate.postForObject(url, request, GetCitizenCertificateResponseDTO.class);
+
+        if (response == null) {
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
+        }
+
+        return response;
+    }
+
+    public GetCitizenCertificatePdfResponseDTO getCitizenCertificatePdf(GetCitizenCertificatePdfRequestDTO request,
+        String certificateId) {
+        final var url = baseUrl + CITIZEN_ENDPOINT_URL + "/" + certificateId + "/print";
+
+        final var response = restTemplate.postForObject(url, request, GetCitizenCertificatePdfResponseDTO.class);
 
         if (response == null) {
             throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);

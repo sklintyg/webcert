@@ -69,7 +69,7 @@ class CertificateInternalServiceFromWCTest {
     private GetCertificateFacadeService getCertificateFacadeService;
 
     @InjectMocks
-    private CertificateInternalServiceFromWC certificateInternalServiceFromWC;
+    private GetCertificateInternalServiceFromWC certificateInternalServiceFromWC;
 
     @BeforeEach
     void setUp() {
