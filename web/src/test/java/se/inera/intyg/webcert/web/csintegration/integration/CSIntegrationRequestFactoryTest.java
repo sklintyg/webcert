@@ -1285,6 +1285,7 @@ class CSIntegrationRequestFactoryTest {
                         .id(PERSONNUMMER.getOriginalPnr())
                         .build()
                 )
+                .additionalInfo("Utskriven från 1177 intyg")
                 .build();
 
             final var citizenCertificateRequest = csIntegrationRequestFactory.getCitizenCertificatePdfRequest(PATIENT_ID);
@@ -1300,6 +1301,7 @@ class CSIntegrationRequestFactoryTest {
                         .id(COORDINATION_PERSONNUMMER.getOriginalPnr())
                         .build()
                 )
+                .additionalInfo("Utskriven från 1177 intyg")
                 .build();
 
             final var citizenCertificateRequest = csIntegrationRequestFactory.getCitizenCertificatePdfRequest(
