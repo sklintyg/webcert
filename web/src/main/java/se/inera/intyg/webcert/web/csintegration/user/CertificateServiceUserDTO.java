@@ -42,6 +42,7 @@ public class CertificateServiceUserDTO {
     Boolean blocked;
     AccessScopeType accessScope;
     Boolean allowCopy;
+    List<String> legitimateProfessionalRoles;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class CertificateServiceUserDTOBuilder {
