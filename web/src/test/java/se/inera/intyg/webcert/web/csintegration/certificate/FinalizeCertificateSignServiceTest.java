@@ -24,7 +24,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -36,6 +38,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.link.ResourceLink;
+import se.inera.intyg.common.support.facade.model.link.ResourceLinkTypeEnum;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
@@ -49,6 +53,8 @@ class FinalizeCertificateSignServiceTest {
     private static final String AUTH_SCHEME = "authScheme";
     private static final String ID = "id";
     private static final String TYPE = "type";
+    @Mock
+    private SendCertificateFromCertificateService sendCertificateFromCertificateService;
     @Mock
     private PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
     @Mock
@@ -145,6 +151,32 @@ class FinalizeCertificateSignServiceTest {
         void shouldPublishCertificateStatusUpdate() {
             finalizeCertificateSignService.finalizeSign(CERTIFICATE);
             verify(publishCertificateStatusUpdateService).publish(CERTIFICATE, HandelsekodEnum.SIGNAT);
+        }
+    }
+
+    @Nested
+    class SendCertificateTests {
+
+        @Test
+        void shouldSendCertificateIfResourceLinkSendAfterSignIsPresentOnCertificate() {
+            CERTIFICATE.setLinks(
+                List.of(ResourceLink.builder()
+                    .type(ResourceLinkTypeEnum.SEND_AFTER_SIGN_CERTIFICATE)
+                    .build())
+            );
+            finalizeCertificateSignService.finalizeSign(CERTIFICATE);
+            verify(sendCertificateFromCertificateService).sendCertificate(ID);
+        }
+
+        @Test
+        void shouldNotSendCertificateIfResourceLinkSendAfterSignIsNotPresentOnCertificate() {
+            CERTIFICATE.setLinks(
+                List.of(ResourceLink.builder()
+                    .type(ResourceLinkTypeEnum.SEND_CERTIFICATE)
+                    .build())
+            );
+            finalizeCertificateSignService.finalizeSign(CERTIFICATE);
+            verifyNoInteractions(sendCertificateFromCertificateService);
         }
     }
 }
