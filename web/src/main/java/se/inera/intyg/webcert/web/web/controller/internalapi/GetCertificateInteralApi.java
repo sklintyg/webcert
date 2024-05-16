@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.web.web.controller.internalapi;
 
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetCertificateResponse;
 
-public interface CertificateInteralApi {
+public interface GetCertificateInteralApi {
 
     GetCertificateResponse get(String certificateId, String personId);
 }

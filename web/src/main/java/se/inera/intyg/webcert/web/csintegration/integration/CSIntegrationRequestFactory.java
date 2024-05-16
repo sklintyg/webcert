@@ -35,6 +35,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificat
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificatePdfRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoRequestDTO;
@@ -352,5 +353,18 @@ public class CSIntegrationRequestFactory {
 
     private boolean isCoordinationNumber(Personnummer personId) {
         return SamordningsnummerValidator.isSamordningsNummer(Optional.of(personId));
+    }
+
+    public GetCitizenCertificatePdfRequestDTO getCitizenCertificatePdfRequest(String personId) {
+        final var citizenPersonId = createPatientId(personId);
+        return GetCitizenCertificatePdfRequestDTO.builder()
+            .personId(
+                PersonIdDTO.builder()
+                    .id(citizenPersonId.getOriginalPnr())
+                    .type(isCoordinationNumber(citizenPersonId) ? PersonIdType.COORDINATION_NUMBER : PersonIdType.PERSONAL_IDENTITY_NUMBER)
+                    .build()
+            )
+            .additionalInfo("Utskriven från 1177 intyg")
+            .build();
     }
 }

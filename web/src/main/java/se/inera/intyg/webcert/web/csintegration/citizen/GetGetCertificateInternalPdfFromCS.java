@@ -24,34 +24,33 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
-import se.inera.intyg.webcert.web.web.controller.internalapi.CertificateInteralApi;
-import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetCertificateResponse;
+import se.inera.intyg.webcert.web.web.controller.internalapi.GetCertificatePdfService;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfResponseDTO;
 
 @Slf4j
 @RequiredArgsConstructor
-@Service("certificateInternalServiceFromCS")
-public class CertificateInternalServiceFromCS implements CertificateInteralApi {
+@Service("getCertificateInternalPdfFromCS")
+public class GetGetCertificateInternalPdfFromCS implements GetCertificatePdfService {
 
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
 
     @Override
-    public GetCertificateResponse get(String certificateId, String personId) {
+    public CertificatePdfResponseDTO get(String customizationId, String certificateId, String personId) {
         final var exists = csIntegrationService.citizenCertificateExists(certificateId);
         if (Boolean.FALSE.equals(exists)) {
             log.debug("Certificate with id '{}' does not exist in certificate service", certificateId);
             return null;
         }
 
-        final var citizenCertificate = csIntegrationService.getCitizenCertificate(
-            csIntegrationRequestFactory.getCitizenCertificateRequest(personId),
+        final var certificatePdfResponse = csIntegrationService.getCitizenCertificatePdf(
+            csIntegrationRequestFactory.getCitizenCertificatePdfRequest(personId),
             certificateId
         );
 
-        return GetCertificateResponse.create(
-            citizenCertificate.getCertificate(),
-            citizenCertificate.getAvailableFunctions(),
-            citizenCertificate.getTexts()
+        return CertificatePdfResponseDTO.create(
+            certificatePdfResponse.getFilename(),
+            certificatePdfResponse.getPdfData()
         );
     }
 }

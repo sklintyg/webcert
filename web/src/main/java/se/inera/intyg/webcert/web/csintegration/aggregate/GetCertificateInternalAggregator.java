@@ -23,22 +23,22 @@ package se.inera.intyg.webcert.web.csintegration.aggregate;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
-import se.inera.intyg.webcert.web.web.controller.internalapi.CertificateInteralApi;
+import se.inera.intyg.webcert.web.web.controller.internalapi.GetCertificateInteralApi;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetCertificateResponse;
 
-@Service("certificateInternalAggregator")
-public class CertificateInternalAggregator implements CertificateInteralApi {
+@Service("getCertificateInternalAggregator")
+public class GetCertificateInternalAggregator implements GetCertificateInteralApi {
 
     private final CertificateServiceProfile certificateServiceProfile;
-    private final CertificateInteralApi certificateInternalServiceFromWC;
-    private final CertificateInteralApi certificateInternalServiceFromCS;
+    private final GetCertificateInteralApi certificateInternalServiceFromWC;
+    private final GetCertificateInteralApi certificateInternalServiceFromCS;
 
-    public CertificateInternalAggregator(CertificateServiceProfile certificateServiceProfile,
-        @Qualifier("certificateInternalServiceFromWC") CertificateInteralApi certificateInteralServiceFromWC,
-        @Qualifier("certificateInternalServiceFromCS") CertificateInteralApi certificateInternalServiceFromCS) {
+    public GetCertificateInternalAggregator(CertificateServiceProfile certificateServiceProfile,
+        @Qualifier("getCertificateInternalServiceFromWC") GetCertificateInteralApi getCertificateInteralServiceFromWC,
+        @Qualifier("getCertificateInternalServiceFromCS") GetCertificateInteralApi getCertificateInternalServiceFromCS) {
         this.certificateServiceProfile = certificateServiceProfile;
-        this.certificateInternalServiceFromWC = certificateInteralServiceFromWC;
-        this.certificateInternalServiceFromCS = certificateInternalServiceFromCS;
+        this.certificateInternalServiceFromWC = getCertificateInteralServiceFromWC;
+        this.certificateInternalServiceFromCS = getCertificateInternalServiceFromCS;
     }
 
     @Override

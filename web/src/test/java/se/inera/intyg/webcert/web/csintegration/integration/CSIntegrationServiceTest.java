@@ -28,6 +28,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -65,6 +66,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificat
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificatePdfRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificatePdfResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetListCertificatesResponseDTO;
@@ -112,6 +115,9 @@ class CSIntegrationServiceTest {
     private static final GetCertificateRequestDTO GET_CERTIFICATE_REQUEST = GetCertificateRequestDTO.builder().build();
     private static final GetCitizenCertificateRequestDTO GET_CITIZEN_CERTIFICATE_REQUEST_DTO = GetCitizenCertificateRequestDTO.builder()
         .build();
+    private static final GetCitizenCertificatePdfRequestDTO GET_CITIZEN_CERTIFICATE_PDF_REQUEST_DTO =
+        GetCitizenCertificatePdfRequestDTO.builder()
+            .build();
     public static final ReplaceCertificateResponseDTO REPLACE_CERTIFICATE_RESPONSE = ReplaceCertificateResponseDTO.builder()
         .certificate(CERTIFICATE)
         .build();
@@ -126,6 +132,13 @@ class CSIntegrationServiceTest {
         .texts(CERTIFICATE_TEXTS)
         .availableFunctions(AVAILABLE_FUNCTIONS)
         .build();
+    private static final String FILE_NAME = "fileName";
+    private static final byte[] PDF_DATA = "pdfData".getBytes(StandardCharsets.UTF_8);
+    private static final GetCitizenCertificatePdfResponseDTO GET_CITIZEN_CERTIFICATE_PDF_RESPONSE_DTO =
+        GetCitizenCertificatePdfResponseDTO.builder()
+            .filename(FILE_NAME)
+            .pdfData(PDF_DATA)
+            .build();
     private static final String ID = "ID";
     private static final DeleteCertificateRequestDTO DELETE_CERTIFICATE_REQUEST = DeleteCertificateRequestDTO.builder().build();
     private static final ParameterizedTypeReference<DeleteCertificateResponseDTO> DELETE_RESPONSE
@@ -1279,6 +1292,45 @@ class CSIntegrationServiceTest {
             verify(restTemplate).postForObject(captor.capture(), any(), any());
 
             assertEquals("baseUrl/api/citizen/certificate/" + CERTIFICATE_ID, captor.getValue());
+        }
+    }
+
+    @Nested
+    class GetCitizenCertificatePdf {
+
+        @Test
+        void shouldPreformPostUsingRequest() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(GET_CITIZEN_CERTIFICATE_PDF_RESPONSE_DTO);
+            final var captor = ArgumentCaptor.forClass(GetCitizenCertificatePdfRequestDTO.class);
+
+            csIntegrationService.getCitizenCertificatePdf(GET_CITIZEN_CERTIFICATE_PDF_REQUEST_DTO, ID);
+            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+
+            assertEquals(GET_CITIZEN_CERTIFICATE_PDF_REQUEST_DTO, captor.getValue());
+        }
+
+        @Test
+        void shouldReturnGetCitizenCertificatePdfResponseDTO() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(GET_CITIZEN_CERTIFICATE_PDF_RESPONSE_DTO);
+            final var response = csIntegrationService.getCitizenCertificatePdf(GET_CITIZEN_CERTIFICATE_PDF_REQUEST_DTO, ID);
+
+            assertEquals(GET_CITIZEN_CERTIFICATE_PDF_RESPONSE_DTO, response);
+        }
+
+
+        @Test
+        void shouldSetUrlCorrect() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(GET_CITIZEN_CERTIFICATE_PDF_RESPONSE_DTO);
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            csIntegrationService.getCitizenCertificatePdf(GET_CITIZEN_CERTIFICATE_PDF_REQUEST_DTO, CERTIFICATE_ID);
+            verify(restTemplate).postForObject(captor.capture(), any(), any());
+
+            assertEquals("baseUrl/api/citizen/certificate/" + CERTIFICATE_ID + "/print", captor.getValue());
         }
     }
 }

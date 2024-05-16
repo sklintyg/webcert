@@ -54,6 +54,7 @@ public class CertificateServiceUserHelper {
             .specialities(user.getSpecialiseringar())
             .accessScope(getAccessScope(user))
             .allowCopy(user.getParameters() == null || user.getParameters().isFornyaOk())
+            .healthCareProfessionalLicence(user.getLegitimeradeYrkesgrupper())
             .role(getRole(user))
             .build();
     }

@@ -23,65 +23,60 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.doReturn;
 
-import java.util.List;
+import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.common.support.facade.model.CertificateText;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateResponseDTO;
-import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionDTO;
-import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionTypeDTO;
-import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetCertificateResponse;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificatePdfRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificatePdfResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfResponseDTO;
 
 @ExtendWith(MockitoExtension.class)
-class CertificateInternalServiceFromCSTest {
+class GetCertificateInternalPdfFromCSTest {
 
     private static final String CERTIFICATE_ID = "certificateId";
     private static final String PERSON_ID = "personId";
-    private static final GetCitizenCertificateRequestDTO GET_CITIZEN_CERTIFICATE_REQUEST_DTO = GetCitizenCertificateRequestDTO.builder()
-        .build();
+    private static final GetCitizenCertificatePdfRequestDTO GET_CITIZEN_CERTIFICATE_PDF_REQUEST_DTO =
+        GetCitizenCertificatePdfRequestDTO.builder()
+            .build();
+    private static final String CUSTOMIZATION_ID = "customizationId";
+    private static final String FILE_NAME = "fileName";
+    private static final byte[] PDF_DATA = "pdfData".getBytes(StandardCharsets.UTF_8);
     @Mock
     private CSIntegrationService csIntegrationService;
     @Mock
     private CSIntegrationRequestFactory csIntegrationRequestFactory;
     @InjectMocks
-    private GetCertificateInternalServiceFromCS certificateInternalServiceFromCS;
+    private GetGetCertificateInternalPdfFromCS getCertificateInternalPdfFromCS;
 
     @Test
     void shallReturnNullIfCertificateDontExistInCertificateService() {
         doReturn(false).when(csIntegrationService).citizenCertificateExists(CERTIFICATE_ID);
-        assertNull(certificateInternalServiceFromCS.get(CERTIFICATE_ID, PERSON_ID));
+        assertNull(getCertificateInternalPdfFromCS.get(CUSTOMIZATION_ID, CERTIFICATE_ID, PERSON_ID));
     }
 
     @Test
-    void shallReturnGetCertificateResponse() {
-        final var certificate = new Certificate();
-        final var availableFunctions = List.of(AvailableFunctionDTO.create(AvailableFunctionTypeDTO.ATTENTION, "name", true));
-        final var certificateTexts = List.of(CertificateText.builder().build());
-
-        final var responseFromCS = GetCitizenCertificateResponseDTO.builder()
-            .certificate(certificate)
-            .availableFunctions(availableFunctions)
-            .texts(certificateTexts)
+    void shallReturnGetCertificatePdfResponse() {
+        final var responseFromCS = GetCitizenCertificatePdfResponseDTO.builder()
+            .filename(FILE_NAME)
+            .pdfData(PDF_DATA)
             .build();
 
-        final var expectedResponse = GetCertificateResponse.create(
-            certificate,
-            availableFunctions,
-            certificateTexts
+        final var expectedResponse = CertificatePdfResponseDTO.create(
+            FILE_NAME,
+            PDF_DATA
         );
 
         doReturn(true).when(csIntegrationService).citizenCertificateExists(CERTIFICATE_ID);
-        doReturn(GET_CITIZEN_CERTIFICATE_REQUEST_DTO).when(csIntegrationRequestFactory).getCitizenCertificateRequest(PERSON_ID);
-        doReturn(responseFromCS).when(csIntegrationService).getCitizenCertificate(GET_CITIZEN_CERTIFICATE_REQUEST_DTO, CERTIFICATE_ID);
+        doReturn(GET_CITIZEN_CERTIFICATE_PDF_REQUEST_DTO).when(csIntegrationRequestFactory).getCitizenCertificatePdfRequest(PERSON_ID);
+        doReturn(responseFromCS).when(csIntegrationService)
+            .getCitizenCertificatePdf(GET_CITIZEN_CERTIFICATE_PDF_REQUEST_DTO, CERTIFICATE_ID);
 
-        final var actualResponse = certificateInternalServiceFromCS.get(CERTIFICATE_ID, PERSON_ID);
+        final var actualResponse = getCertificateInternalPdfFromCS.get(CUSTOMIZATION_ID, CERTIFICATE_ID, PERSON_ID);
         assertEquals(expectedResponse, actualResponse);
     }
 }
