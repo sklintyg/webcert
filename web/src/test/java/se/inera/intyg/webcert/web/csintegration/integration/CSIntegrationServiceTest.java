@@ -51,6 +51,8 @@ import se.inera.intyg.common.support.facade.model.CertificateText;
 import se.inera.intyg.common.support.facade.model.Staff;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateComplementRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateComplementResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateExistsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateExternalTypeExistsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
@@ -190,6 +192,11 @@ class CSIntegrationServiceTest {
         .build();
     private static final RenewCertificateRequestDTO RENEW_CERTIFICATE_REQUEST = RenewCertificateRequestDTO.builder().build();
     private static final RenewCertificateResponseDTO RENEW_CERTIFICATE_RESPONSE = RenewCertificateResponseDTO.builder()
+        .certificate(CERTIFICATE)
+        .build();
+
+    private static final CertificateComplementRequestDTO COMPLEMENT_CERTIFICATE_REQUEST = CertificateComplementRequestDTO.builder().build();
+    private static final CertificateComplementResponseDTO COMPLEMENT_CERTIFICATE_RESPONSE = CertificateComplementResponseDTO.builder()
         .certificate(CERTIFICATE)
         .build();
 
@@ -404,6 +411,58 @@ class CSIntegrationServiceTest {
                 verify(restTemplate).postForObject(captor.capture(), any(), any());
 
                 assertEquals("baseUrl/api/certificate/certificateId/renew", captor.getValue());
+            }
+        }
+    }
+
+    @Nested
+    class ComplementCertificate {
+
+        @Test
+        void shouldThrowExceptionIfResponseIsNull() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(null);
+
+            assertThrows(IllegalStateException.class,
+                () -> csIntegrationService.complementCertificate(CERTIFICATE_ID, COMPLEMENT_CERTIFICATE_REQUEST)
+            );
+        }
+
+        @Nested
+        class WithResponse {
+
+            @BeforeEach
+            void setUp() {
+                when(restTemplate.postForObject(anyString(), any(), any()))
+                    .thenReturn(COMPLEMENT_CERTIFICATE_RESPONSE);
+            }
+
+            @Test
+            void shouldPreformPostUsingRequest() {
+                final var captor = ArgumentCaptor.forClass(CertificateComplementRequestDTO.class);
+
+                csIntegrationService.complementCertificate(CERTIFICATE_ID, COMPLEMENT_CERTIFICATE_REQUEST);
+                verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+
+                assertEquals(COMPLEMENT_CERTIFICATE_REQUEST, captor.getValue());
+            }
+
+            @Test
+            void shouldReturnCertificate() {
+                final var response = csIntegrationService.complementCertificate(CERTIFICATE_ID, COMPLEMENT_CERTIFICATE_REQUEST);
+
+                assertEquals(CERTIFICATE, response);
+            }
+
+            @Test
+            void shouldSetUrlCorrect() {
+                ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+                final var captor = ArgumentCaptor.forClass(String.class);
+
+                csIntegrationService.complementCertificate(CERTIFICATE_ID, COMPLEMENT_CERTIFICATE_REQUEST);
+                verify(restTemplate).postForObject(captor.capture(), any(), any());
+
+                assertEquals("baseUrl/api/certificate/certificateId/complement", captor.getValue());
             }
         }
     }

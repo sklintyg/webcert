@@ -19,16 +19,64 @@
 
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
+import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.facade.ComplementCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
+@Slf4j
+@RequiredArgsConstructor
 @Service("complementCertificateFromCertificateService")
 public class ComplementCertificateFromCertificateService implements ComplementCertificateFacadeService {
 
+    private final CSIntegrationService csIntegrationService;
+    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+    private final WebCertUserService webCertUser;
+    private final MonitoringLogService monitoringLogService;
+    private final IntegratedUnitRegistryHelper integratedUnitRegistryHelper;
+    private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+    private final PDLLogService pdlLogService;
+
     @Override
     public Certificate complement(String certificateId, String message) {
-        return null;
+        log.debug("Attempting to complement certificate '{}' from Certificate Service", certificateId);
+
+        if (Boolean.FALSE.equals(csIntegrationService.certificateExists(certificateId))) {
+            log.debug("Certificate '{}' does not exist in certificate service", certificateId);
+            return null;
+        }
+
+        final var certificateToComplement = csIntegrationService.getCertificate(
+            certificateId,
+            csIntegrationRequestFactory.getCertificateRequest()
+        );
+
+        final var certificate = csIntegrationService.complementCertificate(
+            certificateId,
+            csIntegrationRequestFactory.complementCertificateRequest(
+                certificateToComplement.getMetadata().getPatient(),
+                webCertUser.getUser().getParameters()
+            )
+        );
+
+        integratedUnitRegistryHelper.addUnitForCopy(certificateToComplement, certificate);
+
+        log.debug("Complemented certificate '{}' from Certificate Service", certificateId);
+        monitoringLogService.logIntygCopiedCompletion(
+            certificate.getMetadata().getId(),
+            certificateToComplement.getMetadata().getId()
+        );
+        pdlLogService.logCreated(certificate);
+        publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKAPAT);
+
+        return certificate;
     }
 
     @Override
