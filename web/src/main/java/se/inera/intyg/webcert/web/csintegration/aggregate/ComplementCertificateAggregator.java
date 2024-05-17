@@ -28,8 +28,8 @@ import se.inera.intyg.webcert.web.service.facade.ComplementCertificateFacadeServ
 @Service("complementCertificateAggregator")
 public class ComplementCertificateAggregator implements ComplementCertificateFacadeService {
 
-    private final ComplementCertificateFacadeService complementCertificateFromWC;
-    private final ComplementCertificateFacadeService complementCertificateFromCS;
+    private final ComplementCertificateFacadeService complementCertificateFromWebcert;
+    private final ComplementCertificateFacadeService complementCertificateFromCertificateService;
     private final CertificateServiceProfile certificateServiceProfile;
 
     public ComplementCertificateAggregator(
@@ -38,14 +38,20 @@ public class ComplementCertificateAggregator implements ComplementCertificateFac
         @Qualifier("complementCertificateFromCertificateService")
         ComplementCertificateFacadeService replaceCertificateFromCertificateService,
         CertificateServiceProfile certificateServiceProfile) {
-        this.complementCertificateFromWC = replaceCertificateFromWebcert;
-        this.complementCertificateFromCS = replaceCertificateFromCertificateService;
+        this.complementCertificateFromWebcert = replaceCertificateFromWebcert;
+        this.complementCertificateFromCertificateService = replaceCertificateFromCertificateService;
         this.certificateServiceProfile = certificateServiceProfile;
     }
 
     @Override
     public Certificate complement(String certificateId, String message) {
-        return null;
+        if (!certificateServiceProfile.active()) {
+            return complementCertificateFromWebcert.complement(certificateId, message);
+        }
+
+        final var responseFromCS = complementCertificateFromCertificateService.complement(certificateId, message);
+
+        return responseFromCS != null ? responseFromCS : complementCertificateFromWebcert.complement(certificateId, message);
     }
 
     @Override
