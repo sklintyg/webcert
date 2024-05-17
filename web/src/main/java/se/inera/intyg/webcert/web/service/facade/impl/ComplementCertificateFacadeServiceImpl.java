@@ -30,7 +30,7 @@ import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
 import se.inera.intyg.webcert.web.service.utkast.util.CopyUtkastServiceHelper;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 
-@Service
+@Service("complementCertificateFromWebcert")
 public class ComplementCertificateFacadeServiceImpl implements ComplementCertificateFacadeService {
 
     private final GetCertificateFacadeService getCertificateFacadeService;
