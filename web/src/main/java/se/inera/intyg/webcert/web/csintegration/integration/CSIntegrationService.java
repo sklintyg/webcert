@@ -33,6 +33,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.AnswerComplementRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.AnswerComplementResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateComplementRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateComplementResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateExistsResponseDTO;
@@ -428,5 +430,18 @@ public class CSIntegrationService {
         }
 
         return response;
+    }
+
+    public Certificate answerComplementOnCertificate(String certificateId,
+        AnswerComplementRequestDTO request) {
+        final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/answerComplement";
+
+        final var response = restTemplate.postForObject(url, request, AnswerComplementResponseDTO.class);
+
+        if (response == null) {
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
+        }
+
+        return response.getCertificate();
     }
 }

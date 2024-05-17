@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
@@ -81,6 +82,26 @@ public class ComplementCertificateFromCertificateService implements ComplementCe
 
     @Override
     public Certificate answerComplement(String certificateId, String message) {
-        return null;
+        log.debug("Attempting to answer complement on certificate '{}' from Certificate Service", certificateId);
+
+        if (Boolean.FALSE.equals(csIntegrationService.certificateExists(certificateId))) {
+            log.debug("Certificate '{}' does not exist in certificate service", certificateId);
+            return null;
+        }
+
+        final var certificate = csIntegrationService.answerComplementOnCertificate(
+            certificateId,
+            csIntegrationRequestFactory.answerComplementOnCertificateRequest(message)
+        );
+
+        monitoringLogService.logArendeCreated(
+            certificate.getMetadata().getId(),
+            certificate.getMetadata().getType(),
+            certificate.getMetadata().getUnit().getUnitId(),
+            ArendeAmne.KOMPLT,
+            true
+        );
+
+        return certificate;
     }
 }

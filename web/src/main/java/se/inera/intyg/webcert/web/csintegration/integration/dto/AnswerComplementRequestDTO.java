@@ -19,31 +19,27 @@
 
 package se.inera.intyg.webcert.web.csintegration.integration.dto;
 
-
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateComplementRequestDTO.CertificateComplementRequestDTOBuilder;
-import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.AnswerComplementRequestDTO.AnswerComplementRequestDTOBuilder;
 import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitDTO;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserDTO;
 
-@JsonDeserialize(builder = CertificateComplementRequestDTOBuilder.class)
+@JsonDeserialize(builder = AnswerComplementRequestDTOBuilder.class)
 @Value
 @Builder
-public class CertificateComplementRequestDTO {
+public class AnswerComplementRequestDTO {
 
     CertificateServiceUserDTO user;
-    CertificateServicePatientDTO patient;
     CertificateServiceUnitDTO unit;
     CertificateServiceUnitDTO careUnit;
     CertificateServiceUnitDTO careProvider;
-    String externalReference;
     String message;
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class CertificateComplementRequestDTOBuilder {
+    public static class AnswerComplementRequestDTOBuilder {
 
     }
 }

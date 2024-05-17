@@ -40,8 +40,11 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.common.support.facade.model.metadata.Unit;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.AnswerComplementRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateComplementRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
@@ -53,7 +56,8 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
 class ComplementCertificateFromCertificateServiceTest {
 
 
-    private static final CertificateComplementRequestDTO REQUEST = CertificateComplementRequestDTO.builder().build();
+    private static final CertificateComplementRequestDTO COMPLEMENT_REQUEST_DTO = CertificateComplementRequestDTO.builder().build();
+    private static final AnswerComplementRequestDTO ANSWER_COMPLEMENT_REQUEST_DTO = AnswerComplementRequestDTO.builder().build();
     private static final String PATIENT_ID = "PATIENT_ID";
     private static final Patient PATIENT = Patient.builder()
         .personId(
@@ -68,6 +72,7 @@ class ComplementCertificateFromCertificateServiceTest {
     private static final Certificate COMPLEMENTED_CERTIFICATE = new Certificate();
     private static final String TYPE = "TYPE";
     private static final String MESSAGE = "message";
+    private static final String UNIT_ID = "unitId";
 
     @Mock
     CSIntegrationService csIntegrationService;
@@ -100,8 +105,15 @@ class ComplementCertificateFromCertificateServiceTest {
     ComplementCertificateFromCertificateService complementCertificateFromCertificateService;
 
     @Test
-    void shouldReturnNullIfCertificateDoesNotExistInCS() {
+    void shouldReturnNullIfCertificateDoesNotExistInCSForComplement() {
         final var response = complementCertificateFromCertificateService.complement(ID, MESSAGE);
+
+        assertNull(response);
+    }
+
+    @Test
+    void shouldReturnNullIfCertificateDoesNotExistInCSForAnswerComplement() {
+        final var response = complementCertificateFromCertificateService.answerComplement(ID, MESSAGE);
 
         assertNull(response);
     }
@@ -111,10 +123,17 @@ class ComplementCertificateFromCertificateServiceTest {
 
         @BeforeEach
         void setup() {
+            when(csIntegrationService.certificateExists(anyString()))
+                .thenReturn(true);
+
             CERTIFICATE.setMetadata(CertificateMetadata.builder()
                 .id(ID)
                 .type(TYPE)
                 .patient(PATIENT)
+                .unit(
+                    Unit.builder()
+                        .unitId(UNIT_ID).build()
+                )
                 .build());
 
             COMPLEMENTED_CERTIFICATE.setMetadata(CertificateMetadata.builder()
@@ -122,23 +141,21 @@ class ComplementCertificateFromCertificateServiceTest {
                 .type(TYPE)
                 .patient(PATIENT)
                 .build());
-
-            when(csIntegrationService.certificateExists(anyString()))
-                .thenReturn(true);
-
-            when(csIntegrationService.getCertificate(anyString(), any()))
-                .thenReturn(CERTIFICATE);
-
-            when(csIntegrationRequestFactory.complementCertificateRequest(eq(PATIENT), any(), eq(MESSAGE)))
-                .thenReturn(REQUEST);
         }
 
         @Nested
-        class CertificateIsComplementedFromCS {
+        class ComplementTests {
 
             @BeforeEach
             void setup() {
-                when(csIntegrationService.complementCertificate(ID, REQUEST))
+
+                when(csIntegrationService.getCertificate(anyString(), any()))
+                    .thenReturn(CERTIFICATE);
+
+                when(csIntegrationRequestFactory.complementCertificateRequest(eq(PATIENT), any(), eq(MESSAGE)))
+                    .thenReturn(COMPLEMENT_REQUEST_DTO);
+
+                when(csIntegrationService.complementCertificate(ID, COMPLEMENT_REQUEST_DTO))
                     .thenReturn(COMPLEMENTED_CERTIFICATE);
 
                 when(user.getParameters())
@@ -176,7 +193,7 @@ class ComplementCertificateFromCertificateServiceTest {
                 complementCertificateFromCertificateService.complement(ID, MESSAGE);
 
                 verify(csIntegrationService).complementCertificate(eq(ID), captor.capture());
-                assertEquals(REQUEST, captor.getValue());
+                assertEquals(COMPLEMENT_REQUEST_DTO, captor.getValue());
             }
 
             @Test
@@ -203,6 +220,55 @@ class ComplementCertificateFromCertificateServiceTest {
                 complementCertificateFromCertificateService.complement(ID, MESSAGE);
                 verify(integratedUnitRegistryHelper).addUnitForCopy(CERTIFICATE, COMPLEMENTED_CERTIFICATE);
             }
+        }
+
+        @Nested
+        class AnswerComplementTests {
+
+            @BeforeEach
+            void setup() {
+                when(csIntegrationRequestFactory.answerComplementOnCertificateRequest(MESSAGE))
+                    .thenReturn(ANSWER_COMPLEMENT_REQUEST_DTO);
+
+                when(csIntegrationService.answerComplementOnCertificate(ID, ANSWER_COMPLEMENT_REQUEST_DTO))
+                    .thenReturn(CERTIFICATE);
+            }
+
+            @Test
+            void shouldReturnCertificateIfExistInCS() {
+                final var response = complementCertificateFromCertificateService.answerComplement(ID, MESSAGE);
+
+                assertEquals(CERTIFICATE, response);
+            }
+
+            @Test
+            void shouldCallRequestFactory() {
+                complementCertificateFromCertificateService.answerComplement(ID, MESSAGE);
+                verify(csIntegrationRequestFactory).answerComplementOnCertificateRequest(MESSAGE);
+            }
+
+            @Test
+            void shouldCallComplementWithRequestOfTypeCertificateComplementRequestDTO() {
+                final var captor = ArgumentCaptor.forClass(AnswerComplementRequestDTO.class);
+                complementCertificateFromCertificateService.answerComplement(ID, MESSAGE);
+
+                verify(csIntegrationService).answerComplementOnCertificate(eq(ID), captor.capture());
+                assertEquals(ANSWER_COMPLEMENT_REQUEST_DTO, captor.getValue());
+            }
+
+
+            @Test
+            void shouldMonitorArendeCreated() {
+                complementCertificateFromCertificateService.answerComplement(ID, MESSAGE);
+                verify(monitoringLogService).logArendeCreated(
+                    CERTIFICATE.getMetadata().getId(),
+                    CERTIFICATE.getMetadata().getType(),
+                    CERTIFICATE.getMetadata().getUnit().getUnitId(),
+                    ArendeAmne.KOMPLT,
+                    true
+                );
+            }
+
         }
     }
 }

@@ -28,6 +28,7 @@ import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.AnswerComplementRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateComplementRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoRequestDTO;
@@ -310,7 +311,7 @@ public class CSIntegrationRequestFactory {
             .user(certificateServiceUserHelper.get())
             .patient(certificateServicePatientHelper.get(getPatientId(patient, integrationParameters)))
             .externalReference(getExternalReference(integrationParameters))
-            .comment(message)
+            .message(message)
             .build();
     }
 
@@ -379,6 +380,16 @@ public class CSIntegrationRequestFactory {
                     .build()
             )
             .additionalInfo("Utskriven från 1177 intyg")
+            .build();
+    }
+
+    public AnswerComplementRequestDTO answerComplementOnCertificateRequest(String message) {
+        return AnswerComplementRequestDTO.builder()
+            .unit(certificateServiceUnitHelper.getUnit())
+            .careUnit(certificateServiceUnitHelper.getCareUnit())
+            .careProvider(certificateServiceUnitHelper.getCareProvider())
+            .user(certificateServiceUserHelper.get())
+            .message(message)
             .build();
     }
 }

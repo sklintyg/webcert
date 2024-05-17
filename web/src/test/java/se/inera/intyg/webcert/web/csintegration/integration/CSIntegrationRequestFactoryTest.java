@@ -1308,10 +1308,10 @@ class CSIntegrationRequestFactoryTest {
 
 
         @Test
-        void shouldSetComment() {
+        void shouldSetMessage() {
             final var actualRequest = csIntegrationRequestFactory.complementCertificateRequest(PATIENT_WITH_ID, integrationParameters,
                 MESSAGE);
-            assertEquals(MESSAGE, actualRequest.getComment());
+            assertEquals(MESSAGE, actualRequest.getMessage());
         }
     }
 
@@ -1415,6 +1415,58 @@ class CSIntegrationRequestFactoryTest {
         void shouldThrowIfInvalidPersonId() {
             assertThrows(IllegalArgumentException.class,
                 () -> csIntegrationRequestFactory.getCitizenCertificateRequest("invalidPersonId"));
+        }
+    }
+
+    @Nested
+    class AnswerComplementCertificateRequest {
+
+        @Mock
+        private IntegrationParameters integrationParameters;
+
+        @BeforeEach
+        void setup() {
+            when(certificateServiceUserHelper.get())
+                .thenReturn(USER);
+            when(certificateServiceUnitHelper.getUnit())
+                .thenReturn(UNIT);
+            when(certificateServiceUnitHelper.getCareUnit())
+                .thenReturn(CARE_UNIT);
+            when(certificateServiceUnitHelper.getCareProvider())
+                .thenReturn(CARE_PROVIDER);
+            when(integrationParameters.getReference())
+                .thenReturn(EXTERNAL_REFERENCE);
+        }
+
+        @Test
+        void shouldSetUser() {
+            final var actualRequest = csIntegrationRequestFactory.answerComplementOnCertificateRequest(MESSAGE);
+            assertEquals(USER, actualRequest.getUser());
+        }
+
+        @Test
+        void shouldSetUnit() {
+            final var actualRequest = csIntegrationRequestFactory.answerComplementOnCertificateRequest(MESSAGE);
+            assertEquals(UNIT, actualRequest.getUnit());
+        }
+
+        @Test
+        void shouldSetCareUnit() {
+            final var actualRequest = csIntegrationRequestFactory.answerComplementOnCertificateRequest(MESSAGE);
+            assertEquals(CARE_UNIT, actualRequest.getCareUnit());
+        }
+
+        @Test
+        void shouldSetCareProvider() {
+            final var actualRequest = csIntegrationRequestFactory.answerComplementOnCertificateRequest(MESSAGE);
+            assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
+        }
+
+        @Test
+        void shouldSetMessage() {
+            final var actualRequest = csIntegrationRequestFactory.complementCertificateRequest(PATIENT_WITH_ID, integrationParameters,
+                MESSAGE);
+            assertEquals(MESSAGE, actualRequest.getMessage());
         }
     }
 }
