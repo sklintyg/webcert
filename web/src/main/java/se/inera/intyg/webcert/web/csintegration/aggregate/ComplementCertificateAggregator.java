@@ -56,6 +56,12 @@ public class ComplementCertificateAggregator implements ComplementCertificateFac
 
     @Override
     public Certificate answerComplement(String certificateId, String message) {
-        return null;
+        if (!certificateServiceProfile.active()) {
+            return complementCertificateFromWebcert.answerComplement(certificateId, message);
+        }
+
+        final var responseFromCS = complementCertificateFromCertificateService.answerComplement(certificateId, message);
+
+        return responseFromCS != null ? responseFromCS : complementCertificateFromWebcert.answerComplement(certificateId, message);
     }
 }

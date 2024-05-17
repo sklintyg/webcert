@@ -96,4 +96,45 @@ class ComplementCertificateAggregatorTest {
             }
         }
     }
+
+    @Nested
+    class AnswerComplementTests {
+
+        @Test
+        void shouldRevokeFromWebcertIfProfileIsInactive() {
+            complementCertificateAggregator.answerComplement(CERTIFICATE_ID, MESSAGE);
+
+            verify(complementCertificateFromWC).answerComplement(CERTIFICATE_ID, MESSAGE);
+        }
+
+        @Nested
+        class ActiveProfile {
+
+            @BeforeEach
+            void setup() {
+                when(certificateServiceProfile.active())
+                    .thenReturn(true);
+            }
+
+            @Test
+            void shouldGetComplementedCertificateFromCSIfProfileIsActiveAndResponseFromCSIsNotNull() {
+                when(complementCertificateFromCS.answerComplement(CERTIFICATE_ID, MESSAGE))
+                    .thenReturn(CERTIFICATE);
+
+                complementCertificateAggregator.answerComplement(CERTIFICATE_ID, MESSAGE);
+
+                verify(complementCertificateFromWC, times(0)).answerComplement(CERTIFICATE_ID, MESSAGE);
+            }
+
+            @Test
+            void shouldGetComplementedCertificateFromWCIfProfileIsActiveAndResponseFromCSIsNull() {
+                when(complementCertificateFromCS.answerComplement(CERTIFICATE_ID, MESSAGE))
+                    .thenReturn(null);
+
+                complementCertificateAggregator.answerComplement(CERTIFICATE_ID, MESSAGE);
+
+                verify(complementCertificateFromWC, times(1)).answerComplement(CERTIFICATE_ID, MESSAGE);
+            }
+        }
+    }
 }
