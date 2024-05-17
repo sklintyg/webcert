@@ -61,6 +61,7 @@ import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificaterespo
 @ExtendWith(MockitoExtension.class)
 class CSIntegrationRequestFactoryTest {
 
+    private static final String MESSAGE = "message";
     @Mock
     CertificateServiceUnitHelper certificateServiceUnitHelper;
     @Mock
@@ -1243,31 +1244,36 @@ class CSIntegrationRequestFactoryTest {
 
         @Test
         void shouldSetUser() {
-            final var actualRequest = csIntegrationRequestFactory.complementCertificateRequest(PATIENT_WITH_ID, integrationParameters);
+            final var actualRequest = csIntegrationRequestFactory.complementCertificateRequest(PATIENT_WITH_ID, integrationParameters,
+                MESSAGE);
             assertEquals(USER, actualRequest.getUser());
         }
 
         @Test
         void shouldSetUnit() {
-            final var actualRequest = csIntegrationRequestFactory.complementCertificateRequest(PATIENT_WITH_ID, integrationParameters);
+            final var actualRequest = csIntegrationRequestFactory.complementCertificateRequest(PATIENT_WITH_ID, integrationParameters,
+                MESSAGE);
             assertEquals(UNIT, actualRequest.getUnit());
         }
 
         @Test
         void shouldSetCareUnit() {
-            final var actualRequest = csIntegrationRequestFactory.complementCertificateRequest(PATIENT_WITH_ID, integrationParameters);
+            final var actualRequest = csIntegrationRequestFactory.complementCertificateRequest(PATIENT_WITH_ID, integrationParameters,
+                MESSAGE);
             assertEquals(CARE_UNIT, actualRequest.getCareUnit());
         }
 
         @Test
         void shouldSetCareProvider() {
-            final var actualRequest = csIntegrationRequestFactory.complementCertificateRequest(PATIENT_WITH_ID, integrationParameters);
+            final var actualRequest = csIntegrationRequestFactory.complementCertificateRequest(PATIENT_WITH_ID, integrationParameters,
+                MESSAGE);
             assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
         }
 
         @Test
         void shouldSetPatientUsingPatientIdIfAlternateSSNIsNotSet() {
-            final var actualRequest = csIntegrationRequestFactory.complementCertificateRequest(PATIENT_WITH_ID, integrationParameters);
+            final var actualRequest = csIntegrationRequestFactory.complementCertificateRequest(PATIENT_WITH_ID, integrationParameters,
+                MESSAGE);
 
             verify(certificateServicePatientHelper).get(PERSONNUMMER);
             assertEquals(PATIENT, actualRequest.getPatient());
@@ -1277,7 +1283,8 @@ class CSIntegrationRequestFactoryTest {
         void shouldSetPatientUsingAlternateSSNIfSet() {
             when(integrationParameters.getAlternateSsn())
                 .thenReturn(ALTERNATE_PATIENT_ID);
-            final var actualRequest = csIntegrationRequestFactory.complementCertificateRequest(PATIENT_WITH_ID, integrationParameters);
+            final var actualRequest = csIntegrationRequestFactory.complementCertificateRequest(PATIENT_WITH_ID, integrationParameters,
+                MESSAGE);
 
             verify(certificateServicePatientHelper).get(ALTERNATE_PERSONNUMMER);
             assertEquals(PATIENT, actualRequest.getPatient());
@@ -1286,7 +1293,7 @@ class CSIntegrationRequestFactoryTest {
         @Test
         void shouldSetPatientUsingPreviousIdIfReserveNumber() {
             final var actualRequest = csIntegrationRequestFactory.complementCertificateRequest(PATIENT_WITH_RESERVE_NUMBER,
-                integrationParameters);
+                integrationParameters, MESSAGE);
 
             verify(certificateServicePatientHelper).get(RESERVE_PERSONNUMMER);
             assertEquals(PATIENT, actualRequest.getPatient());
@@ -1294,8 +1301,17 @@ class CSIntegrationRequestFactoryTest {
 
         @Test
         void shouldSetExternalReference() {
-            final var actualRequest = csIntegrationRequestFactory.complementCertificateRequest(PATIENT_WITH_ID, integrationParameters);
+            final var actualRequest = csIntegrationRequestFactory.complementCertificateRequest(PATIENT_WITH_ID, integrationParameters,
+                MESSAGE);
             assertEquals(EXTERNAL_REFERENCE, actualRequest.getExternalReference());
+        }
+
+
+        @Test
+        void shouldSetComment() {
+            final var actualRequest = csIntegrationRequestFactory.complementCertificateRequest(PATIENT_WITH_ID, integrationParameters,
+                MESSAGE);
+            assertEquals(MESSAGE, actualRequest.getComment());
         }
     }
 

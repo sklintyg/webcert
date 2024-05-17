@@ -129,7 +129,7 @@ class ComplementCertificateFromCertificateServiceTest {
             when(csIntegrationService.getCertificate(anyString(), any()))
                 .thenReturn(CERTIFICATE);
 
-            when(csIntegrationRequestFactory.complementCertificateRequest(any(), any()))
+            when(csIntegrationRequestFactory.complementCertificateRequest(eq(PATIENT), any(), eq(MESSAGE)))
                 .thenReturn(REQUEST);
         }
 
@@ -158,7 +158,7 @@ class ComplementCertificateFromCertificateServiceTest {
             @Test
             void shouldCallRequestFactory() {
                 complementCertificateFromCertificateService.complement(ID, MESSAGE);
-                verify(csIntegrationRequestFactory).complementCertificateRequest(PATIENT, parameters);
+                verify(csIntegrationRequestFactory).complementCertificateRequest(PATIENT, parameters, MESSAGE);
             }
 
             @Test

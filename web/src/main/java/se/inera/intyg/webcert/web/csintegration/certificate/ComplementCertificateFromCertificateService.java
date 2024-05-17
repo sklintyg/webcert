@@ -62,8 +62,8 @@ public class ComplementCertificateFromCertificateService implements ComplementCe
             certificateId,
             csIntegrationRequestFactory.complementCertificateRequest(
                 certificateToComplement.getMetadata().getPatient(),
-                webCertUser.getUser().getParameters()
-            )
+                webCertUser.getUser().getParameters(),
+                message)
         );
 
         integratedUnitRegistryHelper.addUnitForCopy(certificateToComplement, certificate);
