@@ -19,16 +19,67 @@
 
 package se.inera.intyg.webcert.web.csintegration.message;
 
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
+import se.inera.intyg.webcert.web.csintegration.certificate.PublishCertificateStatusUpdateService;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareType;
+import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareType.Komplettering;
+import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
+import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
 @Service
 @RequiredArgsConstructor
 public class ProcessIncomingMessageService {
 
+    private final CSIntegrationService csIntegrationService;
+    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+    private final MonitoringLogService monitoringLogService;
+    private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+    private final SendCertificateQuestionUpdateService sendCertificateQuestionUpdateService;
+
     public SendMessageToCareResponseType process(SendMessageToCareType sendMessageToCare) {
-        return null;
+        csIntegrationService.postMessage(
+            csIntegrationRequestFactory.getIncomingMessageRequest(sendMessageToCare)
+        );
+
+        final var certificate = csIntegrationService.getCertificate(
+            sendMessageToCare.getIntygsId().getExtension(),
+            csIntegrationRequestFactory.getCertificateRequest()
+        );
+
+        final var questionType = ArendeAmne.valueOf(sendMessageToCare.getAmne().getCode());
+        final var isAnswer = sendMessageToCare.getSvarPa() != null;
+
+        monitoringLogService.logArendeReceived(
+            certificate.getMetadata().getId(),
+            certificate.getMetadata().getType(),
+            certificate.getMetadata().getUnit().getUnitId(),
+            questionType,
+            sendMessageToCare.getKomplettering().stream().map(Komplettering::getFrageId).collect(Collectors.toList()),
+            isAnswer
+        );
+
+        publishCertificateStatusUpdateService.publish(certificate, getEventType(questionType, isAnswer));
+        sendCertificateQuestionUpdateService.send(sendMessageToCare, certificate);
+
+        final var sendMessageToCareResponseType = new SendMessageToCareResponseType();
+        final var result = new ResultType();
+        result.setResultCode(ResultCodeType.OK);
+        sendMessageToCareResponseType.setResult(result);
+        return sendMessageToCareResponseType;
+    }
+
+    private static HandelsekodEnum getEventType(ArendeAmne questionType, boolean isAnswer) {
+        if (questionType.equals(ArendeAmne.PAMINN) || !isAnswer) {
+            return HandelsekodEnum.NYFRFM;
+        }
+        return HandelsekodEnum.NYSVFM;
     }
 }

@@ -50,6 +50,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.SendCertificateR
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateWithoutSignatureRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.message.MessageRequestConverter;
+import se.inera.intyg.webcert.web.csintegration.message.dto.IncomingMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientHelper;
 import se.inera.intyg.webcert.web.csintegration.patient.PersonIdDTO;
 import se.inera.intyg.webcert.web.csintegration.patient.PersonIdType;
@@ -61,6 +63,7 @@ import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
+import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareType;
 
 @Component
 @RequiredArgsConstructor
@@ -72,6 +75,7 @@ public class CSIntegrationRequestFactory {
     private final CertificateServiceIntegrationUnitHelper certificateServiceIntegrationUnitHelper;
     private final CertificateServicePatientHelper certificateServicePatientHelper;
     private final CertificatesQueryCriteriaFactory certificatesQueryCriteriaFactory;
+    private final MessageRequestConverter messageRequestConverter;
 
     public CertificateServiceTypeInfoRequestDTO getCertificateTypesRequest(Personnummer patientId) {
         return CertificateServiceTypeInfoRequestDTO.builder()
@@ -366,5 +370,9 @@ public class CSIntegrationRequestFactory {
             )
             .additionalInfo("Utskriven från 1177 intyg")
             .build();
+    }
+
+    public IncomingMessageRequestDTO getIncomingMessageRequest(SendMessageToCareType sendMessageToCare) {
+        return messageRequestConverter.convert(sendMessageToCare);
     }
 }
