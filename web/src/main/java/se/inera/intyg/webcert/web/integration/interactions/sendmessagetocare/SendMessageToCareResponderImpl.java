@@ -18,13 +18,12 @@
  */
 package se.inera.intyg.webcert.web.integration.interactions.sendmessagetocare;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.web.converter.ArendeConverter;
-import se.inera.intyg.webcert.web.service.arende.ArendeService;
+import se.inera.intyg.webcert.web.csintegration.aggregate.ProcessIncomingMessageAggregator;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareType;
@@ -33,12 +32,12 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
 @SchemaValidation
+@RequiredArgsConstructor
 public class SendMessageToCareResponderImpl implements SendMessageToCareResponderInterface {
 
     private static final Logger LOG = LoggerFactory.getLogger(SendMessageToCareResponderImpl.class);
 
-    @Autowired
-    private ArendeService arendeService;
+    private final ProcessIncomingMessageAggregator processIncomingMessage;
 
     @Override
     public SendMessageToCareResponseType sendMessageToCare(String logicalAddress, SendMessageToCareType request) {
@@ -48,8 +47,7 @@ public class SendMessageToCareResponderImpl implements SendMessageToCareResponde
         ResultType result = new ResultType();
 
         try {
-            arendeService.processIncomingMessage(ArendeConverter.convert(request));
-            result.setResultCode(ResultCodeType.OK);
+            return processIncomingMessage.process(request);
         } catch (WebCertServiceException e) {
             switch (e.getErrorCode()) {
                 case MESSAGE_ALREADY_EXISTS:

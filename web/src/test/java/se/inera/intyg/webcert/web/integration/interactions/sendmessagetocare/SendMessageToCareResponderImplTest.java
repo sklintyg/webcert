@@ -31,9 +31,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
-import se.inera.intyg.webcert.web.service.arende.ArendeService;
+import se.inera.intyg.webcert.web.csintegration.aggregate.ProcessIncomingMessageAggregator;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareType;
@@ -44,6 +43,7 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.Part;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
+import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SendMessageToCareResponderImplTest {
@@ -57,14 +57,19 @@ public class SendMessageToCareResponderImplTest {
     private NotificationService mockNotificationService;
 
     @Mock
-    private ArendeService arendeService;
+    private ProcessIncomingMessageAggregator arendeService;
 
     @InjectMocks
     private SendMessageToCareResponderImpl responder;
 
     @Test
     public void testSendRequestToService() throws WebCertServiceException {
-        when(arendeService.processIncomingMessage(any())).thenReturn(new Arende());
+        final var sendMessageToCareResponseType = new SendMessageToCareResponseType();
+        final var resultType = new ResultType();
+        resultType.setResultCode(ResultCodeType.OK);
+        sendMessageToCareResponseType.setResult(resultType);
+        
+        when(arendeService.process(any())).thenReturn(sendMessageToCareResponseType);
         SendMessageToCareResponseType response = responder.sendMessageToCare(DEFAULT_LOGICAL_ADDRESS, createNewRequest());
         assertNotNull(response.getResult());
         assertEquals(response.getResult().getResultCode(), ResultCodeType.OK);
@@ -72,7 +77,7 @@ public class SendMessageToCareResponderImplTest {
 
     @Test
     public void testSendRequestToServiceFailed() throws WebCertServiceException {
-        when(arendeService.processIncomingMessage(any()))
+        when(arendeService.process(any()))
             .thenThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Exception message"));
         SendMessageToCareResponseType response = responder.sendMessageToCare(DEFAULT_LOGICAL_ADDRESS, createNewRequest());
         assertNotNull(response.getResult());
@@ -82,7 +87,7 @@ public class SendMessageToCareResponderImplTest {
 
     @Test
     public void testSendRequestToServiceFailedMessageAlreadyExists() throws WebCertServiceException {
-        when(arendeService.processIncomingMessage(any()))
+        when(arendeService.process(any()))
             .thenThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.MESSAGE_ALREADY_EXISTS, "Exception message"));
         SendMessageToCareResponseType response = responder.sendMessageToCare(DEFAULT_LOGICAL_ADDRESS, createNewRequest());
         assertNotNull(response.getResult());
@@ -92,7 +97,7 @@ public class SendMessageToCareResponderImplTest {
 
     @Test
     public void testSendRequestToServiceFailedNotSigned() throws WebCertServiceException {
-        when(arendeService.processIncomingMessage(any()))
+        when(arendeService.process(any()))
             .thenThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE, "Exception message"));
         SendMessageToCareResponseType response = responder.sendMessageToCare(DEFAULT_LOGICAL_ADDRESS, createNewRequest());
         assertNotNull(response.getResult());
@@ -102,7 +107,7 @@ public class SendMessageToCareResponderImplTest {
 
     @Test
     public void testSendRequestToServiceFailedNotFound() throws WebCertServiceException {
-        when(arendeService.processIncomingMessage(any()))
+        when(arendeService.process(any()))
             .thenThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "Exception message"));
         SendMessageToCareResponseType response = responder.sendMessageToCare(DEFAULT_LOGICAL_ADDRESS, createNewRequest());
         assertNotNull(response.getResult());
@@ -112,7 +117,7 @@ public class SendMessageToCareResponderImplTest {
 
     @Test
     public void testSendRequestToServiceFailedExternalServiceProblem() throws WebCertServiceException {
-        when(arendeService.processIncomingMessage(any()))
+        when(arendeService.process(any()))
             .thenThrow(new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, "Exception message"));
         SendMessageToCareResponseType response = responder.sendMessageToCare(DEFAULT_LOGICAL_ADDRESS, createNewRequest());
         assertNotNull(response.getResult());
