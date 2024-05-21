@@ -268,6 +268,11 @@ class ComplementCertificateFromCertificateServiceTest {
                 );
             }
 
+            @Test
+            void shouldPublishStatusUpdate() {
+                complementCertificateFromCertificateService.answerComplement(ID, MESSAGE);
+                verify(publishCertificateStatusUpdateService).publish(CERTIFICATE, HandelsekodEnum.HANFRFM);
+            }
         }
     }
 }

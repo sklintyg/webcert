@@ -102,6 +102,8 @@ public class ComplementCertificateFromCertificateService implements ComplementCe
             true
         );
 
+        publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.HANFRFM);
+
         return certificate;
     }
 }
