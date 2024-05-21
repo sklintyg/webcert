@@ -125,6 +125,7 @@ public class CertificateController {
     @Qualifier("sendCertificateAggregator")
     private SendCertificateFacadeService sendCertificateFacadeService;
     @Autowired
+    @Qualifier("complementCertificateAggregator")
     private ComplementCertificateFacadeService complementCertificateFacadeService;
     @Autowired
     private CreateCertificateFromTemplateFacadeService createCertificateFromTemplateFacadeService;
