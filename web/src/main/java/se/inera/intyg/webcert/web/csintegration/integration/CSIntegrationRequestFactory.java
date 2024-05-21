@@ -302,8 +302,7 @@ public class CSIntegrationRequestFactory {
             .build();
     }
 
-    public CertificateComplementRequestDTO complementCertificateRequest(Patient patient, IntegrationParameters integrationParameters,
-        String message) {
+    public CertificateComplementRequestDTO complementCertificateRequest(Patient patient, IntegrationParameters integrationParameters) {
         return CertificateComplementRequestDTO.builder()
             .unit(certificateServiceUnitHelper.getUnit())
             .careUnit(certificateServiceUnitHelper.getCareUnit())
@@ -311,7 +310,6 @@ public class CSIntegrationRequestFactory {
             .user(certificateServiceUserHelper.get())
             .patient(certificateServicePatientHelper.get(getPatientId(patient, integrationParameters)))
             .externalReference(getExternalReference(integrationParameters))
-            .message(message)
             .build();
     }
 

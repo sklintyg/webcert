@@ -55,7 +55,6 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
 @ExtendWith(MockitoExtension.class)
 class ComplementCertificateFromCertificateServiceTest {
 
-
     private static final CertificateComplementRequestDTO COMPLEMENT_REQUEST_DTO = CertificateComplementRequestDTO.builder().build();
     private static final AnswerComplementRequestDTO ANSWER_COMPLEMENT_REQUEST_DTO = AnswerComplementRequestDTO.builder().build();
     private static final String PATIENT_ID = "PATIENT_ID";
@@ -152,7 +151,7 @@ class ComplementCertificateFromCertificateServiceTest {
                 when(csIntegrationService.getCertificate(anyString(), any()))
                     .thenReturn(CERTIFICATE);
 
-                when(csIntegrationRequestFactory.complementCertificateRequest(eq(PATIENT), any(), eq(MESSAGE)))
+                when(csIntegrationRequestFactory.complementCertificateRequest(eq(PATIENT), any()))
                     .thenReturn(COMPLEMENT_REQUEST_DTO);
 
                 when(csIntegrationService.complementCertificate(ID, COMPLEMENT_REQUEST_DTO))
@@ -175,7 +174,7 @@ class ComplementCertificateFromCertificateServiceTest {
             @Test
             void shouldCallRequestFactory() {
                 complementCertificateFromCertificateService.complement(ID, MESSAGE);
-                verify(csIntegrationRequestFactory).complementCertificateRequest(PATIENT, parameters, MESSAGE);
+                verify(csIntegrationRequestFactory).complementCertificateRequest(PATIENT, parameters);
             }
 
             @Test
