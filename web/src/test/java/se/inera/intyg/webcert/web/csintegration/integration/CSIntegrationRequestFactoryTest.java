@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.csintegration.integration;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -43,6 +44,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModel
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesQueryCriteriaDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificatePdfRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.message.MessageRequestConverter;
+import se.inera.intyg.webcert.web.csintegration.message.dto.IncomingMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientDTO;
 import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientHelper;
 import se.inera.intyg.webcert.web.csintegration.patient.PersonIdDTO;
@@ -57,11 +60,14 @@ import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
+import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareType;
 
 @ExtendWith(MockitoExtension.class)
 class CSIntegrationRequestFactoryTest {
 
     private static final String MESSAGE = "message";
+    @Mock
+    MessageRequestConverter messageRequestConverter;
     @Mock
     CertificateServiceUnitHelper certificateServiceUnitHelper;
     @Mock
@@ -1446,6 +1452,18 @@ class CSIntegrationRequestFactoryTest {
         void shouldSetMessage() {
             final var actualRequest = csIntegrationRequestFactory.answerComplementOnCertificateRequest(MESSAGE);
             assertEquals(MESSAGE, actualRequest.getMessage());
+        }
+      
+    class GetIncomingMessageRequest {
+
+        @Test
+        void shouldReturnIncomingMessageRequest() {
+            final var sendMessageToCareType = new SendMessageToCareType();
+            final var expectedRequest = IncomingMessageRequestDTO.builder().build();
+            doReturn(expectedRequest).when(messageRequestConverter).convert(sendMessageToCareType);
+
+            final var incomingMessageRequest = csIntegrationRequestFactory.getIncomingMessageRequest(sendMessageToCareType);
+            assertEquals(expectedRequest, incomingMessageRequest);
         }
     }
 }

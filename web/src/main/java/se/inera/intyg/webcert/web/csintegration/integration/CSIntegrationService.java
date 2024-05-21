@@ -78,6 +78,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateR
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateWithoutSignatureRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.message.dto.IncomingMessageRequestDTO;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
@@ -88,6 +89,7 @@ public class CSIntegrationService {
 
     private static final String CERTIFICATE_ENDPOINT_URL = "/api/certificate";
     private static final String CITIZEN_ENDPOINT_URL = "/api/citizen/certificate";
+    private static final String MESSAGE_ENDPOINT_URL = "/api/message";
     private static final String PATIENT_ENDPOINT_URL = "/api/patient";
     private static final String CERTIFICATE_TYPE_INFO_ENDPOINT_URL = "/api/certificatetypeinfo";
     private static final String UNIT_ENDPOINT_URL = "/api/unit";
@@ -432,6 +434,7 @@ public class CSIntegrationService {
         return response;
     }
 
+
     public Certificate answerComplementOnCertificate(String certificateId,
         AnswerComplementRequestDTO request) {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/answerComplement";
@@ -443,5 +446,11 @@ public class CSIntegrationService {
         }
 
         return response.getCertificate();
+    }
+
+    public void postMessage(IncomingMessageRequestDTO request) {
+        final var url = baseUrl + MESSAGE_ENDPOINT_URL;
+        restTemplate.postForObject(url, request, Void.class);
+
     }
 }
