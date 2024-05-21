@@ -1451,8 +1451,9 @@ class CSIntegrationServiceTest {
 
                 assertEquals("baseUrl/api/certificate/certificateId/answerComplement", captor.getValue());
             }
+        }
     }
-  
+
     @Nested
     class PostMessage {
 
@@ -1478,4 +1479,3 @@ class CSIntegrationServiceTest {
         }
     }
 }
-

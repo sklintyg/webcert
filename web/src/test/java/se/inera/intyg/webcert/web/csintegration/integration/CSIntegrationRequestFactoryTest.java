@@ -1453,7 +1453,9 @@ class CSIntegrationRequestFactoryTest {
             final var actualRequest = csIntegrationRequestFactory.answerComplementOnCertificateRequest(MESSAGE);
             assertEquals(MESSAGE, actualRequest.getMessage());
         }
-      
+    }
+
+    @Nested
     class GetIncomingMessageRequest {
 
         @Test
