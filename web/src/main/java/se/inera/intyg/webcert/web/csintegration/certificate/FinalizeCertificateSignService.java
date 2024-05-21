@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.link.ResourceLinkTypeEnum;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -35,6 +36,7 @@ public class FinalizeCertificateSignService {
     private final WebCertUserService webCertUserService;
     private final MonitoringLogService monitoringLogService;
     private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+    private final SendCertificateFromCertificateService sendCertificateFromCertificateService;
 
     public void finalizeSign(Certificate certificate) {
         final var user = webCertUserService.getUser();
@@ -52,5 +54,10 @@ public class FinalizeCertificateSignService {
         );
 
         publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SIGNAT);
+
+        if (certificate.getLinks().stream()
+            .anyMatch(resourceLink -> resourceLink.getType().equals(ResourceLinkTypeEnum.SEND_AFTER_SIGN_CERTIFICATE))) {
+            sendCertificateFromCertificateService.sendCertificate(certificate.getMetadata().getId());
+        }
     }
 }
