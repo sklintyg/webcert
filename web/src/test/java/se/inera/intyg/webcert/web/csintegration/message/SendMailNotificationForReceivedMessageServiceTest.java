@@ -43,7 +43,7 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
 import se.riv.clinicalprocess.healthcond.certificate.v3.MeddelandeReferens;
 
 @ExtendWith(MockitoExtension.class)
-class SendCertificateQuestionUpdateServiceTest {
+class SendMailNotificationForReceivedMessageServiceTest {
 
     private static final String CERTIFICATE_TYPE = "certificateType";
     private static final String UNIT_ID = "unitId";
@@ -57,7 +57,7 @@ class SendCertificateQuestionUpdateServiceTest {
     @Mock
     MailNotificationService mailNotificationService;
     @InjectMocks
-    SendCertificateQuestionUpdateService sendCertificateQuestionUpdateService;
+    SendMailNotificationForReceivedMessageService sendMailNotificationForReceivedMessageService;
 
     @BeforeEach
     void setUp() {
@@ -87,7 +87,7 @@ class SendCertificateQuestionUpdateServiceTest {
     @Test
     void shallNotCallMailNotificationServiceIfUnitIsIntegrated() {
         doReturn(new IntegreradEnhet()).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
-        sendCertificateQuestionUpdateService.send(new SendMessageToCareType(), certificate);
+        sendMailNotificationForReceivedMessageService.send(new SendMessageToCareType(), certificate);
         verifyNoInteractions(mailNotificationService);
     }
 
@@ -98,7 +98,7 @@ class SendCertificateQuestionUpdateServiceTest {
 
         doReturn(null).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
 
-        sendCertificateQuestionUpdateService.send(sendMessageToCareType, certificate);
+        sendMailNotificationForReceivedMessageService.send(sendMessageToCareType, certificate);
         verify(mailNotificationService).sendMailForIncomingQuestion(any(MailNotification.class));
     }
 
@@ -109,7 +109,7 @@ class SendCertificateQuestionUpdateServiceTest {
 
         doReturn(null).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
 
-        sendCertificateQuestionUpdateService.send(sendMessageToCareType, certificate);
+        sendMailNotificationForReceivedMessageService.send(sendMessageToCareType, certificate);
         verify(mailNotificationService).sendMailForIncomingQuestion(any(MailNotification.class));
     }
 
@@ -121,7 +121,7 @@ class SendCertificateQuestionUpdateServiceTest {
 
         doReturn(null).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
 
-        sendCertificateQuestionUpdateService.send(sendMessageToCareType, certificate);
+        sendMailNotificationForReceivedMessageService.send(sendMessageToCareType, certificate);
         verify(mailNotificationService).sendMailForIncomingAnswer(any(MailNotification.class));
     }
 }

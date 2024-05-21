@@ -12,12 +12,14 @@ public enum SentByDTO {
         this.code = code;
     }
 
-    public static SentByDTO getByCode(String type) {
+    public static SentByDTO getByCode(String code) {
         for (SentByDTO sentByDTO : values()) {
-            if (sentByDTO.getCode().equals(type)) {
+            if (sentByDTO.getCode().equals(code)) {
                 return sentByDTO;
             }
         }
-        return null;
+        throw new IllegalArgumentException(
+            String.format("No matching code found for '%s'", code)
+        );
     }
 }

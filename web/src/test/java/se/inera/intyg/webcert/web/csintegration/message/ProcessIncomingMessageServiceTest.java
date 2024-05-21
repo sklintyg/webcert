@@ -65,7 +65,7 @@ class ProcessIncomingMessageServiceTest {
     private SendMessageToCareType sendMessageToCareType;
     private Certificate certificate;
     @Mock
-    SendCertificateQuestionUpdateService sendCertificateQuestionUpdateService;
+    SendMailNotificationForReceivedMessageService sendMailNotificationForReceivedMessageService;
     @Mock
     PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
     @Mock
@@ -157,7 +157,7 @@ class ProcessIncomingMessageServiceTest {
     @Test
     void shallSendStatusUpdateForQuestion() {
         processIncomingMessageService.process(sendMessageToCareType);
-        verify(sendCertificateQuestionUpdateService).send(sendMessageToCareType, certificate);
+        verify(sendMailNotificationForReceivedMessageService).send(sendMessageToCareType, certificate);
     }
 
     @Test

@@ -32,7 +32,7 @@ import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMe
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class SendCertificateQuestionUpdateService {
+public class SendMailNotificationForReceivedMessageService {
 
     private final IntegreradeEnheterRegistry integreradeEnheterRegistry;
     private final MailNotificationService mailNotificationService;

@@ -42,7 +42,7 @@ public class ProcessIncomingMessageService {
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
     private final MonitoringLogService monitoringLogService;
     private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
-    private final SendCertificateQuestionUpdateService sendCertificateQuestionUpdateService;
+    private final SendMailNotificationForReceivedMessageService sendMailNotificationForReceivedMessageService;
 
     public SendMessageToCareResponseType process(SendMessageToCareType sendMessageToCare) {
         csIntegrationService.postMessage(
@@ -67,7 +67,7 @@ public class ProcessIncomingMessageService {
         );
 
         publishCertificateStatusUpdateService.publish(certificate, getEventType(questionType, isAnswer));
-        sendCertificateQuestionUpdateService.send(sendMessageToCare, certificate);
+        sendMailNotificationForReceivedMessageService.send(sendMessageToCare, certificate);
 
         final var sendMessageToCareResponseType = new SendMessageToCareResponseType();
         final var result = new ResultType();
