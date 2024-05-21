@@ -40,7 +40,6 @@ public class CertificateComplementRequestDTO {
     CertificateServiceUnitDTO careUnit;
     CertificateServiceUnitDTO careProvider;
     String externalReference;
-    String message;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class CertificateComplementRequestDTOBuilder {
