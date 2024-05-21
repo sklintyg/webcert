@@ -90,6 +90,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateR
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateWithoutSignatureRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.message.dto.IncomingMessageRequestDTO;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
@@ -191,6 +192,8 @@ class CSIntegrationServiceTest {
     private static final RenewCertificateRequestDTO RENEW_CERTIFICATE_REQUEST = RenewCertificateRequestDTO.builder().build();
     private static final RenewCertificateResponseDTO RENEW_CERTIFICATE_RESPONSE = RenewCertificateResponseDTO.builder()
         .certificate(CERTIFICATE)
+        .build();
+    private static final IncomingMessageRequestDTO INCOMING_MESSAGE_REQUEST_DTO = IncomingMessageRequestDTO.builder()
         .build();
 
     @Mock
@@ -1331,6 +1334,31 @@ class CSIntegrationServiceTest {
             verify(restTemplate).postForObject(captor.capture(), any(), any());
 
             assertEquals("baseUrl/api/citizen/certificate/" + CERTIFICATE_ID + "/print", captor.getValue());
+        }
+    }
+
+    @Nested
+    class PostMessage {
+
+        @Test
+        void shouldPreformPostUsingRequest() {
+            final var captor = ArgumentCaptor.forClass(IncomingMessageRequestDTO.class);
+
+            csIntegrationService.postMessage(INCOMING_MESSAGE_REQUEST_DTO);
+            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+
+            assertEquals(INCOMING_MESSAGE_REQUEST_DTO, captor.getValue());
+        }
+
+        @Test
+        void shouldSetUrlCorrect() {
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            csIntegrationService.postMessage(INCOMING_MESSAGE_REQUEST_DTO);
+            verify(restTemplate).postForObject(captor.capture(), any(), any());
+
+            assertEquals("baseUrl/api/message", captor.getValue());
         }
     }
 }
