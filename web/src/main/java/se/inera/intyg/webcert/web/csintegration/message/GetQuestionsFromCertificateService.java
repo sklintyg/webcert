@@ -19,13 +19,44 @@
 
 package se.inera.intyg.webcert.web.csintegration.message;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionsResponseDTO;
 
+@Slf4j
+@RequiredArgsConstructor
 @Service("getQuestionsFromCertificateService")
 public class GetQuestionsFromCertificateService {
 
+    private final CSIntegrationService csIntegrationService;
+    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+
+
     public QuestionsResponseDTO get(String certificateId) {
-        return null;
+        log.debug("Attempting to get questions for certificate '{}' from Certificate Service", certificateId);
+
+        if (Boolean.FALSE.equals(csIntegrationService.certificateExists(certificateId))) {
+            log.debug("Certificate '{}' does not exist in certificate service", certificateId);
+            return null;
+        }
+
+        final var certificate = csIntegrationService.getCertificate(
+            certificateId,
+            csIntegrationRequestFactory.getCertificateRequest()
+        );
+
+        final var questions = csIntegrationService.getQuestions(
+            csIntegrationRequestFactory.getCertificateMessageRequest(
+                certificate.getMetadata().getPatient().getPersonId().getId()
+            ),
+            certificateId
+        );
+
+        return QuestionsResponseDTO.builder()
+            .questions(questions)
+            .build();
     }
 }

@@ -49,6 +49,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CitizenCertifica
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlResponseDTO;
@@ -83,6 +85,7 @@ import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionDTO;
 
 @Service
 public class CSIntegrationService {
@@ -451,6 +454,17 @@ public class CSIntegrationService {
     public void postMessage(IncomingMessageRequestDTO request) {
         final var url = baseUrl + MESSAGE_ENDPOINT_URL;
         restTemplate.postForObject(url, request, Void.class);
+    }
 
+    public List<QuestionDTO> getQuestions(GetCertificateMessageRequestDTO request, String certificateId) {
+        final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + certificateId;
+
+        final var response = restTemplate.postForObject(url, request, GetCertificateMessageResponseDTO.class);
+
+        if (response == null) {
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
+        }
+
+        return response.getQuestions();
     }
 }

@@ -67,6 +67,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateTypeE
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlResponseDTO;
@@ -98,6 +100,7 @@ import se.inera.intyg.webcert.web.csintegration.message.dto.IncomingMessageReque
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionDTO;
 
 @ExtendWith(MockitoExtension.class)
@@ -207,6 +210,12 @@ class CSIntegrationServiceTest {
     private static final AnswerComplementRequestDTO ANSWER_COMPLEMENT_REQUEST = AnswerComplementRequestDTO.builder().build();
     private static final AnswerComplementResponseDTO ANSWER_COMPLEMENT_RESPONSE = AnswerComplementResponseDTO.builder()
         .certificate(CERTIFICATE)
+        .build();
+    private static final GetCertificateMessageRequestDTO GET_CERTIFICATE_MESSAGE_REQUEST_DTO = GetCertificateMessageRequestDTO.builder()
+        .build();
+    private static final List<QuestionDTO> QUESTIONS = List.of(QuestionDTO.builder().build());
+    private static final GetCertificateMessageResponseDTO GET_CERTIFICATE_MESSAGE_RESPONSE_DTO = GetCertificateMessageResponseDTO.builder()
+        .questions(QUESTIONS)
         .build();
 
     @Mock
@@ -1476,6 +1485,53 @@ class CSIntegrationServiceTest {
             verify(restTemplate).postForObject(captor.capture(), any(), any());
 
             assertEquals("baseUrl/api/message", captor.getValue());
+        }
+    }
+
+    @Nested
+    class GetCertificateQuestions {
+
+        @Test
+        void shouldPreformPostUsingRequest() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(GET_CERTIFICATE_MESSAGE_RESPONSE_DTO);
+            final var captor = ArgumentCaptor.forClass(GetCertificateMessageRequestDTO.class);
+
+            csIntegrationService.getQuestions(GET_CERTIFICATE_MESSAGE_REQUEST_DTO, CERTIFICATE_ID);
+            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+
+            assertEquals(GET_CERTIFICATE_MESSAGE_REQUEST_DTO, captor.getValue());
+        }
+
+        @Test
+        void shouldReturnQuestions() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(GET_CERTIFICATE_MESSAGE_RESPONSE_DTO);
+            final var response = csIntegrationService.getQuestions(GET_CERTIFICATE_MESSAGE_REQUEST_DTO, CERTIFICATE_ID);
+
+            assertEquals(QUESTIONS, response);
+        }
+
+        @Test
+        void shouldThrowIfResponseIsNull() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(null);
+            assertThrows(IllegalStateException.class,
+                () -> csIntegrationService.getQuestions(GET_CERTIFICATE_MESSAGE_REQUEST_DTO, CERTIFICATE_ID));
+        }
+
+
+        @Test
+        void shouldSetUrlCorrect() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(GET_CERTIFICATE_MESSAGE_RESPONSE_DTO);
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            csIntegrationService.getQuestions(GET_CERTIFICATE_MESSAGE_REQUEST_DTO, CERTIFICATE_ID);
+            verify(restTemplate).postForObject(captor.capture(), any(), any());
+
+            assertEquals("baseUrl/api/message/" + CERTIFICATE_ID, captor.getValue());
         }
     }
 }
