@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade;
 
-import java.util.Collections;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -31,12 +30,11 @@ import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.webcert.web.csintegration.aggregate.GetQuestionsAggregator;
 import se.inera.intyg.webcert.web.service.facade.question.CreateQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionAnswerFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionFacadeService;
-import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsResourceLinkService;
 import se.inera.intyg.webcert.web.service.facade.question.HandleQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionAnswerFacadeService;
@@ -47,7 +45,6 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.AnswerRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateQuestionRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.HandleQuestionRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionResponseDTO;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionsResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.SaveQuestionRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.SendQuestionRequestDTO;
 
@@ -57,9 +54,6 @@ public class QuestionController {
     private static final Logger LOG = LoggerFactory.getLogger(QuestionController.class);
     private static final String UTF_8_CHARSET = ";charset=utf-8";
 
-    @Autowired
-    @Qualifier(value = "GetQuestionsFacadeServiceImpl")
-    private GetQuestionsFacadeService getQuestionsFacadeService;
     @Autowired
     private DeleteQuestionFacadeService deleteQuestionFacadeService;
     @Autowired
@@ -78,6 +72,8 @@ public class QuestionController {
     private GetQuestionsResourceLinkService getQuestionsResourceLinkService;
     @Autowired
     private HandleQuestionFacadeService handleQuestionFacadeService;
+    @Autowired
+    private GetQuestionsAggregator getQuestionsAggregator;
 
     @GET
     @Path("/{certificateId}")
@@ -87,10 +83,8 @@ public class QuestionController {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Getting questions for certificate with id: '{}'", certificateId);
         }
-
-        final var questions = getQuestionsFacadeService.getQuestions(certificateId);
-        final var links = getQuestionsResourceLinkService.get(questions);
-        return Response.ok(QuestionsResponseDTO.create(questions, links)).build();
+        final var questionsResponse = getQuestionsAggregator.get(certificateId);
+        return Response.ok(questionsResponse).build();
     }
 
     @GET
@@ -101,9 +95,8 @@ public class QuestionController {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Getting complement questions for certificate with id: '{}'", certificateId);
         }
-
-        final var questions = getQuestionsFacadeService.getComplementQuestions(certificateId);
-        return Response.ok(QuestionsResponseDTO.create(questions, Collections.emptyMap())).build();
+        final var questionsResponse = getQuestionsAggregator.getComplements(certificateId);
+        return Response.ok(questionsResponse).build();
     }
 
     @DELETE

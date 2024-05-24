@@ -19,8 +19,10 @@
 
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.webcert.web.csintegration.message.GetQuestionsFromCertificateService;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
@@ -44,6 +46,16 @@ public class GetQuestionsAggregator {
         this.getQuestionsFromWebcert = getQuestionsFromWebcert;
         this.getQuestionsResourceLinkService = getQuestionsResourceLinkService;
         this.getQuestionsFromCertificateService = getQuestionsFromCertificateService;
+    }
+
+    public QuestionsResponseDTO getComplements(String certificateId) {
+        return QuestionsResponseDTO.builder()
+            .questions(
+                get(certificateId).getQuestions().stream()
+                    .filter(question -> question.getType().equals(QuestionType.COMPLEMENT))
+                    .collect(Collectors.toList())
+            )
+            .build();
     }
 
     public QuestionsResponseDTO get(String certificateId) {

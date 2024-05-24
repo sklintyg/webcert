@@ -20,11 +20,9 @@ package se.inera.intyg.webcert.web.web.controller.facade;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
-import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -33,10 +31,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
+import se.inera.intyg.webcert.web.csintegration.aggregate.GetQuestionsAggregator;
 import se.inera.intyg.webcert.web.service.facade.question.CreateQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionAnswerFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionFacadeService;
-import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsResourceLinkService;
 import se.inera.intyg.webcert.web.service.facade.question.HandleQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionAnswerFacadeService;
@@ -53,9 +51,6 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.SendQuestionRequestD
 
 @ExtendWith(MockitoExtension.class)
 class QuestionControllerTest {
-
-    @Mock
-    private GetQuestionsFacadeService getQuestionsFacadeService;
 
     @Mock
     private DeleteQuestionFacadeService deleteQuestionFacadeService;
@@ -83,29 +78,37 @@ class QuestionControllerTest {
 
     @Mock
     private HandleQuestionFacadeService handleQuestionFacadeService;
+    @Mock
+    private GetQuestionsAggregator getQuestionsAggregator;
 
     @InjectMocks
     private QuestionController questionController;
 
     @Test
     void shallReturnQuestionResponse() {
-        doReturn(Collections.singletonList(Question.builder().build()))
-            .when(getQuestionsFacadeService)
-            .getQuestions("test");
+        final var expectedResponse = QuestionsResponseDTO.builder().build();
+
+        doReturn(expectedResponse)
+            .when(getQuestionsAggregator)
+            .get("test");
+
         final var actualResponse = questionController.getQuestions("test");
 
-        assertNotNull(((QuestionsResponseDTO) actualResponse.getEntity()).getQuestions().get(0));
+        assertEquals(expectedResponse, actualResponse.getEntity());
     }
 
     @Test
     void shallReturnQuestionResponseWithoutResourceLinks() {
-        doReturn(Collections.singletonList(Question.builder().build()))
-            .when(getQuestionsFacadeService)
-            .getComplementQuestions("test");
+        final var expectedResponse = QuestionsResponseDTO.builder()
+            .build();
+
+        doReturn(expectedResponse)
+            .when(getQuestionsAggregator)
+            .getComplements("test");
+
         final var actualResponse = questionController.getComplementQuestions("test");
 
-        assertNotNull(((QuestionsResponseDTO) actualResponse.getEntity()).getQuestions().get(0));
-        assertTrue(((QuestionsResponseDTO) actualResponse.getEntity()).getQuestions().get(0).getLinks().isEmpty());
+        assertEquals(expectedResponse, actualResponse.getEntity());
     }
 
     @Test

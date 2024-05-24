@@ -32,10 +32,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.webcert.web.csintegration.message.GetQuestionsFromCertificateService;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsResourceLinkService;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionsResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 
@@ -99,6 +101,35 @@ class GetQuestionsAggregatorTest {
         final var response = getQuestionsAggregator.get(CERTIFICATE_ID);
         verify(getQuestionsFromCertificateService, times(0)).get(CERTIFICATE_ID);
         verify(getQuestionsFromWebcert, times(1)).getQuestions(CERTIFICATE_ID);
+
+        assertEquals(expectedResult, response);
+    }
+
+    @Test
+    void shallReturnComplementQuestions() {
+        final var resultFromCS = QuestionsResponseDTO.builder()
+            .questions(List.of(
+                QuestionDTO.builder()
+                    .type(QuestionType.COMPLEMENT)
+                    .build(),
+                QuestionDTO.builder()
+                    .type(QuestionType.CONTACT)
+                    .build())
+            )
+            .build();
+
+        final var expectedResult = QuestionsResponseDTO.builder()
+            .questions(List.of(
+                QuestionDTO.builder()
+                    .type(QuestionType.COMPLEMENT)
+                    .build())
+            )
+            .build();
+        doReturn(true).when(certificateServiceProfile).active();
+        doReturn(resultFromCS).when(getQuestionsFromCertificateService).get(CERTIFICATE_ID);
+
+        final var response = getQuestionsAggregator.getComplements(CERTIFICATE_ID);
+        verify(getQuestionsFromCertificateService, times(1)).get(CERTIFICATE_ID);
 
         assertEquals(expectedResult, response);
     }
