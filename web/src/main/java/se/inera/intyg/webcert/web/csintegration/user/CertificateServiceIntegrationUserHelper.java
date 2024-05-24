@@ -44,6 +44,7 @@ public class CertificateServiceIntegrationUserHelper {
             .role(getRole(user))
             .accessScope(AccessScopeType.WITHIN_CARE_UNIT)
             .healthCareProfessionalLicence(user.getLegitimeradeYrkesgrupper())
+            .allowCopy(true)
             .build();
     }
 

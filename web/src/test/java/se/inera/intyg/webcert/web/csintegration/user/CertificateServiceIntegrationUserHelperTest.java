@@ -22,6 +22,7 @@ package se.inera.intyg.webcert.web.csintegration.user;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -254,6 +255,11 @@ class CertificateServiceIntegrationUserHelperTest {
 
             assertEquals(PROFESSIONAL_LICENCES,
                 certificateServiceIntegrationUserHelper.get(intygUser).getHealthCareProfessionalLicence());
+        }
+
+        @Test
+        void shallIncludeAllowCopyTrue() {
+            assertTrue(certificateServiceIntegrationUserHelper.get(intygUser).getAllowCopy());
         }
 
         private void addRole(String roleName) {
