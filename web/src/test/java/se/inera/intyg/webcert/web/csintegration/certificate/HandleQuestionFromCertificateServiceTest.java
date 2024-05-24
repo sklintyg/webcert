@@ -19,34 +19,28 @@
 
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionResponseDTO;
 
-@Service
-@RequiredArgsConstructor
-public class HandleQuestionFromCertificateService {
+@ExtendWith(MockitoExtension.class)
+class HandleQuestionFromCertificateServiceTest {
 
-    private final CSIntegrationService csIntegrationService;
-    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
-    private final PDLLogService pdlLogService;
-    private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
 
-    public QuestionResponseDTO handle(String questionId, boolean isHandled) {
-        if (Boolean.FALSE.equals(csIntegrationService.messageExists(questionId))) {
-            return null;
-        }
+    @Mock
+    private CSIntegrationService csIntegrationService;
+    @Mock
+    private CSIntegrationRequestFactory csIntegrationRequestFactory;
+    @Mock
+    private PDLLogService pdlLogService;
+    @Mock
+    private PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+    @InjectMocks
+    private HandleQuestionFromCertificateService handleQuestionFromCertificateService;
 
-        final var question = csIntegrationService.handleMessage(
-            csIntegrationRequestFactory.handleMessageRequestDTO(isHandled),
-            questionId
-        );
 
-        // pdl log
-        // publish event
-        return null;
-    }
 }

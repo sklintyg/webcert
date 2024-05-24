@@ -63,6 +63,9 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertif
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageExistsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.RenewCertificateRequestDTO;
@@ -307,6 +310,19 @@ public class CSIntegrationService {
         return Boolean.TRUE.equals(response.getExists());
     }
 
+
+    public Boolean messageExists(String messageId) {
+        final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + "/exists";
+
+        final var response = restTemplate.getForObject(url, MessageExistsResponseDTO.class);
+
+        if (response == null) {
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
+        }
+
+        return Boolean.TRUE.equals(response.getExists());
+    }
+
     public Boolean citizenCertificateExists(String certificateId) {
         final var url = baseUrl + CITIZEN_ENDPOINT_URL + "/" + certificateId + "/exists";
 
@@ -466,5 +482,17 @@ public class CSIntegrationService {
         }
 
         return response.getQuestions();
+    }
+
+    public QuestionDTO handleMessage(HandleMessageRequestDTO request, String messageId) {
+        final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + "/handle";
+
+        final var response = restTemplate.postForObject(url, request, HandleMessageResponseDTO.class);
+
+        if (response == null) {
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
+        }
+
+        return response.getQuestion();
     }
 }
