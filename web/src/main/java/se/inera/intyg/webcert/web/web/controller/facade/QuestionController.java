@@ -32,11 +32,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.csintegration.aggregate.GetQuestionsAggregator;
+import se.inera.intyg.webcert.web.csintegration.aggregate.HandleQuestionAggregator;
 import se.inera.intyg.webcert.web.service.facade.question.CreateQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionAnswerFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsResourceLinkService;
-import se.inera.intyg.webcert.web.service.facade.question.HandleQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionAnswerFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.SendQuestionAnswerFacadeService;
@@ -71,9 +71,9 @@ public class QuestionController {
     @Autowired
     private GetQuestionsResourceLinkService getQuestionsResourceLinkService;
     @Autowired
-    private HandleQuestionFacadeService handleQuestionFacadeService;
-    @Autowired
     private GetQuestionsAggregator getQuestionsAggregator;
+    @Autowired
+    private HandleQuestionAggregator handleQuestionAggregator;
 
     @GET
     @Path("/{certificateId}")
@@ -83,8 +83,7 @@ public class QuestionController {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Getting questions for certificate with id: '{}'", certificateId);
         }
-        final var questionsResponse = getQuestionsAggregator.get(certificateId);
-        return Response.ok(questionsResponse).build();
+        return Response.ok(getQuestionsAggregator.get(certificateId)).build();
     }
 
     @GET
@@ -95,8 +94,7 @@ public class QuestionController {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Getting complement questions for certificate with id: '{}'", certificateId);
         }
-        final var questionsResponse = getQuestionsAggregator.getComplements(certificateId);
-        return Response.ok(questionsResponse).build();
+        return Response.ok(getQuestionsAggregator.getComplements(certificateId)).build();
     }
 
     @DELETE
@@ -209,9 +207,6 @@ public class QuestionController {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Handle question with id: '{}'", questionId);
         }
-
-        final var handledQuestion = handleQuestionFacadeService.handle(questionId, handleQuestionRequestDTO.isHandled());
-        final var links = getQuestionsResourceLinkService.get(handledQuestion);
-        return Response.ok(QuestionResponseDTO.create(handledQuestion, links)).build();
+        return Response.ok(handleQuestionAggregator.handle(questionId, handleQuestionRequestDTO.isHandled())).build();
     }
 }

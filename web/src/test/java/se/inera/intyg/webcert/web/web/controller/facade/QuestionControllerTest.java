@@ -32,11 +32,11 @@ import org.springframework.http.HttpStatus;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.webcert.web.csintegration.aggregate.GetQuestionsAggregator;
+import se.inera.intyg.webcert.web.csintegration.aggregate.HandleQuestionAggregator;
 import se.inera.intyg.webcert.web.service.facade.question.CreateQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionAnswerFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsResourceLinkService;
-import se.inera.intyg.webcert.web.service.facade.question.HandleQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionAnswerFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.SendQuestionAnswerFacadeService;
@@ -77,7 +77,7 @@ class QuestionControllerTest {
     private GetQuestionsResourceLinkService getQuestionsResourceLinkService;
 
     @Mock
-    private HandleQuestionFacadeService handleQuestionFacadeService;
+    private HandleQuestionAggregator handleQuestionAggregator;
     @Mock
     private GetQuestionsAggregator getQuestionsAggregator;
 
@@ -224,13 +224,14 @@ class QuestionControllerTest {
         final var handleRequestDTO = new HandleQuestionRequestDTO();
         handleRequestDTO.setHandled(true);
 
-        doReturn(Question.builder().build())
-            .when(handleQuestionFacadeService)
+        final var expectedResponse = QuestionResponseDTO.builder().build();
+
+        doReturn(expectedResponse)
+            .when(handleQuestionAggregator)
             .handle(questionId, handleRequestDTO.isHandled());
 
         final var actualResponse = questionController.handleQuestion(questionId, handleRequestDTO);
 
-        assertEquals(HttpStatus.OK.value(), actualResponse.getStatus());
-        assertNotNull(((QuestionResponseDTO) actualResponse.getEntity()).getQuestion());
+        assertEquals(expectedResponse, actualResponse.getEntity());
     }
 }
