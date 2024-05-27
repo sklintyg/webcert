@@ -37,8 +37,7 @@ public class FragorOchSvarFactory {
         questions.forEach(question -> {
             if (fromCare(question)) {
                 answersFromCare.increment(question.isHandled());
-            }
-            if (fromRecipient(question)) {
+            } else if (fromRecipient(question)) {
                 questionsFromRecipient.increment(question.isHandled());
             }
         });
