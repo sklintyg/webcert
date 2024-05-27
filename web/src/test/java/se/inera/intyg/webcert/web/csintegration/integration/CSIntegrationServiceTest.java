@@ -229,11 +229,13 @@ class CSIntegrationServiceTest {
     private static final HandleMessageResponseDTO HANDLE_MESSAGE_RESPONSE_DTO = HandleMessageResponseDTO.builder()
         .question(QUESTION)
         .build();
-    private static final GetCertificteFromMessageRequestDTO GET_CERTIFICTE_FROM_MESSAGE_REQUEST_DTO = GetCertificteFromMessageRequestDTO.builder()
-        .build();
-    private static final GetCertificteFromMessageResponseDTO GET_CERTIFICTE_FROM_MESSAGE_RESPONSE_DTO = GetCertificteFromMessageResponseDTO.builder()
-        .certificate(CERTIFICATE)
-        .build();
+    private static final GetCertificteFromMessageRequestDTO GET_CERTIFICTE_FROM_MESSAGE_REQUEST_DTO =
+        GetCertificteFromMessageRequestDTO.builder()
+            .build();
+    private static final GetCertificteFromMessageResponseDTO GET_CERTIFICTE_FROM_MESSAGE_RESPONSE_DTO =
+        GetCertificteFromMessageResponseDTO.builder()
+            .certificate(CERTIFICATE)
+            .build();
 
     @Mock
     private RestTemplate restTemplate;
