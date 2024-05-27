@@ -19,18 +19,39 @@
 
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
+import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.Patient;
+import se.inera.intyg.common.support.facade.model.PersonId;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificteFromMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionResponseDTO;
 
 @ExtendWith(MockitoExtension.class)
 class HandleQuestionFromCertificateServiceTest {
 
 
+    private static final String MESSAGE_ID = "messageId";
+    private static final String PERSON_ID = "personId";
+    private static final String NOT_FK = "notFk";
+    private static final String CERTIFICATE_ID = "certificateId";
+    private static final String FK = "FK";
     @Mock
     private CSIntegrationService csIntegrationService;
     @Mock
@@ -41,6 +62,107 @@ class HandleQuestionFromCertificateServiceTest {
     private PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
     @InjectMocks
     private HandleQuestionFromCertificateService handleQuestionFromCertificateService;
+    private Certificate certificate;
 
+    @BeforeEach
+    void setUp() {
+        certificate = new Certificate();
+        certificate.setMetadata(
+            CertificateMetadata.builder()
+                .id(CERTIFICATE_ID)
+                .patient(
+                    Patient.builder()
+                        .personId(
+                            PersonId.builder()
+                                .id(PERSON_ID)
+                                .build()
+                        )
+                        .build()
+                )
+                .build()
+        );
+    }
 
+    @Test
+    void shallReturnNullIfMessageDontExist() {
+        doReturn(false).when(csIntegrationService).messageExists(MESSAGE_ID);
+        assertNull(handleQuestionFromCertificateService.handle(MESSAGE_ID, false));
+    }
+
+    @Test
+    void shallReturnHandledQuestion() {
+        final var question = QuestionDTO.builder()
+            .author(NOT_FK)
+            .build();
+        final var expectedResponse = QuestionResponseDTO.builder()
+            .question(
+                question
+            )
+            .build();
+        doReturn(true).when(csIntegrationService).messageExists(MESSAGE_ID);
+        final var handleMessageRequestDTO = HandleMessageRequestDTO.builder().build();
+        final var certificteFromMessageRequestDTO = GetCertificteFromMessageRequestDTO.builder().build();
+
+        doReturn(handleMessageRequestDTO).when(csIntegrationRequestFactory).handleMessageRequestDTO(false);
+        doReturn(certificteFromMessageRequestDTO).when(csIntegrationRequestFactory).getCertificateFromMessageRequestDTO();
+        doReturn(question).when(csIntegrationService).handleMessage(handleMessageRequestDTO, MESSAGE_ID);
+        doReturn(certificate).when(csIntegrationService).getCertificate(certificteFromMessageRequestDTO, MESSAGE_ID);
+
+        final var actualResponse = handleQuestionFromCertificateService.handle(MESSAGE_ID, false);
+        assertEquals(expectedResponse, actualResponse);
+    }
+
+    @Test
+    void shallPdlLogCreateMessage() {
+        final var question = QuestionDTO.builder()
+            .author(NOT_FK)
+            .build();
+        doReturn(true).when(csIntegrationService).messageExists(MESSAGE_ID);
+        final var handleMessageRequestDTO = HandleMessageRequestDTO.builder().build();
+        final var certificteFromMessageRequestDTO = GetCertificteFromMessageRequestDTO.builder().build();
+
+        doReturn(handleMessageRequestDTO).when(csIntegrationRequestFactory).handleMessageRequestDTO(false);
+        doReturn(certificteFromMessageRequestDTO).when(csIntegrationRequestFactory).getCertificateFromMessageRequestDTO();
+        doReturn(question).when(csIntegrationService).handleMessage(handleMessageRequestDTO, MESSAGE_ID);
+        doReturn(certificate).when(csIntegrationService).getCertificate(certificteFromMessageRequestDTO, MESSAGE_ID);
+
+        handleQuestionFromCertificateService.handle(MESSAGE_ID, false);
+        verify(pdlLogService).logCreateMessage(PERSON_ID, CERTIFICATE_ID);
+    }
+
+    @Test
+    void shallPublishEventHandledByRecipient() {
+        final var question = QuestionDTO.builder()
+            .author(FK)
+            .build();
+        doReturn(true).when(csIntegrationService).messageExists(MESSAGE_ID);
+        final var handleMessageRequestDTO = HandleMessageRequestDTO.builder().build();
+        final var certificteFromMessageRequestDTO = GetCertificteFromMessageRequestDTO.builder().build();
+
+        doReturn(handleMessageRequestDTO).when(csIntegrationRequestFactory).handleMessageRequestDTO(false);
+        doReturn(certificteFromMessageRequestDTO).when(csIntegrationRequestFactory).getCertificateFromMessageRequestDTO();
+        doReturn(question).when(csIntegrationService).handleMessage(handleMessageRequestDTO, MESSAGE_ID);
+        doReturn(certificate).when(csIntegrationService).getCertificate(certificteFromMessageRequestDTO, MESSAGE_ID);
+
+        handleQuestionFromCertificateService.handle(MESSAGE_ID, false);
+        verify(publishCertificateStatusUpdateService).publish(certificate, HandelsekodEnum.HANFRFM);
+    }
+
+    @Test
+    void shallPublishEventHandledByCare() {
+        final var question = QuestionDTO.builder()
+            .author(NOT_FK)
+            .build();
+        doReturn(true).when(csIntegrationService).messageExists(MESSAGE_ID);
+        final var handleMessageRequestDTO = HandleMessageRequestDTO.builder().build();
+        final var certificteFromMessageRequestDTO = GetCertificteFromMessageRequestDTO.builder().build();
+
+        doReturn(handleMessageRequestDTO).when(csIntegrationRequestFactory).handleMessageRequestDTO(false);
+        doReturn(certificteFromMessageRequestDTO).when(csIntegrationRequestFactory).getCertificateFromMessageRequestDTO();
+        doReturn(question).when(csIntegrationService).handleMessage(handleMessageRequestDTO, MESSAGE_ID);
+        doReturn(certificate).when(csIntegrationService).getCertificate(certificteFromMessageRequestDTO, MESSAGE_ID);
+
+        handleQuestionFromCertificateService.handle(MESSAGE_ID, false);
+        verify(publishCertificateStatusUpdateService).publish(certificate, HandelsekodEnum.HANFRFV);
+    }
 }

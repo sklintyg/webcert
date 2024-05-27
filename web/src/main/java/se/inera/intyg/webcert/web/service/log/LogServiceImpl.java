@@ -46,7 +46,6 @@ import se.inera.intyg.webcert.common.service.log.template.IntygRevokeMessage;
 import se.inera.intyg.webcert.common.service.log.template.IntygSendMessage;
 import se.inera.intyg.webcert.common.service.log.template.IntygSignMessage;
 import se.inera.intyg.webcert.common.service.log.template.IntygUpdateMessage;
-import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.dto.LogUser;
 import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
@@ -257,11 +256,11 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
-    public void logCreateMessage(WebCertUser user, Arende message) {
+    public void logCreateMessage(WebCertUser user, String personId, String certificateId) {
 
-        LogRequest logRequest = logRequestFactory.createLogRequestFromUser(user, message.getPatientPersonId());
+        LogRequest logRequest = logRequestFactory.createLogRequestFromUser(user, personId);
         send(logMessagePopulator.populateLogMessage(
-            IntygCreateMessage.build(message.getIntygsId()), logRequest, getLogUser(user)), logRequest.isTestIntyg());
+            IntygCreateMessage.build(certificateId), logRequest, getLogUser(user)), logRequest.isTestIntyg());
     }
 
     private void send(PdlLogMessage logMsg, boolean isTestIntyg) {

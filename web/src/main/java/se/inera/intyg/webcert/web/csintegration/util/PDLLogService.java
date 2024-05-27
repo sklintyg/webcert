@@ -27,6 +27,7 @@ import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogUser;
 import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +35,7 @@ public class PDLLogService {
 
     private final LogRequestFactory logRequestFactory;
     private final LogService logService;
+    private final WebCertUserService webCertUserService;
 
     public void logCreated(Certificate certificate) {
         logService.logCreateIntyg(
@@ -108,6 +110,14 @@ public class PDLLogService {
     public void logRevoke(Certificate certificate) {
         logService.logRevokeIntyg(
             logRequestFactory.createLogRequestFromCertificate(certificate)
+        );
+    }
+
+    public void logCreateMessage(String personId, String certificateId) {
+        logService.logCreateMessage(
+            webCertUserService.getUser(),
+            personId,
+            certificateId
         );
     }
 }
