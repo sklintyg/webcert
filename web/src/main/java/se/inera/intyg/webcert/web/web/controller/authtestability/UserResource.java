@@ -44,7 +44,7 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
  * Rest interface only used for testing and in dev environments. It seems like it must be in
  * the same Spring context as the rest of the webservices to get access to the security context.
  */
-@Api(value = "user service", description = "REST API för testbarhet av användare", produces = MediaType.APPLICATION_JSON)
+@Api(value = "user service", produces = MediaType.APPLICATION_JSON)
 @Path("/")
 public class UserResource {
 
@@ -115,6 +115,15 @@ public class UserResource {
     }
 
     @GET
+    @Path("/preferences")
+    @Produces(MediaType.APPLICATION_JSON)
+    @PrometheusTimeMethod
+    public Response getUserPreferences() {
+        final var prefs = webCertUserService.getUser().getAnvandarPreference();
+        return Response.ok(prefs).build();
+    }
+
+    @GET
     @Path("/parameters")
     @Produces(MediaType.APPLICATION_JSON)
     @PrometheusTimeMethod
@@ -177,5 +186,14 @@ public class UserResource {
         webCertUserService.getUser().setPersonId(personId);
         LOG.info("Changed user 'personId' to '{}', was '{}'.", personId, oldPersonId);
         return Response.ok().build();
+    }
+
+    @GET
+    @Path("/subscriptionInfo")
+    @Produces(MediaType.APPLICATION_JSON)
+    @PrometheusTimeMethod
+    public Response getSubscriptionInfo() {
+        final var info = webCertUserService.getUser().getSubscriptionInfo();
+        return Response.ok(info).build();
     }
 }

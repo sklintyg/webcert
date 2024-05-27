@@ -34,6 +34,7 @@ import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastServiceImpl;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirectToIntyg;
 
 /**
@@ -66,7 +67,7 @@ public abstract class IntegrationServiceImpl implements IntegrationService {
     public PrepareRedirectToIntyg prepareRedirectToIntyg(
         final String intygTyp, final String intygId,
         final WebCertUser user, final Personnummer prepareBeforeAlternateSsn) {
-        handleReference(intygId, user.getParameters().getReference());
+        handleReference(intygId, user.getParameters());
 
         Utkast utkast = utkastRepository.findById(intygId).orElse(null);
 
@@ -79,11 +80,17 @@ public abstract class IntegrationServiceImpl implements IntegrationService {
         return createPrepareRedirectToIntyg(intygTypeInfo, UtkastServiceImpl.isUtkast(utkast));
     }
 
-    private void handleReference(String intygId, String referens) {
+    private void handleReference(String intygId, IntegrationParameters parameters) {
+        if (parameters == null) {
+            return;
+        }
+
+        final var referens = parameters.getReference();
         if (referens != null && !referensService.referensExists(intygId)) {
             referensService.saveReferens(intygId, referens);
         }
     }
+
 
     // protected scope
 
