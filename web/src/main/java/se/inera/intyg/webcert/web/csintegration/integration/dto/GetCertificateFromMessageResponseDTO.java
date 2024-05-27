@@ -25,17 +25,17 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Value;
 import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificteFromMessageResponseDTO.GetCertificteFromMessageResponseDTOBuilder;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFromMessageResponseDTO.GetCertificateFromMessageResponseDTOBuilder;
 
-@JsonDeserialize(builder = GetCertificteFromMessageResponseDTOBuilder.class)
+@JsonDeserialize(builder = GetCertificateFromMessageResponseDTOBuilder.class)
 @Value
 @Builder
-public class GetCertificteFromMessageResponseDTO {
+public class GetCertificateFromMessageResponseDTO {
 
     Certificate certificate;
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class GetCertificteFromMessageResponseDTOBuilder {
+    public static class GetCertificateFromMessageResponseDTOBuilder {
 
     }
 }

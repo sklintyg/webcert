@@ -49,13 +49,13 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CitizenCertifica
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFromMessageResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificteFromMessageRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificteFromMessageResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificatePdfRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificatePdfResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateRequestDTO;
@@ -501,7 +501,7 @@ public class CSIntegrationService {
     public Certificate getCertificate(GetCertificteFromMessageRequestDTO request, String messageId) {
         final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + "/certificate";
 
-        final var response = restTemplate.postForObject(url, request, GetCertificteFromMessageResponseDTO.class);
+        final var response = restTemplate.postForObject(url, request, GetCertificateFromMessageResponseDTO.class);
 
         if (response == null) {
             throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);

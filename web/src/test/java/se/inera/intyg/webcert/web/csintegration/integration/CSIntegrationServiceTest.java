@@ -67,13 +67,13 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateTypeE
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFromMessageResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificteFromMessageRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificteFromMessageResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificatePdfRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificatePdfResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateRequestDTO;
@@ -232,8 +232,8 @@ class CSIntegrationServiceTest {
     private static final GetCertificteFromMessageRequestDTO GET_CERTIFICTE_FROM_MESSAGE_REQUEST_DTO =
         GetCertificteFromMessageRequestDTO.builder()
             .build();
-    private static final GetCertificteFromMessageResponseDTO GET_CERTIFICTE_FROM_MESSAGE_RESPONSE_DTO =
-        GetCertificteFromMessageResponseDTO.builder()
+    private static final GetCertificateFromMessageResponseDTO GET_CERTIFICTE_FROM_MESSAGE_RESPONSE_DTO =
+        GetCertificateFromMessageResponseDTO.builder()
             .certificate(CERTIFICATE)
             .build();
 
