@@ -25,16 +25,27 @@ import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
-import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 
 @Component
 @RequiredArgsConstructor
 public class NotificationMessageFactory {
 
+    private final CSIntegrationService csIntegrationService;
+    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+    private final FragorOchSvarFactory fragorOchSvarFactory;
+
     public NotificationMessage create(Certificate certificate, String encodedXmlRepresentation, HandelsekodEnum eventType,
         String handledByHsaId) {
+        final var questions = csIntegrationService.getQuestions(
+            csIntegrationRequestFactory.getCertificateMessageRequest(
+                certificate.getMetadata().getPatient().getPersonId().getId()
+            ),
+            certificate.getMetadata().getId()
+        );
         final var now = LocalDateTime.now();
         final var notificationMessage = new NotificationMessage(
             certificate.getMetadata().getId(),
@@ -43,7 +54,7 @@ public class NotificationMessageFactory {
             eventType,
             certificate.getMetadata().getUnit().getUnitId(),
             null,
-            FragorOchSvar.getEmpty(),
+            fragorOchSvarFactory.calculate(questions),
             ArendeCount.getEmpty(),
             ArendeCount.getEmpty(),
             SchemaVersion.VERSION_3,
