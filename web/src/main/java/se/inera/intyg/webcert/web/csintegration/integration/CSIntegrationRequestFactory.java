@@ -418,7 +418,7 @@ public class CSIntegrationRequestFactory {
             .careUnit(certificateServiceUnitHelper.getCareUnit())
             .careProvider(certificateServiceUnitHelper.getCareProvider())
             .user(certificateServiceUserHelper.get())
-            .isHandled(isHandled)
+            .handled(isHandled)
             .build();
     }
 

@@ -49,7 +49,7 @@ class HandleQuestionFromCertificateServiceTest {
 
     private static final String MESSAGE_ID = "messageId";
     private static final String PERSON_ID = "personId";
-    private static final String NOT_FK = "notFk";
+    private static final String WC = "WC";
     private static final String CERTIFICATE_ID = "certificateId";
     private static final String FK = "FK";
     @Mock
@@ -92,7 +92,7 @@ class HandleQuestionFromCertificateServiceTest {
     @Test
     void shallReturnHandledQuestion() {
         final var question = QuestionDTO.builder()
-            .author(NOT_FK)
+            .author(WC)
             .build();
         final var expectedResponse = QuestionResponseDTO.builder()
             .question(
@@ -115,7 +115,7 @@ class HandleQuestionFromCertificateServiceTest {
     @Test
     void shallPdlLogCreateMessage() {
         final var question = QuestionDTO.builder()
-            .author(NOT_FK)
+            .author(WC)
             .build();
         doReturn(true).when(csIntegrationService).messageExists(MESSAGE_ID);
         final var handleMessageRequestDTO = HandleMessageRequestDTO.builder().build();
@@ -151,7 +151,7 @@ class HandleQuestionFromCertificateServiceTest {
     @Test
     void shallPublishEventHandledByCare() {
         final var question = QuestionDTO.builder()
-            .author(NOT_FK)
+            .author(WC)
             .build();
         doReturn(true).when(csIntegrationService).messageExists(MESSAGE_ID);
         final var handleMessageRequestDTO = HandleMessageRequestDTO.builder().build();

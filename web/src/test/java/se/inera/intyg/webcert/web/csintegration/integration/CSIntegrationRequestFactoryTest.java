@@ -1562,7 +1562,7 @@ class CSIntegrationRequestFactoryTest {
         @Test
         void shouldSetIsHandled() {
             final var actualRequest = csIntegrationRequestFactory.handleMessageRequestDTO(false);
-            assertFalse(actualRequest.getIsHandled());
+            assertFalse(actualRequest.getHandled());
         }
     }
 

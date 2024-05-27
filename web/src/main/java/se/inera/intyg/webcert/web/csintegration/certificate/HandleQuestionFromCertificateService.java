@@ -25,6 +25,7 @@ import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
+import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionResponseDTO;
 
 @Service
@@ -64,6 +65,6 @@ public class HandleQuestionFromCertificateService {
     }
 
     private HandelsekodEnum eventType(String author) {
-        return author.equals("FK") ? HandelsekodEnum.HANFRFM : HandelsekodEnum.HANFRFV;
+        return FrageStallare.WEBCERT.isKodEqual(author) ? HandelsekodEnum.HANFRFV : HandelsekodEnum.HANFRFM;
     }
 }
