@@ -270,7 +270,7 @@ public class ArendeServiceImpl implements ArendeService {
 
         Arende saved = processOutgoingMessage(arende, NotificationEvent.NEW_QUESTION_FROM_CARE, true);
 
-        logService.logCreateMessage(webcertUserService.getUser(), saved);
+        logService.logCreateMessage(webcertUserService.getUser(), saved.getPatientPersonId(), saved.getIntygsId());
 
         arendeDraftService.delete(intygId, null);
         return saved;
@@ -316,7 +316,7 @@ public class ArendeServiceImpl implements ArendeService {
 
         Arende saved = processOutgoingMessage(arende, NotificationEvent.NEW_ANSWER_FROM_CARE, true);
 
-        logService.logCreateMessage(webcertUserService.getUser(), saved);
+        logService.logCreateMessage(webcertUserService.getUser(), saved.getPatientPersonId(), saved.getIntygsId());
 
         arendeDraftService.delete(svarPaMeddelande.getIntygsId(), svarPaMeddelandeId);
         return arendeViewConverter.convertToArendeConversationView(svarPaMeddelande, saved, null,
@@ -432,7 +432,7 @@ public class ArendeServiceImpl implements ArendeService {
 
         sendNotificationAndCreateEvent(openedArende, notificationEvent);
 
-        logService.logCreateMessage(webcertUserService.getUser(), openedArende);
+        logService.logCreateMessage(webcertUserService.getUser(), openedArende.getPatientPersonId(), openedArende.getIntygsId());
 
         return arendeViewConverter.convertToArendeConversationView(openedArende,
             arendeRepository.findBySvarPaId(meddelandeId).stream().findFirst().orElse(null),
@@ -682,7 +682,7 @@ public class ArendeServiceImpl implements ArendeService {
             return null;
         } else {
             Arende closedArende = closeArendeAsHandled(arende);
-            logService.logCreateMessage(webcertUserService.getUser(), closedArende);
+            logService.logCreateMessage(webcertUserService.getUser(), closedArende.getPatientPersonId(), closedArende.getIntygsId());
             return arendeViewConverter.convertToArendeConversationView(closedArende,
                 arendeRepository.findBySvarPaId(meddelandeId).stream().findFirst().orElse(null),
                 null,

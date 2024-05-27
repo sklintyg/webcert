@@ -18,12 +18,58 @@
  */
 package se.inera.intyg.webcert.web.service.arende;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.xml.ws.WebServiceException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
@@ -37,7 +83,12 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.integration.hsatk.services.HsatkEmployeeService;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
-import se.inera.intyg.infra.security.common.model.*;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Feature;
+import se.inera.intyg.infra.security.common.model.Privilege;
+import se.inera.intyg.infra.security.common.model.Role;
+import se.inera.intyg.infra.security.common.model.UserDetails;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.GroupableItem;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
@@ -78,23 +129,14 @@ import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolverResponse
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.util.StatisticsGroupByUtil;
-import se.inera.intyg.webcert.web.web.controller.api.dto.*;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView;
+import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations.FrontendRelations;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 import se.riv.infrastructure.directory.employee.v2.PersonInformationType;
-
-import javax.xml.ws.WebServiceException;
-import java.time.Clock;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
@@ -115,6 +157,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     private static final String SKICKAT_AV = "FKASSA";
 
     private static final Personnummer PNR = Personnummer.createPersonnummer(PERSON_ID).orElseThrow();
+    private static final String CERTIFICATE_ID = "certificateId";
 
     @Mock
     private ArendeRepository arendeRepository;
@@ -482,7 +525,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         verify(certificateSenderService).sendMessageToRecipient(anyString(), anyString());
         verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.NEW_QUESTION_FROM_CARE);
         verify(arendeDraftService).delete(INTYG_ID, null);
-        verify(logService, times(1)).logCreateMessage(any(), any());
+        verify(logService, times(1)).logCreateMessage(any(), any(), any());
     }
 
     @Test
@@ -646,7 +689,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         verify(certificateSenderService).sendMessageToRecipient(anyString(), anyString());
         verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.NEW_ANSWER_FROM_CARE);
         verify(arendeDraftService).delete(INTYG_ID, svarPaMeddelandeId);
-        verify(logService, times(1)).logCreateMessage(any(), any());
+        verify(logService, times(1)).logCreateMessage(any(), any(), any());
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -826,7 +869,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         assertEquals(FIXED_TIME_INSTANT,
             updatedQuestion.getSenasteHandelse().toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
         assertEquals(Status.CLOSED, updatedQuestion.getStatus());
-        verify(logService, times(1)).logCreateMessage(any(), any());
+        verify(logService, times(1)).logCreateMessage(any(), any(), any());
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -918,7 +961,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
             NotificationEvent.QUESTION_FROM_RECIPIENT_HANDLED.name());
         verify(fragaSvarService, never()).closeQuestionAsHandled(anyLong());
         verify(arendeDraftService).delete(INTYG_ID, MEDDELANDE_ID);
-        verify(logService, times(1)).logCreateMessage(any(), any());
+        verify(logService, times(1)).logCreateMessage(any(), any(), any());
     }
 
     @Test
@@ -953,7 +996,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
             NotificationEvent.QUESTION_FROM_CARE_HANDLED.name());
         verify(fragaSvarService, never()).closeQuestionAsHandled(anyLong());
         verify(arendeDraftService).delete(INTYG_ID, MEDDELANDE_ID);
-        verify(logService, times(1)).logCreateMessage(any(), any());
+        verify(logService, times(1)).logCreateMessage(any(), any(), any());
     }
 
     @Test
@@ -977,7 +1020,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
             NotificationEvent.QUESTION_FROM_CARE_WITH_ANSWER_HANDLED.name());
         verify(fragaSvarService, never()).closeQuestionAsHandled(anyLong());
         verify(arendeDraftService).delete(INTYG_ID, MEDDELANDE_ID);
-        verify(logService, times(1)).logCreateMessage(any(), any());
+        verify(logService, times(1)).logCreateMessage(any(), any(), any());
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -1003,7 +1046,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         setupMockForAccessService(ActionLinkType.BESVARA_KOMPLETTERING);
         service.openArendeAsUnhandled(MEDDELANDE_ID);
         verifyNoMoreInteractions(notificationService);
-        verify(logService, times(1)).logCreateMessage(any(), any());
+        verify(logService, times(1)).logCreateMessage(any(), any(), any());
     }
 
     @Test
@@ -1022,7 +1065,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         verify(arendeRepository).save(arendeCaptor.capture());
         assertEquals(Status.PENDING_INTERNAL_ACTION, arendeCaptor.getValue().getStatus());
         verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_RECIPIENT_UNHANDLED);
-        verify(logService, times(1)).logCreateMessage(any(), any());
+        verify(logService, times(1)).logCreateMessage(any(), any(), any());
     }
 
     @Test
@@ -1043,7 +1086,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         verify(arendeRepository).save(arendeCaptor.capture());
         assertEquals(Status.ANSWERED, arendeCaptor.getValue().getStatus());
         verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_CARE_WITH_ANSWER_UNHANDLED);
-        verify(logService, times(1)).logCreateMessage(any(), any());
+        verify(logService, times(1)).logCreateMessage(any(), any(), any());
     }
 
     @Test
@@ -1061,7 +1104,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         verify(arendeRepository).save(arendeCaptor.capture());
         assertEquals(Status.PENDING_EXTERNAL_ACTION, arendeCaptor.getValue().getStatus());
         verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.QUESTION_FROM_CARE_UNHANDLED);
-        verify(logService, times(1)).logCreateMessage(any(), any());
+        verify(logService, times(1)).logCreateMessage(any(), any(), any());
     }
 
     @Test

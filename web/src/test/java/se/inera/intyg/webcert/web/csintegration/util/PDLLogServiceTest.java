@@ -36,11 +36,18 @@ import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @ExtendWith(MockitoExtension.class)
 class PDLLogServiceTest {
 
     private static final Certificate CERTIFICATE = new Certificate();
+    private static final String PERSON_ID = "personId";
+    private static final String CERTIFICATE_ID = "certificateId";
+
+    @Mock
+    WebCertUserService webCertUserService;
 
     @Mock
     LogService logService;
@@ -211,5 +218,17 @@ class PDLLogServiceTest {
 
         verify(logService).logRevokeIntyg(captor.capture());
         assertEquals(expectedLogRequest, captor.getValue());
+    }
+
+    @Test
+    void shouldLogCreateMessage() {
+        final var webCertUser = new WebCertUser();
+        doReturn(webCertUser).when(webCertUserService).getUser();
+
+        pdlLogService.logCreateMessage(
+            PERSON_ID, CERTIFICATE_ID
+        );
+
+        verify(logService).logCreateMessage(webCertUser, PERSON_ID, CERTIFICATE_ID);
     }
 }

@@ -16,31 +16,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.web.controller.facade.dto;
+
+package se.inera.intyg.webcert.web.csintegration.integration.dto;
+
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import java.util.List;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.common.support.facade.model.question.Question;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionResponseDTO.QuestionResponseDTOBuilder;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageRequestDTO.GetCertificateMessageRequestDTOBuilder;
+import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientDTO;
+import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitDTO;
+import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserDTO;
 
-@JsonDeserialize(builder = QuestionResponseDTOBuilder.class)
+@JsonDeserialize(builder = GetCertificateMessageRequestDTOBuilder.class)
 @Value
 @Builder
-public class QuestionResponseDTO {
+public class GetCertificateMessageRequestDTO {
 
-    QuestionDTO question;
-
-    public static QuestionResponseDTO create(Question questions, List<ResourceLinkDTO> links) {
-        return QuestionResponseDTO.builder()
-            .question(QuestionDTO.create(questions, links))
-            .build();
-    }
+    CertificateServiceUserDTO user;
+    CertificateServicePatientDTO patient;
+    CertificateServiceUnitDTO careUnit;
+    CertificateServiceUnitDTO unit;
+    CertificateServiceUnitDTO careProvider;
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class QuestionResponseDTOBuilder {
+    public static class GetCertificateMessageRequestDTOBuilder {
 
     }
 }

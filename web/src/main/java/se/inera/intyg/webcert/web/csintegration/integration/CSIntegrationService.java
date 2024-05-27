@@ -49,9 +49,13 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CitizenCertifica
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFromMessageResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificteFromMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificatePdfRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificatePdfResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateRequestDTO;
@@ -61,6 +65,9 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertif
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageExistsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.RenewCertificateRequestDTO;
@@ -83,6 +90,7 @@ import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionDTO;
 
 @Service
 public class CSIntegrationService {
@@ -304,6 +312,19 @@ public class CSIntegrationService {
         return Boolean.TRUE.equals(response.getExists());
     }
 
+
+    public Boolean messageExists(String messageId) {
+        final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + "/exists";
+
+        final var response = restTemplate.getForObject(url, MessageExistsResponseDTO.class);
+
+        if (response == null) {
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
+        }
+
+        return Boolean.TRUE.equals(response.getExists());
+    }
+
     public Boolean citizenCertificateExists(String certificateId) {
         final var url = baseUrl + CITIZEN_ENDPOINT_URL + "/" + certificateId + "/exists";
 
@@ -451,6 +472,41 @@ public class CSIntegrationService {
     public void postMessage(IncomingMessageRequestDTO request) {
         final var url = baseUrl + MESSAGE_ENDPOINT_URL;
         restTemplate.postForObject(url, request, Void.class);
+    }
 
+    public List<QuestionDTO> getQuestions(GetCertificateMessageRequestDTO request, String certificateId) {
+        final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + certificateId;
+
+        final var response = restTemplate.postForObject(url, request, GetCertificateMessageResponseDTO.class);
+
+        if (response == null) {
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
+        }
+
+        return response.getQuestions();
+    }
+
+    public QuestionDTO handleMessage(HandleMessageRequestDTO request, String messageId) {
+        final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + "/handle";
+
+        final var response = restTemplate.postForObject(url, request, HandleMessageResponseDTO.class);
+
+        if (response == null) {
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
+        }
+
+        return response.getQuestion();
+    }
+
+    public Certificate getCertificate(GetCertificteFromMessageRequestDTO request, String messageId) {
+        final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + "/certificate";
+
+        final var response = restTemplate.postForObject(url, request, GetCertificateFromMessageResponseDTO.class);
+
+        if (response == null) {
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
+        }
+
+        return response.getCertificate();
     }
 }

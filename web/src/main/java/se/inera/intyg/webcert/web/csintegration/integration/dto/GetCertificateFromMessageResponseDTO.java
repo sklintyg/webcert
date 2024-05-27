@@ -16,31 +16,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.web.controller.facade.dto;
+
+package se.inera.intyg.webcert.web.csintegration.integration.dto;
+
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import java.util.List;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.common.support.facade.model.question.Question;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionResponseDTO.QuestionResponseDTOBuilder;
+import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFromMessageResponseDTO.GetCertificateFromMessageResponseDTOBuilder;
 
-@JsonDeserialize(builder = QuestionResponseDTOBuilder.class)
+@JsonDeserialize(builder = GetCertificateFromMessageResponseDTOBuilder.class)
 @Value
 @Builder
-public class QuestionResponseDTO {
+public class GetCertificateFromMessageResponseDTO {
 
-    QuestionDTO question;
-
-    public static QuestionResponseDTO create(Question questions, List<ResourceLinkDTO> links) {
-        return QuestionResponseDTO.builder()
-            .question(QuestionDTO.create(questions, links))
-            .build();
-    }
+    Certificate certificate;
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class QuestionResponseDTOBuilder {
+    public static class GetCertificateFromMessageResponseDTOBuilder {
 
     }
 }
