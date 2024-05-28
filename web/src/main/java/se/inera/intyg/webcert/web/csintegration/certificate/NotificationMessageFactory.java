@@ -24,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
@@ -54,7 +55,7 @@ public class NotificationMessageFactory {
             eventType,
             certificate.getMetadata().getUnit().getUnitId(),
             null,
-            questionCounter.calculateFragorAndSvar(questions),
+            FragorOchSvar.getEmpty(),
             questionCounter.calculateArendeCount(questions, FrageStallare.WEBCERT),
             questionCounter.calculateArendeCount(questions, FrageStallare.FORSAKRINGSKASSAN),
             SchemaVersion.VERSION_3,
@@ -65,7 +66,7 @@ public class NotificationMessageFactory {
             CertificateStatusUpdateFactory.create(encodedXmlRepresentation, eventType, now, handledByHsaId,
                 certificate.getMetadata().getExternalReference())
         );
-        
+
         return notificationMessage;
     }
 }

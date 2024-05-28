@@ -39,48 +39,6 @@ class QuestionCounterTest {
     }
 
     @Nested
-    class FragorAndSvarTests {
-
-        @Test
-        void shallReturnCorrectAmountOfAnswers() {
-            final var question = QuestionDTO.builder()
-                .author(FrageStallare.WEBCERT.getKod())
-                .build();
-
-            assertEquals(1, questionCounter.calculateFragorAndSvar(List.of(question)).getAntalSvar());
-        }
-
-        @Test
-        void shallReturnCorrectAmountOfHandledAnswers() {
-            final var question = QuestionDTO.builder()
-                .author(FrageStallare.WEBCERT.getKod())
-                .isHandled(true)
-                .build();
-
-            assertEquals(1, questionCounter.calculateFragorAndSvar(List.of(question)).getAntalHanteradeSvar());
-        }
-
-        @Test
-        void shallReturnCorrectAmountOfQuestions() {
-            final var question = QuestionDTO.builder()
-                .author(FrageStallare.FORSAKRINGSKASSAN.getKod())
-                .build();
-
-            assertEquals(1, questionCounter.calculateFragorAndSvar(List.of(question)).getAntalFragor());
-        }
-
-        @Test
-        void shallReturnCorrectAmountOfHandledQuestions() {
-            final var question = QuestionDTO.builder()
-                .author(FrageStallare.FORSAKRINGSKASSAN.getKod())
-                .isHandled(true)
-                .build();
-
-            assertEquals(1, questionCounter.calculateFragorAndSvar(List.of(question)).getAntalHanteradeFragor());
-        }
-    }
-
-    @Nested
     class ArendeCountTests {
 
         @Test

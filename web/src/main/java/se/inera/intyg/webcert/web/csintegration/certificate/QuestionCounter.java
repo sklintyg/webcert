@@ -22,39 +22,11 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 import java.util.List;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
-import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionDTO;
 
 @Component
 public class QuestionCounter {
-
-    public FragorOchSvar calculateFragorAndSvar(List<QuestionDTO> questions) {
-        final var totalAmountOfAnswers = (int) questions.stream()
-            .filter(question -> FrageStallare.WEBCERT.isKodEqual(question.getAuthor()))
-            .count();
-
-        final var totalAmountOfQuestions = (int) questions.stream()
-            .filter(question -> FrageStallare.FORSAKRINGSKASSAN.isKodEqual(question.getAuthor()))
-            .count();
-
-        final var totalAmountOfHandledAnswers = (int) questions.stream()
-            .filter(question -> FrageStallare.WEBCERT.isKodEqual(question.getAuthor()))
-            .filter(QuestionDTO::isHandled)
-            .count();
-
-        final var totalAmountOfHandledQuestions = (int) questions.stream()
-            .filter(question -> FrageStallare.FORSAKRINGSKASSAN.isKodEqual(question.getAuthor()))
-            .filter(QuestionDTO::isHandled)
-            .count();
-
-        return new FragorOchSvar(
-            totalAmountOfQuestions,
-            totalAmountOfAnswers,
-            totalAmountOfHandledQuestions,
-            totalAmountOfHandledAnswers
-        );
-    }
 
     public ArendeCount calculateArendeCount(List<QuestionDTO> questions, FrageStallare frageStallare) {
         final var totalAmount = (int) questions.stream()
