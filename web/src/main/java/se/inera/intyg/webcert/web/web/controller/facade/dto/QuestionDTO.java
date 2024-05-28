@@ -80,6 +80,4 @@ public class QuestionDTO {
     public static class QuestionDTOBuilder {
 
     }
-
-
 }
