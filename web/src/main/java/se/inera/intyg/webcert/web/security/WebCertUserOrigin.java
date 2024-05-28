@@ -94,7 +94,7 @@ public class WebCertUserOrigin implements UserOrigin {
             final var actualObj = mapper.readTree(String.valueOf(savedRequest.getParameterMap().get(USER_JSON_DISPLAY)[0]));
             return actualObj.get(ORIGIN).asText();
         } catch (Exception e) {
-            LOG.error("Could not get origin from fake login request.", e);
+            LOG.warn("Could not get origin from fake login request.");
             return UserOriginType.NORMAL.name();
         }
     }

@@ -66,7 +66,10 @@ public abstract class IntegrationServiceImpl implements IntegrationService {
     public PrepareRedirectToIntyg prepareRedirectToIntyg(
         final String intygTyp, final String intygId,
         final WebCertUser user, final Personnummer prepareBeforeAlternateSsn) {
-        handleReference(intygId, user.getParameters().getReference());
+
+        if (user.getParameters() != null) {
+            handleReference(intygId, user.getParameters().getReference());
+        }
 
         Utkast utkast = utkastRepository.findById(intygId).orElse(null);
 
@@ -79,9 +82,9 @@ public abstract class IntegrationServiceImpl implements IntegrationService {
         return createPrepareRedirectToIntyg(intygTypeInfo, UtkastServiceImpl.isUtkast(utkast));
     }
 
-    private void handleReference(String intygId, String referens) {
-        if (referens != null && !referensService.referensExists(intygId)) {
-            referensService.saveReferens(intygId, referens);
+    private void handleReference(String intygId, String reference) {
+        if (reference != null && !referensService.referensExists(intygId)) {
+            referensService.saveReferens(intygId, reference);
         }
     }
 
