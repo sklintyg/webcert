@@ -179,14 +179,14 @@ class PublishCertificateStatusUpdateServiceTest {
         @Test
         void shallCallNotificationMessageFactoryWithIntygUserIfPresent() {
             doReturn(new NotificationMessage()).when(notificationMessageFactory)
-                .create(certificate, getCertificateXmlResponse.getXml(), HandelsekodEnum.SKAPAT, INTYG_USER_HSA_ID, Optional.empty());
+                .create(certificate, getCertificateXmlResponse.getXml(), HandelsekodEnum.SKAPAT, INTYG_USER_HSA_ID, Optional.of(intygUser));
             doReturn(getCertificateXmlResponse).when(csIntegrationService)
                 .getCertificateXml(any(), eq(CERTIFICATE_ID));
 
             publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKAPAT, Optional.of(intygUser), Optional.empty());
 
             verify(notificationMessageFactory).create(certificate, getCertificateXmlResponse.getXml(), HandelsekodEnum.SKAPAT,
-                INTYG_USER_HSA_ID, Optional.empty());
+                INTYG_USER_HSA_ID, Optional.of(intygUser));
         }
 
         @Test
