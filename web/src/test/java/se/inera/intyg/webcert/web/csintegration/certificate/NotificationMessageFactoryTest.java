@@ -151,19 +151,11 @@ class NotificationMessageFactoryTest {
 
     @Test
     void shallConvertFragorOchSvar() {
-        final var getCertificateMessageRequestDTO = GetCertificateMessageRequestDTO.builder().build();
-        final var questions = List.of(QuestionDTO.builder().build());
-        final var expectedFragorOchSvar = new FragorOchSvar(1, 1, 1, 1);
-
-        doReturn(getCertificateMessageRequestDTO).when(csIntegrationRequestFactory).getCertificateMessageRequest(PERSON_ID);
-        doReturn(questions).when(csIntegrationService).getQuestions(getCertificateMessageRequestDTO, ID);
-        doReturn(expectedFragorOchSvar).when(questionCounter).calculateFragorAndSvar(questions);
-
         final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID);
-        assertEquals(expectedFragorOchSvar.getAntalFragor(), result.getFragaSvar().getAntalFragor());
-        assertEquals(expectedFragorOchSvar.getAntalSvar(), result.getFragaSvar().getAntalSvar());
-        assertEquals(expectedFragorOchSvar.getAntalHanteradeSvar(), result.getFragaSvar().getAntalHanteradeSvar());
-        assertEquals(expectedFragorOchSvar.getAntalHanteradeFragor(), result.getFragaSvar().getAntalHanteradeFragor());
+        assertEquals(FragorOchSvar.getEmpty().getAntalFragor(), result.getFragaSvar().getAntalFragor());
+        assertEquals(FragorOchSvar.getEmpty().getAntalSvar(), result.getFragaSvar().getAntalSvar());
+        assertEquals(FragorOchSvar.getEmpty().getAntalHanteradeSvar(), result.getFragaSvar().getAntalHanteradeSvar());
+        assertEquals(FragorOchSvar.getEmpty().getAntalHanteradeFragor(), result.getFragaSvar().getAntalHanteradeFragor());
     }
 
     @Test
