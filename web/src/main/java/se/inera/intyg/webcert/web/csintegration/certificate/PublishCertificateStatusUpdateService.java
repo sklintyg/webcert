@@ -66,7 +66,8 @@ public class PublishCertificateStatusUpdateService {
             certificate,
             certificateXml,
             eventType,
-            handledByUser.getHsaId()
+            handledByUser.getHsaId(),
+            intygUser
         );
 
         notificationService.send(

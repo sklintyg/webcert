@@ -28,6 +28,7 @@ import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 import javax.xml.bind.JAXBContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -121,37 +122,37 @@ class NotificationMessageFactoryTest {
 
     @Test
     void shallConvertId() {
-        final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID);
+        final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID, Optional.empty());
         assertEquals(ID, result.getIntygsId());
     }
 
     @Test
     void shallConvertType() {
-        final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID);
+        final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID, Optional.empty());
         assertEquals(TYPE_1, result.getIntygsTyp());
     }
 
     @Test
     void shallSetCurrentTimestamp() {
-        final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID);
+        final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID, Optional.empty());
         assertNotNull(result.getHandelseTid());
     }
 
     @Test
     void shallConvertEventType() {
-        final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID);
+        final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID, Optional.empty());
         assertEquals(eventType, result.getHandelse());
     }
 
     @Test
     void shallConvertUnitId() {
-        final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID);
+        final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID, Optional.empty());
         assertEquals(UNIT_ID, result.getLogiskAdress());
     }
 
     @Test
     void shallConvertFragorOchSvar() {
-        final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID);
+        final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID, Optional.empty());
         assertEquals(FragorOchSvar.getEmpty().getAntalFragor(), result.getFragaSvar().getAntalFragor());
         assertEquals(FragorOchSvar.getEmpty().getAntalSvar(), result.getFragaSvar().getAntalSvar());
         assertEquals(FragorOchSvar.getEmpty().getAntalHanteradeSvar(), result.getFragaSvar().getAntalHanteradeSvar());
@@ -164,12 +165,13 @@ class NotificationMessageFactoryTest {
         final var questions = List.of(QuestionDTO.builder().build());
         final var expectedArendeCount = new ArendeCount(1, 1, 1, 1);
 
-        doReturn(getCertificateMessageRequestDTO).when(csIntegrationRequestFactory).getCertificateMessageRequest(PERSON_ID);
+        doReturn(getCertificateMessageRequestDTO).when(csIntegrationRequestFactory)
+            .getCertificateMessageRequest(PERSON_ID, Optional.empty());
         doReturn(questions).when(csIntegrationService).getQuestions(getCertificateMessageRequestDTO, ID);
         doReturn(new ArendeCount()).when(questionCounter).calculateArendeCount(questions, FrageStallare.WEBCERT);
         doReturn(expectedArendeCount).when(questionCounter).calculateArendeCount(questions, FrageStallare.FORSAKRINGSKASSAN);
 
-        final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID);
+        final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID, Optional.empty());
 
         assertEquals(expectedArendeCount.getBesvarade(), result.getMottagnaFragor().getBesvarade());
         assertEquals(expectedArendeCount.getHanterade(), result.getMottagnaFragor().getHanterade());
@@ -183,11 +185,12 @@ class NotificationMessageFactoryTest {
         final var questions = List.of(QuestionDTO.builder().build());
         final var expectedArendeCount = new ArendeCount(1, 1, 1, 1);
 
-        doReturn(getCertificateMessageRequestDTO).when(csIntegrationRequestFactory).getCertificateMessageRequest(PERSON_ID);
+        doReturn(getCertificateMessageRequestDTO).when(csIntegrationRequestFactory)
+            .getCertificateMessageRequest(PERSON_ID, Optional.empty());
         doReturn(questions).when(csIntegrationService).getQuestions(getCertificateMessageRequestDTO, ID);
         doReturn(expectedArendeCount).when(questionCounter).calculateArendeCount(questions, FrageStallare.WEBCERT);
 
-        final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID);
+        final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID, Optional.empty());
         assertEquals(expectedArendeCount.getBesvarade(), result.getSkickadeFragor().getBesvarade());
         assertEquals(expectedArendeCount.getHanterade(), result.getSkickadeFragor().getHanterade());
         assertEquals(expectedArendeCount.getEjBesvarade(), result.getSkickadeFragor().getEjBesvarade());
@@ -196,13 +199,13 @@ class NotificationMessageFactoryTest {
 
     @Test
     void shallConvertSchemaVersion() {
-        final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID);
+        final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID, Optional.empty());
         assertEquals(SchemaVersion.VERSION_3, result.getVersion());
     }
 
     @Test
     void shallConvertExternalReference() {
-        final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID);
+        final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID, Optional.empty());
         assertEquals(EXTERNAL_REF, result.getReference());
     }
 
@@ -211,42 +214,42 @@ class NotificationMessageFactoryTest {
 
         @Test
         void shallIncludeIntygIdInStatusUpdateXml() {
-            final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID);
+            final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID, Optional.empty());
             final var careType = unmarshall(result.getStatusUpdateXml());
             assertEquals(EXPECTED_INTYG.getIntygsId().getExtension(), careType.getIntyg().getIntygsId().getExtension());
         }
 
         @Test
         void shallIncludeHandelseInStatusUpdateXml() {
-            final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID);
+            final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID, Optional.empty());
             final var careType = unmarshall(result.getStatusUpdateXml());
             assertEquals(eventType.value(), careType.getHandelse().getHandelsekod().getCode());
         }
 
         @Test
         void shallIncludeHandelseCodeSystemInStatusUpdateXml() {
-            final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID);
+            final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID, Optional.empty());
             final var careType = unmarshall(result.getStatusUpdateXml());
             assertEquals(KV_HANDELSE_CODE_SYSTEM, careType.getHandelse().getHandelsekod().getCodeSystem());
         }
 
         @Test
         void shallIncludeHandelseTidpunktInStatusUpdateXml() {
-            final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID);
+            final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID, Optional.empty());
             final var careType = unmarshall(result.getStatusUpdateXml());
             assertNotNull(careType.getHandelse().getTidpunkt());
         }
 
         @Test
         void shallIncludeHanteratAvInStatusUpdateXml() {
-            final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID);
+            final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID, Optional.empty());
             final var careType = unmarshall(result.getStatusUpdateXml());
             assertEquals(HSA_ID, careType.getHanteratAv().getExtension());
         }
 
         @Test
         void shallIncludeRef() {
-            final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID);
+            final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID, Optional.empty());
             final var careType = unmarshall(result.getStatusUpdateXml());
             assertEquals(EXTERNAL_REF, careType.getRef());
         }

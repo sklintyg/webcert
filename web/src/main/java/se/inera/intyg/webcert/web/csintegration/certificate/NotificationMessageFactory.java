@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
@@ -27,6 +28,7 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
+import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
@@ -40,10 +42,11 @@ public class NotificationMessageFactory {
     private final QuestionCounter questionCounter;
 
     public NotificationMessage create(Certificate certificate, String encodedXmlRepresentation, HandelsekodEnum eventType,
-        String handledByHsaId) {
+        String handledByUser, Optional<IntygUser> user) {
         final var questions = csIntegrationService.getQuestions(
             csIntegrationRequestFactory.getCertificateMessageRequest(
-                certificate.getMetadata().getPatient().getPersonId().getId()
+                certificate.getMetadata().getPatient().getPersonId().getId(),
+                user
             ),
             certificate.getMetadata().getId()
         );
@@ -63,7 +66,7 @@ public class NotificationMessageFactory {
         );
 
         notificationMessage.setStatusUpdateXml(
-            CertificateStatusUpdateFactory.create(encodedXmlRepresentation, eventType, now, handledByHsaId,
+            CertificateStatusUpdateFactory.create(encodedXmlRepresentation, eventType, now, handledByUser,
                 certificate.getMetadata().getExternalReference())
         );
 

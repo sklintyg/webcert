@@ -402,14 +402,27 @@ public class CSIntegrationRequestFactory {
         return messageRequestConverter.convert(sendMessageToCare);
     }
 
-    public GetCertificateMessageRequestDTO getCertificateMessageRequest(String personId) {
-        return GetCertificateMessageRequestDTO.builder()
-            .unit(certificateServiceUnitHelper.getUnit())
-            .careUnit(certificateServiceUnitHelper.getCareUnit())
-            .careProvider(certificateServiceUnitHelper.getCareProvider())
-            .user(certificateServiceUserHelper.get())
-            .patient(certificateServicePatientHelper.get(createPatientId(personId)))
-            .build();
+    public GetCertificateMessageRequestDTO getCertificateMessageRequest(String personId, Optional<IntygUser> user) {
+        return user.map(
+                intygUser ->
+                    GetCertificateMessageRequestDTO.builder()
+                        .unit(certificateServiceIntegrationUnitHelper.getUnit(intygUser))
+                        .careUnit(certificateServiceIntegrationUnitHelper.getCareUnit(intygUser))
+                        .careProvider(certificateServiceIntegrationUnitHelper.getCareProvider(intygUser))
+                        .user(certificateServiceIntegrationUserHelper.get(intygUser))
+                        .patient(certificateServicePatientHelper.get(createPatientId(personId)))
+                        .build()
+            )
+            .orElseGet(
+                () ->
+                    GetCertificateMessageRequestDTO.builder()
+                        .unit(certificateServiceUnitHelper.getUnit())
+                        .careUnit(certificateServiceUnitHelper.getCareUnit())
+                        .careProvider(certificateServiceUnitHelper.getCareProvider())
+                        .user(certificateServiceUserHelper.get())
+                        .patient(certificateServicePatientHelper.get(createPatientId(personId)))
+                        .build()
+            );
     }
 
     public HandleMessageRequestDTO handleMessageRequestDTO(boolean isHandled) {

@@ -25,6 +25,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -81,7 +82,8 @@ class GetQuestionsFromCertificateServiceTest {
         doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
         doReturn(getCertificateRequestDTO).when(csIntegrationRequestFactory).getCertificateRequest();
         doReturn(certificate).when(csIntegrationService).getCertificate(CERTIFICATE_ID, getCertificateRequestDTO);
-        doReturn(getCertificateMessageRequestDTO).when(csIntegrationRequestFactory).getCertificateMessageRequest(PERSON_ID);
+        doReturn(getCertificateMessageRequestDTO).when(csIntegrationRequestFactory)
+            .getCertificateMessageRequest(PERSON_ID, Optional.empty());
         when(csIntegrationService.getQuestions(getCertificateMessageRequestDTO, CERTIFICATE_ID)).thenReturn(expectedQuestions);
 
         final var actualQuestions = getQuestionsFromCertificateService.get(CERTIFICATE_ID);

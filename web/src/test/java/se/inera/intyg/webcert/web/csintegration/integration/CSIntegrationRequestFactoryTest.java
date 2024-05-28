@@ -28,6 +28,7 @@ import static org.mockito.Mockito.when;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -1473,50 +1474,107 @@ class CSIntegrationRequestFactoryTest {
     @Nested
     class GetCertificateMessageRequestTests {
 
-        @BeforeEach
-        void setup() {
-            when(certificateServiceUserHelper.get())
-                .thenReturn(USER);
-            when(certificateServicePatientHelper.get(any()))
-                .thenReturn(PATIENT);
-            when(certificateServiceUnitHelper.getUnit())
-                .thenReturn(UNIT);
-            when(certificateServiceUnitHelper.getCareUnit())
-                .thenReturn(CARE_UNIT);
-            when(certificateServiceUnitHelper.getCareProvider())
-                .thenReturn(CARE_PROVIDER);
+
+        @Nested
+        class WithoutIntygUser {
+
+            @BeforeEach
+            void setup() {
+                when(certificateServiceUserHelper.get())
+                    .thenReturn(USER);
+                when(certificateServicePatientHelper.get(any()))
+                    .thenReturn(PATIENT);
+                when(certificateServiceUnitHelper.getUnit())
+                    .thenReturn(UNIT);
+                when(certificateServiceUnitHelper.getCareUnit())
+                    .thenReturn(CARE_UNIT);
+                when(certificateServiceUnitHelper.getCareProvider())
+                    .thenReturn(CARE_PROVIDER);
+            }
+
+            @Test
+            void shouldSetUser() {
+                final var actualRequest = csIntegrationRequestFactory.getCertificateMessageRequest(PATIENT_ID, Optional.empty());
+                assertEquals(USER, actualRequest.getUser());
+            }
+
+            @Test
+            void shouldSetUnit() {
+                final var actualRequest = csIntegrationRequestFactory.getCertificateMessageRequest(PATIENT_ID, Optional.empty());
+                assertEquals(UNIT, actualRequest.getUnit());
+            }
+
+            @Test
+            void shouldSetCareUnit() {
+                final var actualRequest = csIntegrationRequestFactory.getCertificateMessageRequest(PATIENT_ID, Optional.empty());
+                assertEquals(CARE_UNIT, actualRequest.getCareUnit());
+            }
+
+            @Test
+            void shouldSetCareProvider() {
+                final var actualRequest = csIntegrationRequestFactory.getCertificateMessageRequest(PATIENT_ID, Optional.empty());
+                assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
+            }
+
+            @Test
+            void shouldSetPatient() {
+                final var actualRequest = csIntegrationRequestFactory.getCertificateMessageRequest(PATIENT_ID, Optional.empty());
+
+                verify(certificateServicePatientHelper).get(PERSONNUMMER);
+                assertEquals(PATIENT, actualRequest.getPatient());
+            }
         }
 
-        @Test
-        void shouldSetUser() {
-            final var actualRequest = csIntegrationRequestFactory.getCertificateMessageRequest(PATIENT_ID);
-            assertEquals(USER, actualRequest.getUser());
-        }
+        @Nested
+        class WithIntygUser {
 
-        @Test
-        void shouldSetUnit() {
-            final var actualRequest = csIntegrationRequestFactory.getCertificateMessageRequest(PATIENT_ID);
-            assertEquals(UNIT, actualRequest.getUnit());
-        }
+            private final IntygUser user = new IntygUser("id");
 
-        @Test
-        void shouldSetCareUnit() {
-            final var actualRequest = csIntegrationRequestFactory.getCertificateMessageRequest(PATIENT_ID);
-            assertEquals(CARE_UNIT, actualRequest.getCareUnit());
-        }
+            @BeforeEach
+            void setup() {
+                when(certificateServiceIntegrationUserHelper.get(user))
+                    .thenReturn(USER);
+                when(certificateServicePatientHelper.get(any()))
+                    .thenReturn(PATIENT);
+                when(certificateServiceIntegrationUnitHelper.getUnit(user))
+                    .thenReturn(UNIT);
+                when(certificateServiceIntegrationUnitHelper.getCareUnit(user))
+                    .thenReturn(CARE_UNIT);
+                when(certificateServiceIntegrationUnitHelper.getCareProvider(user))
+                    .thenReturn(CARE_PROVIDER);
+            }
 
-        @Test
-        void shouldSetCareProvider() {
-            final var actualRequest = csIntegrationRequestFactory.getCertificateMessageRequest(PATIENT_ID);
-            assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
-        }
+            @Test
+            void shouldSetUser() {
+                final var actualRequest = csIntegrationRequestFactory.getCertificateMessageRequest(PATIENT_ID, Optional.of(user));
+                assertEquals(USER, actualRequest.getUser());
+            }
 
-        @Test
-        void shouldSetPatient() {
-            final var actualRequest = csIntegrationRequestFactory.getCertificateMessageRequest(PATIENT_ID);
+            @Test
+            void shouldSetUnit() {
+                final var actualRequest = csIntegrationRequestFactory.getCertificateMessageRequest(PATIENT_ID, Optional.of(user));
+                assertEquals(UNIT, actualRequest.getUnit());
+            }
 
-            verify(certificateServicePatientHelper).get(PERSONNUMMER);
-            assertEquals(PATIENT, actualRequest.getPatient());
+            @Test
+            void shouldSetCareUnit() {
+                final var actualRequest = csIntegrationRequestFactory.getCertificateMessageRequest(PATIENT_ID, Optional.of(user));
+                assertEquals(CARE_UNIT, actualRequest.getCareUnit());
+            }
+
+            @Test
+            void shouldSetCareProvider() {
+                final var actualRequest = csIntegrationRequestFactory.getCertificateMessageRequest(PATIENT_ID, Optional.of(user));
+                assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
+            }
+
+            @Test
+            void shouldSetPatient() {
+                final var actualRequest = csIntegrationRequestFactory.getCertificateMessageRequest(PATIENT_ID, Optional.of(user));
+
+                verify(certificateServicePatientHelper).get(PERSONNUMMER);
+                assertEquals(PATIENT, actualRequest.getPatient());
+            }
         }
     }
 

@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.csintegration.message;
 
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -50,7 +51,8 @@ public class GetQuestionsFromCertificateService {
 
         final var questions = csIntegrationService.getQuestions(
             csIntegrationRequestFactory.getCertificateMessageRequest(
-                certificate.getMetadata().getPatient().getPersonId().getId()
+                certificate.getMetadata().getPatient().getPersonId().getId(),
+                Optional.empty()
             ),
             certificateId
         );
