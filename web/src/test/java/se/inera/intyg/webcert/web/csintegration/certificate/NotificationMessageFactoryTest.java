@@ -50,6 +50,7 @@ import se.inera.intyg.common.support.xml.XmlMarshallerHelper;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageRequestDTO;
+import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionDTO;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.registerCertificate.v3.ObjectFactory;
@@ -78,7 +79,7 @@ class NotificationMessageFactoryTest {
     @Mock
     private CSIntegrationRequestFactory csIntegrationRequestFactory;
     @Mock
-    private FragorOchSvarFactory fragorOchSvarFactory;
+    private QuestionCounter questionCounter;
     @InjectMocks
     private NotificationMessageFactory converter;
     private RegisterCertificateType registerCertificateType;
@@ -151,14 +152,12 @@ class NotificationMessageFactoryTest {
     @Test
     void shallConvertFragorOchSvar() {
         final var getCertificateMessageRequestDTO = GetCertificateMessageRequestDTO.builder().build();
-
-        doReturn(getCertificateMessageRequestDTO).when(csIntegrationRequestFactory)
-            .getCertificateMessageRequest(PERSON_ID);
         final var questions = List.of(QuestionDTO.builder().build());
-        doReturn(questions).when(csIntegrationService)
-            .getQuestions(getCertificateMessageRequestDTO, ID);
-        final var expectedFragorOchSvar = new FragorOchSvar();
-        doReturn(expectedFragorOchSvar).when(fragorOchSvarFactory).calculate(questions);
+        final var expectedFragorOchSvar = new FragorOchSvar(1, 1, 1, 1);
+
+        doReturn(getCertificateMessageRequestDTO).when(csIntegrationRequestFactory).getCertificateMessageRequest(PERSON_ID);
+        doReturn(questions).when(csIntegrationService).getQuestions(getCertificateMessageRequestDTO, ID);
+        doReturn(expectedFragorOchSvar).when(questionCounter).calculateFragorAndSvar(questions);
 
         final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID);
         assertEquals(expectedFragorOchSvar.getAntalFragor(), result.getFragaSvar().getAntalFragor());
@@ -169,20 +168,38 @@ class NotificationMessageFactoryTest {
 
     @Test
     void shallConvertMottagnaFragor() {
+        final var getCertificateMessageRequestDTO = GetCertificateMessageRequestDTO.builder().build();
+        final var questions = List.of(QuestionDTO.builder().build());
+        final var expectedArendeCount = new ArendeCount(1, 1, 1, 1);
+
+        doReturn(getCertificateMessageRequestDTO).when(csIntegrationRequestFactory).getCertificateMessageRequest(PERSON_ID);
+        doReturn(questions).when(csIntegrationService).getQuestions(getCertificateMessageRequestDTO, ID);
+        doReturn(new ArendeCount()).when(questionCounter).calculateArendeCount(questions, FrageStallare.WEBCERT);
+        doReturn(expectedArendeCount).when(questionCounter).calculateArendeCount(questions, FrageStallare.FORSAKRINGSKASSAN);
+
         final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID);
-        assertEquals(ArendeCount.getEmpty().getBesvarade(), result.getMottagnaFragor().getBesvarade());
-        assertEquals(ArendeCount.getEmpty().getHanterade(), result.getMottagnaFragor().getHanterade());
-        assertEquals(ArendeCount.getEmpty().getEjBesvarade(), result.getMottagnaFragor().getEjBesvarade());
-        assertEquals(ArendeCount.getEmpty().getTotalt(), result.getMottagnaFragor().getTotalt());
+
+        assertEquals(expectedArendeCount.getBesvarade(), result.getMottagnaFragor().getBesvarade());
+        assertEquals(expectedArendeCount.getHanterade(), result.getMottagnaFragor().getHanterade());
+        assertEquals(expectedArendeCount.getEjBesvarade(), result.getMottagnaFragor().getEjBesvarade());
+        assertEquals(expectedArendeCount.getTotalt(), result.getMottagnaFragor().getTotalt());
     }
 
     @Test
     void shallConvertSkickadeFragor() {
+        final var getCertificateMessageRequestDTO = GetCertificateMessageRequestDTO.builder().build();
+        final var questions = List.of(QuestionDTO.builder().build());
+        final var expectedArendeCount = new ArendeCount(1, 1, 1, 1);
+
+        doReturn(getCertificateMessageRequestDTO).when(csIntegrationRequestFactory).getCertificateMessageRequest(PERSON_ID);
+        doReturn(questions).when(csIntegrationService).getQuestions(getCertificateMessageRequestDTO, ID);
+        doReturn(expectedArendeCount).when(questionCounter).calculateArendeCount(questions, FrageStallare.WEBCERT);
+
         final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID);
-        assertEquals(ArendeCount.getEmpty().getBesvarade(), result.getSkickadeFragor().getBesvarade());
-        assertEquals(ArendeCount.getEmpty().getHanterade(), result.getSkickadeFragor().getHanterade());
-        assertEquals(ArendeCount.getEmpty().getEjBesvarade(), result.getSkickadeFragor().getEjBesvarade());
-        assertEquals(ArendeCount.getEmpty().getTotalt(), result.getSkickadeFragor().getTotalt());
+        assertEquals(expectedArendeCount.getBesvarade(), result.getSkickadeFragor().getBesvarade());
+        assertEquals(expectedArendeCount.getHanterade(), result.getSkickadeFragor().getHanterade());
+        assertEquals(expectedArendeCount.getEjBesvarade(), result.getSkickadeFragor().getEjBesvarade());
+        assertEquals(expectedArendeCount.getTotalt(), result.getSkickadeFragor().getTotalt());
     }
 
     @Test

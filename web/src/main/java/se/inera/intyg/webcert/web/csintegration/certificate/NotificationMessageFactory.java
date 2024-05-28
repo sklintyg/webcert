@@ -24,11 +24,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
+import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 
 @Component
 @RequiredArgsConstructor
@@ -36,7 +36,7 @@ public class NotificationMessageFactory {
 
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
-    private final FragorOchSvarFactory fragorOchSvarFactory;
+    private final QuestionCounter questionCounter;
 
     public NotificationMessage create(Certificate certificate, String encodedXmlRepresentation, HandelsekodEnum eventType,
         String handledByHsaId) {
@@ -54,9 +54,9 @@ public class NotificationMessageFactory {
             eventType,
             certificate.getMetadata().getUnit().getUnitId(),
             null,
-            fragorOchSvarFactory.calculate(questions),
-            ArendeCount.getEmpty(),
-            ArendeCount.getEmpty(),
+            questionCounter.calculateFragorAndSvar(questions),
+            questionCounter.calculateArendeCount(questions, FrageStallare.WEBCERT),
+            questionCounter.calculateArendeCount(questions, FrageStallare.FORSAKRINGSKASSAN),
             SchemaVersion.VERSION_3,
             certificate.getMetadata().getExternalReference()
         );

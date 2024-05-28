@@ -1,0 +1,130 @@
+/*
+ * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package se.inera.intyg.webcert.web.csintegration.certificate;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import se.inera.intyg.common.support.facade.model.question.Answer;
+import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionDTO;
+
+class QuestionCounterTest {
+
+    private QuestionCounter questionCounter;
+
+    @BeforeEach
+    void setUp() {
+        questionCounter = new QuestionCounter();
+    }
+
+    @Nested
+    class FragorAndSvarTests {
+
+        @Test
+        void shallReturnCorrectAmountOfAnswers() {
+            final var question = QuestionDTO.builder()
+                .author(FrageStallare.WEBCERT.getKod())
+                .build();
+
+            assertEquals(1, questionCounter.calculateFragorAndSvar(List.of(question)).getAntalSvar());
+        }
+
+        @Test
+        void shallReturnCorrectAmountOfHandledAnswers() {
+            final var question = QuestionDTO.builder()
+                .author(FrageStallare.WEBCERT.getKod())
+                .isHandled(true)
+                .build();
+
+            assertEquals(1, questionCounter.calculateFragorAndSvar(List.of(question)).getAntalHanteradeSvar());
+        }
+
+        @Test
+        void shallReturnCorrectAmountOfQuestions() {
+            final var question = QuestionDTO.builder()
+                .author(FrageStallare.FORSAKRINGSKASSAN.getKod())
+                .build();
+
+            assertEquals(1, questionCounter.calculateFragorAndSvar(List.of(question)).getAntalFragor());
+        }
+
+        @Test
+        void shallReturnCorrectAmountOfHandledQuestions() {
+            final var question = QuestionDTO.builder()
+                .author(FrageStallare.FORSAKRINGSKASSAN.getKod())
+                .isHandled(true)
+                .build();
+
+            assertEquals(1, questionCounter.calculateFragorAndSvar(List.of(question)).getAntalHanteradeFragor());
+        }
+    }
+
+    @Nested
+    class ArendeCountTests {
+
+        @Test
+        void shallReturnCorrectAmountOfTotal() {
+            final var question = QuestionDTO.builder()
+                .author(FrageStallare.FORSAKRINGSKASSAN.getKod())
+                .isHandled(true)
+                .build();
+
+            assertEquals(1, questionCounter.calculateArendeCount(List.of(question), FrageStallare.FORSAKRINGSKASSAN).getTotalt());
+        }
+
+        @Test
+        void shallReturnCorrectAmountOfNotAnswered() {
+            final var question = QuestionDTO.builder()
+                .author(FrageStallare.FORSAKRINGSKASSAN.getKod())
+                .isHandled(false)
+                .build();
+
+            assertEquals(1, questionCounter.calculateArendeCount(List.of(question), FrageStallare.FORSAKRINGSKASSAN).getEjBesvarade());
+        }
+
+        @Test
+        void shallReturnCorrectAmountOfAnswered() {
+            final var question = QuestionDTO.builder()
+                .author(FrageStallare.FORSAKRINGSKASSAN.getKod())
+                .isHandled(false)
+                .answer(
+                    Answer.builder().build()
+                )
+                .build();
+
+            assertEquals(1, questionCounter.calculateArendeCount(List.of(question), FrageStallare.FORSAKRINGSKASSAN).getBesvarade());
+        }
+
+
+        @Test
+        void shallReturnCorrectAmountOfHandled() {
+            final var question = QuestionDTO.builder()
+                .author(FrageStallare.FORSAKRINGSKASSAN.getKod())
+                .isHandled(true)
+                .build();
+
+            assertEquals(1, questionCounter.calculateArendeCount(List.of(question), FrageStallare.FORSAKRINGSKASSAN).getHanterade());
+        }
+    }
+}
