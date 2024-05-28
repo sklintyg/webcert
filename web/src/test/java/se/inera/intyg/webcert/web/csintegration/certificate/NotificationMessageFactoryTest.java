@@ -21,17 +21,25 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.doReturn;
 import static se.inera.intyg.common.support.Constants.KV_HANDELSE_CODE_SYSTEM;
 
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.List;
 import javax.xml.bind.JAXBContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.Patient;
+import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.common.support.facade.model.Staff;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
@@ -39,6 +47,11 @@ import se.inera.intyg.common.support.modules.support.api.notification.ArendeCoun
 import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.common.support.xml.XmlMarshallerHelper;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageRequestDTO;
+import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionDTO;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.registerCertificate.v3.ObjectFactory;
 import se.riv.clinicalprocess.healthcond.certificate.registerCertificate.v3.RegisterCertificateType;
@@ -46,6 +59,7 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.DatePeriodType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
+@ExtendWith(MockitoExtension.class)
 class NotificationMessageFactoryTest {
 
     private static final String ID = "id1";
@@ -53,12 +67,20 @@ class NotificationMessageFactoryTest {
     private static final String UNIT_ID = "unit1";
     private static final String EXTERNAL_REF = "externalRef";
     private static final String PERSON_ID = "personId";
+    private static final String STAFF_ID = "staffId";
     private static final Intyg EXPECTED_INTYG = new Intyg();
     private static final String CERTIFICATE_ID = "certificateId";
     private static final String HSA_ID = "hsaId";
     private Certificate certificate;
     private String xmlRepresentation;
     private HandelsekodEnum eventType;
+    @Mock
+    private CSIntegrationService csIntegrationService;
+    @Mock
+    private CSIntegrationRequestFactory csIntegrationRequestFactory;
+    @Mock
+    private QuestionCounter questionCounter;
+    @InjectMocks
     private NotificationMessageFactory converter;
     private RegisterCertificateType registerCertificateType;
 
@@ -70,7 +92,16 @@ class NotificationMessageFactoryTest {
             .unit(Unit.builder().unitId(UNIT_ID).build())
             .issuedBy(
                 Staff.builder()
-                    .personId(PERSON_ID)
+                    .personId(STAFF_ID)
+                    .build()
+            )
+            .patient(
+                Patient.builder()
+                    .personId(
+                        PersonId.builder()
+                            .id(PERSON_ID)
+                            .build()
+                    )
                     .build()
             )
             .externalReference(EXTERNAL_REF)
@@ -82,7 +113,6 @@ class NotificationMessageFactoryTest {
         certificate = new Certificate();
         certificate.setMetadata(metadata);
         eventType = HandelsekodEnum.SIGNAT;
-        converter = new NotificationMessageFactory();
         registerCertificateType = new RegisterCertificateType();
         registerCertificateType.setIntyg(EXPECTED_INTYG);
         final var marshall = marshall(registerCertificateType);
@@ -130,20 +160,38 @@ class NotificationMessageFactoryTest {
 
     @Test
     void shallConvertMottagnaFragor() {
+        final var getCertificateMessageRequestDTO = GetCertificateMessageRequestDTO.builder().build();
+        final var questions = List.of(QuestionDTO.builder().build());
+        final var expectedArendeCount = new ArendeCount(1, 1, 1, 1);
+
+        doReturn(getCertificateMessageRequestDTO).when(csIntegrationRequestFactory).getCertificateMessageRequest(PERSON_ID);
+        doReturn(questions).when(csIntegrationService).getQuestions(getCertificateMessageRequestDTO, ID);
+        doReturn(new ArendeCount()).when(questionCounter).calculateArendeCount(questions, FrageStallare.WEBCERT);
+        doReturn(expectedArendeCount).when(questionCounter).calculateArendeCount(questions, FrageStallare.FORSAKRINGSKASSAN);
+
         final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID);
-        assertEquals(ArendeCount.getEmpty().getBesvarade(), result.getMottagnaFragor().getBesvarade());
-        assertEquals(ArendeCount.getEmpty().getHanterade(), result.getMottagnaFragor().getHanterade());
-        assertEquals(ArendeCount.getEmpty().getEjBesvarade(), result.getMottagnaFragor().getEjBesvarade());
-        assertEquals(ArendeCount.getEmpty().getTotalt(), result.getMottagnaFragor().getTotalt());
+
+        assertEquals(expectedArendeCount.getBesvarade(), result.getMottagnaFragor().getBesvarade());
+        assertEquals(expectedArendeCount.getHanterade(), result.getMottagnaFragor().getHanterade());
+        assertEquals(expectedArendeCount.getEjBesvarade(), result.getMottagnaFragor().getEjBesvarade());
+        assertEquals(expectedArendeCount.getTotalt(), result.getMottagnaFragor().getTotalt());
     }
 
     @Test
     void shallConvertSkickadeFragor() {
+        final var getCertificateMessageRequestDTO = GetCertificateMessageRequestDTO.builder().build();
+        final var questions = List.of(QuestionDTO.builder().build());
+        final var expectedArendeCount = new ArendeCount(1, 1, 1, 1);
+
+        doReturn(getCertificateMessageRequestDTO).when(csIntegrationRequestFactory).getCertificateMessageRequest(PERSON_ID);
+        doReturn(questions).when(csIntegrationService).getQuestions(getCertificateMessageRequestDTO, ID);
+        doReturn(expectedArendeCount).when(questionCounter).calculateArendeCount(questions, FrageStallare.WEBCERT);
+
         final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID);
-        assertEquals(ArendeCount.getEmpty().getBesvarade(), result.getSkickadeFragor().getBesvarade());
-        assertEquals(ArendeCount.getEmpty().getHanterade(), result.getSkickadeFragor().getHanterade());
-        assertEquals(ArendeCount.getEmpty().getEjBesvarade(), result.getSkickadeFragor().getEjBesvarade());
-        assertEquals(ArendeCount.getEmpty().getTotalt(), result.getSkickadeFragor().getTotalt());
+        assertEquals(expectedArendeCount.getBesvarade(), result.getSkickadeFragor().getBesvarade());
+        assertEquals(expectedArendeCount.getHanterade(), result.getSkickadeFragor().getHanterade());
+        assertEquals(expectedArendeCount.getEjBesvarade(), result.getSkickadeFragor().getEjBesvarade());
+        assertEquals(expectedArendeCount.getTotalt(), result.getSkickadeFragor().getTotalt());
     }
 
     @Test
@@ -194,6 +242,13 @@ class NotificationMessageFactoryTest {
             final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID);
             final var careType = unmarshall(result.getStatusUpdateXml());
             assertEquals(HSA_ID, careType.getHanteratAv().getExtension());
+        }
+
+        @Test
+        void shallIncludeRef() {
+            final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID);
+            final var careType = unmarshall(result.getStatusUpdateXml());
+            assertEquals(EXTERNAL_REF, careType.getRef());
         }
     }
 
