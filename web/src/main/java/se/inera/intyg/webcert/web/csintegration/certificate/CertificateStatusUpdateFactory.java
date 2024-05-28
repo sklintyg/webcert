@@ -50,7 +50,7 @@ public class CertificateStatusUpdateFactory {
     }
 
     public static byte[] create(String encodedXmlRepresentation, HandelsekodEnum eventType,
-        LocalDateTime now, String handledByHsaId) {
+        LocalDateTime now, String handledByHsaId, String reference) {
         final var request = getRegisterCertificateType(encodedXmlRepresentation);
 
         final var certificateStatusUpdateForCareType = new CertificateStatusUpdateForCareType();
@@ -63,6 +63,7 @@ public class CertificateStatusUpdateFactory {
         certificateStatusUpdateForCareType.setHanteratAv(
             NotificationRedeliveryUtil.getIIType(new HsaId(), handledByHsaId, HSA_ID_OID)
         );
+        certificateStatusUpdateForCareType.setRef(reference);
 
         final var factory = new ObjectFactory();
         final var certificateStatusUpdateForCare = factory.createCertificateStatusUpdateForCare(certificateStatusUpdateForCareType);

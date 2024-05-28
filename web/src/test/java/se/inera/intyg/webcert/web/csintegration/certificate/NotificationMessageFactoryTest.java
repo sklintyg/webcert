@@ -251,6 +251,13 @@ class NotificationMessageFactoryTest {
             final var careType = unmarshall(result.getStatusUpdateXml());
             assertEquals(HSA_ID, careType.getHanteratAv().getExtension());
         }
+
+        @Test
+        void shallIncludeRef() {
+            final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID);
+            final var careType = unmarshall(result.getStatusUpdateXml());
+            assertEquals(EXTERNAL_REF, careType.getRef());
+        }
     }
 
 
