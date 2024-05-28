@@ -42,7 +42,7 @@ public class NotificationMessageFactory {
     private final QuestionCounter questionCounter;
 
     public NotificationMessage create(Certificate certificate, String encodedXmlRepresentation, HandelsekodEnum eventType,
-        String handledByUser, Optional<IntygUser> user) {
+        String handledByHsaId, Optional<IntygUser> user) {
         final var questions = csIntegrationService.getQuestions(
             csIntegrationRequestFactory.getCertificateMessageRequest(
                 certificate.getMetadata().getPatient().getPersonId().getId(),
@@ -66,7 +66,7 @@ public class NotificationMessageFactory {
         );
 
         notificationMessage.setStatusUpdateXml(
-            CertificateStatusUpdateFactory.create(encodedXmlRepresentation, eventType, now, handledByUser,
+            CertificateStatusUpdateFactory.create(encodedXmlRepresentation, eventType, now, handledByHsaId,
                 certificate.getMetadata().getExternalReference())
         );
 
