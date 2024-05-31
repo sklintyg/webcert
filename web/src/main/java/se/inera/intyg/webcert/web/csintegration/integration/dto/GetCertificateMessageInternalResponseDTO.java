@@ -5,10 +5,10 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.util.List;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageInternalResponseDTO.GetCertificateMessageInternalResponseBuilder;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageInternalResponseDTO.GetCertificateMessageInternalResponseDTOBuilder;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionDTO;
 
-@JsonDeserialize(builder = GetCertificateMessageInternalResponseBuilder.class)
+@JsonDeserialize(builder = GetCertificateMessageInternalResponseDTOBuilder.class)
 @Value
 @Builder
 public class GetCertificateMessageInternalResponseDTO {
@@ -16,7 +16,7 @@ public class GetCertificateMessageInternalResponseDTO {
     List<QuestionDTO> questions;
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class GetCertificateMessageInternalResponseBuilder {
+    public static class GetCertificateMessageInternalResponseDTOBuilder {
 
     }
 }
