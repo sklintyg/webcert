@@ -224,9 +224,10 @@ class CSIntegrationServiceTest {
     private static final GetCertificateMessageResponseDTO GET_CERTIFICATE_MESSAGE_RESPONSE_DTO = GetCertificateMessageResponseDTO.builder()
         .questions(QUESTIONS)
         .build();
-    private static final GetCertificateMessageInternalResponseDTO GET_CERTIFICATE_MESSAGE_INTERNAL_RESPONSE_DTO = GetCertificateMessageInternalResponseDTO.builder()
-        .questions(QUESTIONS)
-        .build();
+    private static final GetCertificateMessageInternalResponseDTO GET_CERTIFICATE_MESSAGE_INTERNAL_RESPONSE_DTO =
+        GetCertificateMessageInternalResponseDTO.builder()
+            .questions(QUESTIONS)
+            .build();
 
     private static final HandleMessageRequestDTO HANDLE_MESSAGE_REQUEST_DTO = HandleMessageRequestDTO.builder()
         .build();
