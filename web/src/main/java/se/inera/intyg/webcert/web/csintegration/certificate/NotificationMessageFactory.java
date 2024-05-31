@@ -27,7 +27,6 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
-import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 
@@ -36,15 +35,11 @@ import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 public class NotificationMessageFactory {
 
     private final CSIntegrationService csIntegrationService;
-    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
     private final QuestionCounter questionCounter;
 
     public NotificationMessage create(Certificate certificate, String encodedXmlRepresentation, HandelsekodEnum eventType,
         String handledByHsaId) {
         final var questions = csIntegrationService.getQuestions(
-            csIntegrationRequestFactory.getCertificateMessageRequest(
-                certificate.getMetadata().getPatient().getPersonId().getId()
-            ),
             certificate.getMetadata().getId()
         );
         final var now = LocalDateTime.now();

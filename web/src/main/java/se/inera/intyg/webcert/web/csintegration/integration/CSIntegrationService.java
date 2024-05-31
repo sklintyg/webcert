@@ -50,6 +50,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificat
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFromMessageResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageInternalResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
@@ -98,6 +99,7 @@ public class CSIntegrationService {
     private static final String CERTIFICATE_ENDPOINT_URL = "/api/certificate";
     private static final String CITIZEN_ENDPOINT_URL = "/api/citizen/certificate";
     private static final String MESSAGE_ENDPOINT_URL = "/api/message";
+    private static final String INTERNAL_MESSAGE_ENDPOINT_URL = "/internalapi/message";
     private static final String PATIENT_ENDPOINT_URL = "/api/patient";
     private static final String CERTIFICATE_TYPE_INFO_ENDPOINT_URL = "/api/certificatetypeinfo";
     private static final String UNIT_ENDPOINT_URL = "/api/unit";
@@ -508,5 +510,17 @@ public class CSIntegrationService {
         }
 
         return response.getCertificate();
+    }
+
+    public List<QuestionDTO> getQuestions(String certificateId) {
+        final var url = baseUrl + INTERNAL_MESSAGE_ENDPOINT_URL + "/" + certificateId;
+
+        final var response = restTemplate.postForObject(url, null, GetCertificateMessageInternalResponseDTO.class);
+
+        if (response == null) {
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
+        }
+
+        return response.getQuestions();
     }
 }
