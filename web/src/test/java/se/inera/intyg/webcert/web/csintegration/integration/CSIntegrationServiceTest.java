@@ -68,6 +68,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificat
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFromMessageResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageInternalResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
@@ -223,6 +224,10 @@ class CSIntegrationServiceTest {
     private static final GetCertificateMessageResponseDTO GET_CERTIFICATE_MESSAGE_RESPONSE_DTO = GetCertificateMessageResponseDTO.builder()
         .questions(QUESTIONS)
         .build();
+    private static final GetCertificateMessageInternalResponseDTO GET_CERTIFICATE_MESSAGE_INTERNAL_RESPONSE_DTO =
+        GetCertificateMessageInternalResponseDTO.builder()
+            .questions(QUESTIONS)
+            .build();
 
     private static final HandleMessageRequestDTO HANDLE_MESSAGE_REQUEST_DTO = HandleMessageRequestDTO.builder()
         .build();
@@ -1694,6 +1699,40 @@ class CSIntegrationServiceTest {
             verify(restTemplate).postForObject(captor.capture(), any(), any());
 
             assertEquals("baseUrl/api/message/" + MESSAGE_ID + "/certificate", captor.getValue());
+        }
+    }
+
+    @Nested
+    class GetCertificateQuestionsInternal {
+
+        @Test
+        void shouldReturnQuestions() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(GET_CERTIFICATE_MESSAGE_INTERNAL_RESPONSE_DTO);
+            final var response = csIntegrationService.getQuestions(CERTIFICATE_ID);
+
+            assertEquals(QUESTIONS, response);
+        }
+
+        @Test
+        void shouldThrowIfResponseIsNull() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(null);
+            assertThrows(IllegalStateException.class,
+                () -> csIntegrationService.getQuestions(CERTIFICATE_ID));
+        }
+
+        @Test
+        void shouldSetUrlCorrect() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(GET_CERTIFICATE_MESSAGE_INTERNAL_RESPONSE_DTO);
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            csIntegrationService.getQuestions(CERTIFICATE_ID);
+            verify(restTemplate).postForObject(captor.capture(), any(), any());
+
+            assertEquals("baseUrl/internalapi/message/" + CERTIFICATE_ID, captor.getValue());
         }
     }
 }

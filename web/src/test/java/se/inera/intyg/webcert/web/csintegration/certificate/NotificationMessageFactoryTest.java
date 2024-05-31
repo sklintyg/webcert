@@ -47,9 +47,7 @@ import se.inera.intyg.common.support.modules.support.api.notification.ArendeCoun
 import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.common.support.xml.XmlMarshallerHelper;
-import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageRequestDTO;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionDTO;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
@@ -76,8 +74,6 @@ class NotificationMessageFactoryTest {
     private HandelsekodEnum eventType;
     @Mock
     private CSIntegrationService csIntegrationService;
-    @Mock
-    private CSIntegrationRequestFactory csIntegrationRequestFactory;
     @Mock
     private QuestionCounter questionCounter;
     @InjectMocks
@@ -160,12 +156,10 @@ class NotificationMessageFactoryTest {
 
     @Test
     void shallConvertMottagnaFragor() {
-        final var getCertificateMessageRequestDTO = GetCertificateMessageRequestDTO.builder().build();
         final var questions = List.of(QuestionDTO.builder().build());
         final var expectedArendeCount = new ArendeCount(1, 1, 1, 1);
 
-        doReturn(getCertificateMessageRequestDTO).when(csIntegrationRequestFactory).getCertificateMessageRequest(PERSON_ID);
-        doReturn(questions).when(csIntegrationService).getQuestions(getCertificateMessageRequestDTO, ID);
+        doReturn(questions).when(csIntegrationService).getQuestions(ID);
         doReturn(new ArendeCount()).when(questionCounter).calculateArendeCount(questions, FrageStallare.WEBCERT);
         doReturn(expectedArendeCount).when(questionCounter).calculateArendeCount(questions, FrageStallare.FORSAKRINGSKASSAN);
 
@@ -179,12 +173,10 @@ class NotificationMessageFactoryTest {
 
     @Test
     void shallConvertSkickadeFragor() {
-        final var getCertificateMessageRequestDTO = GetCertificateMessageRequestDTO.builder().build();
         final var questions = List.of(QuestionDTO.builder().build());
         final var expectedArendeCount = new ArendeCount(1, 1, 1, 1);
 
-        doReturn(getCertificateMessageRequestDTO).when(csIntegrationRequestFactory).getCertificateMessageRequest(PERSON_ID);
-        doReturn(questions).when(csIntegrationService).getQuestions(getCertificateMessageRequestDTO, ID);
+        doReturn(questions).when(csIntegrationService).getQuestions(ID);
         doReturn(expectedArendeCount).when(questionCounter).calculateArendeCount(questions, FrageStallare.WEBCERT);
 
         final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID);
