@@ -50,8 +50,7 @@ public class ProcessIncomingMessageService {
         );
 
         final var certificate = csIntegrationService.getCertificate(
-            sendMessageToCare.getIntygsId().getExtension(),
-            csIntegrationRequestFactory.getCertificateRequest()
+            sendMessageToCare.getIntygsId().getExtension()
         );
 
         final var questionType = ArendeAmne.valueOf(sendMessageToCare.getAmne().getCode());

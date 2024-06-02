@@ -97,6 +97,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionDTO;
 public class CSIntegrationService {
 
     private static final String CERTIFICATE_ENDPOINT_URL = "/api/certificate";
+    private static final String INTERNAL_CERTIFICATE_ENDPOINT_URL = "/internalapi/certificate";
     private static final String CITIZEN_ENDPOINT_URL = "/api/citizen/certificate";
     private static final String MESSAGE_ENDPOINT_URL = "/api/message";
     private static final String INTERNAL_MESSAGE_ENDPOINT_URL = "/internalapi/message";
@@ -522,5 +523,17 @@ public class CSIntegrationService {
         }
 
         return response.getQuestions();
+    }
+
+    public Certificate getCertificate(String certificateId) {
+        final var url = baseUrl + INTERNAL_CERTIFICATE_ENDPOINT_URL + "/" + certificateId;
+
+        final var response = restTemplate.postForObject(url, null, CertificateServiceGetCertificateResponseDTO.class);
+
+        if (response == null) {
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
+        }
+
+        return response.getCertificate();
     }
 }

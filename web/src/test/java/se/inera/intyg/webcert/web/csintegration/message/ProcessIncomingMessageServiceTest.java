@@ -94,11 +94,7 @@ class ProcessIncomingMessageServiceTest {
 
         doReturn(INCOMING_MESSAGE_REQUEST_DTO).when(csIntegrationRequestFactory)
             .getIncomingMessageRequest(any(SendMessageToCareType.class));
-        doReturn(GET_CERTIFICATE_REQUEST_DTO).when(csIntegrationRequestFactory)
-            .getCertificateRequest();
-        doReturn(certificate).when(csIntegrationService).getCertificate(
-            CERTIFICATE_ID, GET_CERTIFICATE_REQUEST_DTO
-        );
+        doReturn(certificate).when(csIntegrationService).getCertificate(CERTIFICATE_ID);
 
         sendMessageToCareType = new SendMessageToCareType();
         sendMessageToCareType.setAmne(new Amneskod());

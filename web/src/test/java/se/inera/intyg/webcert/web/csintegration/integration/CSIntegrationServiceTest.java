@@ -1735,4 +1735,39 @@ class CSIntegrationServiceTest {
             assertEquals("baseUrl/internalapi/message/" + CERTIFICATE_ID, captor.getValue());
         }
     }
+
+    @Nested
+    class GetCertificateInternal {
+
+        @Test
+        void shouldReturnCertificate() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(GET_RESPONSE);
+            final var response = csIntegrationService.getCertificate(ID);
+
+            assertEquals(CERTIFICATE, response);
+        }
+
+        @Test
+        void shouldThrowIfResponseIsNull() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(null);
+            assertThrows(IllegalStateException.class,
+                () -> csIntegrationService.getCertificate(ID)
+            );
+        }
+
+        @Test
+        void shouldSetUrlCorrect() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(GET_RESPONSE);
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            csIntegrationService.getCertificate("id");
+            verify(restTemplate).postForObject(captor.capture(), any(), any());
+
+            assertEquals("baseUrl/internalapi/certificate/id", captor.getValue());
+        }
+    }
 }
