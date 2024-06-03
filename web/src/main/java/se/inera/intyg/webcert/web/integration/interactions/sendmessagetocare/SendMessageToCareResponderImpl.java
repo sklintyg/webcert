@@ -48,40 +48,55 @@ public class SendMessageToCareResponderImpl implements SendMessageToCareResponde
 
         try {
             return processIncomingMessage.process(request);
-        } catch (WebCertServiceException e) {
-            switch (e.getErrorCode()) {
+        } catch (WebCertServiceException ex) {
+            switch (ex.getErrorCode()) {
                 case MESSAGE_ALREADY_EXISTS:
                     result.setResultCode(ResultCodeType.INFO);
-                    result.setResultText(e.getMessage());
-                    LOG.info("Could not process incoming message to care. Message already exists. Question id {}. Certificate id {}. {} {}",
+                    result.setResultText(ex.getMessage());
+                    LOG.info(
+                        "Could not process incoming message to care. Message already exists. Question id {}. Certificate id {}. {} {}",
                         request.getMeddelandeId(),
                         request.getIntygsId().getExtension(),
-                        e.getErrorCode(),
-                        e.getMessage());
+                        ex.getErrorCode(),
+                        ex.getMessage()
+                    );
                     break;
                 case INVALID_STATE:
                 case DATA_NOT_FOUND:
                 case EXTERNAL_SYSTEM_PROBLEM:
                     result.setResultCode(ResultCodeType.ERROR);
                     result.setErrorId(ErrorIdType.VALIDATION_ERROR);
-                    result.setResultText(e.getMessage());
-                    LOG.error("Could not process incoming message to care. Validation error. Question id {}. Certificate id {}. {} {}",
-                        request.getMeddelandeId(),
-                        request.getIntygsId().getExtension(),
-                        e.getErrorCode(),
-                        e.getMessage());
+                    result.setResultText(ex.getMessage());
+                    LOG.error(
+                        String.format(
+                            "Could not process incoming message to care. Validation error. Question id %s. Certificate id %s. %s %s",
+                            request.getMeddelandeId(), request.getIntygsId().getExtension(), ex.getErrorCode(), ex.getMessage()
+                        ),
+                        ex
+                    );
                     break;
                 default:
                     result.setResultCode(ResultCodeType.ERROR);
                     result.setErrorId(ErrorIdType.APPLICATION_ERROR);
-                    result.setResultText(e.getMessage());
-                    LOG.error("Could not process incoming message to care. Application error. Question id {}. Certificate id {}. {} {}",
-                        request.getMeddelandeId(),
-                        request.getIntygsId().getExtension(),
-                        e.getErrorCode(),
-                        e.getMessage());
+                    result.setResultText(ex.getMessage());
+                    LOG.error(
+                        String.format(
+                            "Could not process incoming message to care. Application error. Question id %s. Certificate id %s. %s %s",
+                            request.getMeddelandeId(), request.getIntygsId().getExtension(), ex.getErrorCode(), ex.getMessage()
+                        ),
+                        ex
+                    );
                     break;
             }
+        } catch (Exception ex) {
+            result.setResultCode(ResultCodeType.ERROR);
+            result.setErrorId(ErrorIdType.APPLICATION_ERROR);
+            result.setResultText(ex.getMessage());
+            LOG.error(
+                String.format("Could not process incoming message to care. Application error. Question id %s. Certificate id %s. %s",
+                    request.getMeddelandeId(), request.getIntygsId().getExtension(), ex.getMessage()),
+                ex
+            );
         }
 
         response.setResult(result);
