@@ -86,6 +86,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertifica
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.InternalCertificateXmlResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageExistsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateResponseDTO;
@@ -240,6 +241,11 @@ class CSIntegrationServiceTest {
     private static final GetCertificateFromMessageResponseDTO GET_CERTIFICTE_FROM_MESSAGE_RESPONSE_DTO =
         GetCertificateFromMessageResponseDTO.builder()
             .certificate(CERTIFICATE)
+            .build();
+
+    private static final InternalCertificateXmlResponseDTO INTERAL_CERTIFICATE_XML_RESPONSE_DTO =
+        InternalCertificateXmlResponseDTO.builder()
+            .xml(XML_DATA)
             .build();
 
     @Mock
@@ -1768,6 +1774,41 @@ class CSIntegrationServiceTest {
             verify(restTemplate).postForObject(captor.capture(), any(), any());
 
             assertEquals("baseUrl/internalapi/certificate/id", captor.getValue());
+        }
+    }
+
+    @Nested
+    class GetCertificateXmlInternal {
+
+        @Test
+        void shouldReturnXml() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(INTERAL_CERTIFICATE_XML_RESPONSE_DTO);
+            final var response = csIntegrationService.getInternalCertificateXml(ID);
+
+            assertEquals(XML_DATA, response);
+        }
+
+        @Test
+        void shouldThrowIfResponseIsNull() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(null);
+            assertThrows(IllegalStateException.class,
+                () -> csIntegrationService.getInternalCertificateXml(ID)
+            );
+        }
+
+        @Test
+        void shouldSetUrlCorrect() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(INTERAL_CERTIFICATE_XML_RESPONSE_DTO);
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            csIntegrationService.getInternalCertificateXml("id");
+            verify(restTemplate).postForObject(captor.capture(), any(), any());
+
+            assertEquals("baseUrl/internalapi/certificate/id/xml", captor.getValue());
         }
     }
 }
