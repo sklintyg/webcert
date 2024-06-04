@@ -31,7 +31,6 @@ import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.infra.certificate.dto.CertificateListEntry;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.CertificateForwardFunction;
@@ -55,19 +54,17 @@ public class ResourceLinkListHelperImpl implements ResourceLinkListHelper {
     private final UserService userService;
     private final CertificateRelationsConverter certificateRelationsConverter;
     private final AuthoritiesHelper authoritiesHelper;
-    private final CertificateServiceProfile certificateServiceProfile;
 
     @Autowired
     public ResourceLinkListHelperImpl(CertificateAccessServiceHelper certificateAccessServiceHelper,
         WebCertUserService webCertUserService, UserService userService,
         CertificateRelationsConverter certificateRelationsConverter,
-        AuthoritiesHelper authoritiesHelper, CertificateServiceProfile certificateServiceProfile) {
+        AuthoritiesHelper authoritiesHelper) {
         this.certificateAccessServiceHelper = certificateAccessServiceHelper;
         this.webCertUserService = webCertUserService;
         this.userService = userService;
         this.certificateRelationsConverter = certificateRelationsConverter;
         this.authoritiesHelper = authoritiesHelper;
-        this.certificateServiceProfile = certificateServiceProfile;
     }
 
     @Override
@@ -176,12 +173,8 @@ public class ResourceLinkListHelperImpl implements ResourceLinkListHelper {
     }
 
     private boolean validateRenew(ActionLink link, String certificateType, CertificateRelations relations, CertificateStatus status) {
-        final var actionLinkIsRenewCertificate = link.getType() == ActionLinkType.FORNYA_INTYG;
-        if (actionLinkIsRenewCertificate && certificateServiceProfile.activeAndSupportsType(certificateType)) {
-            return true;
-        }
-
-        return actionLinkIsRenewCertificate && CertificateRenewFunction.validate(certificateType, relations, status, authoritiesHelper);
+        return link.getType() == ActionLinkType.FORNYA_INTYG
+            && CertificateRenewFunction.validate(certificateType, relations, status, authoritiesHelper);
     }
 
     private Vardenhet createCareUnit(String unitId, String caregiverId) {
