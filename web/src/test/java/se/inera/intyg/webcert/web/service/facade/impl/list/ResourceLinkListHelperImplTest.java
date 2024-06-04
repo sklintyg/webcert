@@ -18,6 +18,13 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl.list;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
+
+import java.util.HashMap;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,6 +38,7 @@ import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.Role;
+import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.facade.list.ResourceLinkListHelperImpl;
@@ -45,18 +53,12 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 
-import java.util.HashMap;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
-
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class ResourceLinkListHelperImplTest {
 
+    @Mock
+    private CertificateServiceProfile certificateServiceProfile;
     @Mock
     private CertificateAccessServiceHelper certificateAccessServiceHelper;
     @Mock
@@ -95,28 +97,43 @@ class ResourceLinkListHelperImplTest {
     class RenewCertificate {
 
         @Test
-        public void shouldIncludeRenewResourceLinkIfActionLinkExists() {
+        void shouldIncludeRenewResourceLinkIfActionLinkExists() {
             setup(true, false);
             final var entry = setupListIntygEntry(CertificateListItemStatus.SIGNED.toString(), ActionLinkType.FORNYA_INTYG);
+            doReturn(false).when(certificateServiceProfile).activeAndSupportsType(entry.getIntygType());
             final var resourceLinks = resourceLinkListHelper.get(entry, CertificateListItemStatus.SIGNED);
             assertEquals(1, resourceLinks.size());
             assertEquals(ResourceLinkTypeDTO.RENEW_CERTIFICATE, resourceLinks.get(0).getType());
         }
 
         @Test
-        public void shouldNotIncludeRenewResourceLinkIfActionLinkDoesNotExist() {
+        void shouldNotIncludeRenewResourceLinkIfActionLinkDoesNotExist() {
             setup(true, false);
             final var entry = setupListIntygEntry(CertificateListItemStatus.SIGNED.toString(), null);
+            doReturn(false).when(certificateServiceProfile).activeAndSupportsType(entry.getIntygType());
             final var resourceLinks = resourceLinkListHelper.get(entry, CertificateListItemStatus.SIGNED);
             assertEquals(0, resourceLinks.size());
         }
 
         @Test
-        public void shouldNotIncludeRenewResourceLinkIfDraft() {
+        void shouldNotIncludeRenewResourceLinkIfDraft() {
             setup(true, false);
             final var entry = setupListIntygEntry(CertificateListItemStatus.INCOMPLETE.toString(), ActionLinkType.FORNYA_INTYG);
+            doReturn(false).when(certificateServiceProfile).activeAndSupportsType(entry.getIntygType());
             final var resourceLinks = resourceLinkListHelper.get(entry, CertificateListItemStatus.INCOMPLETE);
             assertEquals(0, resourceLinks.size());
+        }
+
+        @Test
+        void shouldIncludeRenewResourceLinkIfActionLinkDoesExistAndCertificateServiceIsActiveAndTypeSupported() {
+            setup(true, false);
+            final var entry = setupListIntygEntry(CertificateListItemStatus.SIGNED.toString(), ActionLinkType.FORNYA_INTYG);
+            doReturn(true).when(certificateServiceProfile).activeAndSupportsType(entry.getIntygType());
+
+            final var resourceLinks = resourceLinkListHelper.get(entry, CertificateListItemStatus.SIGNED);
+
+            assertEquals(1, resourceLinks.size());
+            assertEquals(ResourceLinkTypeDTO.RENEW_CERTIFICATE, resourceLinks.get(0).getType());
         }
     }
 
