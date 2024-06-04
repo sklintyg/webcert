@@ -23,9 +23,9 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.InternalCertificateXmlResponseDTO.InteralCertificateXmlResponseDTOBuilder;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.InternalCertificateXmlResponseDTO.InternalCertificateXmlResponseDTOBuilder;
 
-@JsonDeserialize(builder = InteralCertificateXmlResponseDTOBuilder.class)
+@JsonDeserialize(builder = InternalCertificateXmlResponseDTOBuilder.class)
 @Value
 @Builder
 public class InternalCertificateXmlResponseDTO {
@@ -33,7 +33,7 @@ public class InternalCertificateXmlResponseDTO {
     String xml;
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class InteralCertificateXmlResponseDTOBuilder {
+    public static class InternalCertificateXmlResponseDTOBuilder {
 
     }
 }
