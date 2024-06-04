@@ -227,6 +227,18 @@ class ListIntygEntryConverterTest {
         }
 
         @Test
+        void shouldConvertRenewLink() {
+            CERTIFICATE.setLinks(List.of(ResourceLink.builder()
+                    .type(ResourceLinkTypeEnum.RENEW_CERTIFICATE)
+                    .build()
+                )
+            );
+
+            final var response = listIntygEntryConverter.convert(CERTIFICATE);
+            assertTrue(response.getLinks().stream().anyMatch(link -> link.getType() == ActionLinkType.FORNYA_INTYG));
+        }
+
+        @Test
         void shouldNotIncludeLinksNotSupported() {
             CERTIFICATE.setLinks(List.of(ResourceLink.builder()
                     .type(ResourceLinkTypeEnum.COPY_CERTIFICATE)

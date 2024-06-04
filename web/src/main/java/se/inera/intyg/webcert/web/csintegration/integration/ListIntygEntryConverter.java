@@ -77,6 +77,10 @@ public class ListIntygEntryConverter {
             return new ActionLink(ActionLinkType.VIDAREBEFORDRA_UTKAST);
         }
 
+        if (resourceLink.getType() == ResourceLinkTypeEnum.RENEW_CERTIFICATE) {
+            return new ActionLink(ActionLinkType.FORNYA_INTYG);
+        }
+
         return null;
     }
 
