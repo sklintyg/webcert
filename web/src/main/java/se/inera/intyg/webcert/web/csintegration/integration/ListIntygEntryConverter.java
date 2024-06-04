@@ -78,7 +78,7 @@ public class ListIntygEntryConverter {
         }
 
         if (resourceLink.getType() == ResourceLinkTypeEnum.RENEW_CERTIFICATE) {
-            return new ActionLink(ActionLinkType.FORNYA_INTYG);
+            return new ActionLink(ActionLinkType.FORNYA_INTYG_FRAN_CERTIFICATE_SERVICE);
         }
 
         return null;

@@ -173,6 +173,9 @@ public class ResourceLinkListHelperImpl implements ResourceLinkListHelper {
     }
 
     private boolean validateRenew(ActionLink link, String certificateType, CertificateRelations relations, CertificateStatus status) {
+        if (link.getType() == ActionLinkType.FORNYA_INTYG_FRAN_CERTIFICATE_SERVICE) {
+            return true;
+        }
         return link.getType() == ActionLinkType.FORNYA_INTYG
             && CertificateRenewFunction.validate(certificateType, relations, status, authoritiesHelper);
     }

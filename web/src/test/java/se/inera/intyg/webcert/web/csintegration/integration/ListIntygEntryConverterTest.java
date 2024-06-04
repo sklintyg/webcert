@@ -235,7 +235,8 @@ class ListIntygEntryConverterTest {
             );
 
             final var response = listIntygEntryConverter.convert(CERTIFICATE);
-            assertTrue(response.getLinks().stream().anyMatch(link -> link.getType() == ActionLinkType.FORNYA_INTYG));
+            assertTrue(
+                response.getLinks().stream().anyMatch(link -> link.getType() == ActionLinkType.FORNYA_INTYG_FRAN_CERTIFICATE_SERVICE));
         }
 
         @Test

@@ -116,6 +116,16 @@ class ResourceLinkListHelperImplTest {
             final var resourceLinks = resourceLinkListHelper.get(entry, CertificateListItemStatus.INCOMPLETE);
             assertEquals(0, resourceLinks.size());
         }
+
+        @Test
+        void shouldIncludeRenewResourceLinkIfFromCertificateService() {
+            setup(true, false);
+            final var entry = setupListIntygEntry(CertificateListItemStatus.INCOMPLETE.toString(),
+                ActionLinkType.FORNYA_INTYG_FRAN_CERTIFICATE_SERVICE);
+            final var resourceLinks = resourceLinkListHelper.get(entry, CertificateListItemStatus.SIGNED);
+            assertEquals(1, resourceLinks.size());
+            assertEquals(ResourceLinkTypeDTO.RENEW_CERTIFICATE, resourceLinks.get(0).getType());
+        }
     }
 
     @Nested
