@@ -35,13 +35,12 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificteFromMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionDTO;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionResponseDTO;
 
 @ExtendWith(MockitoExtension.class)
 class HandleQuestionFromCertificateServiceTest {
@@ -91,14 +90,10 @@ class HandleQuestionFromCertificateServiceTest {
 
     @Test
     void shallReturnHandledQuestion() {
-        final var question = QuestionDTO.builder()
+        final var question = Question.builder()
             .author(WC)
             .build();
-        final var expectedResponse = QuestionResponseDTO.builder()
-            .question(
-                question
-            )
-            .build();
+
         doReturn(true).when(csIntegrationService).messageExists(MESSAGE_ID);
         final var handleMessageRequestDTO = HandleMessageRequestDTO.builder().build();
         final var certificteFromMessageRequestDTO = GetCertificteFromMessageRequestDTO.builder().build();
@@ -109,14 +104,15 @@ class HandleQuestionFromCertificateServiceTest {
         doReturn(certificate).when(csIntegrationService).getCertificate(certificteFromMessageRequestDTO, MESSAGE_ID);
 
         final var actualResponse = handleQuestionFromCertificateService.handle(MESSAGE_ID, false);
-        assertEquals(expectedResponse, actualResponse);
+        assertEquals(question, actualResponse);
     }
 
     @Test
     void shallPdlLogCreateMessage() {
-        final var question = QuestionDTO.builder()
+        final var question = Question.builder()
             .author(WC)
             .build();
+
         doReturn(true).when(csIntegrationService).messageExists(MESSAGE_ID);
         final var handleMessageRequestDTO = HandleMessageRequestDTO.builder().build();
         final var certificteFromMessageRequestDTO = GetCertificteFromMessageRequestDTO.builder().build();
@@ -132,9 +128,10 @@ class HandleQuestionFromCertificateServiceTest {
 
     @Test
     void shallPublishEventHandledByRecipient() {
-        final var question = QuestionDTO.builder()
+        final var question = Question.builder()
             .author(FK)
             .build();
+
         doReturn(true).when(csIntegrationService).messageExists(MESSAGE_ID);
         final var handleMessageRequestDTO = HandleMessageRequestDTO.builder().build();
         final var certificteFromMessageRequestDTO = GetCertificteFromMessageRequestDTO.builder().build();
@@ -150,9 +147,10 @@ class HandleQuestionFromCertificateServiceTest {
 
     @Test
     void shallPublishEventHandledByCare() {
-        final var question = QuestionDTO.builder()
+        final var question = Question.builder()
             .author(WC)
             .build();
+        
         doReturn(true).when(csIntegrationService).messageExists(MESSAGE_ID);
         final var handleMessageRequestDTO = HandleMessageRequestDTO.builder().build();
         final var certificteFromMessageRequestDTO = GetCertificteFromMessageRequestDTO.builder().build();

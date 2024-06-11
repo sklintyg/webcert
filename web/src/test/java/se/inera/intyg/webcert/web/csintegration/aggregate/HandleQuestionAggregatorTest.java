@@ -24,7 +24,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,8 +34,6 @@ import se.inera.intyg.webcert.web.csintegration.certificate.HandleQuestionFromCe
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsResourceLinkService;
 import se.inera.intyg.webcert.web.service.facade.question.HandleQuestionFacadeService;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionResponseDTO;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 
 @ExtendWith(MockitoExtension.class)
 class HandleQuestionAggregatorTest {
@@ -63,10 +60,10 @@ class HandleQuestionAggregatorTest {
     @Test
     void shallReturnQuestionsFromWebcertIfProfileIsInactive() {
         final var question = Question.builder().build();
-        final var link = List.of(new ResourceLinkDTO());
+
         doReturn(question).when(handleQuestionFromWC).handle(QUESTION_ID, false);
-        doReturn(link).when(getQuestionsResourceLinkService).get(question);
         doReturn(false).when(certificateServiceProfile).active();
+
         handleQuestionAggregator.handle(QUESTION_ID, false);
         verify(handleQuestionFromWC).handle(QUESTION_ID, false);
     }
@@ -74,7 +71,7 @@ class HandleQuestionAggregatorTest {
     @Test
     void shallReturnQuestionsFromCSIfProfileIsActiveAndResponseFromCSIsNotNull() {
         doReturn(true).when(certificateServiceProfile).active();
-        doReturn(QuestionResponseDTO.builder().build()).when(handleQuestionFromCS).handle(QUESTION_ID, false);
+        doReturn(Question.builder().build()).when(handleQuestionFromCS).handle(QUESTION_ID, false);
         handleQuestionAggregator.handle(QUESTION_ID, false);
         verifyNoInteractions(handleQuestionFromWC);
         verify(handleQuestionFromCS).handle(QUESTION_ID, false);
@@ -82,16 +79,13 @@ class HandleQuestionAggregatorTest {
 
     @Test
     void shallReturnQuestionsFromWebcertIfProfileIsActiveAndResponseFromCSIsNull() {
-        final var question = Question.builder().build();
-        final var link = List.of(new ResourceLinkDTO());
-        final var expectedResult = QuestionResponseDTO.create(question, link);
+        final var expectedQuestion = Question.builder().build();
 
         doReturn(true).when(certificateServiceProfile).active();
         doReturn(null).when(handleQuestionFromCS).handle(QUESTION_ID, false);
-        doReturn(question).when(handleQuestionFromWC).handle(QUESTION_ID, false);
-        doReturn(link).when(getQuestionsResourceLinkService).get(question);
+        doReturn(expectedQuestion).when(handleQuestionFromWC).handle(QUESTION_ID, false);
 
         final var actualResult = handleQuestionAggregator.handle(QUESTION_ID, false);
-        assertEquals(expectedResult, actualResult);
+        assertEquals(expectedQuestion, actualResult);
     }
 }
