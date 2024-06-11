@@ -67,6 +67,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateTypeE
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFromMessageResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageInternalResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageRequestDTO;
@@ -247,6 +248,7 @@ class CSIntegrationServiceTest {
         InternalCertificateXmlResponseDTO.builder()
             .xml(XML_DATA)
             .build();
+    private static final DeleteMessageRequestDTO DELETE_MESSAGE_REQUEST_DTO = DeleteMessageRequestDTO.builder().build();
 
     @Mock
     private RestTemplate restTemplate;
@@ -1809,6 +1811,39 @@ class CSIntegrationServiceTest {
             verify(restTemplate).postForObject(captor.capture(), any(), any());
 
             assertEquals("baseUrl/internalapi/certificate/id/xml", captor.getValue());
+        }
+    }
+
+    @Nested
+    class DeleteMessage {
+
+        @Test
+        void shouldPreformPostUsingRequest() {
+            final var captor = ArgumentCaptor.forClass(DeleteMessageRequestDTO.class);
+
+            csIntegrationService.deleteMessage(
+                "messageId",
+                DELETE_MESSAGE_REQUEST_DTO
+            );
+
+            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+
+            assertEquals(DELETE_MESSAGE_REQUEST_DTO, captor.getValue());
+        }
+
+        @Test
+        void shouldSetUrlCorrect() {
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            csIntegrationService.deleteMessage(
+                "messageId",
+                DELETE_MESSAGE_REQUEST_DTO
+            );
+
+            verify(restTemplate).postForObject(captor.capture(), any(), any());
+
+            assertEquals("baseUrl/api/message/messageId/delete", captor.getValue());
         }
     }
 }

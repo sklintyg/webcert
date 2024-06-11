@@ -30,6 +30,7 @@ import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.web.csintegration.aggregate.GetQuestionsAggregator;
 import se.inera.intyg.webcert.web.csintegration.aggregate.HandleQuestionAggregator;
@@ -55,7 +56,8 @@ public class QuestionController {
     private static final String UTF_8_CHARSET = ";charset=utf-8";
 
     @Autowired
-    private DeleteQuestionFacadeService deleteQuestionFacadeService;
+    @Qualifier("deleteQuestionAggregator")
+    private DeleteQuestionFacadeService deleteQuestionAggregator;
     @Autowired
     private CreateQuestionFacadeService createQuestionFacadeService;
     @Autowired
@@ -106,7 +108,7 @@ public class QuestionController {
             LOG.debug("Deleting question with id: '{}'", questionId);
         }
 
-        deleteQuestionFacadeService.delete(questionId);
+        deleteQuestionAggregator.delete(questionId);
         return Response.ok().build();
     }
 

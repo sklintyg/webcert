@@ -49,6 +49,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CitizenCertifica
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFromMessageResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageInternalResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageRequestDTO;
@@ -548,5 +549,10 @@ public class CSIntegrationService {
         }
 
         return response.getXml();
+    }
+
+    public void deleteMessage(String messageId, DeleteMessageRequestDTO request) {
+        final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + "/delete";
+        restTemplate.postForObject(url, request, Void.class);
     }
 }
