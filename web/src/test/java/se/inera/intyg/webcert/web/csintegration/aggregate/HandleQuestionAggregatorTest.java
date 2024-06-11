@@ -56,7 +56,7 @@ class HandleQuestionAggregatorTest {
     @BeforeEach
     void setUp() {
         handleQuestionAggregator = new HandleQuestionAggregator(
-            handleQuestionFromWC, handleQuestionFromCS, certificateServiceProfile, getQuestionsResourceLinkService
+            handleQuestionFromWC, handleQuestionFromCS, certificateServiceProfile
         );
     }
 

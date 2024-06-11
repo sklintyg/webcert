@@ -32,6 +32,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.AnswerComplementRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.AnswerComplementResponseDTO;
@@ -93,7 +94,6 @@ import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionDTO;
 
 @Service
 public class CSIntegrationService {
@@ -479,7 +479,7 @@ public class CSIntegrationService {
         restTemplate.postForObject(url, request, Void.class);
     }
 
-    public List<QuestionDTO> getQuestions(GetCertificateMessageRequestDTO request, String certificateId) {
+    public List<Question> getQuestions(GetCertificateMessageRequestDTO request, String certificateId) {
         final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + certificateId;
 
         final var response = restTemplate.postForObject(url, request, GetCertificateMessageResponseDTO.class);
@@ -491,7 +491,7 @@ public class CSIntegrationService {
         return response.getQuestions();
     }
 
-    public QuestionDTO handleMessage(HandleMessageRequestDTO request, String messageId) {
+    public Question handleMessage(HandleMessageRequestDTO request, String messageId) {
         final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + "/handle";
 
         final var response = restTemplate.postForObject(url, request, HandleMessageResponseDTO.class);
@@ -515,7 +515,7 @@ public class CSIntegrationService {
         return response.getCertificate();
     }
 
-    public List<QuestionDTO> getQuestions(String certificateId) {
+    public List<Question> getQuestions(String certificateId) {
         final var url = baseUrl + INTERNAL_MESSAGE_ENDPOINT_URL + "/" + certificateId;
 
         final var response = restTemplate.postForObject(url, null, GetCertificateMessageInternalResponseDTO.class);

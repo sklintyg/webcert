@@ -31,12 +31,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
-import se.inera.intyg.webcert.web.csintegration.aggregate.GetQuestionsAggregator;
-import se.inera.intyg.webcert.web.csintegration.aggregate.HandleQuestionAggregator;
 import se.inera.intyg.webcert.web.service.facade.question.CreateQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionAnswerFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionFacadeService;
+import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsResourceLinkService;
+import se.inera.intyg.webcert.web.service.facade.question.HandleQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionAnswerFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.SendQuestionAnswerFacadeService;
@@ -45,6 +45,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.AnswerRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateQuestionRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.HandleQuestionRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionsResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.SaveQuestionRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.SendQuestionRequestDTO;
 
@@ -71,9 +72,9 @@ public class QuestionController {
     @Autowired
     private GetQuestionsResourceLinkService getQuestionsResourceLinkService;
     @Autowired
-    private GetQuestionsAggregator getQuestionsAggregator;
+    private GetQuestionsFacadeService getQuestionsAggregator;
     @Autowired
-    private HandleQuestionAggregator handleQuestionAggregator;
+    private HandleQuestionFacadeService handleQuestionAggregator;
 
     @GET
     @Path("/{certificateId}")
@@ -83,7 +84,10 @@ public class QuestionController {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Getting questions for certificate with id: '{}'", certificateId);
         }
-        return Response.ok(getQuestionsAggregator.get(certificateId)).build();
+        
+        final var questions = getQuestionsAggregator.getQuestions(certificateId);
+        final var links = getQuestionsResourceLinkService.get(questions);
+        return Response.ok(QuestionsResponseDTO.create(questions, links)).build();
     }
 
     @GET
@@ -94,7 +98,10 @@ public class QuestionController {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Getting complement questions for certificate with id: '{}'", certificateId);
         }
-        return Response.ok(getQuestionsAggregator.getComplements(certificateId)).build();
+
+        final var questions = getQuestionsAggregator.getComplementQuestions(certificateId);
+        final var links = getQuestionsResourceLinkService.get(questions);
+        return Response.ok(QuestionsResponseDTO.create(questions, links)).build();
     }
 
     @DELETE
@@ -207,6 +214,8 @@ public class QuestionController {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Handle question with id: '{}'", questionId);
         }
-        return Response.ok(handleQuestionAggregator.handle(questionId, handleQuestionRequestDTO.isHandled())).build();
+        final var question = handleQuestionAggregator.handle(questionId, handleQuestionRequestDTO.isHandled());
+        final var links = getQuestionsResourceLinkService.get(question);
+        return Response.ok(QuestionResponseDTO.create(question, links)).build();
     }
 }

@@ -43,13 +43,13 @@ import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.common.support.facade.model.Staff;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
+import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.common.support.xml.XmlMarshallerHelper;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionDTO;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.registerCertificate.v3.ObjectFactory;
 import se.riv.clinicalprocess.healthcond.certificate.registerCertificate.v3.RegisterCertificateType;
@@ -156,7 +156,7 @@ class NotificationMessageFactoryTest {
 
     @Test
     void shallConvertMottagnaFragor() {
-        final var questions = List.of(QuestionDTO.builder().build());
+        final var questions = List.of(Question.builder().build());
         final var expectedArendeCount = new ArendeCount(1, 1, 1, 1);
 
         doReturn(questions).when(csIntegrationService).getQuestions(ID);
@@ -173,7 +173,7 @@ class NotificationMessageFactoryTest {
 
     @Test
     void shallConvertSkickadeFragor() {
-        final var questions = List.of(QuestionDTO.builder().build());
+        final var questions = List.of(Question.builder().build());
         final var expectedArendeCount = new ArendeCount(1, 1, 1, 1);
 
         doReturn(questions).when(csIntegrationService).getQuestions(ID);

@@ -34,11 +34,11 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionDTO;
 
 @ExtendWith(MockitoExtension.class)
 class GetQuestionsFromCertificateServiceTest {
@@ -60,8 +60,8 @@ class GetQuestionsFromCertificateServiceTest {
 
     @Test
     void shallReturnListOfQuestionsFromCertificateService() {
-        final var questionDto = QuestionDTO.builder().build();
-        final var expectedQuestions = new ArrayList<QuestionDTO>();
+        final var questionDto = Question.builder().build();
+        final var expectedQuestions = new ArrayList<Question>();
         expectedQuestions.add(questionDto);
         final var certificate = new Certificate();
         certificate.setMetadata(
@@ -85,6 +85,6 @@ class GetQuestionsFromCertificateServiceTest {
         when(csIntegrationService.getQuestions(getCertificateMessageRequestDTO, CERTIFICATE_ID)).thenReturn(expectedQuestions);
 
         final var actualQuestions = getQuestionsFromCertificateService.get(CERTIFICATE_ID);
-        assertEquals(expectedQuestions, actualQuestions.getQuestions());
+        assertEquals(expectedQuestions, actualQuestions);
     }
 }

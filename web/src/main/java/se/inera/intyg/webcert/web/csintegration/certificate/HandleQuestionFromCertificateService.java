@@ -22,22 +22,24 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
+import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
+import se.inera.intyg.webcert.web.service.facade.question.HandleQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionResponseDTO;
 
-@Service
+@Service("handleQuestionFromCS")
 @RequiredArgsConstructor
-public class HandleQuestionFromCertificateService {
+public class HandleQuestionFromCertificateService implements HandleQuestionFacadeService {
 
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
     private final PDLLogService pdlLogService;
     private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
 
-    public QuestionResponseDTO handle(String questionId, boolean isHandled) {
+    @Override
+    public Question handle(String questionId, boolean isHandled) {
         if (Boolean.FALSE.equals(csIntegrationService.messageExists(questionId))) {
             return null;
         }
@@ -59,9 +61,7 @@ public class HandleQuestionFromCertificateService {
 
         publishCertificateStatusUpdateService.publish(certificate, eventType(question.getAuthor()));
 
-        return QuestionResponseDTO.builder()
-            .question(question)
-            .build();
+        return question;
     }
 
     private HandelsekodEnum eventType(String author) {
