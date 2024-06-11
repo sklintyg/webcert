@@ -19,7 +19,6 @@
 
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
@@ -33,8 +32,8 @@ public class DeleteQuestionAggregator implements DeleteQuestionFacadeService {
     private final CertificateServiceProfile certificateServiceProfile;
     private final CSIntegrationService csIntegrationService;
 
-    public DeleteQuestionAggregator(DeleteQuestionFacadeService deleteQuestionFromWC,
-        @Qualifier("deleteQuestionFromCS") DeleteQuestionFacadeService deleteQuestionFromCS,
+    public DeleteQuestionAggregator(
+        DeleteQuestionFacadeService deleteQuestionFromWC, DeleteQuestionFacadeService deleteQuestionFromCS,
         CertificateServiceProfile certificateServiceProfile, CSIntegrationService csIntegrationService) {
         this.deleteQuestionFromWC = deleteQuestionFromWC;
         this.deleteQuestionFromCS = deleteQuestionFromCS;
