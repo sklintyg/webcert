@@ -16,40 +16,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.facade.question.impl;
 
-import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUtil.getSubjectAsString;
+package se.inera.intyg.webcert.web.csintegration.aggregate;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
-import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
+import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.question.CreateQuestionFacadeService;
-import se.inera.intyg.webcert.web.service.facade.question.util.QuestionConverter;
 
-@Service("createQuestionFromWC")
-public class CreateQuestionFacadeServiceImpl implements CreateQuestionFacadeService {
+@Service
+@RequiredArgsConstructor
+public class CreateQuestionAggregator implements CreateQuestionFacadeService {
 
-    private final ArendeDraftService arendeDraftService;
-    private final QuestionConverter questionConverter;
-
-    @Autowired
-    public CreateQuestionFacadeServiceImpl(ArendeDraftService arendeDraftService,
-        QuestionConverter questionConverter) {
-        this.arendeDraftService = arendeDraftService;
-        this.questionConverter = questionConverter;
-    }
+    private final CreateQuestionFacadeService createQuestionFromWC;
+    private final CreateQuestionFacadeService createMessageFromCS;
+    private final CertificateServiceProfile certificateServiceProfile;
 
     @Override
     public Question create(String certificateId, QuestionType type, String message) {
-        final var questionDraft = arendeDraftService.create(
-            certificateId,
-            getSubjectAsString(type),
-            message,
-            null
-        );
+        if (!certificateServiceProfile.active()) {
+            return createQuestionFromWC.create(certificateId, type, message);
+        }
 
-        return questionConverter.convert(questionDraft);
+        final var responseFromCS = createMessageFromCS.create(certificateId, type, message);
+
+        return responseFromCS != null ? responseFromCS : createQuestionFromWC.create(certificateId, type, message);
     }
 }

@@ -58,7 +58,7 @@ public class QuestionController {
     @Autowired
     private DeleteQuestionFacadeService deleteQuestionAggregator;
     @Autowired
-    private CreateQuestionFacadeService createQuestionFacadeService;
+    private CreateQuestionFacadeService createQuestionAggregator;
     @Autowired
     private SaveQuestionFacadeService saveQuestionFacadeService;
     @Autowired
@@ -84,7 +84,7 @@ public class QuestionController {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Getting questions for certificate with id: '{}'", certificateId);
         }
-        
+
         final var questions = getQuestionsAggregator.getQuestions(certificateId);
         final var links = getQuestionsResourceLinkService.get(questions);
         return Response.ok(QuestionsResponseDTO.create(questions, links)).build();
@@ -126,7 +126,7 @@ public class QuestionController {
             LOG.debug("Creating question for certificate with id: '{}'", createQuestionRequest.getCertificateId());
         }
 
-        final var question = createQuestionFacadeService.create(
+        final var question = createQuestionAggregator.create(
             createQuestionRequest.getCertificateId(),
             createQuestionRequest.getType(),
             createQuestionRequest.getMessage()
