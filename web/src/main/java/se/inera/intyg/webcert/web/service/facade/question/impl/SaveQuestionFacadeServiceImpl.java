@@ -27,7 +27,7 @@ import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
 import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.util.QuestionConverter;
 
-@Service
+@Service("saveQuestionFromWC")
 public class SaveQuestionFacadeServiceImpl implements SaveQuestionFacadeService {
 
     private final ArendeDraftService arendeDraftService;
