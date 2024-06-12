@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.Patient;
+import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -34,6 +35,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModel
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesQueryCriteriaDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageRequestDTO;
@@ -438,6 +440,17 @@ public class CSIntegrationRequestFactory {
             .careUnit(certificateServiceUnitHelper.getCareUnit())
             .careProvider(certificateServiceUnitHelper.getCareProvider())
             .user(certificateServiceUserHelper.get())
+            .build();
+    }
+
+    public CreateMessageRequestDTO createMessageRequest(QuestionType type, String message) {
+        return CreateMessageRequestDTO.builder()
+            .unit(certificateServiceUnitHelper.getUnit())
+            .careUnit(certificateServiceUnitHelper.getCareUnit())
+            .careProvider(certificateServiceUnitHelper.getCareProvider())
+            .user(certificateServiceUserHelper.get())
+            .questionType(type)
+            .message(message)
             .build();
     }
 }

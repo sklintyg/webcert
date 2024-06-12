@@ -48,6 +48,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServi
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateTypeExistsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CitizenCertificateExistsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateMessageResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteMessageRequestDTO;
@@ -554,5 +556,17 @@ public class CSIntegrationService {
     public void deleteMessage(String messageId, DeleteMessageRequestDTO request) {
         final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + "/delete";
         restTemplate.postForObject(url, request, Void.class);
+    }
+
+    public Question createMessage(CreateMessageRequestDTO request, String certificateId) {
+        final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + certificateId + "/create";
+
+        final var response = restTemplate.postForObject(url, request, CreateMessageResponseDTO.class);
+
+        if (response == null) {
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
+        }
+
+        return response.getQuestion();
     }
 }

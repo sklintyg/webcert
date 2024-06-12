@@ -39,6 +39,7 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
@@ -1643,6 +1644,58 @@ class CSIntegrationRequestFactoryTest {
         void shouldSetCareProvider() {
             final var actualRequest = csIntegrationRequestFactory.deleteMessageRequest();
             assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
+        }
+    }
+
+    @Nested
+    class CreateMessageRequestTests {
+
+        @BeforeEach
+        void setup() {
+            when(certificateServiceUserHelper.get())
+                .thenReturn(USER);
+            when(certificateServiceUnitHelper.getUnit())
+                .thenReturn(UNIT);
+            when(certificateServiceUnitHelper.getCareUnit())
+                .thenReturn(CARE_UNIT);
+            when(certificateServiceUnitHelper.getCareProvider())
+                .thenReturn(CARE_PROVIDER);
+        }
+
+        @Test
+        void shouldSetUser() {
+            final var actualRequest = csIntegrationRequestFactory.createMessageRequest(QuestionType.CONTACT, MESSAGE);
+            assertEquals(USER, actualRequest.getUser());
+        }
+
+        @Test
+        void shouldSetUnit() {
+            final var actualRequest = csIntegrationRequestFactory.createMessageRequest(QuestionType.CONTACT, MESSAGE);
+            assertEquals(UNIT, actualRequest.getUnit());
+        }
+
+        @Test
+        void shouldSetCareUnit() {
+            final var actualRequest = csIntegrationRequestFactory.createMessageRequest(QuestionType.CONTACT, MESSAGE);
+            assertEquals(CARE_UNIT, actualRequest.getCareUnit());
+        }
+
+        @Test
+        void shouldSetCareProvider() {
+            final var actualRequest = csIntegrationRequestFactory.createMessageRequest(QuestionType.CONTACT, MESSAGE);
+            assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
+        }
+
+        @Test
+        void shouldSetQuestionType() {
+            final var actualRequest = csIntegrationRequestFactory.createMessageRequest(QuestionType.CONTACT, MESSAGE);
+            assertEquals(QuestionType.CONTACT, actualRequest.getQuestionType());
+        }
+
+        @Test
+        void shouldSetMessage() {
+            final var actualRequest = csIntegrationRequestFactory.createMessageRequest(QuestionType.CONTACT, MESSAGE);
+            assertEquals(MESSAGE, actualRequest.getMessage());
         }
     }
 }

@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.service.facade.question.CreateQuestionFacadeService;
 
@@ -33,6 +34,7 @@ import se.inera.intyg.webcert.web.service.facade.question.CreateQuestionFacadeSe
 public class CreateMessageFromCertificateService implements CreateQuestionFacadeService {
 
     private final CSIntegrationService csIntegrationService;
+    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
 
     @Override
     public Question create(String certificateId, QuestionType type, String message) {
@@ -40,7 +42,10 @@ public class CreateMessageFromCertificateService implements CreateQuestionFacade
             log.debug("Certificate '{}' does not exist in certificate service", certificateId);
             return null;
         }
-        
-        return null;
+
+        return csIntegrationService.createMessage(
+            csIntegrationRequestFactory.createMessageRequest(type, message),
+            certificateId
+        );
     }
 }
