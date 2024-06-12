@@ -62,7 +62,7 @@ public class QuestionController {
     @Autowired
     private SaveQuestionFacadeService saveQuestionAggregator;
     @Autowired
-    private SendQuestionFacadeService sendQuestionFacadeService;
+    private SendQuestionFacadeService sendQuestionAggregator;
     @Autowired
     private SaveQuestionAnswerFacadeService saveQuestionAnswerFacadeService;
     @Autowired
@@ -159,7 +159,7 @@ public class QuestionController {
             LOG.debug("Sending question with id: '{}'", questionId);
         }
 
-        final var question = sendQuestionFacadeService.send(sendQuestionRequestDTO.getQuestion());
+        final var question = sendQuestionAggregator.send(sendQuestionRequestDTO.getQuestion());
         final var links = getQuestionsResourceLinkService.get(question);
         return Response.ok(QuestionResponseDTO.create(question, links)).build();
     }

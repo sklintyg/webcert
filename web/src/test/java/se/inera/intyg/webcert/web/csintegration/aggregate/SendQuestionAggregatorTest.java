@@ -31,24 +31,25 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
-import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionFacadeService;
+import se.inera.intyg.webcert.web.service.facade.question.SendQuestionFacadeService;
 
 @ExtendWith(MockitoExtension.class)
-class SaveQuestionAggregatorTest {
+class SendQuestionAggregatorTest {
+
 
     private static final Question QUESTION = Question.builder().build();
     @Mock
-    SaveQuestionFacadeService saveQuestionFromWC;
+    SendQuestionAggregator sendQuestionFromWC;
     @Mock
-    SaveQuestionFacadeService saveQuestionFromCS;
+    SendQuestionAggregator sendQuestionFromCS;
     @Mock
     CertificateServiceProfile certificateServiceProfile;
-    SaveQuestionFacadeService saveQuestionFacadeService;
+    SendQuestionFacadeService sendQuestionFacadeService;
 
     @BeforeEach
     void setUp() {
-        saveQuestionFacadeService = new SaveQuestionAggregator(
-            saveQuestionFromWC, saveQuestionFromCS, certificateServiceProfile
+        sendQuestionFacadeService = new SendQuestionAggregator(
+            sendQuestionFromWC, sendQuestionFromCS, certificateServiceProfile
         );
     }
 
@@ -56,10 +57,10 @@ class SaveQuestionAggregatorTest {
     void shallReturnQuestionFromWCIfCertificateServiceProfileIsInactive() {
         doReturn(false).when(certificateServiceProfile).active();
 
-        saveQuestionFacadeService.save(QUESTION);
+        sendQuestionFacadeService.send(QUESTION);
 
-        verify(saveQuestionFromWC).save(QUESTION);
-        verifyNoInteractions(saveQuestionFromCS);
+        verify(sendQuestionFromWC).send(QUESTION);
+        verifyNoInteractions(sendQuestionFromCS);
     }
 
     @Test
@@ -67,10 +68,10 @@ class SaveQuestionAggregatorTest {
         final var expectedQuestion = Question.builder().build();
 
         doReturn(true).when(certificateServiceProfile).active();
-        doReturn(null).when(saveQuestionFromCS).save(QUESTION);
-        doReturn(expectedQuestion).when(saveQuestionFromWC).save(QUESTION);
+        doReturn(null).when(sendQuestionFromCS).send(QUESTION);
+        doReturn(expectedQuestion).when(sendQuestionFromWC).send(QUESTION);
 
-        final var actualQuestion = saveQuestionFacadeService.save(QUESTION);
+        final var actualQuestion = sendQuestionFacadeService.send(QUESTION);
         assertEquals(expectedQuestion, actualQuestion);
     }
 
@@ -79,9 +80,9 @@ class SaveQuestionAggregatorTest {
         final var expectedQuestion = Question.builder().build();
 
         doReturn(true).when(certificateServiceProfile).active();
-        doReturn(expectedQuestion).when(saveQuestionFromCS).save(QUESTION);
+        doReturn(expectedQuestion).when(sendQuestionFromCS).send(QUESTION);
 
-        final var actualQuestion = saveQuestionFacadeService.save(QUESTION);
+        final var actualQuestion = sendQuestionFacadeService.send(QUESTION);
         assertEquals(expectedQuestion, actualQuestion);
     }
 }
