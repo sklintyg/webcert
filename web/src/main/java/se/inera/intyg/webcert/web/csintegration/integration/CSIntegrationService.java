@@ -88,6 +88,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveMessageReque
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveMessageResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SendCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SendCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SendMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SendMessageResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateWithoutSignatureRequestDTO;
@@ -576,6 +578,18 @@ public class CSIntegrationService {
         final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + "/save";
 
         final var response = restTemplate.postForObject(url, request, SaveMessageResponseDTO.class);
+
+        if (response == null) {
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
+        }
+
+        return response.getQuestion();
+    }
+
+    public Question sendMessage(SendMessageRequestDTO request, String messageId) {
+        final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + "/send";
+
+        final var response = restTemplate.postForObject(url, request, SendMessageResponseDTO.class);
 
         if (response == null) {
             throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);

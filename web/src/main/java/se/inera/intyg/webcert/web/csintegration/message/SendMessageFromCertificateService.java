@@ -19,15 +19,66 @@
 
 package se.inera.intyg.webcert.web.csintegration.message;
 
-import org.springframework.stereotype.Service;
-import se.inera.intyg.common.support.facade.model.question.Question;
-import se.inera.intyg.webcert.web.service.facade.question.SendQuestionFacadeService;
+import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUtil.getSubject;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
+import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
+import se.inera.intyg.webcert.web.csintegration.certificate.PublishCertificateStatusUpdateService;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
+import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
+import se.inera.intyg.webcert.web.service.facade.question.SendQuestionFacadeService;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
+
+@Slf4j
+@RequiredArgsConstructor
 @Service("sendMessageFromCS")
 public class SendMessageFromCertificateService implements SendQuestionFacadeService {
 
+    private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+    private final MonitoringLogService monitoringLogService;
+    private final PDLLogService pdlLogService;
+    private final CSIntegrationService csIntegrationService;
+    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+
     @Override
     public Question send(Question question) {
-        return null;
+        if (Boolean.FALSE.equals(csIntegrationService.messageExists(question.getId()))) {
+            log.debug("Message '{}' does not exist in certificate service", question.getId());
+            return null;
+        }
+
+        final var certificate = csIntegrationService.getCertificate(
+            question.getCertificateId(),
+            csIntegrationRequestFactory.getCertificateRequest()
+        );
+
+        final var sentMessage = csIntegrationService.sendMessage(
+            csIntegrationRequestFactory.sendMessageRequest(
+                certificate.getMetadata().getPatient().getPersonId().getId()
+            ),
+            question.getId()
+        );
+
+        pdlLogService.logCreateMessage(
+            certificate.getMetadata().getPatient().getPersonId().getId(),
+            certificate.getMetadata().getId()
+        );
+
+        publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.NYFRFV);
+
+        monitoringLogService.logArendeCreated(
+            certificate.getMetadata().getId(),
+            certificate.getMetadata().getType(),
+            certificate.getMetadata().getUnit().getUnitId(),
+            ArendeAmne.valueOf(getSubject(sentMessage.getType()).toString()),
+            false
+        );
+
+        return sentMessage;
     }
 }
