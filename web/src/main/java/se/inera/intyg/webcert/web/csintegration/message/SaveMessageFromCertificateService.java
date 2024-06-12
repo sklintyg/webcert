@@ -19,15 +19,32 @@
 
 package se.inera.intyg.webcert.web.csintegration.message;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionFacadeService;
 
+@Slf4j
+@RequiredArgsConstructor
 @Service("saveMessageFromCS")
 public class SaveMessageFromCertificateService implements SaveQuestionFacadeService {
 
+    private final CSIntegrationService csIntegrationService;
+    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+
     @Override
     public Question save(Question question) {
-        return null;
+        if (Boolean.FALSE.equals(csIntegrationService.messageExists(question.getId()))) {
+            log.debug("Message '{}' does not exist in certificate service", question.getId());
+            return null;
+        }
+
+        return csIntegrationService.saveMessage(
+            csIntegrationRequestFactory.saveMessageRequest(question),
+            question.getId()
+        );
     }
 }
