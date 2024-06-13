@@ -24,16 +24,16 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.util.List;
 import lombok.Builder;
 import lombok.Value;
+import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitQuestionsResponseDTO.GetUnitQuestionsResponseDTOBuilder;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateDTO;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionDTO;
 
 @JsonDeserialize(builder = GetUnitQuestionsResponseDTOBuilder.class)
 @Value
 @Builder
 public class GetUnitQuestionsResponseDTO {
 
-    List<QuestionDTO> questions;
+    List<Question> questions;
     List<CertificateDTO> certificates;
 
     @JsonPOJOBuilder(withPrefix = "")

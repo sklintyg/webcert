@@ -51,6 +51,7 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateText;
 import se.inera.intyg.common.support.facade.model.Staff;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.AnswerComplementRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.AnswerComplementResponseDTO;
@@ -256,7 +257,7 @@ class CSIntegrationServiceTest {
     private static final GetUnitQuestionsRequestDTO GET_QUESTIONS_REQUEST = GetUnitQuestionsRequestDTO.builder().build();
     private static final List<ArendeListItem> ARENDE_LIST_ITEMS = List.of(new ArendeListItem());
     private static final CertificateDTO CERTIFICATE_DTO = new CertificateDTO();
-    private static final QuestionDTO QUESTION_DTO = QuestionDTO.builder()
+    private static final Question QUESTION_DTO = Question.builder()
         .certificateId(ID)
         .build();
     private static final GetUnitQuestionsResponseDTO GET_QUESTIONS_RESPONSE = GetUnitQuestionsResponseDTO.builder()

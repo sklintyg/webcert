@@ -38,11 +38,11 @@ import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
 import se.inera.intyg.common.support.facade.model.question.Answer;
 import se.inera.intyg.common.support.facade.model.question.Complement;
+import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.common.support.facade.model.question.Reminder;
 import se.inera.intyg.webcert.web.service.facade.CertificateFacadeTestHelper;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateDTO;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 
 @ExtendWith(MockitoExtension.class)
@@ -57,67 +57,67 @@ class ListQuestionConverterTest {
         Collections.emptyList().toArray(ResourceLinkDTO[]::new)
     ));
 
-    private static QuestionDTO QUESTION_DTO;
+    private static Question QUESTION;
 
     @BeforeEach
     void setUp() {
-        QUESTION_DTO = buildQuestionDTO(QuestionType.COMPLEMENT);
+        QUESTION = buildQuestion(QuestionType.COMPLEMENT);
     }
 
     @Test
     void shouldConvertCertificateId() {
-        final var response = listQuestionConverter.convert(CERTIFICATE, QUESTION_DTO);
+        final var response = listQuestionConverter.convert(CERTIFICATE, QUESTION);
         assertEquals(CERTIFICATE.get().getMetadata().getId(), response.get(0).getIntygId());
     }
 
 
     @Test
     void shouldConvertCertificateTestIndicated() {
-        final var response = listQuestionConverter.convert(CERTIFICATE, QUESTION_DTO);
+        final var response = listQuestionConverter.convert(CERTIFICATE, QUESTION);
         assertEquals(CERTIFICATE.get().getMetadata().isTestCertificate(), response.get(0).isTestIntyg());
     }
 
     @Test
     void shouldConvertPatientId() {
-        final var response = listQuestionConverter.convert(CERTIFICATE, QUESTION_DTO);
+        final var response = listQuestionConverter.convert(CERTIFICATE, QUESTION);
         assertEquals(CERTIFICATE.get().getMetadata().getPatient().getPersonId().getId(), response.get(0).getPatientId());
     }
 
     @Test
     void shouldConvertIsDeceased() {
-        final var response = listQuestionConverter.convert(CERTIFICATE, QUESTION_DTO);
+        final var response = listQuestionConverter.convert(CERTIFICATE, QUESTION);
         assertEquals(CERTIFICATE.get().getMetadata().getPatient().isDeceased(), response.get(0).isAvliden());
     }
 
     @Test
     void shouldConvertSignedBy() {
-        final var response = listQuestionConverter.convert(CERTIFICATE, QUESTION_DTO);
+        final var response = listQuestionConverter.convert(CERTIFICATE, QUESTION);
         assertEquals(CERTIFICATE.get().getMetadata().getIssuedBy().getPersonId(), response.get(0).getSigneratAv());
     }
 
     @Test
     void shouldConvertSignedByName() {
-        final var response = listQuestionConverter.convert(CERTIFICATE, QUESTION_DTO);
+        final var response = listQuestionConverter.convert(CERTIFICATE, QUESTION);
         assertEquals(CERTIFICATE.get().getMetadata().getIssuedBy().getFullName(), response.get(0).getSigneratAvNamn());
     }
 
     @Test
     void shouldConvertIsReminder() {
-        final var response = listQuestionConverter.convert(CERTIFICATE, QUESTION_DTO);
+        final var response = listQuestionConverter.convert(CERTIFICATE, QUESTION);
         assertTrue(response.get(0).isPaminnelse());
     }
 
     @Test
     void shouldConvertProtectedPerson() {
-        final var response = listQuestionConverter.convert(CERTIFICATE, QUESTION_DTO);
+        final var response = listQuestionConverter.convert(CERTIFICATE, QUESTION);
         assertFalse(response.get(0).isSekretessmarkering());
     }
 
 
     @Test
     void shouldConvertAuthor() {
-        final var response = listQuestionConverter.convert(CERTIFICATE, QUESTION_DTO);
-        assertEquals(QUESTION_DTO.getAuthor(), response.get(0).getFragestallare());
+        final var response = listQuestionConverter.convert(CERTIFICATE, QUESTION);
+        assertEquals(QUESTION.getAuthor(), response.get(0).getFragestallare());
     }
 
     @Nested
@@ -125,49 +125,49 @@ class ListQuestionConverterTest {
 
         @Test
         void shouldConvertSubjectToReminderIfIsReminder() {
-            final var questionDto = buildQuestionDTO(QuestionType.COORDINATION);
+            final Question questionDto = buildQuestion(QuestionType.COORDINATION);
             final var response = listQuestionConverter.convert(CERTIFICATE, questionDto);
             assertEquals("PAMINN", response.get(0).getAmne());
         }
 
         @Test
         void shouldConvertSubjectCoordination() {
-            final var questionDto = buildQuestionDTO(QuestionType.COORDINATION);
+            final Question questionDto = buildQuestion(QuestionType.COORDINATION);
             final var response = listQuestionConverter.convert(CERTIFICATE, questionDto);
             assertEquals("AVSTMN", response.get(1).getAmne());
         }
 
         @Test
         void shouldConvertSubjectContact() {
-            final var questionDto = buildQuestionDTO(QuestionType.CONTACT);
+            final Question questionDto = buildQuestion(QuestionType.CONTACT);
             final var response = listQuestionConverter.convert(CERTIFICATE, questionDto);
             assertEquals("KONTKT", response.get(1).getAmne());
         }
 
         @Test
         void shouldConvertSubjectMissing() {
-            final var questionDto = buildQuestionDTO(QuestionType.MISSING);
+            final Question questionDto = buildQuestion(QuestionType.MISSING);
             final var response = listQuestionConverter.convert(CERTIFICATE, questionDto);
             assertEquals("OVRIGT", response.get(1).getAmne());
         }
 
         @Test
         void shouldConvertSubjectOther() {
-            final var questionDto = buildQuestionDTO(QuestionType.OTHER);
+            final Question questionDto = buildQuestion(QuestionType.OTHER);
             final var response = listQuestionConverter.convert(CERTIFICATE, questionDto);
             assertEquals("OVRIGT", response.get(1).getAmne());
         }
 
         @Test
         void shouldConvertSubjectComplement() {
-            final var questionDto = buildQuestionDTO(QuestionType.COMPLEMENT);
+            final Question questionDto = buildQuestion(QuestionType.COMPLEMENT);
             final var response = listQuestionConverter.convert(CERTIFICATE, questionDto);
             assertEquals("KOMPLT", response.get(1).getAmne());
         }
     }
 
-    private QuestionDTO buildQuestionDTO(QuestionType questionType) {
-        return QuestionDTO.builder()
+    private Question buildQuestion(QuestionType questionType) {
+        return Question.builder()
             .id("id")
             .type(questionType)
             .isForwarded(true)

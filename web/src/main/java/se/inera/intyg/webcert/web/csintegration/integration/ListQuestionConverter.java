@@ -24,22 +24,22 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
+import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.common.support.facade.model.question.Reminder;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateDTO;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionDTO;
 
 @Component
 public class ListQuestionConverter {
 
-    public List<ArendeListItem> convert(Optional<CertificateDTO> certificate, QuestionDTO questionDTO) {
+    public List<ArendeListItem> convert(Optional<CertificateDTO> certificate, Question question) {
         if (certificate.isEmpty()) {
             throw new IllegalStateException("Certificate for question was not available");
         }
-        final var convertedQuestion = convertArendeListItem(certificate.get(), questionDTO);
-        final var convertedReminders = Arrays.stream(questionDTO.getReminders())
+        final var convertedQuestion = convertArendeListItem(certificate.get(), question);
+        final var convertedReminders = Arrays.stream(question.getReminders())
             .map(reminder -> convertArendeListItem(certificate.get(), reminder))
             .collect(Collectors.toList());
 
@@ -83,9 +83,9 @@ public class ListQuestionConverter {
         throw new IllegalArgumentException("Unsupported question type: " + questionType);
     }
 
-    private ArendeListItem convertArendeListItem(CertificateDTO certificate, QuestionDTO questionDTO) {
-        return convertArendeListItem(certificate, convertSubject(questionDTO.getType()).name(), questionDTO.getAuthor(),
-            questionDTO.getSent(), false);
+    private ArendeListItem convertArendeListItem(CertificateDTO certificate, Question question) {
+        return convertArendeListItem(certificate, convertSubject(question.getType()).name(), question.getAuthor(),
+            question.getSent(), false);
     }
 
     private ArendeListItem convertArendeListItem(CertificateDTO certificate, Reminder reminder) {
