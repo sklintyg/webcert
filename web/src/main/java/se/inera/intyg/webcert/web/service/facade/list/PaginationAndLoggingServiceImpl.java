@@ -44,13 +44,13 @@ public class PaginationAndLoggingServiceImpl implements PaginationAndLoggingServ
     private final AuthoritiesHelper authoritiesHelper;
 
     @Autowired
-    public PaginationAndLoggingServiceImpl(final LogService logService, final AuthoritiesHelper authoritiesHelper) {
+    public PaginationAndLoggingServiceImpl(LogService logService, AuthoritiesHelper authoritiesHelper) {
         this.logService = logService;
         this.authoritiesHelper = authoritiesHelper;
     }
 
     @Override
-    public List<ArendeListItem> get(final QueryFragaSvarParameter filterParameters, final List<ArendeListItem> results,
+    public List<ArendeListItem> get(QueryFragaSvarParameter filterParameters, List<ArendeListItem> results,
         final WebCertUser user) {
         Set<String> intygstyperForPrivilege = authoritiesHelper.getIntygstyperForPrivilege(user, AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
 

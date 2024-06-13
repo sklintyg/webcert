@@ -499,7 +499,13 @@ public class ArendeServiceImpl implements ArendeService {
     @Override
     @Transactional(readOnly = true)
     public QueryFragaSvarResponse filterArende(QueryFragaSvarParameter filterParameters) {
+        final var orignalPageSize = filterParameters.getPageSize();
+        final var startFrom = filterParameters.getStartFrom();
+
         final var filteredArende = filterArende(filterParameters, false);
+        filterParameters.setPageSize(orignalPageSize);
+        filterParameters.setStartFrom(startFrom);
+
         final var arendeListItems = paginationAndLoggingService.get(filterParameters, filteredArende.getResults(),
             webcertUserService.getUser());
 

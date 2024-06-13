@@ -103,7 +103,7 @@ class ListQuestionsFacadeServiceImplTest {
         when(arendeService.filterArende(QUERY_FRAGA_SVAR_PARAMETER, true))
             .thenReturn(QUERY_FRAGA_SVAR_RESPONSE_WC);
 
-        when(listCertificateQuestionsFromCS.list(QUERY_FRAGA_SVAR_PARAMETER.getPatientPersonId()))
+        when(listCertificateQuestionsFromCS.list(QUERY_FRAGA_SVAR_PARAMETER))
             .thenReturn(QUERY_FRAGA_SVAR_RESPONSE_CS);
 
         when(webCertUserService.getUser())

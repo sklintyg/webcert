@@ -46,6 +46,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertifica
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitQuestionsRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageQueryCriteriaDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.RenewCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ReplaceCertificateRequestDTO;
@@ -432,13 +433,13 @@ public class CSIntegrationRequestFactory {
             .build();
     }
 
-    public GetUnitQuestionsRequestDTO getUnitQuestionsRequestDTO(String patientId) {
+    public GetUnitQuestionsRequestDTO getUnitQuestionsRequestDTO(MessageQueryCriteriaDTO messageQueryCriteriaDTO) {
         return GetUnitQuestionsRequestDTO.builder()
             .unit(certificateServiceUnitHelper.getUnit())
             .careUnit(certificateServiceUnitHelper.getCareUnit())
             .careProvider(certificateServiceUnitHelper.getCareProvider())
             .user(certificateServiceUserHelper.get())
-            .patient(certificateServicePatientHelper.get(createPatientId(patientId)))
+            .messageQueryCriteriaDTO(messageQueryCriteriaDTO)
             .build();
     }
 }

@@ -21,25 +21,25 @@ package se.inera.intyg.webcert.web.csintegration.integration.dto;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.time.LocalDateTime;
-import java.util.List;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageQueryCriteriaDTO.MessageQueryCriteriaDTOBuilder;
-import se.inera.intyg.webcert.web.csintegration.patient.PersonIdDTO;
+import se.inera.intyg.webcert.web.service.facade.list.dto.QuestionSenderType;
+import se.inera.intyg.webcert.web.service.facade.list.dto.QuestionStatusType;
 
 @JsonDeserialize(builder = MessageQueryCriteriaDTOBuilder.class)
 @Value
 @Builder
 public class MessageQueryCriteriaDTO {
 
-    LocalDateTime from;
-    LocalDateTime to;
-    List<CertificateStatus> statuses;
-    String issuedByStaffId;
-    PersonIdDTO personId;
+    String unitId;
     Boolean forwarded;
-    Boolean validForSign;
+    QuestionStatusType questionStatus;
+    QuestionSenderType senderType;
+    LocalDateTime sentDateFrom;
+    LocalDateTime sentDateTo;
+    String signedBy;
+    String patientId;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class MessageQueryCriteriaDTOBuilder {

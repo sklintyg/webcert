@@ -76,10 +76,12 @@ public class ListQuestionsFacadeServiceImpl implements ListSignedCertificatesFac
         final var convertedFilter = questionFilterConverter.convert(filter);
 
         final var listResponseFromWC = arendeService.filterArende(convertedFilter, true);
-        final var listResponseFromCS = listCertificateQuestionsFromCS.list(convertedFilter.getPatientPersonId());
+        final var listResponseFromCS = listCertificateQuestionsFromCS.list(convertedFilter);
+        final var questionsFromWC = listResponseFromWC.getResults().stream()
+            .map(this::decorateWithResourceLinks)
+            .collect(Collectors.toList());
 
-        final var aggregatedList = Stream.concat(listResponseFromWC.getResults().stream()
-                .map(this::decorateWithResourceLinks), listResponseFromCS.getResults().stream())
+        final var aggregatedList = Stream.concat(questionsFromWC.stream(), listResponseFromCS.getResults().stream())
             .collect(Collectors.toList());
 
         final var paginatedList = paginationAndLoggingService.get(convertedFilter, aggregatedList, webCertUserService.getUser());

@@ -45,6 +45,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModel
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesQueryCriteriaDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificatePdfRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageQueryCriteriaDTO;
 import se.inera.intyg.webcert.web.csintegration.message.MessageRequestConverter;
 import se.inera.intyg.webcert.web.csintegration.message.dto.IncomingMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientDTO;
@@ -130,6 +131,7 @@ class CSIntegrationRequestFactoryTest {
     private static final String REASON_OTHER_SERIOUS_ERROR_NOT_CONVERTED = "ANNAT_ALLVARLIGT_FEL";
     private static final String REASON_OTHER_SERIOUS_ERROR_CONVERTED = "OTHER_SERIOUS_ERROR";
     private static final String REVOKED_MESSAGE = "REVOKED_MESSAGE";
+    private static final MessageQueryCriteriaDTO MESSAGE_QUERY_CRITERIA_DTO = MessageQueryCriteriaDTO.builder().build();
 
     static {
         CERTIFICATE.setMetadata(
@@ -1619,38 +1621,36 @@ class CSIntegrationRequestFactoryTest {
                 .thenReturn(CARE_UNIT);
             when(certificateServiceUnitHelper.getCareProvider())
                 .thenReturn(CARE_PROVIDER);
-            when(certificateServicePatientHelper.get(PERSONNUMMER))
-                .thenReturn(PATIENT);
         }
 
         @Test
         void shouldSetUser() {
-            final var actualRequest = csIntegrationRequestFactory.getUnitQuestionsRequestDTO(PATIENT_ID);
+            final var actualRequest = csIntegrationRequestFactory.getUnitQuestionsRequestDTO(MESSAGE_QUERY_CRITERIA_DTO);
             assertEquals(USER, actualRequest.getUser());
         }
 
         @Test
         void shouldSetUnit() {
-            final var actualRequest = csIntegrationRequestFactory.getUnitQuestionsRequestDTO(PATIENT_ID);
+            final var actualRequest = csIntegrationRequestFactory.getUnitQuestionsRequestDTO(MESSAGE_QUERY_CRITERIA_DTO);
             assertEquals(UNIT, actualRequest.getUnit());
         }
 
         @Test
         void shouldSetCareUnit() {
-            final var actualRequest = csIntegrationRequestFactory.getUnitQuestionsRequestDTO(PATIENT_ID);
+            final var actualRequest = csIntegrationRequestFactory.getUnitQuestionsRequestDTO(MESSAGE_QUERY_CRITERIA_DTO);
             assertEquals(CARE_UNIT, actualRequest.getCareUnit());
         }
 
         @Test
         void shouldSetCareProvider() {
-            final var actualRequest = csIntegrationRequestFactory.getUnitQuestionsRequestDTO(PATIENT_ID);
+            final var actualRequest = csIntegrationRequestFactory.getUnitQuestionsRequestDTO(MESSAGE_QUERY_CRITERIA_DTO);
             assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
         }
 
         @Test
-        void shouldSetPatient() {
-            final var actualRequest = csIntegrationRequestFactory.getUnitQuestionsRequestDTO(PATIENT_ID);
-            assertEquals(PATIENT, actualRequest.getPatient());
+        void shouldSetMessageQueryCriteria() {
+            final var actualRequest = csIntegrationRequestFactory.getUnitQuestionsRequestDTO(MESSAGE_QUERY_CRITERIA_DTO);
+            assertEquals(MESSAGE_QUERY_CRITERIA_DTO, actualRequest.getMessageQueryCriteriaDTO());
         }
     }
 }

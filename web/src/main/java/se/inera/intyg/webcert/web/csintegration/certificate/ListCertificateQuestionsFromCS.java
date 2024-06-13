@@ -19,12 +19,24 @@
 
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
+import static se.inera.intyg.webcert.web.service.facade.list.dto.QuestionStatusType.ANSWER;
+import static se.inera.intyg.webcert.web.service.facade.list.dto.QuestionStatusType.COMPLEMENT;
+import static se.inera.intyg.webcert.web.service.facade.list.dto.QuestionStatusType.HANDLED;
+import static se.inera.intyg.webcert.web.service.facade.list.dto.QuestionStatusType.NOT_HANDLED;
+import static se.inera.intyg.webcert.web.service.facade.list.dto.QuestionStatusType.READ_ANSWER;
+import static se.inera.intyg.webcert.web.service.facade.list.dto.QuestionStatusType.SHOW_ALL;
+import static se.inera.intyg.webcert.web.service.facade.list.dto.QuestionStatusType.WAIT;
+
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageQueryCriteriaDTO;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
+import se.inera.intyg.webcert.web.service.facade.list.dto.QuestionSenderType;
+import se.inera.intyg.webcert.web.service.facade.list.dto.QuestionStatusType;
+import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
 
 @Service
@@ -35,7 +47,7 @@ public class ListCertificateQuestionsFromCS {
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
 
-    public QueryFragaSvarResponse list(String patientId) {
+    public QueryFragaSvarResponse list(QueryFragaSvarParameter queryFragaSvarParameter) {
         if (!certificateServiceProfile.active()) {
             return QueryFragaSvarResponse.builder()
                 .results(Collections.emptyList())
@@ -43,11 +55,54 @@ public class ListCertificateQuestionsFromCS {
                 .build();
         }
         final var listFromCS = csIntegrationService.listQuestionsForUnit(
-            csIntegrationRequestFactory.getUnitQuestionsRequestDTO(patientId));
+            csIntegrationRequestFactory.getUnitQuestionsRequestDTO(convertFilter(queryFragaSvarParameter)));
 
         return QueryFragaSvarResponse.builder()
             .results(listFromCS)
             .totalCount(listFromCS.size())
             .build();
+    }
+
+    private MessageQueryCriteriaDTO convertFilter(QueryFragaSvarParameter queryFragaSvarParameter) {
+        return MessageQueryCriteriaDTO.builder()
+            .signedBy(queryFragaSvarParameter.getHsaId())
+            .forwarded(queryFragaSvarParameter.getVidarebefordrad())
+            .sentDateFrom(queryFragaSvarParameter.getChangedFrom())
+            .sentDateTo(queryFragaSvarParameter.getChangedTo())
+            .unitId(queryFragaSvarParameter.getEnhetId())
+            .patientId(queryFragaSvarParameter.getPatientPersonId())
+            .senderType(convertSenderType(queryFragaSvarParameter))
+            .questionStatus(convertStatus(queryFragaSvarParameter))
+            .build();
+    }
+
+    private QuestionSenderType convertSenderType(QueryFragaSvarParameter queryFragaSvarParameter) {
+        if (queryFragaSvarParameter.getQuestionFromFK() == null && queryFragaSvarParameter.getQuestionFromWC() == null) {
+            return QuestionSenderType.SHOW_ALL;
+        }
+        return Boolean.TRUE.equals(queryFragaSvarParameter.getQuestionFromWC()) ? QuestionSenderType.WC : QuestionSenderType.FK;
+    }
+
+    private QuestionStatusType convertStatus(QueryFragaSvarParameter queryFragaSvarParameter) {
+        if (queryFragaSvarParameter.getVantarPa() == null) {
+            return SHOW_ALL;
+        }
+        switch (queryFragaSvarParameter.getVantarPa()) {
+            case "HANTERAD":
+                return HANDLED;
+            case "ALLA_OHANTERADE":
+                return NOT_HANDLED;
+            case "KOMPLETTERING_FRAN_VARDEN":
+                return COMPLEMENT;
+            case "SVAR_FRAN_VARDEN":
+                return ANSWER;
+            case "MARKERA_SOM_HANTERAD":
+                return READ_ANSWER;
+            case "SVAR_FRAN_FK":
+                return WAIT;
+            case "ALLA":
+            default:
+                return SHOW_ALL;
+        }
     }
 }

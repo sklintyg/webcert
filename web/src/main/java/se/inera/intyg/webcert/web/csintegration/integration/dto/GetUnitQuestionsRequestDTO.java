@@ -23,7 +23,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientDTO;
 import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitDTO;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserDTO;
 
@@ -32,7 +31,6 @@ import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserDTO;
 @Builder
 public class GetUnitQuestionsRequestDTO {
 
-    CertificateServicePatientDTO patient;
     CertificateServiceUserDTO user;
     CertificateServiceUnitDTO unit;
     CertificateServiceUnitDTO careUnit;
