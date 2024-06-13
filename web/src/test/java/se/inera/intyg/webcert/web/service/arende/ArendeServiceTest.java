@@ -112,6 +112,7 @@ import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderException;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
+import se.inera.intyg.webcert.web.service.facade.list.PaginationAndLoggingService;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
@@ -155,9 +156,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     private static final String MEDDELANDE_ID = "meddelandeId";
     private static final String PERSON_ID = "191212121212";
     private static final String SKICKAT_AV = "FKASSA";
-
     private static final Personnummer PNR = Personnummer.createPersonnummer(PERSON_ID).orElseThrow();
-    private static final String CERTIFICATE_ID = "certificateId";
 
     @Mock
     private ArendeRepository arendeRepository;
@@ -215,6 +214,9 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
     @Mock
     private MessageImportService messageImportService;
+
+    @Mock
+    private PaginationAndLoggingService paginationAndLoggingService;
 
     @InjectMocks
     private ArendeServiceImpl service;
@@ -1305,8 +1307,8 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testFilterArendeWithEnhetsIdAsParam() {
-        WebCertUser webCertUser = createUser();
-        when(webcertUserService.getUser()).thenReturn(webCertUser);
+        final var user = createUser();
+        when(webcertUserService.getUser()).thenReturn(user);
         when(webcertUserService.isAuthorizedForUnit(any(String.class), eq(true))).thenReturn(true);
 
         List<Arende> queryResults = new ArrayList<>();
@@ -1322,24 +1324,34 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         when(fragaSvarService.filterFragaSvar(any(Filter.class))).thenReturn(fsResponse);
 
         QueryFragaSvarParameter params = new QueryFragaSvarParameter();
-        params.setEnhetId(webCertUser.getValdVardenhet().getId());
+        params.setEnhetId(user.getValdVardenhet().getId());
+
+        final var arendeListItem1 = new ArendeListItem();
+        final var arendeListItem2 = new ArendeListItem();
+        final var captor = ArgumentCaptor.forClass(List.class);
+
+        when(paginationAndLoggingService.get(eq(params), any(), eq(user)))
+            .thenReturn(List.of(arendeListItem1, arendeListItem2));
 
         QueryFragaSvarResponse response = service.filterArende(params);
+
+        verify(paginationAndLoggingService, times(1)).get(eq(params), captor.capture(), eq(user));
+        verify(webcertUserService, times(2)).getUser();
 
         verify(webcertUserService).isAuthorizedForUnit(anyString(), eq(true));
 
         verify(arendeRepository).filterArende(any(Filter.class));
-        // verify(arendeRepository).filterArendeCount(any(Filter.class));
         verify(fragaSvarService).filterFragaSvar(any(Filter.class));
 
         assertEquals(2, response.getResults().size());
-        // assertEquals(3, response.getTotalCount());
+        assertEquals(2, response.getTotalCount());
+        assertEquals(2, captor.getValue().size());
     }
 
     @Test
     public void testFilterArendeHsaNotFound() {
-        WebCertUser webCertUser = createUser();
-        when(webcertUserService.getUser()).thenReturn(webCertUser);
+        WebCertUser user = createUser();
+        when(webcertUserService.getUser()).thenReturn(user);
         when(webcertUserService.isAuthorizedForUnit(any(String.class), eq(true))).thenReturn(true);
 
         List<Arende> queryResults = new ArrayList<>();
@@ -1357,12 +1369,22 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         when(hsaEmployeeService.getEmployee(anyString(), any())).thenThrow(WebServiceException.class);
 
         QueryFragaSvarParameter params = new QueryFragaSvarParameter();
+        final var arendeListItem1 = new ArendeListItem();
+        final var arendeListItem2 = new ArendeListItem();
+        final var captor = ArgumentCaptor.forClass(List.class);
+
+        when(paginationAndLoggingService.get(eq(params), any(), eq(user)))
+            .thenReturn(List.of(arendeListItem1, arendeListItem2));
+
         QueryFragaSvarResponse response = service.filterArende(params);
 
+        verify(paginationAndLoggingService, times(1)).get(eq(params), captor.capture(), eq(user));
+        verify(webcertUserService, times(2)).getUser();
         verify(arendeRepository).filterArende(any(Filter.class));
         verify(fragaSvarService).filterFragaSvar(any(Filter.class));
 
         assertEquals(2, response.getResults().size());
+        assertEquals(2, captor.getValue().size());
     }
 
     @Test
@@ -1409,7 +1431,8 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testFilterArendeWithNoEnhetsIdAsParam() {
-        when(webcertUserService.getUser()).thenReturn(createUser());
+        final var user = createUser();
+        when(webcertUserService.getUser()).thenReturn(user);
 
         List<Arende> queryResults = new ArrayList<>();
         queryResults.add(buildArende(UUID.randomUUID().toString(), LocalDateTime.now(), null));
@@ -1425,21 +1448,27 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         QueryFragaSvarParameter params = new QueryFragaSvarParameter();
 
+        final var arendeListItem1 = new ArendeListItem();
+        final var arendeListItem2 = new ArendeListItem();
+        final var captor = ArgumentCaptor.forClass(List.class);
+
+        when(paginationAndLoggingService.get(eq(params), any(), eq(user)))
+            .thenReturn(List.of(arendeListItem1, arendeListItem2));
+
         QueryFragaSvarResponse response = service.filterArende(params);
 
-        verify(webcertUserService).getUser();
-
+        verify(paginationAndLoggingService, times(1)).get(eq(params), captor.capture(), eq(user));
         verify(arendeRepository).filterArende(any(Filter.class));
-        // verify(arendeRepository).filterArendeCount(any(Filter.class));
         verify(fragaSvarService).filterFragaSvar(any(Filter.class));
 
         assertEquals(2, response.getResults().size());
-        // assertEquals(3, response.getTotalCount());
+        assertEquals(2, response.getTotalCount());
     }
 
     @Test
     public void testFilterArendeMergesFragaSvar() {
-        when(webcertUserService.getUser()).thenReturn(createUser());
+        final var user = createUser();
+        when(webcertUserService.getUser()).thenReturn(user);
 
         List<Arende> queryResults = new ArrayList<>();
         queryResults.add(buildArende(UUID.randomUUID().toString(), LocalDateTime.now(), null));
@@ -1455,22 +1484,29 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         when(fragaSvarService.filterFragaSvar(any(Filter.class))).thenReturn(fsResponse);
 
         QueryFragaSvarParameter params = new QueryFragaSvarParameter();
+        final var arendeListItem1 = new ArendeListItem();
+        final var arendeListItem2 = new ArendeListItem();
+        final var captor = ArgumentCaptor.forClass(List.class);
+
+        when(paginationAndLoggingService.get(eq(params), any(), eq(user)))
+            .thenReturn(List.of(arendeListItem1, arendeListItem2));
 
         QueryFragaSvarResponse response = service.filterArende(params);
 
-        verify(webcertUserService).getUser();
-
+        verify(paginationAndLoggingService, times(1)).get(eq(params), captor.capture(), eq(user));
+        verify(webcertUserService, times(2)).getUser();
         verify(arendeRepository).filterArende(any(Filter.class));
-        // verify(arendeRepository).filterArendeCount(any(Filter.class));
         verify(fragaSvarService).filterFragaSvar(any(Filter.class));
 
-        assertEquals(3, response.getResults().size());
-        // assertEquals(4, response.getTotalCount());
+        assertEquals(2, response.getResults().size());
+        assertEquals(3, response.getTotalCount());
+        assertEquals(3, captor.getValue().size());
     }
 
     @Test
     public void testFilterArendeInvalidStartPosition() {
-        when(webcertUserService.getUser()).thenReturn(createUser());
+        final var user = createUser();
+        when(webcertUserService.getUser()).thenReturn(user);
 
         List<Arende> queryResults = new ArrayList<>();
         queryResults.add(buildArende(UUID.randomUUID().toString(), LocalDateTime.now(), null));
@@ -1488,21 +1524,23 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         QueryFragaSvarParameter params = new QueryFragaSvarParameter();
         params.setStartFrom(5);
 
+        when(paginationAndLoggingService.get(params, Collections.emptyList(), user))
+            .thenReturn(Collections.emptyList());
+
         QueryFragaSvarResponse response = service.filterArende(params);
 
-        verify(webcertUserService).getUser();
+        verify(webcertUserService, times(2)).getUser();
 
         verify(arendeRepository).filterArende(any(Filter.class));
-        // verify(arendeRepository).filterArendeCount(any(Filter.class));
         verify(fragaSvarService).filterFragaSvar(any(Filter.class));
 
         assertEquals(0, response.getResults().size());
-        // assertEquals(4, response.getTotalCount());
     }
 
     @Test
     public void testFilterArendeSelection() {
-        when(webcertUserService.getUser()).thenReturn(createUser());
+        final var user = createUser();
+        when(webcertUserService.getUser()).thenReturn(user);
         when(authoritiesHelper.getIntygstyperForPrivilege(any(UserDetails.class), any())).thenReturn(new HashSet<>());
 
         List<Arende> queryResults = new ArrayList<>();
@@ -1522,16 +1560,24 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         params.setStartFrom(2);
         params.setPageSize(10);
 
+        final var arendeListItem1 = new ArendeListItem();
+        final var arendeListItem2 = new ArendeListItem();
+        final var captor = ArgumentCaptor.forClass(List.class);
+
+        when(paginationAndLoggingService.get(eq(params), any(), eq(user)))
+            .thenReturn(List.of(arendeListItem1, arendeListItem2));
+
         QueryFragaSvarResponse response = service.filterArende(params);
 
-        verify(webcertUserService).getUser();
+        verify(paginationAndLoggingService, times(1)).get(eq(params), captor.capture(), eq(user));
+        verify(webcertUserService, times(2)).getUser();
 
         verify(arendeRepository, atLeastOnce()).filterArende(any(Filter.class));
-        // verify(arendeRepository).filterArendeCount(any(Filter.class));
         verify(fragaSvarService).filterFragaSvar(any());
 
-        assertEquals(1, response.getResults().size());
-        // assertEquals(4, response.getTotalCount());
+        assertEquals(2, response.getResults().size());
+        assertEquals(3, captor.getValue().size());
+        assertEquals(3, response.getTotalCount());
     }
 
     @Test
@@ -1541,7 +1587,8 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         final String intygId3 = "intygId3";
         final String messageId = "arendeWithPaminnelseMEDDELANDE_ID";
 
-        when(webcertUserService.getUser()).thenReturn(createUser());
+        final var user = createUser();
+        when(webcertUserService.getUser()).thenReturn(user);
 
         List<Arende> queryResults = new ArrayList<>();
         queryResults.add(buildArende(UUID.randomUUID().toString(), intygId3, LocalDateTime.now().plusDays(2), null, ENHET_ID));
@@ -1560,13 +1607,26 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         when(fragaSvarService.filterFragaSvar(any(Filter.class))).thenReturn(fsResponse);
 
         QueryFragaSvarParameter params = new QueryFragaSvarParameter();
+        final var arendeListItem1 = new ArendeListItem();
+        final var arendeListItem2 = new ArendeListItem();
+        final var captor = ArgumentCaptor.forClass(List.class);
+
+        when(paginationAndLoggingService.get(eq(params), any(), eq(user)))
+            .thenReturn(List.of(arendeListItem1, arendeListItem2));
 
         QueryFragaSvarResponse response = service.filterArende(params);
 
-        assertEquals(3, response.getResults().size());
-        assertEquals(intygId3, response.getResults().get(0).getIntygId());
-        assertEquals(intygId2, response.getResults().get(1).getIntygId());
-        assertEquals(intygId1, response.getResults().get(2).getIntygId());
+        verify(paginationAndLoggingService, times(1)).get(eq(params), captor.capture(), eq(user));
+        verify(webcertUserService, times(2)).getUser();
+
+        verify(paginationAndLoggingService, times(1)).get(eq(params), captor.capture(), eq(user));
+
+        final var arendeListCaptor = (List<ArendeListItem>) captor.getValue();
+
+        assertEquals(3, arendeListCaptor.size());
+        assertEquals(intygId3, arendeListCaptor.get(0).getIntygId());
+        assertEquals(intygId2, arendeListCaptor.get(1).getIntygId());
+        assertEquals(intygId1, arendeListCaptor.get(2).getIntygId());
     }
 
     @Test

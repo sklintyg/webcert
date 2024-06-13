@@ -31,6 +31,7 @@ import static org.mockito.Mockito.when;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -84,6 +85,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertif
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitQuestionsRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitQuestionsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.InternalCertificateXmlResponseDTO;
@@ -105,7 +108,9 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertific
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.message.dto.IncomingMessageRequestDTO;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionDTO;
@@ -248,6 +253,18 @@ class CSIntegrationServiceTest {
             .xml(XML_DATA)
             .build();
 
+    private static final GetUnitQuestionsRequestDTO GET_QUESTIONS_REQUEST = GetUnitQuestionsRequestDTO.builder().build();
+    private static final List<ArendeListItem> ARENDE_LIST_ITEMS = List.of(new ArendeListItem());
+    private static final CertificateDTO CERTIFICATE_DTO = new CertificateDTO();
+    private static final QuestionDTO QUESTION_DTO = QuestionDTO.builder()
+        .certificateId(ID)
+        .build();
+    private static final GetUnitQuestionsResponseDTO GET_QUESTIONS_RESPONSE = GetUnitQuestionsResponseDTO.builder()
+        .certificates(List.of(CERTIFICATE_DTO))
+        .questions(List.of(QUESTION_DTO))
+        .build();
+
+
     @Mock
     private RestTemplate restTemplate;
 
@@ -256,6 +273,9 @@ class CSIntegrationServiceTest {
 
     @Mock
     private ListIntygEntryConverter listIntygEntryConverter;
+
+    @Mock
+    private ListQuestionConverter listQuestionConverter;
 
     @InjectMocks
     private CSIntegrationService csIntegrationService;
@@ -1809,6 +1829,70 @@ class CSIntegrationServiceTest {
             verify(restTemplate).postForObject(captor.capture(), any(), any());
 
             assertEquals("baseUrl/internalapi/certificate/id/xml", captor.getValue());
+        }
+    }
+
+    @Nested
+    class GetQuestionsForUnit {
+
+        @BeforeEach
+        void setup() {
+            CERTIFICATE_DTO.setMetadata(CertificateMetadata.builder()
+                .id(ID)
+                .build());
+        }
+
+        @Test
+        void shouldThrowIfResponseIsNull() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(null);
+            assertThrows(IllegalStateException.class,
+                () -> csIntegrationService.listQuestionsForUnit(GET_QUESTIONS_REQUEST)
+            );
+        }
+
+        @Test
+        void shouldPreformPostUsingRequest() {
+            when(listQuestionConverter.convert(Optional.of(CERTIFICATE_DTO), QUESTION_DTO))
+                .thenReturn(ARENDE_LIST_ITEMS);
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(GET_QUESTIONS_RESPONSE);
+
+            final var captor = ArgumentCaptor.forClass(GetUnitQuestionsRequestDTO.class);
+
+            csIntegrationService.listQuestionsForUnit(GET_QUESTIONS_REQUEST);
+            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+
+            assertEquals(GET_QUESTIONS_REQUEST, captor.getValue());
+        }
+
+        @Test
+        void shouldReturnConvertedListItems() {
+            when(listQuestionConverter.convert(Optional.of(CERTIFICATE_DTO), QUESTION_DTO))
+                .thenReturn(ARENDE_LIST_ITEMS);
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(GET_QUESTIONS_RESPONSE);
+
+            final var response = csIntegrationService.listQuestionsForUnit(GET_QUESTIONS_REQUEST);
+
+            assertEquals(ARENDE_LIST_ITEMS, response);
+        }
+
+        @Test
+        void shouldSetUrlCorrect() {
+            when(listQuestionConverter.convert(Optional.of(CERTIFICATE_DTO), QUESTION_DTO))
+                .thenReturn(ARENDE_LIST_ITEMS);
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(GET_QUESTIONS_RESPONSE);
+
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            csIntegrationService.listQuestionsForUnit(GET_QUESTIONS_REQUEST);
+            verify(restTemplate).postForObject(captor.capture(), any(), any());
+
+            assertEquals("baseUrl/api/unit/questions", captor.getValue());
+
         }
     }
 }

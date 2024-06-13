@@ -16,22 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.fragasvar.dto;
+
+package se.inera.intyg.webcert.web.service.facade.list;
 
 import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class QueryFragaSvarResponse {
+public interface PaginationAndLoggingService {
 
-    private int totalCount;
-    private List<ArendeListItem> results;
+    List<ArendeListItem> get(final QueryFragaSvarParameter filterParameters, final List<ArendeListItem> results, final WebCertUser user);
 
 }

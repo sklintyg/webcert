@@ -1605,4 +1605,52 @@ class CSIntegrationRequestFactoryTest {
             assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
         }
     }
+
+    @Nested
+    class GetUnitQuestionsRequestDTOTest {
+
+        @BeforeEach
+        void setup() {
+            when(certificateServiceUserHelper.get())
+                .thenReturn(USER);
+            when(certificateServiceUnitHelper.getUnit())
+                .thenReturn(UNIT);
+            when(certificateServiceUnitHelper.getCareUnit())
+                .thenReturn(CARE_UNIT);
+            when(certificateServiceUnitHelper.getCareProvider())
+                .thenReturn(CARE_PROVIDER);
+            when(certificateServicePatientHelper.get(PERSONNUMMER))
+                .thenReturn(PATIENT);
+        }
+
+        @Test
+        void shouldSetUser() {
+            final var actualRequest = csIntegrationRequestFactory.getUnitQuestionsRequestDTO(PATIENT_ID);
+            assertEquals(USER, actualRequest.getUser());
+        }
+
+        @Test
+        void shouldSetUnit() {
+            final var actualRequest = csIntegrationRequestFactory.getUnitQuestionsRequestDTO(PATIENT_ID);
+            assertEquals(UNIT, actualRequest.getUnit());
+        }
+
+        @Test
+        void shouldSetCareUnit() {
+            final var actualRequest = csIntegrationRequestFactory.getUnitQuestionsRequestDTO(PATIENT_ID);
+            assertEquals(CARE_UNIT, actualRequest.getCareUnit());
+        }
+
+        @Test
+        void shouldSetCareProvider() {
+            final var actualRequest = csIntegrationRequestFactory.getUnitQuestionsRequestDTO(PATIENT_ID);
+            assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
+        }
+
+        @Test
+        void shouldSetPatient() {
+            final var actualRequest = csIntegrationRequestFactory.getUnitQuestionsRequestDTO(PATIENT_ID);
+            assertEquals(PATIENT, actualRequest.getPatient());
+        }
+    }
 }
