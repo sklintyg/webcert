@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.link.ResourceLink;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
@@ -55,8 +56,18 @@ public class GetQuestionsResourceLinkServiceImpl implements GetQuestionsResource
 
     @Override
     public List<ResourceLinkDTO> get(Question question) {
+        if (useLinksProvidedInQuestion(question)) {
+            return question.getLinks().stream()
+                .map(this::convertLinksProvidedInQuestion)
+                .collect(Collectors.toList());
+        }
+
         final var certificate = getCertificateFacadeService.getCertificate(question.getCertificateId(), false, false);
         return get(certificate, question);
+    }
+
+    private static boolean useLinksProvidedInQuestion(Question question) {
+        return question.getLinks() != null;
     }
 
     private List<ResourceLinkDTO> get(Certificate certificate, Question question) {
@@ -86,6 +97,16 @@ public class GetQuestionsResourceLinkServiceImpl implements GetQuestionsResource
             return questionResourceLinkDTOHashMap;
         }
 
+        if (useLinksProvidedInQuestions(questions)) {
+            return questions.stream()
+                .collect(Collectors.toMap(
+                    question -> question,
+                    question -> question.getLinks().stream()
+                        .map(this::convertLinksProvidedInQuestion)
+                        .collect(Collectors.toList())
+                ));
+        }
+
         final var certificate = getCertificateFacadeService.getCertificate(questions.get(0).getCertificateId(), false, false);
 
         for (Question question : questions) {
@@ -93,6 +114,21 @@ public class GetQuestionsResourceLinkServiceImpl implements GetQuestionsResource
             questionResourceLinkDTOHashMap.put(question, resourceLinkDTOS);
         }
         return questionResourceLinkDTOHashMap;
+    }
+
+    private static boolean useLinksProvidedInQuestions(List<Question> questions) {
+        return questions.stream().anyMatch(GetQuestionsResourceLinkServiceImpl::useLinksProvidedInQuestion);
+    }
+
+    private ResourceLinkDTO convertLinksProvidedInQuestion(ResourceLink link) {
+        return ResourceLinkDTO.create(
+            ResourceLinkTypeDTO.valueOf(link.getType().name()),
+            link.getTitle(),
+            link.getName(),
+            link.getDescription(),
+            link.getBody(),
+            link.isEnabled()
+        );
     }
 
     private AccessEvaluationParameters createAccessEvaluationParameters(Certificate certificate) {

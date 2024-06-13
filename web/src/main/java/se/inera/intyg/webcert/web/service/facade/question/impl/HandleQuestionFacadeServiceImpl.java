@@ -25,7 +25,7 @@ import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.HandleQuestionFacadeService;
 
-@Service("handleQuestionFromWebcert")
+@Service("handleQuestionFromWC")
 public class HandleQuestionFacadeServiceImpl implements HandleQuestionFacadeService {
 
     private final ArendeService arendeService;

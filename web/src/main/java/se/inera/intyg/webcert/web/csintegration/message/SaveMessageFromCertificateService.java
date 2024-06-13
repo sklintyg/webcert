@@ -19,41 +19,32 @@
 
 package se.inera.intyg.webcert.web.csintegration.message;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
+import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionFacadeService;
 
 @Slf4j
 @RequiredArgsConstructor
-@Service("getQuestionsFromCertificateService")
-public class GetQuestionsFromCertificateService {
+@Service("saveMessageFromCS")
+public class SaveMessageFromCertificateService implements SaveQuestionFacadeService {
 
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
 
-
-    public List<Question> get(String certificateId) {
-        log.debug("Attempting to get questions for certificate '{}' from Certificate Service", certificateId);
-
-        if (Boolean.FALSE.equals(csIntegrationService.certificateExists(certificateId))) {
-            log.debug("Certificate '{}' does not exist in certificate service", certificateId);
+    @Override
+    public Question save(Question question) {
+        if (Boolean.FALSE.equals(csIntegrationService.messageExists(question.getId()))) {
+            log.debug("Message '{}' does not exist in certificate service", question.getId());
             return null;
         }
 
-        final var certificate = csIntegrationService.getCertificate(
-            certificateId,
-            csIntegrationRequestFactory.getCertificateRequest()
-        );
-
-        return csIntegrationService.getQuestions(
-            csIntegrationRequestFactory.getCertificateMessageRequest(
-                certificate.getMetadata().getPatient().getPersonId().getId()
-            ),
-            certificateId
+        return csIntegrationService.saveMessage(
+            csIntegrationRequestFactory.saveMessageRequest(question),
+            question.getId()
         );
     }
 }

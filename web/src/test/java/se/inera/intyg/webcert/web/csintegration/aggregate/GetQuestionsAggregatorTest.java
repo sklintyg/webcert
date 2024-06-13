@@ -25,7 +25,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -36,10 +35,6 @@ import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.webcert.web.csintegration.message.GetQuestionsFromCertificateService;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
-import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsResourceLinkService;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionDTO;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionsResponseDTO;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 
 @ExtendWith(MockitoExtension.class)
 class GetQuestionsAggregatorTest {
@@ -50,8 +45,6 @@ class GetQuestionsAggregatorTest {
     @Mock
     private GetQuestionsFacadeService getQuestionsFromWebcert;
     @Mock
-    private GetQuestionsResourceLinkService getQuestionsResourceLinkService;
-    @Mock
     private GetQuestionsFromCertificateService getQuestionsFromCertificateService;
     @InjectMocks
     private GetQuestionsAggregator getQuestionsAggregator;
@@ -59,11 +52,11 @@ class GetQuestionsAggregatorTest {
 
     @Test
     void shallReturnQuestionsFromCSIfProfileIsActiveAndResponseIsNotNull() {
-        final var expectedResult = QuestionsResponseDTO.builder().build();
+        final var expectedResult = List.of(Question.builder().build());
         doReturn(true).when(certificateServiceProfile).active();
         doReturn(expectedResult).when(getQuestionsFromCertificateService).get(CERTIFICATE_ID);
 
-        final var response = getQuestionsAggregator.get(CERTIFICATE_ID);
+        final var response = getQuestionsAggregator.getQuestions(CERTIFICATE_ID);
         verify(getQuestionsFromCertificateService, times(1)).get(CERTIFICATE_ID);
 
         assertEquals(expectedResult, response);
@@ -72,15 +65,13 @@ class GetQuestionsAggregatorTest {
     @Test
     void shallReturnQuestionsFromWCIfProfileIsActiveAndResponseIsNull() {
         final var question = Question.builder().build();
-        final var resourceLinkDTOS = List.of(new ResourceLinkDTO());
-        final var questionListMap = Map.of(question, resourceLinkDTOS);
-        final var expectedResult = QuestionsResponseDTO.create(List.of(question), questionListMap);
+        final var expectedResult = List.of(question);
 
         doReturn(true).when(certificateServiceProfile).active();
+        doReturn(null).when(getQuestionsFromCertificateService).get(CERTIFICATE_ID);
         doReturn(List.of(question)).when(getQuestionsFromWebcert).getQuestions(CERTIFICATE_ID);
-        doReturn(questionListMap).when(getQuestionsResourceLinkService).get(List.of(question));
 
-        final var response = getQuestionsAggregator.get(CERTIFICATE_ID);
+        final var response = getQuestionsAggregator.getQuestions(CERTIFICATE_ID);
         verify(getQuestionsFromCertificateService, times(1)).get(CERTIFICATE_ID);
         verify(getQuestionsFromWebcert, times(1)).getQuestions(CERTIFICATE_ID);
 
@@ -90,15 +81,12 @@ class GetQuestionsAggregatorTest {
     @Test
     void shallReturnQuestionsFromWCIfProfileIsNotActive() {
         final var question = Question.builder().build();
-        final var resourceLinkDTOS = List.of(new ResourceLinkDTO());
-        final var questionListMap = Map.of(question, resourceLinkDTOS);
-        final var expectedResult = QuestionsResponseDTO.create(List.of(question), questionListMap);
+        final var expectedResult = List.of(question);
 
         doReturn(false).when(certificateServiceProfile).active();
         doReturn(List.of(question)).when(getQuestionsFromWebcert).getQuestions(CERTIFICATE_ID);
-        doReturn(questionListMap).when(getQuestionsResourceLinkService).get(List.of(question));
 
-        final var response = getQuestionsAggregator.get(CERTIFICATE_ID);
+        final var response = getQuestionsAggregator.getQuestions(CERTIFICATE_ID);
         verify(getQuestionsFromCertificateService, times(0)).get(CERTIFICATE_ID);
         verify(getQuestionsFromWebcert, times(1)).getQuestions(CERTIFICATE_ID);
 
@@ -107,28 +95,24 @@ class GetQuestionsAggregatorTest {
 
     @Test
     void shallReturnComplementQuestions() {
-        final var resultFromCS = QuestionsResponseDTO.builder()
-            .questions(List.of(
-                QuestionDTO.builder()
-                    .type(QuestionType.COMPLEMENT)
-                    .build(),
-                QuestionDTO.builder()
-                    .type(QuestionType.CONTACT)
-                    .build())
-            )
-            .build();
+        final var resultFromCS = List.of(
+            Question.builder()
+                .type(QuestionType.COMPLEMENT)
+                .build(),
+            Question.builder()
+                .type(QuestionType.CONTACT)
+                .build()
+        );
 
-        final var expectedResult = QuestionsResponseDTO.builder()
-            .questions(List.of(
-                QuestionDTO.builder()
-                    .type(QuestionType.COMPLEMENT)
-                    .build())
-            )
-            .build();
+        final var expectedResult = List.of(
+            Question.builder()
+                .type(QuestionType.COMPLEMENT)
+                .build()
+        );
         doReturn(true).when(certificateServiceProfile).active();
         doReturn(resultFromCS).when(getQuestionsFromCertificateService).get(CERTIFICATE_ID);
 
-        final var response = getQuestionsAggregator.getComplements(CERTIFICATE_ID);
+        final var response = getQuestionsAggregator.getComplementQuestions(CERTIFICATE_ID);
         verify(getQuestionsFromCertificateService, times(1)).get(CERTIFICATE_ID);
 
         assertEquals(expectedResult, response);

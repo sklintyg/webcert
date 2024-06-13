@@ -23,6 +23,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
+import java.util.Collections;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -86,29 +88,23 @@ class QuestionControllerTest {
 
     @Test
     void shallReturnQuestionResponse() {
-        final var expectedResponse = QuestionsResponseDTO.builder().build();
-
-        doReturn(expectedResponse)
+        doReturn(Collections.singletonList(Question.builder().build()))
             .when(getQuestionsAggregator)
-            .get("test");
-
+            .getQuestions("test");
         final var actualResponse = questionController.getQuestions("test");
 
-        assertEquals(expectedResponse, actualResponse.getEntity());
+        assertNotNull(((QuestionsResponseDTO) actualResponse.getEntity()).getQuestions().get(0));
     }
 
     @Test
     void shallReturnQuestionResponseWithoutResourceLinks() {
-        final var expectedResponse = QuestionsResponseDTO.builder()
-            .build();
-
-        doReturn(expectedResponse)
+        doReturn(Collections.singletonList(Question.builder().build()))
             .when(getQuestionsAggregator)
-            .getComplements("test");
-
+            .getComplementQuestions("test");
         final var actualResponse = questionController.getComplementQuestions("test");
 
-        assertEquals(expectedResponse, actualResponse.getEntity());
+        assertNotNull(((QuestionsResponseDTO) actualResponse.getEntity()).getQuestions().get(0));
+        Assertions.assertTrue(((QuestionsResponseDTO) actualResponse.getEntity()).getQuestions().get(0).getLinks().isEmpty());
     }
 
     @Test
@@ -224,14 +220,13 @@ class QuestionControllerTest {
         final var handleRequestDTO = new HandleQuestionRequestDTO();
         handleRequestDTO.setHandled(true);
 
-        final var expectedResponse = QuestionResponseDTO.builder().build();
-
-        doReturn(expectedResponse)
+        doReturn(Question.builder().build())
             .when(handleQuestionAggregator)
             .handle(questionId, handleRequestDTO.isHandled());
 
         final var actualResponse = questionController.handleQuestion(questionId, handleRequestDTO);
 
-        assertEquals(expectedResponse, actualResponse.getEntity());
+        assertEquals(HttpStatus.OK.value(), actualResponse.getStatus());
+        assertNotNull(((QuestionResponseDTO) actualResponse.getEntity()).getQuestion());
     }
 }

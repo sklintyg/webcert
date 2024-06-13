@@ -19,35 +19,28 @@
 
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
-import se.inera.intyg.webcert.web.service.facade.question.HandleQuestionFacadeService;
+import se.inera.intyg.webcert.web.service.facade.question.SendQuestionFacadeService;
 
 @Service
-public class HandleQuestionAggregator implements HandleQuestionFacadeService {
+@RequiredArgsConstructor
+public class SendQuestionAggregator implements SendQuestionFacadeService {
 
-    private final HandleQuestionFacadeService handleQuestionFromWC;
-    private final HandleQuestionFacadeService handleQuestionFromCS;
+    private final SendQuestionFacadeService sendQuestionFromWC;
+    private final SendQuestionFacadeService sendMessageFromCS;
     private final CertificateServiceProfile certificateServiceProfile;
 
-    public HandleQuestionAggregator(
-        HandleQuestionFacadeService handleQuestionFromWC,
-        HandleQuestionFacadeService handleQuestionFromCS,
-        CertificateServiceProfile certificateServiceProfile) {
-        this.handleQuestionFromWC = handleQuestionFromWC;
-        this.handleQuestionFromCS = handleQuestionFromCS;
-        this.certificateServiceProfile = certificateServiceProfile;
-    }
-
     @Override
-    public Question handle(String questionId, boolean isHandled) {
+    public Question send(Question question) {
         if (!certificateServiceProfile.active()) {
-            return handleQuestionFromWC.handle(questionId, isHandled);
+            return sendQuestionFromWC.send(question);
         }
 
-        final var responseFromCS = handleQuestionFromCS.handle(questionId, isHandled);
+        final var responseFromCS = sendMessageFromCS.send(question);
 
-        return responseFromCS != null ? responseFromCS : handleQuestionFromWC.handle(questionId, isHandled);
+        return responseFromCS != null ? responseFromCS : sendQuestionFromWC.send(question);
     }
 }

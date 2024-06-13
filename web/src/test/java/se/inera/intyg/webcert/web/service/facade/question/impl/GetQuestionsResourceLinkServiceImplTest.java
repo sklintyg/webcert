@@ -32,6 +32,7 @@ import static org.mockito.Mockito.when;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -43,6 +44,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
+import se.inera.intyg.common.support.facade.model.link.ResourceLink;
+import se.inera.intyg.common.support.facade.model.link.ResourceLinkTypeEnum;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.facade.model.question.Question;
@@ -79,497 +82,576 @@ class GetQuestionsResourceLinkServiceImplTest {
     private Certificate certificate;
     private ResourceLinkDTO resourceLinkDTO;
 
-    @BeforeEach
-    void setup() {
-        certificate = new Certificate();
-        final var metadata = CertificateMetadata.builder()
-            .id(CERTIFICATE_ID)
-            .type(TYPE)
-            .careProvider(
-                Unit.builder()
-                    .unitId(CARE_PROVIDER_ID)
-                    .build()
-            )
-            .unit(
-                Unit.builder()
-                    .unitId(UNIT_ID)
-                    .build()
-            )
-            .patient(
-                Patient.builder()
-                    .personId(
-                        PersonId.builder()
-                            .id("191212121212")
+    @Nested
+    class UseResourceLinksFromQuestion {
+
+        private static final String NAME = "name";
+        private static final String DESCRIPTION = "description";
+        private static final String TITLE = "title";
+        private static final String BODY = "body";
+
+        @Test
+        void shallUseResourceLinksProvidedInListOfQuestions() {
+            final var question = Question.builder()
+                .links(
+                    List.of(
+                        ResourceLink.builder()
+                            .name(NAME)
+                            .type(ResourceLinkTypeEnum.QUESTIONS)
+                            .description(DESCRIPTION)
+                            .body(BODY)
+                            .enabled(true)
+                            .title(TITLE)
                             .build()
                     )
-                    .build()
-            )
-            .build();
+                )
+                .build();
 
-        certificate.setMetadata(metadata);
+            final var expectedResourceLink = ResourceLinkDTO.create(
+                ResourceLinkTypeDTO.valueOf(ResourceLinkTypeEnum.QUESTIONS.name()),
+                TITLE,
+                NAME,
+                DESCRIPTION,
+                BODY,
+                true
+            );
 
-        when(getCertificateFacadeService.getCertificate(CERTIFICATE_ID, false, false))
-            .thenReturn(certificate);
+            final var questions = List.of(
+                question
+            );
+
+            final var actualQuestionMap = getQuestionsResourceLinkService.get(questions);
+            assertEquals(Map.of(question, List.of(expectedResourceLink)), actualQuestionMap);
+        }
+
+        @Test
+        void shallUseResourceLinksProvidedInQuestion() {
+            final var question = Question.builder()
+                .links(
+                    List.of(
+                        ResourceLink.builder()
+                            .name(NAME)
+                            .type(ResourceLinkTypeEnum.QUESTIONS)
+                            .description(DESCRIPTION)
+                            .body(BODY)
+                            .enabled(true)
+                            .title(TITLE)
+                            .build()
+                    )
+                )
+                .build();
+
+            final var expectedResourceLink = ResourceLinkDTO.create(
+                ResourceLinkTypeDTO.valueOf(ResourceLinkTypeEnum.QUESTIONS.name()),
+                TITLE,
+                NAME,
+                DESCRIPTION,
+                BODY,
+                true
+            );
+
+            final var actualResourceLinks = getQuestionsResourceLinkService.get(question);
+            assertEquals(List.of(expectedResourceLink), actualResourceLinks);
+        }
     }
 
     @Nested
-    class AccessEvaluationParameter {
+    class LinksNotProvidedFromCertificateService {
+
+        @BeforeEach
+        void setup() {
+            certificate = new Certificate();
+            final var metadata = CertificateMetadata.builder()
+                .id(CERTIFICATE_ID)
+                .type(TYPE)
+                .careProvider(
+                    Unit.builder()
+                        .unitId(CARE_PROVIDER_ID)
+                        .build()
+                )
+                .unit(
+                    Unit.builder()
+                        .unitId(UNIT_ID)
+                        .build()
+                )
+                .patient(
+                    Patient.builder()
+                        .personId(
+                            PersonId.builder()
+                                .id("191212121212")
+                                .build()
+                        )
+                        .build()
+                )
+                .build();
+
+            certificate.setMetadata(metadata);
+
+            when(getCertificateFacadeService.getCertificate(CERTIFICATE_ID, false, false))
+                .thenReturn(certificate);
+        }
+
+        @Nested
+        class AccessEvaluationParameter {
+
+            @Nested
+            class SingleQuestion {
+
+                @BeforeEach
+                void setup() {
+                    question = Question.builder()
+                        .certificateId(CERTIFICATE_ID)
+                        .id("questionId")
+                        .sent(LocalDateTime.now())
+                        .build();
+
+                    when(getQuestionsAvailableFunctionsService.get(question))
+                        .thenReturn(
+                            List.of(
+                                ResourceLinkDTO.create(ResourceLinkTypeDTO.ANSWER_QUESTION, "", "", "", false))
+                        );
+                }
+
+                @Test
+                void shallCallGetCertificateOnlyOnce() {
+                    getQuestionsResourceLinkService.get(List.of(question, question));
+                    verify(getCertificateFacadeService, times(1)).getCertificate(CERTIFICATE_ID, false, false);
+                }
+
+                @Test
+                void shallSetType() {
+                    final var captor = ArgumentCaptor.forClass(AccessEvaluationParameters.class);
+
+                    getQuestionsResourceLinkService.get(List.of(question, question));
+                    verify(certificateAccessServiceHelper, times(2)).isAllowToAnswerAdminQuestion(captor.capture());
+
+                    assertEquals(TYPE, captor.getValue().getCertificateType());
+                }
+
+                @Test
+                void shallSetUnit() {
+                    final var captor = ArgumentCaptor.forClass(AccessEvaluationParameters.class);
+                    final var expectedUnit = new Vardenhet();
+                    final var expectedCareProvider = new Vardgivare();
+                    expectedCareProvider.setVardgivarid(CARE_PROVIDER_ID);
+                    expectedUnit.setEnhetsid(UNIT_ID);
+                    expectedUnit.setVardgivare(expectedCareProvider);
+
+                    getQuestionsResourceLinkService.get(List.of(question, question));
+                    verify(certificateAccessServiceHelper, times(2)).isAllowToAnswerAdminQuestion(captor.capture());
+
+                    assertEquals(expectedUnit, captor.getValue().getUnit());
+                }
+
+                @Test
+                void shallSetTypeVersionNull() {
+                    final var captor = ArgumentCaptor.forClass(AccessEvaluationParameters.class);
+
+                    getQuestionsResourceLinkService.get(List.of(question, question));
+                    verify(certificateAccessServiceHelper, times(2)).isAllowToAnswerAdminQuestion(captor.capture());
+
+                    assertNull(captor.getValue().getCertificateTypeVersion());
+                }
+
+                @Test
+                void shallSetTestCertificateFalse() {
+                    final var captor = ArgumentCaptor.forClass(AccessEvaluationParameters.class);
+
+                    getQuestionsResourceLinkService.get(List.of(question, question));
+                    verify(certificateAccessServiceHelper, times(2)).isAllowToAnswerAdminQuestion(captor.capture());
+
+                    assertFalse(captor.getValue().isTestCertificate());
+                }
+
+                @Test
+                void shallSetPatientId() {
+                    final var captor = ArgumentCaptor.forClass(AccessEvaluationParameters.class);
+
+                    getQuestionsResourceLinkService.get(List.of(question, question));
+                    verify(certificateAccessServiceHelper, times(2)).isAllowToAnswerAdminQuestion(captor.capture());
+
+                    assertEquals(certificate.getMetadata().getPatient().getPersonId().getId(),
+                        captor.getValue().getPatient().getOriginalPnr());
+                }
+            }
+
+            @Nested
+            class ListOfQuestions {
+
+                @BeforeEach
+                void setup() {
+                    question = Question.builder()
+                        .certificateId(CERTIFICATE_ID)
+                        .id("questionId")
+                        .sent(LocalDateTime.now())
+                        .build();
+
+                    when(getQuestionsAvailableFunctionsService.get(question))
+                        .thenReturn(
+                            List.of(
+                                ResourceLinkDTO.create(ResourceLinkTypeDTO.ANSWER_QUESTION, "", "", "", false))
+                        );
+                }
+
+                @Test
+                void shallSetType() {
+                    final var captor = ArgumentCaptor.forClass(AccessEvaluationParameters.class);
+
+                    getQuestionsResourceLinkService.get(question);
+                    verify(certificateAccessServiceHelper).isAllowToAnswerAdminQuestion(captor.capture());
+
+                    assertEquals(TYPE, captor.getValue().getCertificateType());
+                }
+
+                @Test
+                void shallSetUnit() {
+                    final var captor = ArgumentCaptor.forClass(AccessEvaluationParameters.class);
+                    final var expectedUnit = new Vardenhet();
+                    final var expectedCareProvider = new Vardgivare();
+                    expectedCareProvider.setVardgivarid(CARE_PROVIDER_ID);
+                    expectedUnit.setEnhetsid(UNIT_ID);
+                    expectedUnit.setVardgivare(expectedCareProvider);
+
+                    getQuestionsResourceLinkService.get(question);
+                    verify(certificateAccessServiceHelper).isAllowToAnswerAdminQuestion(captor.capture());
+
+                    assertEquals(expectedUnit, captor.getValue().getUnit());
+                }
+
+                @Test
+                void shallSetTypeVersionNull() {
+                    final var captor = ArgumentCaptor.forClass(AccessEvaluationParameters.class);
+
+                    getQuestionsResourceLinkService.get(question);
+                    verify(certificateAccessServiceHelper).isAllowToAnswerAdminQuestion(captor.capture());
+
+                    assertNull(captor.getValue().getCertificateTypeVersion());
+                }
+
+                @Test
+                void shallSetTestCertificateFalse() {
+                    final var captor = ArgumentCaptor.forClass(AccessEvaluationParameters.class);
+
+                    getQuestionsResourceLinkService.get(question);
+                    verify(certificateAccessServiceHelper).isAllowToAnswerAdminQuestion(captor.capture());
+
+                    assertFalse(captor.getValue().isTestCertificate());
+                }
+
+                @Test
+                void shallSetPatientId() {
+                    final var captor = ArgumentCaptor.forClass(AccessEvaluationParameters.class);
+
+                    getQuestionsResourceLinkService.get(question);
+                    verify(certificateAccessServiceHelper).isAllowToAnswerAdminQuestion(captor.capture());
+
+                    assertEquals(certificate.getMetadata().getPatient().getPersonId().getId(),
+                        captor.getValue().getPatient().getOriginalPnr());
+                }
+            }
+        }
+
+        @Test
+        void shallIncludeNoLinksIfQuestionDraft() {
+            question = Question.builder()
+                .id("questionId")
+                .certificateId(CERTIFICATE_ID)
+                .build();
+            final var actualLinks = getQuestionsResourceLinkService.get(question);
+            assertEquals(0, actualLinks.size(), "Links should be empty");
+        }
+
+        @Test
+        void shallIncludeNoLinksIfListHaveQuestionDraft() {
+            question = Question.builder()
+                .id("questionId")
+                .certificateId(CERTIFICATE_ID)
+                .build();
+            final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
+            assertEquals(0, actualLinks.get(question).size(), "Links should be empty");
+        }
 
         @Nested
         class SingleQuestion {
 
             @BeforeEach
-            void setup() {
+            void setUp() {
                 question = Question.builder()
-                    .certificateId(CERTIFICATE_ID)
-                    .id("questionId")
+                    .id("123")
                     .sent(LocalDateTime.now())
+                    .certificateId(CERTIFICATE_ID)
                     .build();
 
-                when(getQuestionsAvailableFunctionsService.get(question))
-                    .thenReturn(
-                        List.of(
-                            ResourceLinkDTO.create(ResourceLinkTypeDTO.ANSWER_QUESTION, "", "", "", false))
-                    );
+                resourceLinkDTO = new ResourceLinkDTO();
+
+                doReturn(Collections.singletonList(resourceLinkDTO))
+                    .when(getQuestionsAvailableFunctionsService)
+                    .get(question);
             }
 
             @Test
-            void shallCallGetCertificateOnlyOnce() {
-                getQuestionsResourceLinkService.get(List.of(question, question));
-                verify(getCertificateFacadeService, times(1)).getCertificate(CERTIFICATE_ID, false, false);
+            void shallIncludeAnswerQuestion() {
+                resourceLinkDTO.setType(ResourceLinkTypeDTO.ANSWER_QUESTION);
+                doReturn(true).when(certificateAccessServiceHelper).isAllowToAnswerAdminQuestion(any(AccessEvaluationParameters.class));
+
+                final var actualLinks = getQuestionsResourceLinkService.get(question);
+
+                assertInclude(actualLinks, ResourceLinkTypeDTO.ANSWER_QUESTION);
             }
 
             @Test
-            void shallSetType() {
-                final var captor = ArgumentCaptor.forClass(AccessEvaluationParameters.class);
+            void shallExcludeAnswerQuestion() {
+                resourceLinkDTO.setType(ResourceLinkTypeDTO.ANSWER_QUESTION);
+                doReturn(false).when(certificateAccessServiceHelper).isAllowToAnswerAdminQuestion(any(AccessEvaluationParameters.class));
 
-                getQuestionsResourceLinkService.get(List.of(question, question));
-                verify(certificateAccessServiceHelper, times(2)).isAllowToAnswerAdminQuestion(captor.capture());
+                final var actualLinks = getQuestionsResourceLinkService.get(question);
 
-                assertEquals(TYPE, captor.getValue().getCertificateType());
+                assertExclude(actualLinks, ResourceLinkTypeDTO.ANSWER_QUESTION);
             }
 
             @Test
-            void shallSetUnit() {
-                final var captor = ArgumentCaptor.forClass(AccessEvaluationParameters.class);
-                final var expectedUnit = new Vardenhet();
-                final var expectedCareProvider = new Vardgivare();
-                expectedCareProvider.setVardgivarid(CARE_PROVIDER_ID);
-                expectedUnit.setEnhetsid(UNIT_ID);
-                expectedUnit.setVardgivare(expectedCareProvider);
+            void shallIncludeHandleQuestion() {
+                resourceLinkDTO.setType(ResourceLinkTypeDTO.HANDLE_QUESTION);
+                doReturn(true).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
 
-                getQuestionsResourceLinkService.get(List.of(question, question));
-                verify(certificateAccessServiceHelper, times(2)).isAllowToAnswerAdminQuestion(captor.capture());
+                final var actualLinks = getQuestionsResourceLinkService.get(question);
 
-                assertEquals(expectedUnit, captor.getValue().getUnit());
+                assertInclude(actualLinks, ResourceLinkTypeDTO.HANDLE_QUESTION);
             }
 
             @Test
-            void shallSetTypeVersionNull() {
-                final var captor = ArgumentCaptor.forClass(AccessEvaluationParameters.class);
+            void shallExcludeHandleQuestion() {
+                resourceLinkDTO.setType(ResourceLinkTypeDTO.HANDLE_QUESTION);
+                doReturn(false).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
 
-                getQuestionsResourceLinkService.get(List.of(question, question));
-                verify(certificateAccessServiceHelper, times(2)).isAllowToAnswerAdminQuestion(captor.capture());
+                final var actualLinks = getQuestionsResourceLinkService.get(question);
 
-                assertNull(captor.getValue().getCertificateTypeVersion());
+                assertExclude(actualLinks, ResourceLinkTypeDTO.HANDLE_QUESTION);
+            }
+
+
+            @Test
+            void shallIncludeComplementCertificate() {
+                resourceLinkDTO.setType(ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
+                doReturn(true).when(certificateAccessServiceHelper)
+                    .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
+
+                final var actualLinks = getQuestionsResourceLinkService.get(question);
+
+                assertInclude(actualLinks, ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
             }
 
             @Test
-            void shallSetTestCertificateFalse() {
-                final var captor = ArgumentCaptor.forClass(AccessEvaluationParameters.class);
+            void shallExcludeComplementCertificate() {
+                resourceLinkDTO.setType(ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
+                doReturn(false).when(certificateAccessServiceHelper)
+                    .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
 
-                getQuestionsResourceLinkService.get(List.of(question, question));
-                verify(certificateAccessServiceHelper, times(2)).isAllowToAnswerAdminQuestion(captor.capture());
+                final var actualLinks = getQuestionsResourceLinkService.get(question);
 
-                assertFalse(captor.getValue().isTestCertificate());
+                assertExclude(actualLinks, ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
             }
 
             @Test
-            void shallSetPatientId() {
-                final var captor = ArgumentCaptor.forClass(AccessEvaluationParameters.class);
+            void shallIncludeCannotComplementCertificate() {
+                resourceLinkDTO.setType(ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
+                doReturn(true).when(certificateAccessServiceHelper)
+                    .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
 
-                getQuestionsResourceLinkService.get(List.of(question, question));
-                verify(certificateAccessServiceHelper, times(2)).isAllowToAnswerAdminQuestion(captor.capture());
+                final var actualLinks = getQuestionsResourceLinkService.get(question);
 
-                assertEquals(certificate.getMetadata().getPatient().getPersonId().getId(), captor.getValue().getPatient().getOriginalPnr());
+                assertInclude(actualLinks, ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
+            }
+
+            @Test
+            void shallExcludeCannotComplementCertificate() {
+                resourceLinkDTO.setType(ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
+                doReturn(false).when(certificateAccessServiceHelper)
+                    .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
+
+                final var actualLinks = getQuestionsResourceLinkService.get(question);
+
+                assertExclude(actualLinks, ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
+            }
+
+            @Test
+            void shallIncludeHandleQuestionFragaSvar() {
+                resourceLinkDTO.setType(ResourceLinkTypeDTO.HANDLE_QUESTION);
+                doReturn(true).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
+
+                final var actualLinks = getQuestionsResourceLinkService.get(question);
+
+                assertInclude(actualLinks, ResourceLinkTypeDTO.HANDLE_QUESTION);
+            }
+
+            @Test
+            void shallExcludeHandleQuestionFragaSvar() {
+                resourceLinkDTO.setType(ResourceLinkTypeDTO.HANDLE_QUESTION);
+                doReturn(false).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
+
+                final var actualLinks = getQuestionsResourceLinkService.get(question);
+
+                assertExclude(actualLinks, ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
+            }
+
+            @Test
+            void shallIncludeForwardQuestion() {
+                resourceLinkDTO.setType(ResourceLinkTypeDTO.FORWARD_QUESTION);
+                doReturn(true).when(certificateAccessServiceHelper).isAllowToForwardQuestions(any(AccessEvaluationParameters.class));
+
+                final var actualLinks = getQuestionsResourceLinkService.get(question);
+
+                assertInclude(actualLinks, ResourceLinkTypeDTO.FORWARD_QUESTION);
+            }
+
+            @Test
+            void shallExcludeForwardQuestion() {
+                resourceLinkDTO.setType(ResourceLinkTypeDTO.FORWARD_QUESTION);
+                doReturn(false).when(certificateAccessServiceHelper).isAllowToForwardQuestions(any(AccessEvaluationParameters.class));
+
+                final var actualLinks = getQuestionsResourceLinkService.get(question);
+
+                assertExclude(actualLinks, ResourceLinkTypeDTO.FORWARD_QUESTION);
             }
         }
 
         @Nested
-        class ListOfQuestions {
+        class ListQuestion {
 
             @BeforeEach
-            void setup() {
+            void setUp() {
                 question = Question.builder()
-                    .certificateId(CERTIFICATE_ID)
-                    .id("questionId")
+                    .id("123")
                     .sent(LocalDateTime.now())
+                    .certificateId(CERTIFICATE_ID)
                     .build();
+                resourceLinkDTO = new ResourceLinkDTO();
 
-                when(getQuestionsAvailableFunctionsService.get(question))
-                    .thenReturn(
-                        List.of(
-                            ResourceLinkDTO.create(ResourceLinkTypeDTO.ANSWER_QUESTION, "", "", "", false))
-                    );
+                doReturn(Collections.singletonList(resourceLinkDTO))
+                    .when(getQuestionsAvailableFunctionsService)
+                    .get(question);
             }
 
             @Test
-            void shallSetType() {
-                final var captor = ArgumentCaptor.forClass(AccessEvaluationParameters.class);
+            void shallIncludeAnswerQuestion() {
+                resourceLinkDTO.setType(ResourceLinkTypeDTO.ANSWER_QUESTION);
+                doReturn(true).when(certificateAccessServiceHelper).isAllowToAnswerAdminQuestion(any(AccessEvaluationParameters.class));
 
-                getQuestionsResourceLinkService.get(question);
-                verify(certificateAccessServiceHelper).isAllowToAnswerAdminQuestion(captor.capture());
+                final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
 
-                assertEquals(TYPE, captor.getValue().getCertificateType());
+                assertInclude(actualLinks.get(question), ResourceLinkTypeDTO.ANSWER_QUESTION);
             }
 
             @Test
-            void shallSetUnit() {
-                final var captor = ArgumentCaptor.forClass(AccessEvaluationParameters.class);
-                final var expectedUnit = new Vardenhet();
-                final var expectedCareProvider = new Vardgivare();
-                expectedCareProvider.setVardgivarid(CARE_PROVIDER_ID);
-                expectedUnit.setEnhetsid(UNIT_ID);
-                expectedUnit.setVardgivare(expectedCareProvider);
+            void shallExcludeAnswerQuestion() {
+                resourceLinkDTO.setType(ResourceLinkTypeDTO.ANSWER_QUESTION);
+                doReturn(false).when(certificateAccessServiceHelper).isAllowToAnswerAdminQuestion(any(AccessEvaluationParameters.class));
 
-                getQuestionsResourceLinkService.get(question);
-                verify(certificateAccessServiceHelper).isAllowToAnswerAdminQuestion(captor.capture());
+                final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
 
-                assertEquals(expectedUnit, captor.getValue().getUnit());
+                assertExclude(actualLinks.get(question), ResourceLinkTypeDTO.ANSWER_QUESTION);
             }
 
             @Test
-            void shallSetTypeVersionNull() {
-                final var captor = ArgumentCaptor.forClass(AccessEvaluationParameters.class);
+            void shallIncludeHandleQuestion() {
+                resourceLinkDTO.setType(ResourceLinkTypeDTO.HANDLE_QUESTION);
+                doReturn(true).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
 
-                getQuestionsResourceLinkService.get(question);
-                verify(certificateAccessServiceHelper).isAllowToAnswerAdminQuestion(captor.capture());
+                final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
 
-                assertNull(captor.getValue().getCertificateTypeVersion());
+                assertInclude(actualLinks.get(question), ResourceLinkTypeDTO.HANDLE_QUESTION);
             }
 
             @Test
-            void shallSetTestCertificateFalse() {
-                final var captor = ArgumentCaptor.forClass(AccessEvaluationParameters.class);
+            void shallExcludeHandleQuestion() {
+                resourceLinkDTO.setType(ResourceLinkTypeDTO.HANDLE_QUESTION);
+                doReturn(false).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
 
-                getQuestionsResourceLinkService.get(question);
-                verify(certificateAccessServiceHelper).isAllowToAnswerAdminQuestion(captor.capture());
+                final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
 
-                assertFalse(captor.getValue().isTestCertificate());
+                assertExclude(actualLinks.get(question), ResourceLinkTypeDTO.HANDLE_QUESTION);
             }
 
             @Test
-            void shallSetPatientId() {
-                final var captor = ArgumentCaptor.forClass(AccessEvaluationParameters.class);
+            void shallIncludeComplementCertificate() {
+                resourceLinkDTO.setType(ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
+                doReturn(true).when(certificateAccessServiceHelper)
+                    .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
 
-                getQuestionsResourceLinkService.get(question);
-                verify(certificateAccessServiceHelper).isAllowToAnswerAdminQuestion(captor.capture());
+                final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
 
-                assertEquals(certificate.getMetadata().getPatient().getPersonId().getId(), captor.getValue().getPatient().getOriginalPnr());
+                assertInclude(actualLinks.get(question), ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
+            }
+
+            @Test
+            void shallExcludeComplementCertificate() {
+                resourceLinkDTO.setType(ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
+                doReturn(false).when(certificateAccessServiceHelper)
+                    .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
+
+                final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
+
+                assertExclude(actualLinks.get(question), ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
+            }
+
+            @Test
+            void shallIncludeCannotComplementCertificate() {
+                resourceLinkDTO.setType(ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
+                doReturn(true).when(certificateAccessServiceHelper)
+                    .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
+
+                final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
+
+                assertInclude(actualLinks.get(question), ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
+            }
+
+            @Test
+            void shallExcludeCannotComplementCertificate() {
+                resourceLinkDTO.setType(ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
+                doReturn(false).when(certificateAccessServiceHelper)
+                    .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
+
+                final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
+
+                assertExclude(actualLinks.get(question), ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
+            }
+
+            @Test
+            void shallIncludeHandleQuestionFragaSvar() {
+                resourceLinkDTO.setType(ResourceLinkTypeDTO.HANDLE_QUESTION);
+                doReturn(true).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
+
+                final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
+
+                assertInclude(actualLinks.get(question), ResourceLinkTypeDTO.HANDLE_QUESTION);
+            }
+
+            @Test
+            void shallExcludeHandleQuestionFragaSvar() {
+                resourceLinkDTO.setType(ResourceLinkTypeDTO.HANDLE_QUESTION);
+                doReturn(false).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
+
+                final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
+
+                assertExclude(actualLinks.get(question), ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
             }
         }
-    }
 
-    @Test
-    void shallIncludeNoLinksIfQuestionDraft() {
-        question = Question.builder()
-            .id("questionId")
-            .certificateId(CERTIFICATE_ID)
-            .build();
-        final var actualLinks = getQuestionsResourceLinkService.get(question);
-        assertEquals(0, actualLinks.size(), "Links should be empty");
-    }
-
-    @Test
-    void shallIncludeNoLinksIfListHaveQuestionDraft() {
-        question = Question.builder()
-            .id("questionId")
-            .certificateId(CERTIFICATE_ID)
-            .build();
-        final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
-        assertEquals(0, actualLinks.get(question).size(), "Links should be empty");
-    }
-
-    @Nested
-    class SingleQuestion {
-
-        @BeforeEach
-        void setUp() {
-            question = Question.builder()
-                .id("123")
-                .sent(LocalDateTime.now())
-                .certificateId(CERTIFICATE_ID)
-                .build();
-
-            resourceLinkDTO = new ResourceLinkDTO();
-
-            doReturn(Collections.singletonList(resourceLinkDTO))
-                .when(getQuestionsAvailableFunctionsService)
-                .get(question);
+        private void assertInclude(List<ResourceLinkDTO> availableFunctions, ResourceLinkTypeDTO type) {
+            final var actualResourceLink = get(availableFunctions, type);
+            assertNotNull(actualResourceLink, () -> String.format("Expected resource link with type '%s'", type));
         }
 
-        @Test
-        void shallIncludeAnswerQuestion() {
-            resourceLinkDTO.setType(ResourceLinkTypeDTO.ANSWER_QUESTION);
-            doReturn(true).when(certificateAccessServiceHelper).isAllowToAnswerAdminQuestion(any(AccessEvaluationParameters.class));
-
-            final var actualLinks = getQuestionsResourceLinkService.get(question);
-
-            assertInclude(actualLinks, ResourceLinkTypeDTO.ANSWER_QUESTION);
+        private void assertExclude(List<ResourceLinkDTO> availableFunctions, ResourceLinkTypeDTO type) {
+            final var actualResourceLink = get(availableFunctions, type);
+            assertNull(actualResourceLink, () -> String.format("Don't expect resource link with type '%s'", type));
         }
 
-        @Test
-        void shallExcludeAnswerQuestion() {
-            resourceLinkDTO.setType(ResourceLinkTypeDTO.ANSWER_QUESTION);
-            doReturn(false).when(certificateAccessServiceHelper).isAllowToAnswerAdminQuestion(any(AccessEvaluationParameters.class));
-
-            final var actualLinks = getQuestionsResourceLinkService.get(question);
-
-            assertExclude(actualLinks, ResourceLinkTypeDTO.ANSWER_QUESTION);
+        private ResourceLinkDTO get(List<ResourceLinkDTO> resourceLinks, ResourceLinkTypeDTO type) {
+            return resourceLinks.stream()
+                .filter(resourceLinkDTO -> resourceLinkDTO.getType().equals(type))
+                .findFirst()
+                .orElse(null);
         }
-
-        @Test
-        void shallIncludeHandleQuestion() {
-            resourceLinkDTO.setType(ResourceLinkTypeDTO.HANDLE_QUESTION);
-            doReturn(true).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
-
-            final var actualLinks = getQuestionsResourceLinkService.get(question);
-
-            assertInclude(actualLinks, ResourceLinkTypeDTO.HANDLE_QUESTION);
-        }
-
-        @Test
-        void shallExcludeHandleQuestion() {
-            resourceLinkDTO.setType(ResourceLinkTypeDTO.HANDLE_QUESTION);
-            doReturn(false).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
-
-            final var actualLinks = getQuestionsResourceLinkService.get(question);
-
-            assertExclude(actualLinks, ResourceLinkTypeDTO.HANDLE_QUESTION);
-        }
-
-
-        @Test
-        void shallIncludeComplementCertificate() {
-            resourceLinkDTO.setType(ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
-            doReturn(true).when(certificateAccessServiceHelper)
-                .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
-
-            final var actualLinks = getQuestionsResourceLinkService.get(question);
-
-            assertInclude(actualLinks, ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
-        }
-
-        @Test
-        void shallExcludeComplementCertificate() {
-            resourceLinkDTO.setType(ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
-            doReturn(false).when(certificateAccessServiceHelper)
-                .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
-
-            final var actualLinks = getQuestionsResourceLinkService.get(question);
-
-            assertExclude(actualLinks, ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
-        }
-
-        @Test
-        void shallIncludeCannotComplementCertificate() {
-            resourceLinkDTO.setType(ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
-            doReturn(true).when(certificateAccessServiceHelper)
-                .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
-
-            final var actualLinks = getQuestionsResourceLinkService.get(question);
-
-            assertInclude(actualLinks, ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
-        }
-
-        @Test
-        void shallExcludeCannotComplementCertificate() {
-            resourceLinkDTO.setType(ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
-            doReturn(false).when(certificateAccessServiceHelper)
-                .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
-
-            final var actualLinks = getQuestionsResourceLinkService.get(question);
-
-            assertExclude(actualLinks, ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
-        }
-
-        @Test
-        void shallIncludeHandleQuestionFragaSvar() {
-            resourceLinkDTO.setType(ResourceLinkTypeDTO.HANDLE_QUESTION);
-            doReturn(true).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
-
-            final var actualLinks = getQuestionsResourceLinkService.get(question);
-
-            assertInclude(actualLinks, ResourceLinkTypeDTO.HANDLE_QUESTION);
-        }
-
-        @Test
-        void shallExcludeHandleQuestionFragaSvar() {
-            resourceLinkDTO.setType(ResourceLinkTypeDTO.HANDLE_QUESTION);
-            doReturn(false).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
-
-            final var actualLinks = getQuestionsResourceLinkService.get(question);
-
-            assertExclude(actualLinks, ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
-        }
-
-        @Test
-        void shallIncludeForwardQuestion() {
-            resourceLinkDTO.setType(ResourceLinkTypeDTO.FORWARD_QUESTION);
-            doReturn(true).when(certificateAccessServiceHelper).isAllowToForwardQuestions(any(AccessEvaluationParameters.class));
-
-            final var actualLinks = getQuestionsResourceLinkService.get(question);
-
-            assertInclude(actualLinks, ResourceLinkTypeDTO.FORWARD_QUESTION);
-        }
-
-        @Test
-        void shallExcludeForwardQuestion() {
-            resourceLinkDTO.setType(ResourceLinkTypeDTO.FORWARD_QUESTION);
-            doReturn(false).when(certificateAccessServiceHelper).isAllowToForwardQuestions(any(AccessEvaluationParameters.class));
-
-            final var actualLinks = getQuestionsResourceLinkService.get(question);
-
-            assertExclude(actualLinks, ResourceLinkTypeDTO.FORWARD_QUESTION);
-        }
-    }
-
-    @Nested
-    class ListQuestion {
-
-        @BeforeEach
-        void setUp() {
-            question = Question.builder()
-                .id("123")
-                .sent(LocalDateTime.now())
-                .certificateId(CERTIFICATE_ID)
-                .build();
-            resourceLinkDTO = new ResourceLinkDTO();
-
-            doReturn(Collections.singletonList(resourceLinkDTO))
-                .when(getQuestionsAvailableFunctionsService)
-                .get(question);
-        }
-
-        @Test
-        void shallIncludeAnswerQuestion() {
-            resourceLinkDTO.setType(ResourceLinkTypeDTO.ANSWER_QUESTION);
-            doReturn(true).when(certificateAccessServiceHelper).isAllowToAnswerAdminQuestion(any(AccessEvaluationParameters.class));
-
-            final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
-
-            assertInclude(actualLinks.get(question), ResourceLinkTypeDTO.ANSWER_QUESTION);
-        }
-
-        @Test
-        void shallExcludeAnswerQuestion() {
-            resourceLinkDTO.setType(ResourceLinkTypeDTO.ANSWER_QUESTION);
-            doReturn(false).when(certificateAccessServiceHelper).isAllowToAnswerAdminQuestion(any(AccessEvaluationParameters.class));
-
-            final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
-
-            assertExclude(actualLinks.get(question), ResourceLinkTypeDTO.ANSWER_QUESTION);
-        }
-
-        @Test
-        void shallIncludeHandleQuestion() {
-            resourceLinkDTO.setType(ResourceLinkTypeDTO.HANDLE_QUESTION);
-            doReturn(true).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
-
-            final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
-
-            assertInclude(actualLinks.get(question), ResourceLinkTypeDTO.HANDLE_QUESTION);
-        }
-
-        @Test
-        void shallExcludeHandleQuestion() {
-            resourceLinkDTO.setType(ResourceLinkTypeDTO.HANDLE_QUESTION);
-            doReturn(false).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
-
-            final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
-
-            assertExclude(actualLinks.get(question), ResourceLinkTypeDTO.HANDLE_QUESTION);
-        }
-
-        @Test
-        void shallIncludeComplementCertificate() {
-            resourceLinkDTO.setType(ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
-            doReturn(true).when(certificateAccessServiceHelper)
-                .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
-
-            final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
-
-            assertInclude(actualLinks.get(question), ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
-        }
-
-        @Test
-        void shallExcludeComplementCertificate() {
-            resourceLinkDTO.setType(ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
-            doReturn(false).when(certificateAccessServiceHelper)
-                .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
-
-            final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
-
-            assertExclude(actualLinks.get(question), ResourceLinkTypeDTO.COMPLEMENT_CERTIFICATE);
-        }
-
-        @Test
-        void shallIncludeCannotComplementCertificate() {
-            resourceLinkDTO.setType(ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
-            doReturn(true).when(certificateAccessServiceHelper)
-                .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
-
-            final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
-
-            assertInclude(actualLinks.get(question), ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
-        }
-
-        @Test
-        void shallExcludeCannotComplementCertificate() {
-            resourceLinkDTO.setType(ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
-            doReturn(false).when(certificateAccessServiceHelper)
-                .isAllowToAnswerComplementQuestion(any(AccessEvaluationParameters.class), eq(true));
-
-            final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
-
-            assertExclude(actualLinks.get(question), ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
-        }
-
-        @Test
-        void shallIncludeHandleQuestionFragaSvar() {
-            resourceLinkDTO.setType(ResourceLinkTypeDTO.HANDLE_QUESTION);
-            doReturn(true).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
-
-            final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
-
-            assertInclude(actualLinks.get(question), ResourceLinkTypeDTO.HANDLE_QUESTION);
-        }
-
-        @Test
-        void shallExcludeHandleQuestionFragaSvar() {
-            resourceLinkDTO.setType(ResourceLinkTypeDTO.HANDLE_QUESTION);
-            doReturn(false).when(certificateAccessServiceHelper).isAllowToSetQuestionAsHandled(any(AccessEvaluationParameters.class));
-
-            final var actualLinks = getQuestionsResourceLinkService.get(Collections.singletonList(question));
-
-            assertExclude(actualLinks.get(question), ResourceLinkTypeDTO.CANNOT_COMPLEMENT_CERTIFICATE);
-        }
-    }
-
-    private void assertInclude(List<ResourceLinkDTO> availableFunctions, ResourceLinkTypeDTO type) {
-        final var actualResourceLink = get(availableFunctions, type);
-        assertNotNull(actualResourceLink, () -> String.format("Expected resource link with type '%s'", type));
-    }
-
-    private void assertExclude(List<ResourceLinkDTO> availableFunctions, ResourceLinkTypeDTO type) {
-        final var actualResourceLink = get(availableFunctions, type);
-        assertNull(actualResourceLink, () -> String.format("Don't expect resource link with type '%s'", type));
-    }
-
-    private ResourceLinkDTO get(List<ResourceLinkDTO> resourceLinks, ResourceLinkTypeDTO type) {
-        return resourceLinks.stream()
-            .filter(resourceLinkDTO -> resourceLinkDTO.getType().equals(type))
-            .findFirst()
-            .orElse(null);
     }
 }

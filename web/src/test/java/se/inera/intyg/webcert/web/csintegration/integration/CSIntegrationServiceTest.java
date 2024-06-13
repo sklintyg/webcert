@@ -67,8 +67,11 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServi
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateTypeExistsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateMessageResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFromMessageResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageInternalResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageRequestDTO;
@@ -100,8 +103,12 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.ReplaceCertifica
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ReplaceCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.RevokeCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.RevokeCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveMessageResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SendCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SendCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SendMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SendMessageResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateWithoutSignatureRequestDTO;
@@ -113,7 +120,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionDTO;
 
 @ExtendWith(MockitoExtension.class)
@@ -224,8 +230,9 @@ class CSIntegrationServiceTest {
     private static final AnswerComplementResponseDTO ANSWER_COMPLEMENT_RESPONSE = AnswerComplementResponseDTO.builder()
         .certificate(CERTIFICATE)
         .build();
-    private static final QuestionDTO QUESTION = QuestionDTO.builder().build();
-    private static final List<QuestionDTO> QUESTIONS = List.of(QUESTION);
+    private static final Question QUESTION = Question.builder().build();
+    private static final SendMessageResponseDTO SEND_MESSAGE_RESPONSE_DTO = SendMessageResponseDTO.builder().question(QUESTION).build();
+    private static final List<Question> QUESTIONS = List.of(QUESTION);
     private static final GetCertificateMessageRequestDTO GET_CERTIFICATE_MESSAGE_REQUEST_DTO = GetCertificateMessageRequestDTO.builder()
         .build();
     private static final GetCertificateMessageResponseDTO GET_CERTIFICATE_MESSAGE_RESPONSE_DTO = GetCertificateMessageResponseDTO.builder()
@@ -253,6 +260,17 @@ class CSIntegrationServiceTest {
         InternalCertificateXmlResponseDTO.builder()
             .xml(XML_DATA)
             .build();
+    private static final DeleteMessageRequestDTO DELETE_MESSAGE_REQUEST_DTO = DeleteMessageRequestDTO.builder().build();
+    private static final CreateMessageRequestDTO CREATE_MESSAGE_REQUEST_DTO = CreateMessageRequestDTO.builder().build();
+    private static final CreateMessageResponseDTO CREATE_MESSAGE_RESPONSE_DTO = CreateMessageResponseDTO.builder()
+        .question(QUESTION)
+        .build();
+    private static final SaveMessageResponseDTO SAVE_MESSAGE_RESPONSE_DTO = SaveMessageResponseDTO.builder()
+        .question(QUESTION)
+        .build();
+    private static final SaveMessageRequestDTO SAVE_MESSAGE_REQUEST_DTO = SaveMessageRequestDTO.builder()
+        .build();
+    private static final SendMessageRequestDTO SEND_MESSAGE_REQUEST_DTO = SendMessageRequestDTO.builder().build();
 
     private static final GetUnitQuestionsRequestDTO GET_QUESTIONS_REQUEST = GetUnitQuestionsRequestDTO.builder().build();
     private static final List<ArendeListItem> ARENDE_LIST_ITEMS = List.of(new ArendeListItem());
@@ -1830,6 +1848,189 @@ class CSIntegrationServiceTest {
             verify(restTemplate).postForObject(captor.capture(), any(), any());
 
             assertEquals("baseUrl/internalapi/certificate/id/xml", captor.getValue());
+        }
+    }
+
+    @Nested
+    class DeleteMessage {
+
+        @Test
+        void shouldPreformPostUsingRequest() {
+            final var captor = ArgumentCaptor.forClass(DeleteMessageRequestDTO.class);
+
+            csIntegrationService.deleteMessage(
+                "messageId",
+                DELETE_MESSAGE_REQUEST_DTO
+            );
+
+            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+
+            assertEquals(DELETE_MESSAGE_REQUEST_DTO, captor.getValue());
+        }
+
+        @Test
+        void shouldSetUrlCorrect() {
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            csIntegrationService.deleteMessage(
+                "messageId",
+                DELETE_MESSAGE_REQUEST_DTO
+            );
+
+            verify(restTemplate).postForObject(captor.capture(), any(), any());
+
+            assertEquals("baseUrl/api/message/messageId/delete", captor.getValue());
+        }
+    }
+
+    @Nested
+    class CreateMessageTest {
+
+
+        @Test
+        void shouldPreformPostUsingRequest() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(CREATE_MESSAGE_RESPONSE_DTO);
+            final var captor = ArgumentCaptor.forClass(CreateMessageRequestDTO.class);
+
+            csIntegrationService.createMessage(CREATE_MESSAGE_REQUEST_DTO, CERTIFICATE_ID);
+            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+
+            assertEquals(CREATE_MESSAGE_REQUEST_DTO, captor.getValue());
+        }
+
+        @Test
+        void shouldReturnQuestion() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(CREATE_MESSAGE_RESPONSE_DTO);
+            final var response = csIntegrationService.createMessage(CREATE_MESSAGE_REQUEST_DTO, CERTIFICATE_ID);
+
+            assertEquals(QUESTION, response);
+        }
+
+        @Test
+        void shouldThrowIfResponseIsNull() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(null);
+            assertThrows(IllegalStateException.class,
+                () -> csIntegrationService.createMessage(CREATE_MESSAGE_REQUEST_DTO, CERTIFICATE_ID));
+        }
+
+
+        @Test
+        void shouldSetUrlCorrect() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(CREATE_MESSAGE_RESPONSE_DTO);
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            csIntegrationService.createMessage(CREATE_MESSAGE_REQUEST_DTO, CERTIFICATE_ID);
+            verify(restTemplate).postForObject(captor.capture(), any(), any());
+
+            assertEquals("baseUrl/api/message/" + CERTIFICATE_ID + "/create", captor.getValue());
+        }
+    }
+
+    @Nested
+    class SaveMessageTest {
+
+
+        private static final String MESSAGE_ID = "messageId";
+
+        @Test
+        void shouldPreformPostUsingRequest() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(SAVE_MESSAGE_RESPONSE_DTO);
+            final var captor = ArgumentCaptor.forClass(SaveMessageRequestDTO.class);
+
+            csIntegrationService.saveMessage(SAVE_MESSAGE_REQUEST_DTO, MESSAGE_ID);
+            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+
+            assertEquals(SAVE_MESSAGE_REQUEST_DTO, captor.getValue());
+        }
+
+        @Test
+        void shouldReturnQuestion() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(SAVE_MESSAGE_RESPONSE_DTO);
+            final var response = csIntegrationService.saveMessage(SAVE_MESSAGE_REQUEST_DTO, MESSAGE_ID);
+
+            assertEquals(QUESTION, response);
+        }
+
+        @Test
+        void shouldThrowIfResponseIsNull() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(null);
+            assertThrows(IllegalStateException.class,
+                () -> csIntegrationService.saveMessage(SAVE_MESSAGE_REQUEST_DTO, MESSAGE_ID));
+        }
+
+
+        @Test
+        void shouldSetUrlCorrect() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(SAVE_MESSAGE_RESPONSE_DTO);
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            csIntegrationService.saveMessage(SAVE_MESSAGE_REQUEST_DTO, MESSAGE_ID);
+
+            verify(restTemplate).postForObject(captor.capture(), any(), any());
+
+            assertEquals("baseUrl/api/message/" + MESSAGE_ID + "/save", captor.getValue());
+        }
+    }
+
+    @Nested
+    class SendMessageTest {
+
+
+        private static final String MESSAGE_ID = "messageId";
+
+        @Test
+        void shouldPreformPostUsingRequest() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(SEND_MESSAGE_RESPONSE_DTO);
+            final var captor = ArgumentCaptor.forClass(SendMessageRequestDTO.class);
+
+            csIntegrationService.sendMessage(SEND_MESSAGE_REQUEST_DTO, MESSAGE_ID);
+            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+
+            assertEquals(SEND_MESSAGE_REQUEST_DTO, captor.getValue());
+        }
+
+        @Test
+        void shouldReturnQuestion() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(SEND_MESSAGE_RESPONSE_DTO);
+            final var response = csIntegrationService.sendMessage(SEND_MESSAGE_REQUEST_DTO, MESSAGE_ID);
+
+            assertEquals(QUESTION, response);
+        }
+
+        @Test
+        void shouldThrowIfResponseIsNull() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(null);
+            assertThrows(IllegalStateException.class,
+                () -> csIntegrationService.sendMessage(SEND_MESSAGE_REQUEST_DTO, MESSAGE_ID));
+        }
+
+
+        @Test
+        void shouldSetUrlCorrect() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(SEND_MESSAGE_RESPONSE_DTO);
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            csIntegrationService.sendMessage(SEND_MESSAGE_REQUEST_DTO, MESSAGE_ID);
+
+            verify(restTemplate).postForObject(captor.capture(), any(), any());
+
+            assertEquals("baseUrl/api/message/" + MESSAGE_ID + "/send", captor.getValue());
         }
     }
 

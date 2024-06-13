@@ -16,40 +16,36 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.facade.question.impl;
 
-import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUtil.getSubjectAsString;
+package se.inera.intyg.webcert.web.csintegration.message;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
-import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.service.facade.question.CreateQuestionFacadeService;
-import se.inera.intyg.webcert.web.service.facade.question.util.QuestionConverter;
 
-@Service("createQuestionFromWC")
-public class CreateQuestionFacadeServiceImpl implements CreateQuestionFacadeService {
+@Slf4j
+@Service("createMessageFromCS")
+@RequiredArgsConstructor
+public class CreateMessageFromCertificateService implements CreateQuestionFacadeService {
 
-    private final ArendeDraftService arendeDraftService;
-    private final QuestionConverter questionConverter;
-
-    @Autowired
-    public CreateQuestionFacadeServiceImpl(ArendeDraftService arendeDraftService,
-        QuestionConverter questionConverter) {
-        this.arendeDraftService = arendeDraftService;
-        this.questionConverter = questionConverter;
-    }
+    private final CSIntegrationService csIntegrationService;
+    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
 
     @Override
     public Question create(String certificateId, QuestionType type, String message) {
-        final var questionDraft = arendeDraftService.create(
-            certificateId,
-            getSubjectAsString(type),
-            message,
-            null
-        );
+        if (Boolean.FALSE.equals(csIntegrationService.certificateExists(certificateId))) {
+            log.debug("Certificate '{}' does not exist in certificate service", certificateId);
+            return null;
+        }
 
-        return questionConverter.convert(questionDraft);
+        return csIntegrationService.createMessage(
+            csIntegrationRequestFactory.createMessageRequest(type, message),
+            certificateId
+        );
     }
 }
