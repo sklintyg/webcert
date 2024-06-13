@@ -16,25 +16,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package se.inera.intyg.webcert.web.csintegration.integration.dto;
+
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import java.util.List;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.common.support.facade.model.question.Question;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageInternalResponseDTO.GetCertificateMessageInternalResponseDTOBuilder;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SendMessageRequestDTO.SendMessageRequestDTOBuilder;
+import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientDTO;
+import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitDTO;
+import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserDTO;
 
-@JsonDeserialize(builder = GetCertificateMessageInternalResponseDTOBuilder.class)
+@JsonDeserialize(builder = SendMessageRequestDTOBuilder.class)
 @Value
 @Builder
-public class GetCertificateMessageInternalResponseDTO {
+public class SendMessageRequestDTO {
 
-    List<Question> questions;
+    CertificateServiceUserDTO user;
+    CertificateServiceUnitDTO unit;
+    CertificateServiceUnitDTO careUnit;
+    CertificateServiceUnitDTO careProvider;
+    CertificateServicePatientDTO patient;
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class GetCertificateMessageInternalResponseDTOBuilder {
+    public static class SendMessageRequestDTOBuilder {
 
     }
 }

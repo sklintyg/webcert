@@ -16,25 +16,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package se.inera.intyg.webcert.web.csintegration.integration.dto;
+
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import java.util.List;
 import lombok.Builder;
 import lombok.Value;
 import se.inera.intyg.common.support.facade.model.question.Question;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageInternalResponseDTO.GetCertificateMessageInternalResponseDTOBuilder;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SendMessageResponseDTO.SendMessageResponseDTOBuilder;
 
-@JsonDeserialize(builder = GetCertificateMessageInternalResponseDTOBuilder.class)
+@JsonDeserialize(builder = SendMessageResponseDTOBuilder.class)
 @Value
 @Builder
-public class GetCertificateMessageInternalResponseDTO {
+public class SendMessageResponseDTO {
 
-    List<Question> questions;
+    Question question;
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class GetCertificateMessageInternalResponseDTOBuilder {
+    public static class SendMessageResponseDTOBuilder {
 
     }
 }

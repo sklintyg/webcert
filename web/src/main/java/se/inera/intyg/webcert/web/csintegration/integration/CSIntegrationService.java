@@ -32,6 +32,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.AnswerComplementRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.AnswerComplementResponseDTO;
@@ -47,8 +48,11 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServi
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateTypeExistsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CitizenCertificateExistsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateMessageResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFromMessageResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageInternalResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageRequestDTO;
@@ -80,8 +84,12 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.RevokeCertificat
 import se.inera.intyg.webcert.web.csintegration.integration.dto.RevokeCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveMessageResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SendCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SendCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SendMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SendMessageResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateWithoutSignatureRequestDTO;
@@ -92,7 +100,6 @@ import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionDTO;
 
 @Service
 public class CSIntegrationService {
@@ -478,7 +485,7 @@ public class CSIntegrationService {
         restTemplate.postForObject(url, request, Void.class);
     }
 
-    public List<QuestionDTO> getQuestions(GetCertificateMessageRequestDTO request, String certificateId) {
+    public List<Question> getQuestions(GetCertificateMessageRequestDTO request, String certificateId) {
         final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + certificateId;
 
         final var response = restTemplate.postForObject(url, request, GetCertificateMessageResponseDTO.class);
@@ -490,7 +497,7 @@ public class CSIntegrationService {
         return response.getQuestions();
     }
 
-    public QuestionDTO handleMessage(HandleMessageRequestDTO request, String messageId) {
+    public Question handleMessage(HandleMessageRequestDTO request, String messageId) {
         final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + "/handle";
 
         final var response = restTemplate.postForObject(url, request, HandleMessageResponseDTO.class);
@@ -514,7 +521,7 @@ public class CSIntegrationService {
         return response.getCertificate();
     }
 
-    public List<QuestionDTO> getQuestions(String certificateId) {
+    public List<Question> getQuestions(String certificateId) {
         final var url = baseUrl + INTERNAL_MESSAGE_ENDPOINT_URL + "/" + certificateId;
 
         final var response = restTemplate.postForObject(url, null, GetCertificateMessageInternalResponseDTO.class);
@@ -548,5 +555,46 @@ public class CSIntegrationService {
         }
 
         return response.getXml();
+    }
+
+    public void deleteMessage(String messageId, DeleteMessageRequestDTO request) {
+        final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + "/delete";
+        restTemplate.postForObject(url, request, Void.class);
+    }
+
+    public Question createMessage(CreateMessageRequestDTO request, String certificateId) {
+        final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + certificateId + "/create";
+
+        final var response = restTemplate.postForObject(url, request, CreateMessageResponseDTO.class);
+
+        if (response == null) {
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
+        }
+
+        return response.getQuestion();
+    }
+
+    public Question saveMessage(SaveMessageRequestDTO request, String messageId) {
+        final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + "/save";
+
+        final var response = restTemplate.postForObject(url, request, SaveMessageResponseDTO.class);
+
+        if (response == null) {
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
+        }
+
+        return response.getQuestion();
+    }
+
+    public Question sendMessage(SendMessageRequestDTO request, String messageId) {
+        final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + "/send";
+
+        final var response = restTemplate.postForObject(url, request, SendMessageResponseDTO.class);
+
+        if (response == null) {
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
+        }
+
+        return response.getQuestion();
     }
 }

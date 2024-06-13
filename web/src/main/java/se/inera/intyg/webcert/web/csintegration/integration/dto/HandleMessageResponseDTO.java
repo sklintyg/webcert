@@ -23,15 +23,15 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Value;
+import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageResponseDTO.HandleMessageResponseDTOBuilder;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionDTO;
 
 @JsonDeserialize(builder = HandleMessageResponseDTOBuilder.class)
 @Value
 @Builder
 public class HandleMessageResponseDTO {
 
-    QuestionDTO question;
+    Question question;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class HandleMessageResponseDTOBuilder {
