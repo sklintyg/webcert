@@ -150,7 +150,7 @@ class ListQuestionConverterTest {
         }
 
         @Test
-        void shouldConvertStatusPendingInternalActionIfAuthorIsFKASSA() {
+        void shouldConvertStatusPendingInternalActionIfAuthorIsFkassa() {
             final var response = listQuestionConverter.convert(CERTIFICATE, buildQuestion("FKASSA"));
             assertEquals(Status.PENDING_INTERNAL_ACTION, response.getStatus());
         }
