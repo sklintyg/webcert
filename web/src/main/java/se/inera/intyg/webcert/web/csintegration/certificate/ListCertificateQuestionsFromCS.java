@@ -60,7 +60,8 @@ public class ListCertificateQuestionsFromCS {
                 .build();
         }
         final var listFromCS = csIntegrationService.listQuestionsForUnit(
-            csIntegrationRequestFactory.getUnitQuestionsRequestDTO(convertFilter(queryFragaSvarParameter)));
+            csIntegrationRequestFactory.getUnitQuestionsRequestDTO(convertFilter(queryFragaSvarParameter)),
+            convertStatus(queryFragaSvarParameter));
 
         return QueryFragaSvarResponse.builder()
             .results(listFromCS)
@@ -78,7 +79,6 @@ public class ListCertificateQuestionsFromCS {
                 : webCertUserService.getUser().getIdsOfSelectedVardenhet())
             .patientId(convertPersonId(queryFragaSvarParameter.getPatientPersonId()))
             .senderType(convertSenderType(queryFragaSvarParameter))
-            .questionStatus(convertStatus(queryFragaSvarParameter))
             .build();
     }
 

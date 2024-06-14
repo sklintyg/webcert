@@ -99,6 +99,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertific
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.message.dto.IncomingMessageRequestDTO;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
+import se.inera.intyg.webcert.web.service.facade.list.dto.QuestionStatusType;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
@@ -121,16 +122,21 @@ public class CSIntegrationService {
     private final ListIntygEntryConverter listIntygEntryConverter;
     private final RestTemplate restTemplate;
     private final ListQuestionConverter listQuestionConverter;
+    private final QuestionIsHandledValidator questionIsHandledValidator;
+    private final QuestionStatusValidator questionStatusValidator;
 
     @Value("${certificateservice.base.url}")
     private String baseUrl;
 
     public CSIntegrationService(CertificateTypeInfoConverter certificateTypeInfoConverter, ListIntygEntryConverter listIntygEntryConverter,
-        @Qualifier("csRestTemplate") RestTemplate restTemplate, final ListQuestionConverter listQuestionConverter) {
+        @Qualifier("csRestTemplate") RestTemplate restTemplate, final ListQuestionConverter listQuestionConverter,
+        final QuestionIsHandledValidator questionIsHandledValidator, final QuestionStatusValidator questionStatusValidator) {
         this.certificateTypeInfoConverter = certificateTypeInfoConverter;
         this.listIntygEntryConverter = listIntygEntryConverter;
         this.restTemplate = restTemplate;
         this.listQuestionConverter = listQuestionConverter;
+        this.questionIsHandledValidator = questionIsHandledValidator;
+        this.questionStatusValidator = questionStatusValidator;
     }
 
     public List<ListIntygEntry> listCertificatesForUnit(GetUnitCertificatesRequestDTO request) {
@@ -147,7 +153,7 @@ public class CSIntegrationService {
             .collect(Collectors.toList());
     }
 
-    public List<ArendeListItem> listQuestionsForUnit(GetUnitQuestionsRequestDTO request) {
+    public List<ArendeListItem> listQuestionsForUnit(GetUnitQuestionsRequestDTO request, QuestionStatusType statusToFilterOn) {
         final var url = baseUrl + UNIT_ENDPOINT_URL + "/questions";
         final var response = restTemplate.postForObject(url, request, GetUnitQuestionsResponseDTO.class);
 
@@ -162,6 +168,8 @@ public class CSIntegrationService {
                     .filter(certificate -> certificate.getMetadata().getId().equals(question.getCertificateId()))
                     .findFirst(), question)
             )
+            .filter(question -> !questionIsHandledValidator.validate(question))
+            .filter(question -> questionStatusValidator.validate(question, statusToFilterOn))
             .collect(Collectors.toList());
     }
 

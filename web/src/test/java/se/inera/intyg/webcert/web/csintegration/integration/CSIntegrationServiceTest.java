@@ -116,6 +116,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertific
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.message.dto.IncomingMessageRequestDTO;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
+import se.inera.intyg.webcert.web.service.facade.list.dto.QuestionStatusType;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateDTO;
@@ -298,6 +299,12 @@ class CSIntegrationServiceTest {
 
     @InjectMocks
     private CSIntegrationService csIntegrationService;
+
+    @Mock
+    private QuestionIsHandledValidator questionIsHandledValidator;
+
+    @Mock
+    private QuestionStatusValidator questionStatusValidator;
 
     static {
         CERTIFICATE.setMetadata(
@@ -2049,7 +2056,7 @@ class CSIntegrationServiceTest {
             when(restTemplate.postForObject(anyString(), any(), any()))
                 .thenReturn(null);
             assertThrows(IllegalStateException.class,
-                () -> csIntegrationService.listQuestionsForUnit(GET_QUESTIONS_REQUEST)
+                () -> csIntegrationService.listQuestionsForUnit(GET_QUESTIONS_REQUEST, QuestionStatusType.SHOW_ALL)
             );
         }
 
@@ -2062,7 +2069,7 @@ class CSIntegrationServiceTest {
 
             final var captor = ArgumentCaptor.forClass(GetUnitQuestionsRequestDTO.class);
 
-            csIntegrationService.listQuestionsForUnit(GET_QUESTIONS_REQUEST);
+            csIntegrationService.listQuestionsForUnit(GET_QUESTIONS_REQUEST, QuestionStatusType.SHOW_ALL);
             verify(restTemplate).postForObject(anyString(), captor.capture(), any());
 
             assertEquals(GET_QUESTIONS_REQUEST, captor.getValue());
@@ -2074,10 +2081,44 @@ class CSIntegrationServiceTest {
                 .thenReturn(ARENDE_LIST_ITEM);
             when(restTemplate.postForObject(anyString(), any(), any()))
                 .thenReturn(GET_QUESTIONS_RESPONSE);
+            when(questionIsHandledValidator.validate(ARENDE_LIST_ITEM))
+                .thenReturn(false);
+            when(questionStatusValidator.validate(ARENDE_LIST_ITEM, QuestionStatusType.SHOW_ALL))
+                .thenReturn(true);
 
-            final var response = csIntegrationService.listQuestionsForUnit(GET_QUESTIONS_REQUEST);
+            final var response = csIntegrationService.listQuestionsForUnit(GET_QUESTIONS_REQUEST, QuestionStatusType.SHOW_ALL);
 
             assertEquals(List.of(ARENDE_LIST_ITEM), response);
+        }
+
+        @Test
+        void shouldFilterHandledQuestions() {
+            when(listQuestionConverter.convert(Optional.of(CERTIFICATE_DTO), QUESTION_DTO))
+                .thenReturn(ARENDE_LIST_ITEM);
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(GET_QUESTIONS_RESPONSE);
+            when(questionIsHandledValidator.validate(ARENDE_LIST_ITEM))
+                .thenReturn(true);
+
+            final var response = csIntegrationService.listQuestionsForUnit(GET_QUESTIONS_REQUEST, QuestionStatusType.SHOW_ALL);
+
+            assertEquals(Collections.emptyList(), response);
+        }
+
+        @Test
+        void shouldFilterNonMatchingQuestionStatus() {
+            when(listQuestionConverter.convert(Optional.of(CERTIFICATE_DTO), QUESTION_DTO))
+                .thenReturn(ARENDE_LIST_ITEM);
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(GET_QUESTIONS_RESPONSE);
+            when(questionIsHandledValidator.validate(ARENDE_LIST_ITEM))
+                .thenReturn(false);
+            when(questionStatusValidator.validate(ARENDE_LIST_ITEM, QuestionStatusType.SHOW_ALL))
+                .thenReturn(false);
+
+            final var response = csIntegrationService.listQuestionsForUnit(GET_QUESTIONS_REQUEST, QuestionStatusType.SHOW_ALL);
+
+            assertEquals(Collections.emptyList(), response);
         }
 
         @Test
@@ -2090,7 +2131,7 @@ class CSIntegrationServiceTest {
             ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
             final var captor = ArgumentCaptor.forClass(String.class);
 
-            csIntegrationService.listQuestionsForUnit(GET_QUESTIONS_REQUEST);
+            csIntegrationService.listQuestionsForUnit(GET_QUESTIONS_REQUEST, QuestionStatusType.SHOW_ALL);
             verify(restTemplate).postForObject(captor.capture(), any(), any());
 
             assertEquals("baseUrl/api/unit/questions", captor.getValue());

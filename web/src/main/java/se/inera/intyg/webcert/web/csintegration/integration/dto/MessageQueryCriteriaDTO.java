@@ -27,7 +27,6 @@ import lombok.Value;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageQueryCriteriaDTO.MessageQueryCriteriaDTOBuilder;
 import se.inera.intyg.webcert.web.csintegration.patient.PersonIdDTO;
 import se.inera.intyg.webcert.web.service.facade.list.dto.QuestionSenderType;
-import se.inera.intyg.webcert.web.service.facade.list.dto.QuestionStatusType;
 
 @JsonDeserialize(builder = MessageQueryCriteriaDTOBuilder.class)
 @Value
@@ -36,7 +35,6 @@ public class MessageQueryCriteriaDTO {
 
     List<String> issuedOnUnitIds;
     Boolean forwarded;
-    QuestionStatusType questionStatus;
     QuestionSenderType senderType;
     LocalDateTime sentDateFrom;
     LocalDateTime sentDateTo;
