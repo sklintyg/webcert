@@ -18,40 +18,31 @@
  */
 package se.inera.intyg.webcert.web.csintegration.integration;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
+import se.inera.intyg.common.support.facade.model.link.ResourceLink;
+import se.inera.intyg.common.support.facade.model.link.ResourceLinkTypeEnum;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
-import se.inera.intyg.common.support.facade.model.question.Reminder;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
+import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateDTO;
+import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
+import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 
 @Component
 public class ListQuestionConverter {
 
-    public List<ArendeListItem> convert(Optional<CertificateDTO> certificate, Question question) {
+    public ArendeListItem convert(Optional<CertificateDTO> certificate, Question question) {
         if (certificate.isEmpty()) {
             throw new IllegalStateException("Certificate for question was not available");
         }
-        final var convertedQuestion = convertArendeListItem(certificate.get(), question);
-        final var convertedReminders = Arrays.stream(question.getReminders())
-            .map(reminder -> convertArendeListItem(certificate.get(), reminder))
-            .collect(Collectors.toList());
 
-        convertedReminders.add(convertedQuestion);
-
-        return convertedReminders;
-    }
-
-    private ArendeListItem convertArendeListItem(CertificateDTO certificate, String subject, String author, LocalDateTime sent,
-        Boolean isReminder) {
         final var arendeListItem = new ArendeListItem();
-        final var metadata = certificate.getMetadata();
+        final var metadata = certificate.get().getMetadata();
 
         arendeListItem.setIntygId(metadata.getId());
         arendeListItem.setTestIntyg(metadata.isTestCertificate());
@@ -59,13 +50,37 @@ public class ListQuestionConverter {
         arendeListItem.setAvliden(metadata.getPatient().isDeceased());
         arendeListItem.setSigneratAv(metadata.getIssuedBy().getPersonId());
         arendeListItem.setSekretessmarkering(metadata.getPatient().isProtectedPerson());
-        arendeListItem.setAmne(subject);
+        arendeListItem.setAmne(convertSubject(question.getType()).name());
         arendeListItem.setSigneratAvNamn(metadata.getIssuedBy().getFullName());
-        arendeListItem.setFragestallare(author);
-        arendeListItem.setReceivedDate(sent);
-        arendeListItem.setPaminnelse(isReminder);
+        arendeListItem.setFragestallare(question.getAuthor());
+        arendeListItem.setReceivedDate(question.getSent());
+        arendeListItem.setPaminnelse(question.getReminders() != null && question.getReminders().length > 0);
+        arendeListItem.setStatus(convertStatusQuestion(question));
+        arendeListItem.setVidarebefordrad(question.isForwarded());
+        arendeListItem.setLinks(question.getLinks().stream()
+            .map(this::convertLinks)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList()));
 
         return arendeListItem;
+    }
+
+    private Status convertStatusQuestion(Question question) {
+        if (question.isHandled()) {
+            return Status.CLOSED;
+        }
+
+        if (isAnswered(question)) {
+            return Status.ANSWERED;
+        }
+
+        return question.getAuthor() != null && (question.getAuthor().equals("FK") || question.getAuthor().equals("FKASSA"))
+            ? Status.PENDING_INTERNAL_ACTION
+            : Status.PENDING_EXTERNAL_ACTION;
+    }
+
+    private static boolean isAnswered(final Question question) {
+        return question.getAnswer() != null && question.getAnswer().getSent() != null;
     }
 
     private ArendeAmne convertSubject(QuestionType questionType) {
@@ -83,12 +98,15 @@ public class ListQuestionConverter {
         throw new IllegalArgumentException("Unsupported question type: " + questionType);
     }
 
-    private ArendeListItem convertArendeListItem(CertificateDTO certificate, Question question) {
-        return convertArendeListItem(certificate, convertSubject(question.getType()).name(), question.getAuthor(),
-            question.getSent(), false);
+    private ActionLink convertLinks(ResourceLink link) {
+        if (link.getType() == ResourceLinkTypeEnum.READ_CERTIFICATE) {
+            return new ActionLink(ActionLinkType.LASA_FRAGA);
+        }
+
+        if (link.getType() == ResourceLinkTypeEnum.FORWARD_QUESTION) {
+            return new ActionLink(ActionLinkType.VIDAREBEFODRA_FRAGA);
+        }
+        return null;
     }
 
-    private ArendeListItem convertArendeListItem(CertificateDTO certificate, Reminder reminder) {
-        return convertArendeListItem(certificate, ArendeAmne.PAMINN.name(), reminder.getAuthor(), reminder.getSent(), true);
-    }
 }

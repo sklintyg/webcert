@@ -162,7 +162,6 @@ public class CSIntegrationService {
                     .filter(certificate -> certificate.getMetadata().getId().equals(question.getCertificateId()))
                     .findFirst(), question)
             )
-            .flatMap(List::stream)
             .collect(Collectors.toList());
     }
 

@@ -28,16 +28,20 @@ import static se.inera.intyg.webcert.web.service.facade.list.dto.QuestionStatusT
 import static se.inera.intyg.webcert.web.service.facade.list.dto.QuestionStatusType.WAIT;
 
 import java.util.Collections;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageQueryCriteriaDTO;
+import se.inera.intyg.webcert.web.csintegration.patient.PersonIdDTO;
+import se.inera.intyg.webcert.web.csintegration.patient.PersonIdType;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.list.dto.QuestionSenderType;
 import se.inera.intyg.webcert.web.service.facade.list.dto.QuestionStatusType;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +50,7 @@ public class ListCertificateQuestionsFromCS {
     private final CertificateServiceProfile certificateServiceProfile;
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+    private final WebCertUserService webCertUserService;
 
     public QueryFragaSvarResponse list(QueryFragaSvarParameter queryFragaSvarParameter) {
         if (!certificateServiceProfile.active()) {
@@ -65,12 +70,13 @@ public class ListCertificateQuestionsFromCS {
 
     private MessageQueryCriteriaDTO convertFilter(QueryFragaSvarParameter queryFragaSvarParameter) {
         return MessageQueryCriteriaDTO.builder()
-            .signedBy(queryFragaSvarParameter.getHsaId())
+            .issuedByStaffId(queryFragaSvarParameter.getHsaId())
             .forwarded(queryFragaSvarParameter.getVidarebefordrad())
             .sentDateFrom(queryFragaSvarParameter.getChangedFrom())
             .sentDateTo(queryFragaSvarParameter.getChangedTo())
-            .unitId(queryFragaSvarParameter.getEnhetId())
-            .patientId(queryFragaSvarParameter.getPatientPersonId())
+            .issuedOnUnitIds(queryFragaSvarParameter.getEnhetId() != null ? List.of(queryFragaSvarParameter.getEnhetId())
+                : webCertUserService.getUser().getIdsOfSelectedVardenhet())
+            .patientId(convertPersonId(queryFragaSvarParameter.getPatientPersonId()))
             .senderType(convertSenderType(queryFragaSvarParameter))
             .questionStatus(convertStatus(queryFragaSvarParameter))
             .build();
@@ -104,5 +110,13 @@ public class ListCertificateQuestionsFromCS {
             default:
                 return SHOW_ALL;
         }
+    }
+
+    private PersonIdDTO convertPersonId(String patientId) {
+        return patientId == null || patientId.isBlank() ? null
+            : PersonIdDTO.builder()
+                .id(patientId)
+                .type(PersonIdType.PERSONAL_IDENTITY_NUMBER)
+                .build();
     }
 }

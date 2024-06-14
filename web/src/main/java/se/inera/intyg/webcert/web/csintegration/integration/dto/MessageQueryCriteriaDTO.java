@@ -21,9 +21,11 @@ package se.inera.intyg.webcert.web.csintegration.integration.dto;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.Builder;
 import lombok.Value;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageQueryCriteriaDTO.MessageQueryCriteriaDTOBuilder;
+import se.inera.intyg.webcert.web.csintegration.patient.PersonIdDTO;
 import se.inera.intyg.webcert.web.service.facade.list.dto.QuestionSenderType;
 import se.inera.intyg.webcert.web.service.facade.list.dto.QuestionStatusType;
 
@@ -32,14 +34,14 @@ import se.inera.intyg.webcert.web.service.facade.list.dto.QuestionStatusType;
 @Builder
 public class MessageQueryCriteriaDTO {
 
-    String unitId;
+    List<String> issuedOnUnitIds;
     Boolean forwarded;
     QuestionStatusType questionStatus;
     QuestionSenderType senderType;
     LocalDateTime sentDateFrom;
     LocalDateTime sentDateTo;
-    String signedBy;
-    String patientId;
+    String issuedByStaffId;
+    PersonIdDTO patientId;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class MessageQueryCriteriaDTOBuilder {

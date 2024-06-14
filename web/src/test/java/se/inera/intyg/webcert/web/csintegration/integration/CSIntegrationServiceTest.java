@@ -273,7 +273,7 @@ class CSIntegrationServiceTest {
     private static final SendMessageRequestDTO SEND_MESSAGE_REQUEST_DTO = SendMessageRequestDTO.builder().build();
 
     private static final GetUnitQuestionsRequestDTO GET_QUESTIONS_REQUEST = GetUnitQuestionsRequestDTO.builder().build();
-    private static final List<ArendeListItem> ARENDE_LIST_ITEMS = List.of(new ArendeListItem());
+    private static final ArendeListItem ARENDE_LIST_ITEM = new ArendeListItem();
     private static final CertificateDTO CERTIFICATE_DTO = new CertificateDTO();
     private static final Question QUESTION_DTO = Question.builder()
         .certificateId(ID)
@@ -2056,7 +2056,7 @@ class CSIntegrationServiceTest {
         @Test
         void shouldPreformPostUsingRequest() {
             when(listQuestionConverter.convert(Optional.of(CERTIFICATE_DTO), QUESTION_DTO))
-                .thenReturn(ARENDE_LIST_ITEMS);
+                .thenReturn(ARENDE_LIST_ITEM);
             when(restTemplate.postForObject(anyString(), any(), any()))
                 .thenReturn(GET_QUESTIONS_RESPONSE);
 
@@ -2071,19 +2071,19 @@ class CSIntegrationServiceTest {
         @Test
         void shouldReturnConvertedListItems() {
             when(listQuestionConverter.convert(Optional.of(CERTIFICATE_DTO), QUESTION_DTO))
-                .thenReturn(ARENDE_LIST_ITEMS);
+                .thenReturn(ARENDE_LIST_ITEM);
             when(restTemplate.postForObject(anyString(), any(), any()))
                 .thenReturn(GET_QUESTIONS_RESPONSE);
 
             final var response = csIntegrationService.listQuestionsForUnit(GET_QUESTIONS_REQUEST);
 
-            assertEquals(ARENDE_LIST_ITEMS, response);
+            assertEquals(List.of(ARENDE_LIST_ITEM), response);
         }
 
         @Test
         void shouldSetUrlCorrect() {
             when(listQuestionConverter.convert(Optional.of(CERTIFICATE_DTO), QUESTION_DTO))
-                .thenReturn(ARENDE_LIST_ITEMS);
+                .thenReturn(ARENDE_LIST_ITEM);
             when(restTemplate.postForObject(anyString(), any(), any()))
                 .thenReturn(GET_QUESTIONS_RESPONSE);
 

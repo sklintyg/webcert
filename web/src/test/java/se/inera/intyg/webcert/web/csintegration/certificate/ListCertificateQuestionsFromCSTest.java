@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.web.service.facade.list.dto.QuestionSenderType.FK;
@@ -52,6 +53,8 @@ import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.list.dto.QuestionStatusType;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 
 @ExtendWith(MockitoExtension.class)
@@ -73,6 +76,9 @@ class ListCertificateQuestionsFromCSTest {
     @Mock
     CSIntegrationRequestFactory csIntegrationRequestFactory;
 
+    @Mock
+    WebCertUserService webCertUserService;
+
     @Test
     void shouldReturnResponseWithNoValuesCSProfileIsNotActive() {
         final var expected = QueryFragaSvarResponse.builder()
@@ -92,6 +98,8 @@ class ListCertificateQuestionsFromCSTest {
             .thenReturn(GET_UNIT_QUESTIONS_REQUEST_DTO);
         when(csIntegrationService.listQuestionsForUnit(GET_UNIT_QUESTIONS_REQUEST_DTO))
             .thenReturn(List.of(ARENDE_LIST_ITEM));
+        final var user = mock(WebCertUser.class);
+        when(webCertUserService.getUser()).thenReturn(user);
 
         final var response = listCertificateQuestionsFromCS.list(QUERY_FRAGA_SVAR_PARAMETER);
 
@@ -114,17 +122,35 @@ class ListCertificateQuestionsFromCSTest {
             final var argumentCaptor = ArgumentCaptor.forClass(MessageQueryCriteriaDTO.class);
 
             verify(csIntegrationRequestFactory).getUnitQuestionsRequestDTO(argumentCaptor.capture());
-            assertEquals(queryFragaSvarParameter.getHsaId(), argumentCaptor.getValue().getSignedBy());
+            assertEquals(queryFragaSvarParameter.getHsaId(), argumentCaptor.getValue().getIssuedByStaffId());
         }
 
         @Test
-        void shouldConvertUnitId() {
+        void shouldConvertUnitIdIfSet() {
             final var queryFragaSvarParameter = buildQueryFragaSvarParameter(true, false, "");
             listCertificateQuestionsFromCS.list(queryFragaSvarParameter);
             final var argumentCaptor = ArgumentCaptor.forClass(MessageQueryCriteriaDTO.class);
 
             verify(csIntegrationRequestFactory).getUnitQuestionsRequestDTO(argumentCaptor.capture());
-            assertEquals(queryFragaSvarParameter.getEnhetId(), argumentCaptor.getValue().getUnitId());
+            assertEquals(queryFragaSvarParameter.getEnhetId(), argumentCaptor.getValue().getIssuedOnUnitIds().get(0));
+            assertEquals(1, argumentCaptor.getValue().getIssuedOnUnitIds().size());
+        }
+
+        @Test
+        void shouldSetUnitFromUserServiceIfUnitIdIsNull() {
+            final var user = mock(WebCertUser.class);
+            final var expected = List.of("unitId1", "unitId2");
+            when(webCertUserService.getUser()).thenReturn(user);
+            when(user.getIdsOfSelectedVardenhet()).thenReturn(expected);
+
+            final var queryFragaSvarParameter = buildQueryFragaSvarParameter(true, false, "");
+            queryFragaSvarParameter.setEnhetId(null);
+
+            listCertificateQuestionsFromCS.list(queryFragaSvarParameter);
+            final var argumentCaptor = ArgumentCaptor.forClass(MessageQueryCriteriaDTO.class);
+
+            verify(csIntegrationRequestFactory).getUnitQuestionsRequestDTO(argumentCaptor.capture());
+            assertEquals(expected, argumentCaptor.getValue().getIssuedOnUnitIds());
         }
 
         @Test
@@ -164,7 +190,7 @@ class ListCertificateQuestionsFromCSTest {
             final var argumentCaptor = ArgumentCaptor.forClass(MessageQueryCriteriaDTO.class);
 
             verify(csIntegrationRequestFactory).getUnitQuestionsRequestDTO(argumentCaptor.capture());
-            assertEquals(queryFragaSvarParameter.getPatientPersonId(), argumentCaptor.getValue().getPatientId());
+            assertEquals(queryFragaSvarParameter.getPatientPersonId(), argumentCaptor.getValue().getPatientId().getId());
         }
 
         @Test
