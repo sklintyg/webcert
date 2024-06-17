@@ -31,15 +31,15 @@ import se.inera.intyg.webcert.web.service.facade.list.dto.QuestionStatusType;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 
 @ExtendWith(MockitoExtension.class)
-class QuestionStatusValidatorTest {
+class QuestionStatusFilterTest {
 
     @InjectMocks
-    private QuestionStatusValidator questionStatusValidator;
+    private QuestionStatusFilter questionStatusFilter;
 
     @Test
     void shouldReturnTrueIfShowAll() {
         final var arendeListItem = new ArendeListItem();
-        assertTrue(questionStatusValidator.validate(arendeListItem, QuestionStatusType.SHOW_ALL));
+        assertTrue(questionStatusFilter.validate(arendeListItem, QuestionStatusType.SHOW_ALL));
     }
 
     @Test
@@ -47,7 +47,7 @@ class QuestionStatusValidatorTest {
         final var arendeListItem = new ArendeListItem();
         arendeListItem.setStatus(Status.CLOSED);
 
-        assertFalse(questionStatusValidator.validate(arendeListItem, QuestionStatusType.NOT_HANDLED));
+        assertFalse(questionStatusFilter.validate(arendeListItem, QuestionStatusType.NOT_HANDLED));
     }
 
     @Test
@@ -55,7 +55,7 @@ class QuestionStatusValidatorTest {
         final var arendeListItem = new ArendeListItem();
         arendeListItem.setStatus(Status.PENDING_EXTERNAL_ACTION);
 
-        assertTrue(questionStatusValidator.validate(arendeListItem, QuestionStatusType.NOT_HANDLED));
+        assertTrue(questionStatusFilter.validate(arendeListItem, QuestionStatusType.NOT_HANDLED));
     }
 
     @Test
@@ -63,7 +63,7 @@ class QuestionStatusValidatorTest {
         final var arendeListItem = new ArendeListItem();
         arendeListItem.setStatus(Status.PENDING_EXTERNAL_ACTION);
 
-        assertFalse(questionStatusValidator.validate(arendeListItem, QuestionStatusType.HANDLED));
+        assertFalse(questionStatusFilter.validate(arendeListItem, QuestionStatusType.HANDLED));
     }
 
     @Test
@@ -71,7 +71,7 @@ class QuestionStatusValidatorTest {
         final var arendeListItem = new ArendeListItem();
         arendeListItem.setStatus(Status.CLOSED);
 
-        assertTrue(questionStatusValidator.validate(arendeListItem, QuestionStatusType.HANDLED));
+        assertTrue(questionStatusFilter.validate(arendeListItem, QuestionStatusType.HANDLED));
     }
 
     @Test
@@ -80,7 +80,7 @@ class QuestionStatusValidatorTest {
         arendeListItem.setStatus(Status.PENDING_INTERNAL_ACTION);
         arendeListItem.setAmne("KOMPLT");
 
-        assertTrue(questionStatusValidator.validate(arendeListItem, QuestionStatusType.COMPLEMENT));
+        assertTrue(questionStatusFilter.validate(arendeListItem, QuestionStatusType.COMPLEMENT));
     }
 
     @Test
@@ -89,7 +89,7 @@ class QuestionStatusValidatorTest {
         arendeListItem.setStatus(Status.PENDING_INTERNAL_ACTION);
         arendeListItem.setAmne("KONTKT");
 
-        assertTrue(questionStatusValidator.validate(arendeListItem, QuestionStatusType.ANSWER));
+        assertTrue(questionStatusFilter.validate(arendeListItem, QuestionStatusType.ANSWER));
     }
 
     @Test
@@ -97,7 +97,7 @@ class QuestionStatusValidatorTest {
         final var arendeListItem = new ArendeListItem();
         arendeListItem.setStatus(Status.ANSWERED);
 
-        assertTrue(questionStatusValidator.validate(arendeListItem, QuestionStatusType.READ_ANSWER));
+        assertTrue(questionStatusFilter.validate(arendeListItem, QuestionStatusType.READ_ANSWER));
     }
 
     @Test
@@ -105,7 +105,7 @@ class QuestionStatusValidatorTest {
         final var arendeListItem = new ArendeListItem();
         arendeListItem.setStatus(Status.PENDING_INTERNAL_ACTION);
 
-        assertFalse(questionStatusValidator.validate(arendeListItem, QuestionStatusType.WAIT));
+        assertFalse(questionStatusFilter.validate(arendeListItem, QuestionStatusType.WAIT));
     }
 
     @Test
@@ -113,6 +113,6 @@ class QuestionStatusValidatorTest {
         final var arendeListItem = new ArendeListItem();
         arendeListItem.setStatus(Status.PENDING_EXTERNAL_ACTION);
 
-        assertTrue(questionStatusValidator.validate(arendeListItem, QuestionStatusType.WAIT));
+        assertTrue(questionStatusFilter.validate(arendeListItem, QuestionStatusType.WAIT));
     }
 }

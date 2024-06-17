@@ -28,7 +28,7 @@ import se.inera.intyg.webcert.web.service.facade.list.dto.QuestionStatusType;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 
 @Component
-public class QuestionStatusValidator {
+public class QuestionStatusFilter {
 
     public Boolean validate(ArendeListItem question, QuestionStatusType statusToFilterOn) {
         switch (statusToFilterOn) {

@@ -48,7 +48,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.QuestionIsHandledValidator;
-import se.inera.intyg.webcert.web.csintegration.integration.QuestionStatusValidator;
+import se.inera.intyg.webcert.web.csintegration.integration.QuestionStatusFilter;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitQuestionsRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageQueryCriteriaDTO;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
@@ -80,7 +80,7 @@ class ListCertificateQuestionsFromCSTest {
     CSIntegrationRequestFactory csIntegrationRequestFactory;
 
     @Mock
-    QuestionStatusValidator questionStatusValidator;
+    QuestionStatusFilter questionStatusFilter;
 
     @Mock
     WebCertUserService webCertUserService;
@@ -119,9 +119,9 @@ class ListCertificateQuestionsFromCSTest {
         void shouldFilterHandledListItemsAndThoseNotIncludedInStatus() {
             when(questionIsHandledValidator.validate(ARENDE_LIST_NOT_INCLUDED_IN_STATUS))
                 .thenReturn(false);
-            when(questionStatusValidator.validate(ARENDE_LIST_NOT_INCLUDED_IN_STATUS, ANSWER))
+            when(questionStatusFilter.validate(ARENDE_LIST_NOT_INCLUDED_IN_STATUS, ANSWER))
                 .thenReturn(false);
-            when(questionStatusValidator.validate(ARENDE_LIST_ITEM, ANSWER))
+            when(questionStatusFilter.validate(ARENDE_LIST_ITEM, ANSWER))
                 .thenReturn(true);
             when(csIntegrationService.listQuestionsForUnit(GET_UNIT_QUESTIONS_REQUEST_DTO))
                 .thenReturn(List.of(ARENDE_LIST_ITEM, ARENDE_LIST_NOT_INCLUDED_IN_STATUS));
@@ -135,9 +135,9 @@ class ListCertificateQuestionsFromCSTest {
         void shouldReturnTotalCountValueBeforeFiltering() {
             when(questionIsHandledValidator.validate(ARENDE_LIST_NOT_INCLUDED_IN_STATUS))
                 .thenReturn(false);
-            when(questionStatusValidator.validate(ARENDE_LIST_NOT_INCLUDED_IN_STATUS, ANSWER))
+            when(questionStatusFilter.validate(ARENDE_LIST_NOT_INCLUDED_IN_STATUS, ANSWER))
                 .thenReturn(false);
-            when(questionStatusValidator.validate(ARENDE_LIST_ITEM, ANSWER))
+            when(questionStatusFilter.validate(ARENDE_LIST_ITEM, ANSWER))
                 .thenReturn(true);
             when(csIntegrationService.listQuestionsForUnit(GET_UNIT_QUESTIONS_REQUEST_DTO))
                 .thenReturn(List.of(ARENDE_LIST_ITEM, ARENDE_LIST_NOT_INCLUDED_IN_STATUS));
@@ -290,7 +290,7 @@ class ListCertificateQuestionsFromCSTest {
                 listCertificateQuestionsFromCS.list(queryFragaSvarParameter);
                 final var argumentCaptor = ArgumentCaptor.forClass(QuestionStatusType.class);
 
-                verify(questionStatusValidator).validate(any(), argumentCaptor.capture());
+                verify(questionStatusFilter).validate(any(), argumentCaptor.capture());
                 assertEquals(COMPLEMENT, argumentCaptor.getValue());
             }
 
@@ -301,7 +301,7 @@ class ListCertificateQuestionsFromCSTest {
                 listCertificateQuestionsFromCS.list(queryFragaSvarParameter);
                 final var argumentCaptor = ArgumentCaptor.forClass(QuestionStatusType.class);
 
-                verify(questionStatusValidator).validate(any(), argumentCaptor.capture());
+                verify(questionStatusFilter).validate(any(), argumentCaptor.capture());
                 assertEquals(HANDLED, argumentCaptor.getValue());
             }
 
@@ -312,7 +312,7 @@ class ListCertificateQuestionsFromCSTest {
                 listCertificateQuestionsFromCS.list(queryFragaSvarParameter);
                 final var argumentCaptor = ArgumentCaptor.forClass(QuestionStatusType.class);
 
-                verify(questionStatusValidator).validate(any(), argumentCaptor.capture());
+                verify(questionStatusFilter).validate(any(), argumentCaptor.capture());
                 assertEquals(NOT_HANDLED, argumentCaptor.getValue());
             }
 
@@ -323,7 +323,7 @@ class ListCertificateQuestionsFromCSTest {
                 listCertificateQuestionsFromCS.list(queryFragaSvarParameter);
                 final var argumentCaptor = ArgumentCaptor.forClass(QuestionStatusType.class);
 
-                verify(questionStatusValidator).validate(any(), argumentCaptor.capture());
+                verify(questionStatusFilter).validate(any(), argumentCaptor.capture());
                 assertEquals(ANSWER, argumentCaptor.getValue());
             }
 
@@ -334,7 +334,7 @@ class ListCertificateQuestionsFromCSTest {
                 listCertificateQuestionsFromCS.list(queryFragaSvarParameter);
                 final var argumentCaptor = ArgumentCaptor.forClass(QuestionStatusType.class);
 
-                verify(questionStatusValidator).validate(any(), argumentCaptor.capture());
+                verify(questionStatusFilter).validate(any(), argumentCaptor.capture());
                 assertEquals(READ_ANSWER, argumentCaptor.getValue());
             }
 
@@ -345,7 +345,7 @@ class ListCertificateQuestionsFromCSTest {
                 listCertificateQuestionsFromCS.list(queryFragaSvarParameter);
                 final var argumentCaptor = ArgumentCaptor.forClass(QuestionStatusType.class);
 
-                verify(questionStatusValidator).validate(any(), argumentCaptor.capture());
+                verify(questionStatusFilter).validate(any(), argumentCaptor.capture());
                 assertEquals(WAIT, argumentCaptor.getValue());
             }
 
@@ -356,7 +356,7 @@ class ListCertificateQuestionsFromCSTest {
                 listCertificateQuestionsFromCS.list(queryFragaSvarParameter);
                 final var argumentCaptor = ArgumentCaptor.forClass(QuestionStatusType.class);
 
-                verify(questionStatusValidator).validate(any(), argumentCaptor.capture());
+                verify(questionStatusFilter).validate(any(), argumentCaptor.capture());
                 assertEquals(QuestionStatusType.SHOW_ALL, argumentCaptor.getValue());
             }
 
@@ -366,7 +366,7 @@ class ListCertificateQuestionsFromCSTest {
                 listCertificateQuestionsFromCS.list(queryFragaSvarParameter);
                 final var argumentCaptor = ArgumentCaptor.forClass(QuestionStatusType.class);
 
-                verify(questionStatusValidator).validate(any(), argumentCaptor.capture());
+                verify(questionStatusFilter).validate(any(), argumentCaptor.capture());
                 assertEquals(QuestionStatusType.SHOW_ALL, argumentCaptor.getValue());
             }
         }

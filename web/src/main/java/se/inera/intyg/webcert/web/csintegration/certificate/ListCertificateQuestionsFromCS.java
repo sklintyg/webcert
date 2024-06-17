@@ -37,7 +37,7 @@ import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
-import se.inera.intyg.webcert.web.csintegration.integration.QuestionStatusValidator;
+import se.inera.intyg.webcert.web.csintegration.integration.QuestionStatusFilter;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageQueryCriteriaDTO;
 import se.inera.intyg.webcert.web.csintegration.patient.PersonIdDTO;
 import se.inera.intyg.webcert.web.csintegration.patient.PersonIdType;
@@ -56,7 +56,7 @@ public class ListCertificateQuestionsFromCS {
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
     private final WebCertUserService webCertUserService;
-    private final QuestionStatusValidator questionStatusValidator;
+    private final QuestionStatusFilter questionStatusFilter;
 
     public QueryFragaSvarResponse list(QueryFragaSvarParameter queryFragaSvarParameter) {
         if (!certificateServiceProfile.active()) {
@@ -69,7 +69,7 @@ public class ListCertificateQuestionsFromCS {
             csIntegrationRequestFactory.getUnitQuestionsRequestDTO(convertFilter(queryFragaSvarParameter)));
 
         final var filteredList = listFromCS.stream()
-            .filter(question -> questionStatusValidator.validate(question, convertStatus(queryFragaSvarParameter)))
+            .filter(question -> questionStatusFilter.validate(question, convertStatus(queryFragaSvarParameter)))
             .collect(Collectors.toList());
 
         return QueryFragaSvarResponse.builder()
