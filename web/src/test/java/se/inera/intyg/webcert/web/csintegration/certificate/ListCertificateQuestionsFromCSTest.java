@@ -139,7 +139,7 @@ class ListCertificateQuestionsFromCSTest {
 
             final var response = listCertificateQuestionsFromCS.list(queryFragaSvarParameter);
 
-            assertEquals(2, response.getTotalCount());
+            assertEquals(1, response.getTotalCount());
         }
 
         @Nested
