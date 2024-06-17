@@ -70,6 +70,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertif
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitQuestionsRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitQuestionsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.InternalCertificateXmlResponseDTO;
@@ -98,6 +100,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertific
 import se.inera.intyg.webcert.web.csintegration.message.dto.IncomingMessageRequestDTO;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
@@ -117,15 +120,17 @@ public class CSIntegrationService {
     private final CertificateTypeInfoConverter certificateTypeInfoConverter;
     private final ListIntygEntryConverter listIntygEntryConverter;
     private final RestTemplate restTemplate;
+    private final ListQuestionConverter listQuestionConverter;
 
     @Value("${certificateservice.base.url}")
     private String baseUrl;
 
     public CSIntegrationService(CertificateTypeInfoConverter certificateTypeInfoConverter, ListIntygEntryConverter listIntygEntryConverter,
-        @Qualifier("csRestTemplate") RestTemplate restTemplate) {
+        @Qualifier("csRestTemplate") RestTemplate restTemplate, final ListQuestionConverter listQuestionConverter) {
         this.certificateTypeInfoConverter = certificateTypeInfoConverter;
         this.listIntygEntryConverter = listIntygEntryConverter;
         this.restTemplate = restTemplate;
+        this.listQuestionConverter = listQuestionConverter;
     }
 
     public List<ListIntygEntry> listCertificatesForUnit(GetUnitCertificatesRequestDTO request) {
@@ -139,6 +144,24 @@ public class CSIntegrationService {
         return response.getCertificates()
             .stream()
             .map(listIntygEntryConverter::convert)
+            .collect(Collectors.toList());
+    }
+
+    public List<ArendeListItem> listQuestionsForUnit(GetUnitQuestionsRequestDTO request) {
+        final var url = baseUrl + UNIT_ENDPOINT_URL + "/messages";
+        final var response = restTemplate.postForObject(url, request, GetUnitQuestionsResponseDTO.class);
+
+        if (response == null) {
+            throw new IllegalStateException("Response from certificate service was null when getting unit questions list");
+        }
+
+        return response.getQuestions().stream()
+            .map(question -> listQuestionConverter.convert(
+                response.getCertificates()
+                    .stream()
+                    .filter(certificate -> certificate.getMetadata().getId().equals(question.getCertificateId()))
+                    .findFirst(), question)
+            )
             .collect(Collectors.toList());
     }
 

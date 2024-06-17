@@ -16,22 +16,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.fragasvar.dto;
 
+package se.inera.intyg.webcert.web.csintegration.integration.dto;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.util.List;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
+import lombok.Value;
+import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitQuestionsResponseDTO.GetUnitQuestionsResponseDTOBuilder;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateDTO;
 
-@Data
+@JsonDeserialize(builder = GetUnitQuestionsResponseDTOBuilder.class)
+@Value
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class QueryFragaSvarResponse {
+public class GetUnitQuestionsResponseDTO {
 
-    private int totalCount;
-    private List<ArendeListItem> results;
+    List<Question> questions;
+    List<CertificateDTO> certificates;
 
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class GetUnitQuestionsResponseDTOBuilder {
+
+    }
 }
