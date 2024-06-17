@@ -136,17 +136,11 @@ class ListQuestionConverterTest {
         void shouldConvertStatusAnsweredIfAnswered() {
             final var answer = Answer.builder()
                 .sent(LocalDateTime.now())
-                .author("FK")
+                .author("FKASSA")
                 .message("message")
                 .build();
             final var response = listQuestionConverter.convert(CERTIFICATE, buildQuestion(answer));
             assertEquals(Status.ANSWERED, response.getStatus());
-        }
-
-        @Test
-        void shouldConvertStatusPendingInternalActionIfAuthorIsFK() {
-            final var response = listQuestionConverter.convert(CERTIFICATE, buildQuestion("FK"));
-            assertEquals(Status.PENDING_INTERNAL_ACTION, response.getStatus());
         }
 
         @Test
@@ -156,7 +150,7 @@ class ListQuestionConverterTest {
         }
 
         @Test
-        void shouldConvertStatusPendingExternalActionIfAuthorIsWC() {
+        void shouldConvertStatusPendingExternalActionIfAuthorIsNotFkassa() {
             final var response = listQuestionConverter.convert(CERTIFICATE, buildQuestion("WC"));
             assertEquals(Status.PENDING_EXTERNAL_ACTION, response.getStatus());
         }
