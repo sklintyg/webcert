@@ -93,15 +93,6 @@ class QuestionStatusValidatorTest {
     }
 
     @Test
-    void shouldReturnTrueIfPendingInternalActionAndReminderWhenFilteringOnReadAnswer() {
-        final var arendeListItem = new ArendeListItem();
-        arendeListItem.setStatus(Status.PENDING_INTERNAL_ACTION);
-        arendeListItem.setAmne("PAMINN");
-
-        assertTrue(questionStatusValidator.validate(arendeListItem, QuestionStatusType.READ_ANSWER));
-    }
-
-    @Test
     void shouldReturnTrueIfAnsweredWhenFilteringOnReadAnswer() {
         final var arendeListItem = new ArendeListItem();
         arendeListItem.setStatus(Status.ANSWERED);

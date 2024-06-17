@@ -27,21 +27,10 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 public class QuestionIsHandledValidator {
 
     private static final String MAKULERING = "MAKULERING";
-    private static final String PAMINNELSE = "PAMINNELSE";
-    private static final String PAMINN = "PAMINN";
 
     public Boolean validate(ArendeListItem arendeListItem) {
-        return !isUnhandled(arendeListItem);
-    }
-
-    private boolean isUnhandled(ArendeListItem item) {
-        return !((item.getStatus() == Status.PENDING_INTERNAL_ACTION && isReminder(item) && item.getFragestallare().equals("FK"))
-            || item.getStatus() == Status.ANSWERED
-            || item.getStatus() == Status.CLOSED
-            || item.getAmne().equals(MAKULERING));
-    }
-
-    private boolean isReminder(ArendeListItem item) {
-        return item.getAmne().equals(PAMINNELSE) || item.getAmne().equals(PAMINN);
+        return arendeListItem.getStatus() == Status.ANSWERED
+            || arendeListItem.getStatus() == Status.CLOSED
+            || arendeListItem.getAmne().equals(MAKULERING);
     }
 }

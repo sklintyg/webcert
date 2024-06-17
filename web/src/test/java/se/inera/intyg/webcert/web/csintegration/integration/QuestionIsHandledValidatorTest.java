@@ -64,17 +64,6 @@ class QuestionIsHandledValidatorTest {
     }
 
     @Test
-    void shouldReturnTrueIfStatusPendingInternalActionIsReminderAndAuthorIsFK() {
-        final var arendeListItem = new ArendeListItem();
-        arendeListItem.setStatus(Status.PENDING_INTERNAL_ACTION);
-        arendeListItem.setFragestallare("FK");
-        arendeListItem.setAmne("PAMINNELSE");
-
-        final var result = questionIsHandledValidator.validate(arendeListItem);
-        assertTrue(result);
-    }
-
-    @Test
     void shouldReturnFalseIfPendingInternalAction() {
         final var arendeListItem = new ArendeListItem();
         arendeListItem.setStatus(Status.PENDING_INTERNAL_ACTION);

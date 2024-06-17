@@ -33,25 +33,48 @@ public class QuestionStatusValidator {
     public Boolean validate(ArendeListItem question, QuestionStatusType statusToFilterOn) {
         switch (statusToFilterOn) {
             case NOT_HANDLED:
-                return question.getStatus() != Status.CLOSED;
+                return isQuestionUnhandled(question);
             case HANDLED:
-                return question.getStatus() == Status.CLOSED;
+                return isQuestionHandled(question);
             case COMPLEMENT:
-                return question.getStatus() == Status.PENDING_INTERNAL_ACTION
-                    && Objects.equals(question.getAmne(), ArendeAmne.KOMPLT.name());
+                return isQuestionAnsweredByComplement(question) && isQuestionWaitingOnActionFromCare(question);
             case ANSWER:
-                return question.getStatus() == Status.PENDING_INTERNAL_ACTION
-                    && List.of(ArendeAmne.KONTKT.name(), ArendeAmne.OVRIGT.name(), ArendeAmne.AVSTMN.name()).contains(question.getAmne());
+                return isQuestionWaitingOnActionFromCare(question) && isQuestionAnsweredByText(question);
             case READ_ANSWER:
-                return
-                    (question.getStatus() == Status.PENDING_INTERNAL_ACTION
-                        && Objects.equals(question.getAmne(), ArendeAmne.PAMINN.name()))
-                        || question.getStatus() == Status.ANSWERED;
+                return isQuestionAnswered(question);
             case WAIT:
-                return question.getStatus() == Status.PENDING_EXTERNAL_ACTION;
+                return isQuestionWaitingOnActionFromRecipient(question);
             case SHOW_ALL:
                 return true;
         }
         return false;
+    }
+
+    private static boolean isQuestionWaitingOnActionFromRecipient(final ArendeListItem question) {
+        return question.getStatus() == Status.PENDING_EXTERNAL_ACTION;
+    }
+
+    private static boolean isQuestionAnswered(final ArendeListItem question) {
+        return question.getStatus() == Status.ANSWERED;
+    }
+
+    private static boolean isQuestionAnsweredByText(final ArendeListItem question) {
+        return List.of(ArendeAmne.KONTKT.name(), ArendeAmne.OVRIGT.name(), ArendeAmne.AVSTMN.name()).contains(question.getAmne());
+    }
+
+    private static boolean isQuestionAnsweredByComplement(final ArendeListItem question) {
+        return Objects.equals(question.getAmne(), ArendeAmne.KOMPLT.name());
+    }
+
+    private static boolean isQuestionWaitingOnActionFromCare(final ArendeListItem question) {
+        return question.getStatus() == Status.PENDING_INTERNAL_ACTION;
+    }
+
+    private static boolean isQuestionHandled(final ArendeListItem question) {
+        return question.getStatus() == Status.CLOSED;
+    }
+
+    private static boolean isQuestionUnhandled(final ArendeListItem question) {
+        return question.getStatus() != Status.CLOSED;
     }
 }
