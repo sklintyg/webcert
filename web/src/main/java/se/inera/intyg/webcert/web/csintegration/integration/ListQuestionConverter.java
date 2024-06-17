@@ -20,11 +20,8 @@ package se.inera.intyg.webcert.web.csintegration.integration;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
-import se.inera.intyg.common.support.facade.model.link.ResourceLink;
 import se.inera.intyg.common.support.facade.model.link.ResourceLinkTypeEnum;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
@@ -100,7 +97,7 @@ public class ListQuestionConverter {
 
     private List<ActionLink> getLinks(Question question) {
         final var links = new ArrayList<ActionLink>();
-            links.add(new ActionLink(ActionLinkType.LASA_FRAGA));
+        links.add(new ActionLink(ActionLinkType.LASA_FRAGA));
 
         if (question.getLinks().stream().anyMatch(link -> link.getType() == ResourceLinkTypeEnum.FORWARD_QUESTION)) {
             links.add(new ActionLink(ActionLinkType.VIDAREBEFODRA_FRAGA));

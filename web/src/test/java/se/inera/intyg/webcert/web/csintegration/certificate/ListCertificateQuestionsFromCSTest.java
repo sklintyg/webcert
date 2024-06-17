@@ -66,7 +66,7 @@ class ListCertificateQuestionsFromCSTest {
     private static final ArendeListItem ARENDE_LIST_ITEM_HANDLED = new ArendeListItem();
     private static final ArendeListItem ARENDE_LIST_NOT_INCLUDED_IN_STATUS = new ArendeListItem();
     private static final GetUnitQuestionsRequestDTO GET_UNIT_QUESTIONS_REQUEST_DTO = GetUnitQuestionsRequestDTO.builder().build();
-    private static final QueryFragaSvarParameter QUERY_FRAGA_SVAR_PARAMETER = QueryFragaSvarParameter.builder().build();
+    private static QueryFragaSvarParameter queryFragaSvarParameter;
 
     @InjectMocks
     ListCertificateQuestionsFromCS listCertificateQuestionsFromCS;
@@ -79,15 +79,21 @@ class ListCertificateQuestionsFromCSTest {
 
     @Mock
     CSIntegrationRequestFactory csIntegrationRequestFactory;
-    
+
     @Mock
     QuestionIsHandledValidator questionIsHandledValidator;
-    
+
     @Mock
     QuestionStatusValidator questionStatusValidator;
 
     @Mock
     WebCertUserService webCertUserService;
+
+    @BeforeEach
+    void setUp() {
+        queryFragaSvarParameter = buildQueryFragaSvarParameter(false, true,
+            "SVAR_FRAN_VARDEN");
+    }
 
     @Test
     void shouldReturnResponseWithNoValuesCSProfileIsNotActive() {
@@ -96,7 +102,7 @@ class ListCertificateQuestionsFromCSTest {
             .totalCount(0)
             .build();
 
-        final var response = listCertificateQuestionsFromCS.list(QUERY_FRAGA_SVAR_PARAMETER);
+        final var response = listCertificateQuestionsFromCS.list(queryFragaSvarParameter);
         assertEquals(expected, response);
     }
 
@@ -107,29 +113,28 @@ class ListCertificateQuestionsFromCSTest {
         void setup() {
             when(questionIsHandledValidator.validate(ARENDE_LIST_ITEM))
                 .thenReturn(false);
-            when(questionIsHandledValidator.validate(ARENDE_LIST_ITEM_HANDLED))
-                .thenReturn(true);
-            when(questionIsHandledValidator.validate(ARENDE_LIST_NOT_INCLUDED_IN_STATUS))
-                .thenReturn(false);
-            when(questionStatusValidator.validate(ARENDE_LIST_ITEM, ANSWER))
-                .thenReturn(true);
-            when(questionStatusValidator.validate(ARENDE_LIST_NOT_INCLUDED_IN_STATUS, ANSWER))
-                .thenReturn(false);
-
             when(certificateServiceProfile.active())
                 .thenReturn(true);
             when(csIntegrationRequestFactory.getUnitQuestionsRequestDTO(any()))
                 .thenReturn(GET_UNIT_QUESTIONS_REQUEST_DTO);
-            when(csIntegrationService.listQuestionsForUnit(GET_UNIT_QUESTIONS_REQUEST_DTO))
-                .thenReturn(List.of(ARENDE_LIST_ITEM));
             final var user = mock(WebCertUser.class);
             when(webCertUserService.getUser()).thenReturn(user);
         }
 
         @Test
         void shouldFilterHandledListItemsAndThoseNotIncludedInStatus() {
-            final var response = listCertificateQuestionsFromCS.list(buildQueryFragaSvarParameter(false, true,
-                "SVAR_FRAN_VARDEN"));
+            when(questionIsHandledValidator.validate(ARENDE_LIST_ITEM_HANDLED))
+                .thenReturn(true);
+            when(questionIsHandledValidator.validate(ARENDE_LIST_NOT_INCLUDED_IN_STATUS))
+                .thenReturn(false);
+            when(questionStatusValidator.validate(ARENDE_LIST_NOT_INCLUDED_IN_STATUS, ANSWER))
+                .thenReturn(false);
+            when(questionStatusValidator.validate(ARENDE_LIST_ITEM, ANSWER))
+                .thenReturn(true);
+            when(csIntegrationService.listQuestionsForUnit(GET_UNIT_QUESTIONS_REQUEST_DTO))
+                .thenReturn(List.of(ARENDE_LIST_ITEM, ARENDE_LIST_ITEM_HANDLED, ARENDE_LIST_NOT_INCLUDED_IN_STATUS));
+
+            final var response = listCertificateQuestionsFromCS.list(queryFragaSvarParameter);
 
             assertEquals(List.of(ARENDE_LIST_ITEM), response.getResults());
         }
@@ -141,6 +146,8 @@ class ListCertificateQuestionsFromCSTest {
             void setUp() {
                 when(certificateServiceProfile.active())
                     .thenReturn(true);
+                when(csIntegrationService.listQuestionsForUnit(GET_UNIT_QUESTIONS_REQUEST_DTO))
+                    .thenReturn(List.of(ARENDE_LIST_ITEM));
             }
 
             @Test
@@ -158,6 +165,7 @@ class ListCertificateQuestionsFromCSTest {
             @Test
             void shouldConvertUnitIdIfSet() {
                 final var queryFragaSvarParameter = buildQueryFragaSvarParameter(true, false, "");
+                queryFragaSvarParameter.setEnhetId("unitId");
                 listCertificateQuestionsFromCS.list(queryFragaSvarParameter);
                 final var argumentCaptor = ArgumentCaptor.forClass(MessageQueryCriteriaDTO.class);
 
@@ -354,20 +362,20 @@ class ListCertificateQuestionsFromCSTest {
                 assertEquals(QuestionStatusType.SHOW_ALL, argumentCaptor.getValue());
             }
         }
+    }
 
-        private QueryFragaSvarParameter buildQueryFragaSvarParameter(Boolean fromFK, Boolean fromWC,
-            String vantarPa) {
-            return QueryFragaSvarParameter.builder()
-                .questionFromWC(fromWC)
-                .questionFromFK(fromFK)
-                .vantarPa(vantarPa)
-                .hsaId("hsaId")
-                .enhetId("enhetId")
-                .changedFrom(LocalDateTime.now())
-                .changedTo(LocalDateTime.now())
-                .patientPersonId("201212121212")
-                .vidarebefordrad(true)
-                .build();
-        }
+    private QueryFragaSvarParameter buildQueryFragaSvarParameter(Boolean fromFK, Boolean fromWC,
+        String vantarPa) {
+        return QueryFragaSvarParameter.builder()
+            .questionFromWC(fromWC)
+            .questionFromFK(fromFK)
+            .vantarPa(vantarPa)
+            .hsaId("hsaId")
+            .enhetId(null)
+            .changedFrom(LocalDateTime.now())
+            .changedTo(LocalDateTime.now())
+            .patientPersonId("201212121212")
+            .vidarebefordrad(true)
+            .build();
     }
 }

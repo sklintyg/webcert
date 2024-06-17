@@ -47,6 +47,7 @@ import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.service.facade.CertificateFacadeTestHelper;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
+import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 
 @ExtendWith(MockitoExtension.class)
@@ -174,7 +175,7 @@ class ListQuestionConverterTest {
                 .type(ResourceLinkTypeEnum.FORWARD_QUESTION)
                 .build();
             final var response = listQuestionConverter.convert(CERTIFICATE, buildQuestion(List.of(link)));
-            assertEquals(ActionLinkType.VIDAREBEFODRA_FRAGA, response.getLinks().get(0).getType());
+            assertEquals(ActionLinkType.VIDAREBEFODRA_FRAGA, response.getLinks().get(1).getType());
         }
 
         @Test
@@ -183,7 +184,7 @@ class ListQuestionConverterTest {
                 .type(ResourceLinkTypeEnum.COMPLEMENT_CERTIFICATE)
                 .build();
             final var response = listQuestionConverter.convert(CERTIFICATE, buildQuestion(List.of(link)));
-            assertEquals(Collections.emptyList(), response.getLinks());
+            assertEquals(List.of(new ActionLink(ActionLinkType.LASA_FRAGA)), response.getLinks());
         }
     }
 

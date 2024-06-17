@@ -82,13 +82,13 @@ public class ListCertificateQuestionsFromCS {
     }
 
     private MessageQueryCriteriaDTO convertFilter(QueryFragaSvarParameter queryFragaSvarParameter) {
+        final var userUnits = webCertUserService.getUser().getIdsOfSelectedVardenhet();
         return MessageQueryCriteriaDTO.builder()
             .issuedByStaffId(queryFragaSvarParameter.getHsaId())
             .forwarded(queryFragaSvarParameter.getVidarebefordrad())
             .sentDateFrom(queryFragaSvarParameter.getChangedFrom())
             .sentDateTo(queryFragaSvarParameter.getChangedTo())
-            .issuedOnUnitIds(queryFragaSvarParameter.getEnhetId() != null ? List.of(queryFragaSvarParameter.getEnhetId())
-                : webCertUserService.getUser().getIdsOfSelectedVardenhet())
+            .issuedOnUnitIds(queryFragaSvarParameter.getEnhetId() != null ? List.of(queryFragaSvarParameter.getEnhetId()) : userUnits)
             .patientId(convertPersonId(queryFragaSvarParameter.getPatientPersonId()))
             .senderType(convertSenderType(queryFragaSvarParameter))
             .build();
@@ -125,7 +125,9 @@ public class ListCertificateQuestionsFromCS {
     }
 
     private PersonIdDTO convertPersonId(String patientId) {
-        final var personIdType = isCoordinationNumber(Personnummer.createPersonnummer(patientId).orElseThrow()) ? PersonIdType.COORDINATION_NUMBER : PersonIdType.PERSONAL_IDENTITY_NUMBER;
+        final var personIdType =
+            isCoordinationNumber(Personnummer.createPersonnummer(patientId).orElseThrow()) ? PersonIdType.COORDINATION_NUMBER
+                : PersonIdType.PERSONAL_IDENTITY_NUMBER;
         return patientId == null || patientId.isBlank() ? null
             : PersonIdDTO.builder()
                 .id(patientId)

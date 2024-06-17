@@ -116,7 +116,6 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertific
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.message.dto.IncomingMessageRequestDTO;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
-import se.inera.intyg.webcert.web.service.facade.list.dto.QuestionStatusType;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateDTO;
@@ -299,12 +298,6 @@ class CSIntegrationServiceTest {
 
     @InjectMocks
     private CSIntegrationService csIntegrationService;
-
-    @Mock
-    private QuestionIsHandledValidator questionIsHandledValidator;
-
-    @Mock
-    private QuestionStatusValidator questionStatusValidator;
 
     static {
         CERTIFICATE.setMetadata(
@@ -2085,32 +2078,6 @@ class CSIntegrationServiceTest {
             final var response = csIntegrationService.listQuestionsForUnit(GET_QUESTIONS_REQUEST);
 
             assertEquals(List.of(ARENDE_LIST_ITEM), response);
-        }
-
-        @Test
-        void shouldFilterHandledQuestions() {
-            when(listQuestionConverter.convert(Optional.of(CERTIFICATE_DTO), QUESTION_DTO))
-                .thenReturn(ARENDE_LIST_ITEM);
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(GET_QUESTIONS_RESPONSE);
-            when(questionIsHandledValidator.validate(ARENDE_LIST_ITEM))
-                .thenReturn(true);
-
-            final var response = csIntegrationService.listQuestionsForUnit(GET_QUESTIONS_REQUEST);
-
-            assertEquals(Collections.emptyList(), response);
-        }
-
-        @Test
-        void shouldFilterNonMatchingQuestionStatus() {
-            when(listQuestionConverter.convert(Optional.of(CERTIFICATE_DTO), QUESTION_DTO))
-                .thenReturn(ARENDE_LIST_ITEM);
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(GET_QUESTIONS_RESPONSE);
-
-            final var response = csIntegrationService.listQuestionsForUnit(GET_QUESTIONS_REQUEST);
-
-            assertEquals(Collections.emptyList(), response);
         }
 
         @Test
