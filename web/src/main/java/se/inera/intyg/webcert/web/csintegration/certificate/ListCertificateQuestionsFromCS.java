@@ -29,9 +29,12 @@ import static se.inera.intyg.webcert.web.service.facade.list.dto.QuestionStatusT
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.QuestionIsHandledValidator;
@@ -122,10 +125,15 @@ public class ListCertificateQuestionsFromCS {
     }
 
     private PersonIdDTO convertPersonId(String patientId) {
+        final var personIdType = isCoordinationNumber(Personnummer.createPersonnummer(patientId).orElseThrow()) ? PersonIdType.COORDINATION_NUMBER : PersonIdType.PERSONAL_IDENTITY_NUMBER;
         return patientId == null || patientId.isBlank() ? null
             : PersonIdDTO.builder()
                 .id(patientId)
-                .type(PersonIdType.PERSONAL_IDENTITY_NUMBER)
+                .type(personIdType)
                 .build();
+    }
+
+    private boolean isCoordinationNumber(Personnummer personId) {
+        return SamordningsnummerValidator.isSamordningsNummer(Optional.of(personId));
     }
 }
