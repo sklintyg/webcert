@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.web.csintegration.integration;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -57,10 +59,7 @@ public class ListQuestionConverter {
         arendeListItem.setPaminnelse(question.getReminders() != null && question.getReminders().length > 0);
         arendeListItem.setStatus(convertStatusQuestion(question));
         arendeListItem.setVidarebefordrad(question.isForwarded());
-        arendeListItem.setLinks(question.getLinks().stream()
-            .map(this::convertLinks)
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList()));
+        arendeListItem.setLinks(getLinks(question));
 
         return arendeListItem;
     }
@@ -98,15 +97,15 @@ public class ListQuestionConverter {
         throw new IllegalArgumentException("Unsupported question type: " + questionType);
     }
 
-    private ActionLink convertLinks(ResourceLink link) {
-        if (link.getType() == ResourceLinkTypeEnum.READ_CERTIFICATE) {
-            return new ActionLink(ActionLinkType.LASA_FRAGA);
+    private List<ActionLink> getLinks(Question question) {
+        final var links = new ArrayList<ActionLink>();
+            links.add(new ActionLink(ActionLinkType.LASA_FRAGA));
+
+        if (question.getLinks().stream().anyMatch(link -> link.getType() == ResourceLinkTypeEnum.FORWARD_QUESTION)) {
+            links.add(new ActionLink(ActionLinkType.VIDAREBEFODRA_FRAGA));
         }
 
-        if (link.getType() == ResourceLinkTypeEnum.FORWARD_QUESTION) {
-            return new ActionLink(ActionLinkType.VIDAREBEFODRA_FRAGA);
-        }
-        return null;
+        return links;
     }
 
 }
