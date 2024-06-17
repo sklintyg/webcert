@@ -122,21 +122,16 @@ public class CSIntegrationService {
     private final ListIntygEntryConverter listIntygEntryConverter;
     private final RestTemplate restTemplate;
     private final ListQuestionConverter listQuestionConverter;
-    private final QuestionIsHandledValidator questionIsHandledValidator;
-    private final QuestionStatusValidator questionStatusValidator;
 
     @Value("${certificateservice.base.url}")
     private String baseUrl;
 
     public CSIntegrationService(CertificateTypeInfoConverter certificateTypeInfoConverter, ListIntygEntryConverter listIntygEntryConverter,
-        @Qualifier("csRestTemplate") RestTemplate restTemplate, final ListQuestionConverter listQuestionConverter,
-        final QuestionIsHandledValidator questionIsHandledValidator, final QuestionStatusValidator questionStatusValidator) {
+        @Qualifier("csRestTemplate") RestTemplate restTemplate, final ListQuestionConverter listQuestionConverter) {
         this.certificateTypeInfoConverter = certificateTypeInfoConverter;
         this.listIntygEntryConverter = listIntygEntryConverter;
         this.restTemplate = restTemplate;
         this.listQuestionConverter = listQuestionConverter;
-        this.questionIsHandledValidator = questionIsHandledValidator;
-        this.questionStatusValidator = questionStatusValidator;
     }
 
     public List<ListIntygEntry> listCertificatesForUnit(GetUnitCertificatesRequestDTO request) {
@@ -153,7 +148,7 @@ public class CSIntegrationService {
             .collect(Collectors.toList());
     }
 
-    public List<ArendeListItem> listQuestionsForUnit(GetUnitQuestionsRequestDTO request, QuestionStatusType statusToFilterOn) {
+    public List<ArendeListItem> listQuestionsForUnit(GetUnitQuestionsRequestDTO request) {
         final var url = baseUrl + UNIT_ENDPOINT_URL + "/questions";
         final var response = restTemplate.postForObject(url, request, GetUnitQuestionsResponseDTO.class);
 
@@ -168,8 +163,6 @@ public class CSIntegrationService {
                     .filter(certificate -> certificate.getMetadata().getId().equals(question.getCertificateId()))
                     .findFirst(), question)
             )
-            .filter(question -> !questionIsHandledValidator.validate(question))
-            .filter(question -> questionStatusValidator.validate(question, statusToFilterOn))
             .collect(Collectors.toList());
     }
 

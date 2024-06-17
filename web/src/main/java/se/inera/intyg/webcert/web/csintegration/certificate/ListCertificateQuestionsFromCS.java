@@ -29,10 +29,13 @@ import static se.inera.intyg.webcert.web.service.facade.list.dto.QuestionStatusT
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
+import se.inera.intyg.webcert.web.csintegration.integration.QuestionIsHandledValidator;
+import se.inera.intyg.webcert.web.csintegration.integration.QuestionStatusValidator;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageQueryCriteriaDTO;
 import se.inera.intyg.webcert.web.csintegration.patient.PersonIdDTO;
 import se.inera.intyg.webcert.web.csintegration.patient.PersonIdType;
@@ -51,6 +54,8 @@ public class ListCertificateQuestionsFromCS {
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
     private final WebCertUserService webCertUserService;
+    private final QuestionIsHandledValidator questionIsHandledValidator;
+    private final QuestionStatusValidator questionStatusValidator;
 
     public QueryFragaSvarResponse list(QueryFragaSvarParameter queryFragaSvarParameter) {
         if (!certificateServiceProfile.active()) {
@@ -60,11 +65,15 @@ public class ListCertificateQuestionsFromCS {
                 .build();
         }
         final var listFromCS = csIntegrationService.listQuestionsForUnit(
-            csIntegrationRequestFactory.getUnitQuestionsRequestDTO(convertFilter(queryFragaSvarParameter)),
-            convertStatus(queryFragaSvarParameter));
+            csIntegrationRequestFactory.getUnitQuestionsRequestDTO(convertFilter(queryFragaSvarParameter)));
 
         return QueryFragaSvarResponse.builder()
-            .results(listFromCS)
+            .results(
+                listFromCS.stream()
+                    .filter(question -> !questionIsHandledValidator.validate(question))
+                    .filter(question -> questionStatusValidator.validate(question, convertStatus(queryFragaSvarParameter)))
+                    .collect(Collectors.toList())
+            )
             .totalCount(listFromCS.size())
             .build();
     }
