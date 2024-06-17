@@ -115,9 +115,7 @@ class ListCertificateQuestionsFromCSTest {
         }
 
         @Test
-        void shouldFilterHandledListItemsAndThoseNotIncludedInStatus() {
-            when(questionIsHandledValidator.validate(ARENDE_LIST_NOT_INCLUDED_IN_STATUS))
-                .thenReturn(false);
+        void shouldFilterNotIncludedInStatus() {
             when(questionStatusFilter.validate(ARENDE_LIST_NOT_INCLUDED_IN_STATUS, ANSWER))
                 .thenReturn(false);
             when(questionStatusFilter.validate(ARENDE_LIST_ITEM, ANSWER))
@@ -132,8 +130,6 @@ class ListCertificateQuestionsFromCSTest {
 
         @Test
         void shouldReturnTotalCountValueBeforeFiltering() {
-            when(questionIsHandledValidator.validate(ARENDE_LIST_NOT_INCLUDED_IN_STATUS))
-                .thenReturn(false);
             when(questionStatusFilter.validate(ARENDE_LIST_NOT_INCLUDED_IN_STATUS, ANSWER))
                 .thenReturn(false);
             when(questionStatusFilter.validate(ARENDE_LIST_ITEM, ANSWER))
