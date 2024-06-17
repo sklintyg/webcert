@@ -2093,7 +2093,7 @@ class CSIntegrationServiceTest {
             csIntegrationService.listQuestionsForUnit(GET_QUESTIONS_REQUEST);
             verify(restTemplate).postForObject(captor.capture(), any(), any());
 
-            assertEquals("baseUrl/api/unit/questions", captor.getValue());
+            assertEquals("baseUrl/api/unit/messages", captor.getValue());
 
         }
     }

@@ -148,7 +148,7 @@ public class CSIntegrationService {
     }
 
     public List<ArendeListItem> listQuestionsForUnit(GetUnitQuestionsRequestDTO request) {
-        final var url = baseUrl + UNIT_ENDPOINT_URL + "/questions";
+        final var url = baseUrl + UNIT_ENDPOINT_URL + "/messages";
         final var response = restTemplate.postForObject(url, request, GetUnitQuestionsResponseDTO.class);
 
         if (response == null) {
