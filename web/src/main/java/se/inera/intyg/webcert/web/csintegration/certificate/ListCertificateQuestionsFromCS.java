@@ -37,7 +37,6 @@ import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
-import se.inera.intyg.webcert.web.csintegration.integration.QuestionIsHandledValidator;
 import se.inera.intyg.webcert.web.csintegration.integration.QuestionStatusValidator;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageQueryCriteriaDTO;
 import se.inera.intyg.webcert.web.csintegration.patient.PersonIdDTO;
@@ -57,7 +56,6 @@ public class ListCertificateQuestionsFromCS {
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
     private final WebCertUserService webCertUserService;
-    private final QuestionIsHandledValidator questionIsHandledValidator;
     private final QuestionStatusValidator questionStatusValidator;
 
     public QueryFragaSvarResponse list(QueryFragaSvarParameter queryFragaSvarParameter) {
@@ -70,14 +68,15 @@ public class ListCertificateQuestionsFromCS {
         final var listFromCS = csIntegrationService.listQuestionsForUnit(
             csIntegrationRequestFactory.getUnitQuestionsRequestDTO(convertFilter(queryFragaSvarParameter)));
 
+        final var filteredList = listFromCS.stream()
+            .filter(question -> questionStatusValidator.validate(question, convertStatus(queryFragaSvarParameter)))
+            .collect(Collectors.toList());
+
         return QueryFragaSvarResponse.builder()
             .results(
-                listFromCS.stream()
-                    .filter(question -> !questionIsHandledValidator.validate(question))
-                    .filter(question -> questionStatusValidator.validate(question, convertStatus(queryFragaSvarParameter)))
-                    .collect(Collectors.toList())
+                filteredList
             )
-            .totalCount(listFromCS.size())
+            .totalCount(filteredList.size())
             .build();
     }
 

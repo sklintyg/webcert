@@ -63,7 +63,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 class ListCertificateQuestionsFromCSTest {
 
     private static final ArendeListItem ARENDE_LIST_ITEM = new ArendeListItem();
-    private static final ArendeListItem ARENDE_LIST_ITEM_HANDLED = new ArendeListItem();
     private static final ArendeListItem ARENDE_LIST_NOT_INCLUDED_IN_STATUS = new ArendeListItem();
     private static final GetUnitQuestionsRequestDTO GET_UNIT_QUESTIONS_REQUEST_DTO = GetUnitQuestionsRequestDTO.builder().build();
     private static QueryFragaSvarParameter queryFragaSvarParameter;
@@ -79,9 +78,6 @@ class ListCertificateQuestionsFromCSTest {
 
     @Mock
     CSIntegrationRequestFactory csIntegrationRequestFactory;
-
-    @Mock
-    QuestionIsHandledValidator questionIsHandledValidator;
 
     @Mock
     QuestionStatusValidator questionStatusValidator;
@@ -111,8 +107,6 @@ class ListCertificateQuestionsFromCSTest {
 
         @BeforeEach
         void setup() {
-            when(questionIsHandledValidator.validate(ARENDE_LIST_ITEM))
-                .thenReturn(false);
             when(certificateServiceProfile.active())
                 .thenReturn(true);
             when(csIntegrationRequestFactory.getUnitQuestionsRequestDTO(any()))
@@ -123,8 +117,6 @@ class ListCertificateQuestionsFromCSTest {
 
         @Test
         void shouldFilterHandledListItemsAndThoseNotIncludedInStatus() {
-            when(questionIsHandledValidator.validate(ARENDE_LIST_ITEM_HANDLED))
-                .thenReturn(true);
             when(questionIsHandledValidator.validate(ARENDE_LIST_NOT_INCLUDED_IN_STATUS))
                 .thenReturn(false);
             when(questionStatusValidator.validate(ARENDE_LIST_NOT_INCLUDED_IN_STATUS, ANSWER))
@@ -132,11 +124,27 @@ class ListCertificateQuestionsFromCSTest {
             when(questionStatusValidator.validate(ARENDE_LIST_ITEM, ANSWER))
                 .thenReturn(true);
             when(csIntegrationService.listQuestionsForUnit(GET_UNIT_QUESTIONS_REQUEST_DTO))
-                .thenReturn(List.of(ARENDE_LIST_ITEM, ARENDE_LIST_ITEM_HANDLED, ARENDE_LIST_NOT_INCLUDED_IN_STATUS));
+                .thenReturn(List.of(ARENDE_LIST_ITEM, ARENDE_LIST_NOT_INCLUDED_IN_STATUS));
 
             final var response = listCertificateQuestionsFromCS.list(queryFragaSvarParameter);
 
             assertEquals(List.of(ARENDE_LIST_ITEM), response.getResults());
+        }
+
+        @Test
+        void shouldReturnTotalCountValueBeforeFiltering() {
+            when(questionIsHandledValidator.validate(ARENDE_LIST_NOT_INCLUDED_IN_STATUS))
+                .thenReturn(false);
+            when(questionStatusValidator.validate(ARENDE_LIST_NOT_INCLUDED_IN_STATUS, ANSWER))
+                .thenReturn(false);
+            when(questionStatusValidator.validate(ARENDE_LIST_ITEM, ANSWER))
+                .thenReturn(true);
+            when(csIntegrationService.listQuestionsForUnit(GET_UNIT_QUESTIONS_REQUEST_DTO))
+                .thenReturn(List.of(ARENDE_LIST_ITEM, ARENDE_LIST_NOT_INCLUDED_IN_STATUS));
+
+            final var response = listCertificateQuestionsFromCS.list(queryFragaSvarParameter);
+
+            assertEquals(2, response.getTotalCount());
         }
 
         @Nested
