@@ -28,6 +28,7 @@ import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.csintegration.message.dto.SentByDTO;
+import se.inera.intyg.webcert.web.service.facade.list.dto.QuestionSenderType;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateDTO;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
@@ -52,7 +53,7 @@ public class ListQuestionConverter {
         arendeListItem.setSekretessmarkering(metadata.getPatient().isProtectedPerson());
         arendeListItem.setAmne(convertSubject(question.getType()).name());
         arendeListItem.setSigneratAvNamn(metadata.getIssuedBy().getFullName());
-        arendeListItem.setFragestallare(question.getAuthor());
+        arendeListItem.setFragestallare(convertAuthor(question.getAuthor()));
         arendeListItem.setReceivedDate(question.getSent());
         arendeListItem.setPaminnelse(question.getReminders() != null && question.getReminders().length > 0);
         arendeListItem.setStatus(convertStatusQuestion(question));
@@ -60,6 +61,14 @@ public class ListQuestionConverter {
         arendeListItem.setLinks(getLinks(question));
 
         return arendeListItem;
+    }
+
+    private String convertAuthor(String authorName) {
+        if (authorName.equals(QuestionSenderType.FK.getName())) {
+            return QuestionSenderType.FK.getName();
+        }
+
+        return QuestionSenderType.WC.getName();
     }
 
     private Status convertStatusQuestion(Question question) {

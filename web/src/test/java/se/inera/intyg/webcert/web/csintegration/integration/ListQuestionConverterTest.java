@@ -271,7 +271,7 @@ class ListQuestionConverterTest {
             .complements(List.of(Complement.builder().build()).toArray(Complement[]::new))
             .contactInfo(List.of("contactinfo1", "contactinfo2").toArray(String[]::new))
             .answer(answer)
-            .author(author)
+            .author("Försäkringskassan")
             .links(links)
             .build();
     }
