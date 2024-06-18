@@ -65,10 +65,10 @@ public class ListQuestionConverter {
 
     private String convertAuthor(String authorName) {
         if (authorName.equals(QuestionSenderType.FK.getName())) {
-            return QuestionSenderType.FK.getName();
+            return QuestionSenderType.FK.toString();
         }
 
-        return QuestionSenderType.WC.getName();
+        return QuestionSenderType.WC.toString();
     }
 
     private Status convertStatusQuestion(Question question) {
