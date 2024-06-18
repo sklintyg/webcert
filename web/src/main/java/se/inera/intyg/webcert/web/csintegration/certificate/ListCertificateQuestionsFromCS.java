@@ -124,10 +124,13 @@ public class ListCertificateQuestionsFromCS {
     }
 
     private PersonIdDTO convertPersonId(String patientId) {
+        if (patientId == null || patientId.isEmpty()) {
+            return null;
+        }
         final var personIdType =
             isCoordinationNumber(Personnummer.createPersonnummer(patientId).orElseThrow()) ? PersonIdType.COORDINATION_NUMBER
                 : PersonIdType.PERSONAL_IDENTITY_NUMBER;
-        return patientId == null || patientId.isBlank() ? null
+        return patientId.isBlank() ? null
             : PersonIdDTO.builder()
                 .id(patientId)
                 .type(personIdType)

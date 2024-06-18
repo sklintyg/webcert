@@ -50,14 +50,16 @@ public class PaginationAndLoggingServiceImpl implements PaginationAndLoggingServ
     }
 
     @Override
-    public List<ArendeListItem> get(QueryFragaSvarParameter filterParameters, List<ArendeListItem> results,
-        final WebCertUser user) {
+    public List<ArendeListItem> get(QueryFragaSvarParameter filterParameters, List<ArendeListItem> results, WebCertUser user) {
         Set<String> intygstyperForPrivilege = authoritiesHelper.getIntygstyperForPrivilege(user, AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
 
-        Filter filter = new Filter();
+        Filter filter;
+
         if (!Strings.isNullOrEmpty(filterParameters.getEnhetId())) {
             filter = FilterConverter.convert(filterParameters, Collections.singletonList(filterParameters.getEnhetId()),
                 intygstyperForPrivilege);
+        } else {
+            filter = FilterConverter.convert(filterParameters, user.getIdsOfSelectedVardenhet(), intygstyperForPrivilege);
         }
 
         final var list = results.stream()

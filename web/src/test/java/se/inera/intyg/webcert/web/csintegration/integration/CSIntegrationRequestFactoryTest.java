@@ -1841,7 +1841,7 @@ class CSIntegrationRequestFactoryTest {
         @Test
         void shouldSetMessageQueryCriteria() {
             final var actualRequest = csIntegrationRequestFactory.getUnitQuestionsRequestDTO(MESSAGE_QUERY_CRITERIA_DTO);
-            assertEquals(MESSAGE_QUERY_CRITERIA_DTO, actualRequest.getMessageQueryCriteriaDTO());
+            assertEquals(MESSAGE_QUERY_CRITERIA_DTO, actualRequest.getMessagesQueryCriteria());
         }
     }
 }

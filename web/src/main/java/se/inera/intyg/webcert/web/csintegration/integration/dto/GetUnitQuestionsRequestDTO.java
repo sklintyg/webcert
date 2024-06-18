@@ -35,7 +35,7 @@ public class GetUnitQuestionsRequestDTO {
     CertificateServiceUnitDTO unit;
     CertificateServiceUnitDTO careUnit;
     CertificateServiceUnitDTO careProvider;
-    MessageQueryCriteriaDTO messageQueryCriteriaDTO;
+    MessageQueryCriteriaDTO messagesQueryCriteria;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class GetUnitQuestionsRequestDTOBuilder {
