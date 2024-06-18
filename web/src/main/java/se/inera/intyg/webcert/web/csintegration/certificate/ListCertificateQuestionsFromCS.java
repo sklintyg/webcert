@@ -87,7 +87,11 @@ public class ListCertificateQuestionsFromCS {
             .forwarded(queryFragaSvarParameter.getVidarebefordrad())
             .sentDateFrom(queryFragaSvarParameter.getChangedFrom())
             .sentDateTo(queryFragaSvarParameter.getChangedTo())
-            .issuedOnUnitIds(queryFragaSvarParameter.getEnhetId() != null ? List.of(queryFragaSvarParameter.getEnhetId()) : userUnits)
+            .issuedOnUnitIds(queryFragaSvarParameter.getEnhetId() != null
+                && !queryFragaSvarParameter.getEnhetId().isEmpty()
+                ? List.of(queryFragaSvarParameter.getEnhetId())
+                : userUnits
+            )
             .patientId(convertPersonId(queryFragaSvarParameter.getPatientPersonId()))
             .senderType(convertSenderType(queryFragaSvarParameter))
             .build();
