@@ -74,6 +74,7 @@ public class QuestionDTO {
             .links(links)
             .lastDateToReply(question.getLastDateToReply())
             .contactInfo(question.getContactInfo())
+            .certificateId(question.getCertificateId())
             .build();
     }
 

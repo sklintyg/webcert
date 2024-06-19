@@ -448,12 +448,13 @@ public class CSIntegrationRequestFactory {
             .build();
     }
 
-    public CreateMessageRequestDTO createMessageRequest(QuestionType type, String message) {
+    public CreateMessageRequestDTO createMessageRequest(QuestionType type, String message, String personId) {
         return CreateMessageRequestDTO.builder()
             .unit(certificateServiceUnitHelper.getUnit())
             .careUnit(certificateServiceUnitHelper.getCareUnit())
             .careProvider(certificateServiceUnitHelper.getCareProvider())
             .user(certificateServiceUserHelper.get())
+            .patient(certificateServicePatientHelper.get(createPatientId(personId)))
             .questionType(type)
             .message(message)
             .build();

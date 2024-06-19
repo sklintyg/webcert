@@ -43,8 +43,17 @@ public class CreateMessageFromCertificateService implements CreateQuestionFacade
             return null;
         }
 
+        final var certificate = csIntegrationService.getCertificate(
+            certificateId,
+            csIntegrationRequestFactory.getCertificateRequest()
+        );
+
         return csIntegrationService.createMessage(
-            csIntegrationRequestFactory.createMessageRequest(type, message),
+            csIntegrationRequestFactory.createMessageRequest(
+                type,
+                message,
+                certificate.getMetadata().getPatient().getPersonId().getId()
+            ),
             certificateId
         );
     }
