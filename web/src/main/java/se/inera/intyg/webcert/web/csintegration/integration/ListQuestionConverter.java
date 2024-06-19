@@ -27,7 +27,6 @@ import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.model.Status;
-import se.inera.intyg.webcert.web.csintegration.message.dto.SentByDTO;
 import se.inera.intyg.webcert.web.service.facade.list.dto.QuestionSenderType;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateDTO;
@@ -80,7 +79,7 @@ public class ListQuestionConverter {
             return Status.ANSWERED;
         }
 
-        return question.getAuthor() != null && (question.getAuthor().equals(SentByDTO.FK.getCode()))
+        return question.getAuthor() != null && question.getAuthor().equals(QuestionSenderType.FK.getName())
             ? Status.PENDING_INTERNAL_ACTION
             : Status.PENDING_EXTERNAL_ACTION;
     }

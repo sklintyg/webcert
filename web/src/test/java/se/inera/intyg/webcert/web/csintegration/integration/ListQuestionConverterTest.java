@@ -45,6 +45,7 @@ import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.common.support.facade.model.question.Reminder;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.service.facade.CertificateFacadeTestHelper;
+import se.inera.intyg.webcert.web.service.facade.list.dto.QuestionSenderType;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
@@ -121,7 +122,7 @@ class ListQuestionConverterTest {
     @Test
     void shouldConvertAuthor() {
         final var response = listQuestionConverter.convert(CERTIFICATE, QUESTION);
-        assertEquals(QUESTION.getAuthor(), response.getFragestallare());
+        assertEquals(QuestionSenderType.FK.toString(), response.getFragestallare());
     }
 
     @Nested
@@ -145,13 +146,13 @@ class ListQuestionConverterTest {
         }
 
         @Test
-        void shouldConvertStatusPendingInternalActionIfAuthorIsFkassa() {
-            final var response = listQuestionConverter.convert(CERTIFICATE, buildQuestion("FKASSA"));
+        void shouldConvertStatusPendingInternalActionIfAuthorIsForsakringskassan() {
+            final var response = listQuestionConverter.convert(CERTIFICATE, buildQuestion("Försäkringskassan"));
             assertEquals(Status.PENDING_INTERNAL_ACTION, response.getStatus());
         }
 
         @Test
-        void shouldConvertStatusPendingExternalActionIfAuthorIsNotFkassa() {
+        void shouldConvertStatusPendingExternalActionIfAuthorIsNotForskakringskassan() {
             final var response = listQuestionConverter.convert(CERTIFICATE, buildQuestion("WC"));
             assertEquals(Status.PENDING_EXTERNAL_ACTION, response.getStatus());
         }
@@ -271,7 +272,7 @@ class ListQuestionConverterTest {
             .complements(List.of(Complement.builder().build()).toArray(Complement[]::new))
             .contactInfo(List.of("contactinfo1", "contactinfo2").toArray(String[]::new))
             .answer(answer)
-            .author("Försäkringskassan")
+            .author(author != null ? author : "Försäkringskassan")
             .links(links)
             .build();
     }
