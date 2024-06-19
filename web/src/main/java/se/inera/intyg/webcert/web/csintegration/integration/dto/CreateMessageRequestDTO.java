@@ -26,6 +26,7 @@ import lombok.Builder;
 import lombok.Value;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateMessageRequestDTO.CreateMessageRequestDTOBuilder;
+import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientDTO;
 import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitDTO;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserDTO;
 
@@ -38,6 +39,7 @@ public class CreateMessageRequestDTO {
     CertificateServiceUnitDTO unit;
     CertificateServiceUnitDTO careUnit;
     CertificateServiceUnitDTO careProvider;
+    CertificateServicePatientDTO patient;
     QuestionType questionType;
     String message;
 
