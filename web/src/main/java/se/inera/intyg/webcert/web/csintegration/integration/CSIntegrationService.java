@@ -126,7 +126,7 @@ public class CSIntegrationService {
     private String baseUrl;
 
     public CSIntegrationService(CertificateTypeInfoConverter certificateTypeInfoConverter, ListIntygEntryConverter listIntygEntryConverter,
-        @Qualifier("csRestTemplate") RestTemplate restTemplate, final ListQuestionConverter listQuestionConverter) {
+        @Qualifier("csRestTemplate") RestTemplate restTemplate, ListQuestionConverter listQuestionConverter) {
         this.certificateTypeInfoConverter = certificateTypeInfoConverter;
         this.listIntygEntryConverter = listIntygEntryConverter;
         this.restTemplate = restTemplate;

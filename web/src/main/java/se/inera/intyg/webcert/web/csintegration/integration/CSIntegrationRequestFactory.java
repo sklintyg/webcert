@@ -485,7 +485,7 @@ public class CSIntegrationRequestFactory {
             .careUnit(certificateServiceUnitHelper.getCareUnit())
             .careProvider(certificateServiceUnitHelper.getCareProvider())
             .user(certificateServiceUserHelper.get())
-            .messageQueryCriteriaDTO(messageQueryCriteriaDTO)
+            .messagesQueryCriteria(messageQueryCriteriaDTO)
             .build();
     }
 }
