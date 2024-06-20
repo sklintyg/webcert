@@ -50,6 +50,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CitizenCertifica
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateMessageResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteAnswerRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteAnswerResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteMessageRequestDTO;
@@ -585,6 +587,17 @@ public class CSIntegrationService {
     public void deleteMessage(String messageId, DeleteMessageRequestDTO request) {
         final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + "/delete";
         restTemplate.postForObject(url, request, Void.class);
+    }
+
+    public Question deleteAnswer(String messageId, DeleteAnswerRequestDTO request) {
+        final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + "/deleteanswer";
+        final var response = restTemplate.postForObject(url, request, DeleteAnswerResponseDTO.class);
+
+        if (response == null) {
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
+        }
+
+        return response.getQuestion();
     }
 
     public Question createMessage(CreateMessageRequestDTO request, String certificateId) {

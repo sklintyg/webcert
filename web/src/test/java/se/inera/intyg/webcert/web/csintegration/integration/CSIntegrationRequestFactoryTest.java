@@ -1652,6 +1652,46 @@ class CSIntegrationRequestFactoryTest {
     }
 
     @Nested
+    class DeleteAnswerRequestTests {
+
+        @BeforeEach
+        void setup() {
+            when(certificateServiceUserHelper.get())
+                .thenReturn(USER);
+            when(certificateServiceUnitHelper.getUnit())
+                .thenReturn(UNIT);
+            when(certificateServiceUnitHelper.getCareUnit())
+                .thenReturn(CARE_UNIT);
+            when(certificateServiceUnitHelper.getCareProvider())
+                .thenReturn(CARE_PROVIDER);
+        }
+
+        @Test
+        void shouldSetUser() {
+            final var actualRequest = csIntegrationRequestFactory.deleteAnswerRequest();
+            assertEquals(USER, actualRequest.getUser());
+        }
+
+        @Test
+        void shouldSetUnit() {
+            final var actualRequest = csIntegrationRequestFactory.deleteAnswerRequest();
+            assertEquals(UNIT, actualRequest.getUnit());
+        }
+
+        @Test
+        void shouldSetCareUnit() {
+            final var actualRequest = csIntegrationRequestFactory.deleteAnswerRequest();
+            assertEquals(CARE_UNIT, actualRequest.getCareUnit());
+        }
+
+        @Test
+        void shouldSetCareProvider() {
+            final var actualRequest = csIntegrationRequestFactory.deleteAnswerRequest();
+            assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
+        }
+    }
+
+    @Nested
     class CreateMessageRequestTests {
 
         @BeforeEach
@@ -1872,46 +1912,32 @@ class CSIntegrationRequestFactoryTest {
 
         @Test
         void shouldSetUser() {
-            final var actualRequest = csIntegrationRequestFactory.createMessageRequest(QuestionType.CONTACT, MESSAGE, PATIENT_ID);
+            final var actualRequest = csIntegrationRequestFactory.saveAnswerRequest(MESSAGE);
             assertEquals(USER, actualRequest.getUser());
         }
 
         @Test
         void shouldSetUnit() {
-            final var actualRequest = csIntegrationRequestFactory.createMessageRequest(QuestionType.CONTACT, MESSAGE, PATIENT_ID);
+            final var actualRequest = csIntegrationRequestFactory.saveAnswerRequest(MESSAGE);
             assertEquals(UNIT, actualRequest.getUnit());
         }
 
         @Test
         void shouldSetCareUnit() {
-            final var actualRequest = csIntegrationRequestFactory.createMessageRequest(QuestionType.CONTACT, MESSAGE, PATIENT_ID);
+            final var actualRequest = csIntegrationRequestFactory.saveAnswerRequest(MESSAGE);
             assertEquals(CARE_UNIT, actualRequest.getCareUnit());
         }
 
         @Test
         void shouldSetCareProvider() {
-            final var actualRequest = csIntegrationRequestFactory.createMessageRequest(QuestionType.CONTACT, MESSAGE, PATIENT_ID);
+            final var actualRequest = csIntegrationRequestFactory.saveAnswerRequest(MESSAGE);
             assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
         }
 
         @Test
-        void shouldSetQuestionType() {
-            final var actualRequest = csIntegrationRequestFactory.createMessageRequest(QuestionType.CONTACT, MESSAGE, PATIENT_ID);
-            assertEquals(QuestionType.CONTACT, actualRequest.getQuestionType());
-        }
-
-        @Test
-        void shouldSetMessage() {
-            final var actualRequest = csIntegrationRequestFactory.createMessageRequest(QuestionType.CONTACT, MESSAGE, PATIENT_ID);
-            assertEquals(MESSAGE, actualRequest.getMessage());
-        }
-
-        @Test
-        void shouldSetPatient() {
-            final var actualRequest = csIntegrationRequestFactory.sendMessageRequest(PATIENT_ID);
-
-            verify(certificateServicePatientHelper).get(PERSONNUMMER);
-            assertEquals(PATIENT, actualRequest.getPatient());
+        void shouldSetContent() {
+            final var actualRequest = csIntegrationRequestFactory.saveAnswerRequest(MESSAGE);
+            assertEquals(MESSAGE, actualRequest.getContent());
         }
     }
 }

@@ -66,7 +66,7 @@ public class QuestionController {
     @Autowired
     private SaveQuestionAnswerFacadeService saveAnswerAggregator;
     @Autowired
-    private DeleteQuestionAnswerFacadeService deleteQuestionAnswerFacadeService;
+    private DeleteQuestionAnswerFacadeService deleteAnswerAggregator;
     @Autowired
     private SendQuestionAnswerFacadeService sendQuestionAnswerFacadeService;
     @Autowired
@@ -187,7 +187,7 @@ public class QuestionController {
             LOG.debug("Deleting answer for question with id: '{}'", questionId);
         }
 
-        final var questionWithDeletedAnswer = deleteQuestionAnswerFacadeService.delete(questionId);
+        final var questionWithDeletedAnswer = deleteAnswerAggregator.delete(questionId);
         final var links = getQuestionsResourceLinkService.get(questionWithDeletedAnswer);
         return Response.ok(QuestionResponseDTO.create(questionWithDeletedAnswer, links)).build();
     }
