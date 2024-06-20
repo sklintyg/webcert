@@ -40,10 +40,10 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateMessageReq
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteAnswerRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFromMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificteFromMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificatePdfRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesRequestDTO;
@@ -60,6 +60,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.RevokeInformatio
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveAnswerRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SendAnswerRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SendCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SendMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateRequestDTO;
@@ -432,8 +433,8 @@ public class CSIntegrationRequestFactory {
             .build();
     }
 
-    public GetCertificteFromMessageRequestDTO getCertificateFromMessageRequestDTO() {
-        return GetCertificteFromMessageRequestDTO.builder()
+    public GetCertificateFromMessageRequestDTO getCertificateFromMessageRequestDTO() {
+        return GetCertificateFromMessageRequestDTO.builder()
             .unit(certificateServiceUnitHelper.getUnit())
             .careUnit(certificateServiceUnitHelper.getCareUnit())
             .careProvider(certificateServiceUnitHelper.getCareProvider())
@@ -498,6 +499,17 @@ public class CSIntegrationRequestFactory {
             .careProvider(certificateServiceUnitHelper.getCareProvider())
             .user(certificateServiceUserHelper.get())
             .patient(certificateServicePatientHelper.get(createPatientId(personId)))
+            .build();
+    }
+
+    public SendAnswerRequestDTO sendAnswerRequest(String personId, String message) {
+        return SendAnswerRequestDTO.builder()
+            .unit(certificateServiceUnitHelper.getUnit())
+            .careUnit(certificateServiceUnitHelper.getCareUnit())
+            .careProvider(certificateServiceUnitHelper.getCareProvider())
+            .user(certificateServiceUserHelper.get())
+            .patient(certificateServicePatientHelper.get(createPatientId(personId)))
+            .content(message)
             .build();
     }
 

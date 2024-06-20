@@ -55,6 +55,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteAnswerResp
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFromMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFromMessageResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageInternalResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageRequestDTO;
@@ -62,7 +63,6 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMe
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificteFromMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificatePdfRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificatePdfResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateRequestDTO;
@@ -92,6 +92,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateR
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveMessageResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SendAnswerRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SendAnswerResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SendCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SendCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SendMessageRequestDTO;
@@ -536,7 +538,7 @@ public class CSIntegrationService {
         return response.getQuestion();
     }
 
-    public Certificate getCertificate(GetCertificteFromMessageRequestDTO request, String messageId) {
+    public Certificate getCertificate(GetCertificateFromMessageRequestDTO request, String messageId) {
         final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + "/certificate";
 
         final var response = restTemplate.postForObject(url, request, GetCertificateFromMessageResponseDTO.class);
@@ -640,6 +642,18 @@ public class CSIntegrationService {
         final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + "/send";
 
         final var response = restTemplate.postForObject(url, request, SendMessageResponseDTO.class);
+
+        if (response == null) {
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
+        }
+
+        return response.getQuestion();
+    }
+
+    public Question sendAnswer(SendAnswerRequestDTO request, String messageId) {
+        final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + "/sendanswer";
+
+        final var response = restTemplate.postForObject(url, request, SendAnswerResponseDTO.class);
 
         if (response == null) {
             throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);

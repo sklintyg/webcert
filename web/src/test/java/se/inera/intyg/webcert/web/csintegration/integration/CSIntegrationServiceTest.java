@@ -74,6 +74,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteAnswerResp
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFromMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFromMessageResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageInternalResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageRequestDTO;
@@ -81,7 +82,6 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMe
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificteFromMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificatePdfRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificatePdfResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateRequestDTO;
@@ -109,6 +109,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveAnswerReques
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveAnswerResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveMessageResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SendAnswerRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SendAnswerResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SendCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SendCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SendMessageRequestDTO;
@@ -235,6 +237,7 @@ class CSIntegrationServiceTest {
         .certificate(CERTIFICATE)
         .build();
     private static final Question QUESTION = Question.builder().build();
+    private static final SendAnswerResponseDTO SEND_ANSWER_RESPONSE_DTO = SendAnswerResponseDTO.builder().question(QUESTION).build();
     private static final DeleteAnswerResponseDTO DELETE_ANSWER_RESPONSE_DTO = DeleteAnswerResponseDTO.builder().question(QUESTION).build();
     private static final SendMessageResponseDTO SEND_MESSAGE_RESPONSE_DTO = SendMessageResponseDTO.builder().question(QUESTION).build();
     private static final List<Question> QUESTIONS = List.of(QUESTION);
@@ -253,8 +256,8 @@ class CSIntegrationServiceTest {
     private static final HandleMessageResponseDTO HANDLE_MESSAGE_RESPONSE_DTO = HandleMessageResponseDTO.builder()
         .question(QUESTION)
         .build();
-    private static final GetCertificteFromMessageRequestDTO GET_CERTIFICTE_FROM_MESSAGE_REQUEST_DTO =
-        GetCertificteFromMessageRequestDTO.builder()
+    private static final GetCertificateFromMessageRequestDTO GET_CERTIFICTE_FROM_MESSAGE_REQUEST_DTO =
+        GetCertificateFromMessageRequestDTO.builder()
             .build();
     private static final GetCertificateFromMessageResponseDTO GET_CERTIFICTE_FROM_MESSAGE_RESPONSE_DTO =
         GetCertificateFromMessageResponseDTO.builder()
@@ -292,6 +295,7 @@ class CSIntegrationServiceTest {
         .build();
     private static final SaveAnswerRequestDTO SAVE_ANSWER_REQUEST_DTO = SaveAnswerRequestDTO.builder().build();
     private static final DeleteAnswerRequestDTO DELETE_ANSWER_REQUEST_DTO = DeleteAnswerRequestDTO.builder().build();
+    private static final SendAnswerRequestDTO SEND_ANSWER_REQUEST_DTO = SendAnswerRequestDTO.builder().build();
 
 
     @Mock
@@ -1717,7 +1721,7 @@ class CSIntegrationServiceTest {
         void shouldPreformPostUsingRequest() {
             when(restTemplate.postForObject(anyString(), any(), any()))
                 .thenReturn(GET_CERTIFICTE_FROM_MESSAGE_RESPONSE_DTO);
-            final var captor = ArgumentCaptor.forClass(GetCertificteFromMessageRequestDTO.class);
+            final var captor = ArgumentCaptor.forClass(GetCertificateFromMessageRequestDTO.class);
 
             csIntegrationService.getCertificate(GET_CERTIFICTE_FROM_MESSAGE_REQUEST_DTO, MESSAGE_ID);
             verify(restTemplate).postForObject(anyString(), captor.capture(), any());
@@ -2206,6 +2210,57 @@ class CSIntegrationServiceTest {
 
             assertEquals("baseUrl/api/unit/messages", captor.getValue());
 
+        }
+    }
+
+    @Nested
+    class SendAnswerTest {
+
+
+        private static final String MESSAGE_ID = "messageId";
+
+        @Test
+        void shouldPreformPostUsingRequest() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(SEND_ANSWER_RESPONSE_DTO);
+            final var captor = ArgumentCaptor.forClass(SendAnswerRequestDTO.class);
+
+            csIntegrationService.sendAnswer(SEND_ANSWER_REQUEST_DTO, MESSAGE_ID);
+            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+
+            assertEquals(SEND_ANSWER_REQUEST_DTO, captor.getValue());
+        }
+
+        @Test
+        void shouldReturnQuestion() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(SEND_ANSWER_RESPONSE_DTO);
+            final var response = csIntegrationService.sendAnswer(SEND_ANSWER_REQUEST_DTO, MESSAGE_ID);
+
+            assertEquals(QUESTION, response);
+        }
+
+        @Test
+        void shouldThrowIfResponseIsNull() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(null);
+            assertThrows(IllegalStateException.class,
+                () -> csIntegrationService.sendAnswer(SEND_ANSWER_REQUEST_DTO, MESSAGE_ID));
+        }
+
+
+        @Test
+        void shouldSetUrlCorrect() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(SEND_ANSWER_RESPONSE_DTO);
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            csIntegrationService.sendAnswer(SEND_ANSWER_REQUEST_DTO, MESSAGE_ID);
+
+            verify(restTemplate).postForObject(captor.capture(), any(), any());
+
+            assertEquals("baseUrl/api/message/" + MESSAGE_ID + "/sendanswer", captor.getValue());
         }
     }
 }

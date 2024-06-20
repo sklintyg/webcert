@@ -68,7 +68,7 @@ public class QuestionController {
     @Autowired
     private DeleteQuestionAnswerFacadeService deleteAnswerAggregator;
     @Autowired
-    private SendQuestionAnswerFacadeService sendQuestionAnswerFacadeService;
+    private SendQuestionAnswerFacadeService sendAnswerAggregator;
     @Autowired
     private GetQuestionsResourceLinkService getQuestionsResourceLinkService;
     @Autowired
@@ -201,7 +201,7 @@ public class QuestionController {
             LOG.debug("Send answer for question with id: '{}'", questionId);
         }
 
-        final var questionWithSentAnswer = sendQuestionAnswerFacadeService.send(questionId, answerRequestDTO.getMessage());
+        final var questionWithSentAnswer = sendAnswerAggregator.send(questionId, answerRequestDTO.getMessage());
         final var links = getQuestionsResourceLinkService.get(questionWithSentAnswer);
         return Response.ok(QuestionResponseDTO.create(questionWithSentAnswer, links)).build();
     }

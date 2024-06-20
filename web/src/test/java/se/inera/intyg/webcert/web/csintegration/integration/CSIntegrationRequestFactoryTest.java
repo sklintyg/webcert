@@ -1746,7 +1746,7 @@ class CSIntegrationRequestFactoryTest {
 
         @Test
         void shouldSetPatient() {
-            final var actualRequest = csIntegrationRequestFactory.sendMessageRequest(PATIENT_ID);
+            final var actualRequest = csIntegrationRequestFactory.createMessageRequest(QuestionType.CONTACT, MESSAGE, PATIENT_ID);
 
             verify(certificateServicePatientHelper).get(PERSONNUMMER);
             assertEquals(PATIENT, actualRequest.getPatient());
@@ -1846,6 +1846,62 @@ class CSIntegrationRequestFactoryTest {
 
             verify(certificateServicePatientHelper).get(PERSONNUMMER);
             assertEquals(PATIENT, actualRequest.getPatient());
+        }
+    }
+
+    @Nested
+    class SendAnswerRequestTests {
+
+        @BeforeEach
+        void setup() {
+            when(certificateServiceUserHelper.get())
+                .thenReturn(USER);
+            when(certificateServicePatientHelper.get(any()))
+                .thenReturn(PATIENT);
+            when(certificateServiceUnitHelper.getUnit())
+                .thenReturn(UNIT);
+            when(certificateServiceUnitHelper.getCareUnit())
+                .thenReturn(CARE_UNIT);
+            when(certificateServiceUnitHelper.getCareProvider())
+                .thenReturn(CARE_PROVIDER);
+        }
+
+        @Test
+        void shouldSetUser() {
+            final var actualRequest = csIntegrationRequestFactory.sendAnswerRequest(PATIENT_ID, MESSAGE);
+            assertEquals(USER, actualRequest.getUser());
+        }
+
+        @Test
+        void shouldSetUnit() {
+            final var actualRequest = csIntegrationRequestFactory.sendAnswerRequest(PATIENT_ID, MESSAGE);
+            assertEquals(UNIT, actualRequest.getUnit());
+        }
+
+        @Test
+        void shouldSetCareUnit() {
+            final var actualRequest = csIntegrationRequestFactory.sendAnswerRequest(PATIENT_ID, MESSAGE);
+            assertEquals(CARE_UNIT, actualRequest.getCareUnit());
+        }
+
+        @Test
+        void shouldSetCareProvider() {
+            final var actualRequest = csIntegrationRequestFactory.sendAnswerRequest(PATIENT_ID, MESSAGE);
+            assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
+        }
+
+        @Test
+        void shouldSetPatient() {
+            final var actualRequest = csIntegrationRequestFactory.sendAnswerRequest(PATIENT_ID, MESSAGE);
+
+            verify(certificateServicePatientHelper).get(PERSONNUMMER);
+            assertEquals(PATIENT, actualRequest.getPatient());
+        }
+
+        @Test
+        void shouldSetContent() {
+            final var actualRequest = csIntegrationRequestFactory.sendAnswerRequest(PATIENT_ID, MESSAGE);
+            assertEquals(MESSAGE, actualRequest.getContent());
         }
     }
 
