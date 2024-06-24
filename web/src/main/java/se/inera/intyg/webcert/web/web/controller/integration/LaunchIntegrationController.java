@@ -47,7 +47,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
 public class LaunchIntegrationController extends BaseIntegrationController {
 
     private static final String[] GRANTED_ROLES = new String[]{AuthoritiesConstants.ROLE_ADMIN, AuthoritiesConstants.ROLE_LAKARE,
-        AuthoritiesConstants.ROLE_TANDLAKARE};
+        AuthoritiesConstants.ROLE_TANDLAKARE, AuthoritiesConstants.ROLE_SJUKSKOTERSKA, AuthoritiesConstants.ROLE_BARNMORSKA};
     @Autowired
     private IntygService intygService;
     @Autowired
