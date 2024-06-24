@@ -77,6 +77,7 @@ import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderException;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
+import se.inera.intyg.webcert.web.service.facade.list.PaginationAndLoggingService;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
@@ -171,6 +172,8 @@ public class ArendeServiceImpl implements ArendeService {
     private LogService logService;
     @Autowired
     private MessageImportService messageImportService;
+    @Autowired
+    private PaginationAndLoggingService paginationAndLoggingService;
 
     private final AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
@@ -496,7 +499,18 @@ public class ArendeServiceImpl implements ArendeService {
     @Override
     @Transactional(readOnly = true)
     public QueryFragaSvarResponse filterArende(QueryFragaSvarParameter filterParameters) {
-        return filterArende(filterParameters, false);
+        final var orignalPageSize = filterParameters.getPageSize();
+        final var startFrom = filterParameters.getStartFrom();
+
+        final var filteredArende = filterArende(filterParameters, false);
+        filterParameters.setPageSize(orignalPageSize);
+        filterParameters.setStartFrom(startFrom);
+
+        final var arendeListItems = paginationAndLoggingService.get(filterParameters, filteredArende.getResults(),
+            webcertUserService.getUser());
+
+        filteredArende.setResults(arendeListItems);
+        return filteredArende;
     }
 
     @Override
@@ -515,7 +529,6 @@ public class ArendeServiceImpl implements ArendeService {
         }
 
         int originalStartFrom = filter.getStartFrom();
-        int originalPageSize = filter.getPageSize();
 
         // INTYG-4086: Do NOT perform any paging. We must first load all applicable QA / ärenden, then apply
         // sekretessmarkering filtering. THEN - we can do paging stuff in-memory. Very inefficient...
@@ -563,16 +576,7 @@ public class ArendeServiceImpl implements ArendeService {
                     row.setSigneratAvNamn(hsaIdNameMap.get(row.getSigneratAv()));
                 }
             });
-
-            results.sort(getComparator(filterParameters.getOrderBy(), filterParameters.getOrderAscending()));
-
-            List<ArendeListItem> resultList = results
-                .subList(originalStartFrom, Math.min(originalPageSize + originalStartFrom, results.size()));
-
-            response.setResults(resultList);
-
-            // PDL Logging
-            resultList.stream().map(ArendeListItem::getPatientId).distinct().forEach(patient -> logService.logListIntyg(user, patient));
+            response.setResults(results);
         }
 
         return response;
@@ -620,42 +624,6 @@ public class ArendeServiceImpl implements ArendeService {
             return amneString + INVANTA_SVAR;
         }
         return "";
-    }
-
-    private Comparator<ArendeListItem> getComparator(String orderBy, Boolean ascending) {
-        Comparator<ArendeListItem> comparator;
-        if (orderBy == null) {
-            comparator = Comparator.comparing(ArendeListItem::getReceivedDate);
-        } else {
-            switch (orderBy) {
-                case "amne":
-                    comparator = Comparator.comparing(
-                        a -> getAmneString(a.getAmne(), a.getStatus(), a.isPaminnelse(), a.getFragestallare())
-                    );
-                    break;
-                case "fragestallare":
-                    comparator = Comparator.comparing(ArendeListItem::getFragestallare);
-                    break;
-                case "patientId":
-                    comparator = Comparator.comparing(ArendeListItem::getPatientId);
-                    break;
-                case "signeratAvNamn":
-                    comparator = Comparator.comparing(ArendeListItem::getSigneratAvNamn);
-                    break;
-                case "vidarebefordrad":
-                    comparator = Comparator.comparing(ArendeListItem::isVidarebefordrad);
-                    break;
-                case "receivedDate":
-                default:
-                    comparator = Comparator.comparing(ArendeListItem::getReceivedDate);
-                    break;
-            }
-        }
-
-        if (ascending == null || !ascending) {
-            comparator = comparator.reversed();
-        }
-        return comparator;
     }
 
     private boolean passesSekretessCheck(String intygsTyp, WebCertUser user,

@@ -27,7 +27,6 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlRequestDTO;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -57,16 +56,17 @@ public class PublishCertificateStatusUpdateService {
         }
 
         final var certificateXml = xml.orElseGet(
-            () -> csIntegrationService.getCertificateXml(getRequest(intygUser), certificate.getMetadata().getId()).getXml()
+            () -> csIntegrationService.getInternalCertificateXml(certificate.getMetadata().getId())
         );
 
-        final var handledByUser = intygUser.orElseGet(webCertUserService::getUser);
+        final var handledByUserHsaId = intygUser.map(IntygUser::getHsaId).orElseGet(
+            () -> webCertUserService.hasAuthenticationContext() ? webCertUserService.getUser().getHsaId() : null);
 
         final var notificationMessage = notificationMessageFactory.create(
             certificate,
             certificateXml,
             eventType,
-            handledByUser.getHsaId()
+            handledByUserHsaId
         );
 
         notificationService.send(
@@ -74,11 +74,6 @@ public class PublishCertificateStatusUpdateService {
             certificate.getMetadata().getUnit().getUnitId(),
             certificate.getMetadata().getTypeVersion()
         );
-    }
-
-    private GetCertificateXmlRequestDTO getRequest(Optional<IntygUser> intygUser) {
-        return intygUser.isPresent() ? csIntegrationRequestFactory.getCertificateXmlRequest(intygUser.get())
-            : csIntegrationRequestFactory.getCertificateXmlRequest();
     }
 
     private boolean unitIsNotIntegrated(Certificate certificate) {

@@ -25,6 +25,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.Patient;
+import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -34,7 +36,9 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModel
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesQueryCriteriaDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlRequestDTO;
@@ -44,14 +48,18 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertif
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitQuestionsRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageQueryCriteriaDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.RenewCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ReplaceCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.RevokeCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.RevokeInformationDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SendCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SendMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateWithoutSignatureRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateRequestDTO;
@@ -428,6 +436,57 @@ public class CSIntegrationRequestFactory {
             .careUnit(certificateServiceUnitHelper.getCareUnit())
             .careProvider(certificateServiceUnitHelper.getCareProvider())
             .user(certificateServiceUserHelper.get())
+            .build();
+    }
+
+    public DeleteMessageRequestDTO deleteMessageRequest() {
+        return DeleteMessageRequestDTO.builder()
+            .unit(certificateServiceUnitHelper.getUnit())
+            .careUnit(certificateServiceUnitHelper.getCareUnit())
+            .careProvider(certificateServiceUnitHelper.getCareProvider())
+            .user(certificateServiceUserHelper.get())
+            .build();
+    }
+
+    public CreateMessageRequestDTO createMessageRequest(QuestionType type, String message, String personId) {
+        return CreateMessageRequestDTO.builder()
+            .unit(certificateServiceUnitHelper.getUnit())
+            .careUnit(certificateServiceUnitHelper.getCareUnit())
+            .careProvider(certificateServiceUnitHelper.getCareProvider())
+            .user(certificateServiceUserHelper.get())
+            .patient(certificateServicePatientHelper.get(createPatientId(personId)))
+            .questionType(type)
+            .message(message)
+            .build();
+    }
+
+    public SaveMessageRequestDTO saveMessageRequest(Question question) {
+        return SaveMessageRequestDTO.builder()
+            .unit(certificateServiceUnitHelper.getUnit())
+            .careUnit(certificateServiceUnitHelper.getCareUnit())
+            .careProvider(certificateServiceUnitHelper.getCareProvider())
+            .user(certificateServiceUserHelper.get())
+            .question(question)
+            .build();
+    }
+
+    public SendMessageRequestDTO sendMessageRequest(String personId) {
+        return SendMessageRequestDTO.builder()
+            .unit(certificateServiceUnitHelper.getUnit())
+            .careUnit(certificateServiceUnitHelper.getCareUnit())
+            .careProvider(certificateServiceUnitHelper.getCareProvider())
+            .user(certificateServiceUserHelper.get())
+            .patient(certificateServicePatientHelper.get(createPatientId(personId)))
+            .build();
+    }
+
+    public GetUnitQuestionsRequestDTO getUnitQuestionsRequestDTO(MessageQueryCriteriaDTO messageQueryCriteriaDTO) {
+        return GetUnitQuestionsRequestDTO.builder()
+            .unit(certificateServiceUnitHelper.getUnit())
+            .careUnit(certificateServiceUnitHelper.getCareUnit())
+            .careProvider(certificateServiceUnitHelper.getCareProvider())
+            .user(certificateServiceUserHelper.get())
+            .messagesQueryCriteria(messageQueryCriteriaDTO)
             .build();
     }
 }

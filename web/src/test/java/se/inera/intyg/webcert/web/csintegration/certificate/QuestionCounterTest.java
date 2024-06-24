@@ -26,8 +26,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import se.inera.intyg.common.support.facade.model.question.Answer;
+import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionDTO;
 
 class QuestionCounterTest {
 
@@ -43,7 +43,7 @@ class QuestionCounterTest {
 
         @Test
         void shallReturnCorrectAmountOfTotal() {
-            final var question = QuestionDTO.builder()
+            final var question = Question.builder()
                 .author(FrageStallare.FORSAKRINGSKASSAN.getKod())
                 .isHandled(true)
                 .build();
@@ -53,7 +53,7 @@ class QuestionCounterTest {
 
         @Test
         void shallReturnCorrectAmountOfNotAnswered() {
-            final var question = QuestionDTO.builder()
+            final var question = Question.builder()
                 .author(FrageStallare.FORSAKRINGSKASSAN.getKod())
                 .isHandled(false)
                 .build();
@@ -63,7 +63,7 @@ class QuestionCounterTest {
 
         @Test
         void shallReturnCorrectAmountOfAnswered() {
-            final var question = QuestionDTO.builder()
+            final var question = Question.builder()
                 .author(FrageStallare.FORSAKRINGSKASSAN.getKod())
                 .isHandled(false)
                 .answer(
@@ -77,7 +77,7 @@ class QuestionCounterTest {
 
         @Test
         void shallReturnCorrectAmountOfHandled() {
-            final var question = QuestionDTO.builder()
+            final var question = Question.builder()
                 .author(FrageStallare.FORSAKRINGSKASSAN.getKod())
                 .isHandled(true)
                 .build();

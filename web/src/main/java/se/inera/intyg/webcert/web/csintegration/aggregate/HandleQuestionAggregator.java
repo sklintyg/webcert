@@ -20,42 +20,34 @@
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import org.springframework.stereotype.Service;
-import se.inera.intyg.webcert.web.csintegration.certificate.HandleQuestionFromCertificateService;
+import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
-import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsResourceLinkService;
 import se.inera.intyg.webcert.web.service.facade.question.HandleQuestionFacadeService;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionResponseDTO;
 
 @Service
-public class HandleQuestionAggregator {
+public class HandleQuestionAggregator implements HandleQuestionFacadeService {
 
     private final HandleQuestionFacadeService handleQuestionFromWC;
-    private final HandleQuestionFromCertificateService handleQuestionFromCS;
+    private final HandleQuestionFacadeService handleQuestionFromCS;
     private final CertificateServiceProfile certificateServiceProfile;
-    private final GetQuestionsResourceLinkService getQuestionsResourceLinkService;
 
     public HandleQuestionAggregator(
-        HandleQuestionFacadeService handleQuestionFromWebcert, HandleQuestionFromCertificateService handleQuestionFromCS,
-        CertificateServiceProfile certificateServiceProfile, GetQuestionsResourceLinkService getQuestionsResourceLinkService) {
-        this.handleQuestionFromWC = handleQuestionFromWebcert;
+        HandleQuestionFacadeService handleQuestionFromWC,
+        HandleQuestionFacadeService handleQuestionFromCS,
+        CertificateServiceProfile certificateServiceProfile) {
+        this.handleQuestionFromWC = handleQuestionFromWC;
         this.handleQuestionFromCS = handleQuestionFromCS;
         this.certificateServiceProfile = certificateServiceProfile;
-        this.getQuestionsResourceLinkService = getQuestionsResourceLinkService;
     }
 
-    public QuestionResponseDTO handle(String questionId, boolean isHandled) {
+    @Override
+    public Question handle(String questionId, boolean isHandled) {
         if (!certificateServiceProfile.active()) {
-            return handleQuestionsFromWC(questionId, isHandled);
+            return handleQuestionFromWC.handle(questionId, isHandled);
         }
 
         final var responseFromCS = handleQuestionFromCS.handle(questionId, isHandled);
 
-        return responseFromCS != null ? responseFromCS : handleQuestionsFromWC(questionId, isHandled);
-    }
-
-    private QuestionResponseDTO handleQuestionsFromWC(String questionId, boolean isHandled) {
-        final var question = handleQuestionFromWC.handle(questionId, isHandled);
-        final var links = getQuestionsResourceLinkService.get(question);
-        return QuestionResponseDTO.create(question, links);
+        return responseFromCS != null ? responseFromCS : handleQuestionFromWC.handle(questionId, isHandled);
     }
 }
