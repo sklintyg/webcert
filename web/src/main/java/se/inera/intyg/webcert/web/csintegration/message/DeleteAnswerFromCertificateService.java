@@ -20,12 +20,14 @@
 package se.inera.intyg.webcert.web.csintegration.message;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionAnswerFacadeService;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service("deleteAnswerFromCS")
 public class DeleteAnswerFromCertificateService implements DeleteQuestionAnswerFacadeService {
@@ -35,6 +37,11 @@ public class DeleteAnswerFromCertificateService implements DeleteQuestionAnswerF
 
     @Override
     public Question delete(String questionId) {
+        if (Boolean.FALSE.equals(csIntegrationService.messageExists(questionId))) {
+            log.debug("Message '{}' does not exist in certificate service", questionId);
+            return null;
+        }
+
         return csIntegrationService.deleteAnswer(
             questionId,
             csIntegrationRequestFactory.deleteAnswerRequest()

@@ -19,7 +19,9 @@
 
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
@@ -28,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionAnswerFacadeService;
@@ -50,7 +53,7 @@ class DeleteAnswerAggregatorTest {
     @BeforeEach
     void setUp() {
         deleteAnswerAggregator = new DeleteAnswerAggregator(
-            deleteAnswerFromWC, deleteAnswerFromCS, certificateServiceProfile, csIntegrationService
+            deleteAnswerFromWC, deleteAnswerFromCS, certificateServiceProfile
         );
     }
 
@@ -66,26 +69,27 @@ class DeleteAnswerAggregatorTest {
     }
 
     @Test
-    void shallCallDeleteQuestionsFromWCIfCertificateServiceProfileIsActiveButMessageDontExistInCertificateService() {
+    void shallReturnResponseFromCSIfResponseIsNotNull() {
+        final var expectedResult = Question.builder().build();
         doReturn(true).when(certificateServiceProfile).active();
-        doReturn(false).when(csIntegrationService).messageExists(QUESTION_ID);
+        doReturn(expectedResult).when(deleteAnswerFromCS).delete(QUESTION_ID);
 
-        deleteAnswerAggregator.delete(QUESTION_ID);
+        final var actualResult = deleteAnswerAggregator.delete(QUESTION_ID);
 
-        verify(deleteAnswerFromWC).delete(QUESTION_ID);
+        verify(deleteAnswerFromWC, never()).delete(QUESTION_ID);
 
-        verifyNoInteractions(deleteAnswerFromCS);
+        assertEquals(expectedResult, actualResult);
     }
 
     @Test
-    void shallCallDeleteQuestionsFromCSIfCertificateServiceProfileIsActiveAndMessageExistInCertificateService() {
+    void shallReturnResponseFromWCIfResponseIsFromCSIsNull() {
+        final var expectedResult = Question.builder().build();
         doReturn(true).when(certificateServiceProfile).active();
-        doReturn(true).when(csIntegrationService).messageExists(QUESTION_ID);
+        doReturn(null).when(deleteAnswerFromCS).delete(QUESTION_ID);
+        doReturn(expectedResult).when(deleteAnswerFromWC).delete(QUESTION_ID);
 
-        deleteAnswerAggregator.delete(QUESTION_ID);
+        final var actualResult = deleteAnswerAggregator.delete(QUESTION_ID);
 
-        verify(deleteAnswerFromCS).delete(QUESTION_ID);
-
-        verifyNoInteractions(deleteAnswerFromWC);
+        assertEquals(expectedResult, actualResult);
     }
 }

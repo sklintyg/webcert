@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.web.csintegration.message;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.doReturn;
 
 import org.junit.jupiter.api.Test;
@@ -45,10 +46,18 @@ class DeleteAnswerFromCertificateServiceTest {
     DeleteAnswerFromCertificateService deleteAnswerFromCertificateService;
 
     @Test
+    void shallReturnNullIfMessageDontExistInCertificateService() {
+        doReturn(false).when(csIntegrationService).messageExists(QUESTION_ID);
+        final var actualQuestion = deleteAnswerFromCertificateService.delete(QUESTION_ID);
+        assertNull(actualQuestion);
+    }
+
+    @Test
     void shallReturnDeletedQuestionFromCSIntegrationService() {
         final var expectedQuestion = Question.builder().build();
         final var request = DeleteAnswerRequestDTO.builder().build();
 
+        doReturn(true).when(csIntegrationService).messageExists(QUESTION_ID);
         doReturn(request).when(csIntegrationRequestFactory).deleteAnswerRequest();
         doReturn(expectedQuestion).when(csIntegrationService).deleteAnswer(QUESTION_ID, request);
 
