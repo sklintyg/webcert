@@ -296,6 +296,7 @@ class CSIntegrationServiceTest {
     private static final SaveAnswerRequestDTO SAVE_ANSWER_REQUEST_DTO = SaveAnswerRequestDTO.builder().build();
     private static final DeleteAnswerRequestDTO DELETE_ANSWER_REQUEST_DTO = DeleteAnswerRequestDTO.builder().build();
     private static final SendAnswerRequestDTO SEND_ANSWER_REQUEST_DTO = SendAnswerRequestDTO.builder().build();
+    private static final String MESSAGE_ID = "messageId";
 
 
     @Mock
@@ -1869,17 +1870,22 @@ class CSIntegrationServiceTest {
     class DeleteMessage {
 
         @Test
-        void shouldPreformPostUsingRequest() {
-            final var captor = ArgumentCaptor.forClass(DeleteMessageRequestDTO.class);
+        void shouldSetHttpMethod() {
+            when(restTemplate.exchange(
+                    anyString(),
+                    any(HttpMethod.class),
+                    any(HttpEntity.class),
+                    any(ParameterizedTypeReference.class)
+                )
+            ).thenReturn(new ResponseEntity<>(HttpStatus.OK));
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(HttpMethod.class);
 
-            csIntegrationService.deleteMessage(
-                "messageId",
-                DELETE_MESSAGE_REQUEST_DTO
-            );
+            csIntegrationService.deleteMessage(MESSAGE_ID, DELETE_MESSAGE_REQUEST_DTO);
 
-            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+            verify(restTemplate).exchange(anyString(), captor.capture(), any(HttpEntity.class), any(ParameterizedTypeReference.class));
 
-            assertEquals(DELETE_MESSAGE_REQUEST_DTO, captor.getValue());
+            assertEquals(HttpMethod.DELETE, captor.getValue());
         }
 
         @Test
@@ -1892,7 +1898,12 @@ class CSIntegrationServiceTest {
                 DELETE_MESSAGE_REQUEST_DTO
             );
 
-            verify(restTemplate).postForObject(captor.capture(), any(), any());
+            verify(restTemplate).exchange(
+                captor.capture(),
+                any(HttpMethod.class),
+                any(HttpEntity.class),
+                any(ParameterizedTypeReference.class)
+            );
 
             assertEquals("baseUrl/api/message/messageId/delete", captor.getValue());
         }
@@ -1953,30 +1964,65 @@ class CSIntegrationServiceTest {
         private static final String MESSAGE_ID = "messageId";
 
         @Test
-        void shouldPreformPostUsingRequest() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(DELETE_ANSWER_RESPONSE_DTO);
-            final var captor = ArgumentCaptor.forClass(DeleteAnswerRequestDTO.class);
+        void shouldPreformDeleteUsingRequest() {
+            when(restTemplate.exchange(
+                    anyString(),
+                    any(HttpMethod.class),
+                    any(HttpEntity.class),
+                    any(ParameterizedTypeReference.class)
+                )
+            ).thenReturn(new ResponseEntity<>(DELETE_ANSWER_RESPONSE_DTO, HttpStatus.OK));
+            final var captor = ArgumentCaptor.forClass(HttpEntity.class);
 
             csIntegrationService.deleteAnswer(MESSAGE_ID, DELETE_ANSWER_REQUEST_DTO);
-            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
 
-            assertEquals(DELETE_ANSWER_REQUEST_DTO, captor.getValue());
+            verify(restTemplate).exchange(anyString(), any(HttpMethod.class), captor.capture(), any(ParameterizedTypeReference.class));
+
+            assertEquals(DELETE_ANSWER_REQUEST_DTO, captor.getValue().getBody());
         }
 
         @Test
         void shouldReturnQuestion() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(DELETE_ANSWER_RESPONSE_DTO);
+            when(restTemplate.exchange(
+                    anyString(),
+                    any(HttpMethod.class),
+                    any(HttpEntity.class),
+                    any(ParameterizedTypeReference.class)
+                )
+            ).thenReturn(new ResponseEntity<>(DELETE_ANSWER_RESPONSE_DTO, HttpStatus.OK));
             final var response = csIntegrationService.deleteAnswer(MESSAGE_ID, DELETE_ANSWER_REQUEST_DTO);
 
             assertEquals(QUESTION, response);
         }
 
         @Test
+        void shouldSetHttpMethod() {
+            when(restTemplate.exchange(
+                    anyString(),
+                    any(HttpMethod.class),
+                    any(HttpEntity.class),
+                    any(ParameterizedTypeReference.class)
+                )
+            ).thenReturn(new ResponseEntity<>(DELETE_ANSWER_RESPONSE_DTO, HttpStatus.OK));
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(HttpMethod.class);
+
+            csIntegrationService.deleteAnswer(MESSAGE_ID, DELETE_ANSWER_REQUEST_DTO);
+
+            verify(restTemplate).exchange(anyString(), captor.capture(), any(HttpEntity.class), any(ParameterizedTypeReference.class));
+
+            assertEquals(HttpMethod.DELETE, captor.getValue());
+        }
+
+        @Test
         void shouldThrowIfResponseIsNull() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(null);
+            when(restTemplate.exchange(
+                    anyString(),
+                    any(HttpMethod.class),
+                    any(HttpEntity.class),
+                    any(ParameterizedTypeReference.class)
+                )
+            ).thenReturn(new ResponseEntity<>(null, HttpStatus.OK));
             assertThrows(IllegalStateException.class,
                 () -> csIntegrationService.deleteAnswer(MESSAGE_ID, DELETE_ANSWER_REQUEST_DTO));
         }
@@ -1984,13 +2030,19 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldSetUrlCorrect() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(DELETE_ANSWER_RESPONSE_DTO);
+            when(restTemplate.exchange(
+                anyString(),
+                any(HttpMethod.class),
+                any(HttpEntity.class),
+                any(ParameterizedTypeReference.class)))
+                .thenReturn(new ResponseEntity<>(DELETE_ANSWER_RESPONSE_DTO, HttpStatus.OK));
+
             ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
             final var captor = ArgumentCaptor.forClass(String.class);
 
             csIntegrationService.deleteAnswer(MESSAGE_ID, DELETE_ANSWER_REQUEST_DTO);
-            verify(restTemplate).postForObject(captor.capture(), any(), any());
+            verify(restTemplate).exchange(captor.capture(), any(HttpMethod.class), any(HttpEntity.class),
+                any(ParameterizedTypeReference.class));
 
             assertEquals("baseUrl/api/message/" + MESSAGE_ID + "/deleteanswer", captor.getValue());
         }

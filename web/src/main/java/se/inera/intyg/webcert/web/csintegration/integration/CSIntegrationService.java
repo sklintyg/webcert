@@ -588,18 +588,38 @@ public class CSIntegrationService {
 
     public void deleteMessage(String messageId, DeleteMessageRequestDTO request) {
         final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + "/delete";
-        restTemplate.postForObject(url, request, Void.class);
+
+        final var headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        restTemplate.<Void>exchange(
+            url,
+            HttpMethod.DELETE,
+            new HttpEntity<>(request, headers),
+            new ParameterizedTypeReference<>() {
+            }
+        );
     }
 
     public Question deleteAnswer(String messageId, DeleteAnswerRequestDTO request) {
         final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + "/deleteanswer";
-        final var response = restTemplate.postForObject(url, request, DeleteAnswerResponseDTO.class);
 
-        if (response == null) {
+        final var headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        final var response = restTemplate.<DeleteAnswerResponseDTO>exchange(
+            url,
+            HttpMethod.DELETE,
+            new HttpEntity<>(request, headers),
+            new ParameterizedTypeReference<>() {
+            }
+        );
+
+        if (response.getBody() == null) {
             throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
         }
 
-        return response.getQuestion();
+        return response.getBody().getQuestion();
     }
 
     public Question createMessage(CreateMessageRequestDTO request, String certificateId) {
