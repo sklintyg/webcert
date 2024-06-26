@@ -64,11 +64,11 @@ public class QuestionController {
     @Autowired
     private SendQuestionFacadeService sendQuestionAggregator;
     @Autowired
-    private SaveQuestionAnswerFacadeService saveQuestionAnswerFacadeService;
+    private SaveQuestionAnswerFacadeService saveAnswerAggregator;
     @Autowired
-    private DeleteQuestionAnswerFacadeService deleteQuestionAnswerFacadeService;
+    private DeleteQuestionAnswerFacadeService deleteAnswerAggregator;
     @Autowired
-    private SendQuestionAnswerFacadeService sendQuestionAnswerFacadeService;
+    private SendQuestionAnswerFacadeService sendAnswerAggregator;
     @Autowired
     private GetQuestionsResourceLinkService getQuestionsResourceLinkService;
     @Autowired
@@ -173,7 +173,7 @@ public class QuestionController {
             LOG.debug("Saving answer for question with id: '{}'", questionId);
         }
 
-        final var questionWithSavedAnswer = saveQuestionAnswerFacadeService.save(questionId, answerRequestDTO.getMessage());
+        final var questionWithSavedAnswer = saveAnswerAggregator.save(questionId, answerRequestDTO.getMessage());
         final var links = getQuestionsResourceLinkService.get(questionWithSavedAnswer);
         return Response.ok(QuestionResponseDTO.create(questionWithSavedAnswer, links)).build();
     }
@@ -187,7 +187,7 @@ public class QuestionController {
             LOG.debug("Deleting answer for question with id: '{}'", questionId);
         }
 
-        final var questionWithDeletedAnswer = deleteQuestionAnswerFacadeService.delete(questionId);
+        final var questionWithDeletedAnswer = deleteAnswerAggregator.delete(questionId);
         final var links = getQuestionsResourceLinkService.get(questionWithDeletedAnswer);
         return Response.ok(QuestionResponseDTO.create(questionWithDeletedAnswer, links)).build();
     }
@@ -201,7 +201,7 @@ public class QuestionController {
             LOG.debug("Send answer for question with id: '{}'", questionId);
         }
 
-        final var questionWithSentAnswer = sendQuestionAnswerFacadeService.send(questionId, answerRequestDTO.getMessage());
+        final var questionWithSentAnswer = sendAnswerAggregator.send(questionId, answerRequestDTO.getMessage());
         final var links = getQuestionsResourceLinkService.get(questionWithSentAnswer);
         return Response.ok(QuestionResponseDTO.create(questionWithSentAnswer, links)).build();
     }

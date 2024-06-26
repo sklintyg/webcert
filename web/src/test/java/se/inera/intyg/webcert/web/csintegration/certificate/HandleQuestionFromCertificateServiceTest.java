@@ -38,7 +38,7 @@ import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificteFromMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFromMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 
@@ -96,7 +96,7 @@ class HandleQuestionFromCertificateServiceTest {
 
         doReturn(true).when(csIntegrationService).messageExists(MESSAGE_ID);
         final var handleMessageRequestDTO = HandleMessageRequestDTO.builder().build();
-        final var certificteFromMessageRequestDTO = GetCertificteFromMessageRequestDTO.builder().build();
+        final var certificteFromMessageRequestDTO = GetCertificateFromMessageRequestDTO.builder().build();
 
         doReturn(handleMessageRequestDTO).when(csIntegrationRequestFactory).handleMessageRequestDTO(false);
         doReturn(certificteFromMessageRequestDTO).when(csIntegrationRequestFactory).getCertificateFromMessageRequestDTO();
@@ -115,7 +115,7 @@ class HandleQuestionFromCertificateServiceTest {
 
         doReturn(true).when(csIntegrationService).messageExists(MESSAGE_ID);
         final var handleMessageRequestDTO = HandleMessageRequestDTO.builder().build();
-        final var certificteFromMessageRequestDTO = GetCertificteFromMessageRequestDTO.builder().build();
+        final var certificteFromMessageRequestDTO = GetCertificateFromMessageRequestDTO.builder().build();
 
         doReturn(handleMessageRequestDTO).when(csIntegrationRequestFactory).handleMessageRequestDTO(false);
         doReturn(certificteFromMessageRequestDTO).when(csIntegrationRequestFactory).getCertificateFromMessageRequestDTO();
@@ -134,7 +134,7 @@ class HandleQuestionFromCertificateServiceTest {
 
         doReturn(true).when(csIntegrationService).messageExists(MESSAGE_ID);
         final var handleMessageRequestDTO = HandleMessageRequestDTO.builder().build();
-        final var certificteFromMessageRequestDTO = GetCertificteFromMessageRequestDTO.builder().build();
+        final var certificteFromMessageRequestDTO = GetCertificateFromMessageRequestDTO.builder().build();
 
         doReturn(handleMessageRequestDTO).when(csIntegrationRequestFactory).handleMessageRequestDTO(false);
         doReturn(certificteFromMessageRequestDTO).when(csIntegrationRequestFactory).getCertificateFromMessageRequestDTO();
@@ -150,10 +150,10 @@ class HandleQuestionFromCertificateServiceTest {
         final var question = Question.builder()
             .author(WC)
             .build();
-        
+
         doReturn(true).when(csIntegrationService).messageExists(MESSAGE_ID);
         final var handleMessageRequestDTO = HandleMessageRequestDTO.builder().build();
-        final var certificteFromMessageRequestDTO = GetCertificteFromMessageRequestDTO.builder().build();
+        final var certificteFromMessageRequestDTO = GetCertificateFromMessageRequestDTO.builder().build();
 
         doReturn(handleMessageRequestDTO).when(csIntegrationRequestFactory).handleMessageRequestDTO(false);
         doReturn(certificteFromMessageRequestDTO).when(csIntegrationRequestFactory).getCertificateFromMessageRequestDTO();

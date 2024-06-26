@@ -27,7 +27,7 @@ import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionAnswerFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionFacadeService;
 
-@Service
+@Service("deleteAnswerFromWC")
 public class DeleteQuestionAnswerFacadeServiceImpl implements DeleteQuestionAnswerFacadeService {
 
     private final ArendeService arendeService;

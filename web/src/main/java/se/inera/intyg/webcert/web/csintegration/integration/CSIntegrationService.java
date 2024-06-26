@@ -50,9 +50,12 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CitizenCertifica
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateMessageResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteAnswerRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteAnswerResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFromMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFromMessageResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageInternalResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageRequestDTO;
@@ -60,7 +63,6 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMe
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificteFromMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificatePdfRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificatePdfResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateRequestDTO;
@@ -84,10 +86,14 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.ReplaceCertifica
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ReplaceCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.RevokeCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.RevokeCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveAnswerRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveAnswerResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveMessageResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SendAnswerRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SendAnswerResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SendCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SendCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SendMessageRequestDTO;
@@ -532,7 +538,7 @@ public class CSIntegrationService {
         return response.getQuestion();
     }
 
-    public Certificate getCertificate(GetCertificteFromMessageRequestDTO request, String messageId) {
+    public Certificate getCertificate(GetCertificateFromMessageRequestDTO request, String messageId) {
         final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + "/certificate";
 
         final var response = restTemplate.postForObject(url, request, GetCertificateFromMessageResponseDTO.class);
@@ -582,7 +588,38 @@ public class CSIntegrationService {
 
     public void deleteMessage(String messageId, DeleteMessageRequestDTO request) {
         final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + "/delete";
-        restTemplate.postForObject(url, request, Void.class);
+
+        final var headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        restTemplate.<Void>exchange(
+            url,
+            HttpMethod.DELETE,
+            new HttpEntity<>(request, headers),
+            new ParameterizedTypeReference<>() {
+            }
+        );
+    }
+
+    public Question deleteAnswer(String messageId, DeleteAnswerRequestDTO request) {
+        final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + "/deleteanswer";
+
+        final var headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        final var response = restTemplate.<DeleteAnswerResponseDTO>exchange(
+            url,
+            HttpMethod.DELETE,
+            new HttpEntity<>(request, headers),
+            new ParameterizedTypeReference<>() {
+            }
+        );
+
+        if (response.getBody() == null) {
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
+        }
+
+        return response.getBody().getQuestion();
     }
 
     public Question createMessage(CreateMessageRequestDTO request, String certificateId) {
@@ -609,10 +646,34 @@ public class CSIntegrationService {
         return response.getQuestion();
     }
 
+    public Question saveAnswer(SaveAnswerRequestDTO request, String messageId) {
+        final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + "/saveanswer";
+
+        final var response = restTemplate.postForObject(url, request, SaveAnswerResponseDTO.class);
+
+        if (response == null) {
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
+        }
+
+        return response.getQuestion();
+    }
+
     public Question sendMessage(SendMessageRequestDTO request, String messageId) {
         final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + "/send";
 
         final var response = restTemplate.postForObject(url, request, SendMessageResponseDTO.class);
+
+        if (response == null) {
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
+        }
+
+        return response.getQuestion();
+    }
+
+    public Question sendAnswer(SendAnswerRequestDTO request, String messageId) {
+        final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + "/sendanswer";
+
+        final var response = restTemplate.postForObject(url, request, SendAnswerResponseDTO.class);
 
         if (response == null) {
             throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
