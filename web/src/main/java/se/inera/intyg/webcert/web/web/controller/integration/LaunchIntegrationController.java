@@ -20,8 +20,6 @@
 package se.inera.intyg.webcert.web.web.controller.integration;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -40,7 +38,6 @@ import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
-import se.inera.intyg.webcert.web.web.controller.facade.util.ReactPilotUtil;
 import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
 
 @Path("/launch")
@@ -51,16 +48,10 @@ public class LaunchIntegrationController extends BaseIntegrationController {
     @Autowired
     private IntygService intygService;
     @Autowired
-    private ReactPilotUtil reactPilotUtil;
-    @Autowired
     private ReactUriFactory reactUriFactory;
     @Autowired
     private CommonAuthoritiesResolver commonAuthoritiesResolver;
     private static final Logger LOG = LoggerFactory.getLogger(LaunchIntegrationController.class);
-    private static final String PARAM_CERT_TYPE = "certType";
-    private static final String PARAM_CERT_TYPE_VERSION = "certTypeVersion";
-    private static final String PARAM_CERT_ID = "certId";
-    private String urlFragmentTemplate;
 
     @GET
     @Path("/certificate/{certificateId}")
@@ -72,42 +63,12 @@ public class LaunchIntegrationController extends BaseIntegrationController {
 
         final var intygTypeInfo = intygService.getIntygTypeInfo(certificateId);
         final var certificateType = intygTypeInfo.getIntygType();
-        final var certificateTypeVersion = intygTypeInfo.getIntygTypeVersion();
         validateAndChangeUnit(certificateId, certificateType);
 
         webCertUserService.getUser().setLaunchFromOrigin(origin);
 
         LOG.debug("Redirecting to view intyg {} of type {}", certificateId, certificateType);
-        return buildRedirectResponse(uriInfo, certificateType, certificateTypeVersion, certificateId);
-    }
-
-    public void setUrlFragmentTemplate(String urlFragmentTemplate) {
-        this.urlFragmentTemplate = urlFragmentTemplate;
-    }
-
-    private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String certificateTypeVersion, String certificateId) {
-        if (reactPilotUtil.useReactClientFristaende(webCertUserService.getUser(), certificateType)) {
-            return getReactRedirectResponse(uriInfo, certificateId);
-        }
-        return getAngularRedirectResponse(uriInfo, certificateType, certificateTypeVersion, certificateId);
-    }
-
-    private Response getAngularRedirectResponse(UriInfo uriInfo, String certificateType, String certificateTypeVersion,
-        String certificateId) {
-        final var urlParams = getUrlParams(certificateType, certificateTypeVersion, certificateId);
-        final var location = uriInfo.getBaseUriBuilder()
-            .replacePath(getUrlBaseTemplate())
-            .fragment(urlFragmentTemplate)
-            .buildFromMap(urlParams);
-        return Response.status(Status.TEMPORARY_REDIRECT).location(location).build();
-    }
-
-    private static Map<String, Object> getUrlParams(String certificateType, String certificateTypeVersion, String certificateId) {
-        Map<String, Object> urlParams = new HashMap<>();
-        urlParams.put(PARAM_CERT_TYPE, certificateType);
-        urlParams.put(PARAM_CERT_TYPE_VERSION, certificateTypeVersion);
-        urlParams.put(PARAM_CERT_ID, certificateId);
-        return urlParams;
+        return getReactRedirectResponse(uriInfo, certificateId);
     }
 
     private Response getReactRedirectResponse(UriInfo uriInfo, String certificateId) {
