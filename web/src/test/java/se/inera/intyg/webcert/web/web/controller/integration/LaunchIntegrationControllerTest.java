@@ -52,7 +52,7 @@ import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
-import se.inera.intyg.webcert.web.web.controller.facade.util.ReactPilotUtil;
+import se.inera.intyg.webcert.web.web.controller.facade.util.AngularClientUtil;
 import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
 
 @ExtendWith(MockitoExtension.class)
@@ -70,7 +70,7 @@ class LaunchIntegrationControllerTest {
     private ReactUriFactory reactUriFactory;
 
     @Mock
-    private ReactPilotUtil reactPilotUtil;
+    private AngularClientUtil angularClientUtil;
 
     @Mock
     private CommonAuthoritiesResolver commonAuthoritiesResolver;
@@ -118,7 +118,7 @@ class LaunchIntegrationControllerTest {
                 doReturn(uriBuilder).when(uriBuilder).replacePath(any());
                 doReturn(uriBuilder).when(uriBuilder).fragment(any());
                 doReturn(mock(URI.class)).when(uriBuilder).buildFromMap(any());
-                doReturn(false).when(reactPilotUtil).useReactClientFristaende(any(), any());
+                doReturn(true).when(angularClientUtil).useAngularClient(any());
                 doReturn(mock(SelectableVardenhet.class)).when(webcertUser).getValdVardenhet();
                 doReturn(mock(SelectableVardenhet.class)).when(webcertUser).getValdVardgivare();
                 doReturn(true).when(webcertUser).changeValdVardenhet(any());
@@ -146,7 +146,7 @@ class LaunchIntegrationControllerTest {
             @BeforeEach
             void setup() {
                 doReturn(mock(URI.class)).when(reactUriFactory).uriForCertificate(any(), any());
-                doReturn(true).when(reactPilotUtil).useReactClientFristaende(any(), any());
+                doReturn(false).when(angularClientUtil).useAngularClient(any());
                 doReturn(mock(SelectableVardenhet.class)).when(webcertUser).getValdVardenhet();
                 doReturn(mock(SelectableVardenhet.class)).when(webcertUser).getValdVardgivare();
                 doReturn(true).when(webcertUser).changeValdVardenhet(any());
@@ -176,7 +176,7 @@ class LaunchIntegrationControllerTest {
                 @BeforeEach
                 void setUp() {
                     doReturn(mock(URI.class)).when(reactUriFactory).uriForCertificate(any(), any());
-                    doReturn(true).when(reactPilotUtil).useReactClientFristaende(any(), any());
+                    doReturn(false).when(angularClientUtil).useAngularClient(any());
                     doReturn(mock(SelectableVardenhet.class)).when(webcertUser).getValdVardenhet();
                     doReturn(mock(SelectableVardenhet.class)).when(webcertUser).getValdVardgivare();
                     doReturn(true).when(webcertUser).changeValdVardenhet(any());
