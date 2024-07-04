@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade.util;
 
+import java.util.Objects;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
@@ -25,6 +26,8 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @Component
 public class AngularClientUtil {
+
+    private static final String REHABSTOD_LAUNCH_ORIGIN = "rs";
 
     public boolean useAngularClient(WebCertUser user) {
         if (isOriginDifferentThanDjupintegration(user)) {
@@ -35,11 +38,12 @@ public class AngularClientUtil {
         if (feature == null) {
             return false;
         }
-        
+
         return feature.getGlobal();
     }
 
     private boolean isOriginDifferentThanDjupintegration(WebCertUser user) {
-        return !UserOriginType.DJUPINTEGRATION.name().equalsIgnoreCase(user.getOrigin());
+        return !UserOriginType.DJUPINTEGRATION.name().equalsIgnoreCase(user.getOrigin()) && !Objects.equals(user.getLaunchFromOrigin(),
+            REHABSTOD_LAUNCH_ORIGIN);
     }
 }
