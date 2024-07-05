@@ -57,6 +57,9 @@ public class ConfigController {
     @Value("${privatepractitioner.portal.registration.url}")
     private String ppHost;
 
+    @Value("${forward.draft.or.question.url}")
+    private String forwardDraftOrQuestionUrl;
+
     @Autowired
     private DynamicLinkService dynamicLinkService;
 
@@ -81,7 +84,8 @@ public class ConfigController {
             .filter((banner -> banner.getApplication() == Application.WEBCERT))
             .collect(Collectors.toList());
 
-        return Response.ok(new ConfigurationDTO(version, banners, ppHost, sakerhetstjanstIdpUrl, cgiFunktionstjansterIdpUrl)).build();
+        return Response.ok(new ConfigurationDTO(version, banners, ppHost, sakerhetstjanstIdpUrl, cgiFunktionstjansterIdpUrl,
+            forwardDraftOrQuestionUrl)).build();
     }
 
     @GET
