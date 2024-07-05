@@ -38,6 +38,8 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 class AngularClientUtilTest {
 
     private static final String DJUPINTEGRATION = "DJUPINTEGRATION";
+    private static final String REHABSTOD_LAUNCH_ORIGIN = "rs";
+    private static final String ORIGIN_NORMAL = "ORIGIN_NORMAL";
     @Mock
     private WebCertUser user;
     @Mock
@@ -47,7 +49,7 @@ class AngularClientUtilTest {
 
     @Test
     void shallReturnFalseIfUserIsNotDjupintegration() {
-        doReturn("ORIGIN_NORMAL").when(user).getOrigin();
+        doReturn(ORIGIN_NORMAL).when(user).getOrigin();
         assertFalse(angularClientUtil.useAngularClient(user));
     }
 
@@ -64,6 +66,15 @@ class AngularClientUtilTest {
         doReturn(Map.of(AuthoritiesConstants.FEATURE_USE_ANGULAR_WEBCLIENT, feature)).when(user).getFeatures();
         doReturn(false).when(feature).getGlobal();
         assertFalse(angularClientUtil.useAngularClient(user));
+    }
+
+    @Test
+    void shallReturnTrueIfUsersLaunchOriginIsRSAndHaveFeatureAngularClientAndGlobalIsTrue() {
+        doReturn(ORIGIN_NORMAL).when(user).getOrigin();
+        doReturn(REHABSTOD_LAUNCH_ORIGIN).when(user).getLaunchFromOrigin();
+        doReturn(Map.of(AuthoritiesConstants.FEATURE_USE_ANGULAR_WEBCLIENT, feature)).when(user).getFeatures();
+        doReturn(true).when(feature).getGlobal();
+        assertTrue(angularClientUtil.useAngularClient(user));
     }
 
     @Test

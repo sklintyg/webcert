@@ -40,7 +40,7 @@ import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
-import se.inera.intyg.webcert.web.web.controller.facade.util.ReactPilotUtil;
+import se.inera.intyg.webcert.web.web.controller.facade.util.AngularClientUtil;
 import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
 
 @Path("/launch")
@@ -51,7 +51,7 @@ public class LaunchIntegrationController extends BaseIntegrationController {
     @Autowired
     private IntygService intygService;
     @Autowired
-    private ReactPilotUtil reactPilotUtil;
+    private AngularClientUtil angularClientUtil;
     @Autowired
     private ReactUriFactory reactUriFactory;
     @Autowired
@@ -86,10 +86,10 @@ public class LaunchIntegrationController extends BaseIntegrationController {
     }
 
     private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String certificateTypeVersion, String certificateId) {
-        if (reactPilotUtil.useReactClientFristaende(webCertUserService.getUser(), certificateType)) {
-            return getReactRedirectResponse(uriInfo, certificateId);
+        if (angularClientUtil.useAngularClient(webCertUserService.getUser())) {
+            return getAngularRedirectResponse(uriInfo, certificateType, certificateTypeVersion, certificateId);
         }
-        return getAngularRedirectResponse(uriInfo, certificateType, certificateTypeVersion, certificateId);
+        return getReactRedirectResponse(uriInfo, certificateId);
     }
 
     private Response getAngularRedirectResponse(UriInfo uriInfo, String certificateType, String certificateTypeVersion,
