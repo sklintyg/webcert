@@ -45,6 +45,7 @@ class ReactUriFactoryTest {
         ReflectionTestUtils.setField(reactUriFactory, "hostReactClient", "wc2.wc.localtest.me");
         ReflectionTestUtils.setField(reactUriFactory, "urlReactTemplate", "/certificate/{certId}");
         ReflectionTestUtils.setField(reactUriFactory, "urlReactErrorTemplate", "/certificate/{certId}/sign/{error}");
+        ReflectionTestUtils.setField(reactUriFactory, "urlReactQuestionsTemplate", "/certificate/{certId}/questions");
     }
 
     @Test
@@ -59,5 +60,12 @@ class ReactUriFactoryTest {
         final var certificateId = "xxxx-yyyyy-zzzzz-qqqqq";
         final var actualUri = reactUriFactory.uriForCertificateWithSignError(uriInfo, certificateId, SignaturStatus.ERROR);
         assertEquals("https://wc2.wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq/sign/error", actualUri.toString());
+    }
+
+    @Test
+    void shallReturnUriForCertificateQuestions() {
+        final var certificateId = "xxxx-yyyyy-zzzzz-qqqqq";
+        final var actualUri = reactUriFactory.uriForCertificateQuestions(uriInfo, certificateId);
+        assertEquals("https://wc2.wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq/questions", actualUri.toString());
     }
 }
