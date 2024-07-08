@@ -141,7 +141,7 @@ class LaunchIntegrationControllerTest {
         }
 
         @Nested
-        class ReactTest {
+        class ReactCertificateTest {
 
             @BeforeEach
             void setup() {
@@ -210,6 +210,25 @@ class LaunchIntegrationControllerTest {
                         launchIntegrationController.redirectToCertificate(uriInfo, CERTIFICATE_ID, ORIGIN)
                     );
                 }
+            }
+        }
+
+        @Nested
+        class QuestionsTest {
+
+            @BeforeEach
+            void setup() {
+                doReturn(mock(URI.class)).when(reactUriFactory).uriForCertificateQuestions(any(), any());
+                doReturn(mock(SelectableVardenhet.class)).when(webcertUser).getValdVardenhet();
+                doReturn(mock(SelectableVardenhet.class)).when(webcertUser).getValdVardgivare();
+                doReturn(true).when(webcertUser).changeValdVardenhet(any());
+            }
+
+            @Test
+            void shouldDirectToCertificateQuestions() {
+                launchIntegrationController.directToCertificateQuestions(uriInfo, CERTIFICATE_ID);
+
+                verify(reactUriFactory).uriForCertificateQuestions(any(), any());
             }
         }
     }

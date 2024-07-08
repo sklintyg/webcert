@@ -67,6 +67,24 @@ public class LaunchIntegrationController extends BaseIntegrationController {
     @PrometheusTimeMethod
     public Response redirectToCertificate(@Context UriInfo uriInfo, @PathParam("certificateId") String certificateId,
         @QueryParam("origin") String origin) {
+        webCertUserService.getUser().setLaunchFromOrigin(origin);
+        LOG.debug("Redirecting to view intyg {}", certificateId);
+        return buildRedirectResponse(uriInfo, certificateId, false);
+    }
+
+    @GET
+    @Path("/certificate/{certificateId}/questions")
+    @PrometheusTimeMethod
+    public Response directToCertificateQuestions(@Context UriInfo uriInfo, @PathParam("certificateId") String certificateId) {
+        LOG.debug("Directing to to view questions on intyg {}", certificateId);
+        return buildRedirectResponse(uriInfo, certificateId, true);
+    }
+
+    public void setUrlFragmentTemplate(String urlFragmentTemplate) {
+        this.urlFragmentTemplate = urlFragmentTemplate;
+    }
+
+    private Response buildRedirectResponse(UriInfo uriInfo, String certificateId, boolean redirectToQuestion) {
         super.validateParameter("certificateId", certificateId);
         super.validateAuthorities();
 
@@ -75,21 +93,14 @@ public class LaunchIntegrationController extends BaseIntegrationController {
         final var certificateTypeVersion = intygTypeInfo.getIntygTypeVersion();
         validateAndChangeUnit(certificateId, certificateType);
 
-        webCertUserService.getUser().setLaunchFromOrigin(origin);
+        if (redirectToQuestion) {
+            return getReactRedirectResponseForQuestions(uriInfo, certificateId);
+        }
 
-        LOG.debug("Redirecting to view intyg {} of type {}", certificateId, certificateType);
-        return buildRedirectResponse(uriInfo, certificateType, certificateTypeVersion, certificateId);
-    }
-
-    public void setUrlFragmentTemplate(String urlFragmentTemplate) {
-        this.urlFragmentTemplate = urlFragmentTemplate;
-    }
-
-    private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String certificateTypeVersion, String certificateId) {
         if (angularClientUtil.useAngularClient(webCertUserService.getUser())) {
             return getAngularRedirectResponse(uriInfo, certificateType, certificateTypeVersion, certificateId);
         }
-        return getReactRedirectResponse(uriInfo, certificateId);
+        return getReactRedirectResponseForCertificate(uriInfo, certificateId);
     }
 
     private Response getAngularRedirectResponse(UriInfo uriInfo, String certificateType, String certificateTypeVersion,
@@ -110,8 +121,13 @@ public class LaunchIntegrationController extends BaseIntegrationController {
         return urlParams;
     }
 
-    private Response getReactRedirectResponse(UriInfo uriInfo, String certificateId) {
+    private Response getReactRedirectResponseForCertificate(UriInfo uriInfo, String certificateId) {
         final var uri = reactUriFactory.uriForCertificate(uriInfo, certificateId);
+        return Response.status(Status.TEMPORARY_REDIRECT).location(uri).build();
+    }
+
+    private Response getReactRedirectResponseForQuestions(UriInfo uriInfo, String certificateId) {
+        final var uri = reactUriFactory.uriForCertificateQuestions(uriInfo, certificateId);
         return Response.status(Status.TEMPORARY_REDIRECT).location(uri).build();
     }
 
