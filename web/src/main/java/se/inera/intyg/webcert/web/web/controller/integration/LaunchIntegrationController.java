@@ -93,14 +93,13 @@ public class LaunchIntegrationController extends BaseIntegrationController {
         final var certificateTypeVersion = intygTypeInfo.getIntygTypeVersion();
         validateAndChangeUnit(certificateId, certificateType);
 
-        if (redirectToQuestion) {
-            return getReactRedirectResponseForQuestions(uriInfo, certificateId);
-        }
-
         if (angularClientUtil.useAngularClient(webCertUserService.getUser())) {
             return getAngularRedirectResponse(uriInfo, certificateType, certificateTypeVersion, certificateId);
         }
-        return getReactRedirectResponseForCertificate(uriInfo, certificateId);
+
+        return redirectToQuestion
+            ? getReactRedirectResponseForQuestions(uriInfo, certificateId)
+            : getReactRedirectResponseForCertificate(uriInfo, certificateId);
     }
 
     private Response getAngularRedirectResponse(UriInfo uriInfo, String certificateType, String certificateTypeVersion,
