@@ -30,7 +30,7 @@ public class AngularClientUtil {
     private static final String REHABSTOD_LAUNCH_ORIGIN = "rs";
 
     public boolean useAngularClient(WebCertUser user) {
-        if (isOriginDifferentThanDjupintegration(user)) {
+        if (isOriginDifferentThanDjupintegrationAndNotFromRS(user)) {
             return false;
         }
 
@@ -42,7 +42,7 @@ public class AngularClientUtil {
         return feature.getGlobal();
     }
 
-    private boolean isOriginDifferentThanDjupintegration(WebCertUser user) {
+    private boolean isOriginDifferentThanDjupintegrationAndNotFromRS(WebCertUser user) {
         return !UserOriginType.DJUPINTEGRATION.name().equalsIgnoreCase(user.getOrigin()) && !Objects.equals(user.getLaunchFromOrigin(),
             REHABSTOD_LAUNCH_ORIGIN);
     }
