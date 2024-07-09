@@ -55,6 +55,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteAnswerResp
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ForwardCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ForwardCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFromMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFromMessageResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageInternalResponseDTO;
@@ -680,5 +682,17 @@ public class CSIntegrationService {
         }
 
         return response.getQuestion();
+    }
+
+    public Certificate forwardCertificate(String certificateId, ForwardCertificateRequestDTO request) {
+        final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/forward";
+
+        final var response = restTemplate.postForObject(url, request, ForwardCertificateResponseDTO.class);
+
+        if (response == null || response.getCertificate() == null) {
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
+        }
+
+        return response.getCertificate();
     }
 }
