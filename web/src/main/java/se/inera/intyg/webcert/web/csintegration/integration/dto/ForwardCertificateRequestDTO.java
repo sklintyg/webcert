@@ -30,7 +30,6 @@ import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserDTO;
 @JsonDeserialize(builder = ForwardCertificateRequestDTOBuilder.class)
 @Value
 @Builder
-
 public class ForwardCertificateRequestDTO {
 
     CertificateServiceUserDTO user;
