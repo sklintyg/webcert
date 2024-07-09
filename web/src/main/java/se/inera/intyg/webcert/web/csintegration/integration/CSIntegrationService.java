@@ -42,7 +42,6 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateExist
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateExternalTypeExistsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceCreateCertificateResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceForwardCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceGetCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoResponseDTO;
@@ -57,6 +56,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificat
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ForwardCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ForwardCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFromMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFromMessageResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageInternalResponseDTO;
@@ -687,10 +687,10 @@ public class CSIntegrationService {
     public Certificate forwardCertificate(String certificateId, ForwardCertificateRequestDTO request) {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/forward";
 
-        final var response = restTemplate.postForObject(url, request, CertificateServiceForwardCertificateResponseDTO.class);
+        final var response = restTemplate.postForObject(url, request, ForwardCertificateResponseDTO.class);
 
-        if (response == null) {
-            return null;
+        if (response == null || response.getCertificate() == null) {
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
         }
 
         return response.getCertificate();

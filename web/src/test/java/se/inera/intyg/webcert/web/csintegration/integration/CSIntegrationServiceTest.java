@@ -61,7 +61,6 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateExist
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateExternalTypeExistsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceCreateCertificateResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceForwardCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceGetCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoRequestDTO;
@@ -76,6 +75,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificat
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ForwardCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ForwardCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFromMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFromMessageResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageInternalResponseDTO;
@@ -300,8 +300,8 @@ class CSIntegrationServiceTest {
     private static final SendAnswerRequestDTO SEND_ANSWER_REQUEST_DTO = SendAnswerRequestDTO.builder().build();
     private static final String MESSAGE_ID = "messageId";
     private static final ForwardCertificateRequestDTO FORWARD_CERTIFICATE_REQUEST_DTO = ForwardCertificateRequestDTO.builder().build();
-    private static final CertificateServiceForwardCertificateResponseDTO FORWARD_CERTIFICATE_RESPONSE_DTO =
-        CertificateServiceForwardCertificateResponseDTO.builder()
+    private static final ForwardCertificateResponseDTO FORWARD_CERTIFICATE_RESPONSE_DTO =
+        ForwardCertificateResponseDTO.builder()
             .certificate(CERTIFICATE)
             .build();
 
@@ -2348,11 +2348,11 @@ class CSIntegrationServiceTest {
         }
 
         @Test
-        void shouldReturnNullIfResponseIsNull() {
-            when(restTemplate.postForObject(anyString(), eq(FORWARD_CERTIFICATE_REQUEST_DTO),
-                eq(CertificateServiceForwardCertificateResponseDTO.class)))
+        void shouldThrowIfResponseIsNull() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
                 .thenReturn(null);
-            assertNull(csIntegrationService.forwardCertificate(ID, FORWARD_CERTIFICATE_REQUEST_DTO));
+            assertThrows(IllegalStateException.class,
+                () -> csIntegrationService.forwardCertificate(ID, FORWARD_CERTIFICATE_REQUEST_DTO));
         }
 
         @Test

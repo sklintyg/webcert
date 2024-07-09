@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
@@ -112,11 +111,6 @@ class ForwardCertificateFromCertificateServiceTest {
                 assertEquals(REQUEST, captor.getValue());
             }
 
-        }
-
-        @Test
-        void shouldThrowExceptionIfReturnedCertificateIsNull() {
-            assertThrows(IllegalStateException.class, () -> forwardCertificateFromCertificateService.forwardCertificate(ID, FORWARDED));
         }
     }
 }

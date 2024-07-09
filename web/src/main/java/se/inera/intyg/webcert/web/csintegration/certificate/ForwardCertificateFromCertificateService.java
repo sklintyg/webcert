@@ -48,10 +48,6 @@ public class ForwardCertificateFromCertificateService implements ForwardCertific
             certificateId, csIntegrationRequestFactory.forwardCertificateRequest()
         );
 
-        if (certificate == null) {
-            throw new IllegalStateException("Received null when trying to forward certificate from Certificate Service");
-        }
-
         log.debug("Forwarded certificate '{}' from Certificate Service", certificateId);
 
         return certificate;
