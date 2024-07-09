@@ -114,6 +114,7 @@ public class CertificateController {
     @Qualifier("renewCertificateAggregator")
     private RenewCertificateFacadeService renewCertificateFacadeService;
     @Autowired
+    @Qualifier("forwardCertificateAggregator")
     private ForwardCertificateFacadeService forwardCertificateFacadeService;
     @Autowired
     private ReadyForSignFacadeService readyForSignFacadeService;
