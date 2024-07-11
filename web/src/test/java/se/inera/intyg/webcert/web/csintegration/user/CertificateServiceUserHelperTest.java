@@ -67,6 +67,9 @@ class CertificateServiceUserHelperTest {
     private static final List<String> PA_TITLES = List.of(CODE_ONE, CODE_TWO);
     private static final String DOCTOR = "doctor";
     private static final List<String> LEGITIMATE_PROFEESIONAL_ROLES = List.of(DOCTOR);
+    private static final String RESPONSIBLE_HOSP_NAME = "RESPONSIBLE_HOSP_NAME";
+    private static final IntegrationParameters INTEGRATION_PARAMETERS = IntegrationParameters.of(
+        "", RESPONSIBLE_HOSP_NAME, "", "", "", "", "", "", "", true, false, false, true, "");
 
     private static WebCertUser webCertUser;
     private static SubscriptionInfo subscription;
@@ -88,6 +91,9 @@ class CertificateServiceUserHelperTest {
 
             when(webCertUser.getHsaId())
                 .thenReturn(ID);
+
+            when(webCertUser.getParameters())
+                .thenReturn(INTEGRATION_PARAMETERS);
 
             when(webCertUserService.getUser())
                 .thenReturn(webCertUser);
@@ -121,6 +127,13 @@ class CertificateServiceUserHelperTest {
                 final var response = certificateServiceUserHelper.get();
 
                 assertEquals(ID, response.getId());
+            }
+
+            @Test
+            void shouldReturnUserWithResponsibleHospName() {
+                final var response = certificateServiceUserHelper.get();
+
+                assertEquals(RESPONSIBLE_HOSP_NAME, response.getResponsibleHospName());
             }
 
             @Test
@@ -444,14 +457,11 @@ class CertificateServiceUserHelperTest {
         @Nested
         class AccessScopeTests {
 
-            @BeforeEach
-            void setUp() {
-                parameters = mock(IntegrationParameters.class);
-            }
-
             @Test
             void shouldSetAccessTokenToWithinCareUnit() {
-                webCertUser.setParameters(parameters);
+                when(webCertUser.getParameters())
+                    .thenReturn(INTEGRATION_PARAMETERS);
+
                 final var response = certificateServiceUserHelper.get();
                 assertEquals(AccessScopeType.WITHIN_CARE_UNIT, response.getAccessScope());
             }

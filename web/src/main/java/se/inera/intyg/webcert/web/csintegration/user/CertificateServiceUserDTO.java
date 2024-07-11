@@ -43,6 +43,7 @@ public class CertificateServiceUserDTO {
     AccessScopeType accessScope;
     Boolean allowCopy;
     List<String> healthCareProfessionalLicence;
+    String responsibleHospName;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class CertificateServiceUserDTOBuilder {
