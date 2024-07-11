@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.services.BefattningService;
-import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
@@ -40,7 +39,6 @@ public class CertificateServiceUserHelper {
 
     private static final String INTEGRATED = "DJUPINTEGRATION";
     private final WebCertUserService webCertUserService;
-    private final AuthoritiesHelper authoritiesHelper;
 
     public CertificateServiceUserDTO get() {
         final var user = webCertUserService.getUser();
@@ -56,6 +54,7 @@ public class CertificateServiceUserHelper {
             .allowCopy(user.getParameters() == null || user.getParameters().isFornyaOk())
             .healthCareProfessionalLicence(user.getLegitimeradeYrkesgrupper())
             .role(getRole(user))
+            .responsibleHospName(user.getParameters() == null ? null : user.getParameters().getResponsibleHospName())
             .build();
     }
 
