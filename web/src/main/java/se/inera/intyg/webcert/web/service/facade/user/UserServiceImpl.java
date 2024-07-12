@@ -108,6 +108,7 @@ public class UserServiceImpl implements UserService {
             .signingMethod(getSigningMethod(webCertUser.getAuthenticationMethod()))
             .careProviders(getCareProviders(webCertUser))
             .launchFromOrigin(webCertUser.getLaunchFromOrigin())
+            .origin(webCertUser.getOrigin())
             .build();
     }
 

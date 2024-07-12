@@ -85,7 +85,8 @@ class UserServiceImplTest {
     private static final String SORT_THIRD = "Älgantilop";
     private static final List<String> UNSORTED_NAMES = List.of(SORT_THIRD, SORT_FIRST, SORT_SECOND);
     private static final String LAUNCH_ID = "97f279ba-7d2b-4b0a-8665-7adde08f26f4";
-    private static final String LAUNCH_FROM_ORIGIN = "normal";
+    private static final String LAUNCH_FROM_ORIGIN = "launchFromOrigin";
+    private static final String ORIGIN = "origin";
 
     @BeforeEach
     void setUp() {
@@ -128,6 +129,10 @@ class UserServiceImplTest {
             doReturn(PREFERENCES)
                 .when(user)
                 .getAnvandarPreference();
+
+            doReturn(ORIGIN)
+                .when(user)
+                .getOrigin();
         }
 
         @Test
@@ -209,6 +214,12 @@ class UserServiceImplTest {
             assertEquals(CARE_PROVIDER_ID, careProvider.getId());
             assertEquals(CARE_UNIT_ID, careUnit.getUnitId());
             assertEquals(UNIT_ID, unit.getUnitId());
+        }
+
+        @Test
+        void shallReturnOrigin() {
+            final var actualUser = userService.getLoggedInUser();
+            assertEquals(ORIGIN, actualUser.getOrigin());
         }
     }
 
@@ -491,7 +502,7 @@ class UserServiceImplTest {
             final var loggedInUser = userService.getLoggedInUser();
             assertFalse(loggedInUser.getCareProviders().get(0).isMissingSubscription());
         }
-        
+
         @Test
         void careProviderIsNotConsideredAsMissingSubscriptionIfActionIsNone() {
             final var subscriptionInfo = new SubscriptionInfo();
