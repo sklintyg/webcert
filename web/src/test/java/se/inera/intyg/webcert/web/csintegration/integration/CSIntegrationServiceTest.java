@@ -98,6 +98,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitQuestions
 import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.InternalCertificateXmlResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.LockOldDraftsRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.LockOldDraftsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageExistsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateResponseDTO;
@@ -304,6 +306,9 @@ class CSIntegrationServiceTest {
         ForwardCertificateResponseDTO.builder()
             .certificate(CERTIFICATE)
             .build();
+    private static final int AMOUNT = 5;
+    private static final LockOldDraftsResponseDTO LOCK_OLD_DRAFTS_RESPONSE_DTO = LockOldDraftsResponseDTO.builder().amount(AMOUNT).build();
+    private static final LockOldDraftsRequestDTO LOCK_OLD_DRAFTS_REQUEST_DTO = LockOldDraftsRequestDTO.builder().build();
 
 
     @Mock
@@ -2367,6 +2372,53 @@ class CSIntegrationServiceTest {
             verify(restTemplate).postForObject(captor.capture(), any(), any());
 
             assertEquals("baseUrl/api/certificate/" + ID + "/forward", captor.getValue());
+        }
+    }
+
+    @Nested
+    class LockOldDraftsTest {
+
+        @Test
+        void shouldPreformPostUsingRequest() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(LOCK_OLD_DRAFTS_RESPONSE_DTO);
+            final var captor = ArgumentCaptor.forClass(LockOldDraftsRequestDTO.class);
+
+            csIntegrationService.lockOldDrafts(LOCK_OLD_DRAFTS_REQUEST_DTO);
+            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+
+            assertEquals(LOCK_OLD_DRAFTS_REQUEST_DTO, captor.getValue());
+        }
+
+        @Test
+        void shouldReturnAmount() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(LOCK_OLD_DRAFTS_RESPONSE_DTO);
+            final var response = csIntegrationService.lockOldDrafts(LOCK_OLD_DRAFTS_REQUEST_DTO);
+
+            assertEquals(AMOUNT, response);
+        }
+
+        @Test
+        void shouldThrowIfResponseIsNull() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(null);
+            assertThrows(IllegalStateException.class,
+                () -> csIntegrationService.lockOldDrafts(LOCK_OLD_DRAFTS_REQUEST_DTO));
+        }
+
+        @Test
+        void shouldSetUrlCorrect() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(LOCK_OLD_DRAFTS_RESPONSE_DTO);
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            csIntegrationService.lockOldDrafts(LOCK_OLD_DRAFTS_REQUEST_DTO);
+
+            verify(restTemplate).postForObject(captor.capture(), any(), any());
+
+            assertEquals("baseUrl/internalapi/certificate/lockOldDrafts", captor.getValue());
         }
     }
 }

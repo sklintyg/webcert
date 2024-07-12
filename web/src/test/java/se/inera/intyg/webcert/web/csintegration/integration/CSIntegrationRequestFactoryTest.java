@@ -27,6 +27,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.Base64;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -2034,6 +2035,17 @@ class CSIntegrationRequestFactoryTest {
         void shouldSetCareProvider() {
             final var actualRequest = csIntegrationRequestFactory.forwardCertificateRequest();
             assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
+        }
+    }
+
+    @Nested
+    class LockOldDraftsRequestTests {
+
+        @Test
+        void shouldSetCuttoffDate() {
+            final var expectedCuttoffDate = LocalDate.now().minusDays(5).atStartOfDay();
+            final var actualRequest = csIntegrationRequestFactory.getLockOldDraftsRequestDTO(5);
+            assertEquals(expectedCuttoffDate, actualRequest.getCutoffDate());
         }
     }
 }
