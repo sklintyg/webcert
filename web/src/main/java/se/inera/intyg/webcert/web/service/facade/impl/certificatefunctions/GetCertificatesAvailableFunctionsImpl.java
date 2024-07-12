@@ -256,6 +256,17 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
             );
         }
 
+        if (!isDoctor() && isDjupintegration()) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.RESPONSIBLE_ISSUER,
+                    "Ansvarig intygsutfärdare",
+                    "",
+                    true
+                )
+            );
+        }
+
         certificateSignConfirmationFunction.get(certificate, webCertUserService.getUser())
             .ifPresent(resourceLinks::add);
 
@@ -432,6 +443,11 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     private boolean isDjupintegration() {
         final var user = webCertUserService.getUser();
         return user != null && user.getOrigin().contains("DJUPINTEGRATION");
+    }
+
+    private boolean isDoctor() {
+        final var user = webCertUserService.getUser();
+        return user.isLakare();
     }
 
     private boolean isReplaceCertificateAvailable(Certificate certificate) {
