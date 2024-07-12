@@ -698,7 +698,7 @@ public class CSIntegrationService {
         return response.getCertificate();
     }
 
-    public int lockOldDrafts(LockOldDraftsRequestDTO request) {
+    public List<Certificate> lockOldDrafts(LockOldDraftsRequestDTO request) {
         final var url = baseUrl + INTERNAL_CERTIFICATE_ENDPOINT_URL + "/lockOldDrafts";
 
         final var response = restTemplate.postForObject(url, request, LockOldDraftsResponseDTO.class);
@@ -707,6 +707,6 @@ public class CSIntegrationService {
             throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
         }
 
-        return response.getAmount();
+        return response.getCertificates();
     }
 }

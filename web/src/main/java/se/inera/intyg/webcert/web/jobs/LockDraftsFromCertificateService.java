@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 @Service
 @RequiredArgsConstructor
@@ -32,14 +33,21 @@ public class LockDraftsFromCertificateService {
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
     private final CertificateServiceProfile certificateServiceProfile;
+    private final MonitoringLogService monitoringService;
 
     public int lock(int lockedAfterDay) {
         if (!certificateServiceProfile.active()) {
             return 0;
         }
 
-        return csIntegrationService.lockOldDrafts(
+        final var certificates = csIntegrationService.lockOldDrafts(
             csIntegrationRequestFactory.getLockOldDraftsRequestDTO(lockedAfterDay)
         );
+
+        certificates.forEach(certificate ->
+            monitoringService.logUtkastLocked(certificate.getMetadata().getId(), certificate.getMetadata().getType())
+        );
+
+        return certificates.size();
     }
 }

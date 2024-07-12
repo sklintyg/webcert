@@ -21,21 +21,32 @@ package se.inera.intyg.webcert.web.jobs;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.LockOldDraftsRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 @ExtendWith(MockitoExtension.class)
 class LockDraftsFromCertificateServiceTest {
 
     private static final int LOCKED_AFTER_DAY = 5;
+    private static final String ID = "id";
+    private static final String TYPE = "type";
+
+    @Mock
+    MonitoringLogService monitoringService;
     @Mock
     CSIntegrationService csIntegrationService;
     @Mock
@@ -53,13 +64,38 @@ class LockDraftsFromCertificateServiceTest {
 
     @Test
     void shallReturnNumberOfLockedDraftsFromCertificateServiceIsProfileIsActive() {
-        final var expectedResult = 3;
+        final var expectedResult = List.of(getCertificate(), getCertificate(), getCertificate());
         final var lockOldDraftsRequestDTO = LockOldDraftsRequestDTO.builder().build();
 
         doReturn(true).when(certificateServiceProfile).active();
         doReturn(lockOldDraftsRequestDTO).when(csIntegrationRequestFactory).getLockOldDraftsRequestDTO(LOCKED_AFTER_DAY);
         doReturn(expectedResult).when(csIntegrationService).lockOldDrafts(lockOldDraftsRequestDTO);
 
-        assertEquals(expectedResult, lockDraftsFromCertificateService.lock(LOCKED_AFTER_DAY));
+        assertEquals(expectedResult.size(), lockDraftsFromCertificateService.lock(LOCKED_AFTER_DAY));
+    }
+
+    @Test
+    void shallMonitorLogLockedDraftsIdsAndType() {
+        final var certificates = List.of(getCertificate(), getCertificate(), getCertificate());
+        final var lockOldDraftsRequestDTO = LockOldDraftsRequestDTO.builder().build();
+
+        doReturn(true).when(certificateServiceProfile).active();
+        doReturn(lockOldDraftsRequestDTO).when(csIntegrationRequestFactory).getLockOldDraftsRequestDTO(LOCKED_AFTER_DAY);
+        doReturn(certificates).when(csIntegrationService).lockOldDrafts(lockOldDraftsRequestDTO);
+
+        lockDraftsFromCertificateService.lock(LOCKED_AFTER_DAY);
+
+        verify(monitoringService, times(3)).logUtkastLocked(ID, TYPE);
+    }
+
+    private static Certificate getCertificate() {
+        final var certificate = new Certificate();
+        certificate.setMetadata(
+            CertificateMetadata.builder()
+                .id(ID)
+                .type(TYPE)
+                .build()
+        );
+        return certificate;
     }
 }

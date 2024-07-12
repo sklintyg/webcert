@@ -307,7 +307,8 @@ class CSIntegrationServiceTest {
             .certificate(CERTIFICATE)
             .build();
     private static final int AMOUNT = 5;
-    private static final LockOldDraftsResponseDTO LOCK_OLD_DRAFTS_RESPONSE_DTO = LockOldDraftsResponseDTO.builder().amount(AMOUNT).build();
+    private static final LockOldDraftsResponseDTO LOCK_OLD_DRAFTS_RESPONSE_DTO = LockOldDraftsResponseDTO.builder()
+        .certificates(List.of(CERTIFICATE)).build();
     private static final LockOldDraftsRequestDTO LOCK_OLD_DRAFTS_REQUEST_DTO = LockOldDraftsRequestDTO.builder().build();
 
 
@@ -2391,12 +2392,12 @@ class CSIntegrationServiceTest {
         }
 
         @Test
-        void shouldReturnAmount() {
+        void shouldReturnCertificates() {
             when(restTemplate.postForObject(anyString(), any(), any()))
                 .thenReturn(LOCK_OLD_DRAFTS_RESPONSE_DTO);
             final var response = csIntegrationService.lockOldDrafts(LOCK_OLD_DRAFTS_REQUEST_DTO);
 
-            assertEquals(AMOUNT, response);
+            assertEquals(List.of(CERTIFICATE), response);
         }
 
         @Test

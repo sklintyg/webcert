@@ -21,8 +21,10 @@ package se.inera.intyg.webcert.web.csintegration.integration.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import java.util.List;
 import lombok.Builder;
 import lombok.Value;
+import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.LockOldDraftsResponseDTO.LockOldDraftsResponseDTOBuilder;
 
 @JsonDeserialize(builder = LockOldDraftsResponseDTOBuilder.class)
@@ -30,7 +32,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.LockOldDraftsRes
 @Builder
 public class LockOldDraftsResponseDTO {
 
-    int amount;
+    List<Certificate> certificates;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class LockOldDraftsResponseDTOBuilder {
