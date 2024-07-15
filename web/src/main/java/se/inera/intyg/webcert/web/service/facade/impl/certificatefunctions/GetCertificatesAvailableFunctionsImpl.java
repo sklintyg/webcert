@@ -442,7 +442,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
 
     private boolean isDjupintegration() {
         final var user = webCertUserService.getUser();
-        return user != null && user.getOrigin().contains("DJUPINTEGRATION");
+        return user != null && user.getOrigin() != null && user.getOrigin().contains("DJUPINTEGRATION");
     }
 
     private boolean isDoctor() {

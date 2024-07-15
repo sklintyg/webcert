@@ -140,6 +140,7 @@ class GetCertificatesAvailableFunctionsImplTest {
         void setup() {
             user.setOrigin("NORMAL");
             doReturn(user).when(webCertUserService).getUser();
+            doReturn(true).when(user).isLakare();
         }
 
         @Test
@@ -184,7 +185,6 @@ class GetCertificatesAvailableFunctionsImplTest {
 
         @Test
         void shallExcludeForwardCertificateIfUserIsDoctor() {
-            doReturn(true).when(user).isLakare();
             final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.FORWARD_CERTIFICATE);
@@ -200,6 +200,7 @@ class GetCertificatesAvailableFunctionsImplTest {
 
         @Test
         void shallIncludeReadyForSigning() {
+            doReturn(false).when(user).isLakare();
             final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.READY_FOR_SIGN);
@@ -367,6 +368,32 @@ class GetCertificatesAvailableFunctionsImplTest {
             final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.SIGNED);
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.SIGN_CERTIFICATE);
+        }
+
+        @Test
+        void shallIncludeResponsibleIssuerIfUserIsNotDoctorAndOriginIsDjupintegration() {
+            doReturn(false).when(user).isLakare();
+            doReturn("DJUPINTEGRATION").when(user).getOrigin();
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.RESPONSIBLE_ISSUER);
+        }
+
+        @Test
+        void shallExcludeResponsibleIssuerIfUserIsDoctorAndOriginIsDjupintegration() {
+            doReturn("DJUPINTEGRATION").when(user).getOrigin();
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.RESPONSIBLE_ISSUER);
+        }
+
+        @Test
+        void shallExcludeResponsibleIssuerIfUserIsNotDoctorAndOriginIsNotDjupintegration() {
+            doReturn(false).when(user).isLakare();
+            doReturn("NORMAL").when(user).getOrigin();
+            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.RESPONSIBLE_ISSUER);
         }
     }
 
