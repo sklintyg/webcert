@@ -27,7 +27,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -74,8 +73,6 @@ class CSIntegrationRequestFactoryTest {
 
     private static final String MESSAGE = "message";
     private static final Question QUESTION = Question.builder().build();
-    private static final LocalDateTime END_DATE = LocalDateTime.now();
-    private static final LocalDateTime START_DATE = LocalDateTime.now();
     private static final List<String> UNIT_IDS = List.of("unitId");
     @Mock
     MessageRequestConverter messageRequestConverter;
@@ -2044,14 +2041,12 @@ class CSIntegrationRequestFactoryTest {
     }
 
     @Nested
-    class GetPatientCertificatesWithQARequestDTOTest {
+    class PatientCertificatesWithQARequestDTOTest {
 
         private final PersonIdDTO expectedPersonId = PersonIdDTO.builder().build();
         private static final String CARE_PROVIDER_ID = "careProviderId";
         private final IntygWithNotificationsRequest request = new IntygWithNotificationsRequest.Builder()
             .setPersonnummer(PERSONNUMMER)
-            .setEndDate(END_DATE)
-            .setStartDate(START_DATE)
             .setEnhetId(UNIT_IDS)
             .setVardgivarId(CARE_PROVIDER_ID)
             .build();
@@ -2061,18 +2056,6 @@ class CSIntegrationRequestFactoryTest {
             doReturn(expectedPersonId).when(certificateServicePatientHelper).getPersonId(PERSONNUMMER);
             final var actualRequest = csIntegrationRequestFactory.getPatientCertificatesWithQARequestDTO(request);
             assertEquals(expectedPersonId, actualRequest.getPersonId());
-        }
-
-        @Test
-        void shouldSetEndDate() {
-            final var actualRequest = csIntegrationRequestFactory.getPatientCertificatesWithQARequestDTO(request);
-            assertEquals(END_DATE, actualRequest.getTo());
-        }
-
-        @Test
-        void shouldSetStartDate() {
-            final var actualRequest = csIntegrationRequestFactory.getPatientCertificatesWithQARequestDTO(request);
-            assertEquals(START_DATE, actualRequest.getFrom());
         }
 
         @Test

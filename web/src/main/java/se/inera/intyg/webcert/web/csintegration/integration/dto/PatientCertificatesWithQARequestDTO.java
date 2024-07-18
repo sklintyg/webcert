@@ -21,23 +21,20 @@ package se.inera.intyg.webcert.web.csintegration.integration.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesWithQARequestDTO.GetPatientCertificatesWithQARequestDTOBuilder;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.PatientCertificatesWithQARequestDTO.GetPatientCertificatesWithQARequestDTOBuilder;
 import se.inera.intyg.webcert.web.csintegration.patient.PersonIdDTO;
 
 @JsonDeserialize(builder = GetPatientCertificatesWithQARequestDTOBuilder.class)
 @Value
 @Builder
-public class GetPatientCertificatesWithQARequestDTO {
+public class PatientCertificatesWithQARequestDTO {
 
     PersonIdDTO personId;
     List<String> unitIds;
     String careProviderId;
-    LocalDateTime from;
-    LocalDateTime to;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class GetPatientCertificatesWithQARequestDTOBuilder {

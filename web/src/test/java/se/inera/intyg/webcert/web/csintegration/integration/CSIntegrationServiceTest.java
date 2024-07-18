@@ -90,7 +90,6 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertif
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetListCertificatesResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesWithQARequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesWithQAResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoResponseDTO;
@@ -101,6 +100,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageReq
 import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.InternalCertificateXmlResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageExistsResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.PatientCertificatesWithQARequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.RenewCertificateRequestDTO;
@@ -311,8 +311,8 @@ class CSIntegrationServiceTest {
         GetPatientCertificatesWithQAResponseDTO.builder()
             .list(LIST)
             .build();
-    private static final GetPatientCertificatesWithQARequestDTO GET_PATIENT_CERTIFICATES_WITH_QA_REQUEST_DTO =
-        GetPatientCertificatesWithQARequestDTO.builder()
+    private static final PatientCertificatesWithQARequestDTO GET_PATIENT_CERTIFICATES_WITH_QA_REQUEST_DTO =
+        PatientCertificatesWithQARequestDTO.builder()
             .build();
 
 
@@ -2387,7 +2387,7 @@ class CSIntegrationServiceTest {
         void shouldPreformPostUsingRequest() {
             when(restTemplate.postForObject(anyString(), any(), any()))
                 .thenReturn(GET_PATIENT_CERTIFICATES_WITH_QA_RESPONSE_DTO);
-            final var captor = ArgumentCaptor.forClass(GetPatientCertificatesWithQARequestDTO.class);
+            final var captor = ArgumentCaptor.forClass(PatientCertificatesWithQARequestDTO.class);
 
             csIntegrationService.getPatientCertificatesWithQA(GET_PATIENT_CERTIFICATES_WITH_QA_REQUEST_DTO);
             verify(restTemplate).postForObject(anyString(), captor.capture(), any());

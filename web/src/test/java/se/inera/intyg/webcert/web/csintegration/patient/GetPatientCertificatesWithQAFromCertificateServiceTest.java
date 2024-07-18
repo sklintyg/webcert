@@ -36,7 +36,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.xml.XmlMarshallerHelper;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesWithQARequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.PatientCertificatesWithQARequestDTO;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsRequest.Builder;
 import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.List;
@@ -46,6 +46,8 @@ import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWith
 @ExtendWith(MockitoExtension.class)
 class GetPatientCertificatesWithQAFromCertificateServiceTest {
 
+    @Mock
+    PatientCertificatesWithQaService patientCertificatesWithQaService;
     @Mock
     CertificateServiceProfile certificateServiceProfile;
     @Mock
@@ -65,7 +67,7 @@ class GetPatientCertificatesWithQAFromCertificateServiceTest {
     @Test
     void shallReturnListOfListItemIfCertificateServiceProfileIsActive() {
         final var request = new Builder().build();
-        final var certificatesWithQARequestDTO = GetPatientCertificatesWithQARequestDTO.builder().build();
+        final var certificatesWithQARequestDTO = PatientCertificatesWithQARequestDTO.builder().build();
         final var encodedXml = "encodedXml";
 
         doReturn(true).when(certificateServiceProfile).active();
@@ -84,6 +86,7 @@ class GetPatientCertificatesWithQAFromCertificateServiceTest {
             xmlMarshallerHelperMockedStatic.when(() -> XmlMarshallerHelper.unmarshal(anyString()))
                 .thenReturn(jaxbElement);
             doReturn(listCertificatesForCareWithQAResponseType).when(jaxbElement).getValue();
+            doReturn(expectedListItem).when(patientCertificatesWithQaService).get(request, list.getItem());
 
             final var actualListItem = getPatientCertificatesWithQAFromCertificateService.get(request);
             assertEquals(expectedListItem, actualListItem);

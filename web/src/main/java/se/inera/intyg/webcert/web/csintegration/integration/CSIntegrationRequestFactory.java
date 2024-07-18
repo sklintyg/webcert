@@ -48,12 +48,12 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXm
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificatePdfRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesWithQARequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitQuestionsRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageQueryCriteriaDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.PatientCertificatesWithQARequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.RenewCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ReplaceCertificateRequestDTO;
@@ -535,12 +535,10 @@ public class CSIntegrationRequestFactory {
             .build();
     }
 
-    public GetPatientCertificatesWithQARequestDTO getPatientCertificatesWithQARequestDTO(IntygWithNotificationsRequest request) {
-        return GetPatientCertificatesWithQARequestDTO.builder()
+    public PatientCertificatesWithQARequestDTO getPatientCertificatesWithQARequestDTO(IntygWithNotificationsRequest request) {
+        return PatientCertificatesWithQARequestDTO.builder()
             .personId(certificateServicePatientHelper.getPersonId(request.getPersonnummer()))
             .careProviderId(request.getVardgivarId())
-            .from(request.getStartDate())
-            .to(request.getEndDate())
             .unitIds(request.getEnhetId())
             .build();
     }

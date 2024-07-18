@@ -40,6 +40,7 @@ public class GetPatientCertificatesWithQAFromCertificateService {
     private final CertificateServiceProfile certificateServiceProfile;
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+    private final PatientCertificatesWithQaService patientCertificatesWithQaService;
 
     public List<ListItem> get(IntygWithNotificationsRequest request) {
         if (!certificateServiceProfile.active()) {
@@ -54,6 +55,6 @@ public class GetPatientCertificatesWithQAFromCertificateService {
         final var certificatesForCareWithQAResponseType = (ListCertificatesForCareWithQAResponseType) XmlMarshallerHelper.unmarshal(
             decodedXml).getValue();
 
-        return certificatesForCareWithQAResponseType.getList().getItem();
+        return patientCertificatesWithQaService.get(request, certificatesForCareWithQAResponseType.getList().getItem());
     }
 }
