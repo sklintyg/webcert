@@ -307,11 +307,13 @@ class CSIntegrationServiceTest {
             .certificate(CERTIFICATE)
             .build();
     private static final String LIST = "list";
-    private static final GetPatientCertificatesWithQAResponseDTO GET_PATIENT_CERTIFICATES_WITH_QA_RESPONSE_DTO = GetPatientCertificatesWithQAResponseDTO.builder()
-        .list(LIST)
-        .build();
-    private static final GetPatientCertificatesWithQARequestDTO GET_PATIENT_CERTIFICATES_WITH_QA_REQUEST_DTO = GetPatientCertificatesWithQARequestDTO.builder()
-        .build();
+    private static final GetPatientCertificatesWithQAResponseDTO GET_PATIENT_CERTIFICATES_WITH_QA_RESPONSE_DTO =
+        GetPatientCertificatesWithQAResponseDTO.builder()
+            .list(LIST)
+            .build();
+    private static final GetPatientCertificatesWithQARequestDTO GET_PATIENT_CERTIFICATES_WITH_QA_REQUEST_DTO =
+        GetPatientCertificatesWithQARequestDTO.builder()
+            .build();
 
 
     @Mock
