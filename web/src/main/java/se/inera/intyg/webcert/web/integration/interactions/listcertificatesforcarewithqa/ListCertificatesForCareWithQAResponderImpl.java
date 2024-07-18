@@ -25,10 +25,10 @@ import static se.inera.intyg.webcert.notification_sender.notifications.services.
 import java.util.Objects;
 import java.util.stream.Collectors;
 import org.apache.cxf.annotations.SchemaValidation;
-import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.support.modules.converter.InternalConverterUtil;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
+import se.inera.intyg.webcert.web.csintegration.patient.GetPatientCertificatesWithQAFromCertificateService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsRequest;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsResponse;
@@ -46,8 +46,14 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Handelse;
 @SchemaValidation
 public class ListCertificatesForCareWithQAResponderImpl implements ListCertificatesForCareWithQAResponderInterface {
 
-    @Autowired
-    private IntygService intygService;
+    private final IntygService intygService;
+    private final GetPatientCertificatesWithQAFromCertificateService getPatientCertificatesWithQAFromCertificateService;
+
+    public ListCertificatesForCareWithQAResponderImpl(IntygService intygService,
+        GetPatientCertificatesWithQAFromCertificateService getPatientCertificatesWithQAFromCertificateService) {
+        this.intygService = intygService;
+        this.getPatientCertificatesWithQAFromCertificateService = getPatientCertificatesWithQAFromCertificateService;
+    }
 
     @Override
     public ListCertificatesForCareWithQAResponseType listCertificatesForCareWithQA(String s, ListCertificatesForCareWithQAType request) {
@@ -74,7 +80,10 @@ public class ListCertificatesForCareWithQAResponderImpl implements ListCertifica
             builder = builder.setEndDate(request.getTomTidpunkt());
         }
 
-        java.util.List<IntygWithNotificationsResponse> intygWithNotifications = intygService.listCertificatesForCareWithQA(builder.build());
+        final var intygWithNotificationsRequest = builder.build();
+        java.util.List<IntygWithNotificationsResponse> intygWithNotifications = intygService.listCertificatesForCareWithQA(
+            intygWithNotificationsRequest
+        );
 
         for (IntygWithNotificationsResponse intygHolder : intygWithNotifications) {
             ListItem item = new ListItem();
@@ -90,6 +99,10 @@ public class ListCertificatesForCareWithQAResponderImpl implements ListCertifica
 
             list.getItem().add(item);
         }
+
+        list.getItem().addAll(
+            getPatientCertificatesWithQAFromCertificateService.get(intygWithNotificationsRequest)
+        );
         response.setList(list);
         return response;
     }

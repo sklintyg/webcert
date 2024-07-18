@@ -71,6 +71,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertif
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetListCertificatesResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesWithQARequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesWithQAResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
@@ -117,6 +119,7 @@ public class CSIntegrationService {
 
     private static final String CERTIFICATE_ENDPOINT_URL = "/api/certificate";
     private static final String INTERNAL_CERTIFICATE_ENDPOINT_URL = "/internalapi/certificate";
+    private static final String INTERNAL_PATIENT_ENDPOINT_URL = "/internalapi/patient/certificate";
     private static final String CITIZEN_ENDPOINT_URL = "/api/citizen/certificate";
     private static final String MESSAGE_ENDPOINT_URL = "/api/message";
     private static final String INTERNAL_MESSAGE_ENDPOINT_URL = "/internalapi/message";
@@ -694,5 +697,17 @@ public class CSIntegrationService {
         }
 
         return response.getCertificate();
+    }
+
+    public String getPatientCertificatesWithQA(GetPatientCertificatesWithQARequestDTO request) {
+        final var url = baseUrl + INTERNAL_PATIENT_ENDPOINT_URL + "/qa";
+
+        final var response = restTemplate.postForObject(url, request, GetPatientCertificatesWithQAResponseDTO.class);
+
+        if (response == null || response.getList() == null) {
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
+        }
+
+        return response.getList();
     }
 }

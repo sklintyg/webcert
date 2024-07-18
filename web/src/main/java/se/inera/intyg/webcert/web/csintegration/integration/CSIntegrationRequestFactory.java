@@ -48,6 +48,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXm
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificatePdfRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesWithQARequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitQuestionsRequestDTO;
@@ -77,6 +78,7 @@ import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitHelpe
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceIntegrationUserHelper;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserHelper;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
@@ -530,6 +532,16 @@ public class CSIntegrationRequestFactory {
             .careProvider(certificateServiceUnitHelper.getCareProvider())
             .user(certificateServiceUserHelper.get())
             .messagesQueryCriteria(messageQueryCriteriaDTO)
+            .build();
+    }
+
+    public GetPatientCertificatesWithQARequestDTO getPatientCertificatesWithQARequestDTO(IntygWithNotificationsRequest request) {
+        return GetPatientCertificatesWithQARequestDTO.builder()
+            .personId(certificateServicePatientHelper.getPersonId(request.getPersonnummer()))
+            .careProviderId(request.getVardgivarId())
+            .from(request.getStartDate())
+            .to(request.getEndDate())
+            .unitIds(request.getEnhetId())
             .build();
     }
 }
