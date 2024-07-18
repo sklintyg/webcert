@@ -2421,7 +2421,7 @@ class CSIntegrationServiceTest {
 
             verify(restTemplate).postForObject(captor.capture(), any(), any());
 
-            assertEquals("baseUrl/internalapi/patient/certificate/qa", captor.getValue());
+            assertEquals("baseUrl/internalapi/patient/certificates/qa", captor.getValue());
         }
     }
 }
