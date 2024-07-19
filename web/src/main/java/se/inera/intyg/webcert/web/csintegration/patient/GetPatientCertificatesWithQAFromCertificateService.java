@@ -51,7 +51,7 @@ public class GetPatientCertificatesWithQAFromCertificateService {
             csIntegrationRequestFactory.getPatientCertificatesWithQARequestDTO(request)
         );
 
-        final var decodedXml = new String(Base64.getDecoder().decode(encodedXml.getBytes()), StandardCharsets.UTF_8);
+        final var decodedXml = new String(Base64.getDecoder().decode(encodedXml.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8);
         final var certificatesForCareWithQAResponseType = (ListCertificatesForCareWithQAResponseType) XmlMarshallerHelper.unmarshal(
             decodedXml).getValue();
 
