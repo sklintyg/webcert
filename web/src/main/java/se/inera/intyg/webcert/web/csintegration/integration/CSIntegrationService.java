@@ -71,7 +71,6 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertif
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetListCertificatesResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesWithQAResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
@@ -82,6 +81,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageRes
 import se.inera.intyg.webcert.web.csintegration.integration.dto.InternalCertificateXmlResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageExistsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PatientCertificatesWithQARequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.PatientCertificatesWithQAResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.RenewCertificateRequestDTO;
@@ -702,7 +702,7 @@ public class CSIntegrationService {
     public String getPatientCertificatesWithQA(PatientCertificatesWithQARequestDTO request) {
         final var url = baseUrl + INTERNAL_PATIENT_ENDPOINT_URL + "/qa";
 
-        final var response = restTemplate.postForObject(url, request, GetPatientCertificatesWithQAResponseDTO.class);
+        final var response = restTemplate.postForObject(url, request, PatientCertificatesWithQAResponseDTO.class);
 
         if (response == null || response.getList() == null) {
             throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
