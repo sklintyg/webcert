@@ -38,20 +38,20 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 @ExtendWith(MockitoExtension.class)
-class PatientCertificatesWithQaServiceTest {
+class PatientListItemsWithQaServiceTest {
 
     private static final String CERTIFICATE_ID_1 = "CERTIFICATE_1";
     private static final String CERTIFICATE_ID_2 = "CERTIFICATE_2";
     @Mock
     NotificationService notificationService;
     @InjectMocks
-    PatientCertificatesWithQaService patientCertificatesWithQaService;
+    PatientListItemsWithQaService patientListItemsWithQaService;
 
     @Test
     void shallReturnEmptyListIfListItemsIsEmpty() {
         final var intygWithNotificationsRequest = new Builder().build();
         assertEquals(Collections.emptyList(),
-            patientCertificatesWithQaService.get(intygWithNotificationsRequest, Collections.emptyList()));
+            patientListItemsWithQaService.get(intygWithNotificationsRequest, Collections.emptyList()));
     }
 
     @Test
@@ -61,7 +61,7 @@ class PatientCertificatesWithQaServiceTest {
         final var expectedListItems = List.of(buildListItem(CERTIFICATE_ID_1), buildListItem(CERTIFICATE_ID_2));
         doReturn(notifications).when(notificationService).findNotifications(intygWithNotificationsRequest);
 
-        final var actualListItems = patientCertificatesWithQaService.get(intygWithNotificationsRequest, expectedListItems);
+        final var actualListItems = patientListItemsWithQaService.get(intygWithNotificationsRequest, expectedListItems);
         assertEquals(expectedListItems, actualListItems);
     }
 
@@ -75,7 +75,7 @@ class PatientCertificatesWithQaServiceTest {
 
         doReturn(notifications).when(notificationService).findNotifications(intygWithNotificationsRequest);
 
-        final var actualListItems = patientCertificatesWithQaService.get(intygWithNotificationsRequest, listItems);
+        final var actualListItems = patientListItemsWithQaService.get(intygWithNotificationsRequest, listItems);
         assertEquals(expectedListItems, actualListItems);
     }
 
@@ -85,7 +85,7 @@ class PatientCertificatesWithQaServiceTest {
         final var listItems = List.of(buildListItem(CERTIFICATE_ID_1), buildListItem(CERTIFICATE_ID_2));
         doReturn(Collections.emptyList()).when(notificationService).findNotifications(intygWithNotificationsRequest);
 
-        final var actualListItems = patientCertificatesWithQaService.get(intygWithNotificationsRequest, listItems);
+        final var actualListItems = patientListItemsWithQaService.get(intygWithNotificationsRequest, listItems);
         assertEquals(Collections.emptyList(), actualListItems);
     }
 

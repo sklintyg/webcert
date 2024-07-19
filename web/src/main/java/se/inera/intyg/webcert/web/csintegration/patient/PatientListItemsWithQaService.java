@@ -33,7 +33,7 @@ import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWith
 
 @Service
 @RequiredArgsConstructor
-public class PatientCertificatesWithQaService {
+public class PatientListItemsWithQaService {
 
     private final NotificationService notificationService;
 
@@ -46,15 +46,15 @@ public class PatientCertificatesWithQaService {
         final var notificationMap = allNotifications.stream()
             .collect(Collectors.groupingBy(Handelse::getIntygsId));
 
-        final var certificatesWithQA = listItems.stream()
+        final var listItemsWithQA = listItems.stream()
             .filter(listItem -> notificationMap.containsKey(listItem.getIntyg().getIntygsId().getExtension()))
             .collect(Collectors.toList());
 
-        certificatesWithQA.forEach(
+        listItemsWithQA.forEach(
             listItem -> decorateWithNotification(listItem, notificationMap.get(listItem.getIntyg().getIntygsId().getExtension()))
         );
 
-        return certificatesWithQA;
+        return listItemsWithQA;
     }
 
     private void decorateWithNotification(ListItem listItem, List<Handelse> handelse) {

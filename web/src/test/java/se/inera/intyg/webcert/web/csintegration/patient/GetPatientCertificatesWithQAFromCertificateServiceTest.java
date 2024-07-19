@@ -47,7 +47,7 @@ import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWith
 class GetPatientCertificatesWithQAFromCertificateServiceTest {
 
     @Mock
-    PatientCertificatesWithQaService patientCertificatesWithQaService;
+    PatientListItemsWithQaService patientListItemsWithQaService;
     @Mock
     CertificateServiceProfile certificateServiceProfile;
     @Mock
@@ -86,7 +86,7 @@ class GetPatientCertificatesWithQAFromCertificateServiceTest {
             xmlMarshallerHelperMockedStatic.when(() -> XmlMarshallerHelper.unmarshal(anyString()))
                 .thenReturn(jaxbElement);
             doReturn(listCertificatesForCareWithQAResponseType).when(jaxbElement).getValue();
-            doReturn(expectedListItem).when(patientCertificatesWithQaService).get(request, list.getItem());
+            doReturn(expectedListItem).when(patientListItemsWithQaService).get(request, list.getItem());
 
             final var actualListItem = getPatientCertificatesWithQAFromCertificateService.get(request);
             assertEquals(expectedListItem, actualListItem);
