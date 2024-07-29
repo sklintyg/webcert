@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.csintegration.integration;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.Base64;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -52,6 +53,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertifica
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitQuestionsRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.LockDraftsRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageQueryCriteriaDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PatientCertificatesWithQARequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateRequestDTO;
@@ -540,6 +542,13 @@ public class CSIntegrationRequestFactory {
             .personId(certificateServicePatientHelper.getPersonId(request.getPersonnummer()))
             .careProviderId(request.getVardgivarId())
             .unitIds(request.getEnhetId())
+            .build();
+    }
+
+    public LockDraftsRequestDTO getLockDraftsRequestDTO(int lockedAfterDay) {
+        final var cutoffDate = LocalDate.now().minusDays(lockedAfterDay).atStartOfDay();
+        return LockDraftsRequestDTO.builder()
+            .cutoffDate(cutoffDate)
             .build();
     }
 }

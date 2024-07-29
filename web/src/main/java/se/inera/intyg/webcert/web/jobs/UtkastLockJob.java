@@ -22,7 +22,6 @@ import java.time.LocalDate;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -35,23 +34,27 @@ public class UtkastLockJob {
     private static final String JOB_NAME = "UtkastLockJob.run";
     private static final String LOCK_AT_MOST = "PT10M"; //10 * 60 * 1000
     private static final String LOCK_AT_LEAST = "PT30S"; //30 * 1000
-
-
-    @Autowired
-    private UtkastService utkastService;
+    
+    private final UtkastService utkastService;
+    private final LockDraftsFromCertificateService lockDraftsFromCertificateService;
 
     @Value("${job.utkastlock.locked.after.day}")
     private int lockedAfterDay;
+
+    public UtkastLockJob(UtkastService utkastService, LockDraftsFromCertificateService lockDraftsFromCertificateService) {
+        this.utkastService = utkastService;
+        this.lockDraftsFromCertificateService = lockDraftsFromCertificateService;
+    }
 
     @Scheduled(cron = "${job.utkastlock.cron}")
     @SchedulerLock(name = JOB_NAME, lockAtLeastFor = LOCK_AT_LEAST, lockAtMostFor = LOCK_AT_MOST)
     public void run() {
         LOG.info("Staring job to set utkast to locked");
 
-        LocalDate today = LocalDate.now();
+        final var today = LocalDate.now();
+        final var lockedInWC = utkastService.lockOldDrafts(lockedAfterDay, today);
+        final var lockedInCS = lockDraftsFromCertificateService.lock(lockedAfterDay);
 
-        int numberOfLocked = utkastService.lockOldDrafts(lockedAfterDay, today);
-
-        LOG.info("{} utkast set to locked", numberOfLocked);
+        LOG.info("{} utkast set to locked - {} in Webcert - {} in CertificateService", lockedInWC + lockedInCS, lockedInWC, lockedInCS);
     }
 }

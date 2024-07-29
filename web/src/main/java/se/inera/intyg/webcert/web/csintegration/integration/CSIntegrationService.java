@@ -79,6 +79,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitQuestions
 import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.InternalCertificateXmlResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.LockDraftsRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.LockDraftsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageExistsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PatientCertificatesWithQARequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PatientCertificatesWithQAResponseDTO;
@@ -709,5 +711,17 @@ public class CSIntegrationService {
         }
 
         return response.getList();
+    }
+
+    public List<Certificate> lockDrafts(LockDraftsRequestDTO request) {
+        final var url = baseUrl + INTERNAL_CERTIFICATE_ENDPOINT_URL + "/lock";
+
+        final var response = restTemplate.postForObject(url, request, LockDraftsResponseDTO.class);
+
+        if (response == null) {
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
+        }
+
+        return response.getCertificates();
     }
 }
