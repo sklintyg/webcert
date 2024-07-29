@@ -25,17 +25,17 @@ import java.util.List;
 import lombok.Builder;
 import lombok.Value;
 import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.LockOldDraftsResponseDTO.LockOldDraftsResponseDTOBuilder;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.LockDraftsResponseDTO.LockDraftsResponseDTOBuilder;
 
-@JsonDeserialize(builder = LockOldDraftsResponseDTOBuilder.class)
+@JsonDeserialize(builder = LockDraftsResponseDTOBuilder.class)
 @Value
 @Builder
-public class LockOldDraftsResponseDTO {
+public class LockDraftsResponseDTO {
 
     List<Certificate> certificates;
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class LockOldDraftsResponseDTOBuilder {
+    public static class LockDraftsResponseDTOBuilder {
 
     }
 }

@@ -53,7 +53,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertifica
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitQuestionsRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.LockOldDraftsRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.LockDraftsRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageQueryCriteriaDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PatientCertificatesWithQARequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateRequestDTO;
@@ -545,10 +545,10 @@ public class CSIntegrationRequestFactory {
             .build();
     }
 
-    public LockOldDraftsRequestDTO getLockOldDraftsRequestDTO(int lockedAfterDay) {
-        final var cuttoffDate = LocalDate.now().minusDays(lockedAfterDay).atStartOfDay();
-        return LockOldDraftsRequestDTO.builder()
-            .cutoffDate(cuttoffDate)
+    public LockDraftsRequestDTO getLockDraftsRequestDTO(int lockedAfterDay) {
+        final var cutoffDate = LocalDate.now().minusDays(lockedAfterDay).atStartOfDay();
+        return LockDraftsRequestDTO.builder()
+            .cutoffDate(cutoffDate)
             .build();
     }
 }

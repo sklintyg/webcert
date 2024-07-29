@@ -2078,7 +2078,7 @@ class CSIntegrationRequestFactoryTest {
         @Test
         void shouldSetCuttoffDate() {
             final var expectedCuttoffDate = LocalDate.now().minusDays(5).atStartOfDay();
-            final var actualRequest = csIntegrationRequestFactory.getLockOldDraftsRequestDTO(5);
+            final var actualRequest = csIntegrationRequestFactory.getLockDraftsRequestDTO(5);
             assertEquals(expectedCuttoffDate, actualRequest.getCutoffDate());
         }
     }

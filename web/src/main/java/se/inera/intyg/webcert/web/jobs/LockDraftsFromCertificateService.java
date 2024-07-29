@@ -40,8 +40,8 @@ public class LockDraftsFromCertificateService {
             return 0;
         }
 
-        final var certificates = csIntegrationService.lockOldDrafts(
-            csIntegrationRequestFactory.getLockOldDraftsRequestDTO(lockedAfterDay)
+        final var certificates = csIntegrationService.lockDrafts(
+            csIntegrationRequestFactory.getLockDraftsRequestDTO(lockedAfterDay)
         );
 
         certificates.forEach(certificate ->

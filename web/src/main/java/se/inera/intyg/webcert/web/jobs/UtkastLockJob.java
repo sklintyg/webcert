@@ -34,8 +34,7 @@ public class UtkastLockJob {
     private static final String JOB_NAME = "UtkastLockJob.run";
     private static final String LOCK_AT_MOST = "PT10M"; //10 * 60 * 1000
     private static final String LOCK_AT_LEAST = "PT30S"; //30 * 1000
-
-
+    
     private final UtkastService utkastService;
     private final LockDraftsFromCertificateService lockDraftsFromCertificateService;
 
@@ -52,10 +51,10 @@ public class UtkastLockJob {
     public void run() {
         LOG.info("Staring job to set utkast to locked");
 
-        LocalDate today = LocalDate.now();
+        final var today = LocalDate.now();
+        final var lockedInWC = utkastService.lockOldDrafts(lockedAfterDay, today);
+        final var lockedInCS = lockDraftsFromCertificateService.lock(lockedAfterDay);
 
-        int numberOfLocked = utkastService.lockOldDrafts(lockedAfterDay, today) + lockDraftsFromCertificateService.lock(lockedAfterDay);
-
-        LOG.info("{} utkast set to locked", numberOfLocked);
+        LOG.info("{} utkast set to locked - {} in Webcert - {} in CertificateService", lockedInWC + lockedInCS, lockedInWC, lockedInCS);
     }
 }
