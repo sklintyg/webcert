@@ -101,6 +101,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.InternalCertific
 import se.inera.intyg.webcert.web.csintegration.integration.dto.LockOldDraftsRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.LockOldDraftsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageExistsResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.PatientCertificatesWithQARequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.PatientCertificatesWithQAResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.RenewCertificateRequestDTO;
@@ -305,6 +307,14 @@ class CSIntegrationServiceTest {
     private static final ForwardCertificateResponseDTO FORWARD_CERTIFICATE_RESPONSE_DTO =
         ForwardCertificateResponseDTO.builder()
             .certificate(CERTIFICATE)
+            .build();
+    private static final String LIST = "list";
+    private static final PatientCertificatesWithQAResponseDTO GET_PATIENT_CERTIFICATES_WITH_QA_RESPONSE_DTO =
+        PatientCertificatesWithQAResponseDTO.builder()
+            .list(LIST)
+            .build();
+    private static final PatientCertificatesWithQARequestDTO GET_PATIENT_CERTIFICATES_WITH_QA_REQUEST_DTO =
+        PatientCertificatesWithQARequestDTO.builder()
             .build();
     private static final int AMOUNT = 5;
     private static final LockOldDraftsResponseDTO LOCK_OLD_DRAFTS_RESPONSE_DTO = LockOldDraftsResponseDTO.builder()
@@ -2373,6 +2383,53 @@ class CSIntegrationServiceTest {
             verify(restTemplate).postForObject(captor.capture(), any(), any());
 
             assertEquals("baseUrl/api/certificate/" + ID + "/forward", captor.getValue());
+        }
+    }
+
+    @Nested
+    class GetPatientCertificatesWithQATest {
+
+        @Test
+        void shouldPreformPostUsingRequest() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(GET_PATIENT_CERTIFICATES_WITH_QA_RESPONSE_DTO);
+            final var captor = ArgumentCaptor.forClass(PatientCertificatesWithQARequestDTO.class);
+
+            csIntegrationService.getPatientCertificatesWithQA(GET_PATIENT_CERTIFICATES_WITH_QA_REQUEST_DTO);
+            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+
+            assertEquals(GET_PATIENT_CERTIFICATES_WITH_QA_REQUEST_DTO, captor.getValue());
+        }
+
+        @Test
+        void shouldReturnString() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(GET_PATIENT_CERTIFICATES_WITH_QA_RESPONSE_DTO);
+            final var response = csIntegrationService.getPatientCertificatesWithQA(GET_PATIENT_CERTIFICATES_WITH_QA_REQUEST_DTO);
+
+            assertEquals(LIST, response);
+        }
+
+        @Test
+        void shouldThrowIfResponseIsNull() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(null);
+            assertThrows(IllegalStateException.class,
+                () -> csIntegrationService.getPatientCertificatesWithQA(GET_PATIENT_CERTIFICATES_WITH_QA_REQUEST_DTO));
+        }
+
+        @Test
+        void shouldSetUrlCorrect() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(GET_PATIENT_CERTIFICATES_WITH_QA_RESPONSE_DTO);
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            csIntegrationService.getPatientCertificatesWithQA(GET_PATIENT_CERTIFICATES_WITH_QA_REQUEST_DTO);
+
+            verify(restTemplate).postForObject(captor.capture(), any(), any());
+
+            assertEquals("baseUrl/internalapi/patient/certificates/qa", captor.getValue());
         }
     }
 

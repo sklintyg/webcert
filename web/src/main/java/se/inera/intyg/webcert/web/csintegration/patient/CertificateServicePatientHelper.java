@@ -50,7 +50,7 @@ public class CertificateServicePatientHelper {
             .build();
     }
 
-    private PersonIdDTO getPersonId(Personnummer patientId) {
+    public PersonIdDTO getPersonId(Personnummer patientId) {
         return new PersonIdDTO(
             isCoordinationNumber(patientId) ? PersonIdType.COORDINATION_NUMBER : PersonIdType.PERSONAL_IDENTITY_NUMBER,
             patientId.getOriginalPnr()

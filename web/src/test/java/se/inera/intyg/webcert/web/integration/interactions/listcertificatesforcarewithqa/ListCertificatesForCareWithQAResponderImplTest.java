@@ -36,17 +36,21 @@ import se.inera.intyg.common.support.modules.support.api.notification.ArendeCoun
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
+import se.inera.intyg.webcert.web.csintegration.patient.GetPatientCertificatesWithQAFromCertificateService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsRequest;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsResponse;
 import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.ListCertificatesForCareWithQAResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.ListCertificatesForCareWithQAType;
+import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.ListItem;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.PersonId;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ListCertificatesForCareWithQAResponderImplTest {
 
+    @Mock
+    private GetPatientCertificatesWithQAFromCertificateService getPatientCertificatesWithQAFromCertificateService;
     @Mock
     private IntygService intygService;
 
@@ -69,13 +73,7 @@ public class ListCertificatesForCareWithQAResponderImplTest {
             new IntygWithNotificationsResponse(null, Arrays.asList(handelse), new ArendeCount(1, 1, 1, 1),
                 new ArendeCount(2, 2, 2, 2), reference)));
 
-        ListCertificatesForCareWithQAType request = new ListCertificatesForCareWithQAType();
-        PersonId personId = new PersonId();
-        personId.setExtension(personnummer.getPersonnummer());
-        request.setPersonId(personId);
-        HsaId hsaId = new HsaId();
-        hsaId.setExtension(enhet);
-        request.getEnhetsId().add(hsaId);
+        final var request = getListCertificatesForCareWithQATypeRequest(personnummer, enhet);
 
         ListCertificatesForCareWithQAResponseType response = responder.listCertificatesForCareWithQA("logicalAdress", request);
 
@@ -90,6 +88,40 @@ public class ListCertificatesForCareWithQAResponderImplTest {
         assertEquals(HandelsekodEnum.SKAPAT.name(),
             response.getList().getItem().get(0).getHandelser().getHandelse().get(0).getHandelsekod().getCode());
         assertEquals(ArendeAmne.AVSTMN.name(), response.getList().getItem().get(0).getHandelser().getHandelse().get(0).getAmne().getCode());
+    }
+
+    @Test
+    public void testListCertificatesForCareWithQAFromCertificateService() {
+        final var personnummer = Personnummer.createPersonnummer("191212121212").get();
+        final var enhet = "enhetHsaId";
+        final var deadline = LocalDate.of(2017, 1, 1);
+        Handelse handelse = new Handelse();
+        handelse.setCode(HandelsekodEnum.SKAPAT);
+        handelse.setTimestamp(LocalDateTime.now());
+        handelse.setAmne(ArendeAmne.AVSTMN);
+        handelse.setSistaDatumForSvar(deadline);
+
+        final var expectedListItem = new ListItem();
+        when(getPatientCertificatesWithQAFromCertificateService.get(any(IntygWithNotificationsRequest.class))).thenReturn(
+            java.util.List.of(expectedListItem)
+        );
+
+        final var request = getListCertificatesForCareWithQATypeRequest(personnummer, enhet);
+
+        final var response = responder.listCertificatesForCareWithQA("logicalAdress", request);
+
+        assertEquals(expectedListItem, response.getList().getItem().get(0));
+    }
+
+    private static ListCertificatesForCareWithQAType getListCertificatesForCareWithQATypeRequest(Personnummer personnummer, String enhet) {
+        ListCertificatesForCareWithQAType request = new ListCertificatesForCareWithQAType();
+        PersonId personId = new PersonId();
+        personId.setExtension(personnummer.getPersonnummer());
+        request.setPersonId(personId);
+        HsaId hsaId = new HsaId();
+        hsaId.setExtension(enhet);
+        request.getEnhetsId().add(hsaId);
+        return request;
     }
 
     @Test

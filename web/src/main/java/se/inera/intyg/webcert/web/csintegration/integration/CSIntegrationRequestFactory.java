@@ -55,6 +55,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitQuestions
 import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.LockOldDraftsRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageQueryCriteriaDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.PatientCertificatesWithQARequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.RenewCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ReplaceCertificateRequestDTO;
@@ -79,6 +80,7 @@ import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitHelpe
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceIntegrationUserHelper;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserHelper;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
+import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
@@ -532,6 +534,14 @@ public class CSIntegrationRequestFactory {
             .careProvider(certificateServiceUnitHelper.getCareProvider())
             .user(certificateServiceUserHelper.get())
             .messagesQueryCriteria(messageQueryCriteriaDTO)
+            .build();
+    }
+
+    public PatientCertificatesWithQARequestDTO getPatientCertificatesWithQARequestDTO(IntygWithNotificationsRequest request) {
+        return PatientCertificatesWithQARequestDTO.builder()
+            .personId(certificateServicePatientHelper.getPersonId(request.getPersonnummer()))
+            .careProviderId(request.getVardgivarId())
+            .unitIds(request.getEnhetId())
             .build();
     }
 
