@@ -316,7 +316,6 @@ class CSIntegrationServiceTest {
     private static final PatientCertificatesWithQARequestDTO GET_PATIENT_CERTIFICATES_WITH_QA_REQUEST_DTO =
         PatientCertificatesWithQARequestDTO.builder()
             .build();
-    private static final int AMOUNT = 5;
     private static final LockDraftsResponseDTO LOCK_OLD_DRAFTS_RESPONSE_DTO = LockDraftsResponseDTO.builder()
         .certificates(List.of(CERTIFICATE)).build();
     private static final LockDraftsRequestDTO LOCK_OLD_DRAFTS_REQUEST_DTO = LockDraftsRequestDTO.builder().build();
@@ -2476,7 +2475,7 @@ class CSIntegrationServiceTest {
 
             verify(restTemplate).postForObject(captor.capture(), any(), any());
 
-            assertEquals("baseUrl/internalapi/certificate/lockOldDrafts", captor.getValue());
+            assertEquals("baseUrl/internalapi/certificate/lock", captor.getValue());
         }
     }
 }

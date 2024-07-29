@@ -124,6 +124,15 @@ class ListIntygEntryConverterTest {
     }
 
     @Test
+    void shouldConvertStatusLockedDraft() {
+        final var certificate = CertificateFacadeTestHelper.createCertificateTypeWithVersion("type",
+            CertificateStatus.LOCKED, true, "typeVersion");
+
+        final var response = listIntygEntryConverter.convert(certificate);
+        assertEquals(UtkastStatus.DRAFT_LOCKED.name(), response.getStatus());
+    }
+
+    @Test
     void shouldConvertStatusRevoked() {
         final var certificate = CertificateFacadeTestHelper.createCertificateTypeWithVersion("type",
             CertificateStatus.REVOKED, true, "typeVersion");

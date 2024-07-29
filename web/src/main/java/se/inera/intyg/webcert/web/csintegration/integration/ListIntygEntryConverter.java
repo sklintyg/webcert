@@ -104,6 +104,10 @@ public class ListIntygEntryConverter {
             return UtkastStatus.SIGNED.toString();
         }
 
+        if (status == CertificateStatus.LOCKED) {
+            return UtkastStatus.DRAFT_LOCKED.toString();
+        }
+
         return null;
     }
 
