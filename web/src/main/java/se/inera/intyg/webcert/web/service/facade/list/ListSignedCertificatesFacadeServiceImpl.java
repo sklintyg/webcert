@@ -87,9 +87,9 @@ public class ListSignedCertificatesFacadeServiceImpl implements ListSignedCertif
             .collect(Collectors.toList());
 
         final var mergedList = Stream.concat(
-                convertedListFromWC.stream(),
-                listFromCS.stream()
-            ).collect(Collectors.toList());
+            convertedListFromWC.stream(),
+            listFromCS.stream()
+        ).collect(Collectors.toList());
 
         final var sortedList = listSortHelper.sort(mergedList, ListFilterHelper.getOrderBy(filter), convertedFilter.getOrderAscending());
         final var paginatedList = getSubList(sortedList, startFrom, pageSize);
@@ -106,7 +106,7 @@ public class ListSignedCertificatesFacadeServiceImpl implements ListSignedCertif
         if (pageSize > certificates.size()) {
             return certificates;
         } else {
-            int endPoint = Math.min(certificates.size(), startFrom + pageSize);
+            final var endPoint = Math.min(certificates.size(), startFrom + pageSize);
             return certificates.subList(startFrom, endPoint);
         }
     }
