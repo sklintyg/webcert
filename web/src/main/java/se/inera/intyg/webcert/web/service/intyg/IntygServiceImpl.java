@@ -674,6 +674,7 @@ public class IntygServiceImpl implements IntygService {
         return intygData.isRevoked();
     }
 
+    @Override
     public List<IntygWithNotificationsResponse> listCertificatesForCareWithQA(IntygWithNotificationsRequest request,
         List<String> certificateIdsFromCS) {
         final var intygWithNotificationsResponses = new ArrayList<IntygWithNotificationsResponse>();
