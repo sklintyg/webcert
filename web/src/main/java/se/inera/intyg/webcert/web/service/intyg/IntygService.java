@@ -169,7 +169,8 @@ public interface IntygService {
      * Gathers the information required to return the list with notifications and creates a list of
      * IntygWithNotificationsResponse objects.
      */
-    List<IntygWithNotificationsResponse> listCertificatesForCareWithQA(IntygWithNotificationsRequest request);
+    List<IntygWithNotificationsResponse> listCertificatesForCareWithQA(IntygWithNotificationsRequest request,
+        List<String> certificateIdsFromCS);
 
     /**
      * Gets the certificate's type from utkast entity or Intygstjanst.

@@ -35,6 +35,8 @@ import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWith
 import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.ListCertificatesForCareWithQAType;
 import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.ListItem;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.IIType;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 @SchemaValidation
 public class ListCertificatesForCareWithQAResponderImpl implements ListCertificatesForCareWithQAResponderInterface {
@@ -74,8 +76,14 @@ public class ListCertificatesForCareWithQAResponderImpl implements ListCertifica
         }
 
         final var intygWithNotificationsRequest = builder.build();
+        final var listItemsFromCS = getPatientCertificatesWithQAFromCertificateService.get(intygWithNotificationsRequest);
         java.util.List<IntygWithNotificationsResponse> intygWithNotifications = intygService.listCertificatesForCareWithQA(
-            intygWithNotificationsRequest
+            intygWithNotificationsRequest,
+            listItemsFromCS.stream()
+                .map(ListItem::getIntyg)
+                .map(Intyg::getIntygsId)
+                .map(IIType::getExtension)
+                .collect(Collectors.toList())
         );
 
         for (IntygWithNotificationsResponse intygHolder : intygWithNotifications) {
@@ -93,9 +101,7 @@ public class ListCertificatesForCareWithQAResponderImpl implements ListCertifica
             list.getItem().add(item);
         }
 
-        list.getItem().addAll(
-            getPatientCertificatesWithQAFromCertificateService.get(intygWithNotificationsRequest)
-        );
+        list.getItem().addAll(listItemsFromCS);
         response.setList(list);
         return response;
     }

@@ -680,8 +680,8 @@ public class IntygServiceImpl implements IntygService {
         return intygData.isRevoked();
     }
 
-    @Override
-    public List<IntygWithNotificationsResponse> listCertificatesForCareWithQA(IntygWithNotificationsRequest request) {
+    public List<IntygWithNotificationsResponse> listCertificatesForCareWithQA(IntygWithNotificationsRequest request,
+        List<String> certificateIdsFromCS) {
         final var intygWithNotificationsResponses = new ArrayList<IntygWithNotificationsResponse>();
 
         final var allNotifications = notificationService.findNotifications(request);
@@ -691,10 +691,10 @@ public class IntygServiceImpl implements IntygService {
         final var draftMap = getDraftMap(notificationCertificateIdHash.keySet());
 
         for (var certificateId : notificationCertificateIdHash.keySet()) {
-            if (certificateServiceProfile.active() && Boolean.TRUE.equals(csIntegrationService.certificateExists(certificateId))) {
+            if (certificateIdsFromCS.contains(certificateId)) {
                 continue;
             }
-
+            
             final var notifications = notificationCertificateIdHash.get(certificateId);
 
             IntygWithNotificationsResponse response = null;
