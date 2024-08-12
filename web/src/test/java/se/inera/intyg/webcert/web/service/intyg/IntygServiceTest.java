@@ -111,6 +111,8 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
+import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
@@ -165,6 +167,11 @@ public class IntygServiceTest {
     private VardpersonReferens vardpersonReferens;
 
     private String json;
+
+    @Mock
+    private CertificateServiceProfile certificateServiceProfile;
+    @Mock
+    private CSIntegrationService csIntegrationService;
 
     @Mock
     private IntygModuleRegistry moduleRegistry;
@@ -1210,6 +1217,40 @@ public class IntygServiceTest {
         assertEquals(7, res.get(0).getReceivedQuestions().getBesvarade());
         assertEquals(8, res.get(0).getReceivedQuestions().getHanterade());
         assertEquals(REFERENCE, res.get(0).getRef());
+    }
+
+    @Test
+    public void shallExcludeCertificatesFromCertificateService() throws Exception {
+        final List<String> enhetList = Collections.singletonList("enhet");
+
+        final String intygType = "intygType";
+        final String intygId = "intygId";
+
+        final LocalDateTime localDateTime = LocalDateTime.of(2017, Month.JANUARY, 1, 1, 1);
+
+        Handelse handelse = new Handelse();
+        handelse.setTimestamp(localDateTime);
+        handelse.setCode(HandelsekodEnum.SKAPAT);
+        handelse.setIntygsId(intygId);
+
+        Fk7263Utlatande utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
+
+        ArendeCount sent = new ArendeCount(1, 2, 3, 4);
+        ArendeCount received = new ArendeCount(5, 6, 7, 8);
+
+        when(moduleRegistry.listAllModules()).thenReturn(
+            Collections.singletonList(new IntygModule(intygType, "", "", "", "", "", "", "", "", false)));
+        when(utkastRepository.findAllById(any())).thenReturn(Collections.singletonList(getDraft(intygId)));
+        when(notificationService.findNotifications(any())).thenReturn(Collections.singletonList(handelse));
+        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
+        when(fragorOchSvarCreator.createArenden(eq(intygId), anyString())).thenReturn(Pair.of(sent, received));
+        when(certificateServiceProfile.active()).thenReturn(true);
+        when(csIntegrationService.certificateExists(intygId)).thenReturn(true);
+        List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(
+            new IntygWithNotificationsRequest.Builder().setPersonnummer(PERSNR).setEnhetId(enhetList).build());
+
+        assertNotNull(res);
+        assertEquals(0, res.size());
     }
 
     @Test
