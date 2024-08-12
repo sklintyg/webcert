@@ -21,11 +21,13 @@ package se.inera.intyg.webcert.web.integration.interactions.listcertificatesforc
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -44,7 +46,9 @@ import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWith
 import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.ListCertificatesForCareWithQAType;
 import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.ListItem;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.PersonId;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ListCertificatesForCareWithQAResponderImplTest {
@@ -69,9 +73,12 @@ public class ListCertificatesForCareWithQAResponderImplTest {
         handelse.setAmne(ArendeAmne.AVSTMN);
         handelse.setSistaDatumForSvar(deadline);
 
-        when(intygService.listCertificatesForCareWithQA(any(IntygWithNotificationsRequest.class))).thenReturn(Arrays.asList(
-            new IntygWithNotificationsResponse(null, Arrays.asList(handelse), new ArendeCount(1, 1, 1, 1),
-                new ArendeCount(2, 2, 2, 2), reference)));
+        when(getPatientCertificatesWithQAFromCertificateService.get(any(IntygWithNotificationsRequest.class))).thenReturn(
+            Collections.emptyList());
+        when(intygService.listCertificatesForCareWithQA(any(IntygWithNotificationsRequest.class), eq(Collections.emptyList()))).thenReturn(
+            Arrays.asList(
+                new IntygWithNotificationsResponse(null, Arrays.asList(handelse), new ArendeCount(1, 1, 1, 1),
+                    new ArendeCount(2, 2, 2, 2), reference)));
 
         final var request = getListCertificatesForCareWithQATypeRequest(personnummer, enhet);
 
@@ -102,6 +109,11 @@ public class ListCertificatesForCareWithQAResponderImplTest {
         handelse.setSistaDatumForSvar(deadline);
 
         final var expectedListItem = new ListItem();
+        final var intyg = new Intyg();
+        final var intygsId = new IntygId();
+        intygsId.setExtension("certificateId");
+        intyg.setIntygsId(intygsId);
+        expectedListItem.setIntyg(intyg);
         when(getPatientCertificatesWithQAFromCertificateService.get(any(IntygWithNotificationsRequest.class))).thenReturn(
             java.util.List.of(expectedListItem)
         );
