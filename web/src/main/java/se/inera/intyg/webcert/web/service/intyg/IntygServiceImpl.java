@@ -82,6 +82,8 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
+import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
@@ -202,6 +204,10 @@ public class IntygServiceImpl implements IntygService {
 
     @Autowired
     private IntygTextsService intygTextsService;
+    @Autowired
+    private CertificateServiceProfile certificateServiceProfile;
+    @Autowired
+    private CSIntegrationService csIntegrationService;
 
     private ChronoLocalDateTime sekretessmarkeringStartDatum;
 
@@ -685,6 +691,10 @@ public class IntygServiceImpl implements IntygService {
         final var draftMap = getDraftMap(notificationCertificateIdHash.keySet());
 
         for (var certificateId : notificationCertificateIdHash.keySet()) {
+            if (certificateServiceProfile.active() && Boolean.TRUE.equals(csIntegrationService.certificateExists(certificateId))) {
+                continue;
+            }
+
             final var notifications = notificationCertificateIdHash.get(certificateId);
 
             IntygWithNotificationsResponse response = null;
