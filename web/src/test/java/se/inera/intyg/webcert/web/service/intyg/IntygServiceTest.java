@@ -1221,32 +1221,23 @@ public class IntygServiceTest {
 
     @Test
     public void shallExcludeCertificatesFromCertificateService() throws Exception {
-        final List<String> enhetList = Collections.singletonList("enhet");
+        final var enhetList = Collections.singletonList("enhet");
+        final var intygType = "intygType";
+        final var intygId = "intygId";
 
-        final String intygType = "intygType";
-        final String intygId = "intygId";
-
-        final LocalDateTime localDateTime = LocalDateTime.of(2017, Month.JANUARY, 1, 1, 1);
-
-        Handelse handelse = new Handelse();
+        final var localDateTime = LocalDateTime.of(2017, Month.JANUARY, 1, 1, 1);
+        final var handelse = new Handelse();
         handelse.setTimestamp(localDateTime);
         handelse.setCode(HandelsekodEnum.SKAPAT);
         handelse.setIntygsId(intygId);
-
-        Fk7263Utlatande utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
-
-        ArendeCount sent = new ArendeCount(1, 2, 3, 4);
-        ArendeCount received = new ArendeCount(5, 6, 7, 8);
 
         when(moduleRegistry.listAllModules()).thenReturn(
             Collections.singletonList(new IntygModule(intygType, "", "", "", "", "", "", "", "", false)));
         when(utkastRepository.findAllById(any())).thenReturn(Collections.singletonList(getDraft(intygId)));
         when(notificationService.findNotifications(any())).thenReturn(Collections.singletonList(handelse));
-        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
-        when(fragorOchSvarCreator.createArenden(eq(intygId), anyString())).thenReturn(Pair.of(sent, received));
         when(certificateServiceProfile.active()).thenReturn(true);
         when(csIntegrationService.certificateExists(intygId)).thenReturn(true);
-        List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(
+        final var res = intygService.listCertificatesForCareWithQA(
             new IntygWithNotificationsRequest.Builder().setPersonnummer(PERSNR).setEnhetId(enhetList).build());
 
         assertNotNull(res);
