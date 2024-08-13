@@ -729,7 +729,7 @@ public class CSIntegrationService {
     }
 
     public UserStatisticsDTO getStatistics(StatisticsRequestDTO request) {
-        final var url = baseUrl + UNIT_ENDPOINT_URL + "/statistics";
+        final var url = baseUrl + UNIT_ENDPOINT_URL + "/certificates/statistics";
 
         final var response = restTemplate.postForObject(url, request, StatisticsResponseDTO.class);
 

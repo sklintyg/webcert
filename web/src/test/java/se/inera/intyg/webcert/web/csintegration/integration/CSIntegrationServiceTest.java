@@ -2530,7 +2530,7 @@ class CSIntegrationServiceTest {
 
             verify(restTemplate).postForObject(captor.capture(), any(), any());
 
-            assertEquals("baseUrl/api/unit/statistics", captor.getValue());
+            assertEquals("baseUrl/api/unit/certificates/statistics", captor.getValue());
         }
     }
 }
