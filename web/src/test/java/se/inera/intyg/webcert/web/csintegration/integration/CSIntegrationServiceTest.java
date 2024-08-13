@@ -124,8 +124,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.SendMessageRespo
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateWithoutSignatureRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.StatisticsRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.StatisticsResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.UnitStatisticsRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.UnitStatisticsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.message.dto.IncomingMessageRequestDTO;
@@ -323,10 +323,10 @@ class CSIntegrationServiceTest {
         .certificates(List.of(CERTIFICATE)).build();
     private static final LockDraftsRequestDTO LOCK_OLD_DRAFTS_REQUEST_DTO = LockDraftsRequestDTO.builder().build();
     private static final UserStatisticsDTO USER_STATISTICS = new UserStatisticsDTO();
-    private static final StatisticsResponseDTO STATISTICS_RESPONSE_DTO = StatisticsResponseDTO.builder()
+    private static final UnitStatisticsResponseDTO STATISTICS_RESPONSE_DTO = UnitStatisticsResponseDTO.builder()
         .userStatistics(USER_STATISTICS)
         .build();
-    private static final StatisticsRequestDTO STATISTICS_REQUEST_DTO = StatisticsRequestDTO.builder().build();
+    private static final UnitStatisticsRequestDTO STATISTICS_REQUEST_DTO = UnitStatisticsRequestDTO.builder().build();
 
 
     @Mock
@@ -2494,7 +2494,7 @@ class CSIntegrationServiceTest {
         void shouldPreformPostUsingRequest() {
             when(restTemplate.postForObject(anyString(), any(), any()))
                 .thenReturn(STATISTICS_RESPONSE_DTO);
-            final var captor = ArgumentCaptor.forClass(StatisticsRequestDTO.class);
+            final var captor = ArgumentCaptor.forClass(UnitStatisticsRequestDTO.class);
 
             csIntegrationService.getStatistics(STATISTICS_REQUEST_DTO);
             verify(restTemplate).postForObject(anyString(), captor.capture(), any());

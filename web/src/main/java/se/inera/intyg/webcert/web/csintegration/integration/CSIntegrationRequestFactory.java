@@ -70,7 +70,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.SendCertificateR
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SendMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateWithoutSignatureRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.StatisticsRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.UnitStatisticsRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.message.MessageRequestConverter;
 import se.inera.intyg.webcert.web.csintegration.message.dto.IncomingMessageRequestDTO;
@@ -554,8 +554,8 @@ public class CSIntegrationRequestFactory {
             .build();
     }
 
-    public StatisticsRequestDTO getStatisticsRequest(List<String> unitIds, List<String> selectedUnitIds) {
-        return StatisticsRequestDTO.builder()
+    public UnitStatisticsRequestDTO getStatisticsRequest(List<String> unitIds, List<String> selectedUnitIds) {
+        return UnitStatisticsRequestDTO.builder()
             .unit(certificateServiceUnitHelper.getUnit())
             .careUnit(certificateServiceUnitHelper.getCareUnit())
             .careProvider(certificateServiceUnitHelper.getCareProvider())

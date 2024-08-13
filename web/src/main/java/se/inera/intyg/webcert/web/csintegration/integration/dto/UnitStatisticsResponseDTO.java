@@ -23,18 +23,18 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.StatisticsResponseDTO.StatisticsResponseDTOBuilder;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.UnitStatisticsResponseDTO.UnitStatisticsResponseDTOBuilder;
 import se.inera.intyg.webcert.web.service.facade.user.UserStatisticsDTO;
 
-@JsonDeserialize(builder = StatisticsResponseDTOBuilder.class)
+@JsonDeserialize(builder = UnitStatisticsResponseDTOBuilder.class)
 @Value
 @Builder
-public class StatisticsResponseDTO {
+public class UnitStatisticsResponseDTO {
 
     UserStatisticsDTO userStatistics;
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class StatisticsResponseDTOBuilder {
+    public static class UnitStatisticsResponseDTOBuilder {
 
     }
 }

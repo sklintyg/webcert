@@ -36,7 +36,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.StatisticsRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.UnitStatisticsRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.user.UnitStatisticsDTO;
 import se.inera.intyg.webcert.web.service.facade.user.UserStatisticsDTO;
@@ -79,7 +79,7 @@ class CertificateServiceStatisticServiceTest {
         @BeforeEach
         void setUp() {
             final var vardenhet = new Vardenhet();
-            final var statisticsRequestDTO = StatisticsRequestDTO.builder().build();
+            final var statisticsRequestDTO = UnitStatisticsRequestDTO.builder().build();
             final var userStatisticsDTO = buildUserStatisticsDTO();
             doReturn(statisticsRequestDTO).when(csIntegrationRequestFactory).getStatisticsRequest(UNIT_IDS, SELECTED_UNIT_IDS);
             doReturn(userStatisticsDTO).when(csIntegrationService).getStatistics(statisticsRequestDTO);
@@ -112,13 +112,13 @@ class CertificateServiceStatisticServiceTest {
 
     @Test
     void shallMergeUnitStatistics() {
-        final var statisticsRequestDTO = StatisticsRequestDTO.builder().build();
+        final var statisticsRequestDTO = UnitStatisticsRequestDTO.builder().build();
         final var userStatisticsDTOFromCS = buildUserStatisticsDTO();
         doReturn(statisticsRequestDTO).when(csIntegrationRequestFactory).getStatisticsRequest(UNIT_IDS, SELECTED_UNIT_IDS);
         doReturn(userStatisticsDTOFromCS).when(csIntegrationService).getStatistics(statisticsRequestDTO);
         doReturn(true).when(certificateServiceProfile).active();
         doReturn(SELECTED_UNIT_IDS).when(user).getIdsOfSelectedVardenhet();
-        
+
         final var userStatisticsDTO = buildUserStatisticsDTO();
         certificateServiceStatisticService.add(userStatisticsDTO, UNIT_IDS, user);
         assertAll(

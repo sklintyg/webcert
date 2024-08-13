@@ -24,14 +24,14 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.util.List;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.StatisticsRequestDTO.StatisticsRequestDTOBuilder;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.UnitStatisticsRequestDTO.UnitStatisticsRequestDTOBuilder;
 import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitDTO;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserDTO;
 
-@JsonDeserialize(builder = StatisticsRequestDTOBuilder.class)
+@JsonDeserialize(builder = UnitStatisticsRequestDTOBuilder.class)
 @Value
 @Builder
-public class StatisticsRequestDTO {
+public class UnitStatisticsRequestDTO {
 
     CertificateServiceUserDTO user;
     CertificateServiceUnitDTO unit;
@@ -41,7 +41,7 @@ public class StatisticsRequestDTO {
     List<String> selectedUnitIds;
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class StatisticsRequestDTOBuilder {
+    public static class UnitStatisticsRequestDTOBuilder {
 
     }
 }
