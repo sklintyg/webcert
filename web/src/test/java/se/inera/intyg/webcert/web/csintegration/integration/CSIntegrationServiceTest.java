@@ -124,10 +124,13 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.SendMessageRespo
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateWithoutSignatureRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.StatisticsRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.StatisticsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.message.dto.IncomingMessageRequestDTO;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
+import se.inera.intyg.webcert.web.service.facade.user.UserStatisticsDTO;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateDTO;
@@ -319,6 +322,11 @@ class CSIntegrationServiceTest {
     private static final LockDraftsResponseDTO LOCK_OLD_DRAFTS_RESPONSE_DTO = LockDraftsResponseDTO.builder()
         .certificates(List.of(CERTIFICATE)).build();
     private static final LockDraftsRequestDTO LOCK_OLD_DRAFTS_REQUEST_DTO = LockDraftsRequestDTO.builder().build();
+    private static final UserStatisticsDTO USER_STATISTICS = new UserStatisticsDTO();
+    private static final StatisticsResponseDTO STATISTICS_RESPONSE_DTO = StatisticsResponseDTO.builder()
+        .userStatistics(USER_STATISTICS)
+        .build();
+    private static final StatisticsRequestDTO STATISTICS_REQUEST_DTO = StatisticsRequestDTO.builder().build();
 
 
     @Mock
@@ -2433,7 +2441,7 @@ class CSIntegrationServiceTest {
     }
 
     @Nested
-    class LockOldDraftsTest {
+    class LockDraftsTest {
 
         @Test
         void shouldPreformPostUsingRequest() {
@@ -2476,6 +2484,53 @@ class CSIntegrationServiceTest {
             verify(restTemplate).postForObject(captor.capture(), any(), any());
 
             assertEquals("baseUrl/internalapi/certificate/lock", captor.getValue());
+        }
+    }
+
+    @Nested
+    class GetStatisticsTest {
+
+        @Test
+        void shouldPreformPostUsingRequest() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(STATISTICS_RESPONSE_DTO);
+            final var captor = ArgumentCaptor.forClass(StatisticsRequestDTO.class);
+
+            csIntegrationService.getStatistics(STATISTICS_REQUEST_DTO);
+            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+
+            assertEquals(STATISTICS_REQUEST_DTO, captor.getValue());
+        }
+
+        @Test
+        void shouldReturnUserStatistics() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(STATISTICS_RESPONSE_DTO);
+            final var response = csIntegrationService.getStatistics(STATISTICS_REQUEST_DTO);
+
+            assertEquals(USER_STATISTICS, response);
+        }
+
+        @Test
+        void shouldThrowIfResponseIsNull() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(null);
+            assertThrows(IllegalStateException.class,
+                () -> csIntegrationService.getStatistics(STATISTICS_REQUEST_DTO));
+        }
+
+        @Test
+        void shouldSetUrlCorrect() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(STATISTICS_RESPONSE_DTO);
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            csIntegrationService.getStatistics(STATISTICS_REQUEST_DTO);
+
+            verify(restTemplate).postForObject(captor.capture(), any(), any());
+
+            assertEquals("baseUrl/api/unit/statistics", captor.getValue());
         }
     }
 }

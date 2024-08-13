@@ -2073,13 +2073,65 @@ class CSIntegrationRequestFactoryTest {
     }
 
     @Nested
-    class LockOldDraftsRequestTests {
+    class LockDraftsRequestTests {
 
         @Test
         void shouldSetCuttoffDate() {
             final var expectedCuttoffDate = LocalDate.now().minusDays(5).atStartOfDay();
             final var actualRequest = csIntegrationRequestFactory.getLockDraftsRequestDTO(5);
             assertEquals(expectedCuttoffDate, actualRequest.getCutoffDate());
+        }
+    }
+
+    @Nested
+    class StatisticsRequestTests {
+
+        @BeforeEach
+        void setup() {
+            when(certificateServiceUserHelper.get())
+                .thenReturn(USER);
+            when(certificateServiceUnitHelper.getUnit())
+                .thenReturn(UNIT);
+            when(certificateServiceUnitHelper.getCareUnit())
+                .thenReturn(CARE_UNIT);
+            when(certificateServiceUnitHelper.getCareProvider())
+                .thenReturn(CARE_PROVIDER);
+        }
+
+        @Test
+        void shouldSetUser() {
+            final var actualRequest = csIntegrationRequestFactory.getStatisticsRequest(UNIT_IDS, UNIT_IDS);
+            assertEquals(USER, actualRequest.getUser());
+        }
+
+        @Test
+        void shouldSetUnit() {
+            final var actualRequest = csIntegrationRequestFactory.getStatisticsRequest(UNIT_IDS, UNIT_IDS);
+            assertEquals(UNIT, actualRequest.getUnit());
+        }
+
+        @Test
+        void shouldSetCareUnit() {
+            final var actualRequest = csIntegrationRequestFactory.getStatisticsRequest(UNIT_IDS, UNIT_IDS);
+            assertEquals(CARE_UNIT, actualRequest.getCareUnit());
+        }
+
+        @Test
+        void shouldSetCareProvider() {
+            final var actualRequest = csIntegrationRequestFactory.getStatisticsRequest(UNIT_IDS, UNIT_IDS);
+            assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
+        }
+
+        @Test
+        void shouldSetUnitIds() {
+            final var actualRequest = csIntegrationRequestFactory.getStatisticsRequest(UNIT_IDS, UNIT_IDS);
+            assertEquals(UNIT_IDS, actualRequest.getUnitIds());
+        }
+
+        @Test
+        void shouldSetSelectedUnitIds() {
+            final var actualRequest = csIntegrationRequestFactory.getStatisticsRequest(UNIT_IDS, UNIT_IDS);
+            assertEquals(UNIT_IDS, actualRequest.getSelectedUnitIds());
         }
     }
 }

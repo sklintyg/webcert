@@ -68,4 +68,11 @@ public class UnitStatisticsDTO {
     public void setQuestionsOnSubUnits(long questionsOnSubUnits) {
         this.questionsOnSubUnits = questionsOnSubUnits;
     }
+
+    public void merge(UnitStatisticsDTO unitStatisticsDTO) {
+        this.draftsOnUnit += unitStatisticsDTO.draftsOnUnit;
+        this.questionsOnUnit += unitStatisticsDTO.questionsOnUnit;
+        this.draftsOnSubUnits += unitStatisticsDTO.draftsOnSubUnits;
+        this.questionsOnSubUnits += unitStatisticsDTO.questionsOnSubUnits;
+    }
 }
