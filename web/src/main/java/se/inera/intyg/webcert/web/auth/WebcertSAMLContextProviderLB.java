@@ -28,7 +28,6 @@ import org.springframework.security.saml.context.SAMLMessageContext;
 
 public class WebcertSAMLContextProviderLB extends SAMLContextProviderLB {
 
-    @Value("${certificate.view.host.react.client}")
     private String reactClientDomainName;
 
     @Value("${webcert.domain.name}")
