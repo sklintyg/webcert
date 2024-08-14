@@ -73,7 +73,6 @@
   <bean id="launchIntegrationController"
       class="se.inera.intyg.webcert.web.web.controller.integration.LaunchIntegrationController">
     <property name="urlBaseTemplate" value="${certificate.view.url.base}" />
-    <property name="urlFragmentTemplate" value="${certificate.view.url.fragment.template}" />
   </bean>
 
 </beans>

@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.web.controller.integration;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -57,7 +56,6 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.web.controller.facade.util.AngularClientUtil;
 import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirectToIntyg;
@@ -105,14 +103,8 @@ public class IntygIntegrationController extends BaseIntegrationController {
         AuthoritiesConstants.ROLE_BARNMORSKA,
     };
 
-    private String urlIntygFragmentTemplate;
-    private String urlUtkastFragmentTemplate;
-
     @Autowired
     private ReactUriFactory reactUriFactory;
-
-    @Autowired
-    private AngularClientUtil angularClientUtil;
 
     @Autowired
     private CommonAuthoritiesResolver commonAuthoritiesResolver;
@@ -320,14 +312,6 @@ public class IntygIntegrationController extends BaseIntegrationController {
         return handleRedirectToIntyg(uriInfo, intygTyp, intygId, enhetId, user);
     }
 
-    public void setUrlIntygFragmentTemplate(String urlFragmentTemplate) {
-        this.urlIntygFragmentTemplate = urlFragmentTemplate;
-    }
-
-    public void setUrlUtkastFragmentTemplate(String urlFragmentTemplate) {
-        this.urlUtkastFragmentTemplate = urlFragmentTemplate;
-    }
-
     @Override
     protected String[] getGrantedRoles() {
         return GRANTED_ROLES;
@@ -351,7 +335,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
                     updateUserWithActiveFeatures(user);
                     PrepareRedirectToIntyg prepareRedirectInfo = integrationService.prepareRedirectToIntyg(intygTyp, intygId, user);
                     LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygTyp);
-                    return buildRedirectResponse(uriInfo, prepareRedirectInfo, user);
+                    return buildRedirectResponse(uriInfo, prepareRedirectInfo);
                 }
 
                 // Set state parameter telling us that we have been redirected to 'enhetsvaljaren'
@@ -379,7 +363,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
                     updateUserWithActiveFeatures(user);
                     LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygTyp);
-                    return buildRedirectResponse(uriInfo, prepareRedirectInfo, user);
+                    return buildRedirectResponse(uriInfo, prepareRedirectInfo);
                 }
 
                 LOG.warn("Validation failed for deep-integration request because user {} is not authorized for enhet {}",
@@ -423,41 +407,22 @@ public class IntygIntegrationController extends BaseIntegrationController {
         return Response.temporaryRedirect(location).build();
     }
 
-    private Response buildRedirectResponse(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg, WebCertUser user) {
-        final var location = getRedirectUri(uriInfo, prepareRedirectToIntyg, user);
+    private Response buildRedirectResponse(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg) {
+        final var location = getRedirectUri(uriInfo, prepareRedirectToIntyg);
         return Response.seeOther(location).build();
     }
 
-    private URI getRedirectUri(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg, WebCertUser user) {
-        if (angularClientUtil.useAngularClient(user)) {
-            return getRedirectUriForAngularClient(uriInfo, prepareRedirectToIntyg);
-        }
+    private URI getRedirectUri(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg) {
         return reactUriFactory.uriForCertificate(uriInfo, prepareRedirectToIntyg.getIntygId());
-    }
-
-    private URI getRedirectUriForAngularClient(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg) {
-        final var uriBuilder = uriInfo.getBaseUriBuilder().replacePath(getUrlBaseTemplate());
-        final var urlFragmentTemplate = prepareRedirectToIntyg.isUtkast() ? urlUtkastFragmentTemplate : urlIntygFragmentTemplate;
-        final var urlParams = Map.of(
-            PARAM_CERT_TYPE, prepareRedirectToIntyg.getIntygTyp(),
-            PARAM_CERT_TYPE_VERSION, prepareRedirectToIntyg.getIntygTypeVersion(),
-            PARAM_CERT_ID, prepareRedirectToIntyg.getIntygId()
-        );
-        return uriBuilder.fragment(urlFragmentTemplate).buildFromMap(urlParams);
     }
 
     private String getDestinationUrl(UriInfo uriInfo, String certificateId) {
         String urlPath = String.format("/visa/intyg/%s/%s/%s/resume", "intygVersion", "intygTypeVersion", certificateId);
-        try {
-            // get the builder without any existing query params
-            UriBuilder uriBuilder = uriInfo.getRequestUriBuilder().replacePath(urlPath).replaceQuery(null);
-            URI uri = uriBuilder.build();
+        // get the builder without any existing query params
+        UriBuilder uriBuilder = uriInfo.getRequestUriBuilder().replacePath(urlPath).replaceQuery(null);
+        URI uri = uriBuilder.build();
 
-            return URLEncoder.encode(uri.toString(), "UTF-8");
-
-        } catch (UnsupportedEncodingException e) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM, e);
-        }
+        return URLEncoder.encode(uri.toString(), StandardCharsets.UTF_8);
     }
 
     private WebCertUser getWebCertUser() {
@@ -506,7 +471,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
     private void cacheExistingLaunchIdForSession(String launchId, String sessionId) {
         if (launchId != null) {
             redisCacheLaunchId.put(launchId, Base64.getEncoder().encodeToString(sessionId.getBytes(StandardCharsets.UTF_8)));
-            LOG.info(String.format("launchId was successfully added to the session. launchId stored in session is: %s", launchId));
+            LOG.info("launchId was successfully added to the session. launchId stored in session is: {}", launchId);
         }
     }
 }
