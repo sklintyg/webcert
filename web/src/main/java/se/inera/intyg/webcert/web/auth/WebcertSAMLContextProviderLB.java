@@ -66,7 +66,7 @@ public class WebcertSAMLContextProviderLB extends SAMLContextProviderLB {
         if (shouldSetEntityId(request)) {
             final var domainName = isRequestFromReactClient ? reactClientDomainName + SITHS_WC2_ALIAS : webcertDomainName;
             final var entityId = request.getScheme() + "://" + domainName;
-            request.setAttribute(SAMLConstants.LOCAL_ENTITY_ID, entityId);
+            request.setAttribute(SAMLConstants.LOCAL_ENTITY_ID, "https://wc.localtest.me/normal");
         }
     }
 
