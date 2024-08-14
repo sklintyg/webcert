@@ -42,7 +42,6 @@ class ReactUriFactoryTest {
         final var uriBuilder = UriBuilder.fromUri("https://wc.localtest.me/visa/xxxx-yyyyy-zzzzz-qqqqq/saved");
         when(uriInfo.getBaseUriBuilder()).thenReturn(uriBuilder);
 
-        ReflectionTestUtils.setField(reactUriFactory, "hostReactClient", "wc2.wc.localtest.me");
         ReflectionTestUtils.setField(reactUriFactory, "urlReactTemplate", "/certificate/{certId}");
         ReflectionTestUtils.setField(reactUriFactory, "urlReactErrorTemplate", "/certificate/{certId}/sign/{error}");
         ReflectionTestUtils.setField(reactUriFactory, "urlReactQuestionsTemplate", "/certificate/{certId}/questions");
@@ -52,20 +51,20 @@ class ReactUriFactoryTest {
     void shallReturnUriForCertificate() {
         final var certificateId = "xxxx-yyyyy-zzzzz-qqqqq";
         final var actualUri = reactUriFactory.uriForCertificate(uriInfo, certificateId);
-        assertEquals("https://wc2.wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq", actualUri.toString());
+        assertEquals("https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq", actualUri.toString());
     }
 
     @Test
     void shallReturnUriWithSignErrorForCertificate() {
         final var certificateId = "xxxx-yyyyy-zzzzz-qqqqq";
         final var actualUri = reactUriFactory.uriForCertificateWithSignError(uriInfo, certificateId, SignaturStatus.ERROR);
-        assertEquals("https://wc2.wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq/sign/error", actualUri.toString());
+        assertEquals("https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq/sign/error", actualUri.toString());
     }
 
     @Test
     void shallReturnUriForCertificateQuestions() {
         final var certificateId = "xxxx-yyyyy-zzzzz-qqqqq";
         final var actualUri = reactUriFactory.uriForCertificateQuestions(uriInfo, certificateId);
-        assertEquals("https://wc2.wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq/questions", actualUri.toString());
+        assertEquals("https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq/questions", actualUri.toString());
     }
 }

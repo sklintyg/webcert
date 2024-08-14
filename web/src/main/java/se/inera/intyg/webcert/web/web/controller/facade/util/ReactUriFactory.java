@@ -38,14 +38,10 @@ public class ReactUriFactory {
     @Value("${certificate.view.url.react.questions.integration.template}")
     private String urlReactQuestionsTemplate;
 
-    @Value("${certificate.view.host.react.client}")
-    private String hostReactClient;
-
     public URI uriForCertificate(UriInfo uriInfo, String certificateId) {
         final var uriBuilder = uriInfo.getBaseUriBuilder().replacePath("/");
         final var urlParams = Collections.singletonMap(PARAM_CERT_ID, certificateId);
         return uriBuilder
-            .host(hostReactClient)
             .path(urlReactTemplate)
             .buildFromMap(urlParams);
     }
@@ -54,7 +50,6 @@ public class ReactUriFactory {
         final var uriBuilder = uriInfo.getBaseUriBuilder().replacePath("/");
         final var urlParams = Map.of(PARAM_CERT_ID, certificateId, PARAM_ERROR, signStatus.toString().toLowerCase());
         return uriBuilder
-            .host(hostReactClient)
             .path(urlReactErrorTemplate)
             .buildFromMap(urlParams);
     }
@@ -63,7 +58,6 @@ public class ReactUriFactory {
         final var uriBuilder = uriInfo.getBaseUriBuilder().replacePath("/");
         final var urlParams = Collections.singletonMap(PARAM_CERT_ID, certificateId);
         return uriBuilder
-            .host(hostReactClient)
             .path(urlReactQuestionsTemplate)
             .buildFromMap(urlParams);
     }
