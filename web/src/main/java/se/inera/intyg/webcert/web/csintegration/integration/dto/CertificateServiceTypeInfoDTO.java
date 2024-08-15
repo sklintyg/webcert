@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.util.List;
 import lombok.Builder;
 import lombok.Value;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateConfirmationModal;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoDTO.CertificateServiceTypeInfoDTOBuilder;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 
@@ -36,6 +37,7 @@ public class CertificateServiceTypeInfoDTO {
     String name;
     String description;
     List<ResourceLinkDTO> links;
+    CertificateConfirmationModal confirmationModal;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class CertificateServiceTypeInfoDTOBuilder {
