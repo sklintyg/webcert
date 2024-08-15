@@ -22,7 +22,6 @@ package se.inera.intyg.webcert.web.csintegration.integration.dto;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.util.List;
-import java.util.Map;
 import lombok.Builder;
 import lombok.Value;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.UnitStatisticsRequestDTO.UnitStatisticsRequestDTOBuilder;
@@ -39,8 +38,6 @@ public class UnitStatisticsRequestDTO {
     CertificateServiceUnitDTO careUnit;
     CertificateServiceUnitDTO careProvider;
     List<String> unitIds;
-    List<String> selectedUnitIds;
-    Map<String, List<String>> careUnitHierarchyMap;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class UnitStatisticsRequestDTOBuilder {
