@@ -25,6 +25,9 @@ public class UnitStatisticsDTO {
     private long draftsOnSubUnits;
     private long questionsOnSubUnits;
 
+    public UnitStatisticsDTO() {
+    }
+
     public UnitStatisticsDTO(long draftsOnUnit, long questionsOnUnit) {
         this.draftsOnUnit = draftsOnUnit;
         this.questionsOnUnit = questionsOnUnit;
@@ -74,5 +77,13 @@ public class UnitStatisticsDTO {
         this.questionsOnUnit += unitStatisticsDTO.questionsOnUnit;
         this.draftsOnSubUnits += unitStatisticsDTO.draftsOnSubUnits;
         this.questionsOnSubUnits += unitStatisticsDTO.questionsOnSubUnits;
+    }
+
+    public void addDraftsOnSubUnits(long draftsOnSubUnits) {
+        this.draftsOnSubUnits += draftsOnSubUnits;
+    }
+
+    public void addQuestionsOnSubUnits(long questionsOnSubUnits) {
+        this.questionsOnSubUnits += questionsOnSubUnits;
     }
 }

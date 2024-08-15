@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.csintegration.integration;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -107,13 +108,13 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.SendMessageRespo
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateWithoutSignatureRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.StatisticsForUnitDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.UnitStatisticsRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.UnitStatisticsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.message.dto.IncomingMessageRequestDTO;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
-import se.inera.intyg.webcert.web.service.facade.user.UserStatisticsDTO;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
@@ -728,15 +729,15 @@ public class CSIntegrationService {
         return response.getCertificates();
     }
 
-    public UserStatisticsDTO getStatistics(UnitStatisticsRequestDTO request) {
+    public Map<String, StatisticsForUnitDTO> getStatistics(UnitStatisticsRequestDTO request) {
         final var url = baseUrl + UNIT_ENDPOINT_URL + "/certificates/statistics";
 
         final var response = restTemplate.postForObject(url, request, UnitStatisticsResponseDTO.class);
 
-        if (response == null || response.getUserStatistics() == null) {
+        if (response == null || response.getUnitStatistics() == null) {
             throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
         }
 
-        return response.getUserStatistics();
+        return response.getUnitStatistics();
     }
 }

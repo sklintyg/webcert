@@ -30,6 +30,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -75,6 +76,7 @@ class CSIntegrationRequestFactoryTest {
     private static final String MESSAGE = "message";
     private static final Question QUESTION = Question.builder().build();
     private static final List<String> UNIT_IDS = List.of("unitId");
+    private static final Map<String, List<String>> CARE_UNIT_HIERARCHY_MAP = Map.of("hsaId", List.of("id1", "id2"));
     @Mock
     MessageRequestConverter messageRequestConverter;
     @Mock
@@ -2100,38 +2102,32 @@ class CSIntegrationRequestFactoryTest {
 
         @Test
         void shouldSetUser() {
-            final var actualRequest = csIntegrationRequestFactory.getStatisticsRequest(UNIT_IDS, UNIT_IDS);
+            final var actualRequest = csIntegrationRequestFactory.getStatisticsRequest(UNIT_IDS);
             assertEquals(USER, actualRequest.getUser());
         }
 
         @Test
         void shouldSetUnit() {
-            final var actualRequest = csIntegrationRequestFactory.getStatisticsRequest(UNIT_IDS, UNIT_IDS);
+            final var actualRequest = csIntegrationRequestFactory.getStatisticsRequest(UNIT_IDS);
             assertEquals(UNIT, actualRequest.getUnit());
         }
 
         @Test
         void shouldSetCareUnit() {
-            final var actualRequest = csIntegrationRequestFactory.getStatisticsRequest(UNIT_IDS, UNIT_IDS);
+            final var actualRequest = csIntegrationRequestFactory.getStatisticsRequest(UNIT_IDS);
             assertEquals(CARE_UNIT, actualRequest.getCareUnit());
         }
 
         @Test
         void shouldSetCareProvider() {
-            final var actualRequest = csIntegrationRequestFactory.getStatisticsRequest(UNIT_IDS, UNIT_IDS);
+            final var actualRequest = csIntegrationRequestFactory.getStatisticsRequest(UNIT_IDS);
             assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
         }
 
         @Test
         void shouldSetUnitIds() {
-            final var actualRequest = csIntegrationRequestFactory.getStatisticsRequest(UNIT_IDS, UNIT_IDS);
+            final var actualRequest = csIntegrationRequestFactory.getStatisticsRequest(UNIT_IDS);
             assertEquals(UNIT_IDS, actualRequest.getUnitIds());
-        }
-
-        @Test
-        void shouldSetSelectedUnitIds() {
-            final var actualRequest = csIntegrationRequestFactory.getStatisticsRequest(UNIT_IDS, UNIT_IDS);
-            assertEquals(UNIT_IDS, actualRequest.getSelectedUnitIds());
         }
     }
 }

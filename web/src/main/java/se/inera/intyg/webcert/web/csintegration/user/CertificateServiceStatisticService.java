@@ -20,11 +20,17 @@
 package se.inera.intyg.webcert.web.csintegration.user;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.AbstractVardenhet;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.StatisticsForUnitDTO;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
+import se.inera.intyg.webcert.web.service.facade.user.UnitStatisticsDTO;
 import se.inera.intyg.webcert.web.service.facade.user.UserStatisticsDTO;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
@@ -42,17 +48,82 @@ public class CertificateServiceStatisticService {
         }
 
         final var statisticsFromCS = csIntegrationService.getStatistics(
-            csIntegrationRequestFactory.getStatisticsRequest(unitIds, user.getIdsOfSelectedVardenhet())
+            csIntegrationRequestFactory.getStatisticsRequest(unitIds)
         );
 
         if (user.getValdVardenhet() != null) {
-            statisticsFromWC.addNbrOfDraftsOnSelectedUnit(statisticsFromCS.getNbrOfDraftsOnSelectedUnit());
-            statisticsFromWC.addNbrOfUnhandledQuestionsOnSelectedUnit(statisticsFromCS.getNbrOfUnhandledQuestionsOnSelectedUnit());
+            statisticsFromWC.addNbrOfDraftsOnSelectedUnit(getNbrOfDraftsOnSelectedUnit(user, statisticsFromCS));
+            statisticsFromWC.addNbrOfUnhandledQuestionsOnSelectedUnit(getNbrOfUnhandledQuestionsOnSelectedUnit(user, statisticsFromCS));
             statisticsFromWC.addTotalDraftsAndUnhandledQuestionsOnOtherUnits(
-                statisticsFromCS.getTotalDraftsAndUnhandledQuestionsOnOtherUnits()
+                getTotalDraftsAndUnhandledQuestionsOnOtherUnits(user, statisticsFromCS)
             );
         }
 
-        statisticsFromWC.mergeUnitStatistics(statisticsFromCS.getUnitStatistics());
+        final var careUnitsWithRelatedSubUnits = getAvailableCareUnitsWithSubUnits(user);
+        final var unitStatisticsDTO = buildUnitStatisticsFromCS(statisticsFromCS, careUnitsWithRelatedSubUnits);
+        statisticsFromWC.mergeUnitStatistics(unitStatisticsDTO);
+    }
+
+    private static Map<String, UnitStatisticsDTO> buildUnitStatisticsFromCS(Map<String, StatisticsForUnitDTO> statisticsFromCS,
+        Map<String, List<String>> careUnitsWithRelatedSubUnits) {
+        return statisticsFromCS.entrySet().stream()
+            .collect(Collectors.toMap(
+                Map.Entry::getKey,
+                statisticForUnit -> {
+                    final var unitStatistics = new UnitStatisticsDTO();
+                    final var statistics = statisticForUnit.getValue();
+                    unitStatistics.setDraftsOnUnit(statistics.getDraftCount());
+                    unitStatistics.setQuestionsOnUnit(statistics.getUnhandledMessageCount());
+                    if (careUnitsWithRelatedSubUnits.containsKey(statisticForUnit.getKey())) {
+                        final var subUnits = careUnitsWithRelatedSubUnits.get(statisticForUnit.getKey());
+                        subUnits.forEach(unit -> {
+                            if (!statisticsFromCS.containsKey(unit)) {
+                                return;
+                            }
+                            unitStatistics.addQuestionsOnSubUnits(statisticsFromCS.get(unit).getUnhandledMessageCount());
+                            unitStatistics.addDraftsOnSubUnits(statisticsFromCS.get(unit).getDraftCount());
+                        });
+                    }
+                    return unitStatistics;
+                }
+            ));
+    }
+
+    private static Map<String, List<String>> getAvailableCareUnitsWithSubUnits(WebCertUser user) {
+        return user.getVardgivare().stream()
+            .map(Vardgivare::getVardenheter)
+            .flatMap(List::stream)
+            .collect(Collectors.toMap(
+                AbstractVardenhet::getId,
+                unit -> {
+                    final var subUnits = unit.getHsaIds();
+                    subUnits.remove(unit.getId());
+                    return subUnits;
+                }
+            ));
+    }
+
+    private static long getTotalDraftsAndUnhandledQuestionsOnOtherUnits(WebCertUser user,
+        Map<String, StatisticsForUnitDTO> statisticsFromCS) {
+        return statisticsFromCS.keySet().stream()
+            .filter(unitId -> !user.getIdsOfSelectedVardenhet().contains(unitId))
+            .mapToLong(unitId -> statisticsFromCS.get(unitId).getDraftCount() + statisticsFromCS.get(unitId).getUnhandledMessageCount())
+            .sum();
+    }
+
+    private static Long getNbrOfUnhandledQuestionsOnSelectedUnit(WebCertUser user, Map<String, StatisticsForUnitDTO> statisticsFromCS) {
+        return statisticsFromCS.keySet().stream()
+            .filter(unitId -> user.getValdVardenhet().getId().equals(unitId))
+            .findFirst()
+            .map(unitId -> statisticsFromCS.get(unitId).getUnhandledMessageCount())
+            .orElse(0L);
+    }
+
+    private static Long getNbrOfDraftsOnSelectedUnit(WebCertUser user, Map<String, StatisticsForUnitDTO> statisticsFromCS) {
+        return statisticsFromCS.keySet().stream()
+            .filter(unitId -> user.getValdVardenhet().getId().equals(unitId))
+            .findFirst()
+            .map(unitId -> statisticsFromCS.get(unitId).getDraftCount())
+            .orElse(0L);
     }
 }

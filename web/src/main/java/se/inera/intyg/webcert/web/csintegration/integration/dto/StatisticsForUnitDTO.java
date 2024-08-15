@@ -21,29 +21,20 @@ package se.inera.intyg.webcert.web.csintegration.integration.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import java.util.List;
-import java.util.Map;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.UnitStatisticsRequestDTO.UnitStatisticsRequestDTOBuilder;
-import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitDTO;
-import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.StatisticsForUnitDTO.StatisticsForUnitDTOBuilder;
 
-@JsonDeserialize(builder = UnitStatisticsRequestDTOBuilder.class)
+@JsonDeserialize(builder = StatisticsForUnitDTOBuilder.class)
 @Value
 @Builder
-public class UnitStatisticsRequestDTO {
+public class StatisticsForUnitDTO {
 
-    CertificateServiceUserDTO user;
-    CertificateServiceUnitDTO unit;
-    CertificateServiceUnitDTO careUnit;
-    CertificateServiceUnitDTO careProvider;
-    List<String> unitIds;
-    List<String> selectedUnitIds;
-    Map<String, List<String>> careUnitHierarchyMap;
+    long draftCount;
+    long unhandledMessageCount;
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class UnitStatisticsRequestDTOBuilder {
+    public static class StatisticsForUnitDTOBuilder {
 
     }
 }

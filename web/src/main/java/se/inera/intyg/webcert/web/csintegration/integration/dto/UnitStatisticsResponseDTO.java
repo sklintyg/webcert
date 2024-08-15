@@ -21,17 +21,17 @@ package se.inera.intyg.webcert.web.csintegration.integration.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import java.util.Map;
 import lombok.Builder;
 import lombok.Value;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.UnitStatisticsResponseDTO.UnitStatisticsResponseDTOBuilder;
-import se.inera.intyg.webcert.web.service.facade.user.UserStatisticsDTO;
 
 @JsonDeserialize(builder = UnitStatisticsResponseDTOBuilder.class)
 @Value
 @Builder
 public class UnitStatisticsResponseDTO {
 
-    UserStatisticsDTO userStatistics;
+    Map<String, StatisticsForUnitDTO> unitStatistics;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class UnitStatisticsResponseDTOBuilder {

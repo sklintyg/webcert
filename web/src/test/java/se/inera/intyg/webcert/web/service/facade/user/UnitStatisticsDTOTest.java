@@ -37,4 +37,18 @@ class UnitStatisticsDTOTest {
             () -> assertEquals(3, unitStatistics.getDraftsOnSubUnits())
         );
     }
+
+    @Test
+    void shallIncreaseDraftsOnSubUnits() {
+        final var unitStatistics = new UnitStatisticsDTO(1, 1, 1, 1);
+        unitStatistics.addDraftsOnSubUnits(1);
+        assertEquals(2, unitStatistics.getDraftsOnSubUnits());
+    }
+
+    @Test
+    void shallIncreaseQuestionsOnSubUnits() {
+        final var unitStatistics = new UnitStatisticsDTO(1, 1, 1, 1);
+        unitStatistics.addQuestionsOnSubUnits(1);
+        assertEquals(2, unitStatistics.getQuestionsOnSubUnits());
+    }
 }

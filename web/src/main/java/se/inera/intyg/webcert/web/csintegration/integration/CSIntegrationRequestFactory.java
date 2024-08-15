@@ -554,14 +554,13 @@ public class CSIntegrationRequestFactory {
             .build();
     }
 
-    public UnitStatisticsRequestDTO getStatisticsRequest(List<String> unitIds, List<String> selectedUnitIds) {
+    public UnitStatisticsRequestDTO getStatisticsRequest(List<String> unitIds) {
         return UnitStatisticsRequestDTO.builder()
             .unit(certificateServiceUnitHelper.getUnit())
             .careUnit(certificateServiceUnitHelper.getCareUnit())
             .careProvider(certificateServiceUnitHelper.getCareProvider())
             .user(certificateServiceUserHelper.get())
             .unitIds(unitIds)
-            .selectedUnitIds(selectedUnitIds)
             .build();
     }
 }
