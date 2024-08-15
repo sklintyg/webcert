@@ -52,6 +52,7 @@ import se.inera.intyg.common.support.facade.model.CertificateText;
 import se.inera.intyg.common.support.facade.model.Staff;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.common.support.modules.support.facade.dto.CertificateEventDTO;
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.AnswerComplementRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.AnswerComplementResponseDTO;
@@ -76,6 +77,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificat
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ForwardCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ForwardCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateEventsRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateEventsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFromMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFromMessageResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageInternalResponseDTO;
@@ -307,6 +310,13 @@ class CSIntegrationServiceTest {
     private static final ForwardCertificateResponseDTO FORWARD_CERTIFICATE_RESPONSE_DTO =
         ForwardCertificateResponseDTO.builder()
             .certificate(CERTIFICATE)
+            .build();
+    private static final CertificateEventDTO[] EVENTS = {new CertificateEventDTO()};
+    private static final GetCertificateEventsRequestDTO GET_CERTIFICATE_EVENTS_REQUEST_DTO = GetCertificateEventsRequestDTO.builder()
+        .build();
+    private static final GetCertificateEventsResponseDTO GET_CERTIFICATE_EVENTS_RESPONSE_DTO =
+        GetCertificateEventsResponseDTO.builder()
+            .events(EVENTS)
             .build();
     private static final String LIST = "list";
     private static final PatientCertificatesWithQAResponseDTO GET_PATIENT_CERTIFICATES_WITH_QA_RESPONSE_DTO =
@@ -2382,6 +2392,53 @@ class CSIntegrationServiceTest {
             verify(restTemplate).postForObject(captor.capture(), any(), any());
 
             assertEquals("baseUrl/api/certificate/" + ID + "/forward", captor.getValue());
+        }
+    }
+
+    @Nested
+    class GetCertificateEventsTest {
+
+        @Test
+        void shouldPreformPostUsingRequest() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(GET_CERTIFICATE_EVENTS_RESPONSE_DTO);
+            final var captor = ArgumentCaptor.forClass(GetCertificateEventsRequestDTO.class);
+
+            csIntegrationService.getCertificateEvents(ID, GET_CERTIFICATE_EVENTS_REQUEST_DTO);
+            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+
+            assertEquals(GET_CERTIFICATE_EVENTS_REQUEST_DTO, captor.getValue());
+        }
+
+        @Test
+        void shouldReturnCertificate() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(GET_CERTIFICATE_EVENTS_RESPONSE_DTO);
+            final var response = csIntegrationService.getCertificateEvents(ID, GET_CERTIFICATE_EVENTS_REQUEST_DTO);
+
+            assertEquals(EVENTS, response);
+        }
+
+        @Test
+        void shouldThrowIfResponseIsNull() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(null);
+            assertThrows(IllegalStateException.class,
+                () -> csIntegrationService.getCertificateEvents(ID, GET_CERTIFICATE_EVENTS_REQUEST_DTO));
+        }
+
+        @Test
+        void shouldSetUrlCorrect() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(GET_CERTIFICATE_EVENTS_RESPONSE_DTO);
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            csIntegrationService.getCertificateEvents(ID, GET_CERTIFICATE_EVENTS_REQUEST_DTO);
+
+            verify(restTemplate).postForObject(captor.capture(), any(), any());
+
+            assertEquals("baseUrl/api/certificate/" + ID + "/events", captor.getValue());
         }
     }
 

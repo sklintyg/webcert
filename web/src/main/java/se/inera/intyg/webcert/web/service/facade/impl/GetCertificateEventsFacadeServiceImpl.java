@@ -43,7 +43,7 @@ import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations.FrontendRelations;
 
-@Service
+@Service("getCertificateEventsFromWebcert")
 public class GetCertificateEventsFacadeServiceImpl implements GetCertificateEventsFacadeService {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetCertificateEventsFacadeServiceImpl.class);

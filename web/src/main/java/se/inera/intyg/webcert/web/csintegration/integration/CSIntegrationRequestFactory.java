@@ -42,6 +42,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteAnswerRequ
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ForwardCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateEventsRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFromMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
@@ -338,6 +339,15 @@ public class CSIntegrationRequestFactory {
 
     public ForwardCertificateRequestDTO forwardCertificateRequest() {
         return ForwardCertificateRequestDTO.builder()
+            .user(certificateServiceUserHelper.get())
+            .unit(certificateServiceUnitHelper.getUnit())
+            .careUnit(certificateServiceUnitHelper.getCareUnit())
+            .careProvider(certificateServiceUnitHelper.getCareProvider())
+            .build();
+    }
+
+    public GetCertificateEventsRequestDTO getCertificateEventsRequest() {
+        return GetCertificateEventsRequestDTO.builder()
             .user(certificateServiceUserHelper.get())
             .unit(certificateServiceUnitHelper.getUnit())
             .careUnit(certificateServiceUnitHelper.getCareUnit())
