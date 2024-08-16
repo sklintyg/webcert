@@ -37,7 +37,7 @@ public class GetCertificateEventsFromCertificateService implements GetCertificat
 
     @Override
     public CertificateEventDTO[] getCertificateEvents(String certificateId) {
-        log.debug("Attempting to events for certificate '{}' from Certificate Service", certificateId);
+        log.debug("Attempting to retrieve events for certificate '{}' from Certificate Service", certificateId);
 
         if (Boolean.FALSE.equals(csIntegrationService.certificateExists(certificateId))) {
             log.debug("Certificate '{}' does not exist in certificate service", certificateId);
