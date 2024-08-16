@@ -560,7 +560,7 @@ public class CSIntegrationRequestFactory {
             .careUnit(certificateServiceUnitHelper.getCareUnit())
             .careProvider(certificateServiceUnitHelper.getCareProvider())
             .user(certificateServiceUserHelper.get())
-            .unitIds(unitIds)
+            .availableUnitIds(unitIds)
             .build();
     }
 }
