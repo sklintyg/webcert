@@ -246,8 +246,8 @@ class ListCertificateQuestionsFromCSTest {
             }
 
             @Test
-            void shouldSetSenderToShowAllIfBothSendersAreNull() {
-                final var queryFragaSvarParameter = buildQueryFragaSvarParameter(null, null, "");
+            void shouldSetSenderToShowAllIfBothSendersAreFalse() {
+                final var queryFragaSvarParameter = buildQueryFragaSvarParameter(false, false, "");
                 listCertificateQuestionsFromCS.list(queryFragaSvarParameter);
                 final var argumentCaptor = ArgumentCaptor.forClass(MessageQueryCriteriaDTO.class);
 

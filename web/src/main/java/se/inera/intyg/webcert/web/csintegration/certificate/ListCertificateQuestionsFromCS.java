@@ -98,7 +98,8 @@ public class ListCertificateQuestionsFromCS {
     }
 
     private QuestionSenderType convertSenderType(QueryFragaSvarParameter queryFragaSvarParameter) {
-        if (queryFragaSvarParameter.getQuestionFromFK() == null && queryFragaSvarParameter.getQuestionFromWC() == null) {
+        if (Boolean.FALSE.equals(queryFragaSvarParameter.getQuestionFromFK()) && Boolean.FALSE.equals(
+            queryFragaSvarParameter.getQuestionFromWC())) {
             return QuestionSenderType.SHOW_ALL;
         }
         return Boolean.TRUE.equals(queryFragaSvarParameter.getQuestionFromWC()) ? QuestionSenderType.WC : QuestionSenderType.FK;
