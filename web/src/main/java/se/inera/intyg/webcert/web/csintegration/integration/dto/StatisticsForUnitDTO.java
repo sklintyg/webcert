@@ -30,8 +30,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.StatisticsForUni
 @Builder
 public class StatisticsForUnitDTO {
 
-    long draftCount;
-    long unhandledMessageCount;
+    int draftCount;
+    int unhandledMessageCount;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class StatisticsForUnitDTOBuilder {

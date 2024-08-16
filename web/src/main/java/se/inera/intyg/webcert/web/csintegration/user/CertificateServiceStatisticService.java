@@ -111,19 +111,19 @@ public class CertificateServiceStatisticService {
             .sum();
     }
 
-    private static Long getNbrOfUnhandledQuestionsOnSelectedUnit(WebCertUser user, Map<String, StatisticsForUnitDTO> statisticsFromCS) {
+    private static int getNbrOfUnhandledQuestionsOnSelectedUnit(WebCertUser user, Map<String, StatisticsForUnitDTO> statisticsFromCS) {
         return statisticsFromCS.keySet().stream()
             .filter(unitId -> user.getValdVardenhet().getId().equals(unitId))
             .findFirst()
             .map(unitId -> statisticsFromCS.get(unitId).getUnhandledMessageCount())
-            .orElse(0L);
+            .orElse(0);
     }
 
-    private static Long getNbrOfDraftsOnSelectedUnit(WebCertUser user, Map<String, StatisticsForUnitDTO> statisticsFromCS) {
+    private static int getNbrOfDraftsOnSelectedUnit(WebCertUser user, Map<String, StatisticsForUnitDTO> statisticsFromCS) {
         return statisticsFromCS.keySet().stream()
             .filter(unitId -> user.getValdVardenhet().getId().equals(unitId))
             .findFirst()
             .map(unitId -> statisticsFromCS.get(unitId).getDraftCount())
-            .orElse(0L);
+            .orElse(0);
     }
 }
