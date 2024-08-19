@@ -42,6 +42,7 @@ class ReactUriFactoryTest {
         final var uriBuilder = UriBuilder.fromUri("https://wc.localtest.me/visa/xxxx-yyyyy-zzzzz-qqqqq/saved");
         when(uriInfo.getBaseUriBuilder()).thenReturn(uriBuilder);
 
+        ReflectionTestUtils.setField(reactUriFactory, "webcertDomainName", "wc.localtest.me");
         ReflectionTestUtils.setField(reactUriFactory, "urlReactTemplate", "/certificate/{certId}");
         ReflectionTestUtils.setField(reactUriFactory, "urlReactErrorTemplate", "/certificate/{certId}/sign/{error}");
         ReflectionTestUtils.setField(reactUriFactory, "urlReactQuestionsTemplate", "/certificate/{certId}/questions");

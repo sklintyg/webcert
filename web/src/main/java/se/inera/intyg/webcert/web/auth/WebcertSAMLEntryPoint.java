@@ -20,7 +20,6 @@ package se.inera.intyg.webcert.web.auth;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
 import org.opensaml.saml2.metadata.provider.MetadataProviderException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.saml.SAMLEntryPoint;
@@ -30,12 +29,12 @@ import se.inera.intyg.webcert.web.auth.common.AuthConstants;
 
 /**
  * Custom SAMLEntryPoint for Webcert that overrides the generation of AuthnContexts based on metadata alias:
- *
+ * <p>
  * For SITHS (defaultAlias), we only supply {@link AuthConstants#SITHS_AUTHN_CLASSES}
  *
  * For ELEG (eleg), we do not specify anything. This is due to SSO problems at CGIs end when a previously authenticated
  * identity is validated against the IdP to access another system in the same federation.
- *
+ * <p>
  * Created by eriklupander on 2015-11-24.
  */
 public class WebcertSAMLEntryPoint extends SAMLEntryPoint {
@@ -57,10 +56,9 @@ public class WebcertSAMLEntryPoint extends SAMLEntryPoint {
             ssoProfileOptions = defaultOptions.clone();
 
             final var alias = context.getLocalExtendedMetadata().getAlias();
-            if (alias.equals(AuthConstants.ALIAS_ELEG) || alias.equals(AuthConstants.ALIAS_ELEG_WC2)) {
+            if (alias.equals(AuthConstants.ALIAS_ELEG)) {
                 ssoProfileOptions.setAuthnContexts(new HashSet<>());
-            } else if (alias.equals(AuthConstants.ALIAS_SITHS_NORMAL) || alias.equals(AuthConstants.ALIAS_SITHS)
-                || alias.equals(AuthConstants.ALIAS_SITHS_WC2)) {
+            } else if (alias.equals(AuthConstants.ALIAS_SITHS_NORMAL) || alias.equals(AuthConstants.ALIAS_SITHS)) {
                 ssoProfileOptions.setAuthnContexts(buildTlsClientAuthContexts());
             }
         } else {
@@ -71,8 +69,6 @@ public class WebcertSAMLEntryPoint extends SAMLEntryPoint {
     }
 
     private Collection<String> buildTlsClientAuthContexts() {
-        Set<String> set = new HashSet<>();
-        set.addAll(AuthConstants.SITHS_AUTHN_CLASSES);
-        return set;
+        return new HashSet<>(AuthConstants.SITHS_AUTHN_CLASSES);
     }
 }

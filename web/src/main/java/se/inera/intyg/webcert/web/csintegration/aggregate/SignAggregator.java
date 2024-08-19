@@ -42,19 +42,15 @@ public class SignAggregator implements UnderskriftService {
     }
 
     @Override
-    public SignaturBiljett startSigningProcess(String intygsId, String intygsTyp, long version, SignMethod signMethod, String ticketID,
-        boolean isWc2ClientRequest) {
+    public SignaturBiljett startSigningProcess(String intygsId, String intygsTyp, long version, SignMethod signMethod, String ticketID) {
         if (!certificateServiceProfile.active()) {
-            return signServiceForWC.startSigningProcess(intygsId, intygsTyp, version, signMethod,
-                ticketID, isWc2ClientRequest);
+            return signServiceForWC.startSigningProcess(intygsId, intygsTyp, version, signMethod, ticketID);
         }
 
-        final var signaturBiljett = signServiceForCS.startSigningProcess(intygsId, intygsTyp, version, signMethod, ticketID,
-            isWc2ClientRequest);
+        final var signaturBiljett = signServiceForCS.startSigningProcess(intygsId, intygsTyp, version, signMethod, ticketID);
 
         return signaturBiljett != null ? signaturBiljett
-            : signServiceForWC.startSigningProcess(intygsId, intygsTyp, version, signMethod, ticketID,
-                isWc2ClientRequest);
+            : signServiceForWC.startSigningProcess(intygsId, intygsTyp, version, signMethod, ticketID);
     }
 
     @Override

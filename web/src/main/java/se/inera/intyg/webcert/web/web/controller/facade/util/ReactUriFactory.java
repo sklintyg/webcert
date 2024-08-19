@@ -29,6 +29,9 @@ import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 @Component
 public class ReactUriFactory {
 
+    @Value("${webcert.domain.name}")
+    private String webcertDomainName;
+
     public static final String PARAM_CERT_ID = "certId";
     public static final String PARAM_ERROR = "error";
     @Value("${certificate.view.url.react.integration.template}")
@@ -42,6 +45,7 @@ public class ReactUriFactory {
         final var uriBuilder = uriInfo.getBaseUriBuilder().replacePath("/");
         final var urlParams = Collections.singletonMap(PARAM_CERT_ID, certificateId);
         return uriBuilder
+            .host(webcertDomainName)
             .path(urlReactTemplate)
             .buildFromMap(urlParams);
     }
@@ -50,6 +54,7 @@ public class ReactUriFactory {
         final var uriBuilder = uriInfo.getBaseUriBuilder().replacePath("/");
         final var urlParams = Map.of(PARAM_CERT_ID, certificateId, PARAM_ERROR, signStatus.toString().toLowerCase());
         return uriBuilder
+            .host(webcertDomainName)
             .path(urlReactErrorTemplate)
             .buildFromMap(urlParams);
     }
@@ -58,6 +63,7 @@ public class ReactUriFactory {
         final var uriBuilder = uriInfo.getBaseUriBuilder().replacePath("/");
         final var urlParams = Collections.singletonMap(PARAM_CERT_ID, certificateId);
         return uriBuilder
+            .host(webcertDomainName)
             .path(urlReactQuestionsTemplate)
             .buildFromMap(urlParams);
     }

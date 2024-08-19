@@ -73,7 +73,7 @@ public class PageController {
         WebCertUser user = webCertUserService.getUser();
         if (!user.changeValdVardenhet(enhetHsaId)) {
             HttpHeaders httpHeaders = new HttpHeaders();
-            URI uri = UriBuilder.fromPath("/error.jsp")
+            URI uri = UriBuilder.fromPath("/error")
                 .queryParam("reason", "enhet.auth.exception")
                 .queryParam("enhetHsaId", enhetHsaId)
                 .build();

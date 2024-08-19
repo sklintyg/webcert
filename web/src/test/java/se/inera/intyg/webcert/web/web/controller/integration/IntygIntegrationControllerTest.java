@@ -358,7 +358,7 @@ public class IntygIntegrationControllerTest {
     }
 
     @Nested
-    class RedirectToCertificateReact {
+    class RedirectToCertificate {
 
         @BeforeEach
         public void setup() {
@@ -375,7 +375,7 @@ public class IntygIntegrationControllerTest {
         }
 
         @Test
-        public void shallRedirectToReactWithStatusSEE_OTHERAsTheRedirectShouldAlwaysBeAGET() {
+        public void shallRedirectWithStatusSeeOtherAsTheRedirectShouldAlwaysBeAGET() {
             final var user = createDefaultUserWithIntegrationParameters();
 
             when(webCertUserService.getUser()).thenReturn(user);
@@ -388,21 +388,7 @@ public class IntygIntegrationControllerTest {
         }
 
         @Test
-        public void shallRedirectToReactClientWhenFeatureUseReactClientActive() {
-            final var user = createDefaultUserWithIntegrationParameters();
-
-            when(webCertUserService.getUser()).thenReturn(user);
-            doReturn(URI.create("https://wc.localtest.me/certificate/A1234-B5678-C90123-D4567")).when(reactUriFactory)
-                .uriForCertificate(uriInfo, INTYGSID);
-
-            final var redirectToIntyg = intygIntegrationController.getRedirectToIntyg(httpServletRequest, uriInfo, INTYGSID, ENHETSID);
-            assertEquals(Response.Status.SEE_OTHER.getStatusCode(), redirectToIntyg.getStatus());
-            assertEquals("https://wc.localtest.me/certificate/" + INTYGSID,
-                redirectToIntyg.getMetadata().get(HttpHeaders.LOCATION).get(0).toString());
-        }
-
-        @Test
-        public void shallRedirectToReactClientWhenFeatureUseReactClientActiveForAllTypes() {
+        public void shallRedirectToCertificate() {
             final var user = createDefaultUserWithIntegrationParameters();
 
             when(webCertUserService.getUser()).thenReturn(user);

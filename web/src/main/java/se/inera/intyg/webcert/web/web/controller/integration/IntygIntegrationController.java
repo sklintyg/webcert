@@ -390,7 +390,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
     private Response buildErrorResponse(UriInfo uriInfo, String errorReason) {
         URI location = uriInfo.getBaseUriBuilder()
-            .replacePath("/error.jsp")
+            .replacePath("/error")
             .queryParam("reason", errorReason)
             .build();
 

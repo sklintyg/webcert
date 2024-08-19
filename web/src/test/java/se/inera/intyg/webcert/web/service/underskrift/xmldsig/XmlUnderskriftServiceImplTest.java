@@ -132,7 +132,7 @@ public class XmlUnderskriftServiceImplTest {
 
         SignaturBiljett signaturBiljett = testee.skapaSigneringsBiljettMedDigest(INTYG_ID, INTYG_TYP, VERSION, Optional.of("json"),
             SignMethod.FAKE,
-            TICKET_ID, false, "<xml/>");
+            TICKET_ID, "<xml/>");
         assertNotNull(signaturBiljett);
         verify(redisTicketTracker, times(1)).trackBiljett(any(SignaturBiljett.class));
     }

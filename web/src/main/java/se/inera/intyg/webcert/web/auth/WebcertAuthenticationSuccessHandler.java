@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -44,9 +45,12 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
 public class WebcertAuthenticationSuccessHandler extends
     SimpleUrlAuthenticationSuccessHandler {
 
+    @Value("${webcert.domain.name}")
+    private String webcertDomainName;
+
     private RequestCache requestCache = new HttpSessionRequestCache();
 
-    private Pattern djupintegrationPattern = Pattern.compile(REGEXP_REQUESTURI_DJUPINTEGRATION);
+    private final Pattern djupintegrationPattern = Pattern.compile(REGEXP_REQUESTURI_DJUPINTEGRATION);
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
@@ -109,6 +113,7 @@ public class WebcertAuthenticationSuccessHandler extends
             );
 
             webCertUser.setParameters(integrationParameters);
+            targetUrl = targetUrl.replaceAll("(?<=https://).+(?=" + REGEXP_REQUESTURI_DJUPINTEGRATION + ")", webcertDomainName);
 
             // Modify so the redirect is to /visa/intyg/{intygsId}/saved which ignores reading the params above from
             // GET params or POST body.

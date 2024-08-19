@@ -50,7 +50,7 @@ public class XmlUnderskriftServiceImpl extends BaseXMLSignatureService implement
 
     @Override
     public SignaturBiljett skapaSigneringsBiljettMedDigest(String intygsId, String intygsTyp, long version, Optional<String> utkastJson,
-        SignMethod signMethod, String ticketId, boolean isWc2ClientRequest, String certificateXml) {
+        SignMethod signMethod, String ticketId, String certificateXml) {
 
         String signatureAlgorithm;
         if (SignMethod.SIGN_SERVICE.equals(signMethod)) {
@@ -71,7 +71,6 @@ public class XmlUnderskriftServiceImpl extends BaseXMLSignatureService implement
             .withStatus(SignaturStatus.BEARBETAR)
             .withSkapad(LocalDateTime.now())
             .withHash(intygSignature.getSignedInfoForSigning())
-            .withWc2ClientRequest(isWc2ClientRequest)
             .build();
 
         redisTicketTracker.trackBiljett(biljett);
