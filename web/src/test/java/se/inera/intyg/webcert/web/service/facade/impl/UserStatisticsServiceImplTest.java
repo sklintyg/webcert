@@ -18,6 +18,18 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -29,19 +41,14 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
+import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceStatisticService;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
+import se.inera.intyg.webcert.web.service.facade.user.UserStatisticsDTO;
 import se.inera.intyg.webcert.web.service.facade.user.UserStatisticsServiceImpl;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
-
-import java.util.*;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 class UserStatisticsServiceImplTest {
@@ -49,6 +56,8 @@ class UserStatisticsServiceImplTest {
     final static String SELECTED_UNIT_ID = "UNITID";
     final static String NOT_SELECTED_UNIT_ID = "NOT_SELECTED_UNIT_ID";
     final static String SUB_UNIT_TO_SELECTED = "SUB_UNIT_ID";
+    @Mock
+    private CertificateServiceStatisticService certificateServiceStatisticService;
 
     @Mock
     private WebCertUserService webCertUserService;
@@ -305,6 +314,13 @@ class UserStatisticsServiceImplTest {
 
                 assertEquals(expectedValue * 3, result);
             }
+        }
+
+        @Test
+        void shouldAddStatisticsFromCertificateService() {
+            userStatisticsService.getUserStatistics();
+            verify(certificateServiceStatisticService).add(any(UserStatisticsDTO.class),
+                eq(List.of(SELECTED_UNIT_ID, NOT_SELECTED_UNIT_ID, SUB_UNIT_TO_SELECTED)), eq(user));
         }
     }
 }
