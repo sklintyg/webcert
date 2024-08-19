@@ -2127,7 +2127,7 @@ class CSIntegrationRequestFactoryTest {
         @Test
         void shouldSetUnitIds() {
             final var actualRequest = csIntegrationRequestFactory.getStatisticsRequest(UNIT_IDS);
-            assertEquals(UNIT_IDS, actualRequest.getAvailableUnitIds());
+            assertEquals(UNIT_IDS, actualRequest.getIssuedByUnitIds());
         }
     }
 }

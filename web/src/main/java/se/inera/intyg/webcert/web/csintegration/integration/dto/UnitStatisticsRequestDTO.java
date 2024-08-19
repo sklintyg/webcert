@@ -37,7 +37,7 @@ public class UnitStatisticsRequestDTO {
     CertificateServiceUnitDTO unit;
     CertificateServiceUnitDTO careUnit;
     CertificateServiceUnitDTO careProvider;
-    List<String> availableUnitIds;
+    List<String> issuedByUnitIds;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class UnitStatisticsRequestDTOBuilder {
