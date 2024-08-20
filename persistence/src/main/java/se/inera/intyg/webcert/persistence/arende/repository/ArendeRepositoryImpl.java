@@ -23,7 +23,6 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -48,14 +47,7 @@ public class ArendeRepositoryImpl implements ArendeFilteredRepositoryCustom {
         cq.where(createPredicate(filter, builder, root));
         cq.orderBy(builder.desc(root.get("senasteHandelse")));
 
-        TypedQuery<Arende> query = entityManager.createQuery(cq);
-
-        if (filter.hasPageSizeAndStartFrom()) {
-            query.setMaxResults(filter.getPageSize());
-            query.setFirstResult(filter.getStartFrom());
-        }
-
-        return query.getResultList();
+        return entityManager.createQuery(cq).getResultList();
     }
 
     @Override
