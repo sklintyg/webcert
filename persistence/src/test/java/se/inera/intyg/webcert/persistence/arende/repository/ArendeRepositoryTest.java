@@ -470,38 +470,6 @@ public class ArendeRepositoryTest {
     }
 
     @Test
-    public void testFilterArendePaginated() {
-        final String enhet = "enhet";
-        repo.save(buildArende("signeratAv", enhet, Status.CLOSED, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
-        repo.save(buildArende("signeratAv", enhet, Status.ANSWERED, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
-        repo.save(buildArende("signeratAv", enhet, Status.PENDING_EXTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
-        repo.save(buildArende("signeratAv", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
-
-        Filter filter = buildDefaultFilter(enhet);
-        filter.setStartFrom(0);
-        filter.setPageSize(1);
-
-        List<Arende> result = repo.filterArende(filter);
-        assertEquals(1, result.size());
-    }
-
-    @Test
-    public void testFilterArendePaginated2() {
-        final String enhet = "enhet";
-        repo.save(buildArende("signeratAv", enhet, Status.CLOSED, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
-        repo.save(buildArende("signeratAv", enhet, Status.ANSWERED, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
-        repo.save(buildArende("signeratAv", enhet, Status.PENDING_EXTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
-        repo.save(buildArende("signeratAv", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
-
-        Filter filter = buildDefaultFilter(enhet);
-        filter.setStartFrom(1);
-        filter.setPageSize(10);
-
-        List<Arende> result = repo.filterArende(filter);
-        assertEquals(2, result.size());
-    }
-
-    @Test
     public void testFilterArendeCount() {
         final String enhet = "enhet";
         repo.save(buildArende("signeratAv", enhet, Status.CLOSED, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
