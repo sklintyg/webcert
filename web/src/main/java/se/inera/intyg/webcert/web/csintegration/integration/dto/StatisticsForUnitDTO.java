@@ -16,20 +16,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.underskrift;
 
-import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
-import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
+package se.inera.intyg.webcert.web.csintegration.integration.dto;
 
-public interface UnderskriftService {
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import lombok.Builder;
+import lombok.Value;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.StatisticsForUnitDTO.StatisticsForUnitDTOBuilder;
 
-    SignaturBiljett startSigningProcess(String intygsId, String intygsTyp, long version, SignMethod signMethod, String ticketID);
+@JsonDeserialize(builder = StatisticsForUnitDTOBuilder.class)
+@Value
+@Builder
+public class StatisticsForUnitDTO {
 
-    SignaturBiljett fakeSignature(String intygsId, String intygsTyp, long version, String ticketId);
+    int draftCount;
+    int unhandledMessageCount;
 
-    SignaturBiljett netidSignature(String biljettId, byte[] signatur, String certifikat);
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class StatisticsForUnitDTOBuilder {
 
-    SignaturBiljett grpSignature(String biljettId, byte[] signatur);
-
-    SignaturBiljett signeringsStatus(String ticketId);
+    }
 }

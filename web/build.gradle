@@ -1,11 +1,8 @@
-apply plugin: 'com.netflix.nebula.grunt'
 apply plugin: 'org.gretty'
 apply plugin: 'idea'
 apply plugin: 'war'
 
 def buildDirectory = project.layout.buildDirectory.get().asFile
-def webappOutputDir = 'build/apps/'
-def webappTestOutputDir = 'build/karma/'
 
 ext {
     generatedJavaDir = file("${buildDirectory}/generatedSource/java")
@@ -15,7 +12,6 @@ ext {
 
 gretty {
     def instance = System.properties['instance'] ?: '0'
-    def minified = System.properties['useMinifiedJavaScript'] ?: false
     def useHttpPort = 8020 + (instance as Integer)
     def useInternalHttpPort = 8120 + (instance as Integer)
     def applicationDir = "${rootProject.projectDir}/devops/dev"
@@ -25,7 +21,6 @@ gretty {
     integrationTestTask = null
     scanInterval = 0
     debugPort = 8820 + (instance as Integer)
-    portPropertiesFileName = "gretty_ports_${instance}.properties"
     fastReload = true
     inplaceMode = 'hard'
     debugSuspend = false
@@ -38,37 +33,18 @@ gretty {
                "-Dfile.encoding=UTF-8",
                "-Dapplication.dir=${applicationDir}",
                "-Ddev.config.file=${applicationDir}/config/application-dev.properties",
-               "-DuseMinifiedJavaScript=${minified}",
                "-Ddev.http.port=${useHttpPort}",
                "-Ddev.http.port.internal=${useInternalHttpPort}",
                "-Dxml.catalog.cacheEnabled=false"
     ]
 
-    extraResourceBase webappOutputDir
-
     dependencies {
-        gretty "org.eclipse.jetty:apache-jstl"
         gretty "se.inera.intyg.refdata:refdata:${refDataVersion}"
     }
 }
 
-node {
-    version = "${nodeJsVersion}"
-    npmVersion = "${npmVersion}"
-    download = true
-    distBaseUrl = 'https://nodejs.org/dist/'
-    workDir = file("${rootProject.projectDir}/.gradle/nodejs")
-    npmWorkDir = file("${rootProject.projectDir}/.gradle/npm")
-}
-
-grunt {
-    colors = System.properties['gruntColors'] ? System.properties['gruntColors'].toBoolean() : true
-}
-
 idea {
     module {
-        excludeDirs += file('node_modules')
-        excludeDirs += file('src/main/webapp/bower_components')
         generatedSourceDirs.add(generatedJavaDir)
     }
 }
@@ -82,40 +58,7 @@ configurations {
     testImplemetationClasspath.extendsFrom implementation
 }
 
-war {
-    from("${buildDirectory}/apps")
-    exclude '**/*.scss'
-    exclude '**/*.spec.js'
-    exclude '**/*.test.js'
-}
-
 test { exclude '**/*IT*' }
-
-tasks.register('jsTests', NodeTask) {
-    dependsOn npmInstall
-    inputs.dir("$projectDir/src/main/resources")
-    inputs.dir("$projectDir/src/main/webapp")
-    inputs.files(fileTree(projectDir).include('*.js'))
-    inputs.files(fileTree(projectDir).include('*.json'))
-    inputs.files(configurations.testImplemetationClasspath)
-    outputs.dir(webappTestOutputDir)
-
-    script = file('node_modules/grunt-cli/bin/grunt')
-    args = ['test', "--outputDir=${webappTestOutputDir}", '--run-coverage=' + (project.findProperty('codeCoverage') != null ? 'true' : '')]
-}
-
-tasks.register('jsInclude', NodeTask) {
-    dependsOn npmInstall
-    inputs.dir("$projectDir/src/main/resources")
-    inputs.dir("$projectDir/src/main/webapp")
-    inputs.files(fileTree(projectDir).include('*.js'))
-    inputs.files(fileTree(projectDir).include('*.json'))
-    inputs.files(configurations.testImplemetationClasspath)
-    outputs.dir(webappOutputDir)
-
-    script = file('node_modules/grunt-cli/bin/grunt')
-    args = ['default', "--outputDir=${webappOutputDir}"]
-}
 
 tasks.register('unzipBuildTools', Copy) {
     into "${buildDirectory}/build-tools/"
@@ -123,14 +66,6 @@ tasks.register('unzipBuildTools', Copy) {
         def intygJar = project.rootProject.buildscript.configurations.classpath.find { it.name.contains("se.inera.intyg.plugin.common") }
         zipTree(intygJar)
     }
-}
-
-tasks.register('jsCodeQuality', NodeTask) {
-    dependsOn npmInstall, unzipBuildTools
-    outputs.upToDateWhen { false }
-
-    script = file('node_modules/grunt-cli/bin/grunt')
-    args = ['lint']
 }
 
 tasks.register('xsd2Java') {
@@ -152,12 +87,8 @@ tasks.register('xsd2Java') {
     }
 }
 
-checkstyleMain.dependsOn jsCodeQuality
 compileJava.dependsOn(xsd2Java)
-jsCodeQuality.onlyIf { project.hasProperty('codeQuality') }
 sourceSets.main.java { srcDir generatedJavaDir }
-test.dependsOn(jsTests)
-war.dependsOn(jsInclude)
 war.dependsOn createVersionPropertyFile
 
 if (project.hasProperty("codeQuality")) {

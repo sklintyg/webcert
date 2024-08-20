@@ -95,11 +95,11 @@ public class WebcertRedirectIntegrationExceptionHandler implements ExceptionMapp
 
     private Response buildErrorRedirectResponse(String errorReason, String message) {
         URI location = ERROR_REASON_MISSING_PARAMETER.equals(errorReason)
-            ? uriInfo.getBaseUriBuilder().replacePath("/error.jsp")
+            ? uriInfo.getBaseUriBuilder().replacePath("/error")
             .queryParam("reason", errorReason)
             .queryParam("message", message)
             .build()
-            : uriInfo.getBaseUriBuilder().replacePath("/error.jsp")
+            : uriInfo.getBaseUriBuilder().replacePath("/error")
                 .queryParam("reason", errorReason)
                 .build();
 

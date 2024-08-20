@@ -83,7 +83,7 @@ class SignServiceForCSTest {
         @Test
         void shallReturnNullIfCertificateDontExistsInCertificateService() {
             doReturn(false).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
-            assertNull(signServiceForCS.startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE, TICKET_ID, false));
+            assertNull(signServiceForCS.startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE, TICKET_ID));
         }
 
         @Test
@@ -98,7 +98,7 @@ class SignServiceForCSTest {
             ).when(csIntegrationService).getCertificateXml(certificateXmlRequestDTO, CERTIFICATE_ID);
             assertThrows(ConcurrentModificationException.class,
                 () -> signServiceForCS.startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE,
-                    TICKET_ID, false));
+                    TICKET_ID));
         }
 
         @Test
@@ -113,11 +113,11 @@ class SignServiceForCSTest {
                     .build()
             ).when(csIntegrationService).getCertificateXml(certificateXmlRequestDTO, CERTIFICATE_ID);
             doReturn(expectedTicket).when(createSignatureTicketService)
-                .create(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE, TICKET_ID, false,
+                .create(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE, TICKET_ID,
                     new String(Base64.getDecoder().decode(CERTIFICATE_XML_DATA), StandardCharsets.UTF_8));
 
             final var actualTicket = signServiceForCS.startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE,
-                TICKET_ID, false);
+                TICKET_ID);
             assertEquals(expectedTicket, actualTicket);
         }
     }

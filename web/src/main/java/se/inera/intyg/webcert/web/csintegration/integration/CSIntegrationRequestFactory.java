@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.csintegration.integration;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.Base64;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -70,6 +71,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.SendCertificateR
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SendMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateWithoutSignatureRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.UnitStatisticsRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.message.MessageRequestConverter;
 import se.inera.intyg.webcert.web.csintegration.message.dto.IncomingMessageRequestDTO;
@@ -559,6 +561,16 @@ public class CSIntegrationRequestFactory {
         final var cutoffDate = LocalDate.now().minusDays(lockedAfterDay).atStartOfDay();
         return LockDraftsRequestDTO.builder()
             .cutoffDate(cutoffDate)
+            .build();
+    }
+
+    public UnitStatisticsRequestDTO getStatisticsRequest(List<String> unitIds) {
+        return UnitStatisticsRequestDTO.builder()
+            .unit(certificateServiceUnitHelper.getUnit())
+            .careUnit(certificateServiceUnitHelper.getCareUnit())
+            .careProvider(certificateServiceUnitHelper.getCareProvider())
+            .user(certificateServiceUserHelper.get())
+            .issuedByUnitIds(unitIds)
             .build();
     }
 }

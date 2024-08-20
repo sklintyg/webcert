@@ -70,25 +70,22 @@ class SignAggregatorTest {
         void shallUseWebcertImplementationIfProfileNotActive() {
             doReturn(false).when(certificateServiceProfile).active();
 
-            signCertificateAggregator.startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, SignMethod.SIGN_SERVICE, TICKED_ID,
-                false);
+            signCertificateAggregator.startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, SignMethod.SIGN_SERVICE, TICKED_ID);
 
             verify(signatureServiceForWC, times(1)).startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, SignMethod.SIGN_SERVICE,
-                TICKED_ID,
-                false);
+                TICKED_ID);
         }
 
         @Test
         void shallUseWebcertImplementationIfCSReturnsNull() {
             doReturn(true).when(certificateServiceProfile).active();
             doReturn(null).when(signatureServiceForCS).startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, SignMethod.SIGN_SERVICE,
-                TICKED_ID, false);
+                TICKED_ID);
 
-            signCertificateAggregator.startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, SignMethod.SIGN_SERVICE, TICKED_ID, false);
+            signCertificateAggregator.startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, SignMethod.SIGN_SERVICE, TICKED_ID);
 
             verify(signatureServiceForWC, times(1)).startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, SignMethod.SIGN_SERVICE,
-                TICKED_ID,
-                false);
+                TICKED_ID);
         }
 
 
@@ -98,17 +95,15 @@ class SignAggregatorTest {
             doReturn(true).when(certificateServiceProfile).active();
             doReturn(expectedResult).when(signatureServiceForCS)
                 .startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, SignMethod.SIGN_SERVICE,
-                    TICKED_ID, false);
+                    TICKED_ID);
 
             final var actualResult = signCertificateAggregator.startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L,
-                SignMethod.SIGN_SERVICE, TICKED_ID, false);
+                SignMethod.SIGN_SERVICE, TICKED_ID);
 
             verify(signatureServiceForWC, times(0)).startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, SignMethod.SIGN_SERVICE,
-                TICKED_ID,
-                false);
+                TICKED_ID);
             verify(signatureServiceForCS, times(1)).startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, SignMethod.SIGN_SERVICE,
-                TICKED_ID,
-                false);
+                TICKED_ID);
             assertEquals(expectedResult, actualResult);
         }
     }

@@ -31,6 +31,7 @@ import static org.mockito.Mockito.when;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -127,6 +128,9 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.SendMessageRespo
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateWithoutSignatureRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.StatisticsForUnitDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.UnitStatisticsRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.UnitStatisticsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.message.dto.IncomingMessageRequestDTO;
@@ -311,7 +315,7 @@ class CSIntegrationServiceTest {
         ForwardCertificateResponseDTO.builder()
             .certificate(CERTIFICATE)
             .build();
-    private static final CertificateEventDTO[] EVENTS = {new CertificateEventDTO()};
+    private static final List<CertificateEventDTO> EVENTS = List.of(new CertificateEventDTO());
     private static final GetCertificateEventsRequestDTO GET_CERTIFICATE_EVENTS_REQUEST_DTO = GetCertificateEventsRequestDTO.builder()
         .build();
     private static final GetCertificateEventsResponseDTO GET_CERTIFICATE_EVENTS_RESPONSE_DTO =
@@ -329,6 +333,11 @@ class CSIntegrationServiceTest {
     private static final LockDraftsResponseDTO LOCK_OLD_DRAFTS_RESPONSE_DTO = LockDraftsResponseDTO.builder()
         .certificates(List.of(CERTIFICATE)).build();
     private static final LockDraftsRequestDTO LOCK_OLD_DRAFTS_REQUEST_DTO = LockDraftsRequestDTO.builder().build();
+    private static final Map<String, StatisticsForUnitDTO> USER_STATISTICS = Map.of("unit", StatisticsForUnitDTO.builder().build());
+    private static final UnitStatisticsResponseDTO STATISTICS_RESPONSE_DTO = UnitStatisticsResponseDTO.builder()
+        .unitStatistics(USER_STATISTICS)
+        .build();
+    private static final UnitStatisticsRequestDTO STATISTICS_REQUEST_DTO = UnitStatisticsRequestDTO.builder().build();
 
 
     @Mock
@@ -2416,7 +2425,8 @@ class CSIntegrationServiceTest {
                 .thenReturn(GET_CERTIFICATE_EVENTS_RESPONSE_DTO);
             final var response = csIntegrationService.getCertificateEvents(ID, GET_CERTIFICATE_EVENTS_REQUEST_DTO);
 
-            assertEquals(EVENTS, response);
+            assertEquals(EVENTS.size(), response.length);
+            assertEquals(EVENTS.get(0), response[0]);
         }
 
         @Test
@@ -2490,7 +2500,7 @@ class CSIntegrationServiceTest {
     }
 
     @Nested
-    class LockOldDraftsTest {
+    class LockDraftsTest {
 
         @Test
         void shouldPreformPostUsingRequest() {
@@ -2533,6 +2543,53 @@ class CSIntegrationServiceTest {
             verify(restTemplate).postForObject(captor.capture(), any(), any());
 
             assertEquals("baseUrl/internalapi/certificate/lock", captor.getValue());
+        }
+    }
+
+    @Nested
+    class GetStatisticsTest {
+
+        @Test
+        void shouldPreformPostUsingRequest() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(STATISTICS_RESPONSE_DTO);
+            final var captor = ArgumentCaptor.forClass(UnitStatisticsRequestDTO.class);
+
+            csIntegrationService.getStatistics(STATISTICS_REQUEST_DTO);
+            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+
+            assertEquals(STATISTICS_REQUEST_DTO, captor.getValue());
+        }
+
+        @Test
+        void shouldReturnUserStatistics() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(STATISTICS_RESPONSE_DTO);
+            final var response = csIntegrationService.getStatistics(STATISTICS_REQUEST_DTO);
+
+            assertEquals(USER_STATISTICS, response);
+        }
+
+        @Test
+        void shouldThrowIfResponseIsNull() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(null);
+            assertThrows(IllegalStateException.class,
+                () -> csIntegrationService.getStatistics(STATISTICS_REQUEST_DTO));
+        }
+
+        @Test
+        void shouldSetUrlCorrect() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(STATISTICS_RESPONSE_DTO);
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            csIntegrationService.getStatistics(STATISTICS_REQUEST_DTO);
+
+            verify(restTemplate).postForObject(captor.capture(), any(), any());
+
+            assertEquals("baseUrl/api/unit/certificates/statistics", captor.getValue());
         }
     }
 }

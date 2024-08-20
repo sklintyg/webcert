@@ -24,8 +24,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -57,19 +56,10 @@ class WebcertAuthenticationFailureHandlerTest {
     @Captor
     private ArgumentCaptor<String> urlCaptor;
 
+    private final HttpServletRequest request = new MockHttpServletRequest();
+    private final HttpServletResponse response = new MockHttpServletResponse();
+
     private static final int ONE = 1;
-
-    private static final String WC = "wc";
-    private static final String WC2 = "wc2";
-    private static final String REQUEST_URI = "requestUri";
-    private static final String SERVLET_PATH = "servletPath";
-    private static final String X_FORWARDED_HOST = "x-forwarded-host";
-
-    private static final Map<String, Map<String, String>> REDIRECTS = Map.of(
-        "requestUri", Map.of("wc", "https://wc.localtest.me", "wc2", "https://wc2.wc.localtest.me/siths-wc2"),
-        "servletPath", Map.of("wc", "https://wc.localtest.me", "wc2", "https://wc2.wc.localtest.me/siths-wc2"),
-        "x-forwarded-host", Map.of("wc", "wc.localtest.me", "wc2", "wc2.wc.localtest.me"));
-
     private static final BadCredentialsException BAD_CREDENTIALS = new BadCredentialsException("Bad credentials exception");
     private static final HsaServiceException HSA_SERVICE = new HsaServiceException("Hsa service exception", new Exception());
     private static final RememberMeAuthenticationException OTHER_AUTH_EXCEPTION = new RememberMeAuthenticationException("Other exception");
@@ -86,76 +76,7 @@ class WebcertAuthenticationFailureHandlerTest {
     }
 
     @Test
-    public void shouldRedirectToAngularClientLoginFailed() throws IOException {
-        final var request = getRequest(Collections.emptyMap());
-        final var response = getResponse();
-
-        handler.onAuthenticationFailure(request, response, BAD_CREDENTIALS);
-
-        verify(redirectStrategy, times(ONE)).sendRedirect(eq(request), eq(response), urlCaptor.capture());
-        assertEquals("/error.jsp?reason=login.failed", urlCaptor.getValue());
-    }
-
-    @Test
-    public void shouldRedirectToAngularClientLoginHsaError() throws IOException {
-        final var request = getRequest(Map.of(REQUEST_URI, WC, SERVLET_PATH, WC, X_FORWARDED_HOST, WC));
-        final var response = getResponse();
-
-        handler.onAuthenticationFailure(request, response, HSA_SERVICE);
-
-        verify(redirectStrategy, times(ONE)).sendRedirect(eq(request), eq(response), urlCaptor.capture());
-        assertEquals("/error.jsp?reason=login.hsaerror", urlCaptor.getValue());
-    }
-
-    @Test
-    public void shouldRedirectToAngularClientLoginMedarbetaruppdragError() throws IOException {
-        final var request = getRequest(Map.of(REQUEST_URI, WC));
-        final var response = getResponse();
-
-        handler.onAuthenticationFailure(request, response, MISSING_ASSIGNMENT);
-
-        verify(redirectStrategy, times(ONE)).sendRedirect(eq(request), eq(response), urlCaptor.capture());
-        assertEquals("/error.jsp?reason=login.medarbetaruppdrag", urlCaptor.getValue());
-    }
-
-    @Test
-    public void shouldRedirectToAngularClientSubscriptionError() throws IOException {
-        final var request = getRequest(Map.of(SERVLET_PATH, WC));
-        final var response = getResponse();
-
-        handler.onAuthenticationFailure(request, response, MISSING_SUBSCRIPTION);
-
-        verify(redirectStrategy, times(ONE)).sendRedirect(eq(request), eq(response), urlCaptor.capture());
-        assertEquals("/new-error.jsp?reason=auth-exception-subscription", urlCaptor.getValue());
-    }
-
-    @Test
-    public void shouldRedirectToPPRegistrationWhenRequestFromAngular() throws IOException {
-        final var request = getRequest(Map.of(X_FORWARDED_HOST, WC));
-        final var response = getResponse();
-
-        handler.onAuthenticationFailure(request, response, PP_AUTHORIZATION);
-
-        verify(redirectStrategy, times(ONE)).sendRedirect(eq(request), eq(response), urlCaptor.capture());
-        assertEquals("/ppRegistrationUrl", urlCaptor.getValue());
-    }
-
-    @Test
-    public void shouldRedirectToAngularClientDefaultError() throws IOException {
-        final var request = getRequest(Map.of(REQUEST_URI, WC, X_FORWARDED_HOST, WC));
-        final var response = getResponse();
-
-        handler.onAuthenticationFailure(request, response, OTHER_AUTH_EXCEPTION);
-
-        verify(redirectStrategy, times(ONE)).sendRedirect(eq(request), eq(response), urlCaptor.capture());
-        assertEquals("/error.jsp?reason=login.failed", urlCaptor.getValue());
-    }
-
-    @Test
-    public void shouldRedirectToReactClientLoginFailed() throws IOException {
-        final var request = getRequest(Map.of(REQUEST_URI, WC2));
-        final var response = getResponse();
-
+    public void shouldRedirectToLoginFailed() throws IOException {
         handler.onAuthenticationFailure(request, response, BAD_CREDENTIALS);
 
         verify(redirectStrategy, times(ONE)).sendRedirect(eq(request), eq(response), urlCaptor.capture());
@@ -163,10 +84,7 @@ class WebcertAuthenticationFailureHandlerTest {
     }
 
     @Test
-    public void shouldRedirectToReactClientLoginHsaError() throws IOException {
-        final var request = getRequest(Map.of(SERVLET_PATH, WC2));
-        final var response = getResponse();
-
+    public void shouldRedirectToHsaError() throws IOException {
         handler.onAuthenticationFailure(request, response, HSA_SERVICE);
 
         verify(redirectStrategy, times(ONE)).sendRedirect(eq(request), eq(response), urlCaptor.capture());
@@ -174,10 +92,7 @@ class WebcertAuthenticationFailureHandlerTest {
     }
 
     @Test
-    public void shouldRedirectToReactClientLoginMedarbetaruppdragError() throws IOException {
-        final var request = getRequest(Map.of(REQUEST_URI, WC2, SERVLET_PATH, WC, X_FORWARDED_HOST, WC));
-        final var response = getResponse();
-
+    public void shouldRedirectToLoginMedarbetaruppdragError() throws IOException {
         handler.onAuthenticationFailure(request, response, MISSING_ASSIGNMENT);
 
         verify(redirectStrategy, times(ONE)).sendRedirect(eq(request), eq(response), urlCaptor.capture());
@@ -185,10 +100,7 @@ class WebcertAuthenticationFailureHandlerTest {
     }
 
     @Test
-    public void shouldRedirectToReactClientSubscriptionError() throws IOException {
-        final var request = getRequest(Map.of(REQUEST_URI, WC2, SERVLET_PATH, WC2, X_FORWARDED_HOST, WC2));
-        final var response = getResponse();
-
+    public void shouldRedirectToSubscriptionError() throws IOException {
         handler.onAuthenticationFailure(request, response, MISSING_SUBSCRIPTION);
 
         verify(redirectStrategy, times(ONE)).sendRedirect(eq(request), eq(response), urlCaptor.capture());
@@ -196,10 +108,7 @@ class WebcertAuthenticationFailureHandlerTest {
     }
 
     @Test
-    public void shouldRedirectToPPRegistrationWhenRequestFromReact() throws IOException {
-        final var request = getRequest(Map.of(X_FORWARDED_HOST, WC2));
-        final var response = getResponse();
-
+    public void shouldRedirectToPPRegistration() throws IOException {
         handler.onAuthenticationFailure(request, response, PP_AUTHORIZATION);
 
         verify(redirectStrategy, times(ONE)).sendRedirect(eq(request), eq(response), urlCaptor.capture());
@@ -207,39 +116,11 @@ class WebcertAuthenticationFailureHandlerTest {
     }
 
     @Test
-    public void shouldRedirectToReactClientDefaultError() throws IOException {
-        final var request = getRequest(Map.of(REQUEST_URI, WC, X_FORWARDED_HOST, WC2));
-        final var response = getResponse();
-
+    public void shouldRedirectToDefaultError() throws IOException {
         handler.onAuthenticationFailure(request, response, OTHER_AUTH_EXCEPTION);
 
         verify(redirectStrategy, times(ONE)).sendRedirect(eq(request), eq(response), urlCaptor.capture());
         assertEquals("/error?reason=login.failed", urlCaptor.getValue());
     }
 
-    private MockHttpServletRequest getRequest(Map<String, String> properties) {
-        final var request = new MockHttpServletRequest();
-        setProperties(request, properties);
-        return request;
-    }
-
-    private HttpServletResponse getResponse() {
-        return new MockHttpServletResponse();
-    }
-
-    private void setProperties(MockHttpServletRequest request, Map<String, String> properties) {
-        for (final var entry : properties.entrySet()) {
-            switch (entry.getKey()) {
-                case REQUEST_URI:
-                    request.setRequestURI(REDIRECTS.get(REQUEST_URI).get(entry.getValue()));
-                    break;
-                case SERVLET_PATH:
-                    request.setServletPath(REDIRECTS.get(SERVLET_PATH).get(entry.getValue()));
-                    break;
-                case X_FORWARDED_HOST:
-                    request.addHeader(X_FORWARDED_HOST, REDIRECTS.get(X_FORWARDED_HOST).get(entry.getValue()));
-                    break;
-            }
-        }
-    }
 }

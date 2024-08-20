@@ -26,14 +26,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import java.net.URI;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -52,7 +50,6 @@ import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
-import se.inera.intyg.webcert.web.web.controller.facade.util.AngularClientUtil;
 import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
 
 @ExtendWith(MockitoExtension.class)
@@ -68,9 +65,6 @@ class LaunchIntegrationControllerTest {
 
     @Mock
     private ReactUriFactory reactUriFactory;
-
-    @Mock
-    private AngularClientUtil angularClientUtil;
 
     @Mock
     private CommonAuthoritiesResolver commonAuthoritiesResolver;
@@ -108,45 +102,11 @@ class LaunchIntegrationControllerTest {
         }
 
         @Nested
-        class AngularTest {
-
-            @BeforeEach
-            void setup() {
-                final var uriBuilder = mock(UriBuilder.class);
-                uriInfo = mock(UriInfo.class);
-                doReturn(uriBuilder).when(uriInfo).getBaseUriBuilder();
-                doReturn(uriBuilder).when(uriBuilder).replacePath(any());
-                doReturn(uriBuilder).when(uriBuilder).fragment(any());
-                doReturn(mock(URI.class)).when(uriBuilder).buildFromMap(any());
-                doReturn(true).when(angularClientUtil).useAngularClient(any());
-                doReturn(mock(SelectableVardenhet.class)).when(webcertUser).getValdVardenhet();
-                doReturn(mock(SelectableVardenhet.class)).when(webcertUser).getValdVardgivare();
-                doReturn(true).when(webcertUser).changeValdVardenhet(any());
-            }
-
-            @Test
-            void shouldNotUseReactIfFeatureIsInactivated() {
-                launchIntegrationController.redirectToCertificate(uriInfo, CERTIFICATE_ID, ORIGIN);
-
-                verify(reactUriFactory, never()).uriForCertificate(any(), any());
-            }
-
-            @Test
-            void shouldSetLaunchFromOriginOnUser() {
-                launchIntegrationController.redirectToCertificate(uriInfo, CERTIFICATE_ID, ORIGIN);
-
-                verify(webcertUser).setLaunchFromOrigin(ORIGIN);
-            }
-
-        }
-
-        @Nested
         class ReactCertificateTest {
 
             @BeforeEach
             void setup() {
                 doReturn(mock(URI.class)).when(reactUriFactory).uriForCertificate(any(), any());
-                doReturn(false).when(angularClientUtil).useAngularClient(any());
                 doReturn(mock(SelectableVardenhet.class)).when(webcertUser).getValdVardenhet();
                 doReturn(mock(SelectableVardenhet.class)).when(webcertUser).getValdVardgivare();
                 doReturn(true).when(webcertUser).changeValdVardenhet(any());
@@ -176,7 +136,6 @@ class LaunchIntegrationControllerTest {
                 @BeforeEach
                 void setUp() {
                     doReturn(mock(URI.class)).when(reactUriFactory).uriForCertificate(any(), any());
-                    doReturn(false).when(angularClientUtil).useAngularClient(any());
                     doReturn(mock(SelectableVardenhet.class)).when(webcertUser).getValdVardenhet();
                     doReturn(mock(SelectableVardenhet.class)).when(webcertUser).getValdVardgivare();
                     doReturn(true).when(webcertUser).changeValdVardenhet(any());
