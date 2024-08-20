@@ -351,21 +351,4 @@
         <url-pattern>/api/v1/session/invalidate</url-pattern>
     </filter-mapping>
 
-    <welcome-file-list>
-        <welcome-file>boot-app.jsp</welcome-file>
-
-    </welcome-file-list>
-    <error-page>
-        <error-code>403</error-code>
-        <location>/error.jsp?reason=denied</location>
-    </error-page>
-    <error-page>
-        <error-code>404</error-code>
-        <location>/error.jsp?reason=notfound</location>
-    </error-page>
-    <error-page>
-        <error-code>500</error-code>
-        <location>/error.jsp?reason=error</location>
-    </error-page>
-
 </web-app>

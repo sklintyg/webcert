@@ -69,11 +69,11 @@ class CreateSignatureTicketServiceTest {
     void shallThrowIfTicketFromServiceIsNull() {
         doReturn(AuthenticationMethod.FAKE).when(user).getAuthenticationMethod();
         doReturn(null).when(xmlUnderskriftService)
-            .skapaSigneringsBiljettMedDigest(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, Optional.empty(), SignMethod.FAKE, TICKET_ID, false,
+            .skapaSigneringsBiljettMedDigest(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, Optional.empty(), SignMethod.FAKE, TICKET_ID,
                 CERTIFICATE_XML);
 
         assertThrows(IllegalStateException.class,
-            () -> createSignatureTicketService.create(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE, TICKET_ID, false,
+            () -> createSignatureTicketService.create(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE, TICKET_ID,
                 CERTIFICATE_XML));
     }
 
@@ -82,11 +82,10 @@ class CreateSignatureTicketServiceTest {
         final var expectedTicket = new SignaturBiljett();
         doReturn(AuthenticationMethod.FAKE).when(user).getAuthenticationMethod();
         doReturn(expectedTicket).when(xmlUnderskriftService)
-            .skapaSigneringsBiljettMedDigest(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, Optional.empty(), SignMethod.FAKE, TICKET_ID, false,
+            .skapaSigneringsBiljettMedDigest(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, Optional.empty(), SignMethod.FAKE, TICKET_ID,
                 CERTIFICATE_XML);
 
         final var actualTicket = createSignatureTicketService.create(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE, TICKET_ID,
-            false,
             CERTIFICATE_XML);
 
         assertEquals(expectedTicket, actualTicket);
@@ -97,11 +96,10 @@ class CreateSignatureTicketServiceTest {
         final var expectedTicket = new SignaturBiljett();
         doReturn(AuthenticationMethod.SITHS).when(user).getAuthenticationMethod();
         doReturn(expectedTicket).when(xmlUnderskriftService)
-            .skapaSigneringsBiljettMedDigest(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, Optional.empty(), SignMethod.FAKE, TICKET_ID, false,
+            .skapaSigneringsBiljettMedDigest(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, Optional.empty(), SignMethod.FAKE, TICKET_ID,
                 CERTIFICATE_XML);
 
         final var actualTicket = createSignatureTicketService.create(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE, TICKET_ID,
-            false,
             CERTIFICATE_XML);
 
         assertEquals(expectedTicket, actualTicket);
@@ -112,11 +110,10 @@ class CreateSignatureTicketServiceTest {
         final var expectedTicket = new SignaturBiljett();
         doReturn(AuthenticationMethod.NET_ID).when(user).getAuthenticationMethod();
         doReturn(expectedTicket).when(xmlUnderskriftService)
-            .skapaSigneringsBiljettMedDigest(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, Optional.empty(), SignMethod.FAKE, TICKET_ID, false,
+            .skapaSigneringsBiljettMedDigest(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, Optional.empty(), SignMethod.FAKE, TICKET_ID,
                 CERTIFICATE_XML);
 
         final var actualTicket = createSignatureTicketService.create(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE, TICKET_ID,
-            false,
             CERTIFICATE_XML);
 
         assertEquals(expectedTicket, actualTicket);
@@ -127,11 +124,10 @@ class CreateSignatureTicketServiceTest {
         final var expectedTicket = new SignaturBiljett();
         doReturn(AuthenticationMethod.BANK_ID).when(user).getAuthenticationMethod();
         doReturn(expectedTicket).when(grpUnderskriftService)
-            .skapaSigneringsBiljettMedDigest(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, Optional.empty(), SignMethod.FAKE, TICKET_ID, false,
+            .skapaSigneringsBiljettMedDigest(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, Optional.empty(), SignMethod.FAKE, TICKET_ID,
                 null);
 
         final var actualTicket = createSignatureTicketService.create(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE, TICKET_ID,
-            false,
             CERTIFICATE_XML);
 
         assertEquals(expectedTicket, actualTicket);
@@ -142,11 +138,11 @@ class CreateSignatureTicketServiceTest {
         final var expectedTicket = new SignaturBiljett();
         doReturn(AuthenticationMethod.MOBILT_BANK_ID).when(user).getAuthenticationMethod();
         doReturn(expectedTicket).when(grpUnderskriftService)
-            .skapaSigneringsBiljettMedDigest(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, Optional.empty(), SignMethod.FAKE, TICKET_ID, false,
+            .skapaSigneringsBiljettMedDigest(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, Optional.empty(), SignMethod.FAKE, TICKET_ID,
                 null);
 
         final var actualTicket = createSignatureTicketService.create(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE, TICKET_ID,
-            false, CERTIFICATE_XML);
+            CERTIFICATE_XML);
 
         assertEquals(expectedTicket, actualTicket);
     }
@@ -158,11 +154,11 @@ class CreateSignatureTicketServiceTest {
         doReturn(AuthenticationMethod.MOBILT_BANK_ID).when(user).getAuthenticationMethod();
         doReturn(PERSON_ID).when(user).getPersonId();
         doReturn(expectedTicket).when(grpUnderskriftService)
-            .skapaSigneringsBiljettMedDigest(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, Optional.empty(), SignMethod.GRP, TICKET_ID, false,
+            .skapaSigneringsBiljettMedDigest(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, Optional.empty(), SignMethod.GRP, TICKET_ID,
                 null);
 
         createSignatureTicketService.create(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.GRP, TICKET_ID,
-            false, CERTIFICATE_XML);
+            CERTIFICATE_XML);
 
         verify(grpUnderskriftService).startGrpCollectPoller(PERSON_ID, expectedTicket);
     }

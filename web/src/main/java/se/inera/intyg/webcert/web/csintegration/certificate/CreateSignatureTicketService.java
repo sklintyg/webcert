@@ -38,10 +38,10 @@ public class CreateSignatureTicketService {
     private final WebCertUserService webCertUserService;
 
     public SignaturBiljett create(String certificateId, String certificateType, long version, SignMethod signMethod,
-        String ticketID, boolean isWc2ClientRequest, String certificateXml) {
+        String ticketID, String certificateXml) {
         final var user = webCertUserService.getUser();
         final var ticket = getTicket(user.getAuthenticationMethod(), certificateId, certificateType, version,
-            signMethod, ticketID, isWc2ClientRequest, certificateXml);
+            signMethod, ticketID, certificateXml);
 
         if (ticket == null) {
             throw new IllegalStateException("Unhandled authentication method, could not create SignaturBiljett");
@@ -55,18 +55,17 @@ public class CreateSignatureTicketService {
     }
 
     private SignaturBiljett getTicket(AuthenticationMethod authenticationMethod, String certificateId, String certificateType, long version,
-        SignMethod signMethod, String ticketID, boolean isWc2ClientRequest, String certificateXml) {
+        SignMethod signMethod, String ticketID, String certificateXml) {
         switch (authenticationMethod) {
             case FAKE:
             case SITHS:
             case NET_ID:
                 return xmlUnderskriftService.skapaSigneringsBiljettMedDigest(
-                    certificateId, certificateType, version, Optional.empty(),
-                    signMethod, ticketID, isWc2ClientRequest, certificateXml);
+                    certificateId, certificateType, version, Optional.empty(), signMethod, ticketID, certificateXml);
             case BANK_ID:
             case MOBILT_BANK_ID: {
                 return grpUnderskriftService.skapaSigneringsBiljettMedDigest(certificateId, certificateType, version,
-                    Optional.empty(), signMethod, ticketID, isWc2ClientRequest, null);
+                    Optional.empty(), signMethod, ticketID, null);
             }
             default:
                 throw new IllegalStateException(

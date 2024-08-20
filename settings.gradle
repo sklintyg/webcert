@@ -21,7 +21,6 @@ include ':mail-stub'
 include ':notification-stub'
 include ':webcert-web'
 include ':webcert-liquibase-runner'
-include ':webcert-protractor'
 include ':integration-api'
 include ':servicenow-integration'
 
@@ -38,7 +37,6 @@ project(':mail-stub').projectDir = "$rootDir/stubs/mail-stub" as File
 project(':notification-stub').projectDir = "$rootDir/stubs/notification-stub" as File
 project(':webcert-web').projectDir = "$rootDir/web" as File
 project(':webcert-liquibase-runner').projectDir = "$rootDir/tools/liquibase-runner" as File
-project(':webcert-protractor').projectDir = "$rootDir/test" as File
 project(':integration-api').projectDir = "$rootDir/integration/integration-api" as File
 project(':servicenow-integration').projectDir = "$rootDir/integration/servicenow-integration" as File
 

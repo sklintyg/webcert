@@ -38,9 +38,6 @@
 
   <jaxrs:server address="/">
     <jaxrs:serviceBeans>
-      <ref bean="fragaSvarUthoppController" />
-      <ref bean="privatePractitionerFragaSvarUthoppController" />
-      <ref bean="certificateIntegrationController" />
       <ref bean="launchIntegrationController" />
     </jaxrs:serviceBeans>
     <jaxrs:providers>
@@ -52,28 +49,9 @@
     </jaxrs:extensionMappings>
   </jaxrs:server>
 
-  <bean id="fragaSvarUthoppController"
-    class="se.inera.intyg.webcert.web.web.controller.legacyintegration.FragaSvarUthoppController">
-    <property name="urlBaseTemplate" value="${certificate.view.url.base}" />
-    <property name="urlFragmentTemplate" value="${certificate.view.url.fragment.template}" />
-  </bean>
-
-  <bean id="privatePractitionerFragaSvarUthoppController"
-      class="se.inera.intyg.webcert.web.web.controller.legacyintegration.PrivatePractitionerFragaSvarUthoppController">
-    <property name="urlBaseTemplate" value="${certificate.view.url.base}" />
-    <property name="urlFragmentTemplate" value="${certificate.view.url.fragment.template}" />
-  </bean>
-
-  <bean id="certificateIntegrationController"
-      class="se.inera.intyg.webcert.web.web.controller.legacyintegration.CertificateIntegrationController">
-    <property name="urlBaseTemplate" value="${certificate.view.url.base}" />
-    <property name="urlFragmentTemplate" value="${certificate.view.url.fragment.template}" />
-  </bean>
-
   <bean id="launchIntegrationController"
       class="se.inera.intyg.webcert.web.web.controller.integration.LaunchIntegrationController">
     <property name="urlBaseTemplate" value="${certificate.view.url.base}" />
-    <property name="urlFragmentTemplate" value="${certificate.view.url.fragment.template}" />
   </bean>
 
 </beans>

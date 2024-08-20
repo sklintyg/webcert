@@ -128,8 +128,7 @@ public class SignatureApiController extends AbstractApiController {
                 ticketId = UUID.randomUUID().toString();
             }
 
-            SignaturBiljett sb = underskriftService.startSigningProcess(intygsId, intygsTyp, version, signMethod, ticketId,
-                isWc2ClientRequest(request));
+            SignaturBiljett sb = underskriftService.startSigningProcess(intygsId, intygsTyp, version, signMethod, ticketId);
 
             if (SignMethod.SIGN_SERVICE.equals(signMethod)) {
                 DssSignRequestDTO signRequestDTO = dssSignatureService.createSignatureRequestDTO(sb);
@@ -189,34 +188,15 @@ public class SignatureApiController extends AbstractApiController {
         }
     }
 
-    private boolean isWc2ClientRequest(HttpServletRequest request) {
-        final var refererHeader = request.getHeader("referer");
-        return refererHeader != null && refererHeader.contains("wc2.");
-    }
-
     private Response getRedirectResponseWithReturnUrl(SignaturBiljett signaturBiljett, UriInfo uriInfo) {
         final var redirectUri = getRedirectUri(signaturBiljett, uriInfo);
         return Response.seeOther(redirectUri).build();
     }
 
     private URI getRedirectUri(SignaturBiljett signaturBiljett, UriInfo uriInfo) {
-        if (signaturBiljett.isWc2ClientRequest()) {
-            return signaturBiljett.getStatus().equals(SignaturStatus.ERROR)
-                ? reactUriFactory.uriForCertificateWithSignError(uriInfo, signaturBiljett.getIntygsId(), signaturBiljett.getStatus())
-                : reactUriFactory.uriForCertificate(uriInfo, signaturBiljett.getIntygsId());
-        }
-
-        return getRedirectUriForAngularClient(signaturBiljett);
-    }
-
-    private URI getRedirectUriForAngularClient(SignaturBiljett signaturBiljett) {
-        String returnUrl;
-        if (SignaturStatus.ERROR.equals(signaturBiljett.getStatus())) {
-            returnUrl = dssSignatureService.findReturnErrorUrl(signaturBiljett.getIntygsId(), signaturBiljett.getTicketId());
-        } else {
-            returnUrl = dssSignatureService.findReturnUrl(signaturBiljett.getIntygsId());
-        }
-        return URI.create(returnUrl);
+        return signaturBiljett.getStatus().equals(SignaturStatus.ERROR)
+            ? reactUriFactory.uriForCertificateWithSignError(uriInfo, signaturBiljett.getIntygsId(), signaturBiljett.getStatus())
+            : reactUriFactory.uriForCertificate(uriInfo, signaturBiljett.getIntygsId());
     }
 
     private SignaturStateDTO convertToSignatureStateDTO(SignaturBiljett sb) {
