@@ -2092,36 +2092,12 @@ class CSIntegrationRequestFactoryTest {
         void setup() {
             when(certificateServiceUserHelper.get())
                 .thenReturn(USER);
-            when(certificateServiceUnitHelper.getUnit())
-                .thenReturn(UNIT);
-            when(certificateServiceUnitHelper.getCareUnit())
-                .thenReturn(CARE_UNIT);
-            when(certificateServiceUnitHelper.getCareProvider())
-                .thenReturn(CARE_PROVIDER);
         }
 
         @Test
         void shouldSetUser() {
             final var actualRequest = csIntegrationRequestFactory.getStatisticsRequest(UNIT_IDS);
             assertEquals(USER, actualRequest.getUser());
-        }
-
-        @Test
-        void shouldSetUnit() {
-            final var actualRequest = csIntegrationRequestFactory.getStatisticsRequest(UNIT_IDS);
-            assertEquals(UNIT, actualRequest.getUnit());
-        }
-
-        @Test
-        void shouldSetCareUnit() {
-            final var actualRequest = csIntegrationRequestFactory.getStatisticsRequest(UNIT_IDS);
-            assertEquals(CARE_UNIT, actualRequest.getCareUnit());
-        }
-
-        @Test
-        void shouldSetCareProvider() {
-            final var actualRequest = csIntegrationRequestFactory.getStatisticsRequest(UNIT_IDS);
-            assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
         }
 
         @Test
