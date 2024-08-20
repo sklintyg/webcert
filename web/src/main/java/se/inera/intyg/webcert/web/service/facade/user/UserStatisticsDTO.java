@@ -69,4 +69,25 @@ public class UserStatisticsDTO {
 
         unitStatistics.put(unitId, statistics);
     }
+
+    public void mergeUnitStatistics(Map<String, UnitStatisticsDTO> unitStatistics) {
+        unitStatistics.forEach((key, value) ->
+            this.unitStatistics.merge(key, value, (unitStatistics1, unitStatistics2) -> {
+                unitStatistics1.merge(unitStatistics2);
+                return unitStatistics1;
+            })
+        );
+    }
+
+    public void addNbrOfDraftsOnSelectedUnit(long nbrOfDraftsOnSelectedUnit) {
+        this.nbrOfDraftsOnSelectedUnit += nbrOfDraftsOnSelectedUnit;
+    }
+
+    public void addNbrOfUnhandledQuestionsOnSelectedUnit(long nbrOfUnhandledQuestionsOnSelectedUnit) {
+        this.nbrOfUnhandledQuestionsOnSelectedUnit += nbrOfUnhandledQuestionsOnSelectedUnit;
+    }
+
+    public void addTotalDraftsAndUnhandledQuestionsOnOtherUnits(long totalDraftsAndUnhandledQuestionsOnOtherUnits) {
+        this.totalDraftsAndUnhandledQuestionsOnOtherUnits += totalDraftsAndUnhandledQuestionsOnOtherUnits;
+    }
 }

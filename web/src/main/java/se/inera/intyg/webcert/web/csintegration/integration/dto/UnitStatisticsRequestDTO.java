@@ -24,23 +24,23 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.util.List;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.common.support.facade.model.metadata.CertificateConfirmationModal;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoDTO.CertificateServiceTypeInfoDTOBuilder;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.UnitStatisticsRequestDTO.UnitStatisticsRequestDTOBuilder;
+import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitDTO;
+import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserDTO;
 
-@JsonDeserialize(builder = CertificateServiceTypeInfoDTOBuilder.class)
+@JsonDeserialize(builder = UnitStatisticsRequestDTOBuilder.class)
 @Value
 @Builder
-public class CertificateServiceTypeInfoDTO {
+public class UnitStatisticsRequestDTO {
 
-    String type;
-    String name;
-    String description;
-    List<ResourceLinkDTO> links;
-    CertificateConfirmationModal confirmationModal;
+    CertificateServiceUserDTO user;
+    CertificateServiceUnitDTO unit;
+    CertificateServiceUnitDTO careUnit;
+    CertificateServiceUnitDTO careProvider;
+    List<String> issuedByUnitIds;
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class CertificateServiceTypeInfoDTOBuilder {
+    public static class UnitStatisticsRequestDTOBuilder {
 
     }
 }

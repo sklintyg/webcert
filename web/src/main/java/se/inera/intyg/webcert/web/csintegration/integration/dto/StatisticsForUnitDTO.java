@@ -21,26 +21,20 @@ package se.inera.intyg.webcert.web.csintegration.integration.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import java.util.List;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.common.support.facade.model.metadata.CertificateConfirmationModal;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoDTO.CertificateServiceTypeInfoDTOBuilder;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.StatisticsForUnitDTO.StatisticsForUnitDTOBuilder;
 
-@JsonDeserialize(builder = CertificateServiceTypeInfoDTOBuilder.class)
+@JsonDeserialize(builder = StatisticsForUnitDTOBuilder.class)
 @Value
 @Builder
-public class CertificateServiceTypeInfoDTO {
+public class StatisticsForUnitDTO {
 
-    String type;
-    String name;
-    String description;
-    List<ResourceLinkDTO> links;
-    CertificateConfirmationModal confirmationModal;
+    int draftCount;
+    int unhandledMessageCount;
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class CertificateServiceTypeInfoDTOBuilder {
+    public static class StatisticsForUnitDTOBuilder {
 
     }
 }

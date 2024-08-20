@@ -31,6 +31,7 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
+import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceStatisticService;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -48,16 +49,18 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
     private final AuthoritiesHelper authoritiesHelper;
     private final FragaSvarService fragaSvarService;
     private final ArendeService arendeService;
+    private final CertificateServiceStatisticService certificateServiceStatisticService;
 
     @Autowired
     public UserStatisticsServiceImpl(WebCertUserService webCertUserService, UtkastService utkastService,
         AuthoritiesHelper authoritiesHelper, FragaSvarService fragaSvarService,
-        ArendeService arendeService) {
+        ArendeService arendeService, CertificateServiceStatisticService certificateServiceStatisticService) {
         this.webCertUserService = webCertUserService;
         this.utkastService = utkastService;
         this.authoritiesHelper = authoritiesHelper;
         this.fragaSvarService = fragaSvarService;
         this.arendeService = arendeService;
+        this.certificateServiceStatisticService = certificateServiceStatisticService;
     }
 
     @Override
@@ -92,7 +95,7 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
         }
 
         addCareProviderStatistics(statistics, user.getVardgivare(), draftsMap, questionsMap);
-
+        certificateServiceStatisticService.add(statistics, unitIds, user);
         return statistics;
     }
 
