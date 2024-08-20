@@ -95,9 +95,16 @@ public class CertificateServiceUserHelper {
     }
 
     private boolean hasSubscription(WebCertUser webCertUser) {
+        if (ifUserHasntSelectedLoggedInUnitYet(webCertUser)) {
+            return true;
+        }
         final var careProviderId = webCertUser.getValdVardgivare().getId();
 
         return !webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscription().contains(careProviderId);
+    }
+
+    private static boolean ifUserHasntSelectedLoggedInUnitYet(WebCertUser webCertUser) {
+        return webCertUser.getValdVardgivare() == null;
     }
 
     private CertificateServiceUserRole getRole(WebCertUser webCertUser) {
