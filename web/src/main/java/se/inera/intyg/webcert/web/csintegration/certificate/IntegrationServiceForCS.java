@@ -41,12 +41,12 @@ public class IntegrationServiceForCS implements IntegrationService {
     private final LogSjfService logSjfService;
 
     @Override
-    public PrepareRedirectToIntyg prepareRedirectToIntyg(String certificateType, String certificateId, WebCertUser user) {
-        return prepareRedirectToIntyg(certificateType, certificateId, user, null);
+    public PrepareRedirectToIntyg prepareRedirectToIntyg(String certificateId, WebCertUser user) {
+        return prepareRedirectToIntyg(certificateId, user, null);
     }
 
     @Override
-    public PrepareRedirectToIntyg prepareRedirectToIntyg(String certificateType, String certificateId, WebCertUser user,
+    public PrepareRedirectToIntyg prepareRedirectToIntyg(String certificateId, WebCertUser user,
         Personnummer prepareBeforeAlternateSsn) {
         final var exists = csIntegrationService.certificateExists(certificateId);
         if (Boolean.FALSE.equals(exists)) {

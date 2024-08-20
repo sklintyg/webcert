@@ -46,7 +46,6 @@ class IntegrationCertificateAggregatorTest {
     private static final String ID = "ID";
     private static final PrepareRedirectToIntyg PREPARE_REDIRECT_TO_INTYG_FROM_CS = new PrepareRedirectToIntyg();
     private static final PrepareRedirectToIntyg PREPARE_REDIRECT_TO_INTYG_FROM_WC = new PrepareRedirectToIntyg();
-    private static final String CERT_TYPE = "certType";
     private static final WebCertUser USER = new WebCertUser();
     private static final Personnummer ALTERNATE_SSN = Personnummer.createPersonnummer("191212121212").orElseThrow();
 
@@ -73,11 +72,11 @@ class IntegrationCertificateAggregatorTest {
     void shouldReturnPrepareRedirectToIntygFromCSIfCSProfileIsActiveAndResponseFromCSNotNull() {
         when(certificateServiceProfile.active())
             .thenReturn(true);
-        when(integrationServiceFromCS.prepareRedirectToIntyg(CERT_TYPE, ID, USER, ALTERNATE_SSN))
+        when(integrationServiceFromCS.prepareRedirectToIntyg(ID, USER, ALTERNATE_SSN))
             .thenReturn(PREPARE_REDIRECT_TO_INTYG_FROM_CS);
 
-        final var response = aggregator.prepareRedirectToIntyg(CERT_TYPE, ID, USER, ALTERNATE_SSN);
-        verify(integrationServiceFromCS, times(1)).prepareRedirectToIntyg(CERT_TYPE, ID, USER, ALTERNATE_SSN);
+        final var response = aggregator.prepareRedirectToIntyg(ID, USER, ALTERNATE_SSN);
+        verify(integrationServiceFromCS, times(1)).prepareRedirectToIntyg(ID, USER, ALTERNATE_SSN);
 
         assertEquals(PREPARE_REDIRECT_TO_INTYG_FROM_CS, response);
     }
@@ -86,22 +85,22 @@ class IntegrationCertificateAggregatorTest {
     void shouldReturnPrepareRedirectToIntygFromWCIfCSProfileIsActiveAndResponseFromCSIsNull() {
         when(certificateServiceProfile.active())
             .thenReturn(true);
-        when(integrationServiceFromWC.prepareRedirectToIntyg(CERT_TYPE, ID, USER, ALTERNATE_SSN))
+        when(integrationServiceFromWC.prepareRedirectToIntyg(ID, USER, ALTERNATE_SSN))
             .thenReturn(PREPARE_REDIRECT_TO_INTYG_FROM_CS);
 
-        final var response = aggregator.prepareRedirectToIntyg(CERT_TYPE, ID, USER, ALTERNATE_SSN);
-        verify(integrationServiceFromWC, times(1)).prepareRedirectToIntyg(CERT_TYPE, ID, USER, ALTERNATE_SSN);
+        final var response = aggregator.prepareRedirectToIntyg(ID, USER, ALTERNATE_SSN);
+        verify(integrationServiceFromWC, times(1)).prepareRedirectToIntyg(ID, USER, ALTERNATE_SSN);
 
         assertEquals(PREPARE_REDIRECT_TO_INTYG_FROM_WC, response);
     }
 
     @Test
     void shouldReturnPrepareRedirectToIntygFromWCIfCSProfileIsNotActive() {
-        when(integrationServiceFromWC.prepareRedirectToIntyg(CERT_TYPE, ID, USER, ALTERNATE_SSN))
+        when(integrationServiceFromWC.prepareRedirectToIntyg(ID, USER, ALTERNATE_SSN))
             .thenReturn(PREPARE_REDIRECT_TO_INTYG_FROM_WC);
 
-        final var response = aggregator.prepareRedirectToIntyg(CERT_TYPE, ID, USER, ALTERNATE_SSN);
-        verify(integrationServiceFromWC, times(1)).prepareRedirectToIntyg(CERT_TYPE, ID, USER, ALTERNATE_SSN);
+        final var response = aggregator.prepareRedirectToIntyg(ID, USER, ALTERNATE_SSN);
+        verify(integrationServiceFromWC, times(1)).prepareRedirectToIntyg(ID, USER, ALTERNATE_SSN);
 
         assertEquals(PREPARE_REDIRECT_TO_INTYG_FROM_WC, response);
     }
@@ -111,13 +110,12 @@ class IntegrationCertificateAggregatorTest {
         final var argumentCaptor = ArgumentCaptor.forClass(Personnummer.class);
         when(certificateServiceProfile.active())
             .thenReturn(true);
-        when(integrationServiceFromCS.prepareRedirectToIntyg(CERT_TYPE, ID, USER, null))
+        when(integrationServiceFromCS.prepareRedirectToIntyg(ID, USER, null))
             .thenReturn(PREPARE_REDIRECT_TO_INTYG_FROM_CS);
 
-        aggregator.prepareRedirectToIntyg(CERT_TYPE, ID, USER);
+        aggregator.prepareRedirectToIntyg(ID, USER);
 
         verify(integrationServiceFromCS, times(1)).prepareRedirectToIntyg(
-            eq(CERT_TYPE),
             eq(ID),
             eq(USER),
             argumentCaptor.capture()

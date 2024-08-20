@@ -43,21 +43,21 @@ public class IntegrationCertificateAggregator implements IntegrationService {
     }
 
     @Override
-    public PrepareRedirectToIntyg prepareRedirectToIntyg(String intygTyp, String intygId, WebCertUser user) {
-        return prepareRedirectToIntyg(intygTyp, intygId, user, null);
+    public PrepareRedirectToIntyg prepareRedirectToIntyg(String intygId, WebCertUser user) {
+        return prepareRedirectToIntyg(intygId, user, null);
     }
 
     @Override
-    public PrepareRedirectToIntyg prepareRedirectToIntyg(String intygTyp, String intygId, WebCertUser user,
+    public PrepareRedirectToIntyg prepareRedirectToIntyg(String intygId, WebCertUser user,
         Personnummer prepareBeforeAlternateSsn) {
         if (!certificateServiceProfile.active()) {
-            return integrationServiceForWC.prepareRedirectToIntyg(intygTyp, intygId, user, prepareBeforeAlternateSsn);
+            return integrationServiceForWC.prepareRedirectToIntyg(intygId, user, prepareBeforeAlternateSsn);
         }
 
-        final var responseFromCS = integrationServiceForCS.prepareRedirectToIntyg(intygTyp, intygId, user,
+        final var responseFromCS = integrationServiceForCS.prepareRedirectToIntyg(intygId, user,
             prepareBeforeAlternateSsn);
 
         return responseFromCS != null ? responseFromCS
-            : integrationServiceForWC.prepareRedirectToIntyg(intygTyp, intygId, user, prepareBeforeAlternateSsn);
+            : integrationServiceForWC.prepareRedirectToIntyg(intygId, user, prepareBeforeAlternateSsn);
     }
 }

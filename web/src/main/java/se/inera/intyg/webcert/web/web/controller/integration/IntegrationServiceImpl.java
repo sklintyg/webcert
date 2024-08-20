@@ -46,10 +46,8 @@ public abstract class IntegrationServiceImpl implements IntegrationService {
 
     @Autowired
     private IntygService intygService;
-
     @Autowired
     private PatientDetailsResolver patientDetailsResolver;
-
     @Autowired
     private UtkastRepository utkastRepository;
     @Autowired
@@ -58,13 +56,12 @@ public abstract class IntegrationServiceImpl implements IntegrationService {
     // api
 
     @Override
-    public PrepareRedirectToIntyg prepareRedirectToIntyg(String intygTyp, String intygId, WebCertUser user) {
-        return prepareRedirectToIntyg(intygTyp, intygId, user, null);
+    public PrepareRedirectToIntyg prepareRedirectToIntyg(String intygId, WebCertUser user) {
+        return prepareRedirectToIntyg(intygId, user, null);
     }
 
     @Override
-    public PrepareRedirectToIntyg prepareRedirectToIntyg(
-        final String intygTyp, final String intygId,
+    public PrepareRedirectToIntyg prepareRedirectToIntyg(final String intygId,
         final WebCertUser user, final Personnummer prepareBeforeAlternateSsn) {
 
         if (user.getParameters() != null) {

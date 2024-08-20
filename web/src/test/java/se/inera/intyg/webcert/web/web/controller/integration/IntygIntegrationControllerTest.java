@@ -52,7 +52,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.cache.Cache;
 import org.springframework.http.HttpHeaders;
-import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
@@ -91,9 +90,6 @@ public class IntygIntegrationControllerTest {
     private CommonAuthoritiesResolver authoritiesResolver;
 
     @Mock
-    private IntygModuleRegistry moduleRegistry;
-
-    @Mock
     private ReactUriFactory reactUriFactory;
 
     @Mock
@@ -106,39 +102,6 @@ public class IntygIntegrationControllerTest {
     private IntygIntegrationController intygIntegrationController;
 
     @Test
-    public void invalidParametersShouldNotFailOnNullPatientInfo() {
-        final var user = createDefaultUserWithIntegrationParameters();
-
-        uriInfo = mock(UriInfo.class);
-        when(integrationService.prepareRedirectToIntyg(any(), any(), any())).thenReturn(createPrepareRedirectToIntyg());
-        doReturn(URI.create("https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq")).when(reactUriFactory)
-            .uriForCertificate(uriInfo, INTYGSID);
-
-        final var res = intygIntegrationController.handleRedirectToIntyg(uriInfo, INTYGSTYP, INTYGSID, ENHETSID, user);
-
-        assertEquals(Response.Status.SEE_OTHER.getStatusCode(), res.getStatus());
-
-        verify(authoritiesResolver).getFeatures(Arrays.asList(user.getValdVardenhet().getId(), user.getValdVardgivare().getId()));
-    }
-
-    @Test
-    public void testIntygsTypLookupFailGet() {
-        final var intygTyp = "nonExistant";
-
-        when(moduleRegistry.getModuleIdFromExternalId(intygTyp.toUpperCase())).thenReturn("");
-
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> {
-                intygIntegrationController.getRedirectToIntyg(null, intygTyp, "intygId", null, null, null, null,
-                    null, null, null, null, null, null, false, false,
-                    false, true);
-            },
-            "Expected getRedirectToIntyg() to throw, but it didn't"
-        );
-    }
-
-    @Test
     public void testSavedRequestGETHandlerRequiresIntegrationParameters() {
         final var user = mock(WebCertUser.class);
 
@@ -147,9 +110,7 @@ public class IntygIntegrationControllerTest {
 
         assertThrows(
             IllegalStateException.class,
-            () -> {
-                intygIntegrationController.getRedirectToIntyg(null, null, INTYGSID, null);
-            },
+            () -> intygIntegrationController.getRedirectToIntyg(null, null, INTYGSID, null),
             "Expected getRedirectToIntyg() to throw, but it didn't"
         );
     }
@@ -245,7 +206,7 @@ public class IntygIntegrationControllerTest {
         @BeforeEach
         public void setup() {
             uriInfo = mock(UriInfo.class);
-            when(integrationService.prepareRedirectToIntyg(any(), any(), any()))
+            when(integrationService.prepareRedirectToIntyg(any(), any()))
                 .thenReturn(createPrepareRedirectToIntyg());
             when(authoritiesResolver.getFeatures(any())).thenReturn(new HashMap<>());
             this.user = createDefaultUser();
@@ -332,7 +293,7 @@ public class IntygIntegrationControllerTest {
             uriInfo = mock(UriInfo.class);
             final var uriBuilder = UriBuilder.fromUri("https://wc.localtest.me/");
 
-            when(integrationService.prepareRedirectToIntyg(any(), any(), any()))
+            when(integrationService.prepareRedirectToIntyg(any(), any()))
                 .thenReturn(createPrepareRedirectToIntyg());
             when(authoritiesResolver.getFeatures(any())).thenReturn(new HashMap<>());
             this.user = createDefaultUserWithIntegrationParametersAndLaunchId1();
@@ -363,7 +324,7 @@ public class IntygIntegrationControllerTest {
         @BeforeEach
         public void setup() {
             uriInfo = mock(UriInfo.class);
-            when(integrationService.prepareRedirectToIntyg(any(), any(), any()))
+            when(integrationService.prepareRedirectToIntyg(any(), any()))
                 .thenReturn(createPrepareRedirectToIntyg());
             when(authoritiesResolver.getFeatures(any())).thenReturn(new HashMap<>());
 
