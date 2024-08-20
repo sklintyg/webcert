@@ -239,6 +239,20 @@ class CertificateServiceUserHelperTest {
                         assertTrue(response.getBlocked());
                     }
                 }
+
+                @Test
+                void shouldReturnBlockedTrueIfUserHasntSelectedCareProviderYet() {
+                    final var feature = mock(Feature.class);
+
+                    when(webCertUser.getOrigin()).thenReturn("NORMAL");
+                    when(feature.getGlobal()).thenReturn(true);
+                    when(webCertUser.getFeatures())
+                        .thenReturn(Map.of(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL, feature));
+
+                    final var response = certificateServiceUserHelper.get();
+
+                    assertTrue(response.getBlocked());
+                }
             }
 
             @Nested
