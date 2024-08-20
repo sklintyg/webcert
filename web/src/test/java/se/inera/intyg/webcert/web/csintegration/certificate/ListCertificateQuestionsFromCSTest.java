@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -64,6 +65,7 @@ class ListCertificateQuestionsFromCSTest {
     private static final ArendeListItem ARENDE_LIST_ITEM = new ArendeListItem();
     private static final ArendeListItem ARENDE_LIST_NOT_INCLUDED_IN_STATUS = new ArendeListItem();
     private static final GetUnitQuestionsRequestDTO GET_UNIT_QUESTIONS_REQUEST_DTO = GetUnitQuestionsRequestDTO.builder().build();
+    private static final String HSA_ID = "hsaId";
     private static QueryFragaSvarParameter queryFragaSvarParameter;
 
     @InjectMocks
@@ -87,7 +89,7 @@ class ListCertificateQuestionsFromCSTest {
     @BeforeEach
     void setUp() {
         queryFragaSvarParameter = buildQueryFragaSvarParameter(false, true,
-            "SVAR_FRAN_VARDEN");
+            "SVAR_FRAN_VARDEN", HSA_ID);
     }
 
     @Test
@@ -155,7 +157,7 @@ class ListCertificateQuestionsFromCSTest {
 
             @Test
             void shouldConvertSignedById() {
-                final var queryFragaSvarParameter = buildQueryFragaSvarParameter(true, false, "");
+                final var queryFragaSvarParameter = buildQueryFragaSvarParameter(true, false, "", HSA_ID);
                 listCertificateQuestionsFromCS.list(queryFragaSvarParameter);
                 final var argumentCaptor = ArgumentCaptor.forClass(MessageQueryCriteriaDTO.class);
 
@@ -166,8 +168,32 @@ class ListCertificateQuestionsFromCSTest {
             }
 
             @Test
+            void shouldExcludeSignedByIdIfEmpty() {
+                final var queryFragaSvarParameter = buildQueryFragaSvarParameter(true, false, "", "");
+                listCertificateQuestionsFromCS.list(queryFragaSvarParameter);
+                final var argumentCaptor = ArgumentCaptor.forClass(MessageQueryCriteriaDTO.class);
+
+                verify(csIntegrationRequestFactory).getUnitQuestionsRequestDTO(
+                    argumentCaptor.capture()
+                );
+                assertNull(argumentCaptor.getValue().getIssuedByStaffId());
+            }
+
+            @Test
+            void shouldExcludeSignedByIdIfNull() {
+                final var queryFragaSvarParameter = buildQueryFragaSvarParameter(true, false, "", null);
+                listCertificateQuestionsFromCS.list(queryFragaSvarParameter);
+                final var argumentCaptor = ArgumentCaptor.forClass(MessageQueryCriteriaDTO.class);
+
+                verify(csIntegrationRequestFactory).getUnitQuestionsRequestDTO(
+                    argumentCaptor.capture()
+                );
+                assertNull(argumentCaptor.getValue().getIssuedByStaffId());
+            }
+
+            @Test
             void shouldConvertUnitIdIfSet() {
-                final var queryFragaSvarParameter = buildQueryFragaSvarParameter(true, false, "");
+                final var queryFragaSvarParameter = buildQueryFragaSvarParameter(true, false, "", HSA_ID);
                 queryFragaSvarParameter.setEnhetId("unitId");
                 listCertificateQuestionsFromCS.list(queryFragaSvarParameter);
                 final var argumentCaptor = ArgumentCaptor.forClass(MessageQueryCriteriaDTO.class);
@@ -186,7 +212,7 @@ class ListCertificateQuestionsFromCSTest {
                 when(webCertUserService.getUser()).thenReturn(user);
                 when(user.getIdsOfSelectedVardenhet()).thenReturn(expected);
 
-                final var queryFragaSvarParameter = buildQueryFragaSvarParameter(true, false, "");
+                final var queryFragaSvarParameter = buildQueryFragaSvarParameter(true, false, "", HSA_ID);
                 queryFragaSvarParameter.setEnhetId(null);
 
                 listCertificateQuestionsFromCS.list(queryFragaSvarParameter);
@@ -199,7 +225,7 @@ class ListCertificateQuestionsFromCSTest {
 
             @Test
             void shouldConvertChangedFrom() {
-                final var queryFragaSvarParameter = buildQueryFragaSvarParameter(true, false, "");
+                final var queryFragaSvarParameter = buildQueryFragaSvarParameter(true, false, "", HSA_ID);
                 listCertificateQuestionsFromCS.list(queryFragaSvarParameter);
                 final var argumentCaptor = ArgumentCaptor.forClass(MessageQueryCriteriaDTO.class);
 
@@ -211,7 +237,7 @@ class ListCertificateQuestionsFromCSTest {
 
             @Test
             void shouldConvertChangedTo() {
-                final var queryFragaSvarParameter = buildQueryFragaSvarParameter(true, false, "");
+                final var queryFragaSvarParameter = buildQueryFragaSvarParameter(true, false, "", HSA_ID);
                 listCertificateQuestionsFromCS.list(queryFragaSvarParameter);
                 final var argumentCaptor = ArgumentCaptor.forClass(MessageQueryCriteriaDTO.class);
 
@@ -223,7 +249,7 @@ class ListCertificateQuestionsFromCSTest {
 
             @Test
             void shouldConvertForwarded() {
-                final var queryFragaSvarParameter = buildQueryFragaSvarParameter(true, false, "");
+                final var queryFragaSvarParameter = buildQueryFragaSvarParameter(true, false, "", HSA_ID);
                 listCertificateQuestionsFromCS.list(queryFragaSvarParameter);
                 final var argumentCaptor = ArgumentCaptor.forClass(MessageQueryCriteriaDTO.class);
 
@@ -235,7 +261,7 @@ class ListCertificateQuestionsFromCSTest {
 
             @Test
             void shouldConvertPatientID() {
-                final var queryFragaSvarParameter = buildQueryFragaSvarParameter(true, false, "");
+                final var queryFragaSvarParameter = buildQueryFragaSvarParameter(true, false, "", HSA_ID);
                 listCertificateQuestionsFromCS.list(queryFragaSvarParameter);
                 final var argumentCaptor = ArgumentCaptor.forClass(MessageQueryCriteriaDTO.class);
 
@@ -247,7 +273,7 @@ class ListCertificateQuestionsFromCSTest {
 
             @Test
             void shouldSetSenderToShowAllIfBothSendersAreFalse() {
-                final var queryFragaSvarParameter = buildQueryFragaSvarParameter(false, false, "");
+                final var queryFragaSvarParameter = buildQueryFragaSvarParameter(false, false, "", HSA_ID);
                 listCertificateQuestionsFromCS.list(queryFragaSvarParameter);
                 final var argumentCaptor = ArgumentCaptor.forClass(MessageQueryCriteriaDTO.class);
 
@@ -258,7 +284,7 @@ class ListCertificateQuestionsFromCSTest {
 
             @Test
             void shouldSetSenderToFKIfFKIsTrue() {
-                final var queryFragaSvarParameter = buildQueryFragaSvarParameter(true, false, "");
+                final var queryFragaSvarParameter = buildQueryFragaSvarParameter(true, false, "", HSA_ID);
                 listCertificateQuestionsFromCS.list(queryFragaSvarParameter);
                 final var argumentCaptor = ArgumentCaptor.forClass(MessageQueryCriteriaDTO.class);
 
@@ -269,7 +295,7 @@ class ListCertificateQuestionsFromCSTest {
 
             @Test
             void shouldSetSenderToWCIfWCIsTrue() {
-                final var queryFragaSvarParameter = buildQueryFragaSvarParameter(false, true, "");
+                final var queryFragaSvarParameter = buildQueryFragaSvarParameter(false, true, "", HSA_ID);
                 listCertificateQuestionsFromCS.list(queryFragaSvarParameter);
                 final var argumentCaptor = ArgumentCaptor.forClass(MessageQueryCriteriaDTO.class);
 
@@ -281,7 +307,7 @@ class ListCertificateQuestionsFromCSTest {
             @Test
             void shouldSetQuestionStatusTypeToComplement() {
                 final var queryFragaSvarParameter = buildQueryFragaSvarParameter(false, true,
-                    "KOMPLETTERING_FRAN_VARDEN");
+                    "KOMPLETTERING_FRAN_VARDEN", HSA_ID);
                 listCertificateQuestionsFromCS.list(queryFragaSvarParameter);
                 final var argumentCaptor = ArgumentCaptor.forClass(QuestionStatusType.class);
 
@@ -292,7 +318,7 @@ class ListCertificateQuestionsFromCSTest {
             @Test
             void shouldSetQuestionStatusTypeToHandled() {
                 final var queryFragaSvarParameter = buildQueryFragaSvarParameter(false, true,
-                    "HANTERAD");
+                    "HANTERAD", HSA_ID);
                 listCertificateQuestionsFromCS.list(queryFragaSvarParameter);
                 final var argumentCaptor = ArgumentCaptor.forClass(QuestionStatusType.class);
 
@@ -303,7 +329,7 @@ class ListCertificateQuestionsFromCSTest {
             @Test
             void shouldSetQuestionStatusTypeToNotHandled() {
                 final var queryFragaSvarParameter = buildQueryFragaSvarParameter(false, true,
-                    "ALLA_OHANTERADE");
+                    "ALLA_OHANTERADE", HSA_ID);
                 listCertificateQuestionsFromCS.list(queryFragaSvarParameter);
                 final var argumentCaptor = ArgumentCaptor.forClass(QuestionStatusType.class);
 
@@ -314,7 +340,7 @@ class ListCertificateQuestionsFromCSTest {
             @Test
             void shouldSetQuestionStatusTypeToAnswer() {
                 final var queryFragaSvarParameter = buildQueryFragaSvarParameter(false, true,
-                    "SVAR_FRAN_VARDEN");
+                    "SVAR_FRAN_VARDEN", HSA_ID);
                 listCertificateQuestionsFromCS.list(queryFragaSvarParameter);
                 final var argumentCaptor = ArgumentCaptor.forClass(QuestionStatusType.class);
 
@@ -325,7 +351,7 @@ class ListCertificateQuestionsFromCSTest {
             @Test
             void shouldSetQuestionStatusTypeToReadAnswer() {
                 final var queryFragaSvarParameter = buildQueryFragaSvarParameter(false, true,
-                    "MARKERA_SOM_HANTERAD");
+                    "MARKERA_SOM_HANTERAD", HSA_ID);
                 listCertificateQuestionsFromCS.list(queryFragaSvarParameter);
                 final var argumentCaptor = ArgumentCaptor.forClass(QuestionStatusType.class);
 
@@ -336,7 +362,7 @@ class ListCertificateQuestionsFromCSTest {
             @Test
             void shouldSetQuestionStatusTypeToWait() {
                 final var queryFragaSvarParameter = buildQueryFragaSvarParameter(false, true,
-                    "SVAR_FRAN_FK");
+                    "SVAR_FRAN_FK", HSA_ID);
                 listCertificateQuestionsFromCS.list(queryFragaSvarParameter);
                 final var argumentCaptor = ArgumentCaptor.forClass(QuestionStatusType.class);
 
@@ -347,7 +373,7 @@ class ListCertificateQuestionsFromCSTest {
             @Test
             void shouldSetQuestionStatusTypeToShowAll() {
                 final var queryFragaSvarParameter = buildQueryFragaSvarParameter(false, true,
-                    "ALLA");
+                    "ALLA", HSA_ID);
                 listCertificateQuestionsFromCS.list(queryFragaSvarParameter);
                 final var argumentCaptor = ArgumentCaptor.forClass(QuestionStatusType.class);
 
@@ -357,7 +383,7 @@ class ListCertificateQuestionsFromCSTest {
 
             @Test
             void shouldSetQuestionStatusTypeToShowAllIfNull() {
-                final var queryFragaSvarParameter = buildQueryFragaSvarParameter(false, true, null);
+                final var queryFragaSvarParameter = buildQueryFragaSvarParameter(false, true, null, HSA_ID);
                 listCertificateQuestionsFromCS.list(queryFragaSvarParameter);
                 final var argumentCaptor = ArgumentCaptor.forClass(QuestionStatusType.class);
 
@@ -368,12 +394,12 @@ class ListCertificateQuestionsFromCSTest {
     }
 
     private QueryFragaSvarParameter buildQueryFragaSvarParameter(Boolean fromFK, Boolean fromWC,
-        String vantarPa) {
+        String vantarPa, String hsaId) {
         return QueryFragaSvarParameter.builder()
             .questionFromWC(fromWC)
             .questionFromFK(fromFK)
             .vantarPa(vantarPa)
-            .hsaId("hsaId")
+            .hsaId(hsaId)
             .enhetId(null)
             .changedFrom(LocalDateTime.now())
             .changedTo(LocalDateTime.now())

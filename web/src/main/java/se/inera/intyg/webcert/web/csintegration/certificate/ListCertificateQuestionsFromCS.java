@@ -83,7 +83,11 @@ public class ListCertificateQuestionsFromCS {
     private MessageQueryCriteriaDTO convertFilter(QueryFragaSvarParameter queryFragaSvarParameter) {
         final var userUnits = webCertUserService.getUser().getIdsOfSelectedVardenhet();
         return MessageQueryCriteriaDTO.builder()
-            .issuedByStaffId(queryFragaSvarParameter.getHsaId())
+            .issuedByStaffId(
+                queryFragaSvarParameter.getHsaId() != null && !queryFragaSvarParameter.getHsaId().isEmpty()
+                    ? queryFragaSvarParameter.getHsaId()
+                    : null
+            )
             .forwarded(queryFragaSvarParameter.getVidarebefordrad())
             .sentDateFrom(queryFragaSvarParameter.getChangedFrom())
             .sentDateTo(queryFragaSvarParameter.getChangedTo())
