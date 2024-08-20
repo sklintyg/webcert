@@ -737,6 +737,6 @@ public class CSIntegrationService {
             throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
         }
 
-        return response.getEvents();
+        return response.getEvents().toArray(CertificateEventDTO[]::new);
     }
 }

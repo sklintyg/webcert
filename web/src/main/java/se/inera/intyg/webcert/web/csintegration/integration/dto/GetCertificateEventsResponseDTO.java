@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.csintegration.integration.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import java.util.List;
 import lombok.Builder;
 import lombok.Value;
 import se.inera.intyg.common.support.modules.support.facade.dto.CertificateEventDTO;
@@ -31,7 +32,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateEv
 @Builder
 public class GetCertificateEventsResponseDTO {
 
-    CertificateEventDTO[] events;
+    List<CertificateEventDTO> events;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class GetCertificateEventsResponseDTOBuilder {
