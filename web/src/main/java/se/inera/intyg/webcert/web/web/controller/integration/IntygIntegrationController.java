@@ -20,8 +20,6 @@ package se.inera.intyg.webcert.web.web.controller.integration;
 
 import com.google.common.base.Strings;
 import io.swagger.annotations.Api;
-import java.net.URI;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
@@ -106,7 +104,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
     private IntegrationService integrationService;
     @Autowired
     private Cache redisCacheLaunchId;
-    
+
     @Override
     protected String[] getGrantedRoles() {
         return GRANTED_ROLES;
@@ -122,10 +120,12 @@ public class IntygIntegrationController extends BaseIntegrationController {
      * the certificate.
      *
      * @param intygId The id of the certificate to view.
+     * @deprecated This method is will be removed when the last deep-integrated region has moved to the POST-version of this endpoint.
      */
     @GET
     @Path("{certId}")
     @PrometheusTimeMethod
+    @Deprecated(since = "2019")
     public Response getRedirectToIntyg(@Context UriInfo uriInfo,
         @PathParam(PARAM_CERT_ID) String intygId,
         @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId,
@@ -233,6 +233,10 @@ public class IntygIntegrationController extends BaseIntegrationController {
         return handleRedirectToIntyg(uriInfo, intygId, enhetId, user);
     }
 
+    /**
+     * Resumes launching the application and redirecting to provided certificate after user has selected which unit (SelectedVardenhet)
+     * it chooses to be logged in to.
+     */
     @GET
     @Path("/{certId}/resume")
     @PrometheusTimeMethod
@@ -257,35 +261,21 @@ public class IntygIntegrationController extends BaseIntegrationController {
         try {
             if (userHasNotSelectedVardenhet(enhetId)) {
                 if (userHasExactlyOneSelectableVardenhet(user)) {
-                    user.changeValdVardenhet(user.getVardgivare().get(0).getVardenheter().get(0).getId());
-                    updateUserWithActiveFeatures(user);
-                    final var prepareRedirectInfo = integrationService.prepareRedirectToIntyg(intygId, user);
+                    changeValdVardenhet(user.getVardgivare().get(0).getVardenheter().get(0).getId(), user);
+                    final var prepareRedirectInfo = prepareRedirectToIntyg(intygId, user);
                     LOG.debug("Redirecting to view intyg {} of type {}", intygId, prepareRedirectInfo.getIntygTyp());
-                    return buildRedirectResponse(uriInfo, prepareRedirectInfo);
+                    return buildViewCertificateResponse(uriInfo, prepareRedirectInfo);
                 }
 
                 LOG.info("Deep integration request does not contain an 'enhet', redirecting to enhet selection page!");
                 user.getParameters().getState().setRedirectToEnhetsval(true);
-                return buildChooseUnitResponse(uriInfo, intygId);
+                return buildSelectUnitResponse(uriInfo);
             }
 
-            if (user.changeValdVardenhet(enhetId)) {
-                updateUserWithActiveFeatures(user);
-                final String beforeAlternateSsnParam = user.getParameters().getBeforeAlternateSsn();
-                // We want to send beforeAlternateSsnParam to prepareRedirectToIntyg, to be able to
-                // see the difference between beforeAlternateSsn and alternateSsn in the gui when opening the utkast.
-                // This will trigger an info-message that the personnummer for the utkast has changed.
-                // This fix is not pretty but due to earlier implementations this is the easiest fix. See INTYG-8115 for more info.
-                PrepareRedirectToIntyg prepareRedirectInfo;
-                if (!Strings.isNullOrEmpty(beforeAlternateSsnParam)) {
-                    Personnummer beforeAlternateSsn = Personnummer.createPersonnummer(beforeAlternateSsnParam).orElse(null);
-                    prepareRedirectInfo = integrationService.prepareRedirectToIntyg(intygId, user, beforeAlternateSsn);
-                } else {
-                    prepareRedirectInfo = integrationService.prepareRedirectToIntyg(intygId, user);
-                }
-
+            if (changeValdVardenhet(enhetId, user)) {
+                final var prepareRedirectInfo = prepareRedirectToIntyg(intygId, user);
                 LOG.debug("Redirecting to view intyg {} of type {}", intygId, prepareRedirectInfo.getIntygTyp());
-                return buildRedirectResponse(uriInfo, prepareRedirectInfo);
+                return buildViewCertificateResponse(uriInfo, prepareRedirectInfo);
             }
 
             LOG.warn("Validation failed for deep-integration request because user {} is not authorized for enhet {}", user.getHsaId(),
@@ -301,6 +291,23 @@ public class IntygIntegrationController extends BaseIntegrationController {
         }
     }
 
+    /**
+     * Legacy code-comment relating to implementation choices of this logic:
+     * // We want to send beforeAlternateSsnParam to prepareRedirectToIntyg, to be able to
+     * // see the difference between beforeAlternateSsn and alternateSsn in the gui when opening the utkast.
+     * // This will trigger an info-message that the personnummer for the utkast has changed.
+     * // This fix is not pretty but due to earlier implementations this is the easiest fix. See INTYG-8115 for more info.
+     */
+    private PrepareRedirectToIntyg prepareRedirectToIntyg(String intygId, WebCertUser user) {
+        final String beforeAlternateSsnParam = user.getParameters().getBeforeAlternateSsn();
+
+        if (!Strings.isNullOrEmpty(beforeAlternateSsnParam)) {
+            Personnummer beforeAlternateSsn = Personnummer.createPersonnummer(beforeAlternateSsnParam).orElse(null);
+            return integrationService.prepareRedirectToIntyg(intygId, user, beforeAlternateSsn);
+        }
+        return integrationService.prepareRedirectToIntyg(intygId, user);
+    }
+
     private Response buildNoContentErrorResponse(UriInfo uriInfo) {
         return buildErrorResponse(uriInfo, "integration.nocontent");
     }
@@ -310,41 +317,18 @@ public class IntygIntegrationController extends BaseIntegrationController {
     }
 
     private Response buildErrorResponse(UriInfo uriInfo, String errorReason) {
-        final var location = uriInfo.getBaseUriBuilder()
-            .replacePath("/error")
-            .queryParam("reason", errorReason)
-            .build();
-
+        final var location = reactUriFactory.uriForErrorResponse(uriInfo, errorReason);
         return Response.temporaryRedirect(location).build();
     }
 
-    private Response buildChooseUnitResponse(UriInfo uriInfo, String certificateId) {
-        final var uriBuilder = uriInfo.getBaseUriBuilder().replacePath(getUrlBaseTemplate());
-
-        final var destinationUrl = getDestinationUrl(uriInfo, certificateId);
-        final var urlFragment = "/integration-enhetsval";
-
-        final var location = uriBuilder.queryParam("destination", destinationUrl).fragment(urlFragment).build();
+    private Response buildSelectUnitResponse(UriInfo uriInfo) {
+        final var location = reactUriFactory.uriForUnitSelection(uriInfo);
         return Response.temporaryRedirect(location).build();
     }
 
-    private Response buildRedirectResponse(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg) {
-        final var location = getRedirectUri(uriInfo, prepareRedirectToIntyg);
+    private Response buildViewCertificateResponse(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg) {
+        final var location = reactUriFactory.uriForCertificate(uriInfo, prepareRedirectToIntyg.getIntygId());
         return Response.seeOther(location).build();
-    }
-
-    private URI getRedirectUri(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg) {
-        return reactUriFactory.uriForCertificate(uriInfo, prepareRedirectToIntyg.getIntygId());
-    }
-
-    private String getDestinationUrl(UriInfo uriInfo, String certificateId) {
-        final var urlPath = String.format("/visa/intyg/%s/resume", certificateId);
-        final var uri = uriInfo.getRequestUriBuilder()
-            .replacePath(urlPath)
-            .replaceQuery(null)
-            .build();
-
-        return URLEncoder.encode(uri.toString(), StandardCharsets.UTF_8);
     }
 
     private WebCertUser getWebCertUser() {
@@ -358,9 +342,20 @@ public class IntygIntegrationController extends BaseIntegrationController {
         return user;
     }
 
+    private boolean changeValdVardenhet(String enhetId, WebCertUser user) {
+        final var successful = user.changeValdVardenhet(enhetId);
+        if (successful) {
+            updateUserWithActiveFeatures(user);
+        }
+        return successful;
+    }
+
     private void updateUserWithActiveFeatures(WebCertUser webCertUser) {
-        webCertUser.setFeatures(commonAuthoritiesResolver
-            .getFeatures(Arrays.asList(webCertUser.getValdVardenhet().getId(), webCertUser.getValdVardgivare().getId())));
+        webCertUser.setFeatures(
+            commonAuthoritiesResolver.getFeatures(
+                Arrays.asList(webCertUser.getValdVardenhet().getId(), webCertUser.getValdVardgivare().getId())
+            )
+        );
     }
 
     private boolean userHasExactlyOneSelectableVardenhet(WebCertUser webCertUser) {
