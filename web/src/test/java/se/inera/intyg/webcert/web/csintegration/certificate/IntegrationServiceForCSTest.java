@@ -80,7 +80,7 @@ class IntegrationServiceForCSTest {
     @Test
     void shallReturnNullIfCertificateDontExistInCS() {
         doReturn(false).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
-        assertNull(integrationServiceForCS.prepareRedirectToIntyg(CERTIFICATE_TYPE, CERTIFICATE_ID, user));
+        assertNull(integrationServiceForCS.prepareRedirectToIntyg(CERTIFICATE_ID, user));
     }
 
     @Test
@@ -90,7 +90,7 @@ class IntegrationServiceForCSTest {
         doReturn(certificate).when(csIntegrationService).getCertificate(CERTIFICATE_ID, GET_CERTIFICATE_REQUEST_DTO);
         doReturn(true).when(user).isSjfActive();
 
-        integrationServiceForCS.prepareRedirectToIntyg(CERTIFICATE_TYPE, CERTIFICATE_ID, user);
+        integrationServiceForCS.prepareRedirectToIntyg(CERTIFICATE_ID, user);
         verify(logSjfService, times(1)).log(certificate, user);
     }
 
@@ -101,7 +101,7 @@ class IntegrationServiceForCSTest {
         doReturn(certificate).when(csIntegrationService).getCertificate(CERTIFICATE_ID, GET_CERTIFICATE_REQUEST_DTO);
         doReturn(false).when(user).isSjfActive();
 
-        integrationServiceForCS.prepareRedirectToIntyg(CERTIFICATE_TYPE, CERTIFICATE_ID, user);
+        integrationServiceForCS.prepareRedirectToIntyg(CERTIFICATE_ID, user);
         verifyNoInteractions(logSjfService);
     }
 
@@ -112,7 +112,7 @@ class IntegrationServiceForCSTest {
         doReturn(certificate).when(csIntegrationService).getCertificate(CERTIFICATE_ID, GET_CERTIFICATE_REQUEST_DTO);
         doReturn(false).when(user).isSjfActive();
 
-        integrationServiceForCS.prepareRedirectToIntyg(CERTIFICATE_TYPE, CERTIFICATE_ID, user, PERSONAL_NUMBER);
+        integrationServiceForCS.prepareRedirectToIntyg(CERTIFICATE_ID, user, PERSONAL_NUMBER);
         verify(certificateDetailsUpdateService).update(certificate, user, PERSONAL_NUMBER);
     }
 
@@ -128,7 +128,7 @@ class IntegrationServiceForCSTest {
         doReturn(certificate).when(csIntegrationService).getCertificate(CERTIFICATE_ID, GET_CERTIFICATE_REQUEST_DTO);
         doReturn(false).when(user).isSjfActive();
 
-        final var actualRedirect = integrationServiceForCS.prepareRedirectToIntyg(CERTIFICATE_TYPE, CERTIFICATE_ID, user, PERSONAL_NUMBER);
+        final var actualRedirect = integrationServiceForCS.prepareRedirectToIntyg(CERTIFICATE_ID, user, PERSONAL_NUMBER);
         assertEquals(expectedRedirect, actualRedirect);
     }
 }

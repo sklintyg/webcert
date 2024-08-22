@@ -67,12 +67,11 @@ public abstract class BaseIntegrationController {
         return webCertUserService;
     }
 
-    protected void validateParameters(Map<String, Object> parameters) {
-        parameters.forEach((key, value) -> validateParameter(key, (String) value));
+    protected void validateParameters(Map<String, String> parameters) {
+        parameters.forEach(this::validateParameter);
     }
 
     protected void validateParameter(String paramName, String paramValue) {
-        // Input validation
         if (Strings.nullToEmpty(paramValue).trim().isEmpty()) {
             throw new IllegalArgumentException(
                 String.format("Path/query parameter '%s' was either whitespace, empty (\"\") or null", paramName));

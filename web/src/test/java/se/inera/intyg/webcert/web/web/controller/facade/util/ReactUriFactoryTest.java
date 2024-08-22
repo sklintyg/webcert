@@ -44,8 +44,10 @@ class ReactUriFactoryTest {
 
         ReflectionTestUtils.setField(reactUriFactory, "webcertDomainName", "wc.localtest.me");
         ReflectionTestUtils.setField(reactUriFactory, "urlReactTemplate", "/certificate/{certId}");
-        ReflectionTestUtils.setField(reactUriFactory, "urlReactErrorTemplate", "/certificate/{certId}/sign/{error}");
+        ReflectionTestUtils.setField(reactUriFactory, "urlReactSignErrorTemplate", "/certificate/{certId}/sign/{error}");
         ReflectionTestUtils.setField(reactUriFactory, "urlReactQuestionsTemplate", "/certificate/{certId}/questions");
+        ReflectionTestUtils.setField(reactUriFactory, "urlReactErrorTemplate", "/error");
+        ReflectionTestUtils.setField(reactUriFactory, "urlReactUnitSelectionTemplate", "/certificate/{certId}/launch-unit-selection");
     }
 
     @Test
@@ -67,5 +69,19 @@ class ReactUriFactoryTest {
         final var certificateId = "xxxx-yyyyy-zzzzz-qqqqq";
         final var actualUri = reactUriFactory.uriForCertificateQuestions(uriInfo, certificateId);
         assertEquals("https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq/questions", actualUri.toString());
+    }
+
+    @Test
+    void shallReturnUriForError() {
+        final var reason = "auth-exception";
+        final var actualUri = reactUriFactory.uriForErrorResponse(uriInfo, reason);
+        assertEquals("https://wc.localtest.me/error?reason=auth-exception", actualUri.toString());
+    }
+
+    @Test
+    void shallReturnUriForUnitSelection() {
+        final var certificateId = "xxxx-yyyyy-zzzzz-qqqqq";
+        final var actualUri = reactUriFactory.uriForUnitSelection(uriInfo, certificateId);
+        assertEquals("https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq/launch-unit-selection", actualUri.toString());
     }
 }

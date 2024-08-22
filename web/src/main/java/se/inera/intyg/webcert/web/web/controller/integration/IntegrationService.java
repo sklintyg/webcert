@@ -27,10 +27,9 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirect
  */
 public interface IntegrationService {
 
-    PrepareRedirectToIntyg prepareRedirectToIntyg(String intygTyp, String intygId, WebCertUser user);
+    PrepareRedirectToIntyg prepareRedirectToIntyg(String intygId, WebCertUser user);
 
-    PrepareRedirectToIntyg prepareRedirectToIntyg(
-        String intygTyp, String intygId, WebCertUser user, Personnummer prepareBeforeAlternateSsn);
+    PrepareRedirectToIntyg prepareRedirectToIntyg(String intygId, WebCertUser user, Personnummer prepareBeforeAlternateSsn);
 
 
 }

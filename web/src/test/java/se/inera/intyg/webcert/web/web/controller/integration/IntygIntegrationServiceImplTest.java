@@ -135,7 +135,7 @@ public class IntygIntegrationServiceImplTest {
         doReturn(REFERENS).when(integrationParameters).getReference();
         doReturn(false).when(referensService).referensExists(INTYGSID);
 
-        testee.prepareRedirectToIntyg(INTYGSTYP, INTYGSID, user);
+        testee.prepareRedirectToIntyg(INTYGSID, user);
         verify(referensService).saveReferens(INTYGSID, REFERENS);
     }
 
@@ -149,7 +149,7 @@ public class IntygIntegrationServiceImplTest {
         doReturn(Optional.of(createUtkast())).when(utkastRepository).findById(anyString());
         doReturn(null).when(integrationParameters).getReference();
 
-        testee.prepareRedirectToIntyg(INTYGSTYP, INTYGSID, user);
+        testee.prepareRedirectToIntyg(INTYGSID, user);
         verifyNoInteractions(referensService);
     }
 
@@ -168,7 +168,7 @@ public class IntygIntegrationServiceImplTest {
         user.setParameters(parameters);
 
         // when
-        PrepareRedirectToIntyg prepareRedirectToIntyg = testee.prepareRedirectToIntyg(INTYGSTYP, INTYGSID, user);
+        PrepareRedirectToIntyg prepareRedirectToIntyg = testee.prepareRedirectToIntyg(INTYGSID, user);
 
         // then
         verify(utkastRepository).findById(anyString());
@@ -196,7 +196,7 @@ public class IntygIntegrationServiceImplTest {
         user.setParameters(parameters);
 
         // when
-        PrepareRedirectToIntyg prepareRedirectToIntyg = testee.prepareRedirectToIntyg(INTYGSTYP, INTYGSID, user);
+        PrepareRedirectToIntyg prepareRedirectToIntyg = testee.prepareRedirectToIntyg(INTYGSID, user);
 
         // then
         verify(utkastRepository).findById(anyString());
@@ -226,7 +226,7 @@ public class IntygIntegrationServiceImplTest {
         user.setParameters(parameters);
 
         // when
-        PrepareRedirectToIntyg prepareRedirectToIntyg = testee.prepareRedirectToIntyg(INTYGSTYP, INTYGSID, user);
+        PrepareRedirectToIntyg prepareRedirectToIntyg = testee.prepareRedirectToIntyg(INTYGSID, user);
 
         // then
         verify(utkastRepository).findById(anyString());
@@ -261,7 +261,7 @@ public class IntygIntegrationServiceImplTest {
         user.getAuthorities().put(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, p);
 
         // when
-        PrepareRedirectToIntyg prepareRedirectToIntyg = testee.prepareRedirectToIntyg(INTYGSTYP, INTYGSID, user);
+        PrepareRedirectToIntyg prepareRedirectToIntyg = testee.prepareRedirectToIntyg(INTYGSID, user);
 
         // then
         verify(utkastRepository).findById(anyString());
@@ -289,7 +289,7 @@ public class IntygIntegrationServiceImplTest {
         user.setValdVardgivare(createVardgivare());
 
         // when
-        testee.prepareRedirectToIntyg(INTYGSTYP, INTYGSID, user);
+        testee.prepareRedirectToIntyg(INTYGSID, user);
 
         // then
         verify(monitoringLog).logIntegratedOtherCaregiver(anyString(), anyString(), anyString(), anyString());
@@ -311,7 +311,7 @@ public class IntygIntegrationServiceImplTest {
         user.setValdVardgivare(createVardenhet());
 
         // when
-        testee.prepareRedirectToIntyg(INTYGSTYP, INTYGSID, user);
+        testee.prepareRedirectToIntyg(INTYGSID, user);
 
         // then
         verify(monitoringLog).logIntegratedOtherCaregiver(anyString(), anyString(), anyString(), anyString());
@@ -332,7 +332,7 @@ public class IntygIntegrationServiceImplTest {
         user.setParameters(parameters);
 
         // when
-        testee.prepareRedirectToIntyg(INTYGSTYP, INTYGSID, user);
+        testee.prepareRedirectToIntyg(INTYGSID, user);
 
         // if code reaches this point we fail the test
         fail();
