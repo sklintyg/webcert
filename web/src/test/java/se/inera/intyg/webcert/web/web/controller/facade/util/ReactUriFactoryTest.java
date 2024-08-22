@@ -47,7 +47,7 @@ class ReactUriFactoryTest {
         ReflectionTestUtils.setField(reactUriFactory, "urlReactSignErrorTemplate", "/certificate/{certId}/sign/{error}");
         ReflectionTestUtils.setField(reactUriFactory, "urlReactQuestionsTemplate", "/certificate/{certId}/questions");
         ReflectionTestUtils.setField(reactUriFactory, "urlReactErrorTemplate", "/error");
-        ReflectionTestUtils.setField(reactUriFactory, "urlReactUnitSelectionTemplate", "/launch-unit-selection");
+        ReflectionTestUtils.setField(reactUriFactory, "urlReactUnitSelectionTemplate", "/certificate/{certId}/launch-unit-selection");
     }
 
     @Test
@@ -80,7 +80,8 @@ class ReactUriFactoryTest {
 
     @Test
     void shallReturnUriForUnitSelection() {
-        final var actualUri = reactUriFactory.uriForUnitSelection(uriInfo);
-        assertEquals("https://wc.localtest.me/launch-unit-selection", actualUri.toString());
+        final var certificateId = "xxxx-yyyyy-zzzzz-qqqqq";
+        final var actualUri = reactUriFactory.uriForUnitSelection(uriInfo, certificateId);
+        assertEquals("https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq/launch-unit-selection", actualUri.toString());
     }
 }

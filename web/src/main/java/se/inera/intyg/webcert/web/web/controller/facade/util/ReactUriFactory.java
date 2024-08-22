@@ -78,11 +78,12 @@ public class ReactUriFactory {
             .build();
     }
 
-    public URI uriForUnitSelection(UriInfo uriInfo) {
+    public URI uriForUnitSelection(UriInfo uriInfo, String certificateId) {
+        final var urlParams = Collections.singletonMap(PARAM_CERT_ID, certificateId);
         return uriBuilder(uriInfo)
             .host(webcertDomainName)
             .path(urlReactUnitSelectionTemplate)
-            .build();
+            .buildFromMap(urlParams);
     }
 
     private static UriBuilder uriBuilder(UriInfo uriInfo) {

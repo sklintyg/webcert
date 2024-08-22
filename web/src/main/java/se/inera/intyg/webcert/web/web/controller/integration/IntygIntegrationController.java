@@ -269,7 +269,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
                 LOG.info("Deep integration request does not contain an 'enhet', redirecting to enhet selection page!");
                 user.getParameters().getState().setRedirectToEnhetsval(true);
-                return buildSelectUnitResponse(uriInfo);
+                return buildSelectUnitResponse(uriInfo, intygId);
             }
 
             if (changeValdVardenhet(enhetId, user)) {
@@ -321,8 +321,8 @@ public class IntygIntegrationController extends BaseIntegrationController {
         return Response.temporaryRedirect(location).build();
     }
 
-    private Response buildSelectUnitResponse(UriInfo uriInfo) {
-        final var location = reactUriFactory.uriForUnitSelection(uriInfo);
+    private Response buildSelectUnitResponse(UriInfo uriInfo, String certificateId) {
+        final var location = reactUriFactory.uriForUnitSelection(uriInfo, certificateId);
         return Response.temporaryRedirect(location).build();
     }
 
