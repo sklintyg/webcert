@@ -666,11 +666,6 @@ public final class AccessServiceEvaluation {
             }
         }
 
-        if (user.getOrigin().equals(UserOriginType.READONLY.name()) && isUserLoggedInOnDifferentUnit(vardenhet.getEnhetsid())) {
-            return Optional.of(AccessResult.create(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT,
-                createMessage(errorMessage)));
-        }
-
         if (!webCertUserService.isAuthorizedForUnit(vardenhet.getVardgivare().getVardgivarid(), vardenhet.getEnhetsid(),
             isReadOnlyOperation)) {
             return Optional.of(AccessResult.create(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT,
@@ -754,7 +749,7 @@ public final class AccessServiceEvaluation {
         }
 
         if (sj.length() > 0) {
-            return message + sj.toString();
+            return message + sj;
         }
         return message;
     }
