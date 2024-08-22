@@ -33,7 +33,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
@@ -57,9 +56,6 @@ public class CustomXFrameOptionsHeaderWriterTest {
     private static final boolean HAS_AUTHENTICATION_CONTEXT = true;
     private static final boolean NO_AUTHENTICATION_CONTEXT = false;
 
-    private static final UserOriginType ORIGIN_NOT_READ_ONLY = UserOriginType.NORMAL;
-    private static final UserOriginType ORIGIN_READONLY = UserOriginType.READONLY;
-
     @Test
     public void shouldSkipHeaderWhenNoAuthenticationContext() {
         final var httpServerRequest = createHttpServerRequest(REQUEST_URI);
@@ -73,25 +69,11 @@ public class CustomXFrameOptionsHeaderWriterTest {
     }
 
     @Test
-    public void shouldSkipHeaderWhenOriginReadOnly() {
-        final var httpServerRequest = createHttpServerRequest(REQUEST_URI);
-        final var httpServerResponse = createHttpServerResponse();
-
-        setMockReturnValueForAuthenticationContext(HAS_AUTHENTICATION_CONTEXT);
-        setMockReturnValueForUserOrigin(ORIGIN_READONLY);
-
-        customXFrameOptionsHeaderWriter.writeHeaders(httpServerRequest, httpServerResponse);
-
-        assertFalse(httpServerResponse.containsHeader(XFRAME_OPTIONS_HEADER));
-    }
-
-    @Test
     public void shouldSkipHeaderWhenRequestForPdfEndpoint() {
         final var httpServerRequest = createHttpServerRequest(REQUEST_URI_PDF_ENDPOINT);
         final var httpServerResponse = createHttpServerResponse();
 
         setMockReturnValueForAuthenticationContext(HAS_AUTHENTICATION_CONTEXT);
-        setMockReturnValueForUserOrigin(ORIGIN_NOT_READ_ONLY);
 
         customXFrameOptionsHeaderWriter.writeHeaders(httpServerRequest, httpServerResponse);
 
@@ -104,7 +86,6 @@ public class CustomXFrameOptionsHeaderWriterTest {
         final var httpServerResponse = createHttpServerResponse();
 
         setMockReturnValueForAuthenticationContext(HAS_AUTHENTICATION_CONTEXT);
-        setMockReturnValueForUserOrigin(ORIGIN_NOT_READ_ONLY);
 
         customXFrameOptionsHeaderWriter.writeHeaders(httpServerRequest, httpServerResponse);
 
@@ -124,10 +105,5 @@ public class CustomXFrameOptionsHeaderWriterTest {
 
     private void setMockReturnValueForAuthenticationContext(boolean hasContext) {
         when(webcertUserService.hasAuthenticationContext()).thenReturn(hasContext);
-    }
-
-    private void setMockReturnValueForUserOrigin(UserOriginType userOriginType) {
-        when(webcertUserService.getUser()).thenReturn(webcertUser);
-        when(webcertUser.getOrigin()).thenReturn(userOriginType.name());
     }
 }

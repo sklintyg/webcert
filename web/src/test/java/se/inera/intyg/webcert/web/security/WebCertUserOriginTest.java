@@ -50,19 +50,13 @@ public class WebCertUserOriginTest {
     private WebCertUserOrigin webcertUserOrigin = new WebCertUserOrigin();
 
     @Test
-    public void testReadonlyRegexp() throws Exception {
-        assertTrue("/visa/intyg/99aaa4f1-d862-4750-a628-f7dcb9c8bac0/readonly".matches(WebCertUserOrigin.REGEXP_REQUESTURI_READONLY));
-        assertFalse("/visa/intyg/99aaa4f1-d862-4750-a628-f7dcb9c8bac0/readonly/".matches(WebCertUserOrigin.REGEXP_REQUESTURI_READONLY));
-    }
-
-    @Test
-    public void testDjupintegrationRegexp() throws Exception {
+    public void testDjupintegrationRegexp() {
         assertTrue("/visa/intyg/99aaa4f1-d862-4750-a628-f7dcb9c8bac0".matches(WebCertUserOrigin.REGEXP_REQUESTURI_DJUPINTEGRATION));
         assertTrue("/visa/intyg/99aaa4f1-d862-4750-a628-f7dcb9c8bac0/".matches(WebCertUserOrigin.REGEXP_REQUESTURI_DJUPINTEGRATION));
     }
 
     @Test
-    public void testUthoppRegexp() throws Exception {
+    public void testUthoppRegexp() {
         assertTrue("/webcert/web/user/certificate/99aaa4f1-d862-4750-a628-f7dcb9c8bac0/questions"
             .matches(WebCertUserOrigin.REGEXP_REQUESTURI_UTHOPP));
         assertFalse("/webcert/web/user/certificate/99aaa4f1-d862-4750-a628-f7dcb9c8bac0/questions/"
@@ -106,13 +100,6 @@ public class WebCertUserOriginTest {
         String res = webcertUserOrigin.resolveOrigin(buildRequest("/visa/intyg/luse/99aaa4f1-d862-4750-a628-f7dcb9c8bac0"));
 
         assertEquals("DJUPINTEGRATION", res);
-    }
-
-    @Test
-    public void testResolveOriginReadonly() {
-        String res = webcertUserOrigin.resolveOrigin(buildRequest("/visa/intyg/luse/99aaa4f1-d862-4750-a628-f7dcb9c8bac0/readonly"));
-
-        assertEquals("READONLY", res);
     }
 
     @Test

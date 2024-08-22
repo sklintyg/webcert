@@ -81,9 +81,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
     private UserOriginType getUserOrigin() {
         String uri = getCurrentRequest().getRequestURI();
 
-        if (uri.endsWith("read")) {
-            return UserOriginType.READONLY;
-        } else if (uri.endsWith("edit")) {
+        if (uri.endsWith("edit")) {
             return UserOriginType.DJUPINTEGRATION;
         }
 

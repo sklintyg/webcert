@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.web.auth;
 
 import static org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter.XFRAME_OPTIONS_HEADER;
-import static se.inera.intyg.infra.security.common.model.UserOriginType.READONLY;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -54,8 +53,7 @@ public class CustomXFrameOptionsHeaderWriter implements HeaderWriter {
     }
 
     private boolean shouldSkipHeader(String requestUri) {
-        return !userService.hasAuthenticationContext() || READONLY.name().equals(userService.getUser().getOrigin())
-            || isRequestForPdfApi(requestUri);
+        return !userService.hasAuthenticationContext() || isRequestForPdfApi(requestUri);
     }
 
     private boolean isRequestForPdfApi(String requestUri) {

@@ -199,8 +199,6 @@ public class WebCertUserServiceImpl implements WebCertUserService {
                 return user.getValdVardgivare().getId().equals(vardgivarHsaId);
             }
             return CareUnitAccessHelper.userIsLoggedInOnEnhetOrUnderenhet(user, enhetsHsaId);
-        } else if (origin.equals(UserOriginType.READONLY.name())) {
-            return CareUnitAccessHelper.userIsLoggedInOnEnhetOrUnderenhet(user, enhetsHsaId);
         } else {
             return user.getIdsOfSelectedVardenhet().contains(enhetsHsaId);
         }
