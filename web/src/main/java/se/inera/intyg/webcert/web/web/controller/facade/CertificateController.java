@@ -119,6 +119,7 @@ public class CertificateController {
     @Autowired
     private ReadyForSignFacadeService readyForSignFacadeService;
     @Autowired
+    @Qualifier("getCertificateEventsAggregator")
     private GetCertificateEventsFacadeService getCertificateEventsFacadeService;
     @Autowired
     private GetCertificateResourceLinks getCertificateResourceLinks;

@@ -528,8 +528,6 @@ public class ArendeServiceImpl implements ArendeService {
             filter = FilterConverter.convert(filterParameters, user.getIdsOfSelectedVardenhet(), intygstyperForPrivilege);
         }
 
-        int originalStartFrom = filter.getStartFrom();
-
         // INTYG-4086: Do NOT perform any paging. We must first load all applicable QA / ärenden, then apply
         // sekretessmarkering filtering. THEN - we can do paging stuff in-memory. Very inefficient...
         filter.setStartFrom(null);
@@ -537,7 +535,6 @@ public class ArendeServiceImpl implements ArendeService {
 
         List<ArendeListItem> results = arendeRepository.filterArende(filter).stream()
             .map(ArendeListItemConverter::convert)
-            .filter(Objects::nonNull)
             .filter(this::isUnhandled)
             // We need to decorate the ArendeListItem with information whether there exist a reminder or not because
             // they want to display this information to the user. We cannot do this without a database access, hence
@@ -550,34 +547,30 @@ public class ArendeServiceImpl implements ArendeService {
         QueryFragaSvarResponse response = new QueryFragaSvarResponse();
 
         Map<Personnummer, PatientDetailsResolverResponse> statusMap = patientDetailsResolver.getPersonStatusesForList(results.stream()
-            .map(ali -> Personnummer.createPersonnummer(ali.getPatientId()).get())
+            .map(ali -> Personnummer.createPersonnummer(ali.getPatientId()).orElseThrow())
             .collect(Collectors.toList()));
 
         // INTYG-4086, INTYG-4486: Filter out any items that doesn't pass sekretessmarkering rules
         results = results.stream()
             .filter(ali -> this.passesSekretessCheck(ali.getIntygTyp(), user,
-                statusMap.get(Personnummer.createPersonnummer(ali.getPatientId()).get())))
+                statusMap.get(Personnummer.createPersonnummer(ali.getPatientId()).orElseThrow())))
             .collect(Collectors.toList());
 
-        results.stream().forEach(ali -> markStatuses(ali, statusMap.get(Personnummer.createPersonnummer(ali.getPatientId()).get())));
+        results.forEach(ali -> markStatuses(ali, statusMap.get(Personnummer.createPersonnummer(ali.getPatientId()).orElseThrow())));
 
         response.setTotalCount(results.size());
 
-        if (originalStartFrom >= results.size()) {
-            response.setResults(new ArrayList<>());
-        } else {
-            // Get lakare name
-            Set<String> hsaIds = results.stream().map(ArendeListItem::getSigneratAv).collect(Collectors.toSet());
-            Map<String, String> hsaIdNameMap = getNamesByHsaIds(hsaIds);
+        // Get lakare name
+        Set<String> hsaIds = results.stream().map(ArendeListItem::getSigneratAv).collect(Collectors.toSet());
+        Map<String, String> hsaIdNameMap = getNamesByHsaIds(hsaIds);
 
-            // Update lakare name
-            results.forEach(row -> {
-                if (hsaIdNameMap.containsKey(row.getSigneratAv())) {
-                    row.setSigneratAvNamn(hsaIdNameMap.get(row.getSigneratAv()));
-                }
-            });
-            response.setResults(results);
-        }
+        // Update lakare name
+        results.forEach(row -> {
+            if (hsaIdNameMap.containsKey(row.getSigneratAv())) {
+                row.setSigneratAvNamn(hsaIdNameMap.get(row.getSigneratAv()));
+            }
+        });
+        response.setResults(results);
 
         return response;
     }
