@@ -323,7 +323,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
     private Response buildSelectUnitResponse(UriInfo uriInfo, String certificateId) {
         final var location = reactUriFactory.uriForUnitSelection(uriInfo, certificateId);
-        return Response.temporaryRedirect(location).build();
+        return Response.seeOther(location).build();
     }
 
     private Response buildViewCertificateResponse(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg) {
