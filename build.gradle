@@ -12,8 +12,8 @@ plugins {
 }
 
 ext {
-    commonVersion = System.properties['commonVersion'] ?: '3.21.0-SNAPSHOT'
-    infraVersion = System.properties['infraVersion'] ?: '3.21.0-SNAPSHOT'
+    commonVersion = System.properties['commonVersion'] ?: '3.21.0.41'
+    infraVersion = System.properties['infraVersion'] ?: '3.21.0.41'
     refDataVersion = System.properties['refDataVersion'] ?: '1.0-SNAPSHOT'
 
     funktionstjansterGrpSchemasVersion = "2.0.0.1"
