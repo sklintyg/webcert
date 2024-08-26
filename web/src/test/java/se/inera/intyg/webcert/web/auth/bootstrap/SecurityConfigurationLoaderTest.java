@@ -75,7 +75,7 @@ public class SecurityConfigurationLoaderTest {
     public void loadConfigurationAndAssertTypeOfObjects() {
         AuthoritiesConfiguration configuration = loader.getAuthoritiesConfiguration();
 
-        assertEquals(3, configuration.getRequestOrigins().size());
+        assertEquals(2, configuration.getRequestOrigins().size());
         assertEquals(8, configuration.getPrivileges().size());
         assertEquals(4, configuration.getRoles().size());
         assertEquals(2, configuration.getTitles().size());

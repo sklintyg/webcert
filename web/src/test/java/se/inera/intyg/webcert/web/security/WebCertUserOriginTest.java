@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.web.security;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -53,14 +52,6 @@ public class WebCertUserOriginTest {
     public void testDjupintegrationRegexp() {
         assertTrue("/visa/intyg/99aaa4f1-d862-4750-a628-f7dcb9c8bac0".matches(WebCertUserOrigin.REGEXP_REQUESTURI_DJUPINTEGRATION));
         assertTrue("/visa/intyg/99aaa4f1-d862-4750-a628-f7dcb9c8bac0/".matches(WebCertUserOrigin.REGEXP_REQUESTURI_DJUPINTEGRATION));
-    }
-
-    @Test
-    public void testUthoppRegexp() {
-        assertTrue("/webcert/web/user/certificate/99aaa4f1-d862-4750-a628-f7dcb9c8bac0/questions"
-            .matches(WebCertUserOrigin.REGEXP_REQUESTURI_UTHOPP));
-        assertFalse("/webcert/web/user/certificate/99aaa4f1-d862-4750-a628-f7dcb9c8bac0/questions/"
-            .matches(WebCertUserOrigin.REGEXP_REQUESTURI_UTHOPP));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -100,14 +91,6 @@ public class WebCertUserOriginTest {
         String res = webcertUserOrigin.resolveOrigin(buildRequest("/visa/intyg/luse/99aaa4f1-d862-4750-a628-f7dcb9c8bac0"));
 
         assertEquals("DJUPINTEGRATION", res);
-    }
-
-    @Test
-    public void testResolveOriginUthopp() {
-        String res = webcertUserOrigin
-            .resolveOrigin(buildRequest("/webcert/web/user/certificate/luse/99aaa4f1-d862-4750-a628-f7dcb9c8bac0/questions"));
-
-        assertEquals("UTHOPP", res);
     }
 
     private HttpServletRequest buildRequest(String uri) {
