@@ -7,7 +7,6 @@ changedby: Magnus Ekstrand
 knownRequestOrigins:
   - &kro010 NORMAL
   - &kro020 DJUPINTEGRATION
-  - &kro030 UTHOPP
 
 # De intygstyper som systemet har
 knownIntygstyper:
@@ -40,10 +39,6 @@ requestOrigins:
     intygstyper: # Implicit alla
   - &ro020
     name: *kro020
-    intygstyper:
-      - *ki010 # FK7263
-  - &ro030
-    name: *kro030
     intygstyper:
       - *ki010 # FK7263
 

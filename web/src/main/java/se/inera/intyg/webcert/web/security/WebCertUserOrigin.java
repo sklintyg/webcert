@@ -52,7 +52,6 @@ public class WebCertUserOrigin implements UserOrigin {
     // =====================================================================================
 
     public static final String REGEXP_REQUESTURI_DJUPINTEGRATION = "(/v\\d+)?/visa/intyg/.+$";
-    public static final String REGEXP_REQUESTURI_UTHOPP = "/webcert/web/user/certificate/.+/questions$";
     private static final String FAKE = "/fake";
     private static final String USER_JSON_DISPLAY = "userJsonDisplay";
     private static final String ORIGIN = "origin";
@@ -76,8 +75,6 @@ public class WebCertUserOrigin implements UserOrigin {
 
         if (uri.matches(REGEXP_REQUESTURI_DJUPINTEGRATION)) {
             return UserOriginType.DJUPINTEGRATION.name();
-        } else if (uri.matches(REGEXP_REQUESTURI_UTHOPP)) {
-            return UserOriginType.UTHOPP.name();
         } else if (uri.equals(FAKE)) {
             return extractOriginFromRequest(savedRequest);
         }

@@ -75,7 +75,7 @@ public class UserOriginResourceTest extends AuthoritiesConfigurationTestSetup {
         Mockito.when(webCertUserService.getUser()).thenReturn(user);
 
         //When
-        String newOrigin = UserOriginType.UTHOPP.name();
+        String newOrigin = UserOriginType.NORMAL.name();
         userResource.setOrigin(newOrigin);
 
         //Then

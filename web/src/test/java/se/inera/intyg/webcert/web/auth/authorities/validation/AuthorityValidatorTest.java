@@ -243,15 +243,6 @@ public class AuthorityValidatorTest {
     }
 
     @Test(expected = AuthoritiesException.class)
-    public void testMustHavePrevilegeIntygsTypFailsOnMissingRequestOrigin() {
-        WebCertUser user = createDefaultUser();
-        user.setOrigin(UserOriginType.UTHOPP.name());
-
-        validator.given(user, "fk7263").
-            privilege("p1").orThrow();
-    }
-
-    @Test(expected = AuthoritiesException.class)
     public void testMustHavePrevilegeIntygsTypFailsOnMissingRequestOriginIntygsTyp() {
         WebCertUser user = createDefaultUser();
         user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
