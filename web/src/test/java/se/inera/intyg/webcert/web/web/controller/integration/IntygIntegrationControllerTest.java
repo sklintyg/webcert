@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.web.controller.integration;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -68,7 +69,7 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
 import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirectToIntyg;
 
 @ExtendWith(MockitoExtension.class)
-public class IntygIntegrationControllerTest {
+class IntygIntegrationControllerTest {
 
     private static final String ALTERNATE_SSN = "19010101-0101";
     private static final String INTYGSTYP = "lisjp";
@@ -102,7 +103,7 @@ public class IntygIntegrationControllerTest {
     private IntygIntegrationController intygIntegrationController;
 
     @Test
-    public void testSavedRequestGETHandlerRequiresIntegrationParameters() {
+    void testSavedRequestGETHandlerRequiresIntegrationParameters() {
         final var user = mock(WebCertUser.class);
 
         when(user.getParameters()).thenReturn(null);
@@ -131,15 +132,15 @@ public class IntygIntegrationControllerTest {
         return o;
     }
 
-    private Privilege createPrivilege(String name, List<String> intygsTyper, List<RequestOrigin> requestOrigins) {
+    private Privilege createPrivilege(List<String> intygsTyper, List<RequestOrigin> requestOrigins) {
         Privilege p = new Privilege();
-        p.setName(name);
+        p.setName(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG);
         p.setIntygstyper(intygsTyper);
         p.setRequestOrigins(requestOrigins);
         return p;
     }
 
-    private WebCertUser createUser(String roleName, Privilege p, Map<String, Feature> features, String origin) {
+    private WebCertUser createUser(Privilege p, Map<String, Feature> features, String origin) {
         WebCertUser user = new WebCertUser();
 
         HashMap<String, Privilege> pMap = new HashMap<>();
@@ -151,8 +152,8 @@ public class IntygIntegrationControllerTest {
 
         HashMap<String, Role> rMap = new HashMap<>();
         Role role = new Role();
-        role.setName(roleName);
-        rMap.put(roleName, role);
+        role.setName(AuthoritiesConstants.ROLE_LAKARE);
+        rMap.put(AuthoritiesConstants.ROLE_LAKARE, role);
 
         user.setRoles(rMap);
 
@@ -161,23 +162,23 @@ public class IntygIntegrationControllerTest {
         Vardenhet ve = new Vardenhet();
         ve.setVardgivareHsaId("vg1");
         ve.setId(ENHETSID);
-        vg.setVardenheter(Arrays.asList(ve));
-        user.setVardgivare(Arrays.asList(vg));
+        vg.setVardenheter(List.of(ve));
+        user.setVardgivare(List.of(vg));
         return user;
     }
 
     private WebCertUser createDefaultUser() {
-        return createUser(AuthoritiesConstants.ROLE_LAKARE,
-            createPrivilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG,
+        return createUser(
+            createPrivilege(
                 Arrays.asList("lisjp", "ts-bas"), // p1 is restricted to these intygstyper
                 Arrays.asList(
-                    createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), Arrays.asList("lisjp")),
-                    createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), Arrays.asList("ts-bas")))),
+                    createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), List.of("lisjp")),
+                    createRequestOrigin(UserOriginType.DJUPINTEGRATION.name(), List.of("ts-bas")))),
             Stream.of(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, "base_feature")
                 .collect(Collectors.toMap(Function.identity(), s -> {
                     Feature feature = new Feature();
                     feature.setName(s);
-                    feature.setIntygstyper(Arrays.asList("lisjp"));
+                    feature.setIntygstyper(List.of("lisjp"));
                     return feature;
                 })),
             UserOriginType.DJUPINTEGRATION.name());
@@ -204,7 +205,7 @@ public class IntygIntegrationControllerTest {
         private WebCertUser user;
 
         @BeforeEach
-        public void setup() {
+        void setup() {
             uriInfo = mock(UriInfo.class);
             when(integrationService.prepareRedirectToIntyg(any(), any()))
                 .thenReturn(createPrepareRedirectToIntyg());
@@ -223,16 +224,16 @@ public class IntygIntegrationControllerTest {
         class PostiviteLaunchIdVerification {
 
             @Test
-            public void launchIdShouldAppearOnUserIfProvidedInPostWhenJumpIsExecuted() {
+            void launchIdShouldAppearOnUserIfProvidedInPostWhenJumpIsExecuted() {
                 intygIntegrationController.postRedirectToIntyg(uriInfo, httpServletRequest, INTYGSID_POST, "", "", "",
                     "", "", "", "", "", "", true, "", false,
                     false, true, LAUNCHID);
 
-                assertEquals(user.getParameters().getLaunchId(), LAUNCHID);
+                assertEquals(LAUNCHID, user.getParameters().getLaunchId());
             }
 
             @Test
-            public void assertThatRedisAddsLaunchIdToCache() {
+            void assertThatRedisAddsLaunchIdToCache() {
                 intygIntegrationController.postRedirectToIntyg(uriInfo, httpServletRequest, INTYGSID_POST, "", "", "",
                     "", "", "", "", "", "", true, "", false,
                     false, true, LAUNCHID);
@@ -246,7 +247,7 @@ public class IntygIntegrationControllerTest {
         class NegativeLaunchIdVerification {
 
             @Test
-            public void assertThatLaunchIdIsNotGuid() {
+            void assertThatLaunchIdIsNotGuid() {
                 assertThrows(
                     IllegalArgumentException.class,
                     () -> {
@@ -273,12 +274,12 @@ public class IntygIntegrationControllerTest {
             }
 
             @Test
-            public void launchIdShouldBeAddedEvenIfNotProvided() {
+            void launchIdShouldBeAddedEvenIfNotProvided() {
                 intygIntegrationController.postRedirectToIntyg(uriInfo, httpServletRequest, INTYGSID_POST, "", "", "",
                     "", "", "", "", "", "", true, "", false,
                     false, true, "");
 
-                assertEquals(user.getParameters().getLaunchId(), null);
+                assertNull(user.getParameters().getLaunchId());
             }
         }
     }
@@ -286,17 +287,15 @@ public class IntygIntegrationControllerTest {
     @Nested
     class LaunchIdSavedRequestVerification {
 
-        private WebCertUser user;
-
         @BeforeEach
-        public void setup() {
+        void setup() {
             uriInfo = mock(UriInfo.class);
             final var uriBuilder = UriBuilder.fromUri("https://wc.localtest.me/");
 
             when(integrationService.prepareRedirectToIntyg(any(), any()))
                 .thenReturn(createPrepareRedirectToIntyg());
             when(authoritiesResolver.getFeatures(any())).thenReturn(new HashMap<>());
-            this.user = createDefaultUserWithIntegrationParametersAndLaunchId1();
+            WebCertUser user = createDefaultUserWithIntegrationParametersAndLaunchId1();
             when(webCertUserService.getUser()).thenReturn(user);
             doReturn(URI.create("https://wc.localtest.me/certificate/xxxx-yyyyy-zzzzz-qqqqq")).when(reactUriFactory)
                 .uriForCertificate(uriInfo, INTYGSID);
@@ -310,7 +309,7 @@ public class IntygIntegrationControllerTest {
         class PostiviteLaunchIdVerification {
 
             @Test
-            public void assertThatRedisAddsLaunchIdToCache() {
+            void assertThatRedisAddsLaunchIdToCache() {
                 intygIntegrationController.getRedirectToIntyg(httpServletRequest, uriInfo, INTYGSID, ENHETSID);
 
                 verify(redisCacheLaunchId).put(LAUNCHID, Base64.getEncoder().encodeToString(SESSION_ID.getBytes()));
@@ -322,7 +321,7 @@ public class IntygIntegrationControllerTest {
     class RedirectToCertificate {
 
         @BeforeEach
-        public void setup() {
+        void setup() {
             uriInfo = mock(UriInfo.class);
             when(integrationService.prepareRedirectToIntyg(any(), any()))
                 .thenReturn(createPrepareRedirectToIntyg());
@@ -336,7 +335,7 @@ public class IntygIntegrationControllerTest {
         }
 
         @Test
-        public void shallRedirectWithStatusSeeOtherAsTheRedirectShouldAlwaysBeAGET() {
+        void shallRedirectWithStatusSeeOtherAsTheRedirectShouldAlwaysBeAGET() {
             final var user = createDefaultUserWithIntegrationParameters();
 
             when(webCertUserService.getUser()).thenReturn(user);
@@ -349,7 +348,7 @@ public class IntygIntegrationControllerTest {
         }
 
         @Test
-        public void shallRedirectToCertificate() {
+        void shallRedirectToCertificate() {
             final var user = createDefaultUserWithIntegrationParameters();
 
             when(webCertUserService.getUser()).thenReturn(user);

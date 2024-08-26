@@ -40,11 +40,13 @@ import se.inera.intyg.webcert.web.web.handlers.WebcertRestExceptionResponse;
 public class LaunchIdValidationFilter extends OncePerRequestFilter {
 
     private static final Logger LOG = LoggerFactory.getLogger(LaunchIdValidationFilter.class);
+
     @Autowired
     @Qualifier("objectMapper")
     private ObjectMapper mapper;
+
     @Autowired
-    WebCertUserService webCertUserService;
+    private WebCertUserService webCertUserService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -63,9 +65,8 @@ public class LaunchIdValidationFilter extends OncePerRequestFilter {
         final var webcertRestExceptionResponse = getWebcertRestExceptionResponse();
         errorDetails.put("errorCode", webcertRestExceptionResponse.getErrorCode());
         errorDetails.put("message", webcertRestExceptionResponse.getMessage());
-        LOG.info(String.format("provided launchId: %s - does not match with current session launchId: %s - session will be invalidated.",
-            launchId,
-            user.getParameters().getLaunchId()));
+        LOG.info("Provided launchId: '{}'- does not match with current session launchId: '{}' - session will be invalidated.", launchId,
+            user.getParameters().getLaunchId());
 
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);

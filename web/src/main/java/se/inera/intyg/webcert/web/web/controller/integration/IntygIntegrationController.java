@@ -26,6 +26,7 @@ import java.util.Base64;
 import java.util.Map;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
@@ -62,7 +63,7 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirect
  * @author bensam
  */
 @Path("/intyg")
-@Api(value = "intyg (Djupintegration)", description = "REST API för Djupintegration", produces = MediaType.APPLICATION_JSON)
+@Api(value = "intyg (Djupintegration)", produces = MediaType.APPLICATION_JSON)
 // CHECKSTYLE:OFF ParameterNumber
 public class IntygIntegrationController extends BaseIntegrationController {
 
@@ -127,6 +128,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
     @PrometheusTimeMethod
     @Deprecated(since = "2019")
     public Response getRedirectToIntyg(@Context UriInfo uriInfo,
+        @Context HttpServletRequest request,
         @PathParam(PARAM_CERT_ID) String intygId,
         @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId,
         @DefaultValue("") @QueryParam(PARAM_PATIENT_ALTERNATE_SSN) String alternatePatientSSn,
@@ -151,7 +153,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
             postadress, postnummer, postort, coherentJournaling, deceased, inactiveUnit, fornyaOk
         );
 
-        final var user = getWebCertUser();
+        final var user = getWebCertUser(request.getSession());
         user.setParameters(integrationParameters);
 
         return handleRedirectToIntyg(uriInfo, intygId, enhetId, user);
@@ -189,7 +191,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
             launchIdShouldBeAdded(launchId) ? launchId : null
         );
 
-        final var user = getWebCertUser();
+        final var user = getWebCertUser(request.getSession());
         user.setParameters(integrationParameters);
 
         cacheExistingLaunchIdForSession(user.getParameters().getLaunchId(), request.getSession().getId());
@@ -242,6 +244,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
     @PrometheusTimeMethod
     public Response resumeRedirectToIntyg(
         @Context UriInfo uriInfo,
+        @Context HttpServletRequest request,
         @PathParam(PARAM_CERT_ID) String intygId,
         @DefaultValue("") @QueryParam(PARAM_ENHET_ID) String enhetId) {
 
@@ -251,7 +254,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
         );
         validateRequest(params);
 
-        final var user = getWebCertUser();
+        final var user = getWebCertUser(request.getSession());
         user.getParameters().getState().setRedirectToEnhetsval(false);
 
         return handleRedirectToIntyg(uriInfo, intygId, enhetId, user);
@@ -318,7 +321,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
     private Response buildErrorResponse(UriInfo uriInfo, String errorReason) {
         final var location = reactUriFactory.uriForErrorResponse(uriInfo, errorReason);
-        return Response.temporaryRedirect(location).build();
+        return Response.seeOther(location).build();
     }
 
     private Response buildSelectUnitResponse(UriInfo uriInfo, String certificateId) {
@@ -331,10 +334,10 @@ public class IntygIntegrationController extends BaseIntegrationController {
         return Response.seeOther(location).build();
     }
 
-    private WebCertUser getWebCertUser() {
+    private WebCertUser getWebCertUser(HttpSession session) {
         final var user = getWebCertUserService().getUser();
-
         if (user.getParameters() != null && !user.getParameters().getState().hasUserBeenRedirectedToEnhetsval()) {
+            getWebCertUserService().removeSessionNow(session);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_USER_SESSION_ALREADY_ACTIVE,
                 "This user session is already active and using Webcert. Please use a new user session for each deep integration link.");
         }
