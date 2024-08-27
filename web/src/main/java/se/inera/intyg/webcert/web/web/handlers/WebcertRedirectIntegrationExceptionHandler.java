@@ -77,7 +77,7 @@ public class WebcertRedirectIntegrationExceptionHandler implements ExceptionMapp
 
     private Response handleRuntimeException(RuntimeException e) {
         if (e instanceof WebCertServiceException) {
-            LOG.warn("WebCertServiceException caught: {}", e.getMessage());
+            LOG.warn("WebCertServiceException caught: {}", e.getMessage(), e);
             switch (((WebCertServiceException) e).getErrorCode()) {
                 case MISSING_PARAMETER:
                     return getRedirectResponse(ERROR_REASON_MISSING_PARAMETER);
