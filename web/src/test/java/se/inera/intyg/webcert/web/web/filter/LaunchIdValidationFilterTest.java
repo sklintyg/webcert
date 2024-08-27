@@ -54,19 +54,18 @@ public class LaunchIdValidationFilterTest {
 
     @Mock
     private HttpServletRequest httpServletRequest;
-
     @Mock
     private ObjectMapper mapper;
     @Mock
     private HttpServletResponse httpServletResponse;
-
     @Mock
     private FilterChain filterChain;
-
     @Mock
     private WebCertUserService webCertUserService;
+
     @Captor
     ArgumentCaptor<Map> mapArgumentCaptor;
+
     @InjectMocks
     private LaunchIdValidationFilter filter = new LaunchIdValidationFilter();
 
@@ -83,17 +82,6 @@ public class LaunchIdValidationFilterTest {
     @Test
     public void filterChainShouldContinueWhenUserIsNull() throws ServletException, IOException {
         when(httpServletRequest.getHeader("launchId")).thenReturn(LAUNCH_ID);
-
-        filter.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
-
-        verify(filterChain, atLeastOnce()).doFilter(httpServletRequest, httpServletResponse);
-        verify(httpServletResponse, never()).setStatus(HttpServletResponse.SC_FORBIDDEN);
-    }
-
-    @Test
-    public void filterChainShouldContinueWhenGetUserProducesNullpointerException() throws ServletException, IOException {
-        when(httpServletRequest.getHeader("launchId")).thenReturn(LAUNCH_ID);
-        when(webCertUserService.getUser()).thenThrow(NullPointerException.class);
 
         filter.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
 

@@ -47,6 +47,7 @@ public class WebcertRedirectIntegrationExceptionHandler implements ExceptionMapp
     public static final String ERROR_REASON_AUTH_EXCEPTION_SEKRETESSMARKERING = "auth-exception-sekretessmarkering";
     public static final String ERROR_REASON_AUTH_EXCEPTION_USER_ALREADY_ACTIVE = "auth-exception-user-already-active";
     public static final String ERROR_REASON_PU_PROBLEM = "pu-problem";
+    public static final String ERROR_REASON_UNKNOWN = "unknown";
 
     @Context
     UriInfo uriInfo;
@@ -89,11 +90,13 @@ public class WebcertRedirectIntegrationExceptionHandler implements ExceptionMapp
                     return getRedirectResponse(ERROR_REASON_AUTH_EXCEPTION_USER_ALREADY_ACTIVE);
                 case PU_PROBLEM:
                     return getRedirectResponse(ERROR_REASON_PU_PROBLEM);
+                default:
+                    return getRedirectResponse(ERROR_REASON_UNKNOWN);
             }
         }
 
         LOG.error("Unhandled RuntimeException occured!", e);
-        return getRedirectResponse("unknown");
+        return getRedirectResponse(ERROR_REASON_UNKNOWN);
     }
 
     private Response getRedirectResponse(String errorCode) {

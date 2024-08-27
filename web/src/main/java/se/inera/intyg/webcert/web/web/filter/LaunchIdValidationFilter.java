@@ -20,7 +20,9 @@ package se.inera.intyg.webcert.web.web.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -30,6 +32,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
+import org.springframework.lang.NonNull;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
@@ -40,6 +46,7 @@ import se.inera.intyg.webcert.web.web.handlers.WebcertRestExceptionResponse;
 public class LaunchIdValidationFilter extends OncePerRequestFilter {
 
     private static final Logger LOG = LoggerFactory.getLogger(LaunchIdValidationFilter.class);
+    private static RequestMatcher requestMatcher;
 
     @Autowired
     @Qualifier("objectMapper")
@@ -48,9 +55,27 @@ public class LaunchIdValidationFilter extends OncePerRequestFilter {
     @Autowired
     private WebCertUserService webCertUserService;
 
+    static {
+        final String[] publicEndPoints = {"/api/configuration/**", "/api/log/**"};
+        ignorePatterns(publicEndPoints);
+    }
+
+    private static void ignorePatterns(String... antPatterns) {
+        List<RequestMatcher> matchers = new ArrayList<>();
+        for (String pattern : antPatterns) {
+            matchers.add(new AntPathRequestMatcher(pattern, null));
+        }
+        requestMatcher = new OrRequestMatcher(matchers);
+    }
+
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-        throws ServletException, IOException {
+    protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
+        return requestMatcher.matches(request);
+    }
+
+    @Override
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
+        @NonNull FilterChain filterChain) throws ServletException, IOException {
         if (continueFilterChain(request)) {
             filterChain.doFilter(request, response);
             return;
@@ -74,12 +99,8 @@ public class LaunchIdValidationFilter extends OncePerRequestFilter {
     }
 
     private boolean continueFilterChain(HttpServletRequest request) {
-        try {
-            return request.getHeader("launchId") == null || webCertUserService == null || webCertUserService.getUser() == null
-                || webCertUserService.getUser().getParameters() == null;
-        } catch (NullPointerException e) {
-            return true;
-        }
+        return request.getHeader("launchId") == null || webCertUserService == null || webCertUserService.getUser() == null
+            || webCertUserService.getUser().getParameters() == null;
     }
 
     private WebcertRestExceptionResponse getWebcertRestExceptionResponse() {
