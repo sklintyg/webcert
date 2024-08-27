@@ -91,6 +91,17 @@ public class LaunchIdValidationFilterTest {
     }
 
     @Test
+    public void filterChainShouldContinueWhenGetUserProducesNullpointerException() throws ServletException, IOException {
+        when(httpServletRequest.getHeader("launchId")).thenReturn(LAUNCH_ID);
+        when(webCertUserService.getUser()).thenThrow(NullPointerException.class);
+
+        filter.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
+
+        verify(filterChain, atLeastOnce()).doFilter(httpServletRequest, httpServletResponse);
+        verify(httpServletResponse, never()).setStatus(HttpServletResponse.SC_FORBIDDEN);
+    }
+
+    @Test
     public void filterChainShouldStopWhenLaunchIdDoesNotMatchAndGiveError() throws ServletException, IOException {
         when(httpServletRequest.getHeader("launchId")).thenReturn(NEW_LAUNCH_ID);
         when(webCertUserService.getUser()).thenReturn(createUserWithIntegrationsParameters());
