@@ -74,8 +74,12 @@ public class LaunchIdValidationFilter extends OncePerRequestFilter {
     }
 
     private boolean continueFilterChain(HttpServletRequest request) {
-        return request.getHeader("launchId") == null || webCertUserService == null || webCertUserService.getUser() == null
-            || webCertUserService.getUser().getParameters() == null;
+        try {
+            return request.getHeader("launchId") == null || webCertUserService == null || webCertUserService.getUser() == null
+                || webCertUserService.getUser().getParameters() == null;
+        } catch (NullPointerException e) {
+            return true;
+        }
     }
 
     private WebcertRestExceptionResponse getWebcertRestExceptionResponse() {
