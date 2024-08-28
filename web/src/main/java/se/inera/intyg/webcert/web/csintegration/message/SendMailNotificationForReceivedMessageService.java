@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
+import se.inera.intyg.webcert.web.csintegration.certificate.IntegratedUnitNotificationEvaluator;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.service.mail.MailNotification;
 import se.inera.intyg.webcert.web.service.mail.MailNotificationService;
@@ -36,9 +37,10 @@ public class SendMailNotificationForReceivedMessageService {
 
     private final IntegreradeEnheterRegistry integreradeEnheterRegistry;
     private final MailNotificationService mailNotificationService;
+    private final IntegratedUnitNotificationEvaluator integratedUnitNotificationEvaluator;
 
     public void send(SendMessageToCareType sendMessageToCare, Certificate certificate) {
-        if (unitIsIntegrated(certificate)) {
+        if (unitIsIntegrated(certificate) && !integratedUnitNotificationEvaluator.mailNotification()) {
             return;
         }
 

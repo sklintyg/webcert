@@ -41,6 +41,7 @@ public class PublishCertificateStatusUpdateService {
     private final NotificationMessageFactory notificationMessageFactory;
     private final NotificationService notificationService;
     private final WebCertUserService webCertUserService;
+    private final IntegratedUnitNotificationEvaluator integratedUnitNotificationEvaluator;
 
     public void publish(Certificate certificate, HandelsekodEnum eventType, String xml) {
         publish(certificate, eventType, Optional.empty(), Optional.of(xml));
@@ -51,7 +52,7 @@ public class PublishCertificateStatusUpdateService {
     }
 
     public void publish(Certificate certificate, HandelsekodEnum eventType, Optional<IntygUser> intygUser, Optional<String> xml) {
-        if (unitIsNotIntegrated(certificate)) {
+        if (unitIsNotIntegrated(certificate) || integratedUnitNotificationEvaluator.mailNotification()) {
             return;
         }
 

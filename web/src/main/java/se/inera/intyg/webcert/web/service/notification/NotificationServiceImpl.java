@@ -76,6 +76,7 @@ import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.csintegration.certificate.IntegratedUnitNotificationEvaluator;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
@@ -131,6 +132,9 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Autowired
     private IntygService intygService;
+
+    @Autowired
+    private IntegratedUnitNotificationEvaluator integratedUnitNotificationEvaluator;
 
     @PostConstruct
     public void checkJmsTemplate() {
@@ -254,7 +258,8 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void sendNotificationForQuestionReceived(FragaSvar fragaSvar) {
-        if (integreradeEnheterRegistry.isEnhetIntegrerad(fragaSvar.getVardperson().getEnhetsId(), Fk7263EntryPoint.MODULE_ID)) {
+        if (integreradeEnheterRegistry.isEnhetIntegrerad(fragaSvar.getVardperson().getEnhetsId(), Fk7263EntryPoint.MODULE_ID)
+            && !integratedUnitNotificationEvaluator.mailNotification()) {
             sendNotificationForQAs(fragaSvar.getIntygsReferens().getIntygsId(), NotificationEvent.NEW_QUESTION_FROM_RECIPIENT,
                 fragaSvar.getSistaDatumForSvar(), ArendeAmne.fromAmne(fragaSvar.getAmne()).orElse(null));
         } else {
@@ -279,7 +284,8 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void sendNotificationForQuestionReceived(Arende arende) {
-        if (integreradeEnheterRegistry.isEnhetIntegrerad(arende.getEnhetId(), arende.getIntygTyp())) {
+        if (integreradeEnheterRegistry.isEnhetIntegrerad(arende.getEnhetId(), arende.getIntygTyp())
+            && !integratedUnitNotificationEvaluator.mailNotification()) {
             sendNotificationForQAs(arende.getIntygsId(), NotificationEvent.NEW_QUESTION_FROM_RECIPIENT, arende.getSistaDatumForSvar(),
                 arende.getAmne());
         } else {
