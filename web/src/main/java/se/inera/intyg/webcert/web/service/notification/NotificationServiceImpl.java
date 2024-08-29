@@ -259,7 +259,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void sendNotificationForQuestionReceived(FragaSvar fragaSvar) {
         if (integreradeEnheterRegistry.isEnhetIntegrerad(fragaSvar.getVardperson().getEnhetsId(), Fk7263EntryPoint.MODULE_ID)
-            && !integratedUnitNotificationEvaluator.mailNotification()) {
+            && !integratedUnitNotificationEvaluator.mailNotification(fragaSvar.getVardperson().getVardgivarId(), fragaSvar.getVardperson().getEnhetsId())) {
             sendNotificationForQAs(fragaSvar.getIntygsReferens().getIntygsId(), NotificationEvent.NEW_QUESTION_FROM_RECIPIENT,
                 fragaSvar.getSistaDatumForSvar(), ArendeAmne.fromAmne(fragaSvar.getAmne()).orElse(null));
         } else {
