@@ -150,7 +150,7 @@ class IntegrationServiceForCSTest {
     }
 
     @Test
-    void shallRethowExceptionIfNotStatusCode403FromCS() {
+    void shallRethrowExceptionIfNotStatusCode403FromCS() {
         doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
         doThrow(new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR)).when(csIntegrationRequestFactory).getCertificateRequest();
 
