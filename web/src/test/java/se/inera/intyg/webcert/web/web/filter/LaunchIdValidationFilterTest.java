@@ -54,19 +54,18 @@ public class LaunchIdValidationFilterTest {
 
     @Mock
     private HttpServletRequest httpServletRequest;
-
     @Mock
     private ObjectMapper mapper;
     @Mock
     private HttpServletResponse httpServletResponse;
-
     @Mock
     private FilterChain filterChain;
-
     @Mock
     private WebCertUserService webCertUserService;
+
     @Captor
     ArgumentCaptor<Map> mapArgumentCaptor;
+
     @InjectMocks
     private LaunchIdValidationFilter filter = new LaunchIdValidationFilter();
 
