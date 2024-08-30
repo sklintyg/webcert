@@ -23,10 +23,13 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
+import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
+import se.inera.intyg.webcert.web.csintegration.certificate.IntegratedUnitNotificationEvaluator;
 import se.inera.intyg.webcert.web.csintegration.certificate.PublishCertificateStatusUpdateService;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
+import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareType;
@@ -39,7 +42,9 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 public class ProcessIncomingMessageService {
 
     private final CSIntegrationService csIntegrationService;
+    private final IntegreradeEnheterRegistry integreradeEnheterRegistry;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+    private final IntegratedUnitNotificationEvaluator integratedUnitNotificationEvaluator;
     private final MonitoringLogService monitoringLogService;
     private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
     private final SendMailNotificationForReceivedMessageService sendMailNotificationForReceivedMessageService;
@@ -65,8 +70,15 @@ public class ProcessIncomingMessageService {
             isAnswer
         );
 
-        publishCertificateStatusUpdateService.publish(certificate, getEventType(questionType, isAnswer));
-        sendMailNotificationForReceivedMessageService.send(sendMessageToCare, certificate);
+        final var shouldReciveMailNotifications = shouldReciveMailNotifications(certificate);
+
+        if (unitIsIntegrated(certificate) && !shouldReciveMailNotifications) {
+            publishCertificateStatusUpdateService.publish(certificate, getEventType(questionType, isAnswer));
+        }
+
+        if (!unitIsIntegrated(certificate) || shouldReciveMailNotifications) {
+            sendMailNotificationForReceivedMessageService.send(sendMessageToCare, certificate);
+        }
 
         final var sendMessageToCareResponseType = new SendMessageToCareResponseType();
         final var result = new ResultType();
@@ -75,10 +87,23 @@ public class ProcessIncomingMessageService {
         return sendMessageToCareResponseType;
     }
 
+    private boolean shouldReciveMailNotifications(Certificate certificate) {
+        return integratedUnitNotificationEvaluator.mailNotification(
+            certificate.getMetadata().getCareProvider().getUnitId(),
+            certificate.getMetadata().getUnit().getUnitId(),
+            certificate.getMetadata().getId(),
+            certificate.getMetadata().getSigned()
+        );
+    }
+
     private static HandelsekodEnum getEventType(ArendeAmne questionType, boolean isAnswer) {
         if (questionType.equals(ArendeAmne.PAMINN) || !isAnswer) {
             return HandelsekodEnum.NYFRFM;
         }
         return HandelsekodEnum.NYSVFM;
+    }
+
+    private boolean unitIsIntegrated(Certificate certificate) {
+        return integreradeEnheterRegistry.getIntegreradEnhet(certificate.getMetadata().getUnit().getUnitId()) != null;
     }
 }

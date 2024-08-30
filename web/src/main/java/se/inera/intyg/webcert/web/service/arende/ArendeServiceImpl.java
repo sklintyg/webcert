@@ -206,6 +206,10 @@ public class ArendeServiceImpl implements ArendeService {
         }
 
         Utkast utkast = utkastRepository.findById(certificateId).orElse(null);
+        return getArendeForUtkast(arende, utkast, certificateId);
+    }
+
+    private Arende getArendeForUtkast(Arende arende, Utkast utkast, String certificateId) {
         if (utkast != null) {
             validateArende(certificateId, utkast);
 
@@ -216,6 +220,9 @@ public class ArendeServiceImpl implements ArendeService {
             monitoringLog.logArendeReceived(certificateId, utkast.getIntygsTyp(), utkast.getEnhetsId(), arende.getAmne(),
                 arende.getKomplettering().stream().map(MedicinsktArende::getFrageId).collect(Collectors.toList()),
                 arende.getSvarPaId() != null);
+            Arende saved = arendeRepository.save(arende);
+            sendNotificationAndCreateEventForIncomingMessage(saved, utkast.getVardgivarId(), utkast.getSignatur().getSigneringsDatum());
+            return saved;
         } else {
             final var certificate = intygService.fetchIntygDataForInternalUse(certificateId, false);
 
@@ -229,13 +236,14 @@ public class ArendeServiceImpl implements ArendeService {
                 certificate.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getEnhetsid(), arende.getAmne(),
                 arende.getKomplettering().stream().map(MedicinsktArende::getFrageId).collect(Collectors.toList()),
                 arende.getSvarPaId() != null);
+            Arende saved = arendeRepository.save(arende);
+            sendNotificationAndCreateEventForIncomingMessage(
+                saved,
+                certificate.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarid(),
+                certificate.getUtlatande().getGrundData().getSigneringsdatum()
+            );
+            return saved;
         }
-
-        Arende saved = arendeRepository.save(arende);
-
-        sendNotificationAndCreateEventForIncomingMessage(saved);
-
-        return saved;
     }
 
 
@@ -871,12 +879,12 @@ public class ArendeServiceImpl implements ArendeService {
     }
 
 
-    private void sendNotificationAndCreateEventForIncomingMessage(Arende saved) {
+    private void sendNotificationAndCreateEventForIncomingMessage(Arende saved, String careProviderId, LocalDateTime issuingDate) {
         String certificateId = saved.getIntygsId();
         String sentBy = saved.getSkickatAv();
 
         if (ArendeAmne.PAMINN == saved.getAmne() || saved.getSvarPaId() == null) {
-            notificationService.sendNotificationForQuestionReceived(saved);
+            notificationService.sendNotificationForQuestionReceived(saved, careProviderId, issuingDate);
 
             if (saved.getPaminnelseMeddelandeId() != null) {
                 certificateEventService.createCertificateEvent(certificateId, sentBy, EventCode.PAMINNELSE);
@@ -887,7 +895,7 @@ public class ArendeServiceImpl implements ArendeService {
                 certificateEventService.createCertificateEvent(certificateId, sentBy, EventCode.NYFRFM, message);
             }
         } else {
-            notificationService.sendNotificationForAnswerRecieved(saved);
+            notificationService.sendNotificationForAnswerRecieved(saved, careProviderId, issuingDate);
             certificateEventService.createCertificateEvent(certificateId, sentBy, EventCode.NYSVFM);
         }
     }

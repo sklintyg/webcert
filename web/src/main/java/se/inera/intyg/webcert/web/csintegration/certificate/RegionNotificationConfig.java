@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Builder;
 import lombok.Data;
@@ -29,13 +28,11 @@ import lombok.Data;
 @JsonInclude
 @Builder
 @Data
-public class IntegratedUnitNotificationConfig {
+public class RegionNotificationConfig {
 
-    @JsonProperty("careProviders")
-    List<String> careProviders;
-    @JsonProperty("issuedOnUnit")
-    List<String> issuedOnUnit;
-    @JsonProperty("datetime")
-    LocalDateTime datetime;
+    @JsonProperty("region")
+    String region;
+    @JsonProperty("configuration")
+    List<IntegratedUnitNotificationConfig> configuration;
 
 }

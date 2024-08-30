@@ -19,55 +19,57 @@
 
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
-@Service
+@Slf4j
+@Component
 @RequiredArgsConstructor
 public class IntegratedUnitNotificationEvaluator {
-   private static final String JSON_SOURCE = "";
 
+    private final GetUnitNotificationConfig getUnitNotificationConfig;
 
-   public boolean mailNotification(String careProviderId, String issuedOnUnitId) {
-      final var objectMapper = new ObjectMapper();
-      try {
-         final var jsonMap = objectMapper.readValue(JSON_SOURCE,
-             new TypeReference<Map<String, List<IntegratedUnitNotificationConfig>>>() {
-             });
-         return evaluateMailNotification(careProviderId, issuedOnUnitId, jsonMap);
-      } catch (Exception e) {
-         throw new IllegalStateException("Error trying to parse integrated unit json configuration file");
-      }
-   }
+    public boolean mailNotification(String careProviderId, String issuedOnUnitId, String certificateId, LocalDateTime issuingDate) {
+        final var regionNotificationConfigs = getUnitNotificationConfig.get();
+        if (regionNotificationConfigs.isEmpty()) {
+            return false;
+        }
 
-   private boolean evaluateMailNotification(String careProviderId, String issuedOnUnitId, Map<String, List<IntegratedUnitNotificationConfig>> configMap) {
-      return configMap.values().stream()
-          .flatMap(List::stream)
-          .anyMatch(config ->
-                  evaluateMailNotification(
-                      config.getIssuedOnUnit(),
-                      config.getCareProviders(),
-                      config.getDatetime(),
-                      issuedOnUnitId,
-                      careProviderId
-                  )
-              );
-   }
+        if (evaluateMailNotification(careProviderId, issuedOnUnitId, regionNotificationConfigs, issuingDate)) {
+            log.info("Certificate with id '{}' has been evaluated and should receive mail notification.", certificateId);
+            return true;
+        }
 
-   private boolean evaluateMailNotification(List<String> unitIds, List<String> careProviderIds, LocalDateTime activateFrom, String unitId, String careProviderId) {
-      if (!careProviderIds.contains(careProviderId)) {
-         return false;
-      }
+        log.info("Certificate with id '{}' has been evaluated and should not receive mail notification.", certificateId);
+        return false;
+    }
 
-      if (!unitIds.contains(unitId)) {
-         return false;
-      }
+    private boolean evaluateMailNotification(String careProviderId, String issuedOnUnitId,
+        List<RegionNotificationConfig> regionNotificationConfigs, LocalDateTime issuingDate) {
+        return regionNotificationConfigs.stream()
+            .map(RegionNotificationConfig::getConfiguration)
+            .flatMap(List::stream)
+            .anyMatch(config ->
+                evaluateMailNotification(
+                    config.getIssuedOnUnit(),
+                    config.getCareProviders(),
+                    config.getDatetime(),
+                    issuedOnUnitId,
+                    careProviderId,
+                    issuingDate
+                )
+            );
+    }
 
-     return !activateFrom.isAfter(LocalDateTime.now());
-   }
+    private boolean evaluateMailNotification(List<String> unitIds, List<String> careProviderIds, LocalDateTime activateFrom, String unitId,
+        String careProviderId, LocalDateTime issuingDate) {
+        if ((careProviderIds != null && !careProviderIds.contains(careProviderId)) && (unitIds != null && !unitIds.contains(unitId))) {
+            return false;
+        }
+
+        return activateFrom.isBefore(issuingDate);
+    }
 }
