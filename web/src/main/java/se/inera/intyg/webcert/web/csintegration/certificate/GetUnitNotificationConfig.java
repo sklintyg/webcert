@@ -22,6 +22,7 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import java.io.FileInputStream;
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -41,8 +42,7 @@ public class GetUnitNotificationConfig {
     public List<RegionNotificationConfig> get() {
         final var objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-        try {
-            final var resourceAsStream = getClass().getClassLoader().getResourceAsStream(unitNotificationConfigPath);
+        try (final var resourceAsStream = new FileInputStream(unitNotificationConfigPath)) {
             final var integratedUnitNotificationConfig = objectMapper.readValue(
                 resourceAsStream,
                 new TypeReference<List<RegionNotificationConfig>>() {

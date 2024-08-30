@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.nio.file.Paths;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -32,11 +33,14 @@ import org.springframework.test.util.ReflectionTestUtils;
 @ExtendWith(MockitoExtension.class)
 class GetUnitNotificationConfigTest {
 
-    private static final String NOTIFICATIONS_WITH_VALUE_PATH = "UnitNotificationConfig/unit-notification-config-with-value.json";
+    private static final String NOTIFICATIONS_WITH_VALUE_PATH = Paths.get("src", "test", "resources", "UnitNotificationConfig",
+        "unit-notification-config-with-value.json").toString();
     private static final String INVALID_PATH = "InvalidPath";
-    private static final String NOTIFICATIONS_WITH_VALUES_PATH = "UnitNotificationConfig/unit-notification-config-with-values.json";
+    private static final String NOTIFICATIONS_WITH_VALUES_PATH = Paths.get("src", "test", "resources", "UnitNotificationConfig",
+        "unit-notification-config-with-values.json").toString();
     private static final String NOTIFICATIONS_WITH_VALUE_AND_MULTIPLE_CONFIGURATIONS_PATH =
-        "UnitNotificationConfig/unit-notification-config-with-value-with-multiple-configurations.json";
+        Paths.get("src", "test", "resources", "UnitNotificationConfig",
+            "unit-notification-config-with-value-with-multiple-configurations.json").toString();
     @InjectMocks
     private GetUnitNotificationConfig getUnitNotificationConfig;
 
