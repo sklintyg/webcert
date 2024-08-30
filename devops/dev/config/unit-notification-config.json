@@ -1,11 +1,11 @@
 [
   {
-    "region": "Region Örebro",
+    "region": "Beta Regionen",
     "configuration": [
       {
-        "datetime": "2024-10-01 08:00",
-        "careProviders" : ["HSA_ID1", "HSA_ID2"],
-        "issuedOnUnit" : ["HSA_ID3", "HSA_ID4"],
+        "datetime": "2024-08-01T08:00",
+        "careProviders" : ["TSTNMT2321000156-BETA"],
+        "issuedOnUnit" : []
       }
     ]
   }
