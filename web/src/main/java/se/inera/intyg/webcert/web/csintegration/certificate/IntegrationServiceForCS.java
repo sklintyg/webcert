@@ -21,9 +21,13 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -54,18 +58,26 @@ public class IntegrationServiceForCS implements IntegrationService {
             return null;
         }
 
-        final var certificate = csIntegrationService.getCertificate(
-            certificateId,
-            csIntegrationRequestFactory.getCertificateRequest()
-        );
+        try {
+            final var certificate = csIntegrationService.getCertificate(
+                certificateId,
+                csIntegrationRequestFactory.getCertificateRequest()
+            );
 
-        if (user.isSjfActive()) {
-            logSjfService.log(certificate, user);
+            if (user.isSjfActive()) {
+                logSjfService.log(certificate, user);
+            }
+
+            certificateDetailsUpdateService.update(certificate, user, prepareBeforeAlternateSsn);
+
+            return createPrepareRedirectToIntyg(certificate);
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.FORBIDDEN) {
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, String.format("User '%s' was denied"
+                    + "access to certificate '%s' from certificate-service.", user.getHsaId(), certificateId), e);
+            }
+            throw e;
         }
-
-        certificateDetailsUpdateService.update(certificate, user, prepareBeforeAlternateSsn);
-
-        return createPrepareRedirectToIntyg(certificate);
     }
 
     private static PrepareRedirectToIntyg createPrepareRedirectToIntyg(Certificate certificate) {

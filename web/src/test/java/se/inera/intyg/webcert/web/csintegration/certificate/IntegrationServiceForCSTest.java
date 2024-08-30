@@ -21,7 +21,9 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -32,9 +34,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
@@ -130,5 +136,27 @@ class IntegrationServiceForCSTest {
 
         final var actualRedirect = integrationServiceForCS.prepareRedirectToIntyg(CERTIFICATE_ID, user, PERSONAL_NUMBER);
         assertEquals(expectedRedirect, actualRedirect);
+    }
+
+    @Test
+    void shallThrowWebcertServiceExceptionForAuthorizationProblemIfStatusCode403FromCS() {
+        doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
+        doThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN)).when(csIntegrationRequestFactory).getCertificateRequest();
+
+        final var e = assertThrows(WebCertServiceException.class, () ->
+            integrationServiceForCS.prepareRedirectToIntyg(CERTIFICATE_ID, user, PERSONAL_NUMBER));
+
+        assertEquals(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM, e.getErrorCode());
+    }
+
+    @Test
+    void shallRethrowExceptionIfNotStatusCode403FromCS() {
+        doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
+        doThrow(new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR)).when(csIntegrationRequestFactory).getCertificateRequest();
+
+        final var e = assertThrows(HttpClientErrorException.class, () ->
+            integrationServiceForCS.prepareRedirectToIntyg(CERTIFICATE_ID, user, PERSONAL_NUMBER));
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, e.getStatusCode());
     }
 }
