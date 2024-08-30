@@ -21,14 +21,18 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
+import se.inera.intyg.webcert.web.csintegration.certificate.IntegratedUnitNotificationConfig.IntegratedUnitNotificationConfigBuilder;
 
 @JsonInclude
+@JsonDeserialize(builder = IntegratedUnitNotificationConfigBuilder.class)
 @Builder
-@Data
+@Value
 public class IntegratedUnitNotificationConfig {
 
     @JsonProperty("careProviders")
@@ -38,4 +42,8 @@ public class IntegratedUnitNotificationConfig {
     @JsonProperty("datetime")
     LocalDateTime datetime;
 
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class IntegratedUnitNotificationConfigBuilder {
+
+    }
 }

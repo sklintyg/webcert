@@ -21,13 +21,17 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.util.List;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Value;
+import se.inera.intyg.webcert.web.csintegration.certificate.RegionNotificationConfig.RegionNotificationConfigBuilder;
 
 @JsonInclude
+@JsonDeserialize(builder = RegionNotificationConfigBuilder.class)
 @Builder
-@Data
+@Value
 public class RegionNotificationConfig {
 
     @JsonProperty("region")
@@ -35,4 +39,8 @@ public class RegionNotificationConfig {
     @JsonProperty("configuration")
     List<IntegratedUnitNotificationConfig> configuration;
 
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class RegionNotificationConfigBuilder {
+
+    }
 }
