@@ -34,16 +34,9 @@ public abstract class BaseIntegrationController {
 
     protected WebCertUserService webCertUserService;
 
-    private String urlBaseTemplate;
-
     protected AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
     // api
-
-    @Autowired
-    public void setUrlBaseTemplate(String urlBaseTemplate) {
-        this.urlBaseTemplate = urlBaseTemplate;
-    }
 
     @Autowired
     public void setWebCertUserService(WebCertUserService webCertUserService) {
@@ -58,10 +51,6 @@ public abstract class BaseIntegrationController {
     protected abstract String[] getGrantedRoles();
 
     protected abstract UserOriginType getGrantedRequestOrigin();
-
-    protected String getUrlBaseTemplate() {
-        return urlBaseTemplate;
-    }
 
     protected WebCertUserService getWebCertUserService() {
         return webCertUserService;

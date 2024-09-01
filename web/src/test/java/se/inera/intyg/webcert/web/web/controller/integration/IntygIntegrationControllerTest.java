@@ -327,8 +327,6 @@ class IntygIntegrationControllerTest {
                 .thenReturn(createPrepareRedirectToIntyg());
             when(authoritiesResolver.getFeatures(any())).thenReturn(new HashMap<>());
 
-            intygIntegrationController.setUrlBaseTemplate("/");
-
             final var session = mock(HttpSession.class);
             when(httpServletRequest.getSession()).thenReturn(session);
             when(httpServletRequest.getSession().getId()).thenReturn("12345");
