@@ -124,7 +124,7 @@ public class WebcertAuthenticationSuccessHandler extends
             }
         }
 
-        logger.info("Redirecting to DefaultSavedRequest Url: " + targetUrl);
+        logger.debug("Redirecting to DefaultSavedRequest Url: " + targetUrl);
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
 
