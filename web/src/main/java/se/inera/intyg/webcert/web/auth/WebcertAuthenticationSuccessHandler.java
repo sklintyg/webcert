@@ -76,7 +76,7 @@ public class WebcertAuthenticationSuccessHandler extends
         clearAuthenticationAttributes(request);
 
         // Use the DefaultSavedRequest URL
-        String targetUrl = savedRequest.getRedirectUrl();
+        String targetUrl = savedRequest.getRedirectUrl().replace("localhost", webcertDomainName);
         String targetUri = ((DefaultSavedRequest) savedRequest).getRequestURI();
 
         // If original req was POST for djupintegration, we need to extract parameters
@@ -113,7 +113,6 @@ public class WebcertAuthenticationSuccessHandler extends
             );
 
             webCertUser.setParameters(integrationParameters);
-            targetUrl = targetUrl.replaceAll("(?<=https://).+(?=" + REGEXP_REQUESTURI_DJUPINTEGRATION + ")", webcertDomainName);
 
             // Modify so the redirect is to /visa/intyg/{intygsId}/saved which ignores reading the params above from
             // GET params or POST body.
@@ -125,7 +124,7 @@ public class WebcertAuthenticationSuccessHandler extends
             }
         }
 
-        logger.debug("Redirecting to DefaultSavedRequest Url: " + targetUrl);
+        logger.info("Redirecting to DefaultSavedRequest Url: " + targetUrl);
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
 
