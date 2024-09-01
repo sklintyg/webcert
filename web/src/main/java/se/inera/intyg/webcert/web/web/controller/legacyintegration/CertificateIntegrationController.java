@@ -27,8 +27,7 @@ import se.inera.intyg.infra.security.common.model.UserOriginType;
  * Controller to enable a landsting user to access certificates directly from a link.
  *
  * This controller inherits from the FragaSvarUthoppController which manages
- * request for UTHOPP links. In this scenario we change the request origin to be
- * NORMAL instead of UTHOPP. This inheritance is somewhat confusing but it make
+ * request for UTHOPP links. This inheritance is somewhat confusing but it make
  * sense if we look at it from a functional perspective.
  */
 // CHECKSTYLE:OFF LineLength
