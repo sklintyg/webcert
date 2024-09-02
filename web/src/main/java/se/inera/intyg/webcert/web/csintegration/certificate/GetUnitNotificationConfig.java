@@ -37,7 +37,7 @@ import org.springframework.stereotype.Component;
 public class GetUnitNotificationConfig {
 
 
-    @Value("${unit.notification.config.path}")
+    @Value("${unit.notification.config.path:}")
     private String unitNotificationConfigPath;
     private List<RegionNotificationConfig> integratedUnitNotificationConfig;
 
@@ -55,7 +55,9 @@ public class GetUnitNotificationConfig {
             } catch (FileNotFoundException e) {
                 log.warn("File not found: {}. Returning empty configuration.", unitNotificationConfigPath);
             } catch (Exception e) {
-                log.error("Failed to load Integrated Unit Notification configuration. Reason: {}", e.getMessage(), e);
+                log.error(
+                    String.format("Failed to load Integrated Unit Notification configuration. Reason: %s", e.getMessage()), e
+                );
             }
         }
         return integratedUnitNotificationConfig;
