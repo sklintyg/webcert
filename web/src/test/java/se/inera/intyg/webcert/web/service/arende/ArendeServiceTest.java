@@ -107,6 +107,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.converter.ArendeViewConverter;
+import se.inera.intyg.webcert.web.csintegration.certificate.IntegratedUnitNotificationEvaluator;
 import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderException;
@@ -157,7 +158,11 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     private static final String PERSON_ID = "191212121212";
     private static final String SKICKAT_AV = "FKASSA";
     private static final Personnummer PNR = Personnummer.createPersonnummer(PERSON_ID).orElseThrow();
+    private static final String CARE_PROVIDER_ID = "CARE_PROVIDER_ID";
+    private static final LocalDateTime ISSUING_DATE = LocalDateTime.now();
 
+    @Mock
+    private IntegratedUnitNotificationEvaluator integratedUnitNotificationEvaluator;
     @Mock
     private ArendeRepository arendeRepository;
 
@@ -269,7 +274,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         assertEquals(signeratAvName, res.getSigneratAvName());
 
         verify(utkastRepository).findById(INTYG_ID);
-        verify(notificationService).sendNotificationForQuestionReceived(any(Arende.class));
+        verify(notificationService).sendNotificationForQuestionReceived(any(Arende.class), eq(CARE_PROVIDER_ID), eq(ISSUING_DATE));
         verifyNoInteractions(arendeDraftService);
     }
 
@@ -289,7 +294,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         verify(utkastRepository).findById(INTYG_ID);
         verify(certificateEventService).createCertificateEvent(INTYG_ID, SKICKAT_AV, EventCode.NYFRFM, EventCode.NYFRFM.getDescription());
-        verify(notificationService).sendNotificationForQuestionReceived(any(Arende.class));
+        verify(notificationService).sendNotificationForQuestionReceived(any(Arende.class), eq(CARE_PROVIDER_ID), eq(ISSUING_DATE));
         verifyNoInteractions(arendeDraftService);
     }
 
@@ -316,7 +321,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         verify(arendeRepository).findOneByMeddelandeId(frageid);
         verify(arendeRepository, times(2)).save(any(Arende.class));
         verify(certificateEventService).createCertificateEvent(INTYG_ID, SKICKAT_AV, EventCode.NYSVFM);
-        verify(notificationService).sendNotificationForAnswerRecieved(any(Arende.class));
+        verify(notificationService).sendNotificationForAnswerRecieved(any(Arende.class), eq(CARE_PROVIDER_ID), eq(ISSUING_DATE));
         verifyNoInteractions(arendeDraftService);
     }
 
@@ -340,7 +345,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         verify(utkastRepository).findById(INTYG_ID);
         verify(certificateEventService)
             .createCertificateEvent(INTYG_ID, SKICKAT_AV, EventCode.PAMINNELSE);
-        verify(notificationService).sendNotificationForQuestionReceived(any(Arende.class));
+        verify(notificationService).sendNotificationForQuestionReceived(any(Arende.class), eq(CARE_PROVIDER_ID), eq(ISSUING_DATE));
         verifyNoInteractions(arendeDraftService);
     }
 
@@ -374,7 +379,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         assertEquals(FIXED_TIME_INSTANT,
             updatedQuestion.getSenasteHandelse().toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
         assertEquals(Status.ANSWERED, updatedQuestion.getStatus());
-        verify(notificationService, only()).sendNotificationForAnswerRecieved(any(Arende.class));
+        verify(notificationService, only()).sendNotificationForAnswerRecieved(any(Arende.class), eq(CARE_PROVIDER_ID), eq(ISSUING_DATE));
         verifyNoInteractions(arendeDraftService);
     }
 
@@ -406,7 +411,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         Arende updatedQuestion = arendeCaptor.getAllValues().get(1);
         assertEquals(FIXED_TIME_INSTANT,
             updatedQuestion.getSenasteHandelse().toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
-        verify(notificationService, only()).sendNotificationForQuestionReceived(any(Arende.class));
+        verify(notificationService, only()).sendNotificationForQuestionReceived(any(Arende.class), eq(CARE_PROVIDER_ID), eq(ISSUING_DATE));
         verifyNoInteractions(arendeDraftService);
     }
 
@@ -1842,14 +1847,18 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
     private Utkast buildUtkast() {
         final String signeratAv = "signeratAv";
+        final var signatur = mock(Signatur.class);
+
+        doReturn(ISSUING_DATE).when(signatur).getSigneringsDatum();
 
         Utkast utkast = new Utkast();
         utkast.setIntygsId(INTYG_ID);
         utkast.setSkapadAv(new VardpersonReferens());
         utkast.getSkapadAv().setHsaId(signeratAv);
-        utkast.setSignatur(mock(Signatur.class));
+        utkast.setSignatur(signatur);
         utkast.setPatientPersonnummer(PNR);
         utkast.setModel("");
+        utkast.setVardgivarId(CARE_PROVIDER_ID);
 
         when(utkast.getSignatur().getSigneradAv()).thenReturn(signeratAv);
 
