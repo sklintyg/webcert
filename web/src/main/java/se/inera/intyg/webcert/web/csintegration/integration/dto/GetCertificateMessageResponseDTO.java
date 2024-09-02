@@ -24,15 +24,15 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.util.List;
 import lombok.Builder;
 import lombok.Value;
+import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageResponseDTO.GetCertificateMessageResponseDTOBuilder;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionDTO;
 
 @JsonDeserialize(builder = GetCertificateMessageResponseDTOBuilder.class)
 @Value
 @Builder
 public class GetCertificateMessageResponseDTO {
 
-    List<QuestionDTO> questions;
+    List<Question> questions;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class GetCertificateMessageResponseDTOBuilder {

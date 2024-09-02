@@ -21,14 +21,14 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import java.util.List;
 import org.springframework.stereotype.Component;
+import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionDTO;
 
 @Component
 public class QuestionCounter {
 
-    public ArendeCount calculateArendeCount(List<QuestionDTO> questions, FrageStallare frageStallare) {
+    public ArendeCount calculateArendeCount(List<Question> questions, FrageStallare frageStallare) {
         final var totalAmount = (int) questions.stream()
             .filter(question -> frageStallare.isKodEqual(question.getAuthor()))
             .count();
@@ -47,7 +47,7 @@ public class QuestionCounter {
 
         final var totalHandled = (int) questions.stream()
             .filter(question -> frageStallare.isKodEqual(question.getAuthor()))
-            .filter(QuestionDTO::isHandled)
+            .filter(Question::isHandled)
             .count();
 
         return new ArendeCount(

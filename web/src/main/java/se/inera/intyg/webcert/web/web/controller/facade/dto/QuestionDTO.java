@@ -54,6 +54,7 @@ public class QuestionDTO {
     List<ResourceLinkDTO> links;
     LocalDate lastDateToReply;
     String[] contactInfo;
+    String certificateId;
 
     public static QuestionDTO create(Question question, List<ResourceLinkDTO> links) {
         return QuestionDTO.builder()
@@ -73,6 +74,7 @@ public class QuestionDTO {
             .links(links)
             .lastDateToReply(question.getLastDateToReply())
             .contactInfo(question.getContactInfo())
+            .certificateId(question.getCertificateId())
             .build();
     }
 

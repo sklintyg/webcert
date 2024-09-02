@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.service.arende.ArendeDraftService;
 import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionFacadeService;
 
-@Service
+@Service("deleteQuestionFromWC")
 public class DeleteQuestionFacadeServiceImpl implements DeleteQuestionFacadeService {
 
     private final ArendeDraftService arendeDraftService;

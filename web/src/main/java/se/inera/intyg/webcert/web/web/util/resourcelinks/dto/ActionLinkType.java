@@ -65,6 +65,11 @@ public enum ActionLinkType {
     FORNYA_INTYG,
 
     /**
+     * Renew certificate from certificate service.
+     */
+    FORNYA_INTYG_FRAN_CERTIFICATE_SERVICE,
+
+    /**
      * Invalidate certificate.
      */
     MAKULERA_INTYG,

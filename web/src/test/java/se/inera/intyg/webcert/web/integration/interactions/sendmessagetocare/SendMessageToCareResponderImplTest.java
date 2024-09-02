@@ -68,7 +68,7 @@ public class SendMessageToCareResponderImplTest {
         final var resultType = new ResultType();
         resultType.setResultCode(ResultCodeType.OK);
         sendMessageToCareResponseType.setResult(resultType);
-        
+
         when(arendeService.process(any())).thenReturn(sendMessageToCareResponseType);
         SendMessageToCareResponseType response = responder.sendMessageToCare(DEFAULT_LOGICAL_ADDRESS, createNewRequest());
         assertNotNull(response.getResult());
@@ -123,6 +123,16 @@ public class SendMessageToCareResponderImplTest {
         assertNotNull(response.getResult());
         assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
         assertEquals(ErrorIdType.VALIDATION_ERROR, response.getResult().getErrorId());
+    }
+
+    @Test
+    public void testSendRequestToServiceFailedWithRuntimeException() throws WebCertServiceException {
+        when(arendeService.process(any()))
+            .thenThrow(new IllegalStateException("Exception message"));
+        SendMessageToCareResponseType response = responder.sendMessageToCare(DEFAULT_LOGICAL_ADDRESS, createNewRequest());
+        assertNotNull(response.getResult());
+        assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
+        assertEquals(ErrorIdType.APPLICATION_ERROR, response.getResult().getErrorId());
     }
 
     private SendMessageToCareType createNewRequest() {

@@ -74,6 +74,7 @@ class PublishCertificateStatusUpdateServiceTest {
 
     private final Certificate certificate = new Certificate();
     private final String xml = "xml";
+    private static final String XML_STRING = "xmlString";
 
     @BeforeEach
     void setUp() {
