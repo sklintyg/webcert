@@ -20,10 +20,11 @@
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -54,23 +55,78 @@ class GetUnitNotificationConfigTest {
 
     @Test
     void shallReturnListOfIntegratedUnitNotificationConfig() {
+        final var expectedRegionNotificationConfig = RegionNotificationConfig.builder()
+            .region("Region Örebro")
+            .configuration(
+                List.of(
+                    IntegratedUnitNotificationConfig.builder()
+                        .careProviders(List.of("HSA_ID1", "HSA_ID2"))
+                        .issuedOnUnit(List.of("HSA_ID3", "HSA_ID4"))
+                        .datetime(LocalDateTime.of(2024, 10, 1, 8, 0, 0))
+                        .build()
+                )
+            )
+            .build();
         ReflectionTestUtils.setField(getUnitNotificationConfig, "unitNotificationConfigPath", NOTIFICATIONS_WITH_VALUE_PATH);
         final var result = getUnitNotificationConfig.get();
-        assertFalse(result.isEmpty());
+        assertEquals(expectedRegionNotificationConfig, result.get(0));
     }
 
     @Test
     void shallReturnListOfIntegratedUnitNotificationConfigWithMultipleConfigurations() {
+        final var expectedRegionNotificationConfig = RegionNotificationConfig.builder()
+            .region("Region Örebro")
+            .configuration(
+                List.of(
+                    IntegratedUnitNotificationConfig.builder()
+                        .careProviders(List.of("HSA_ID1", "HSA_ID2"))
+                        .issuedOnUnit(List.of("HSA_ID3", "HSA_ID4"))
+                        .datetime(LocalDateTime.of(2024, 10, 1, 8, 0, 0))
+                        .build(),
+                    IntegratedUnitNotificationConfig.builder()
+                        .careProviders(List.of("HSA_ID1", "HSA_ID2"))
+                        .issuedOnUnit(List.of("HSA_ID3", "HSA_ID4"))
+                        .datetime(LocalDateTime.of(2024, 10, 1, 8, 0, 0))
+                        .build()
+                )
+            )
+            .build();
         ReflectionTestUtils.setField(getUnitNotificationConfig, "unitNotificationConfigPath",
             NOTIFICATIONS_WITH_VALUE_AND_MULTIPLE_CONFIGURATIONS_PATH);
         final var result = getUnitNotificationConfig.get();
-        assertEquals(2, result.get(0).getConfiguration().size());
+        assertEquals(expectedRegionNotificationConfig, result.get(0));
     }
 
     @Test
     void shallReturnListOfIntegratedUnitNotificationConfigWithMultipleRegions() {
+        final var expectedRegionNotificationConfig = List.of(
+            RegionNotificationConfig.builder()
+                .region("Region Örebro")
+                .configuration(
+                    List.of(
+                        IntegratedUnitNotificationConfig.builder()
+                            .careProviders(List.of("HSA_ID1", "HSA_ID2"))
+                            .issuedOnUnit(List.of("HSA_ID3", "HSA_ID4"))
+                            .datetime(LocalDateTime.of(2024, 10, 1, 8, 0, 0))
+                            .build()
+                    )
+                )
+                .build(),
+            RegionNotificationConfig.builder()
+                .region("Region Örebro")
+                .configuration(
+                    List.of(
+                        IntegratedUnitNotificationConfig.builder()
+                            .careProviders(List.of("HSA_ID1", "HSA_ID2"))
+                            .issuedOnUnit(List.of("HSA_ID3", "HSA_ID4"))
+                            .datetime(LocalDateTime.of(2024, 10, 1, 8, 0, 0))
+                            .build()
+                    )
+                )
+                .build()
+        );
         ReflectionTestUtils.setField(getUnitNotificationConfig, "unitNotificationConfigPath", NOTIFICATIONS_WITH_VALUES_PATH);
         final var result = getUnitNotificationConfig.get();
-        assertEquals(2, result.size());
+        assertEquals(expectedRegionNotificationConfig, result);
     }
 }

@@ -23,6 +23,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.FileInputStream;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -38,20 +39,24 @@ public class GetUnitNotificationConfig {
 
     @Value("${unit.notification.config.path}")
     private String unitNotificationConfigPath;
+    private List<RegionNotificationConfig> integratedUnitNotificationConfig;
 
     public List<RegionNotificationConfig> get() {
-        final var objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        try (final var resourceAsStream = new FileInputStream(unitNotificationConfigPath)) {
-            final var integratedUnitNotificationConfig = objectMapper.readValue(
-                resourceAsStream,
-                new TypeReference<List<RegionNotificationConfig>>() {
-                });
-            log.info("Integrated Unit Notification was loaded with configuration: {}", integratedUnitNotificationConfig);
-            return integratedUnitNotificationConfig;
-        } catch (Exception e) {
-            log.info("No Integrated Unit Notification was loaded, returning empty configuration map. Reason: {}", e.getMessage());
-            return Collections.emptyList();
+        if (integratedUnitNotificationConfig == null) {
+            integratedUnitNotificationConfig = new ArrayList<>();
+            final var objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule());
+            try (final var resourceAsStream = new FileInputStream(unitNotificationConfigPath)) {
+                integratedUnitNotificationConfig = objectMapper.readValue(
+                    resourceAsStream,
+                    new TypeReference<>() {
+                    });
+                log.info("Integrated Unit Notification was loaded with configuration: {}", integratedUnitNotificationConfig);
+            } catch (Exception e) {
+                log.info("No Integrated Unit Notification was loaded, returning empty configuration map. Reason: {}", e.getMessage());
+                return Collections.emptyList();
+            }
         }
+        return integratedUnitNotificationConfig;
     }
 }
