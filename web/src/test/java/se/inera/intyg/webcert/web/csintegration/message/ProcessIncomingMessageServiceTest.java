@@ -24,7 +24,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,11 +39,13 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
+import se.inera.intyg.webcert.persistence.integreradenhet.model.IntegreradEnhet;
+import se.inera.intyg.webcert.web.csintegration.certificate.IntegratedUnitNotificationEvaluator;
 import se.inera.intyg.webcert.web.csintegration.certificate.PublishCertificateStatusUpdateService;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.message.dto.IncomingMessageRequestDTO;
+import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareType;
@@ -60,10 +64,15 @@ class ProcessIncomingMessageServiceTest {
     private static final String CERTIFICATE_ID = "certificateId";
     private static final String CERTIFICATE_TYPE = "certificateType";
     private static final String UNIT_ID = "unitId";
-    private static final GetCertificateRequestDTO GET_CERTIFICATE_REQUEST_DTO = GetCertificateRequestDTO.builder().build();
+    private static final String CARE_PROVIDER_ID = "careProviderId";
+    private static final LocalDateTime ISSUING_DATE = LocalDateTime.now();
 
     private SendMessageToCareType sendMessageToCareType;
     private Certificate certificate;
+    @Mock
+    IntegreradeEnheterRegistry integreradeEnheterRegistry;
+    @Mock
+    IntegratedUnitNotificationEvaluator integratedUnitNotificationEvaluator;
     @Mock
     SendMailNotificationForReceivedMessageService sendMailNotificationForReceivedMessageService;
     @Mock
@@ -89,6 +98,12 @@ class ProcessIncomingMessageServiceTest {
                         .unitId(UNIT_ID)
                         .build()
                 )
+                .careProvider(
+                    Unit.builder()
+                        .unitId(CARE_PROVIDER_ID)
+                        .build()
+                )
+                .signed(ISSUING_DATE)
                 .build()
         );
 
@@ -138,22 +153,51 @@ class ProcessIncomingMessageServiceTest {
     }
 
     @Test
-    void shallPublishEventForQuestion() {
+    void shallPublishEventForQuestionIfUnitShouldNotRecieveMailNotificationAndIsIntegrated() {
+        doReturn(new IntegreradEnhet()).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
         processIncomingMessageService.process(sendMessageToCareType);
         verify(publishCertificateStatusUpdateService).publish(certificate, HandelsekodEnum.NYFRFM);
     }
 
     @Test
-    void shallPublishEventForAnswer() {
+    void shallPublishEventForAnswerIfUnitShouldNotRecieveMailNotificationAndIsIntegrated() {
+        doReturn(new IntegreradEnhet()).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
         sendMessageToCareType.setSvarPa(new MeddelandeReferens());
         processIncomingMessageService.process(sendMessageToCareType);
         verify(publishCertificateStatusUpdateService).publish(certificate, HandelsekodEnum.NYSVFM);
     }
 
     @Test
-    void shallSendStatusUpdateForQuestion() {
+    void shallNotPublishEventIfUnitShouldRecieveMailNotificationAndIsIntegrated() {
+        doReturn(new IntegreradEnhet()).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
+        doReturn(true).when(integratedUnitNotificationEvaluator).mailNotification(CARE_PROVIDER_ID, UNIT_ID,
+            CERTIFICATE_ID, ISSUING_DATE);
+        sendMessageToCareType.setSvarPa(new MeddelandeReferens());
+        processIncomingMessageService.process(sendMessageToCareType);
+        verifyNoInteractions(publishCertificateStatusUpdateService);
+    }
+
+    @Test
+    void shallSendMailNotificationIfUnitIsNotIntegrated() {
+        doReturn(null).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
         processIncomingMessageService.process(sendMessageToCareType);
         verify(sendMailNotificationForReceivedMessageService).send(sendMessageToCareType, certificate);
+    }
+
+    @Test
+    void shallSendMailNotificationIfUnitIsIntegratedButShouldRecieveMailNotification() {
+        doReturn(new IntegreradEnhet()).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
+        doReturn(true).when(integratedUnitNotificationEvaluator).mailNotification(CARE_PROVIDER_ID, UNIT_ID, CERTIFICATE_ID, ISSUING_DATE);
+        processIncomingMessageService.process(sendMessageToCareType);
+        verify(sendMailNotificationForReceivedMessageService).send(sendMessageToCareType, certificate);
+    }
+
+    @Test
+    void shallNotSendMailNotificationIfUnitIsIntegratedAndShouldNotRecieveMailNotification() {
+        doReturn(new IntegreradEnhet()).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
+        doReturn(false).when(integratedUnitNotificationEvaluator).mailNotification(CARE_PROVIDER_ID, UNIT_ID, CERTIFICATE_ID, ISSUING_DATE);
+        processIncomingMessageService.process(sendMessageToCareType);
+        verifyNoInteractions(sendMailNotificationForReceivedMessageService);
     }
 
     @Test

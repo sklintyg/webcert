@@ -40,6 +40,7 @@ import static se.inera.intyg.webcert.notification_sender.notifications.routes.No
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -76,6 +77,7 @@ import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.csintegration.certificate.IntegratedUnitNotificationEvaluator;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
@@ -131,6 +133,9 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Autowired
     private IntygService intygService;
+
+    @Autowired
+    private IntegratedUnitNotificationEvaluator integratedUnitNotificationEvaluator;
 
     @PostConstruct
     public void checkJmsTemplate() {
@@ -254,7 +259,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void sendNotificationForQuestionReceived(FragaSvar fragaSvar) {
-        if (integreradeEnheterRegistry.isEnhetIntegrerad(fragaSvar.getVardperson().getEnhetsId(), Fk7263EntryPoint.MODULE_ID)) {
+        if (unitIsIntegrated(fragaSvar) && shouldNotRecieveNotificationByMail(fragaSvar)) {
             sendNotificationForQAs(fragaSvar.getIntygsReferens().getIntygsId(), NotificationEvent.NEW_QUESTION_FROM_RECIPIENT,
                 fragaSvar.getSistaDatumForSvar(), ArendeAmne.fromAmne(fragaSvar.getAmne()).orElse(null));
         } else {
@@ -265,9 +270,22 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
+    private boolean unitIsIntegrated(FragaSvar fragaSvar) {
+        return integreradeEnheterRegistry.isEnhetIntegrerad(fragaSvar.getVardperson().getEnhetsId(), Fk7263EntryPoint.MODULE_ID);
+    }
+
+    private boolean shouldNotRecieveNotificationByMail(FragaSvar fragaSvar) {
+        return !integratedUnitNotificationEvaluator.mailNotification(
+            fragaSvar.getVardperson().getVardgivarId(),
+            fragaSvar.getVardperson().getEnhetsId(),
+            fragaSvar.getIntygsReferens().getIntygsId(),
+            fragaSvar.getIntygsReferens().getSigneringsDatum()
+        );
+    }
+
     @Override
     public void sendNotificationForAnswerRecieved(FragaSvar fragaSvar) {
-        if (integreradeEnheterRegistry.isEnhetIntegrerad(fragaSvar.getVardperson().getEnhetsId(), Fk7263EntryPoint.MODULE_ID)) {
+        if (unitIsIntegrated(fragaSvar)) {
             sendNotificationForQAs(fragaSvar.getIntygsReferens().getIntygsId(), NotificationEvent.NEW_ANSWER_FROM_RECIPIENT);
         } else {
             sendNotificationForIncomingAnswerByMail(new MailNotification(fragaSvar.getInternReferens().toString(),
@@ -278,8 +296,8 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public void sendNotificationForQuestionReceived(Arende arende) {
-        if (integreradeEnheterRegistry.isEnhetIntegrerad(arende.getEnhetId(), arende.getIntygTyp())) {
+    public void sendNotificationForQuestionReceived(Arende arende, String careProviderId, LocalDateTime issuingDate) {
+        if (unitIsIntegrated(arende) && shouldNotRecieveNotificationByMail(arende, careProviderId, issuingDate)) {
             sendNotificationForQAs(arende.getIntygsId(), NotificationEvent.NEW_QUESTION_FROM_RECIPIENT, arende.getSistaDatumForSvar(),
                 arende.getAmne());
         } else {
@@ -288,14 +306,24 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
+    private boolean unitIsIntegrated(Arende arende) {
+        return integreradeEnheterRegistry.isEnhetIntegrerad(arende.getEnhetId(), arende.getIntygTyp());
+    }
+
     @Override
-    public void sendNotificationForAnswerRecieved(Arende arende) {
-        if (integreradeEnheterRegistry.isEnhetIntegrerad(arende.getEnhetId(), arende.getIntygTyp())) {
+    public void sendNotificationForAnswerRecieved(Arende arende, String careProviderId, LocalDateTime issuingDate) {
+        if (unitIsIntegrated(arende) && shouldNotRecieveNotificationByMail(arende, careProviderId, issuingDate)) {
             sendNotificationForQAs(arende.getIntygsId(), NotificationEvent.NEW_ANSWER_FROM_RECIPIENT);
         } else {
             sendNotificationForIncomingAnswerByMail(new MailNotification(arende.getMeddelandeId(), arende.getIntygsId(),
                 arende.getIntygTyp(), arende.getEnhetId(), arende.getEnhetName(), arende.getSigneratAv()));
         }
+    }
+
+    private boolean shouldNotRecieveNotificationByMail(Arende arende, String careProviderId, LocalDateTime issuingDate) {
+        return !integratedUnitNotificationEvaluator.mailNotification(
+            careProviderId, arende.getEnhetId(), arende.getIntygsId(), issuingDate
+        );
     }
 
     @Override

@@ -1,0 +1,12 @@
+[
+  {
+    "region": "Beta Regionen",
+    "configuration": [
+      {
+        "datetime": "2024-08-01T08:00",
+        "careProviders" : ["TSTNMT2321000156-BETA"],
+        "issuedOnUnit" : []
+      }
+    ]
+  }
+]

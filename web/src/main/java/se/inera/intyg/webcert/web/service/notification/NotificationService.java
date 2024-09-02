@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.notification;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
@@ -88,12 +89,12 @@ public interface NotificationService {
     /**
      * New question received from recipient (NYFRFM).
      */
-    void sendNotificationForQuestionReceived(Arende arende);
+    void sendNotificationForQuestionReceived(Arende arende, String careProviderId, LocalDateTime issuingDate);
 
     /**
      * New answer received from recipient (NYSVFM).
      */
-    void sendNotificationForAnswerRecieved(Arende arende);
+    void sendNotificationForAnswerRecieved(Arende arende, String careProviderId, LocalDateTime issuingDate);
 
     void sendNotificationForQAs(String intygsId, NotificationEvent event);
 
