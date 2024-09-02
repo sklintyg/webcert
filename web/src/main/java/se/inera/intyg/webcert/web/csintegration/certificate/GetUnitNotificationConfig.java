@@ -23,6 +23,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -52,8 +53,11 @@ public class GetUnitNotificationConfig {
                     new TypeReference<>() {
                     });
                 log.info("Integrated Unit Notification was loaded with configuration: {}", integratedUnitNotificationConfig);
+            } catch (FileNotFoundException e) {
+                log.warn("File not found: {}. Returning empty configuration.", unitNotificationConfigPath);
+                return Collections.emptyList();
             } catch (Exception e) {
-                log.info("No Integrated Unit Notification was loaded, returning empty configuration map. Reason: {}", e.getMessage());
+                log.error("Failed to load Integrated Unit Notification configuration. Reason: {}", e.getMessage(), e);
                 return Collections.emptyList();
             }
         }

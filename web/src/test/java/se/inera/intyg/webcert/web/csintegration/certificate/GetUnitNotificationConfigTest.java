@@ -45,10 +45,16 @@ class GetUnitNotificationConfigTest {
     @InjectMocks
     private GetUnitNotificationConfig getUnitNotificationConfig;
 
-
     @Test
     void shallReturnEmptyListIfPathIsInvalid() {
         ReflectionTestUtils.setField(getUnitNotificationConfig, "unitNotificationConfigPath", INVALID_PATH);
+        final var result = getUnitNotificationConfig.get();
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void shallReturnEmptyListIfPathIsMissing() {
+        ReflectionTestUtils.setField(getUnitNotificationConfig, "unitNotificationConfigPath", null);
         final var result = getUnitNotificationConfig.get();
         assertTrue(result.isEmpty());
     }
