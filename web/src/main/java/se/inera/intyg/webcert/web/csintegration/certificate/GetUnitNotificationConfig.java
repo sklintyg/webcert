@@ -25,7 +25,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,10 +54,10 @@ public class GetUnitNotificationConfig {
                 log.info("Integrated Unit Notification was loaded with configuration: {}", integratedUnitNotificationConfig);
             } catch (FileNotFoundException e) {
                 log.warn("File not found: {}. Returning empty configuration.", unitNotificationConfigPath);
-                return Collections.emptyList();
+                integratedUnitNotificationConfig = new ArrayList<>();
             } catch (Exception e) {
                 log.error("Failed to load Integrated Unit Notification configuration. Reason: {}", e.getMessage(), e);
-                return Collections.emptyList();
+                integratedUnitNotificationConfig = new ArrayList<>();
             }
         }
         return integratedUnitNotificationConfig;
