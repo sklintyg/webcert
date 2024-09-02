@@ -52,12 +52,10 @@
 
   <bean id="intygIntegrationController"
       class="se.inera.intyg.webcert.web.web.controller.integration.IntygIntegrationController">
-    <property name="urlBaseTemplate" value="${certificate.view.url.base}" />
   </bean>
 
   <bean id="userIntegrationController"
       class="se.inera.intyg.webcert.web.web.controller.integration.UserIntegrationController">
-    <property name="urlBaseTemplate" value="${certificate.view.url.base}" />
   </bean>
 
 </beans>

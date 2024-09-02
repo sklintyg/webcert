@@ -47,6 +47,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.savedrequest.DefaultSavedRequest;
 import org.springframework.security.web.savedrequest.RequestCache;
+import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.IntygIntegrationController;
@@ -87,6 +88,8 @@ public class WebcertAuthenticationSuccessHandlerTest {
     public void init() {
         when(savedRequest.getMethod()).thenReturn("GET");
         when(savedRequest.getRedirectUrl()).thenReturn(URL);
+
+        ReflectionTestUtils.setField(testee, "webcertDomainName", "webcert.test.se");
 
         Authentication auth = mock(Authentication.class);
         when(auth.getPrincipal()).thenReturn(user);
