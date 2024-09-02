@@ -72,12 +72,10 @@ public class ProcessIncomingMessageService {
 
         final var shouldReciveMailNotifications = shouldReciveMailNotifications(certificate);
 
-        if (unitIsIntegrated(certificate) && !shouldReciveMailNotifications) {
-            publishCertificateStatusUpdateService.publish(certificate, getEventType(questionType, isAnswer));
-        }
-
         if (!unitIsIntegrated(certificate) || shouldReciveMailNotifications) {
             sendMailNotificationForReceivedMessageService.send(sendMessageToCare, certificate);
+        } else {
+            publishCertificateStatusUpdateService.publish(certificate, getEventType(questionType, isAnswer));
         }
 
         final var sendMessageToCareResponseType = new SendMessageToCareResponseType();
