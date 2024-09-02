@@ -54,10 +54,8 @@ public class GetUnitNotificationConfig {
                 log.info("Integrated Unit Notification was loaded with configuration: {}", integratedUnitNotificationConfig);
             } catch (FileNotFoundException e) {
                 log.warn("File not found: {}. Returning empty configuration.", unitNotificationConfigPath);
-                integratedUnitNotificationConfig = new ArrayList<>();
             } catch (Exception e) {
                 log.error("Failed to load Integrated Unit Notification configuration. Reason: {}", e.getMessage(), e);
-                integratedUnitNotificationConfig = new ArrayList<>();
             }
         }
         return integratedUnitNotificationConfig;
