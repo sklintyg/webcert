@@ -223,27 +223,26 @@ public class ArendeServiceImpl implements ArendeService {
             Arende saved = arendeRepository.save(arende);
             sendNotificationAndCreateEventForIncomingMessage(saved, utkast.getVardgivarId(), utkast.getSignatur().getSigneringsDatum());
             return saved;
-        } else {
-            final var certificate = intygService.fetchIntygDataForInternalUse(certificateId, false);
-
-            validateArende(certificate);
-
-            ArendeConverter.decorateMessageFromCertificate(arende, certificate.getUtlatande(), LocalDateTime.now(systemClock));
-
-            updateSenasteHandelseAndStatusForRelatedArende(arende);
-
-            monitoringLog.logArendeReceived(certificateId, certificate.getUtlatande().getTyp(),
-                certificate.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getEnhetsid(), arende.getAmne(),
-                arende.getKomplettering().stream().map(MedicinsktArende::getFrageId).collect(Collectors.toList()),
-                arende.getSvarPaId() != null);
-            Arende saved = arendeRepository.save(arende);
-            sendNotificationAndCreateEventForIncomingMessage(
-                saved,
-                certificate.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarid(),
-                certificate.getUtlatande().getGrundData().getSigneringsdatum()
-            );
-            return saved;
         }
+        final var certificate = intygService.fetchIntygDataForInternalUse(certificateId, false);
+
+        validateArende(certificate);
+
+        ArendeConverter.decorateMessageFromCertificate(arende, certificate.getUtlatande(), LocalDateTime.now(systemClock));
+
+        updateSenasteHandelseAndStatusForRelatedArende(arende);
+
+        monitoringLog.logArendeReceived(certificateId, certificate.getUtlatande().getTyp(),
+            certificate.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getEnhetsid(), arende.getAmne(),
+            arende.getKomplettering().stream().map(MedicinsktArende::getFrageId).collect(Collectors.toList()),
+            arende.getSvarPaId() != null);
+        Arende saved = arendeRepository.save(arende);
+        sendNotificationAndCreateEventForIncomingMessage(
+            saved,
+            certificate.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarid(),
+            certificate.getUtlatande().getGrundData().getSigneringsdatum()
+        );
+        return saved;
     }
 
 
