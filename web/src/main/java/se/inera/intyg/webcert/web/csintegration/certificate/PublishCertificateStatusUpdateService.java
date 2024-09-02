@@ -25,7 +25,6 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.infra.security.common.model.IntygUser;
-import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
@@ -37,7 +36,6 @@ public class PublishCertificateStatusUpdateService {
 
     private final IntegreradeEnheterRegistry integreradeEnheterRegistry;
     private final CSIntegrationService csIntegrationService;
-    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
     private final NotificationMessageFactory notificationMessageFactory;
     private final NotificationService notificationService;
     private final WebCertUserService webCertUserService;
