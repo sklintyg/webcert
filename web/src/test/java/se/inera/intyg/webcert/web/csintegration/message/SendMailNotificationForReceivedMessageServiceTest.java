@@ -20,7 +20,9 @@
 package se.inera.intyg.webcert.web.csintegration.message;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,6 +34,8 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.Staff;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
+import se.inera.intyg.webcert.persistence.integreradenhet.model.IntegreradEnhet;
+import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.service.mail.MailNotification;
 import se.inera.intyg.webcert.web.service.mail.MailNotificationService;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareType;
@@ -48,6 +52,8 @@ class SendMailNotificationForReceivedMessageServiceTest {
     private Certificate certificate;
     private static final String CERTIFICATE_ID = "certificateId";
     private SendMessageToCareType sendMessageToCareType;
+    @Mock
+    IntegreradeEnheterRegistry integreradeEnheterRegistry;
     @Mock
     MailNotificationService mailNotificationService;
     @InjectMocks
@@ -78,11 +84,19 @@ class SendMailNotificationForReceivedMessageServiceTest {
 
     }
 
+    @Test
+    void shallNotCallMailNotificationServiceIfUnitIsIntegrated() {
+        doReturn(new IntegreradEnhet()).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
+        sendMailNotificationForReceivedMessageService.send(new SendMessageToCareType(), certificate);
+        verifyNoInteractions(mailNotificationService);
+    }
 
     @Test
     void shallSendMailForIncomingQuestionIfQuestionTypeIsReminder() {
         sendMessageToCareType.setAmne(new Amneskod());
         sendMessageToCareType.getAmne().setCode("PAMINN");
+
+        doReturn(null).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
 
         sendMailNotificationForReceivedMessageService.send(sendMessageToCareType, certificate);
         verify(mailNotificationService).sendMailForIncomingQuestion(any(MailNotification.class));
@@ -93,6 +107,8 @@ class SendMailNotificationForReceivedMessageServiceTest {
         sendMessageToCareType.setAmne(new Amneskod());
         sendMessageToCareType.getAmne().setCode("KOMPLT");
 
+        doReturn(null).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
+
         sendMailNotificationForReceivedMessageService.send(sendMessageToCareType, certificate);
         verify(mailNotificationService).sendMailForIncomingQuestion(any(MailNotification.class));
     }
@@ -102,6 +118,8 @@ class SendMailNotificationForReceivedMessageServiceTest {
         sendMessageToCareType.setAmne(new Amneskod());
         sendMessageToCareType.getAmne().setCode("KOMPLT");
         sendMessageToCareType.setSvarPa(new MeddelandeReferens());
+
+        doReturn(null).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
 
         sendMailNotificationForReceivedMessageService.send(sendMessageToCareType, certificate);
         verify(mailNotificationService).sendMailForIncomingAnswer(any(MailNotification.class));

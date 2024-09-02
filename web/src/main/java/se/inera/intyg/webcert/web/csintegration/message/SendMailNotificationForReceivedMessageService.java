@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
+import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.service.mail.MailNotification;
 import se.inera.intyg.webcert.web.service.mail.MailNotificationService;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareType;
@@ -33,9 +34,14 @@ import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMe
 @RequiredArgsConstructor
 public class SendMailNotificationForReceivedMessageService {
 
+    private final IntegreradeEnheterRegistry integreradeEnheterRegistry;
     private final MailNotificationService mailNotificationService;
 
     public void send(SendMessageToCareType sendMessageToCare, Certificate certificate) {
+        if (unitIsIntegrated(certificate)) {
+            return;
+        }
+
         final var questionType = ArendeAmne.valueOf(sendMessageToCare.getAmne().getCode());
         final var isAnswer = sendMessageToCare.getSvarPa() != null;
         if (questionType.equals(ArendeAmne.PAMINN) || !isAnswer) {
@@ -58,5 +64,9 @@ public class SendMailNotificationForReceivedMessageService {
             certificate.getMetadata().getUnit().getUnitName(),
             certificate.getMetadata().getIssuedBy().getPersonId()
         );
+    }
+
+    private boolean unitIsIntegrated(Certificate certificate) {
+        return integreradeEnheterRegistry.getIntegreradEnhet(certificate.getMetadata().getUnit().getUnitId()) != null;
     }
 }
