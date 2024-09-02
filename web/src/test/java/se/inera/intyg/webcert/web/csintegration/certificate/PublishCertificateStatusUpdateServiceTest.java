@@ -42,6 +42,7 @@ import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.persistence.integreradenhet.model.IntegreradEnhet;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
@@ -58,7 +59,6 @@ class PublishCertificateStatusUpdateServiceTest {
     private static final String WEBCERT_HSA_ID = "webcertHsaId";
     private final IntygUser intygUser = new IntygUser(INTYG_USER_HSA_ID);
     private final WebCertUser webCertUser = new WebCertUser();
-
     @Mock
     private WebCertUserService webCertUserService;
     @Mock
@@ -69,11 +69,14 @@ class PublishCertificateStatusUpdateServiceTest {
     private IntegreradeEnheterRegistry integreradeEnheterRegistry;
     @Mock
     private CSIntegrationService csIntegrationService;
+    @Mock
+    private CSIntegrationRequestFactory csIntegrationRequestFactory;
     @InjectMocks
     private PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
 
     private final Certificate certificate = new Certificate();
     private final String xml = "xml";
+    private static final String XML_STRING = "xmlString";
 
     @BeforeEach
     void setUp() {
