@@ -40,14 +40,14 @@ public class IntegratedUnitNotificationEvaluator {
 
         if (evaluateMailNotification(careProviderId, issuedOnUnitId, regionNotificationConfigs, issuingDate)) {
             log.info(
-                "Certificate with id '{}' has been evaluated and should receive mail notification. CareProviderId: '{}', IssuedOnUnitId: '{}', IssuingDate: '{}'",
-                certificateId, careProviderId, issuedOnUnitId, issuingDate);
+                "Certificate with id '{}' has been evaluated and should receive mail notification. CareProviderId: '{}',"
+                    + " IssuedOnUnitId: '{}', IssuingDate: '{}'", certificateId, careProviderId, issuedOnUnitId, issuingDate);
             return true;
         }
 
         log.info(
-            "Certificate with id '{}' has been evaluated and should not receive mail notification. CareProviderId: '{}', IssuedOnUnitId: '{}', IssuingDate: '{}'",
-            certificateId, careProviderId, issuedOnUnitId, issuingDate);
+            "Certificate with id '{}' has been evaluated and should not receive mail notification. CareProviderId: '{}',"
+                + " IssuedOnUnitId: '{}', IssuingDate: '{}'", certificateId, careProviderId, issuedOnUnitId, issuingDate);
         return false;
     }
 
