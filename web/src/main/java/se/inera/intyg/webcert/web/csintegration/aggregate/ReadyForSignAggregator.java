@@ -43,6 +43,7 @@ public class ReadyForSignAggregator implements ReadyForSignFacadeService {
         if (!certificateServiceProfile.active()) {
             return readyForSignForWC.readyForSign(certificateId);
         }
+        
         final var responseFromCS = readyForSignForCS.readyForSign(certificateId);
         return responseFromCS != null ? responseFromCS : readyForSignForWC.readyForSign(certificateId);
     }

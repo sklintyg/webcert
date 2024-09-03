@@ -22,10 +22,12 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.service.facade.ReadyForSignFacadeService;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -34,6 +36,8 @@ public class ReadyForSignForCertificateService implements ReadyForSignFacadeServ
 
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+    private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+    private final MonitoringLogService monitoringLogService;
 
     @Override
     public Certificate readyForSign(String certificateId) {
@@ -49,6 +53,11 @@ public class ReadyForSignForCertificateService implements ReadyForSignFacadeServ
             csIntegrationRequestFactory.readyForSignRequest()
         );
 
-        return null;
+        publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.KFSIGN);
+        monitoringLogService.logUtkastMarkedAsReadyToSignNotificationSent(
+            certificateId, certificate.getMetadata().getType()
+        );
+
+        return certificate;
     }
 }
