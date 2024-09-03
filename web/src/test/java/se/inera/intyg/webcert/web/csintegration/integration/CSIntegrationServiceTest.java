@@ -109,6 +109,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.PatientCertifica
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PatientCertificatesWithQAResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ReadyForSignRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ReadyForSignResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.RenewCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.RenewCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ReplaceCertificateRequestDTO;
@@ -152,6 +154,8 @@ class CSIntegrationServiceTest {
         .list(TYPE_INFOS)
         .build();
     private static final Certificate CERTIFICATE = new Certificate();
+    private static final ReadyForSignResponseDTO READY_FOR_SIGN_RESPONSE_DTO = ReadyForSignResponseDTO.builder().certificate(CERTIFICATE)
+        .build();
     private static final CreateCertificateRequestDTO CREATE_CERTIFICATE_REQUEST = CreateCertificateRequestDTO.builder().build();
     private static final CertificateServiceCreateCertificateResponseDTO CREATE_RESPONSE =
         CertificateServiceCreateCertificateResponseDTO.builder()
@@ -338,6 +342,7 @@ class CSIntegrationServiceTest {
         .unitStatistics(USER_STATISTICS)
         .build();
     private static final UnitStatisticsRequestDTO STATISTICS_REQUEST_DTO = UnitStatisticsRequestDTO.builder().build();
+    private static final ReadyForSignRequestDTO READY_FOR_SIGN_REQUEST_DTO = ReadyForSignRequestDTO.builder().build();
 
 
     @Mock
@@ -2590,6 +2595,53 @@ class CSIntegrationServiceTest {
             verify(restTemplate).postForObject(captor.capture(), any(), any());
 
             assertEquals("baseUrl/api/unit/certificates/statistics", captor.getValue());
+        }
+    }
+
+    @Nested
+    class MarkCertificateReadyForSignTest {
+
+        @Test
+        void shouldPreformPostUsingRequest() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(READY_FOR_SIGN_RESPONSE_DTO);
+            final var captor = ArgumentCaptor.forClass(ReadyForSignRequestDTO.class);
+
+            csIntegrationService.markCertificateReadyForSign(ID, READY_FOR_SIGN_REQUEST_DTO);
+            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+
+            assertEquals(READY_FOR_SIGN_REQUEST_DTO, captor.getValue());
+        }
+
+        @Test
+        void shouldReturnCertificate() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(READY_FOR_SIGN_RESPONSE_DTO);
+            final var response = csIntegrationService.markCertificateReadyForSign(ID, READY_FOR_SIGN_REQUEST_DTO);
+
+            assertEquals(CERTIFICATE, response);
+        }
+
+        @Test
+        void shouldThrowIfResponseIsNull() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(null);
+            assertThrows(IllegalStateException.class,
+                () -> csIntegrationService.markCertificateReadyForSign(ID, READY_FOR_SIGN_REQUEST_DTO));
+        }
+
+        @Test
+        void shouldSetUrlCorrect() {
+            when(restTemplate.postForObject(anyString(), any(), any()))
+                .thenReturn(READY_FOR_SIGN_RESPONSE_DTO);
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            csIntegrationService.markCertificateReadyForSign(ID, READY_FOR_SIGN_REQUEST_DTO);
+
+            verify(restTemplate).postForObject(captor.capture(), any(), any());
+
+            assertEquals("baseUrl/api/certificate/" + ID + "/readyForSign", captor.getValue());
         }
     }
 }

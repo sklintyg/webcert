@@ -19,15 +19,36 @@
 
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.service.facade.ReadyForSignFacadeService;
 
+@Slf4j
+@RequiredArgsConstructor
 @Service("readyForSignForCS")
 public class ReadyForSignForCertificateService implements ReadyForSignFacadeService {
 
+    private final CSIntegrationService csIntegrationService;
+    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+
     @Override
     public Certificate readyForSign(String certificateId) {
+        log.debug("Attempting to mark certificate '{}' as ready for sign", certificateId);
+
+        if (Boolean.FALSE.equals(csIntegrationService.certificateExists(certificateId))) {
+            log.debug("Certificate '{}' does not exist in certificate service", certificateId);
+            return null;
+        }
+
+        final var certificate = csIntegrationService.markCertificateReadyForSign(
+            certificateId,
+            csIntegrationRequestFactory.readyForSignRequest()
+        );
+
         return null;
     }
 }

@@ -59,6 +59,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.LockDraftsReques
 import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageQueryCriteriaDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PatientCertificatesWithQARequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ReadyForSignRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.RenewCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ReplaceCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.RevokeCertificateRequestDTO;
@@ -568,6 +569,15 @@ public class CSIntegrationRequestFactory {
         return UnitStatisticsRequestDTO.builder()
             .user(certificateServiceUserHelper.get())
             .issuedByUnitIds(unitIds)
+            .build();
+    }
+
+    public ReadyForSignRequestDTO readyForSignRequest() {
+        return ReadyForSignRequestDTO.builder()
+            .unit(certificateServiceUnitHelper.getUnit())
+            .careUnit(certificateServiceUnitHelper.getCareUnit())
+            .careProvider(certificateServiceUnitHelper.getCareProvider())
+            .user(certificateServiceUserHelper.get())
             .build();
     }
 }

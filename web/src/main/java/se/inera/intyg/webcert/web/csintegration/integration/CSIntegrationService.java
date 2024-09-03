@@ -90,6 +90,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.PatientCertifica
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PatientCertificatesWithQAResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ReadyForSignRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ReadyForSignResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.RenewCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.RenewCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ReplaceCertificateRequestDTO;
@@ -754,5 +756,17 @@ public class CSIntegrationService {
         }
 
         return response.getUnitStatistics();
+    }
+
+    public Certificate markCertificateReadyForSign(String certificateId, ReadyForSignRequestDTO request) {
+        final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/readyForSign";
+
+        final var response = restTemplate.postForObject(url, request, ReadyForSignResponseDTO.class);
+
+        if (response == null || response.getCertificate() == null) {
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
+        }
+
+        return response.getCertificate();
     }
 }
