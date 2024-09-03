@@ -1844,7 +1844,7 @@ class CSIntegrationServiceTest {
         void shouldReturnCertificate() {
             when(restTemplate.postForObject(anyString(), any(), any()))
                 .thenReturn(GET_RESPONSE);
-            final var response = csIntegrationService.getCertificate(ID);
+            final var response = csIntegrationService.getInternalCertificate(ID);
 
             assertEquals(CERTIFICATE, response);
         }
@@ -1854,7 +1854,7 @@ class CSIntegrationServiceTest {
             when(restTemplate.postForObject(anyString(), any(), any()))
                 .thenReturn(null);
             assertThrows(IllegalStateException.class,
-                () -> csIntegrationService.getCertificate(ID)
+                () -> csIntegrationService.getInternalCertificate(ID)
             );
         }
 
@@ -1865,7 +1865,7 @@ class CSIntegrationServiceTest {
             ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
             final var captor = ArgumentCaptor.forClass(String.class);
 
-            csIntegrationService.getCertificate("id");
+            csIntegrationService.getInternalCertificate("id");
             verify(restTemplate).postForObject(captor.capture(), any(), any());
 
             assertEquals("baseUrl/internalapi/certificate/id", captor.getValue());

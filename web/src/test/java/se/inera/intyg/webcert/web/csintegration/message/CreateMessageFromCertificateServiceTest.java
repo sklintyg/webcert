@@ -78,7 +78,7 @@ class CreateMessageFromCertificateServiceTest {
         );
 
         final var getCertificateRequestDTO = GetCertificateRequestDTO.builder().build();
-        
+
         doReturn(getCertificateRequestDTO).when(csIntegrationRequestFactory).getCertificateRequest();
         doReturn(certificate).when(csIntegrationService).getCertificate(CERTIFICATE_ID, getCertificateRequestDTO);
         doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);

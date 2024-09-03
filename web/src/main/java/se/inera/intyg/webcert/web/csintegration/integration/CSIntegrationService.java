@@ -576,7 +576,7 @@ public class CSIntegrationService {
         return response.getQuestions();
     }
 
-    public Certificate getCertificate(String certificateId) {
+    public Certificate getInternalCertificate(String certificateId) {
         final var url = baseUrl + INTERNAL_CERTIFICATE_ENDPOINT_URL + "/" + certificateId;
 
         final var response = restTemplate.postForObject(url, null, CertificateServiceGetCertificateResponseDTO.class);
