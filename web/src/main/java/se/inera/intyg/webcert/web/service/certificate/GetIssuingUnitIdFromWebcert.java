@@ -17,29 +17,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.csintegration.certificate;
+package se.inera.intyg.webcert.web.service.certificate;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
+import se.inera.intyg.webcert.web.service.intyg.IntygService;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
-public class GetUnitIdFromCertificateService {
+public class GetIssuingUnitIdFromWebcert {
 
-    private final CSIntegrationService csIntegrationService;
+    private final IntygService intygService;
 
     public String get(String certificateId) {
-        log.debug("Attempting to retrieve certificate '{}' from Certificate Service", certificateId);
-
-        if (Boolean.FALSE.equals(csIntegrationService.certificateExists(certificateId))) {
-            log.debug("Certificate '{}' does not exist in certificate service", certificateId);
-            return null;
-        }
-
-        final var certificate = csIntegrationService.getInternalCertificate(certificateId);
-        return certificate.getMetadata().getUnit().getUnitId();
+        final var intygTypeInfo = intygService.getIntygTypeInfo(certificateId);
+        final var certificateType = intygTypeInfo.getIntygType();
+        return intygService.getIssuingVardenhetHsaId(certificateId, certificateType);
     }
 }

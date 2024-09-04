@@ -34,20 +34,20 @@ import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 
 @ExtendWith(MockitoExtension.class)
-class GetUnitIdFromCertificateServiceTest {
+class GetIssuingUnitIdFromCertificateServiceTest {
 
     private static final String CERTIFICATE_ID = "certificateId";
     private static final String EXPECTED_UNIT_ID = "expectedUnitId";
     @Mock
     CSIntegrationService csIntegrationService;
     @InjectMocks
-    GetUnitIdFromCertificateService getUnitIdFromCertificateService;
+    GetIssuingUnitIdFromCertificateService getIssuingUnitIdFromCertificateService;
 
     @Test
     void shallReturnNullIfCertificateDontExistInCertificateService() {
         doReturn(false).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
 
-        final var actualResult = getUnitIdFromCertificateService.get(CERTIFICATE_ID);
+        final var actualResult = getIssuingUnitIdFromCertificateService.get(CERTIFICATE_ID);
         assertNull(actualResult);
     }
 
@@ -66,7 +66,7 @@ class GetUnitIdFromCertificateServiceTest {
         doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
         doReturn(certificate).when(csIntegrationService).getInternalCertificate(CERTIFICATE_ID);
 
-        final var actualResult = getUnitIdFromCertificateService.get(CERTIFICATE_ID);
+        final var actualResult = getIssuingUnitIdFromCertificateService.get(CERTIFICATE_ID);
         assertEquals(EXPECTED_UNIT_ID, actualResult);
     }
 }

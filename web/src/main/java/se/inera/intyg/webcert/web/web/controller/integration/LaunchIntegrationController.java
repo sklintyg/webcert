@@ -37,7 +37,7 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.web.csintegration.aggregate.GetUnitIdAggregator;
+import se.inera.intyg.webcert.web.csintegration.aggregate.GetIssuingUnitIdAggregator;
 import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
 
 @Path("/launch")
@@ -46,7 +46,7 @@ public class LaunchIntegrationController extends BaseIntegrationController {
     private static final String[] GRANTED_ROLES = new String[]{AuthoritiesConstants.ROLE_ADMIN, AuthoritiesConstants.ROLE_LAKARE,
         AuthoritiesConstants.ROLE_TANDLAKARE, AuthoritiesConstants.ROLE_SJUKSKOTERSKA, AuthoritiesConstants.ROLE_BARNMORSKA};
     @Autowired
-    private GetUnitIdAggregator getUnitIdAggregator;
+    private GetIssuingUnitIdAggregator getIssuingUnitIdAggregator;
     @Autowired
     private ReactUriFactory reactUriFactory;
     @Autowired
@@ -75,7 +75,7 @@ public class LaunchIntegrationController extends BaseIntegrationController {
         super.validateParameter("certificateId", certificateId);
         super.validateAuthorities();
 
-        final var unitId = getUnitIdAggregator.get(certificateId);
+        final var unitId = getIssuingUnitIdAggregator.get(certificateId);
         validateAndChangeUnit(unitId);
 
         return redirectToQuestion

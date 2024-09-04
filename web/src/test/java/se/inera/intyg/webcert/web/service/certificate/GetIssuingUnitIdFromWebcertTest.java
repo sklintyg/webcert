@@ -31,7 +31,7 @@ import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
 
 @ExtendWith(MockitoExtension.class)
-class GetUnitIdFromWebcertTest {
+class GetIssuingUnitIdFromWebcertTest {
 
     private static final String CERTIFICATE_ID = "certificateId";
     private static final String CERTIFICATE_TYPE = "certificateType";
@@ -39,7 +39,7 @@ class GetUnitIdFromWebcertTest {
     @Mock
     IntygService intygService;
     @InjectMocks
-    GetUnitIdFromWebcert getUnitIdFromWebcert;
+    GetIssuingUnitIdFromWebcert getIssuingUnitIdFromWebcert;
 
     @Test
     void shallReturnUnitIdForCertificate() {
@@ -48,7 +48,7 @@ class GetUnitIdFromWebcertTest {
         doReturn(intygTypeInfo).when(intygService).getIntygTypeInfo(CERTIFICATE_ID);
         doReturn(expectedUnitId).when(intygService).getIssuingVardenhetHsaId(CERTIFICATE_ID, CERTIFICATE_TYPE);
 
-        final var actualResult = getUnitIdFromWebcert.get(CERTIFICATE_ID);
+        final var actualResult = getIssuingUnitIdFromWebcert.get(CERTIFICATE_ID);
         assertEquals(expectedUnitId, actualResult);
     }
 }
