@@ -117,7 +117,7 @@ public class CertificateController {
     @Qualifier("forwardCertificateAggregator")
     private ForwardCertificateFacadeService forwardCertificateFacadeService;
     @Autowired
-    private ReadyForSignFacadeService readyForSignFacadeService;
+    private ReadyForSignFacadeService readyForSignAggregator;
     @Autowired
     @Qualifier("getCertificateEventsAggregator")
     private GetCertificateEventsFacadeService getCertificateEventsFacadeService;
@@ -375,7 +375,7 @@ public class CertificateController {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Ready for sign certificate with id: '{}' ", certificateId);
         }
-        final var certificate = readyForSignFacadeService.readyForSign(certificateId);
+        final var certificate = readyForSignAggregator.readyForSign(certificateId);
 
         final var resourceLinks = getCertificateResourceLinks.get(certificate);
         final var certificateDTO = CertificateDTO.create(certificate, resourceLinks);

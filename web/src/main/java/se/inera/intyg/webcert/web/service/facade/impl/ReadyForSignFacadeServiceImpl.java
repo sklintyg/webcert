@@ -26,7 +26,7 @@ import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.ReadyForSignFacadeService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
-@Service
+@Service("readyForSignForWC")
 public class ReadyForSignFacadeServiceImpl implements ReadyForSignFacadeService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ReadyForSignFacadeServiceImpl.class);
