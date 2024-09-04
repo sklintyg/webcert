@@ -626,26 +626,30 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private void sendNotificationForIncomingQuestionByMail(MailNotification mailNotification) {
-        // send mail to enhet to inform about new question
         try {
             mailNotificationService.sendMailForIncomingQuestion(mailNotification);
-        } catch (MailSendException e) {
-            LOGGER.error("Notification mail for question '" + mailNotification.getQaId()
-                + "' concerning certificate '" + mailNotification.getCertificateId()
-                + "' couldn't be sent to " + mailNotification.getCareUnitId()
-                + " (" + mailNotification.getCareUnitName() + "): " + e.getMessage());
+        } catch (MailSendException ex) {
+            LOGGER.error(
+                String.format("Notification mail for question '%s' concerning certificate '%s' couldn't be sent to '%s' (%s)",
+                    mailNotification.getQaId(), mailNotification.getCertificateId(), mailNotification.getCareUnitId(),
+                    mailNotification.getCareUnitName()
+                ),
+                ex
+            );
         }
     }
 
     private void sendNotificationForIncomingAnswerByMail(MailNotification mailNotification) {
-        // send mail to enhet to inform about new question
         try {
             mailNotificationService.sendMailForIncomingAnswer(mailNotification);
-        } catch (MailSendException e) {
-            LOGGER.error("Notification mail for answer '" + mailNotification.getQaId()
-                + "' concerning certificate '" + mailNotification.getCertificateId()
-                + "' couldn't be sent to " + mailNotification.getCareUnitId()
-                + " (" + mailNotification.getCareUnitName() + "): " + e.getMessage());
+        } catch (MailSendException ex) {
+            LOGGER.error(
+                String.format("Notification mail for answer '%s' concerning certificate '%s' couldn't be sent to '%s' (%s)",
+                    mailNotification.getQaId(), mailNotification.getCertificateId(), mailNotification.getCareUnitId(),
+                    mailNotification.getCareUnitName()
+                ),
+                ex
+            );
         }
     }
 
