@@ -54,7 +54,7 @@ public class ProcessIncomingMessageService {
             csIntegrationRequestFactory.getIncomingMessageRequest(sendMessageToCare)
         );
 
-        final var certificate = csIntegrationService.getCertificate(
+        final var certificate = csIntegrationService.getInternalCertificate(
             sendMessageToCare.getIntygsId().getExtension()
         );
 

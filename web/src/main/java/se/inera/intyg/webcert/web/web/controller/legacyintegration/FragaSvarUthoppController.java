@@ -39,7 +39,7 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.web.service.intyg.IntygService;
+import se.inera.intyg.webcert.web.csintegration.aggregate.GetIssuingUnitIdAggregator;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
 import se.inera.intyg.webcert.web.web.controller.integration.BaseIntegrationController;
@@ -63,7 +63,7 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
     private static final UserOriginType GRANTED_ORIGIN = UserOriginType.NORMAL;
 
     @Autowired
-    private IntygService intygService;
+    private GetIssuingUnitIdAggregator getIssuingUnitIdAggregator;
 
     @Autowired
     private ReactUriFactory reactUriFactory;
@@ -139,7 +139,7 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
             }
         } else {
             // No enhet on link (legacy fallback for pre WC 5.0 links)
-            String enhet = intygService.getIssuingVardenhetHsaId(intygsId, null);
+            String enhet = getIssuingUnitIdAggregator.get(intygsId);
             if (!user.changeValdVardenhet(enhet)) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
                     "User does not have access to enhet " + enhetHsaId);
