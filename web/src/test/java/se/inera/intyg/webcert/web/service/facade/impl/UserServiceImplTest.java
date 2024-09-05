@@ -76,6 +76,7 @@ class UserServiceImplTest {
     private static final String HSA_ID = "HSA_ID";
     private static final String NAME = "NAME";
     private static final String ROLE = "ROLE";
+    private static final String ORIGIN = "ORIGIN";
     public static final String ROLE_NAME = "ROLE_NAME";
     public static final String ROLE_DESCRIPTION = "ROLE_DESCRIPTION";
     private static final Map<String, String> PREFERENCES = Map.of("wc.preference", "true");
@@ -128,6 +129,10 @@ class UserServiceImplTest {
             doReturn(PREFERENCES)
                 .when(user)
                 .getAnvandarPreference();
+
+            doReturn(ORIGIN)
+                .when(user)
+                .getOrigin();
         }
 
         @Test
@@ -209,6 +214,12 @@ class UserServiceImplTest {
             assertEquals(CARE_PROVIDER_ID, careProvider.getId());
             assertEquals(CARE_UNIT_ID, careUnit.getUnitId());
             assertEquals(UNIT_ID, unit.getUnitId());
+        }
+
+        @Test
+        void shallReturnOrigin() {
+            final var actualUser = userService.getLoggedInUser();
+            assertEquals(ORIGIN, actualUser.getOrigin());
         }
     }
 

@@ -68,6 +68,7 @@ public class UserServiceImpl implements UserService {
             .hsaId(webCertUser.getHsaId())
             .name(webCertUser.getNamn())
             .role(getRole(webCertUser))
+            .origin(webCertUser.getOrigin())
             .launchId(launchId)
             .loggedInUnit(
                 Unit.builder()
