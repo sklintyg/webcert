@@ -48,7 +48,8 @@ public class DecorateCertificateFromCSWithInformationFromWC {
     private Patient decoratePatient(IntegrationParameters parameters, Patient patient) {
         return patient.withPreviousPersonId(getPreviousPersonId(parameters, patient))
             .withPersonIdChanged(isPatientIdChanged(parameters, patient))
-            .withDifferentNameFromEHR(isPatientNameDifferent(parameters, patient));
+            .withDifferentNameFromEHR(isPatientNameDifferent(parameters, patient))
+            .withReserveId(hasReserveId(parameters));
     }
 
     private PersonId getPreviousPersonId(IntegrationParameters parameters, Patient patient) {
@@ -118,5 +119,10 @@ public class DecorateCertificateFromCSWithInformationFromWC {
 
     private boolean isValidPersonIdOrCoordinationId(String id) {
         return Personnummer.createPersonnummer(id).isPresent();
+    }
+
+    private boolean hasReserveId(IntegrationParameters parameters) {
+        return isAlternateSSNSet(parameters)
+            && !isValidPersonIdOrCoordinationId(parameters.getAlternateSsn());
     }
 }

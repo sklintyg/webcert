@@ -330,6 +330,38 @@ class DecorateCertificateFromCSWithInformationFromWCTest {
         }
     }
 
+    @Nested
+    class ReserveId {
+
+        @Test
+        void shallSetReserveIdFlagIfPersonIdIsReserveId() {
+            final var parameters = createIntegrationParameters(PATIENT_RESERVE_ID, FIRST_NAME, LAST_NAME);
+            user.setParameters(parameters);
+
+            when(webCertUser.getParameters())
+                .thenReturn(parameters);
+
+            final var certificate = createCertificate();
+            decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+
+            assertTrue(certificate.getMetadata().getPatient().isReserveId());
+        }
+
+        @Test
+        void shallNotSetReserveIdFlagIfPersonIdIsValid() {
+            final var parameters = createIntegrationParameters(PATIENT_ID, FIRST_NAME, LAST_NAME);
+            user.setParameters(parameters);
+
+            when(webCertUser.getParameters())
+                .thenReturn(parameters);
+
+            final var certificate = createCertificate();
+            decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+
+            assertFalse(certificate.getMetadata().getPatient().isReserveId());
+        }
+    }
+
     private IntegrationParameters createIntegrationParameters(String alternateSsn, String firstName, String lastName) {
         return new IntegrationParameters("reference", "responsible", alternateSsn, firstName, "mellannamn", lastName,
             "address", "zipcode", "city", true, false, false, true, null);
