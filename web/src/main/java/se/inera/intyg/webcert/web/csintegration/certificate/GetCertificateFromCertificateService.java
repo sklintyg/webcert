@@ -36,6 +36,7 @@ public class GetCertificateFromCertificateService implements GetCertificateFacad
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
     private final PDLLogService pdlLogService;
+    private final DecorateCertificateFromCSWithInformationFromWC decorateCertificateFromCSWithInformationFromWC;
 
     @Override
     public Certificate getCertificate(String certificateId, boolean pdlLog, boolean validateAccess) {
@@ -51,6 +52,8 @@ public class GetCertificateFromCertificateService implements GetCertificateFacad
             csIntegrationRequestFactory.getCertificateRequest()
         );
         log.debug("Certificate with id '{}' was retrieved from certificate service", certificateId);
+
+        decorateCertificateFromCSWithInformationFromWC.decorate(response);
 
         if (pdlLog) {
             pdlLogService.logRead(response);

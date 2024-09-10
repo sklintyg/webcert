@@ -35,7 +35,7 @@ public class AlternateSsnEvaluator {
             return false;
         }
 
-        if (alternateSsnProvided(user)) {
+        if (alternateSsnNotProvided(user)) {
             return false;
         }
 
@@ -55,7 +55,7 @@ public class AlternateSsnEvaluator {
         return value.replace("-", "");
     }
 
-    private static boolean alternateSsnProvided(WebCertUser user) {
+    private static boolean alternateSsnNotProvided(WebCertUser user) {
         return user.getParameters() == null
             || (user.getParameters().getAlternateSsn() == null
             || user.getParameters().getAlternateSsn().isBlank())

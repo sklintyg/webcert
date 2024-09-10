@@ -48,6 +48,8 @@ class GetCertificateFromCertificateServiceTest {
     CSIntegrationRequestFactory csIntegrationRequestFactory;
     @Mock
     PDLLogService pdlLogService;
+    @Mock
+    DecorateCertificateFromCSWithInformationFromWC decorateCertificateFromCSWithInformationFromWC;
     @InjectMocks
     GetCertificateFromCertificateService getCertificateFromCertificateService;
 
