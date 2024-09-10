@@ -24,6 +24,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,6 +35,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRecipient;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
@@ -47,6 +49,9 @@ class PDLLogServiceTest {
     private static final Certificate CERTIFICATE = new Certificate();
     private static final String PERSON_ID = "personId";
     private static final String CERTIFICATE_ID = "certificateId";
+    private static final String ADDITIONAL_INFO = "Läsning i enlighet med sammanhållen journalföring";
+    private static final String ADDITIONAL_WITH_RECIPIENT_MESSAGE = "Intyg skickat till mottagare ";
+    private static final String RECIPIENT_NAME = "recipientName";
 
     @Mock
     WebCertUserService webCertUserService;
@@ -60,12 +65,25 @@ class PDLLogServiceTest {
     @InjectMocks
     PDLLogService pdlLogService;
 
+    @BeforeEach
+    void setUp() {
+        CERTIFICATE.setMetadata(
+            CertificateMetadata.builder()
+                .recipient(
+                    CertificateRecipient.builder()
+                        .name(RECIPIENT_NAME)
+                        .build()
+                )
+                .build()
+        );
+    }
+
     @Test
     void shouldLogCreateCertificate() {
         final var expectedLogRequest = LogRequest.builder().build();
         final var captor = ArgumentCaptor.forClass(LogRequest.class);
 
-        doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, false);
+        doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, null);
 
         pdlLogService.logCreated(CERTIFICATE);
 
@@ -75,14 +93,14 @@ class PDLLogServiceTest {
     }
 
     @Test
-    void shouldLogCreateCertificateWithSjf() {
+    void shouldLogCreateCertificateWithAdditionalInfo() {
         final var expectedLogRequest = LogRequest.builder().build();
         final var captor = ArgumentCaptor.forClass(LogRequest.class);
         final var mockedUser = mock(WebCertUser.class);
 
-        doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, true);
+        doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, ADDITIONAL_INFO);
         doReturn(mockedUser).when(webCertUserService).getUser();
-        doReturn(sjfIntegrationParameter()).when(mockedUser).getParameters();
+        doReturn(additionalInfoIntegrationParameter()).when(mockedUser).getParameters();
 
         pdlLogService.logCreated(CERTIFICATE);
 
@@ -96,7 +114,7 @@ class PDLLogServiceTest {
         final var expectedLogRequest = LogRequest.builder().build();
         final var captor = ArgumentCaptor.forClass(LogRequest.class);
 
-        doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, false);
+        doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, null);
 
         pdlLogService.logRead(CERTIFICATE);
 
@@ -106,15 +124,15 @@ class PDLLogServiceTest {
     }
 
     @Test
-    void shouldLogReadCertificateWithSjf() {
+    void shouldLogReadCertificateWithAdditionalInfo() {
         final var expectedLogRequest = LogRequest.builder().build();
         final var captor = ArgumentCaptor.forClass(LogRequest.class);
 
         final var mockedUser = mock(WebCertUser.class);
 
-        doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, true);
+        doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, ADDITIONAL_INFO);
         doReturn(mockedUser).when(webCertUserService).getUser();
-        doReturn(sjfIntegrationParameter()).when(mockedUser).getParameters();
+        doReturn(additionalInfoIntegrationParameter()).when(mockedUser).getParameters();
 
         pdlLogService.logRead(CERTIFICATE);
 
@@ -128,7 +146,7 @@ class PDLLogServiceTest {
         final var expectedLogRequest = LogRequest.builder().build();
         final var captor = ArgumentCaptor.forClass(LogRequest.class);
 
-        doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, false);
+        doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, null);
 
         pdlLogService.logSaved(CERTIFICATE);
 
@@ -138,14 +156,14 @@ class PDLLogServiceTest {
     }
 
     @Test
-    void shouldLogSavedCertificateWithSjf() {
+    void shouldLogSavedCertificateWithAdditionalInfo() {
         final var expectedLogRequest = LogRequest.builder().build();
         final var captor = ArgumentCaptor.forClass(LogRequest.class);
         final var mockedUser = mock(WebCertUser.class);
 
-        doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, true);
+        doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, ADDITIONAL_INFO);
         doReturn(mockedUser).when(webCertUserService).getUser();
-        doReturn(sjfIntegrationParameter()).when(mockedUser).getParameters();
+        doReturn(additionalInfoIntegrationParameter()).when(mockedUser).getParameters();
 
         pdlLogService.logSaved(CERTIFICATE);
 
@@ -159,7 +177,7 @@ class PDLLogServiceTest {
         final var expectedLogRequest = LogRequest.builder().build();
         final var captor = ArgumentCaptor.forClass(LogRequest.class);
 
-        doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, false);
+        doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, null);
 
         pdlLogService.logDeleted(CERTIFICATE);
 
@@ -169,14 +187,14 @@ class PDLLogServiceTest {
     }
 
     @Test
-    void shouldLogDeletedCertificateWithSjf() {
+    void shouldLogDeletedCertificateWithAdditionalInfo() {
         final var expectedLogRequest = LogRequest.builder().build();
         final var captor = ArgumentCaptor.forClass(LogRequest.class);
         final var mockedUser = mock(WebCertUser.class);
 
-        doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, true);
+        doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, ADDITIONAL_INFO);
         doReturn(mockedUser).when(webCertUserService).getUser();
-        doReturn(sjfIntegrationParameter()).when(mockedUser).getParameters();
+        doReturn(additionalInfoIntegrationParameter()).when(mockedUser).getParameters();
 
         pdlLogService.logDeleted(CERTIFICATE);
 
@@ -196,7 +214,7 @@ class PDLLogServiceTest {
                 .status(CertificateStatus.UNSIGNED)
                 .build();
             CERTIFICATE.setMetadata(metadata);
-            doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, false);
+            doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, null);
 
             pdlLogService.logPrinted(CERTIFICATE);
 
@@ -214,9 +232,9 @@ class PDLLogServiceTest {
                 .build();
             CERTIFICATE.setMetadata(metadata);
 
-            doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, true);
+            doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, ADDITIONAL_INFO);
             doReturn(mockedUser).when(webCertUserService).getUser();
-            doReturn(sjfIntegrationParameter()).when(mockedUser).getParameters();
+            doReturn(additionalInfoIntegrationParameter()).when(mockedUser).getParameters();
 
             pdlLogService.logPrinted(CERTIFICATE);
 
@@ -232,7 +250,7 @@ class PDLLogServiceTest {
                 .status(CertificateStatus.LOCKED)
                 .build();
             CERTIFICATE.setMetadata(metadata);
-            doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, false);
+            doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, null);
 
             pdlLogService.logPrinted(CERTIFICATE);
 
@@ -250,9 +268,9 @@ class PDLLogServiceTest {
                 .build();
             CERTIFICATE.setMetadata(metadata);
 
-            doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, true);
+            doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, ADDITIONAL_INFO);
             doReturn(mockedUser).when(webCertUserService).getUser();
-            doReturn(sjfIntegrationParameter()).when(mockedUser).getParameters();
+            doReturn(additionalInfoIntegrationParameter()).when(mockedUser).getParameters();
 
             pdlLogService.logPrinted(CERTIFICATE);
 
@@ -268,7 +286,7 @@ class PDLLogServiceTest {
                 .status(CertificateStatus.SIGNED)
                 .build();
             CERTIFICATE.setMetadata(metadata);
-            doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, false);
+            doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, null);
 
             pdlLogService.logPrinted(CERTIFICATE);
 
@@ -286,9 +304,9 @@ class PDLLogServiceTest {
                 .build();
             CERTIFICATE.setMetadata(metadata);
 
-            doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, true);
+            doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, ADDITIONAL_INFO);
             doReturn(mockedUser).when(webCertUserService).getUser();
-            doReturn(sjfIntegrationParameter()).when(mockedUser).getParameters();
+            doReturn(additionalInfoIntegrationParameter()).when(mockedUser).getParameters();
 
             pdlLogService.logPrinted(CERTIFICATE);
 
@@ -304,7 +322,7 @@ class PDLLogServiceTest {
                 .status(CertificateStatus.REVOKED)
                 .build();
             CERTIFICATE.setMetadata(metadata);
-            doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, false);
+            doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, null);
 
             pdlLogService.logPrinted(CERTIFICATE);
 
@@ -322,9 +340,9 @@ class PDLLogServiceTest {
                 .build();
             CERTIFICATE.setMetadata(metadata);
 
-            doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, true);
+            doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, ADDITIONAL_INFO);
             doReturn(mockedUser).when(webCertUserService).getUser();
-            doReturn(sjfIntegrationParameter()).when(mockedUser).getParameters();
+            doReturn(additionalInfoIntegrationParameter()).when(mockedUser).getParameters();
 
             pdlLogService.logPrinted(CERTIFICATE);
 
@@ -338,7 +356,7 @@ class PDLLogServiceTest {
         final var expectedLogRequest = LogRequest.builder().build();
         final var captor = ArgumentCaptor.forClass(LogRequest.class);
 
-        doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, false);
+        doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, null);
 
         pdlLogService.logSign(CERTIFICATE);
 
@@ -348,14 +366,14 @@ class PDLLogServiceTest {
     }
 
     @Test
-    void shouldLogSignCertificateWithSjf() {
+    void shouldLogSignCertificateWithAdditionalInfo() {
         final var expectedLogRequest = LogRequest.builder().build();
         final var captor = ArgumentCaptor.forClass(LogRequest.class);
         final var mockedUser = mock(WebCertUser.class);
 
-        doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, true);
+        doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, ADDITIONAL_INFO);
         doReturn(mockedUser).when(webCertUserService).getUser();
-        doReturn(sjfIntegrationParameter()).when(mockedUser).getParameters();
+        doReturn(additionalInfoIntegrationParameter()).when(mockedUser).getParameters();
 
         pdlLogService.logSign(CERTIFICATE);
 
@@ -368,7 +386,8 @@ class PDLLogServiceTest {
     void shouldLogSentCertificate() {
         final var expectedLogRequest = LogRequest.builder().build();
         final var captor = ArgumentCaptor.forClass(LogRequest.class);
-        doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, false);
+        doReturn(expectedLogRequest).when(logRequestFactory)
+            .createLogRequestFromCertificate(CERTIFICATE, ADDITIONAL_WITH_RECIPIENT_MESSAGE + RECIPIENT_NAME);
 
         pdlLogService.logSent(CERTIFICATE);
 
@@ -377,14 +396,15 @@ class PDLLogServiceTest {
     }
 
     @Test
-    void shouldLogSentCertificateWithSjf() {
+    void shouldLogSentCertificateWithAdditionalInfo() {
         final var expectedLogRequest = LogRequest.builder().build();
         final var captor = ArgumentCaptor.forClass(LogRequest.class);
         final var mockedUser = mock(WebCertUser.class);
 
-        doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, true);
+        doReturn(expectedLogRequest).when(logRequestFactory)
+            .createLogRequestFromCertificate(CERTIFICATE, ADDITIONAL_INFO + ". " + ADDITIONAL_WITH_RECIPIENT_MESSAGE + RECIPIENT_NAME);
         doReturn(mockedUser).when(webCertUserService).getUser();
-        doReturn(sjfIntegrationParameter()).when(mockedUser).getParameters();
+        doReturn(additionalInfoIntegrationParameter()).when(mockedUser).getParameters();
 
         pdlLogService.logSent(CERTIFICATE);
 
@@ -396,7 +416,7 @@ class PDLLogServiceTest {
     void shouldLogRevokeCertificate() {
         final var expectedLogRequest = LogRequest.builder().build();
         final var captor = ArgumentCaptor.forClass(LogRequest.class);
-        doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, false);
+        doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, null);
 
         pdlLogService.logRevoke(CERTIFICATE);
 
@@ -405,14 +425,14 @@ class PDLLogServiceTest {
     }
 
     @Test
-    void shouldLogRevokeCertificateWithSjf() {
+    void shouldLogRevokeCertificateWithAdditionalInfo() {
         final var expectedLogRequest = LogRequest.builder().build();
         final var captor = ArgumentCaptor.forClass(LogRequest.class);
         final var mockedUser = mock(WebCertUser.class);
 
-        doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, true);
+        doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, ADDITIONAL_INFO);
         doReturn(mockedUser).when(webCertUserService).getUser();
-        doReturn(sjfIntegrationParameter()).when(mockedUser).getParameters();
+        doReturn(additionalInfoIntegrationParameter()).when(mockedUser).getParameters();
 
         pdlLogService.logRevoke(CERTIFICATE);
 
@@ -432,7 +452,7 @@ class PDLLogServiceTest {
         verify(logService).logCreateMessage(webCertUser, PERSON_ID, CERTIFICATE_ID);
     }
 
-    private IntegrationParameters sjfIntegrationParameter() {
+    private IntegrationParameters additionalInfoIntegrationParameter() {
         return IntegrationParameters.of(null, null, null, null, null, null, null, null, null, true, false, false, false);
     }
 }

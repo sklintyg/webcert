@@ -36,16 +36,17 @@ public class PDLLogService {
     private final LogRequestFactory logRequestFactory;
     private final LogService logService;
     private final WebCertUserService webCertUserService;
+    private static final String SJF_LOG_POST = "Läsning i enlighet med sammanhållen journalföring";
 
     public void logCreated(Certificate certificate) {
         logService.logCreateIntyg(
-            logRequestFactory.createLogRequestFromCertificate(certificate, sjf())
+            logRequestFactory.createLogRequestFromCertificate(certificate, additionalInfo())
         );
     }
 
     public void logCreatedWithIntygUser(Certificate certificate, IntygUser user) {
         logService.logCreateIntyg(
-            logRequestFactory.createLogRequestFromCertificate(certificate, sjf()),
+            logRequestFactory.createLogRequestFromCertificate(certificate, additionalInfo()),
             new LogUser.Builder(user.getHsaId(), user.getValdVardenhet().getId(), user.getValdVardgivare().getId())
                 .userName(user.getNamn())
                 .userAssignment(user.getSelectedMedarbetarUppdragNamn())
@@ -58,25 +59,25 @@ public class PDLLogService {
 
     public void logRead(Certificate certificate) {
         logService.logReadIntyg(
-            logRequestFactory.createLogRequestFromCertificate(certificate, sjf())
+            logRequestFactory.createLogRequestFromCertificate(certificate, additionalInfo())
         );
     }
 
     public void logSaved(Certificate certificate) {
         logService.logUpdateIntyg(
-            logRequestFactory.createLogRequestFromCertificate(certificate, sjf())
+            logRequestFactory.createLogRequestFromCertificate(certificate, additionalInfo())
         );
     }
 
     public void logDeleted(Certificate certificate) {
         logService.logDeleteIntyg(
-            logRequestFactory.createLogRequestFromCertificate(certificate, sjf())
+            logRequestFactory.createLogRequestFromCertificate(certificate, additionalInfo())
         );
     }
 
     public void logSign(Certificate certificate) {
         logService.logSignIntyg(
-            logRequestFactory.createLogRequestFromCertificate(certificate, sjf())
+            logRequestFactory.createLogRequestFromCertificate(certificate, additionalInfo())
         );
     }
 
@@ -84,32 +85,32 @@ public class PDLLogService {
         final var status = certificate.getMetadata().getStatus();
         if (status == CertificateStatus.UNSIGNED || status == CertificateStatus.LOCKED) {
             logService.logPrintIntygAsDraft(
-                logRequestFactory.createLogRequestFromCertificate(certificate, sjf())
+                logRequestFactory.createLogRequestFromCertificate(certificate, additionalInfo())
             );
         }
 
         if (status == CertificateStatus.REVOKED) {
             logService.logPrintRevokedIntygAsPDF(
-                logRequestFactory.createLogRequestFromCertificate(certificate, sjf())
+                logRequestFactory.createLogRequestFromCertificate(certificate, additionalInfo())
             );
         }
 
         if (status == CertificateStatus.SIGNED) {
             logService.logPrintIntygAsPDF(
-                logRequestFactory.createLogRequestFromCertificate(certificate, sjf())
+                logRequestFactory.createLogRequestFromCertificate(certificate, additionalInfo())
             );
         }
     }
 
     public void logSent(Certificate certificate) {
         logService.logSendIntygToRecipient(
-            logRequestFactory.createLogRequestFromCertificate(certificate, sjf())
+            logRequestFactory.createLogRequestFromCertificate(certificate, additionalInfoWithRecipient(certificate, additionalInfo()))
         );
     }
 
     public void logRevoke(Certificate certificate) {
         logService.logRevokeIntyg(
-            logRequestFactory.createLogRequestFromCertificate(certificate, sjf())
+            logRequestFactory.createLogRequestFromCertificate(certificate, additionalInfo())
         );
     }
 
@@ -121,11 +122,19 @@ public class PDLLogService {
         );
     }
 
-    private boolean sjf() {
+    private String additionalInfo() {
         final var user = webCertUserService.getUser();
         if (user == null) {
-            return false;
+            return null;
         }
-        return user.getParameters() != null && user.getParameters().isSjf();
+        return user.getParameters() != null && user.getParameters().isSjf() ? SJF_LOG_POST : null;
+    }
+
+    private String additionalInfoWithRecipient(Certificate certificate, String additionalInfo) {
+        final var recipientMessage = String.format("Intyg skickat till mottagare %s", certificate.getMetadata().getRecipient().getName());
+        if (additionalInfo == null) {
+            return recipientMessage;
+        }
+        return additionalInfo.concat(". ").concat(recipientMessage);
     }
 }

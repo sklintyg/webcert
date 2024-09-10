@@ -119,7 +119,7 @@ public class LogRequestFactoryImpl implements LogRequestFactory {
     }
 
     @Override
-    public LogRequest createLogRequestFromCertificate(Certificate certificate, boolean sjf) {
+    public LogRequest createLogRequestFromCertificate(Certificate certificate, String additionalInfo) {
         final var personId = certificate.getMetadata().getPatient().getPersonId().getId();
         final var personnummer = getPersonnummer(personId);
 
@@ -132,8 +132,8 @@ public class LogRequestFactoryImpl implements LogRequestFactory {
             .intygCareGiverId(certificate.getMetadata().getCareProvider().getUnitId())
             .intygCareGiverName(certificate.getMetadata().getCareProvider().getUnitName());
 
-        if (sjf) {
-            logRequest.additionalInfo(SJF_LOG_POST);
+        if (additionalInfo != null) {
+            logRequest.additionalInfo(additionalInfo);
         }
 
         return logRequest.build();
