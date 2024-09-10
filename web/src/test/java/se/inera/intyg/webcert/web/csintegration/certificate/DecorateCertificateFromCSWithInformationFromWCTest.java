@@ -45,14 +45,14 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
 class DecorateCertificateFromCSWithInformationFromWCTest {
 
     private static final String ID_TYPE = "PERSON_NUMMER";
-    final String PATIENT_ID = "19121212-1212";
-    final String ALTERNATE_PATIENT_ID = "19121212-1213";
-    final String PATIENT_RESERVE_ID = "19121212-12AB";
-    final String FIRST_NAME = "firstName";
-    final String LAST_NAME = "lastName";
-    final String ALTERNATE_FIRST_NAME = "alternateFirstName";
-    final String ALTERNATE_LAST_NAME = "alternateLastName";
-    final WebCertUser user = new WebCertUser();
+    private static final String PATIENT_ID = "19121212-1212";
+    private static final String ALTERNATE_PATIENT_ID = "19121212-1213";
+    private static final String PATIENT_RESERVE_ID = "19121212-12AB";
+    private static final String FIRST_NAME = "firstName";
+    private static final String LAST_NAME = "lastName";
+    private static final String ALTERNATE_FIRST_NAME = "alternateFirstName";
+    private static final String ALTERNATE_LAST_NAME = "alternateLastName";
+    private static final WebCertUser user = new WebCertUser();
 
     @Mock
     WebCertUserService webCertUserService;
