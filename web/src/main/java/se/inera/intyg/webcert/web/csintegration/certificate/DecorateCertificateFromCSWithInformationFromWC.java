@@ -37,12 +37,16 @@ public class DecorateCertificateFromCSWithInformationFromWC {
     private final WebCertUserService webCertUserService;
 
     public void decorate(Certificate certificate) {
-        final var parameters = webCertUserService.getUser().getParameters();
+        final var user = webCertUserService.getUser();
+
+        if (user == null || user.getParameters() == null) {
+            return;
+        }
+
+        final var parameters = user.getParameters();
 
         final var patient = decoratePatient(parameters, certificate.getMetadata().getPatient());
-        final var metadata = certificate.getMetadata();
-        metadata.setPatient(patient);
-        certificate.setMetadata(metadata);
+        certificate.getMetadata().setPatient(patient);
     }
 
     private Patient decoratePatient(IntegrationParameters parameters, Patient patient) {

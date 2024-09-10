@@ -44,6 +44,7 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
 @ExtendWith(MockitoExtension.class)
 class DecorateCertificateFromCSWithInformationFromWCTest {
 
+    private static final String ID_TYPE = "PERSON_NUMMER";
     final String PATIENT_ID = "19121212-1212";
     final String ALTERNATE_PATIENT_ID = "19121212-1213";
     final String PATIENT_RESERVE_ID = "19121212-12AB";
@@ -66,6 +67,33 @@ class DecorateCertificateFromCSWithInformationFromWCTest {
             .thenReturn(webCertUser);
     }
 
+    @Test
+    void shallNotDecorateCertificateIfUserIsNull() {
+        when(webCertUserService.getUser())
+            .thenReturn(null);
+
+        final var certificate = createCertificate();
+        decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+
+        assertNull(certificate.getMetadata().getPatient().getPreviousPersonId());
+        assertFalse(certificate.getMetadata().getPatient().isPersonIdChanged());
+        assertFalse(certificate.getMetadata().getPatient().isDifferentNameFromEHR());
+        assertFalse(certificate.getMetadata().getPatient().isReserveId());
+    }
+
+    @Test
+    void shallNotDecorateCertificateIfParametersIsNull() {
+        when(webCertUser.getParameters())
+            .thenReturn(null);
+
+        final var certificate = createCertificate();
+        decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+
+        assertNull(certificate.getMetadata().getPatient().getPreviousPersonId());
+        assertFalse(certificate.getMetadata().getPatient().isPersonIdChanged());
+        assertFalse(certificate.getMetadata().getPatient().isDifferentNameFromEHR());
+        assertFalse(certificate.getMetadata().getPatient().isReserveId());
+    }
 
     @Test
     void shallNotChangeOtherValuesThanPatient() {
@@ -88,7 +116,7 @@ class DecorateCertificateFromCSWithInformationFromWCTest {
             .patient(Patient.builder()
                 .personId(PersonId.builder()
                     .id(PATIENT_ID)
-                    .type("PERSON_NUMMER")
+                    .type(ID_TYPE)
                     .build())
                 .firstName(FIRST_NAME)
                 .lastName(LAST_NAME)
@@ -373,7 +401,7 @@ class DecorateCertificateFromCSWithInformationFromWCTest {
             .patient(Patient.builder()
                 .personId(PersonId.builder()
                     .id(PATIENT_ID)
-                    .type("PERSON_NUMMER")
+                    .type(ID_TYPE)
                     .build())
                 .firstName(FIRST_NAME)
                 .lastName(LAST_NAME)
