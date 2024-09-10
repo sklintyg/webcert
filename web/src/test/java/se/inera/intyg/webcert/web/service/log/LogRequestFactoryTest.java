@@ -280,39 +280,39 @@ public class LogRequestFactoryTest {
 
         @Test
         void shallReturnIntygsId() {
-            assertEquals(CERTIFICATE_ID, logRequestFactory.createLogRequestFromCertificate(certificate).getIntygId());
+            assertEquals(CERTIFICATE_ID, logRequestFactory.createLogRequestFromCertificate(certificate, false).getIntygId());
         }
 
         @Test
         void shallReturnPatientId() {
             assertEquals(PATIENT_ID,
-                logRequestFactory.createLogRequestFromCertificate(certificate).getPatientId().getPersonnummerWithDash()
+                logRequestFactory.createLogRequestFromCertificate(certificate, false).getPatientId().getPersonnummerWithDash()
             );
         }
 
         @Test
         void shallReturnCareUnitId() {
-            assertEquals(UNIT_ID, logRequestFactory.createLogRequestFromCertificate(certificate).getIntygCareUnitId());
+            assertEquals(UNIT_ID, logRequestFactory.createLogRequestFromCertificate(certificate, false).getIntygCareUnitId());
         }
 
         @Test
         void shallReturnCareUnitName() {
-            assertEquals(UNIT_NAME, logRequestFactory.createLogRequestFromCertificate(certificate).getIntygCareUnitName());
+            assertEquals(UNIT_NAME, logRequestFactory.createLogRequestFromCertificate(certificate, false).getIntygCareUnitName());
         }
 
         @Test
         void shallReturnCareGiverId() {
-            assertEquals(CARE_PROVIDER_ID, logRequestFactory.createLogRequestFromCertificate(certificate).getIntygCareGiverId());
+            assertEquals(CARE_PROVIDER_ID, logRequestFactory.createLogRequestFromCertificate(certificate, false).getIntygCareGiverId());
         }
 
         @Test
         void shallReturnCareGiverName() {
-            assertEquals(CARE_PROVIDER_NAME, logRequestFactory.createLogRequestFromCertificate(certificate).getIntygCareGiverName());
+            assertEquals(CARE_PROVIDER_NAME, logRequestFactory.createLogRequestFromCertificate(certificate, false).getIntygCareGiverName());
         }
 
         @Test
         void shallNotIncludeAdditionalInfoIfNotSjf() {
-            assertNull(logRequestFactory.createLogRequestFromCertificate(certificate).getAdditionalInfo());
+            assertNull(logRequestFactory.createLogRequestFromCertificate(certificate, false).getAdditionalInfo());
         }
 
         @Test
@@ -322,7 +322,7 @@ public class LogRequestFactoryTest {
 
         @Test
         void shallNotIncludePatientNameBecauseRequirementToHandleProtectedPersons() {
-            assertNull(logRequestFactory.createLogRequestFromCertificate(certificate).getPatientName());
+            assertNull(logRequestFactory.createLogRequestFromCertificate(certificate, false).getPatientName());
         }
     }
 
