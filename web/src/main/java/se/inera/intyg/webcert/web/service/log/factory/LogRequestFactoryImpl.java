@@ -119,11 +119,6 @@ public class LogRequestFactoryImpl implements LogRequestFactory {
     }
 
     @Override
-    public LogRequest createLogRequestFromCertificate(Certificate certificate) {
-        return createLogRequestFromCertificate(certificate, false);
-    }
-
-    @Override
     public LogRequest createLogRequestFromCertificate(Certificate certificate, boolean sjf) {
         final var personId = certificate.getMetadata().getPatient().getPersonId().getId();
         final var personnummer = getPersonnummer(personId);

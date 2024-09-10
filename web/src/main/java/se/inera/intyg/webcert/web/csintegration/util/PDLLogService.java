@@ -39,13 +39,13 @@ public class PDLLogService {
 
     public void logCreated(Certificate certificate) {
         logService.logCreateIntyg(
-            logRequestFactory.createLogRequestFromCertificate(certificate)
+            logRequestFactory.createLogRequestFromCertificate(certificate, sjf())
         );
     }
 
     public void logCreatedWithIntygUser(Certificate certificate, IntygUser user) {
         logService.logCreateIntyg(
-            logRequestFactory.createLogRequestFromCertificate(certificate),
+            logRequestFactory.createLogRequestFromCertificate(certificate, sjf()),
             new LogUser.Builder(user.getHsaId(), user.getValdVardenhet().getId(), user.getValdVardgivare().getId())
                 .userName(user.getNamn())
                 .userAssignment(user.getSelectedMedarbetarUppdragNamn())
@@ -58,25 +58,25 @@ public class PDLLogService {
 
     public void logRead(Certificate certificate) {
         logService.logReadIntyg(
-            logRequestFactory.createLogRequestFromCertificate(certificate)
+            logRequestFactory.createLogRequestFromCertificate(certificate, sjf())
         );
     }
 
     public void logSaved(Certificate certificate) {
         logService.logUpdateIntyg(
-            logRequestFactory.createLogRequestFromCertificate(certificate)
+            logRequestFactory.createLogRequestFromCertificate(certificate, sjf())
         );
     }
 
     public void logDeleted(Certificate certificate) {
         logService.logDeleteIntyg(
-            logRequestFactory.createLogRequestFromCertificate(certificate)
+            logRequestFactory.createLogRequestFromCertificate(certificate, sjf())
         );
     }
 
     public void logSign(Certificate certificate) {
         logService.logSignIntyg(
-            logRequestFactory.createLogRequestFromCertificate(certificate)
+            logRequestFactory.createLogRequestFromCertificate(certificate, sjf())
         );
     }
 
@@ -84,32 +84,32 @@ public class PDLLogService {
         final var status = certificate.getMetadata().getStatus();
         if (status == CertificateStatus.UNSIGNED || status == CertificateStatus.LOCKED) {
             logService.logPrintIntygAsDraft(
-                logRequestFactory.createLogRequestFromCertificate(certificate)
+                logRequestFactory.createLogRequestFromCertificate(certificate, sjf())
             );
         }
 
         if (status == CertificateStatus.REVOKED) {
             logService.logPrintRevokedIntygAsPDF(
-                logRequestFactory.createLogRequestFromCertificate(certificate)
+                logRequestFactory.createLogRequestFromCertificate(certificate, sjf())
             );
         }
 
         if (status == CertificateStatus.SIGNED) {
             logService.logPrintIntygAsPDF(
-                logRequestFactory.createLogRequestFromCertificate(certificate)
+                logRequestFactory.createLogRequestFromCertificate(certificate, sjf())
             );
         }
     }
 
     public void logSent(Certificate certificate) {
         logService.logSendIntygToRecipient(
-            logRequestFactory.createLogRequestFromCertificate(certificate)
+            logRequestFactory.createLogRequestFromCertificate(certificate, sjf())
         );
     }
 
     public void logRevoke(Certificate certificate) {
         logService.logRevokeIntyg(
-            logRequestFactory.createLogRequestFromCertificate(certificate)
+            logRequestFactory.createLogRequestFromCertificate(certificate, sjf())
         );
     }
 
@@ -119,5 +119,13 @@ public class PDLLogService {
             personId,
             certificateId
         );
+    }
+
+    private boolean sjf() {
+        final var user = webCertUserService.getUser();
+        if (user == null) {
+            return false;
+        }
+        return user.getParameters() != null && user.getParameters().isSjf();
     }
 }
