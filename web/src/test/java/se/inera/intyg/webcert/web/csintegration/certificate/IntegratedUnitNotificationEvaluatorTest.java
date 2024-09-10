@@ -75,7 +75,7 @@ class IntegratedUnitNotificationEvaluatorTest {
     }
 
     @Test
-    void shallReturnFalseIfDateInConfigurationIsAfterActivationDate() {
+    void shallReturnTrueIfDateOfIssuingUnitIsBeforeConfigurationDateTime() {
         final var regionNotificationConfig = RegionNotificationConfig.builder()
             .region(REGION)
             .configuration(
@@ -91,11 +91,11 @@ class IntegratedUnitNotificationEvaluatorTest {
         doReturn(List.of(regionNotificationConfig)).when(getUnitNotificationConfig).get();
         final var result = integratedUnitNotificationEvaluator.mailNotification(CARE_PROVIDER_ID, ISSUED_ON_UNIT_ID, CERTIFICATE_ID,
             ISSUING_DATE);
-        assertFalse(result);
+        assertTrue(result);
     }
 
     @Test
-    void shallReturnTrueIfDateInConfigurationIsBeforeActivationDateAndCareProviderMatch() {
+    void shallReturnFalseIfDateOfIssuingUnitIsBeforeConfigurationDateTimeButDoesNotMatchAnyUnitId() {
         final var regionNotificationConfig = RegionNotificationConfig.builder()
             .region(REGION)
             .configuration(
@@ -111,27 +111,7 @@ class IntegratedUnitNotificationEvaluatorTest {
         doReturn(List.of(regionNotificationConfig)).when(getUnitNotificationConfig).get();
         final var result = integratedUnitNotificationEvaluator.mailNotification(CARE_PROVIDER_ID, ISSUED_ON_UNIT_ID, CERTIFICATE_ID,
             ISSUING_DATE);
-        assertTrue(result);
-    }
-
-    @Test
-    void shallReturnTrueIfDateInConfigurationIsBeforeActivationDateAndUnitIdMatch() {
-        final var regionNotificationConfig = RegionNotificationConfig.builder()
-            .region(REGION)
-            .configuration(
-                List.of(
-                    IntegratedUnitNotificationConfig.builder()
-                        .careProviders(List.of(NOT_MATCHING_ID))
-                        .issuedOnUnit(List.of(ISSUED_ON_UNIT_ID))
-                        .datetime(LocalDateTime.now().minusDays(1))
-                        .build()
-                ))
-            .build();
-
-        doReturn(List.of(regionNotificationConfig)).when(getUnitNotificationConfig).get();
-        final var result = integratedUnitNotificationEvaluator.mailNotification(CARE_PROVIDER_ID, ISSUED_ON_UNIT_ID, CERTIFICATE_ID,
-            ISSUING_DATE);
-        assertTrue(result);
+        assertFalse(result);
     }
 
     @Nested
@@ -145,7 +125,7 @@ class IntegratedUnitNotificationEvaluatorTest {
                     List.of(
                         IntegratedUnitNotificationConfig.builder()
                             .issuedOnUnit(List.of(ISSUED_ON_UNIT_ID))
-                            .datetime(LocalDateTime.now().minusDays(1))
+                            .datetime(LocalDateTime.now().plusDays(1))
                             .build()
                     ))
                 .build();
@@ -157,14 +137,14 @@ class IntegratedUnitNotificationEvaluatorTest {
         }
 
         @Test
-        void shallHandleMatchingValuesWithNullValuesForUnitIds() {
+        void shallHandleMatchingValuesWithNullValuesForIssuedOnUnitId() {
             final var regionNotificationConfig = RegionNotificationConfig.builder()
                 .region(REGION)
                 .configuration(
                     List.of(
                         IntegratedUnitNotificationConfig.builder()
-                            .careProviders(List.of(NOT_MATCHING_ID))
-                            .datetime(LocalDateTime.now().minusDays(1))
+                            .careProviders(List.of(CARE_PROVIDER_ID))
+                            .datetime(LocalDateTime.now().plusDays(1))
                             .build()
                     ))
                 .build();
@@ -175,5 +155,4 @@ class IntegratedUnitNotificationEvaluatorTest {
             assertTrue(result);
         }
     }
-
 }
