@@ -74,6 +74,6 @@ public class IntegratedUnitNotificationEvaluator {
             return false;
         }
 
-        return activateFrom.isBefore(issuingDate);
+        return issuingDate.isBefore(activateFrom);
     }
 }
