@@ -40,7 +40,5 @@ public interface LogRequestFactory {
 
     LogRequest createLogRequestFromUser(WebCertUser user, String patientId, String intygsId);
 
-    LogRequest createLogRequestFromCertificate(Certificate certificate);
-
-    LogRequest createLogRequestFromCertificate(Certificate certificate, boolean sjf);
+    LogRequest createLogRequestFromCertificate(Certificate certificate, String additionalInfo);
 }
