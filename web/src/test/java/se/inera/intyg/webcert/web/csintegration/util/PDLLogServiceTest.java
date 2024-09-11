@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.web.csintegration.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -409,6 +410,23 @@ class PDLLogServiceTest {
         pdlLogService.logSent(CERTIFICATE);
 
         verify(logService).logSendIntygToRecipient(captor.capture());
+        assertEquals(expectedLogRequest, captor.getValue());
+    }
+
+    @Test
+    void shouldLogSentCertificateWithAdditionalInfoWithRecipient() {
+        final var expectedLogRequest = "Läsning i enlighet med sammanhållen journalföring. Intyg skickat till mottagare recipientName";
+        final var captor = ArgumentCaptor.forClass(String.class);
+        final var mockedUser = mock(WebCertUser.class);
+
+        doReturn(LogRequest.builder().build()).when(logRequestFactory)
+            .createLogRequestFromCertificate(CERTIFICATE, ADDITIONAL_INFO + ". " + ADDITIONAL_WITH_RECIPIENT_MESSAGE + RECIPIENT_NAME);
+        doReturn(mockedUser).when(webCertUserService).getUser();
+        doReturn(additionalInfoIntegrationParameter()).when(mockedUser).getParameters();
+
+        pdlLogService.logSent(CERTIFICATE);
+
+        verify(logRequestFactory).createLogRequestFromCertificate(eq(CERTIFICATE), captor.capture());
         assertEquals(expectedLogRequest, captor.getValue());
     }
 
