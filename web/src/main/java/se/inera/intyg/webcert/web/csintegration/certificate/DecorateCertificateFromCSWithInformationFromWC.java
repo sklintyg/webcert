@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,7 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
 @Service
 public class DecorateCertificateFromCSWithInformationFromWC {
 
+    private static final String PERSON_ID_TYPE = "PERSON_NUMMER";
     private final WebCertUserService webCertUserService;
 
     public void decorate(Certificate certificate) {
@@ -50,7 +52,9 @@ public class DecorateCertificateFromCSWithInformationFromWC {
     }
 
     private Patient decoratePatient(IntegrationParameters parameters, Patient patient) {
-        return patient.withPreviousPersonId(getPreviousPersonId(parameters, patient))
+        return patient
+            .withPersonId(getPersonId(parameters, patient))
+            .withPreviousPersonId(getPreviousPersonId(parameters, patient))
             .withPersonIdChanged(isPatientIdChanged(parameters, patient))
             .withDifferentNameFromEHR(isPatientNameDifferent(parameters, patient))
             .withReserveId(hasReserveId(parameters));
@@ -61,18 +65,30 @@ public class DecorateCertificateFromCSWithInformationFromWC {
             final var personnummer = Personnummer.createPersonnummer(parameters.getBeforeAlternateSsn()).orElse(null);
             return PersonId.builder()
                 .id(personnummer != null ? personnummer.getPersonnummerWithDash() : parameters.getBeforeAlternateSsn())
-                .type("PERSON_NUMMER")
+                .type(PERSON_ID_TYPE)
                 .build();
         }
 
         if (isAlternateSSNSet(parameters)) {
             return PersonId.builder()
                 .id(patient.getPersonId().getId())
-                .type("PERSON_NUMMER")
+                .type(PERSON_ID_TYPE)
                 .build();
         }
 
         return null;
+    }
+
+    private PersonId getPersonId(IntegrationParameters parameters, Patient patient) {
+        final var patientId = Personnummer.createPersonnummer(patient.getPersonId().getId()).orElse(null);
+        final var id = !isAlternateSSNSet(parameters)
+            || isPersonIdSameAsAlternateSSN(patientId, parameters)
+            ? Objects.requireNonNull(patientId).getPersonnummerWithDash()
+            : parameters.getAlternateSsn();
+        return PersonId.builder()
+            .id(id)
+            .type(PERSON_ID_TYPE)
+            .build();
     }
 
     private boolean isPatientIdChanged(IntegrationParameters parameters, Patient patient) {

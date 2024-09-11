@@ -132,6 +132,71 @@ class DecorateCertificateFromCSWithInformationFromWCTest {
     }
 
     @Nested
+    class PatientId {
+
+        @Test
+        void shallHaveAlternateSSNAsPatientIdIfPatientIdHasBeenReplaced() {
+            final var parameters = createIntegrationParameters(ALTERNATE_PATIENT_ID, FIRST_NAME, LAST_NAME);
+            parameters.setBeforeAlternateSsn(PATIENT_ID);
+            user.setParameters(parameters);
+
+            when(webCertUser.getParameters())
+                .thenReturn(parameters);
+
+            final var certificate = createCertificate();
+            decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+
+            assertEquals(ALTERNATE_PATIENT_ID, certificate.getMetadata().getPatient().getPersonId().getId());
+            assertTrue(certificate.getMetadata().getPatient().isPersonIdChanged());
+        }
+
+        @Test
+        void shallHaveOriginalIdIfAlternateSSNIsEmpty() {
+            final var parameters = createIntegrationParameters("", FIRST_NAME, LAST_NAME);
+            user.setParameters(parameters);
+
+            when(webCertUser.getParameters())
+                .thenReturn(parameters);
+
+            final var certificate = createCertificate();
+            decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+
+            assertEquals(PATIENT_ID, certificate.getMetadata().getPatient().getPersonId().getId());
+            assertFalse(certificate.getMetadata().getPatient().isPersonIdChanged());
+        }
+
+        @Test
+        void shallHaveOriginalPatientIdIfAlternateSSNIsNull() {
+            final var parameters = createIntegrationParameters(null, FIRST_NAME, LAST_NAME);
+            user.setParameters(parameters);
+
+            when(webCertUser.getParameters())
+                .thenReturn(parameters);
+
+            final var certificate = createCertificate();
+            decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+
+            assertEquals(PATIENT_ID, certificate.getMetadata().getPatient().getPersonId().getId());
+            assertFalse(certificate.getMetadata().getPatient().isPersonIdChanged());
+        }
+
+        @Test
+        void shallHaveAlternateSSNAsPatientIdIfSet() {
+            final var parameters = createIntegrationParameters(ALTERNATE_PATIENT_ID, FIRST_NAME, LAST_NAME);
+            user.setParameters(parameters);
+
+            when(webCertUser.getParameters())
+                .thenReturn(parameters);
+
+            final var certificate = createCertificate();
+            decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+
+            assertEquals(ALTERNATE_PATIENT_ID, certificate.getMetadata().getPatient().getPersonId().getId());
+            assertTrue(certificate.getMetadata().getPatient().isPersonIdChanged());
+        }
+    }
+
+    @Nested
     class PreviousId {
 
         @Test
