@@ -52,7 +52,7 @@ public class CreateMessageFromCertificateService implements CreateQuestionFacade
             csIntegrationRequestFactory.createMessageRequest(
                 type,
                 message,
-                certificate.getMetadata().getPatient().getPersonId().getId()
+                certificate.getMetadata().getPatient().getActualPersonId().getId()
             ),
             certificateId
         );

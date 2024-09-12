@@ -30,7 +30,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.Base64;
 import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -76,7 +75,6 @@ class CSIntegrationRequestFactoryTest {
     private static final String MESSAGE = "message";
     private static final Question QUESTION = Question.builder().build();
     private static final List<String> UNIT_IDS = List.of("unitId");
-    private static final Map<String, List<String>> CARE_UNIT_HIERARCHY_MAP = Map.of("hsaId", List.of("id1", "id2"));
     @Mock
     MessageRequestConverter messageRequestConverter;
     @Mock
@@ -102,13 +100,9 @@ class CSIntegrationRequestFactoryTest {
         .build();
     private static final Certificate CERTIFICATE = new Certificate();
     private static final String PATIENT_ID = "191212121212";
-    private static final String RESERVE_ID = "194011306125";
-    private static final String ALTERNATE_PATIENT_ID = "201212121212";
     private static final String COORDINATION_NUMBER_PATIENT_ID = "191212721212";
     private static final String EXTERNAL_REFERENCE = "REF";
     private static final Personnummer PERSONNUMMER = Personnummer.createPersonnummer(PATIENT_ID).orElseThrow();
-    private static final Personnummer ALTERNATE_PERSONNUMMER = Personnummer.createPersonnummer(ALTERNATE_PATIENT_ID).orElseThrow();
-    private static final Personnummer RESERVE_PERSONNUMMER = Personnummer.createPersonnummer(RESERVE_ID).orElseThrow();
     private static final Personnummer COORDINATION_PERSONNUMMER = Personnummer.createPersonnummer(COORDINATION_NUMBER_PATIENT_ID)
         .orElseThrow();
     private static final CertificateServiceUserDTO USER = CertificateServiceUserDTO.builder().build();
@@ -121,14 +115,6 @@ class CSIntegrationRequestFactoryTest {
                 .id(PATIENT_ID)
                 .build()
         )
-        .build();
-    private static final Patient PATIENT_WITH_RESERVE_NUMBER = Patient.builder()
-        .previousPersonId(
-            PersonId.builder()
-                .id(RESERVE_ID)
-                .build()
-        )
-        .reserveId(true)
         .build();
     private static final CertificateServicePatientDTO PATIENT = CertificateServicePatientDTO.builder().build();
     private static final ListFilter LIST_FILTER = new ListFilter();
@@ -1133,25 +1119,6 @@ class CSIntegrationRequestFactoryTest {
         }
 
         @Test
-        void shouldSetPatientUsingAlternateSSNIfSet() {
-            when(integrationParameters.getAlternateSsn())
-                .thenReturn(ALTERNATE_PATIENT_ID);
-            final var actualRequest = csIntegrationRequestFactory.replaceCertificateRequest(PATIENT_WITH_ID, integrationParameters);
-
-            verify(certificateServicePatientHelper).get(ALTERNATE_PERSONNUMMER);
-            assertEquals(PATIENT, actualRequest.getPatient());
-        }
-
-        @Test
-        void shouldSetPatientUsingPreviousIdIfReserveNumber() {
-            final var actualRequest = csIntegrationRequestFactory.replaceCertificateRequest(PATIENT_WITH_RESERVE_NUMBER,
-                integrationParameters);
-
-            verify(certificateServicePatientHelper).get(RESERVE_PERSONNUMMER);
-            assertEquals(PATIENT, actualRequest.getPatient());
-        }
-
-        @Test
         void shouldSetExternalReference() {
             final var actualRequest = csIntegrationRequestFactory.replaceCertificateRequest(PATIENT_WITH_ID, integrationParameters);
             assertEquals(EXTERNAL_REFERENCE, actualRequest.getExternalReference());
@@ -1213,25 +1180,6 @@ class CSIntegrationRequestFactoryTest {
         }
 
         @Test
-        void shouldSetPatientUsingAlternateSSNIfSet() {
-            when(integrationParameters.getAlternateSsn())
-                .thenReturn(ALTERNATE_PATIENT_ID);
-            final var actualRequest = csIntegrationRequestFactory.renewCertificateRequest(PATIENT_WITH_ID, integrationParameters);
-
-            verify(certificateServicePatientHelper).get(ALTERNATE_PERSONNUMMER);
-            assertEquals(PATIENT, actualRequest.getPatient());
-        }
-
-        @Test
-        void shouldSetPatientUsingPreviousIdIfReserveNumber() {
-            final var actualRequest = csIntegrationRequestFactory.renewCertificateRequest(PATIENT_WITH_RESERVE_NUMBER,
-                integrationParameters);
-
-            verify(certificateServicePatientHelper).get(RESERVE_PERSONNUMMER);
-            assertEquals(PATIENT, actualRequest.getPatient());
-        }
-
-        @Test
         void shouldSetExternalReference() {
             final var actualRequest = csIntegrationRequestFactory.renewCertificateRequest(PATIENT_WITH_ID, integrationParameters);
             assertEquals(EXTERNAL_REFERENCE, actualRequest.getExternalReference());
@@ -1289,25 +1237,6 @@ class CSIntegrationRequestFactoryTest {
             final var actualRequest = csIntegrationRequestFactory.complementCertificateRequest(PATIENT_WITH_ID, integrationParameters);
 
             verify(certificateServicePatientHelper).get(PERSONNUMMER);
-            assertEquals(PATIENT, actualRequest.getPatient());
-        }
-
-        @Test
-        void shouldSetPatientUsingAlternateSSNIfSet() {
-            when(integrationParameters.getAlternateSsn())
-                .thenReturn(ALTERNATE_PATIENT_ID);
-            final var actualRequest = csIntegrationRequestFactory.complementCertificateRequest(PATIENT_WITH_ID, integrationParameters);
-
-            verify(certificateServicePatientHelper).get(ALTERNATE_PERSONNUMMER);
-            assertEquals(PATIENT, actualRequest.getPatient());
-        }
-
-        @Test
-        void shouldSetPatientUsingPreviousIdIfReserveNumber() {
-            final var actualRequest = csIntegrationRequestFactory.complementCertificateRequest(PATIENT_WITH_RESERVE_NUMBER,
-                integrationParameters);
-
-            verify(certificateServicePatientHelper).get(RESERVE_PERSONNUMMER);
             assertEquals(PATIENT, actualRequest.getPatient());
         }
 

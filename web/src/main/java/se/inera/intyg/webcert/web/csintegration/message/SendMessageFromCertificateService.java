@@ -59,7 +59,7 @@ public class SendMessageFromCertificateService implements SendQuestionFacadeServ
 
         final var sentMessage = csIntegrationService.sendMessage(
             csIntegrationRequestFactory.sendMessageRequest(
-                certificate.getMetadata().getPatient().getPersonId().getId()
+                certificate.getMetadata().getPatient().getActualPersonId().getId()
             ),
             question.getId()
         );

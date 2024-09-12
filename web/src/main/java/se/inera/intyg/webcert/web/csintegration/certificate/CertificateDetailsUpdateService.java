@@ -52,7 +52,7 @@ public class CertificateDetailsUpdateService {
                 certificate,
                 shouldUpdatePatientDetails
                     ? user.getParameters().getAlternateSsn()
-                    : certificate.getMetadata().getPatient().getPersonId().getId(),
+                    : certificate.getMetadata().getPatient().getActualPersonId().getId(),
                 shouldSetExternalReference
                     ? user.getParameters().getReference()
                     : null
