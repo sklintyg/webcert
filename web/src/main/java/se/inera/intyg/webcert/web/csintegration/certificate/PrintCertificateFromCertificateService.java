@@ -56,7 +56,7 @@ public class PrintCertificateFromCertificateService {
             certificateId,
             csIntegrationRequestFactory.getPrintCertificateRequest(
                 "Intyget är utskrivet från Webcert.",
-                certificate.getMetadata().getPatient().getPersonId().getId()
+                certificate.getMetadata().getPatient().getActualPersonId().getId()
             )
         );
 

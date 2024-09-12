@@ -51,7 +51,7 @@ public class GetQuestionsFromCertificateService {
 
         return csIntegrationService.getQuestions(
             csIntegrationRequestFactory.getCertificateMessageRequest(
-                certificate.getMetadata().getPatient().getPersonId().getId()
+                certificate.getMetadata().getPatient().getActualPersonId().getId()
             ),
             certificateId
         );

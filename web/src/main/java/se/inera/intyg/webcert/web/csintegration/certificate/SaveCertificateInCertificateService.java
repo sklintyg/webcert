@@ -57,7 +57,7 @@ public class SaveCertificateInCertificateService implements SaveCertificateFacad
         final var savedCertificate = csIntegrationService.saveCertificate(
             csIntegrationRequestFactory.saveRequest(
                 certificate,
-                certificate.getMetadata().getPatient().getPersonId().getId()
+                certificate.getMetadata().getPatient().getActualPersonId().getId()
             )
         );
 

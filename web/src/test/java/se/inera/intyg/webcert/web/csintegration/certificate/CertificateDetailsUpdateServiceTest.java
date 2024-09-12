@@ -93,7 +93,23 @@ class CertificateDetailsUpdateServiceTest {
                 )
                 .build()
         );
-        savedCertificate = certificate;
+        savedCertificate = new Certificate();
+        savedCertificate.setMetadata(
+            CertificateMetadata.builder()
+                .id(CERTIFICATE_ID)
+                .type(CERTIFICATE_TYPE)
+                .typeVersion(TYPE_VERSION)
+                .patient(
+                    Patient.builder()
+                        .personId(
+                            PersonId.builder()
+                                .id(ALTERNATE_SSN)
+                                .build()
+                        )
+                        .build()
+                )
+                .build()
+        );
         WEBCERT_USER.setParameters(integrationParameters);
     }
 
@@ -163,7 +179,7 @@ class CertificateDetailsUpdateServiceTest {
             doReturn(savedCertificate).when(csIntegrationService).saveCertificate(SAVE_CERTIFICATE_REQUEST_DTO);
 
             certificateDetailsUpdateService.update(certificate, WEBCERT_USER, PERSONAL_NUMBER);
-            verify(publishCertificateStatusUpdateService).publish(certificate, HandelsekodEnum.ANDRAT);
+            verify(publishCertificateStatusUpdateService).publish(savedCertificate, HandelsekodEnum.ANDRAT);
         }
 
         @Test

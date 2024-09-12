@@ -181,7 +181,8 @@ public class CSIntegrationRequestFactory {
             .build();
     }
 
-    public GetPatientCertificatesRequestDTO getPatientCertificatesRequest(String patientId) {
+    public GetPatientCertificatesRequestDTO getPatientCertificatesRequest(
+        String patientId) {
         return GetPatientCertificatesRequestDTO.builder()
             .patient(certificateServicePatientHelper.get(createPatientId(patientId)))
             .unit(certificateServiceUnitHelper.getUnit())
@@ -213,7 +214,9 @@ public class CSIntegrationRequestFactory {
     public ValidateCertificateRequestDTO getValidateCertificateRequest(Certificate certificate) {
         return ValidateCertificateRequestDTO.builder()
             .user(certificateServiceUserHelper.get())
-            .patient(certificateServicePatientHelper.get(createPatientId(certificate.getMetadata().getPatient().getPersonId().getId())))
+            .patient(
+                certificateServicePatientHelper.get(createPatientId(certificate.getMetadata().getPatient().getActualPersonId().getId()))
+            )
             .unit(certificateServiceUnitHelper.getUnit())
             .careUnit(certificateServiceUnitHelper.getCareUnit())
             .careProvider(certificateServiceUnitHelper.getCareProvider())
@@ -313,7 +316,7 @@ public class CSIntegrationRequestFactory {
             .careUnit(certificateServiceUnitHelper.getCareUnit())
             .careProvider(certificateServiceUnitHelper.getCareProvider())
             .user(certificateServiceUserHelper.get())
-            .patient(certificateServicePatientHelper.get(getPatientId(patient, integrationParameters)))
+            .patient(certificateServicePatientHelper.get(createPatientId(patient.getActualPersonId().getId())))
             .externalReference(getExternalReference(integrationParameters))
             .build();
     }
@@ -324,7 +327,7 @@ public class CSIntegrationRequestFactory {
             .careUnit(certificateServiceUnitHelper.getCareUnit())
             .careProvider(certificateServiceUnitHelper.getCareProvider())
             .user(certificateServiceUserHelper.get())
-            .patient(certificateServicePatientHelper.get(getPatientId(patient, integrationParameters)))
+            .patient(certificateServicePatientHelper.get(createPatientId(patient.getActualPersonId().getId())))
             .externalReference(getExternalReference(integrationParameters))
             .build();
     }
@@ -335,7 +338,7 @@ public class CSIntegrationRequestFactory {
             .careUnit(certificateServiceUnitHelper.getCareUnit())
             .careProvider(certificateServiceUnitHelper.getCareProvider())
             .user(certificateServiceUserHelper.get())
-            .patient(certificateServicePatientHelper.get(getPatientId(patient, integrationParameters)))
+            .patient(certificateServicePatientHelper.get(createPatientId(patient.getActualPersonId().getId())))
             .externalReference(getExternalReference(integrationParameters))
             .build();
     }
@@ -378,23 +381,8 @@ public class CSIntegrationRequestFactory {
             );
     }
 
-    private boolean isAlternateSSNDefined(IntegrationParameters integrationParameters) {
-        return integrationParameters != null && integrationParameters.getAlternateSsn() != null && !integrationParameters.getAlternateSsn()
-            .isEmpty();
-    }
-
     private String getExternalReference(IntegrationParameters integrationParameters) {
         return integrationParameters == null ? null : integrationParameters.getReference();
-    }
-
-    private Personnummer getPatientId(Patient patient, IntegrationParameters integrationParameters) {
-        if (patient.isReserveId()) {
-            return createPatientId(patient.getPreviousPersonId().getId());
-        }
-
-        return isAlternateSSNDefined(integrationParameters)
-            ? createPatientId(integrationParameters.getAlternateSsn())
-            : createPatientId(patient.getPersonId().getId());
     }
 
     public GetCitizenCertificateRequestDTO getCitizenCertificateRequest(String personId) {
