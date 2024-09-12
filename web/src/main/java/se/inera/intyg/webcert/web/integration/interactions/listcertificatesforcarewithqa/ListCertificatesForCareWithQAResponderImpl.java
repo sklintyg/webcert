@@ -117,7 +117,8 @@ public class ListCertificatesForCareWithQAResponderImpl implements ListCertifica
         list.getItem().addAll(listItemsFromCS);
         response.setList(list);
         log.info(
-            "Request processing completed. PersonId: '{}' CareProviderId '{}' UnitIds '{}'. Returning '{}' number of certificates. Elapsed time: '{}' seconds",
+            "Request processing completed. PersonId: '{}' CareProviderId '{}' UnitIds '{}'."
+                + " Returning '{}' number of certificates. Elapsed time: '{}' seconds",
             HashUtility.hash(intygWithNotificationsRequest.getPersonnummer().getPersonnummer()),
             intygWithNotificationsRequest.getVardgivarId(),
             intygWithNotificationsRequest.getEnhetId(),
