@@ -19,48 +19,36 @@
 
 package se.inera.intyg.webcert.web.csintegration.patient;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.web.integration.interactions.listcertificatesforcarewithqa.HandelseFactory;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsRequest;
-import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.HandelseList;
 import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.ListItem;
 
 @Service
 @RequiredArgsConstructor
-public class PatientListItemsWithQaService {
+public class ListItemNotificationDecorator {
 
-    private final NotificationService notificationService;
-
-    public List<ListItem> get(IntygWithNotificationsRequest request, List<ListItem> listItems) {
+    public void decorate(List<ListItem> listItems, List<Handelse> notifications) {
         if (listItems.isEmpty()) {
-            return Collections.emptyList();
+            return;
         }
 
-        final var allNotifications = notificationService.findNotifications(request);
-        final var notificationMap = allNotifications.stream()
+        final var notificationMap = notifications.stream()
             .collect(Collectors.groupingBy(Handelse::getIntygsId));
 
-        final var listItemsWithQA = listItems.stream()
-            .filter(listItem -> notificationMap.containsKey(listItem.getIntyg().getIntygsId().getExtension()))
-            .collect(Collectors.toList());
-
-        listItemsWithQA.forEach(
+        listItems.forEach(
             listItem -> decorateWithNotification(listItem, notificationMap.get(listItem.getIntyg().getIntygsId().getExtension()))
         );
-
-        return listItemsWithQA;
     }
 
-    private void decorateWithNotification(ListItem listItem, List<Handelse> handelse) {
+    private void decorateWithNotification(ListItem listItem, List<Handelse> notifications) {
         final var eventList = new HandelseList();
         eventList.getHandelse().addAll(
-            handelse.stream()
+            notifications.stream()
                 .map(HandelseFactory::toHandelse)
                 .collect(Collectors.toList())
         );

@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.service.intyg;
 import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
@@ -170,7 +171,7 @@ public interface IntygService {
      * IntygWithNotificationsResponse objects.
      */
     List<IntygWithNotificationsResponse> listCertificatesForCareWithQA(IntygWithNotificationsRequest request,
-        List<String> certificateIdsFromCS);
+        List<Handelse> notificationsForWC);
 
     /**
      * Gets the certificate's type from utkast entity or Intygstjanst.

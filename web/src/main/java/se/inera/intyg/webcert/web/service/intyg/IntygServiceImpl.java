@@ -676,19 +676,14 @@ public class IntygServiceImpl implements IntygService {
 
     @Override
     public List<IntygWithNotificationsResponse> listCertificatesForCareWithQA(IntygWithNotificationsRequest request,
-        List<String> certificateIdsFromCS) {
+        List<Handelse> notificationsForWC) {
         final var intygWithNotificationsResponses = new ArrayList<IntygWithNotificationsResponse>();
 
-        final var allNotifications = notificationService.findNotifications(request);
-
-        final var notificationCertificateIdHash = getNotificationCertificateIdHash(allNotifications);
+        final var notificationCertificateIdHash = getNotificationCertificateIdHash(notificationsForWC);
 
         final var draftMap = getDraftMap(notificationCertificateIdHash.keySet());
 
         for (var certificateId : notificationCertificateIdHash.keySet()) {
-            if (certificateIdsFromCS.contains(certificateId)) {
-                continue;
-            }
 
             final var notifications = notificationCertificateIdHash.get(certificateId);
 

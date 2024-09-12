@@ -23,6 +23,7 @@ import java.time.LocalDate;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.Certificate;
@@ -32,6 +33,7 @@ import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.AnswerComplementRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateComplementRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
@@ -84,7 +86,6 @@ import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitHelpe
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceIntegrationUserHelper;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserHelper;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
@@ -538,11 +539,13 @@ public class CSIntegrationRequestFactory {
             .build();
     }
 
-    public PatientCertificatesWithQARequestDTO getPatientCertificatesWithQARequestDTO(IntygWithNotificationsRequest request) {
+    public PatientCertificatesWithQARequestDTO getPatientCertificatesWithQARequestDTO(List<Handelse> notifications) {
         return PatientCertificatesWithQARequestDTO.builder()
-            .personId(certificateServicePatientHelper.getPersonId(request.getPersonnummer()))
-            .careProviderId(request.getVardgivarId())
-            .unitIds(request.getEnhetId())
+            .certificateIds(
+                notifications.stream()
+                    .map(Handelse::getIntygsId)
+                    .collect(Collectors.toList())
+            )
             .build();
     }
 

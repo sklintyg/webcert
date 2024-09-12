@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.verify;
 
 import java.util.Collections;
 import javax.xml.bind.JAXBElement;
@@ -34,20 +35,23 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.xml.XmlMarshallerHelper;
+import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PatientCertificatesWithQARequestDTO;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsRequest.Builder;
 import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.List;
 import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.ListCertificatesForCareWithQAResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.ListItem;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
 @ExtendWith(MockitoExtension.class)
-class GetPatientCertificatesWithQAFromCertificateServiceTest {
+class GetCertificatesWithQAFromCertificateServiceTest {
 
+    private static final String CERTIFICATE_ID = "certificateId";
     @Mock
-    PatientListItemsWithQaService patientListItemsWithQaService;
+    ListItemNotificationDecorator listItemNotificationDecorator;
     @Mock
     CertificateServiceProfile certificateServiceProfile;
     @Mock
@@ -55,28 +59,36 @@ class GetPatientCertificatesWithQAFromCertificateServiceTest {
     @Mock
     CSIntegrationRequestFactory csIntegrationRequestFactory;
     @InjectMocks
-    GetPatientCertificatesWithQAFromCertificateService getPatientCertificatesWithQAFromCertificateService;
+    GetCertificatesWithQAFromCertificateService getCertificatesWithQAFromCertificateService;
 
     @Test
     void shallReturnEmptyListIfCertificateServiceProfileIsNotActive() {
-        final var request = new Builder().build();
+        final var notifications = Collections.singletonList(new Handelse());
         doReturn(false).when(certificateServiceProfile).active();
-        assertEquals(Collections.emptyList(), getPatientCertificatesWithQAFromCertificateService.get(request));
+        assertEquals(Collections.emptyList(), getCertificatesWithQAFromCertificateService.get(notifications));
     }
 
     @Test
     void shallReturnListOfListItemIfCertificateServiceProfileIsActive() {
-        final var request = new Builder().build();
+        final var notification = new Handelse();
+        notification.setIntygsId(CERTIFICATE_ID);
+        final var notifications = Collections.singletonList(notification);
         final var certificatesWithQARequestDTO = PatientCertificatesWithQARequestDTO.builder().build();
         final var encodedXml = "encodedXml";
 
         doReturn(true).when(certificateServiceProfile).active();
-        doReturn(certificatesWithQARequestDTO).when(csIntegrationRequestFactory).getPatientCertificatesWithQARequestDTO(request);
+        doReturn(certificatesWithQARequestDTO).when(csIntegrationRequestFactory).getPatientCertificatesWithQARequestDTO(notifications);
         doReturn(encodedXml).when(csIntegrationService).getPatientCertificatesWithQA(certificatesWithQARequestDTO);
 
         final var listCertificatesForCareWithQAResponseType = new ListCertificatesForCareWithQAResponseType();
         final var list = new List();
-        list.getItem().add(new ListItem());
+        final var listItem = new ListItem();
+        final var intyg = new Intyg();
+        final var intygId = new IntygId();
+        intygId.setExtension(CERTIFICATE_ID);
+        intyg.setIntygsId(intygId);
+        listItem.setIntyg(intyg);
+        list.getItem().add(listItem);
         listCertificatesForCareWithQAResponseType.setList(list);
         final var expectedListItem = list.getItem();
         final var jaxbElement = mock(JAXBElement.class);
@@ -86,10 +98,47 @@ class GetPatientCertificatesWithQAFromCertificateServiceTest {
             xmlMarshallerHelperMockedStatic.when(() -> XmlMarshallerHelper.unmarshal(anyString()))
                 .thenReturn(jaxbElement);
             doReturn(listCertificatesForCareWithQAResponseType).when(jaxbElement).getValue();
-            doReturn(expectedListItem).when(patientListItemsWithQaService).get(request, list.getItem());
 
-            final var actualListItem = getPatientCertificatesWithQAFromCertificateService.get(request);
+            final var actualListItem = getCertificatesWithQAFromCertificateService.get(notifications);
             assertEquals(expectedListItem, actualListItem);
+        }
+    }
+
+    @Test
+    void shallFilterNotificationsToOnlyContainNotificationsForCertificatesFromCertificateService() {
+        final var notification1 = new Handelse();
+        final var notification2 = new Handelse();
+        notification1.setIntygsId(CERTIFICATE_ID);
+        notification2.setIntygsId("invalidCertificateId");
+        final var notifications = java.util.List.of(notification1, notification2);
+        final var certificatesWithQARequestDTO = PatientCertificatesWithQARequestDTO.builder().build();
+        final var encodedXml = "encodedXml";
+
+        doReturn(true).when(certificateServiceProfile).active();
+        doReturn(certificatesWithQARequestDTO).when(csIntegrationRequestFactory).getPatientCertificatesWithQARequestDTO(notifications);
+        doReturn(encodedXml).when(csIntegrationService).getPatientCertificatesWithQA(certificatesWithQARequestDTO);
+
+        final var listCertificatesForCareWithQAResponseType = new ListCertificatesForCareWithQAResponseType();
+        final var list = new List();
+        final var listItem = new ListItem();
+        final var intyg = new Intyg();
+        final var intygId = new IntygId();
+        intygId.setExtension(CERTIFICATE_ID);
+        intyg.setIntygsId(intygId);
+        listItem.setIntyg(intyg);
+        list.getItem().add(listItem);
+        listCertificatesForCareWithQAResponseType.setList(list);
+        
+        final var jaxbElement = mock(JAXBElement.class);
+
+        try (MockedStatic<XmlMarshallerHelper> xmlMarshallerHelperMockedStatic = mockStatic(
+            XmlMarshallerHelper.class)) {
+            xmlMarshallerHelperMockedStatic.when(() -> XmlMarshallerHelper.unmarshal(anyString()))
+                .thenReturn(jaxbElement);
+            doReturn(listCertificatesForCareWithQAResponseType).when(jaxbElement).getValue();
+
+            getCertificatesWithQAFromCertificateService.get(notifications);
+            verify(listItemNotificationDecorator).decorate(list.getItem(), java.util.List.of(notification1));
         }
     }
 }

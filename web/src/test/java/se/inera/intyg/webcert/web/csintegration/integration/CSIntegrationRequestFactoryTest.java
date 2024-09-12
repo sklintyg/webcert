@@ -28,6 +28,7 @@ import static org.mockito.Mockito.when;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,6 +46,7 @@ import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesQueryCriteriaDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificatePdfRequestDTO;
@@ -63,7 +65,6 @@ import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceIntegrati
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserDTO;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserHelper;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
@@ -2015,31 +2016,23 @@ class CSIntegrationRequestFactoryTest {
     @Nested
     class PatientCertificatesWithQARequestDTOTest {
 
-        private final PersonIdDTO expectedPersonId = PersonIdDTO.builder().build();
-        private static final String CARE_PROVIDER_ID = "careProviderId";
-        private final IntygWithNotificationsRequest request = new IntygWithNotificationsRequest.Builder()
-            .setPersonnummer(PERSONNUMMER)
-            .setEnhetId(UNIT_IDS)
-            .setVardgivarId(CARE_PROVIDER_ID)
-            .build();
+        private static final String CERTIFICATE_ID = "certificateId";
+        private List<Handelse> notifications;
 
-        @Test
-        void shouldSetPersonIdDTO() {
-            doReturn(expectedPersonId).when(certificateServicePatientHelper).getPersonId(PERSONNUMMER);
-            final var actualRequest = csIntegrationRequestFactory.getPatientCertificatesWithQARequestDTO(request);
-            assertEquals(expectedPersonId, actualRequest.getPersonId());
+        @BeforeEach
+        void setUp() {
+            notifications = new ArrayList<>();
+            final var event1 = new Handelse();
+            final var event2 = new Handelse();
+            event1.setIntygsId(CERTIFICATE_ID);
+            event2.setIntygsId(CERTIFICATE_ID);
+            notifications.addAll(List.of(event1, event2));
         }
 
         @Test
-        void shouldSetCareProviderId() {
-            final var actualRequest = csIntegrationRequestFactory.getPatientCertificatesWithQARequestDTO(request);
-            assertEquals(CARE_PROVIDER_ID, actualRequest.getCareProviderId());
-        }
-
-        @Test
-        void shouldSetUnitIds() {
-            final var actualRequest = csIntegrationRequestFactory.getPatientCertificatesWithQARequestDTO(request);
-            assertEquals(UNIT_IDS, actualRequest.getUnitIds());
+        void shouldSetCertificateIds() {
+            final var actualRequest = csIntegrationRequestFactory.getPatientCertificatesWithQARequestDTO(notifications);
+            assertEquals(List.of(CERTIFICATE_ID, CERTIFICATE_ID), actualRequest.getCertificateIds());
         }
     }
 

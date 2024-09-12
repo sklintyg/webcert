@@ -25,16 +25,13 @@ import java.util.List;
 import lombok.Builder;
 import lombok.Value;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PatientCertificatesWithQARequestDTO.GetPatientCertificatesWithQARequestDTOBuilder;
-import se.inera.intyg.webcert.web.csintegration.patient.PersonIdDTO;
 
 @JsonDeserialize(builder = GetPatientCertificatesWithQARequestDTOBuilder.class)
 @Value
 @Builder
 public class PatientCertificatesWithQARequestDTO {
 
-    PersonIdDTO personId;
-    List<String> unitIds;
-    String careProviderId;
+    List<String> certificateIds;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class GetPatientCertificatesWithQARequestDTOBuilder {

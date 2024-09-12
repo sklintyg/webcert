@@ -23,38 +23,54 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.xml.XmlMarshallerHelper;
+import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsRequest;
 import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.ListCertificatesForCareWithQAResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.ListItem;
 
 @Component
 @RequiredArgsConstructor
-public class GetPatientCertificatesWithQAFromCertificateService {
+public class GetCertificatesWithQAFromCertificateService {
 
     private final CertificateServiceProfile certificateServiceProfile;
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
-    private final PatientListItemsWithQaService patientListItemsWithQaService;
+    private final ListItemNotificationDecorator listItemNotificationDecorator;
 
-    public List<ListItem> get(IntygWithNotificationsRequest request) {
+    public List<ListItem> get(List<Handelse> notifications) {
         if (!certificateServiceProfile.active()) {
             return Collections.emptyList();
         }
 
         final var encodedXml = csIntegrationService.getPatientCertificatesWithQA(
-            csIntegrationRequestFactory.getPatientCertificatesWithQARequestDTO(request)
+            csIntegrationRequestFactory.getPatientCertificatesWithQARequestDTO(notifications)
         );
 
         final var decodedXml = new String(Base64.getDecoder().decode(encodedXml.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8);
         final var certificatesForCareWithQAResponseType = (ListCertificatesForCareWithQAResponseType) XmlMarshallerHelper.unmarshal(
             decodedXml).getValue();
 
-        return patientListItemsWithQaService.get(request, certificatesForCareWithQAResponseType.getList().getItem());
+        final var listItems = certificatesForCareWithQAResponseType.getList().getItem();
+        
+        listItemNotificationDecorator.decorate(
+            listItems,
+            notifications.stream()
+                .filter(removeNotificationsNotRelatedToCertificatesFromCertificateService(listItems))
+                .collect(Collectors.toList())
+        );
+
+        return listItems;
+    }
+
+    private static Predicate<Handelse> removeNotificationsNotRelatedToCertificatesFromCertificateService(List<ListItem> listItems) {
+        return notification -> listItems.stream()
+            .anyMatch(item -> item.getIntyg().getIntygsId().getExtension().equals(notification.getIntygsId()));
     }
 }
