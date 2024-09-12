@@ -33,6 +33,7 @@ import java.time.chrono.ChronoLocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -677,6 +678,10 @@ public class IntygServiceImpl implements IntygService {
     @Override
     public List<IntygWithNotificationsResponse> listCertificatesForCareWithQA(IntygWithNotificationsRequest request,
         List<Handelse> notificationsForWC) {
+        if (notificationsForWC.isEmpty()) {
+            return Collections.emptyList();
+        }
+        
         final var intygWithNotificationsResponses = new ArrayList<IntygWithNotificationsResponse>();
 
         final var notificationCertificateIdHash = getNotificationCertificateIdHash(notificationsForWC);

@@ -69,6 +69,12 @@ class GetCertificatesWithQAFromCertificateServiceTest {
     }
 
     @Test
+    void shallReturnEmptyListIfNotificationsIsEmpty() {
+        doReturn(true).when(certificateServiceProfile).active();
+        assertEquals(Collections.emptyList(), getCertificatesWithQAFromCertificateService.get(Collections.emptyList()));
+    }
+
+    @Test
     void shallReturnListOfListItemIfCertificateServiceProfileIsActive() {
         final var notification = new Handelse();
         notification.setIntygsId(CERTIFICATE_ID);
@@ -128,7 +134,7 @@ class GetCertificatesWithQAFromCertificateServiceTest {
         listItem.setIntyg(intyg);
         list.getItem().add(listItem);
         listCertificatesForCareWithQAResponseType.setList(list);
-        
+
         final var jaxbElement = mock(JAXBElement.class);
 
         try (MockedStatic<XmlMarshallerHelper> xmlMarshallerHelperMockedStatic = mockStatic(

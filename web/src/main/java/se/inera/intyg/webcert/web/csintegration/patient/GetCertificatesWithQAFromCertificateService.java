@@ -45,7 +45,7 @@ public class GetCertificatesWithQAFromCertificateService {
     private final ListItemNotificationDecorator listItemNotificationDecorator;
 
     public List<ListItem> get(List<Handelse> notifications) {
-        if (!certificateServiceProfile.active()) {
+        if (!certificateServiceProfile.active() || notifications.isEmpty()) {
             return Collections.emptyList();
         }
 
@@ -58,7 +58,7 @@ public class GetCertificatesWithQAFromCertificateService {
             decodedXml).getValue();
 
         final var listItems = certificatesForCareWithQAResponseType.getList().getItem();
-        
+
         listItemNotificationDecorator.decorate(
             listItems,
             notifications.stream()

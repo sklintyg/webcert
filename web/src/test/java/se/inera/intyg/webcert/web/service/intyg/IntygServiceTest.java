@@ -1168,6 +1168,14 @@ public class IntygServiceTest {
     }
 
     @Test
+    public void shallReturnEmptyListIfNotificationsIsEmpty() {
+        assertEquals(Collections.emptyList(), intygService.listCertificatesForCareWithQA(
+            new IntygWithNotificationsRequest.Builder().build(),
+            Collections.emptyList())
+        );
+    }
+
+    @Test
     public void testListCertificatesForCareWithQAOk() throws Exception {
         final List<String> enhetList = Collections.singletonList("enhet");
 
