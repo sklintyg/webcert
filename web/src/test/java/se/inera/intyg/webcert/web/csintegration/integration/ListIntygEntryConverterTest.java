@@ -55,8 +55,8 @@ class ListIntygEntryConverterTest {
         "type", CertificateStatus.UNSIGNED, true, "typeVersion");
 
     private static final Personnummer PERSONNUMMER = Personnummer.createPersonnummer("191212121212").get();
-    private final static String RELATION_ID = "relationId";
-    private final static LocalDateTime CREATED = LocalDateTime.now();
+    private static final String RELATION_ID = "relationId";
+    private static final LocalDateTime CREATED = LocalDateTime.now();
 
     @Test
     void shouldConvertCertificateId() {
