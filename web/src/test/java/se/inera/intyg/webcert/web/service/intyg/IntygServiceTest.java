@@ -1170,7 +1170,6 @@ public class IntygServiceTest {
     @Test
     public void shallReturnEmptyListIfNotificationsIsEmpty() {
         assertEquals(Collections.emptyList(), intygService.listCertificatesForCareWithQA(
-            new IntygWithNotificationsRequest.Builder().build(),
             Collections.emptyList())
         );
     }
@@ -1201,7 +1200,6 @@ public class IntygServiceTest {
         when(fragorOchSvarCreator.createArenden(eq(intygId), anyString())).thenReturn(Pair.of(sent, received));
 
         List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(
-            new IntygWithNotificationsRequest.Builder().setPersonnummer(PERSNR).setEnhetId(enhetList).build(),
             Collections.singletonList(handelse));
 
         assertNotNull(res);
@@ -1239,7 +1237,6 @@ public class IntygServiceTest {
         when(utkastRepository.findAllById(any())).thenReturn(Collections.emptyList());
 
         List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(
-            new IntygWithNotificationsRequest.Builder().setPersonnummer(PERSNR).setEnhetId(enhetList).build(),
             Collections.singletonList(handelse));
 
         assertNotNull(res);
@@ -1279,7 +1276,7 @@ public class IntygServiceTest {
         when(fragorOchSvarCreator.createArenden(eq(intygId), anyString())).thenReturn(Pair.of(sent, received));
         doReturn(draftList).when(utkastRepository).findAllById(any());
 
-        List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(request, Collections.singletonList(handelse));
+        List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(Collections.singletonList(handelse));
 
         assertNotNull(res);
         assertEquals(1, res.size());
@@ -1327,7 +1324,7 @@ public class IntygServiceTest {
         when(fragorOchSvarCreator.createArenden(eq(CERTIFICATE_ID), anyString())).thenReturn(Pair.of(sent, received));
         doReturn(Collections.emptyList()).when(utkastRepository).findAllById(any());
 
-        List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(request, Collections.singletonList(handelse));
+        List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(Collections.singletonList(handelse));
 
         assertNotNull(res);
         assertEquals(1, res.size());
@@ -1356,7 +1353,7 @@ public class IntygServiceTest {
         when(notificationService.getNotifications(eq(intygId))).thenReturn(Collections.emptyList());
 
         List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(
-            new IntygWithNotificationsRequest.Builder().setPersonnummer(PERSNR).setEnhetId(enhetList).build(), Collections.emptyList());
+            Collections.emptyList());
 
         assertNotNull(res);
         assertEquals(0, res.size());
@@ -1387,8 +1384,7 @@ public class IntygServiceTest {
         when(fragorOchSvarCreator.createArenden(eq(intygId), anyString())).thenReturn(Pair.of(sent, received));
 
         List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(
-            new IntygWithNotificationsRequest.Builder().setPersonnummer(PERSNR).setVardgivarId(vardgivarId)
-                .build(), Collections.singletonList(handelse));
+            Collections.singletonList(handelse));
 
         assertNotNull(res);
         assertEquals(1, res.size());
@@ -1423,11 +1419,7 @@ public class IntygServiceTest {
             .thenReturn(Collections.emptyList());
 
         List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(
-            new IntygWithNotificationsRequest.Builder()
-                .setPersonnummer(PERSNR)
-                .setVardgivarId(vardgivarId)
-                .setStartDate(start)
-                .setEndDate(end).build(), Collections.emptyList());
+            Collections.emptyList());
 
         assertNotNull(res);
         assertEquals(0, res.size());

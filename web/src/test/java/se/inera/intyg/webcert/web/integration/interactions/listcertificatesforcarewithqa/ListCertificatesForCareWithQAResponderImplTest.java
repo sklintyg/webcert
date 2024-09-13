@@ -83,7 +83,7 @@ public class ListCertificatesForCareWithQAResponderImplTest {
             List.of(
                 new IntygWithNotificationsResponse(null, List.of(handelse), new ArendeCount(1, 1, 1, 1),
                     new ArendeCount(2, 2, 2, 2), REFERENCE)))
-            .when(intygService).listCertificatesForCareWithQA(any(IntygWithNotificationsRequest.class), eq(notifications));
+            .when(intygService).listCertificatesForCareWithQA(eq(notifications));
 
         final var request = getListCertificatesForCareWithQATypeRequest(personnummer, enhet);
 
@@ -160,7 +160,7 @@ public class ListCertificatesForCareWithQAResponderImplTest {
             List.of(
                 new IntygWithNotificationsResponse(null, List.of(handelse), new ArendeCount(1, 1, 1, 1),
                     new ArendeCount(2, 2, 2, 2), REFERENCE)))
-            .when(intygService).listCertificatesForCareWithQA(any(IntygWithNotificationsRequest.class), eq(notifications));
+            .when(intygService).listCertificatesForCareWithQA(eq(notifications));
 
         final var request = getListCertificatesForCareWithQATypeRequest(personnummer, enhet);
 

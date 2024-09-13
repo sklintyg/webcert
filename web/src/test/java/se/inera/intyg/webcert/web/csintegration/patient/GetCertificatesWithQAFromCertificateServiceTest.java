@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.web.csintegration.patient;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -30,6 +31,7 @@ import java.util.Collections;
 import javax.xml.bind.JAXBElement;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
@@ -50,6 +52,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 class GetCertificatesWithQAFromCertificateServiceTest {
 
     private static final String CERTIFICATE_ID = "certificateId";
+    private static final String CERTIFICATE_ID_FROM_WC = "certificateIdFromWc";
     @Mock
     ListItemNotificationDecorator listItemNotificationDecorator;
     @Mock
@@ -83,7 +86,8 @@ class GetCertificatesWithQAFromCertificateServiceTest {
         final var encodedXml = "encodedXml";
 
         doReturn(true).when(certificateServiceProfile).active();
-        doReturn(certificatesWithQARequestDTO).when(csIntegrationRequestFactory).getCertificatesWithQARequestDTO(notifications);
+        doReturn(certificatesWithQARequestDTO).when(csIntegrationRequestFactory)
+            .getCertificatesWithQARequestDTO(java.util.List.of(CERTIFICATE_ID));
         doReturn(encodedXml).when(csIntegrationService).getCertificatesWithQA(certificatesWithQARequestDTO);
 
         final var listCertificatesForCareWithQAResponseType = new ListCertificatesForCareWithQAResponseType();
@@ -111,17 +115,57 @@ class GetCertificatesWithQAFromCertificateServiceTest {
     }
 
     @Test
+    void shallCallCertificateServiceWithDistinctListOfCertificateIds() {
+        final var expectedCertificateIds = java.util.List.of(CERTIFICATE_ID);
+        final var notification1 = new Handelse();
+        notification1.setIntygsId(CERTIFICATE_ID);
+        final var notification2 = new Handelse();
+        notification2.setIntygsId(CERTIFICATE_ID);
+        final var notifications = java.util.List.of(notification1, notification2);
+        final var encodedXml = "encodedXml";
+        final var listArgumentCaptor = ArgumentCaptor.forClass(java.util.List.class);
+
+        doReturn(true).when(certificateServiceProfile).active();
+        doReturn(encodedXml).when(csIntegrationService).getCertificatesWithQA(any());
+
+        final var listCertificatesForCareWithQAResponseType = new ListCertificatesForCareWithQAResponseType();
+        final var list = new List();
+        final var listItem = new ListItem();
+        final var intyg = new Intyg();
+        final var intygId = new IntygId();
+        intygId.setExtension(CERTIFICATE_ID);
+        intyg.setIntygsId(intygId);
+        listItem.setIntyg(intyg);
+        list.getItem().add(listItem);
+        listCertificatesForCareWithQAResponseType.setList(list);
+
+        final var jaxbElement = mock(JAXBElement.class);
+
+        try (MockedStatic<XmlMarshallerHelper> xmlMarshallerHelperMockedStatic = mockStatic(
+            XmlMarshallerHelper.class)) {
+            xmlMarshallerHelperMockedStatic.when(() -> XmlMarshallerHelper.unmarshal(anyString()))
+                .thenReturn(jaxbElement);
+            doReturn(listCertificatesForCareWithQAResponseType).when(jaxbElement).getValue();
+
+            getCertificatesWithQAFromCertificateService.get(notifications);
+            verify(csIntegrationRequestFactory).getCertificatesWithQARequestDTO(listArgumentCaptor.capture());
+            assertEquals(expectedCertificateIds, listArgumentCaptor.getValue());
+        }
+    }
+
+    @Test
     void shallFilterNotificationsToOnlyContainNotificationsForCertificatesFromCertificateService() {
         final var notification1 = new Handelse();
         final var notification2 = new Handelse();
         notification1.setIntygsId(CERTIFICATE_ID);
-        notification2.setIntygsId("invalidCertificateId");
+        notification2.setIntygsId(CERTIFICATE_ID_FROM_WC);
         final var notifications = java.util.List.of(notification1, notification2);
         final var certificatesWithQARequestDTO = CertificatesWithQARequestDTO.builder().build();
         final var encodedXml = "encodedXml";
 
         doReturn(true).when(certificateServiceProfile).active();
-        doReturn(certificatesWithQARequestDTO).when(csIntegrationRequestFactory).getCertificatesWithQARequestDTO(notifications);
+        doReturn(certificatesWithQARequestDTO).when(csIntegrationRequestFactory)
+            .getCertificatesWithQARequestDTO(java.util.List.of(CERTIFICATE_ID, CERTIFICATE_ID_FROM_WC));
         doReturn(encodedXml).when(csIntegrationService).getCertificatesWithQA(certificatesWithQARequestDTO);
 
         final var listCertificatesForCareWithQAResponseType = new ListCertificatesForCareWithQAResponseType();

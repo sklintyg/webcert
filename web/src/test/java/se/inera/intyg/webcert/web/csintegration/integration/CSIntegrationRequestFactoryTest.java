@@ -46,7 +46,6 @@ import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesQueryCriteriaDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificatePdfRequestDTO;
@@ -2017,21 +2016,17 @@ class CSIntegrationRequestFactoryTest {
     class CertificatesWithQARequestDTOTest {
 
         private static final String CERTIFICATE_ID = "certificateId";
-        private List<Handelse> notifications;
+        private List<String> certificateIds;
 
         @BeforeEach
         void setUp() {
-            notifications = new ArrayList<>();
-            final var event1 = new Handelse();
-            final var event2 = new Handelse();
-            event1.setIntygsId(CERTIFICATE_ID);
-            event2.setIntygsId(CERTIFICATE_ID);
-            notifications.addAll(List.of(event1, event2));
+            certificateIds = new ArrayList<>();
+            certificateIds.addAll(List.of(CERTIFICATE_ID, CERTIFICATE_ID));
         }
 
         @Test
         void shouldSetCertificateIds() {
-            final var actualRequest = csIntegrationRequestFactory.getCertificatesWithQARequestDTO(notifications);
+            final var actualRequest = csIntegrationRequestFactory.getCertificatesWithQARequestDTO(certificateIds);
             assertEquals(List.of(CERTIFICATE_ID, CERTIFICATE_ID), actualRequest.getCertificateIds());
         }
     }

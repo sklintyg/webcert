@@ -50,7 +50,12 @@ public class GetCertificatesWithQAFromCertificateService {
         }
 
         final var encodedXml = csIntegrationService.getCertificatesWithQA(
-            csIntegrationRequestFactory.getCertificatesWithQARequestDTO(notifications)
+            csIntegrationRequestFactory.getCertificatesWithQARequestDTO(
+                notifications.stream()
+                    .map(Handelse::getIntygsId)
+                    .distinct()
+                    .collect(Collectors.toList())
+            )
         );
 
         final var decodedXml = new String(Base64.getDecoder().decode(encodedXml.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8);

@@ -23,7 +23,6 @@ import java.time.LocalDate;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.Certificate;
@@ -33,7 +32,6 @@ import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.AnswerComplementRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateComplementRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
@@ -539,13 +537,9 @@ public class CSIntegrationRequestFactory {
             .build();
     }
 
-    public CertificatesWithQARequestDTO getCertificatesWithQARequestDTO(List<Handelse> notifications) {
+    public CertificatesWithQARequestDTO getCertificatesWithQARequestDTO(List<String> certificateIds) {
         return CertificatesWithQARequestDTO.builder()
-            .certificateIds(
-                notifications.stream()
-                    .map(Handelse::getIntygsId)
-                    .collect(Collectors.toList())
-            )
+            .certificateIds(certificateIds)
             .build();
     }
 

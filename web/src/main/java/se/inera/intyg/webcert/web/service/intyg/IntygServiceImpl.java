@@ -96,7 +96,6 @@ import se.inera.intyg.webcert.web.service.intyg.decorator.UtkastIntygDecorator;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsRequest;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsResponse;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
@@ -676,12 +675,11 @@ public class IntygServiceImpl implements IntygService {
     }
 
     @Override
-    public List<IntygWithNotificationsResponse> listCertificatesForCareWithQA(IntygWithNotificationsRequest request,
-        List<Handelse> notificationsForWC) {
+    public List<IntygWithNotificationsResponse> listCertificatesForCareWithQA(List<Handelse> notificationsForWC) {
         if (notificationsForWC.isEmpty()) {
             return Collections.emptyList();
         }
-        
+
         final var intygWithNotificationsResponses = new ArrayList<IntygWithNotificationsResponse>();
 
         final var notificationCertificateIdHash = getNotificationCertificateIdHash(notificationsForWC);

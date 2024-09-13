@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.integration.interactions.listcertificatesforc
 
 import static se.inera.intyg.webcert.notification_sender.notifications.services.NotificationTypeConverter.toArenden;
 
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
@@ -65,8 +66,61 @@ public class ListCertificatesForCareWithQAResponderImpl implements ListCertifica
             throw new IllegalArgumentException();
         }
 
-        ListCertificatesForCareWithQAResponseType response = new ListCertificatesForCareWithQAResponseType();
-        List list = new List();
+        final var intygWithNotificationsRequest = getIntygWithNotificationsRequest(request);
+        final var response = new ListCertificatesForCareWithQAResponseType();
+        final var start = System.currentTimeMillis();
+        log.info("Started processing request: PersonId: '{}' - CareProviderId '{}' - UnitIds '{}'",
+            HashUtility.hash(intygWithNotificationsRequest.getPersonnummer().getPersonnummer()),
+            intygWithNotificationsRequest.getVardgivarId(),
+            intygWithNotificationsRequest.getEnhetId()
+        );
+        try {
+            final var notifications = notificationService.findNotifications(intygWithNotificationsRequest);
+            final var listItemsFromCS = getCertificatesWithQAFromCertificateService.get(notifications);
+            final var intygWithNotifications = intygService.listCertificatesForCareWithQA(
+                notifications.stream()
+                    .filter(removeNotificationsRelatedToCertificatesFromCertificateService(listItemsFromCS))
+                    .collect(Collectors.toList())
+            );
+
+            List list = new List();
+            list.getItem().addAll(buildListItemsForWC(intygWithNotifications));
+            list.getItem().addAll(listItemsFromCS);
+            response.setList(list);
+
+            return response;
+        } finally {
+            log.info(
+                "Request processing completed. PersonId: '{}' CareProviderId '{}' UnitIds '{}'."
+                    + " Returning '{}' number of certificates. Elapsed time: '{}' seconds",
+                HashUtility.hash(intygWithNotificationsRequest.getPersonnummer().getPersonnummer()),
+                intygWithNotificationsRequest.getVardgivarId(),
+                intygWithNotificationsRequest.getEnhetId(),
+                response.getList().getItem().size(),
+                timeElapsed(start)
+            );
+        }
+    }
+
+    private java.util.List<ListItem> buildListItemsForWC(java.util.List<IntygWithNotificationsResponse> intygWithNotifications) {
+        final var listItems = new ArrayList<ListItem>();
+        for (IntygWithNotificationsResponse intygHolder : intygWithNotifications) {
+            ListItem item = new ListItem();
+            item.setIntyg(intygHolder.getIntyg());
+            HandelseList handelseList = new HandelseList();
+            handelseList.getHandelse().addAll(intygHolder.getNotifications().stream()
+                .map(HandelseFactory::toHandelse)
+                .collect(Collectors.toList()));
+            item.setHandelser(handelseList);
+            item.setSkickadeFragor(toArenden(intygHolder.getSentQuestions()));
+            item.setMottagnaFragor(toArenden(intygHolder.getReceivedQuestions()));
+            item.setRef(intygHolder.getRef());
+            listItems.add(item);
+        }
+        return listItems;
+    }
+
+    private static IntygWithNotificationsRequest getIntygWithNotificationsRequest(ListCertificatesForCareWithQAType request) {
         IntygWithNotificationsRequest.Builder builder = new IntygWithNotificationsRequest.Builder()
             .setPersonnummer(Personnummer.createPersonnummer(request.getPersonId().getExtension()).get());
 
@@ -82,50 +136,7 @@ public class ListCertificatesForCareWithQAResponderImpl implements ListCertifica
         if (request.getTomTidpunkt() != null) {
             builder = builder.setEndDate(request.getTomTidpunkt());
         }
-        final var intygWithNotificationsRequest = builder.build();
-
-        final var start = System.currentTimeMillis();
-        log.info("Started processing request: PersonId: '{}' - CareProviderId '{}' - UnitIds '{}'",
-            HashUtility.hash(intygWithNotificationsRequest.getPersonnummer().getPersonnummer()),
-            intygWithNotificationsRequest.getVardgivarId(),
-            intygWithNotificationsRequest.getEnhetId()
-        );
-
-        final var notifications = notificationService.findNotifications(intygWithNotificationsRequest);
-        final var listItemsFromCS = getCertificatesWithQAFromCertificateService.get(notifications);
-        java.util.List<IntygWithNotificationsResponse> intygWithNotifications = intygService.listCertificatesForCareWithQA(
-            intygWithNotificationsRequest,
-            notifications.stream()
-                .filter(removeNotificationsRelatedToCertificatesFromCertificateService(listItemsFromCS))
-                .collect(Collectors.toList())
-        );
-
-        for (IntygWithNotificationsResponse intygHolder : intygWithNotifications) {
-            ListItem item = new ListItem();
-            item.setIntyg(intygHolder.getIntyg());
-            HandelseList handelseList = new HandelseList();
-            handelseList.getHandelse().addAll(intygHolder.getNotifications().stream()
-                .map(HandelseFactory::toHandelse)
-                .collect(Collectors.toList()));
-            item.setHandelser(handelseList);
-            item.setSkickadeFragor(toArenden(intygHolder.getSentQuestions()));
-            item.setMottagnaFragor(toArenden(intygHolder.getReceivedQuestions()));
-            item.setRef(intygHolder.getRef());
-            list.getItem().add(item);
-        }
-
-        list.getItem().addAll(listItemsFromCS);
-        response.setList(list);
-        log.info(
-            "Request processing completed. PersonId: '{}' CareProviderId '{}' UnitIds '{}'."
-                + " Returning '{}' number of certificates. Elapsed time: '{}' seconds",
-            HashUtility.hash(intygWithNotificationsRequest.getPersonnummer().getPersonnummer()),
-            intygWithNotificationsRequest.getVardgivarId(),
-            intygWithNotificationsRequest.getEnhetId(),
-            response.getList().getItem().size(),
-            timeElapsed(start)
-        );
-        return response;
+        return builder.build();
     }
 
     private long timeElapsed(long startTime) {
