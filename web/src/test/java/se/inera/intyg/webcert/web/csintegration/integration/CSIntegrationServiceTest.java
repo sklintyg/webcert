@@ -68,6 +68,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServi
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateTypeExistsResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesWithQARequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesWithQAResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateMessageResponseDTO;
@@ -105,8 +107,6 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.InternalCertific
 import se.inera.intyg.webcert.web.csintegration.integration.dto.LockDraftsRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.LockDraftsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageExistsResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.PatientCertificatesWithQARequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.PatientCertificatesWithQAResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ReadyForSignRequestDTO;
@@ -327,12 +327,12 @@ class CSIntegrationServiceTest {
             .events(EVENTS)
             .build();
     private static final String LIST = "list";
-    private static final PatientCertificatesWithQAResponseDTO GET_PATIENT_CERTIFICATES_WITH_QA_RESPONSE_DTO =
-        PatientCertificatesWithQAResponseDTO.builder()
+    private static final CertificatesWithQAResponseDTO GET_PATIENT_CERTIFICATES_WITH_QA_RESPONSE_DTO =
+        CertificatesWithQAResponseDTO.builder()
             .list(LIST)
             .build();
-    private static final PatientCertificatesWithQARequestDTO GET_PATIENT_CERTIFICATES_WITH_QA_REQUEST_DTO =
-        PatientCertificatesWithQARequestDTO.builder()
+    private static final CertificatesWithQARequestDTO GET_PATIENT_CERTIFICATES_WITH_QA_REQUEST_DTO =
+        CertificatesWithQARequestDTO.builder()
             .build();
     private static final LockDraftsResponseDTO LOCK_OLD_DRAFTS_RESPONSE_DTO = LockDraftsResponseDTO.builder()
         .certificates(List.of(CERTIFICATE)).build();
@@ -2464,9 +2464,9 @@ class CSIntegrationServiceTest {
         void shouldPreformPostUsingRequest() {
             when(restTemplate.postForObject(anyString(), any(), any()))
                 .thenReturn(GET_PATIENT_CERTIFICATES_WITH_QA_RESPONSE_DTO);
-            final var captor = ArgumentCaptor.forClass(PatientCertificatesWithQARequestDTO.class);
+            final var captor = ArgumentCaptor.forClass(CertificatesWithQARequestDTO.class);
 
-            csIntegrationService.getPatientCertificatesWithQA(GET_PATIENT_CERTIFICATES_WITH_QA_REQUEST_DTO);
+            csIntegrationService.getCertificatesWithQA(GET_PATIENT_CERTIFICATES_WITH_QA_REQUEST_DTO);
             verify(restTemplate).postForObject(anyString(), captor.capture(), any());
 
             assertEquals(GET_PATIENT_CERTIFICATES_WITH_QA_REQUEST_DTO, captor.getValue());
@@ -2476,7 +2476,7 @@ class CSIntegrationServiceTest {
         void shouldReturnString() {
             when(restTemplate.postForObject(anyString(), any(), any()))
                 .thenReturn(GET_PATIENT_CERTIFICATES_WITH_QA_RESPONSE_DTO);
-            final var response = csIntegrationService.getPatientCertificatesWithQA(GET_PATIENT_CERTIFICATES_WITH_QA_REQUEST_DTO);
+            final var response = csIntegrationService.getCertificatesWithQA(GET_PATIENT_CERTIFICATES_WITH_QA_REQUEST_DTO);
 
             assertEquals(LIST, response);
         }
@@ -2486,7 +2486,7 @@ class CSIntegrationServiceTest {
             when(restTemplate.postForObject(anyString(), any(), any()))
                 .thenReturn(null);
             assertThrows(IllegalStateException.class,
-                () -> csIntegrationService.getPatientCertificatesWithQA(GET_PATIENT_CERTIFICATES_WITH_QA_REQUEST_DTO));
+                () -> csIntegrationService.getCertificatesWithQA(GET_PATIENT_CERTIFICATES_WITH_QA_REQUEST_DTO));
         }
 
         @Test
@@ -2496,7 +2496,7 @@ class CSIntegrationServiceTest {
             ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
             final var captor = ArgumentCaptor.forClass(String.class);
 
-            csIntegrationService.getPatientCertificatesWithQA(GET_PATIENT_CERTIFICATES_WITH_QA_REQUEST_DTO);
+            csIntegrationService.getCertificatesWithQA(GET_PATIENT_CERTIFICATES_WITH_QA_REQUEST_DTO);
 
             verify(restTemplate).postForObject(captor.capture(), any(), any());
 

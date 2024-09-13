@@ -49,8 +49,8 @@ public class GetCertificatesWithQAFromCertificateService {
             return Collections.emptyList();
         }
 
-        final var encodedXml = csIntegrationService.getPatientCertificatesWithQA(
-            csIntegrationRequestFactory.getPatientCertificatesWithQARequestDTO(notifications)
+        final var encodedXml = csIntegrationService.getCertificatesWithQA(
+            csIntegrationRequestFactory.getCertificatesWithQARequestDTO(notifications)
         );
 
         final var decodedXml = new String(Base64.getDecoder().decode(encodedXml.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8);

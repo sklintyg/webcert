@@ -48,6 +48,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServi
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateTypeExistsResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesWithQARequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesWithQAResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CitizenCertificateExistsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateMessageRequestDTO;
@@ -86,8 +88,6 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.InternalCertific
 import se.inera.intyg.webcert.web.csintegration.integration.dto.LockDraftsRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.LockDraftsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageExistsResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.PatientCertificatesWithQARequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.PatientCertificatesWithQAResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ReadyForSignRequestDTO;
@@ -709,10 +709,10 @@ public class CSIntegrationService {
         return response.getCertificate();
     }
 
-    public String getPatientCertificatesWithQA(PatientCertificatesWithQARequestDTO request) {
+    public String getCertificatesWithQA(CertificatesWithQARequestDTO request) {
         final var url = baseUrl + INTERNAL_CERTIFICATE_ENDPOINT_URL + "/qa";
 
-        final var response = restTemplate.postForObject(url, request, PatientCertificatesWithQAResponseDTO.class);
+        final var response = restTemplate.postForObject(url, request, CertificatesWithQAResponseDTO.class);
 
         if (response == null || response.getList() == null) {
             throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);

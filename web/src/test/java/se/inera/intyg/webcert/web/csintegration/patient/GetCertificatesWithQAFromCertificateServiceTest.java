@@ -38,7 +38,7 @@ import se.inera.intyg.common.support.xml.XmlMarshallerHelper;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.PatientCertificatesWithQARequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesWithQARequestDTO;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.List;
 import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.ListCertificatesForCareWithQAResponseType;
@@ -79,12 +79,12 @@ class GetCertificatesWithQAFromCertificateServiceTest {
         final var notification = new Handelse();
         notification.setIntygsId(CERTIFICATE_ID);
         final var notifications = Collections.singletonList(notification);
-        final var certificatesWithQARequestDTO = PatientCertificatesWithQARequestDTO.builder().build();
+        final var certificatesWithQARequestDTO = CertificatesWithQARequestDTO.builder().build();
         final var encodedXml = "encodedXml";
 
         doReturn(true).when(certificateServiceProfile).active();
-        doReturn(certificatesWithQARequestDTO).when(csIntegrationRequestFactory).getPatientCertificatesWithQARequestDTO(notifications);
-        doReturn(encodedXml).when(csIntegrationService).getPatientCertificatesWithQA(certificatesWithQARequestDTO);
+        doReturn(certificatesWithQARequestDTO).when(csIntegrationRequestFactory).getCertificatesWithQARequestDTO(notifications);
+        doReturn(encodedXml).when(csIntegrationService).getCertificatesWithQA(certificatesWithQARequestDTO);
 
         final var listCertificatesForCareWithQAResponseType = new ListCertificatesForCareWithQAResponseType();
         final var list = new List();
@@ -117,12 +117,12 @@ class GetCertificatesWithQAFromCertificateServiceTest {
         notification1.setIntygsId(CERTIFICATE_ID);
         notification2.setIntygsId("invalidCertificateId");
         final var notifications = java.util.List.of(notification1, notification2);
-        final var certificatesWithQARequestDTO = PatientCertificatesWithQARequestDTO.builder().build();
+        final var certificatesWithQARequestDTO = CertificatesWithQARequestDTO.builder().build();
         final var encodedXml = "encodedXml";
 
         doReturn(true).when(certificateServiceProfile).active();
-        doReturn(certificatesWithQARequestDTO).when(csIntegrationRequestFactory).getPatientCertificatesWithQARequestDTO(notifications);
-        doReturn(encodedXml).when(csIntegrationService).getPatientCertificatesWithQA(certificatesWithQARequestDTO);
+        doReturn(certificatesWithQARequestDTO).when(csIntegrationRequestFactory).getCertificatesWithQARequestDTO(notifications);
+        doReturn(encodedXml).when(csIntegrationService).getCertificatesWithQA(certificatesWithQARequestDTO);
 
         final var listCertificatesForCareWithQAResponseType = new ListCertificatesForCareWithQAResponseType();
         final var list = new List();

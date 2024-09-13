@@ -2014,7 +2014,7 @@ class CSIntegrationRequestFactoryTest {
     }
 
     @Nested
-    class PatientCertificatesWithQARequestDTOTest {
+    class CertificatesWithQARequestDTOTest {
 
         private static final String CERTIFICATE_ID = "certificateId";
         private List<Handelse> notifications;
@@ -2031,7 +2031,7 @@ class CSIntegrationRequestFactoryTest {
 
         @Test
         void shouldSetCertificateIds() {
-            final var actualRequest = csIntegrationRequestFactory.getPatientCertificatesWithQARequestDTO(notifications);
+            final var actualRequest = csIntegrationRequestFactory.getCertificatesWithQARequestDTO(notifications);
             assertEquals(List.of(CERTIFICATE_ID, CERTIFICATE_ID), actualRequest.getCertificateIds());
         }
     }

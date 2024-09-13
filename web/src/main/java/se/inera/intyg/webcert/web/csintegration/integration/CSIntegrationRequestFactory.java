@@ -39,6 +39,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateCompl
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesQueryCriteriaDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesWithQARequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteAnswerRequestDTO;
@@ -59,7 +60,6 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitQuestions
 import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.LockDraftsRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageQueryCriteriaDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.PatientCertificatesWithQARequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ReadyForSignRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.RenewCertificateRequestDTO;
@@ -539,8 +539,8 @@ public class CSIntegrationRequestFactory {
             .build();
     }
 
-    public PatientCertificatesWithQARequestDTO getPatientCertificatesWithQARequestDTO(List<Handelse> notifications) {
-        return PatientCertificatesWithQARequestDTO.builder()
+    public CertificatesWithQARequestDTO getCertificatesWithQARequestDTO(List<Handelse> notifications) {
+        return CertificatesWithQARequestDTO.builder()
             .certificateIds(
                 notifications.stream()
                     .map(Handelse::getIntygsId)
