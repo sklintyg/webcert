@@ -140,6 +140,9 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
             intygTextsService.isLatestMajorVersion(certificateToReturn.getMetadata().getType(),
                 certificateToReturn.getMetadata().getTypeVersion())
         );
+        certificateToReturn.getMetadata().setAvailableForCitizen(
+            !(certificate.getUtlatande().getTyp().equals("db") || certificate.getUtlatande().getTyp().equals("doi"))
+        );
 
         return certificateToReturn;
     }

@@ -136,6 +136,10 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
                 certificateToReturn.getMetadata().getTypeVersion())
         );
 
+        certificateToReturn.getMetadata().setAvailableForCitizen(
+            !(certificate.getIntygsTyp().equals("db") || certificate.getIntygsTyp().equals("doi"))
+        );
+
         certificateToReturn.getMetadata().setResponsibleHospName(
             getResponsibleHospName()
         );
