@@ -130,7 +130,6 @@ public class CSIntegrationService {
 
     private static final String CERTIFICATE_ENDPOINT_URL = "/api/certificate";
     private static final String INTERNAL_CERTIFICATE_ENDPOINT_URL = "/internalapi/certificate";
-    private static final String INTERNAL_PATIENT_ENDPOINT_URL = "/internalapi/patient/certificates";
     private static final String CITIZEN_ENDPOINT_URL = "/api/citizen/certificate";
     private static final String MESSAGE_ENDPOINT_URL = "/api/message";
     private static final String INTERNAL_MESSAGE_ENDPOINT_URL = "/internalapi/message";
@@ -711,7 +710,7 @@ public class CSIntegrationService {
     }
 
     public String getPatientCertificatesWithQA(PatientCertificatesWithQARequestDTO request) {
-        final var url = baseUrl + INTERNAL_PATIENT_ENDPOINT_URL + "/qa";
+        final var url = baseUrl + INTERNAL_CERTIFICATE_ENDPOINT_URL + "/qa";
 
         final var response = restTemplate.postForObject(url, request, PatientCertificatesWithQAResponseDTO.class);
 
