@@ -18,9 +18,12 @@
  */
 package se.inera.intyg.webcert.web.csintegration.integration;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Nested;
@@ -28,13 +31,19 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.CertificateRelationType;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.link.ResourceLink;
 import se.inera.intyg.common.support.facade.model.link.ResourceLinkTypeEnum;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.web.service.facade.CertificateFacadeTestHelper;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Relations.FrontendRelations;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 
 @ExtendWith(MockitoExtension.class)
@@ -258,6 +267,356 @@ class ListIntygEntryConverterTest {
 
             final var response = listIntygEntryConverter.convert(CERTIFICATE);
             assertEquals(Collections.emptyList(), response.getLinks());
+        }
+    }
+
+    @Nested
+    class ConvertRelations {
+
+        private final String RELATION_ID = "relationId";
+        private final LocalDateTime CREATED = LocalDateTime.now();
+
+        @Test
+        void shouldReturnNullLatestChildRelationIfNoReplaceRelations() {
+            final var certificateWithChildRelation = CertificateFacadeTestHelper.createCertificateWithChildRelation("type",
+                CertificateStatus.UNSIGNED);
+
+            final var response = listIntygEntryConverter.convert(certificateWithChildRelation);
+
+            assertNull(response.getRelations().getLatestChildRelations().getReplacedByIntyg());
+        }
+
+        @Test
+        void shouldConvertReplaceChildRelation() {
+            final var replacedByIntyg = createWebcertCertificateRelation(RelationKod.ERSATT, UtkastStatus.SIGNED, false);
+
+            final var relation = CertificateRelation.builder()
+                .certificateId(RELATION_ID)
+                .type(CertificateRelationType.REPLACED)
+                .status(CertificateStatus.SIGNED)
+                .created(CREATED)
+                .build();
+
+            final var certificateWithChildRelation = CertificateFacadeTestHelper.createCertificateWithChildRelation("type",
+                CertificateStatus.UNSIGNED, relation);
+
+            final var response = listIntygEntryConverter.convert(certificateWithChildRelation).getRelations().getLatestChildRelations();
+
+            assertAll(
+                () -> assertEquals(replacedByIntyg.getIntygsId(), response.getReplacedByIntyg().getIntygsId()),
+                () -> assertEquals(replacedByIntyg.getRelationKod(), response.getReplacedByIntyg().getRelationKod()),
+                () -> assertEquals(replacedByIntyg.getSkapad(), response.getReplacedByIntyg().getSkapad()),
+                () -> assertEquals(replacedByIntyg.getStatus(), response.getReplacedByIntyg().getStatus()),
+                () -> assertEquals(replacedByIntyg.isMakulerat(), response.getReplacedByIntyg().isMakulerat())
+            );
+        }
+
+        @Test
+        void shouldConvertReplaceChildRelationButRevoked() {
+            final var replacedByIntyg = createWebcertCertificateRelation(RelationKod.ERSATT, UtkastStatus.SIGNED, true);
+
+            final var relation = CertificateRelation.builder()
+                .certificateId(RELATION_ID)
+                .type(CertificateRelationType.REPLACED)
+                .status(CertificateStatus.REVOKED)
+                .created(CREATED)
+                .build();
+
+            final var certificateWithChildRelation = CertificateFacadeTestHelper.createCertificateWithChildRelation("type",
+                CertificateStatus.UNSIGNED, relation);
+
+            final var response = listIntygEntryConverter.convert(certificateWithChildRelation).getRelations().getLatestChildRelations();
+
+            assertAll(
+                () -> assertEquals(replacedByIntyg.getIntygsId(), response.getReplacedByIntyg().getIntygsId()),
+                () -> assertEquals(replacedByIntyg.getRelationKod(), response.getReplacedByIntyg().getRelationKod()),
+                () -> assertEquals(replacedByIntyg.getSkapad(), response.getReplacedByIntyg().getSkapad()),
+                () -> assertEquals(replacedByIntyg.getStatus(), response.getReplacedByIntyg().getStatus()),
+                () -> assertEquals(replacedByIntyg.isMakulerat(), response.getReplacedByIntyg().isMakulerat())
+            );
+        }
+
+        @Test
+        void shouldConvertReplaceChildRelationButDraft() {
+            final var replacedByUtkast = createWebcertCertificateRelation(RelationKod.ERSATT, UtkastStatus.DRAFT_COMPLETE, false);
+
+            final var relation = CertificateRelation.builder()
+                .certificateId(RELATION_ID)
+                .type(CertificateRelationType.REPLACED)
+                .status(CertificateStatus.UNSIGNED)
+                .created(CREATED)
+                .build();
+
+            final var certificateWithChildRelation = CertificateFacadeTestHelper.createCertificateWithChildRelation("type",
+                CertificateStatus.UNSIGNED, relation);
+
+            final var response = listIntygEntryConverter.convert(certificateWithChildRelation).getRelations().getLatestChildRelations();
+
+            assertAll(
+                () -> assertEquals(replacedByUtkast.getIntygsId(), response.getReplacedByUtkast().getIntygsId()),
+                () -> assertEquals(replacedByUtkast.getRelationKod(), response.getReplacedByUtkast().getRelationKod()),
+                () -> assertEquals(replacedByUtkast.getSkapad(), response.getReplacedByUtkast().getSkapad()),
+                () -> assertEquals(replacedByUtkast.getStatus(), response.getReplacedByUtkast().getStatus()),
+                () -> assertEquals(replacedByUtkast.isMakulerat(), response.getReplacedByUtkast().isMakulerat())
+            );
+        }
+
+        @Test
+        void shouldConvertReplaceChildRelationButDraftLocked() {
+            final var replacedByUtkast = createWebcertCertificateRelation(RelationKod.ERSATT, UtkastStatus.DRAFT_LOCKED, false);
+
+            final var relation = CertificateRelation.builder()
+                .certificateId(RELATION_ID)
+                .type(CertificateRelationType.REPLACED)
+                .status(CertificateStatus.LOCKED)
+                .created(CREATED)
+                .build();
+
+            final var certificateWithChildRelation = CertificateFacadeTestHelper.createCertificateWithChildRelation("type",
+                CertificateStatus.UNSIGNED, relation);
+
+            final var response = listIntygEntryConverter.convert(certificateWithChildRelation).getRelations().getLatestChildRelations();
+
+            assertAll(
+                () -> assertEquals(replacedByUtkast.getIntygsId(), response.getReplacedByUtkast().getIntygsId()),
+                () -> assertEquals(replacedByUtkast.getRelationKod(), response.getReplacedByUtkast().getRelationKod()),
+                () -> assertEquals(replacedByUtkast.getSkapad(), response.getReplacedByUtkast().getSkapad()),
+                () -> assertEquals(replacedByUtkast.getStatus(), response.getReplacedByUtkast().getStatus()),
+                () -> assertEquals(replacedByUtkast.isMakulerat(), response.getReplacedByUtkast().isMakulerat())
+            );
+        }
+
+        @Test
+        void shouldConvertReplaceChildRelationButDraftLockedRevoked() {
+            final var replacedByUtkast = createWebcertCertificateRelation(RelationKod.ERSATT, UtkastStatus.DRAFT_LOCKED, true);
+
+            final var relation = CertificateRelation.builder()
+                .certificateId(RELATION_ID)
+                .type(CertificateRelationType.REPLACED)
+                .status(CertificateStatus.LOCKED_REVOKED)
+                .created(CREATED)
+                .build();
+
+            final var certificateWithChildRelation = CertificateFacadeTestHelper.createCertificateWithChildRelation("type",
+                CertificateStatus.UNSIGNED, relation);
+
+            final var response = listIntygEntryConverter.convert(certificateWithChildRelation).getRelations().getLatestChildRelations();
+
+            assertAll(
+                () -> assertEquals(replacedByUtkast.getIntygsId(), response.getReplacedByUtkast().getIntygsId()),
+                () -> assertEquals(replacedByUtkast.getRelationKod(), response.getReplacedByUtkast().getRelationKod()),
+                () -> assertEquals(replacedByUtkast.getSkapad(), response.getReplacedByUtkast().getSkapad()),
+                () -> assertEquals(replacedByUtkast.getStatus(), response.getReplacedByUtkast().getStatus()),
+                () -> assertEquals(replacedByUtkast.isMakulerat(), response.getReplacedByUtkast().isMakulerat())
+            );
+        }
+
+        @Test
+        void shouldAlwaysUseTheLatestReplaceChildRelation() {
+            final var replacedByIntyg = createWebcertCertificateRelation(RelationKod.ERSATT, UtkastStatus.SIGNED, false);
+
+            final var latestRelation = CertificateRelation.builder()
+                .certificateId(RELATION_ID)
+                .type(CertificateRelationType.REPLACED)
+                .status(CertificateStatus.SIGNED)
+                .created(CREATED)
+                .build();
+
+            final var otherRelation = CertificateRelation.builder()
+                .certificateId(RELATION_ID)
+                .type(CertificateRelationType.COMPLEMENTED)
+                .status(CertificateStatus.SIGNED)
+                .created(CREATED.minusDays(1))
+                .build();
+
+            final var certificateWithChildRelation = CertificateFacadeTestHelper.createCertificateWithChildRelation("type",
+                CertificateStatus.UNSIGNED, otherRelation, latestRelation);
+
+            final var response = listIntygEntryConverter.convert(certificateWithChildRelation).getRelations().getLatestChildRelations();
+
+            assertAll(
+                () -> assertEquals(replacedByIntyg.getIntygsId(), response.getReplacedByIntyg().getIntygsId()),
+                () -> assertEquals(replacedByIntyg.getRelationKod(), response.getReplacedByIntyg().getRelationKod()),
+                () -> assertEquals(replacedByIntyg.getSkapad(), response.getReplacedByIntyg().getSkapad()),
+                () -> assertEquals(replacedByIntyg.getStatus(), response.getReplacedByIntyg().getStatus()),
+                () -> assertEquals(replacedByIntyg.isMakulerat(), response.getReplacedByIntyg().isMakulerat())
+            );
+        }
+
+        @Test
+        void shouldConvertComplementChildRelation() {
+            final var complementedByIntyg = createWebcertCertificateRelation(RelationKod.KOMPLT, UtkastStatus.SIGNED, false);
+
+            final var relation = CertificateRelation.builder()
+                .certificateId(RELATION_ID)
+                .type(CertificateRelationType.COMPLEMENTED)
+                .status(CertificateStatus.SIGNED)
+                .created(CREATED)
+                .build();
+
+            final var certificateWithChildRelation = CertificateFacadeTestHelper.createCertificateWithChildRelation("type",
+                CertificateStatus.UNSIGNED, relation);
+
+            final var response = listIntygEntryConverter.convert(certificateWithChildRelation).getRelations().getLatestChildRelations();
+
+            assertAll(
+                () -> assertEquals(complementedByIntyg.getIntygsId(), response.getComplementedByIntyg().getIntygsId()),
+                () -> assertEquals(complementedByIntyg.getRelationKod(), response.getComplementedByIntyg().getRelationKod()),
+                () -> assertEquals(complementedByIntyg.getSkapad(), response.getComplementedByIntyg().getSkapad()),
+                () -> assertEquals(complementedByIntyg.getStatus(), response.getComplementedByIntyg().getStatus()),
+                () -> assertEquals(complementedByIntyg.isMakulerat(), response.getComplementedByIntyg().isMakulerat())
+            );
+        }
+
+        @Test
+        void shouldConvertComplementChildRelationButRevoked() {
+            final var complementedByIntyg = createWebcertCertificateRelation(RelationKod.KOMPLT, UtkastStatus.SIGNED, true);
+
+            final var relation = CertificateRelation.builder()
+                .certificateId(RELATION_ID)
+                .type(CertificateRelationType.COMPLEMENTED)
+                .status(CertificateStatus.REVOKED)
+                .created(CREATED)
+                .build();
+
+            final var certificateWithChildRelation = CertificateFacadeTestHelper.createCertificateWithChildRelation("type",
+                CertificateStatus.UNSIGNED, relation);
+
+            final var response = listIntygEntryConverter.convert(certificateWithChildRelation).getRelations().getLatestChildRelations();
+
+            assertAll(
+                () -> assertEquals(complementedByIntyg.getIntygsId(), response.getComplementedByIntyg().getIntygsId()),
+                () -> assertEquals(complementedByIntyg.getRelationKod(), response.getComplementedByIntyg().getRelationKod()),
+                () -> assertEquals(complementedByIntyg.getSkapad(), response.getComplementedByIntyg().getSkapad()),
+                () -> assertEquals(complementedByIntyg.getStatus(), response.getComplementedByIntyg().getStatus()),
+                () -> assertEquals(complementedByIntyg.isMakulerat(), response.getComplementedByIntyg().isMakulerat())
+            );
+        }
+
+        @Test
+        void shouldConvertComplementChildRelationButDraft() {
+            final var complementedByUtkast = createWebcertCertificateRelation(RelationKod.KOMPLT, UtkastStatus.DRAFT_COMPLETE, false);
+
+            final var relation = CertificateRelation.builder()
+                .certificateId(RELATION_ID)
+                .type(CertificateRelationType.COMPLEMENTED)
+                .status(CertificateStatus.UNSIGNED)
+                .created(CREATED)
+                .build();
+
+            final var certificateWithChildRelation = CertificateFacadeTestHelper.createCertificateWithChildRelation("type",
+                CertificateStatus.UNSIGNED, relation);
+
+            final var response = listIntygEntryConverter.convert(certificateWithChildRelation).getRelations().getLatestChildRelations();
+
+            assertAll(
+                () -> assertEquals(complementedByUtkast.getIntygsId(), response.getComplementedByUtkast().getIntygsId()),
+                () -> assertEquals(complementedByUtkast.getRelationKod(), response.getComplementedByUtkast().getRelationKod()),
+                () -> assertEquals(complementedByUtkast.getSkapad(), response.getComplementedByUtkast().getSkapad()),
+                () -> assertEquals(complementedByUtkast.getStatus(), response.getComplementedByUtkast().getStatus()),
+                () -> assertEquals(complementedByUtkast.isMakulerat(), response.getComplementedByUtkast().isMakulerat())
+            );
+        }
+
+        @Test
+        void shouldConvertComplementChildRelationButDraftLocked() {
+            final var complementedByUtkast = createWebcertCertificateRelation(RelationKod.KOMPLT, UtkastStatus.DRAFT_LOCKED, false);
+
+            final var relation = CertificateRelation.builder()
+                .certificateId(RELATION_ID)
+                .type(CertificateRelationType.COMPLEMENTED)
+                .status(CertificateStatus.LOCKED)
+                .created(CREATED)
+                .build();
+
+            final var certificateWithChildRelation = CertificateFacadeTestHelper.createCertificateWithChildRelation("type",
+                CertificateStatus.UNSIGNED, relation);
+
+            final var response = listIntygEntryConverter.convert(certificateWithChildRelation).getRelations().getLatestChildRelations();
+
+            assertAll(
+                () -> assertEquals(complementedByUtkast.getIntygsId(), response.getComplementedByUtkast().getIntygsId()),
+                () -> assertEquals(complementedByUtkast.getRelationKod(), response.getComplementedByUtkast().getRelationKod()),
+                () -> assertEquals(complementedByUtkast.getSkapad(), response.getComplementedByUtkast().getSkapad()),
+                () -> assertEquals(complementedByUtkast.getStatus(), response.getComplementedByUtkast().getStatus()),
+                () -> assertEquals(complementedByUtkast.isMakulerat(), response.getComplementedByUtkast().isMakulerat())
+            );
+        }
+
+        @Test
+        void shouldConvertComplementChildRelationButDraftLockedRevoked() {
+            final var complementedByUtkast = createWebcertCertificateRelation(RelationKod.KOMPLT, UtkastStatus.DRAFT_LOCKED, true);
+
+            final var relation = CertificateRelation.builder()
+                .certificateId(RELATION_ID)
+                .type(CertificateRelationType.COMPLEMENTED)
+                .status(CertificateStatus.LOCKED_REVOKED)
+                .created(CREATED)
+                .build();
+
+            final var certificateWithChildRelation = CertificateFacadeTestHelper.createCertificateWithChildRelation("type",
+                CertificateStatus.UNSIGNED, relation);
+
+            final var response = listIntygEntryConverter.convert(certificateWithChildRelation).getRelations().getLatestChildRelations();
+
+            assertAll(
+                () -> assertEquals(complementedByUtkast.getIntygsId(), response.getComplementedByUtkast().getIntygsId()),
+                () -> assertEquals(complementedByUtkast.getRelationKod(), response.getComplementedByUtkast().getRelationKod()),
+                () -> assertEquals(complementedByUtkast.getSkapad(), response.getComplementedByUtkast().getSkapad()),
+                () -> assertEquals(complementedByUtkast.getStatus(), response.getComplementedByUtkast().getStatus()),
+                () -> assertEquals(complementedByUtkast.isMakulerat(), response.getComplementedByUtkast().isMakulerat())
+            );
+        }
+
+        @Test
+        void shouldAlwaysUseTheLatestComplementChildRelation() {
+            final var complementedByIntyg = createWebcertCertificateRelation(RelationKod.KOMPLT, UtkastStatus.SIGNED, false);
+
+            final var latestRelation = CertificateRelation.builder()
+                .certificateId(RELATION_ID)
+                .type(CertificateRelationType.COMPLEMENTED)
+                .status(CertificateStatus.SIGNED)
+                .created(CREATED)
+                .build();
+
+            final var otherRelation = CertificateRelation.builder()
+                .certificateId(RELATION_ID)
+                .type(CertificateRelationType.REPLACED)
+                .status(CertificateStatus.SIGNED)
+                .created(CREATED.minusDays(1))
+                .build();
+
+            final var certificateWithChildRelation = CertificateFacadeTestHelper.createCertificateWithChildRelation("type",
+                CertificateStatus.UNSIGNED, otherRelation, latestRelation);
+
+            final var response = listIntygEntryConverter.convert(certificateWithChildRelation).getRelations().getLatestChildRelations();
+
+            assertAll(
+                () -> assertEquals(complementedByIntyg.getIntygsId(), response.getComplementedByIntyg().getIntygsId()),
+                () -> assertEquals(complementedByIntyg.getRelationKod(), response.getComplementedByIntyg().getRelationKod()),
+                () -> assertEquals(complementedByIntyg.getSkapad(), response.getComplementedByIntyg().getSkapad()),
+                () -> assertEquals(complementedByIntyg.getStatus(), response.getComplementedByIntyg().getStatus()),
+                () -> assertEquals(complementedByIntyg.isMakulerat(), response.getComplementedByIntyg().isMakulerat())
+            );
+        }
+
+        private WebcertCertificateRelation createWebcertCertificateRelation(RelationKod relationKod, UtkastStatus utkastStatus,
+            boolean makulerat) {
+            final var expectedRelations = new Relations();
+            expectedRelations.setLatestChildRelations(
+                new FrontendRelations()
+            );
+
+            final var replacedByIntyg = new WebcertCertificateRelation();
+            replacedByIntyg.setIntygsId(RELATION_ID);
+            replacedByIntyg.setRelationKod(relationKod);
+            replacedByIntyg.setStatus(utkastStatus);
+            replacedByIntyg.setMakulerat(makulerat);
+            replacedByIntyg.setSkapad(CREATED);
+            expectedRelations.getLatestChildRelations().setReplacedByIntyg(
+                replacedByIntyg
+            );
+            return replacedByIntyg;
         }
     }
 }
