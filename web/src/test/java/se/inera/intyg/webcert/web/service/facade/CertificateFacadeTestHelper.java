@@ -39,16 +39,16 @@ import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDate
 public class CertificateFacadeTestHelper {
 
     public static Certificate createCertificate(String certificateType, CertificateStatus status) {
-        return createCertificateWithChildRelation(certificateType, status, null);
+        return createCertificateWithChildRelation(certificateType, status, (CertificateRelation) null);
     }
 
     public static Certificate createCertificate(String certificateType, CertificateStatus status, boolean addressFromPU) {
-        return createCertificateWithChildRelation(certificateType, status, null, addressFromPU);
+        return createCertificateWithChildRelation(certificateType, status, addressFromPU, (CertificateRelation) null);
     }
 
     public static Certificate createCertificateWithChildRelation(String certificateType, CertificateStatus status,
-        CertificateRelation relation) {
-        return createCertificateWithChildRelation(certificateType, status, relation, true);
+        CertificateRelation... relation) {
+        return createCertificateWithChildRelation(certificateType, status, true, relation);
     }
 
     public static Certificate createCertificateTypeWithVersion(String certificateType, CertificateStatus status, boolean addressFromPU,
@@ -119,7 +119,7 @@ public class CertificateFacadeTestHelper {
     }
 
     public static Certificate createCertificateWithChildRelation(String certificateType, CertificateStatus status,
-        CertificateRelation relation, boolean addressFromPU) {
+        boolean addressFromPU, CertificateRelation... relation) {
         final var metadataBuilder = CertificateMetadata.builder()
             .id("certificateId")
             .type(certificateType)
@@ -166,15 +166,19 @@ public class CertificateFacadeTestHelper {
                     .email("email")
                     .phoneNumber("phoneNumber")
                     .build()
+            ).issuedBy(Staff.builder()
+                .fullName("fullName")
+                .personId("personId")
+                .prescriptionCode("prescriptionCode")
+                .build()
             );
+        ;
 
-        if (relation != null) {
+        if (relation != null && relation.length > 0 && relation[0] != null) {
             metadataBuilder.relations(
                 CertificateRelations.builder()
                     .children(
-                        new CertificateRelation[]{
-                            relation
-                        }
+                        relation
                     )
                     .build()
             );

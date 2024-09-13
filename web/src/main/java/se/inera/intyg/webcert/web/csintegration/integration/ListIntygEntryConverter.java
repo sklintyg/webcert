@@ -19,15 +19,23 @@
 package se.inera.intyg.webcert.web.csintegration.integration;
 
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.stream.Stream;
 import org.springframework.stereotype.Component;
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.link.ResourceLink;
 import se.inera.intyg.common.support.facade.model.link.ResourceLinkTypeEnum;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItemStatus;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Relations.FrontendRelations;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 
@@ -60,12 +68,95 @@ public class ListIntygEntryConverter {
         listIntygEntry.setVardgivarId(metadata.getCareProvider().getUnitId());
         listIntygEntry.setVidarebefordrad(metadata.isForwarded());
 
+        listIntygEntry.setRelations(convertRelations(certificate.getMetadata().getRelations()));
+
         if (certificate.getLinks() != null) {
             certificate.getLinks().forEach(link -> listIntygEntry.getLinks().add(convertResourceLink(link)));
             listIntygEntry.getLinks().removeAll(Collections.singleton(null));
         }
 
         return listIntygEntry;
+    }
+
+    private Relations convertRelations(CertificateRelations relations) {
+        if (relations == null || relations.getChildren() == null || relations.getChildren().length == 0) {
+            return new Relations();
+        }
+
+        final var webcertCertificateRelation = Stream.of(relations.getChildren())
+            .max(Comparator.comparing(CertificateRelation::getCreated))
+            .map(childRelation ->
+                new WebcertCertificateRelation(
+                    childRelation.getCertificateId(),
+                    convertTypeOfRelation(childRelation),
+                    childRelation.getCreated(),
+                    convertStatusOfRelation(childRelation),
+                    convertRevokedStatus(childRelation)
+                )
+            )
+            .orElseThrow(() -> new IllegalStateException("Could not find any child relations!"));
+
+        final var convertedRelations = new Relations();
+        convertedRelations.setLatestChildRelations(new FrontendRelations());
+        if (webcertCertificateRelation.getRelationKod() == RelationKod.ERSATT) {
+            if (webcertCertificateRelation.getStatus() == UtkastStatus.SIGNED) {
+                convertedRelations.getLatestChildRelations().setReplacedByIntyg(webcertCertificateRelation);
+            } else {
+                convertedRelations.getLatestChildRelations().setReplacedByUtkast(webcertCertificateRelation);
+            }
+        } else if (webcertCertificateRelation.getRelationKod() == RelationKod.KOMPLT) {
+            if (webcertCertificateRelation.getStatus() == UtkastStatus.SIGNED) {
+                convertedRelations.getLatestChildRelations().setComplementedByIntyg(webcertCertificateRelation);
+            } else {
+                convertedRelations.getLatestChildRelations().setComplementedByUtkast(webcertCertificateRelation);
+            }
+        }
+        return convertedRelations;
+    }
+
+    private static boolean convertRevokedStatus(CertificateRelation relations) {
+        switch (relations.getStatus()) {
+            case REVOKED:
+            case LOCKED_REVOKED:
+                return true;
+            case LOCKED:
+            case UNSIGNED:
+            case SIGNED:
+                return false;
+            default:
+                throw new IllegalStateException("Unexpected status: " + relations.getStatus());
+        }
+    }
+
+    private static UtkastStatus convertStatusOfRelation(CertificateRelation relations) {
+        switch (relations.getStatus()) {
+            case SIGNED:
+            case REVOKED:
+                return UtkastStatus.SIGNED;
+            case UNSIGNED:
+                return UtkastStatus.DRAFT_COMPLETE;
+            case LOCKED:
+                return UtkastStatus.DRAFT_LOCKED;
+            case LOCKED_REVOKED:
+                return UtkastStatus.DRAFT_LOCKED;
+            default:
+                throw new IllegalStateException("Unexpected status: " + relations.getStatus());
+        }
+    }
+
+    private static RelationKod convertTypeOfRelation(CertificateRelation relations) {
+        switch (relations.getType()) {
+            case REPLACED:
+                return RelationKod.ERSATT;
+            case COMPLEMENTED:
+                return RelationKod.KOMPLT;
+            case COPIED:
+                return RelationKod.KOPIA;
+            case EXTENDED:
+                return RelationKod.FRLANG;
+            default:
+                throw new IllegalArgumentException("Unsupported relation type: " + relations.getType());
+        }
     }
 
     private ActionLink convertResourceLink(ResourceLink resourceLink) {
