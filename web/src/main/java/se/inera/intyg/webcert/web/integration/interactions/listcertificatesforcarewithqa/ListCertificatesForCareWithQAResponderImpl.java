@@ -96,7 +96,7 @@ public class ListCertificatesForCareWithQAResponderImpl implements ListCertifica
                 HashUtility.hash(intygWithNotificationsRequest.getPersonnummer().getPersonnummer()),
                 intygWithNotificationsRequest.getVardgivarId(),
                 intygWithNotificationsRequest.getEnhetId(),
-                response.getList().getItem().size(),
+                response.getList() != null ? response.getList().getItem().size() : 0,
                 timeElapsed(start)
             );
         }
