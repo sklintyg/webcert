@@ -30,6 +30,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 
 @Slf4j
@@ -44,7 +45,7 @@ public class QRCodeService {
     public String qrCodeForBankId(SignaturBiljett ticket) {
         final var qrStartSecret = ticket.getQrStartSecret();
 
-        if (qrStartSecret == null) {
+        if (ticket.getSignMethod() != SignMethod.GRP) {
             return null;
         }
 
@@ -56,7 +57,7 @@ public class QRCodeService {
 
             return String.join(DELIMITER, BANK_ID, ticket.getQrStartToken(), secondsElapsed, qrAuthenticationCode);
 
-        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+        } catch (Exception e) {
             final var message = String.format("Failure creating QR code for eleg signature, ticketId '%s'  certificateId '%s'.",
                 ticket.getTicketId(), ticket.getIntygsId());
             throw new IllegalStateException(message, e);
