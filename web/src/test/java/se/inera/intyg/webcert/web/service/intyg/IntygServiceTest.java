@@ -1168,6 +1168,13 @@ public class IntygServiceTest {
     }
 
     @Test
+    public void shallReturnEmptyListIfNotificationsIsEmpty() {
+        assertEquals(Collections.emptyList(), intygService.listCertificatesForCareWithQA(
+            Collections.emptyList())
+        );
+    }
+
+    @Test
     public void testListCertificatesForCareWithQAOk() throws Exception {
         final List<String> enhetList = Collections.singletonList("enhet");
 
@@ -1189,12 +1196,11 @@ public class IntygServiceTest {
         when(moduleRegistry.listAllModules()).thenReturn(
             Collections.singletonList(new IntygModule(intygType, "", "", "", "", "", "", "", "", false)));
         when(utkastRepository.findAllById(any())).thenReturn(Collections.singletonList(getDraft(intygId)));
-        when(notificationService.findNotifications(any())).thenReturn(Collections.singletonList(handelse));
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(fragorOchSvarCreator.createArenden(eq(intygId), anyString())).thenReturn(Pair.of(sent, received));
 
         List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(
-            new IntygWithNotificationsRequest.Builder().setPersonnummer(PERSNR).setEnhetId(enhetList).build(), Collections.emptyList());
+            Collections.singletonList(handelse));
 
         assertNotNull(res);
         assertEquals(1, res.size());
@@ -1213,29 +1219,6 @@ public class IntygServiceTest {
     }
 
     @Test
-    public void shallExcludeCertificatesFromCertificateService() throws Exception {
-        final var enhetList = Collections.singletonList("enhet");
-        final var intygType = "intygType";
-        final var intygId = "intygId";
-
-        final var localDateTime = LocalDateTime.of(2017, Month.JANUARY, 1, 1, 1);
-        final var handelse = new Handelse();
-        handelse.setTimestamp(localDateTime);
-        handelse.setCode(HandelsekodEnum.SKAPAT);
-        handelse.setIntygsId(intygId);
-
-        when(moduleRegistry.listAllModules()).thenReturn(
-            Collections.singletonList(new IntygModule(intygType, "", "", "", "", "", "", "", "", false)));
-        when(utkastRepository.findAllById(any())).thenReturn(Collections.singletonList(getDraft(intygId)));
-        when(notificationService.findNotifications(any())).thenReturn(Collections.singletonList(handelse));
-        final var res = intygService.listCertificatesForCareWithQA(
-            new IntygWithNotificationsRequest.Builder().setPersonnummer(PERSNR).setEnhetId(enhetList).build(), List.of(intygId));
-
-        assertNotNull(res);
-        assertEquals(0, res.size());
-    }
-
-    @Test
     public void testListCertificatesForCareWithQADeletedDraft() throws Exception {
         final List<String> enhetList = Collections.singletonList("enhet");
 
@@ -1249,16 +1232,12 @@ public class IntygServiceTest {
         handelse.setCode(HandelsekodEnum.SKAPAT);
         handelse.setIntygsId(intygId);
 
-        ArendeCount sent = new ArendeCount(1, 2, 3, 4);
-        ArendeCount received = new ArendeCount(5, 6, 7, 8);
-
         when(moduleRegistry.listAllModules()).thenReturn(
             Collections.singletonList(new IntygModule(intygType, "", "", "", "", "", "", "", "", false)));
         when(utkastRepository.findAllById(any())).thenReturn(Collections.emptyList());
-        when(notificationService.findNotifications(any())).thenReturn(Collections.singletonList(handelse));
 
         List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(
-            new IntygWithNotificationsRequest.Builder().setPersonnummer(PERSNR).setEnhetId(enhetList).build(), Collections.emptyList());
+            Collections.singletonList(handelse));
 
         assertNotNull(res);
         assertEquals(0, res.size());
@@ -1295,10 +1274,9 @@ public class IntygServiceTest {
             Collections.singletonList(new IntygModule(intygType, "", "", "", "", "", "", "", "", false)));
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(fragorOchSvarCreator.createArenden(eq(intygId), anyString())).thenReturn(Pair.of(sent, received));
-        doReturn(Collections.singletonList(handelse)).when(notificationService).findNotifications(request);
         doReturn(draftList).when(utkastRepository).findAllById(any());
 
-        List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(request, Collections.emptyList());
+        List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(Collections.singletonList(handelse));
 
         assertNotNull(res);
         assertEquals(1, res.size());
@@ -1344,10 +1322,9 @@ public class IntygServiceTest {
             Collections.singletonList(new IntygModule(intygType, "", "", "", "", "", "", "", "", false)));
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(fragorOchSvarCreator.createArenden(eq(CERTIFICATE_ID), anyString())).thenReturn(Pair.of(sent, received));
-        doReturn(Collections.singletonList(handelse)).when(notificationService).findNotifications(request);
         doReturn(Collections.emptyList()).when(utkastRepository).findAllById(any());
 
-        List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(request, Collections.emptyList());
+        List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(Collections.singletonList(handelse));
 
         assertNotNull(res);
         assertEquals(1, res.size());
@@ -1376,7 +1353,7 @@ public class IntygServiceTest {
         when(notificationService.getNotifications(eq(intygId))).thenReturn(Collections.emptyList());
 
         List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(
-            new IntygWithNotificationsRequest.Builder().setPersonnummer(PERSNR).setEnhetId(enhetList).build(), Collections.emptyList());
+            Collections.emptyList());
 
         assertNotNull(res);
         assertEquals(0, res.size());
@@ -1403,13 +1380,11 @@ public class IntygServiceTest {
         when(moduleRegistry.listAllModules()).thenReturn(
             Collections.singletonList(new IntygModule(intygType, "", "", "", "", "", "", "", "", false)));
         when(utkastRepository.findAllById(any())).thenReturn(Collections.singletonList(getDraft(intygId)));
-        when(notificationService.findNotifications(any())).thenReturn(Collections.singletonList(handelse));
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(fragorOchSvarCreator.createArenden(eq(intygId), anyString())).thenReturn(Pair.of(sent, received));
 
         List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(
-            new IntygWithNotificationsRequest.Builder().setPersonnummer(PERSNR).setVardgivarId(vardgivarId)
-                .build(), Collections.emptyList());
+            Collections.singletonList(handelse));
 
         assertNotNull(res);
         assertEquals(1, res.size());
@@ -1444,11 +1419,7 @@ public class IntygServiceTest {
             .thenReturn(Collections.emptyList());
 
         List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(
-            new IntygWithNotificationsRequest.Builder()
-                .setPersonnummer(PERSNR)
-                .setVardgivarId(vardgivarId)
-                .setStartDate(start)
-                .setEndDate(end).build(), Collections.emptyList());
+            Collections.emptyList());
 
         assertNotNull(res);
         assertEquals(0, res.size());

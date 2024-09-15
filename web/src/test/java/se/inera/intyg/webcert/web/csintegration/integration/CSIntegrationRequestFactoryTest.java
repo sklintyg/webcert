@@ -28,6 +28,7 @@ import static org.mockito.Mockito.when;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,7 +64,6 @@ import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceIntegrati
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserDTO;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserHelper;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
@@ -2013,33 +2013,21 @@ class CSIntegrationRequestFactoryTest {
     }
 
     @Nested
-    class PatientCertificatesWithQARequestDTOTest {
+    class CertificatesWithQARequestDTOTest {
 
-        private final PersonIdDTO expectedPersonId = PersonIdDTO.builder().build();
-        private static final String CARE_PROVIDER_ID = "careProviderId";
-        private final IntygWithNotificationsRequest request = new IntygWithNotificationsRequest.Builder()
-            .setPersonnummer(PERSONNUMMER)
-            .setEnhetId(UNIT_IDS)
-            .setVardgivarId(CARE_PROVIDER_ID)
-            .build();
+        private static final String CERTIFICATE_ID = "certificateId";
+        private List<String> certificateIds;
 
-        @Test
-        void shouldSetPersonIdDTO() {
-            doReturn(expectedPersonId).when(certificateServicePatientHelper).getPersonId(PERSONNUMMER);
-            final var actualRequest = csIntegrationRequestFactory.getPatientCertificatesWithQARequestDTO(request);
-            assertEquals(expectedPersonId, actualRequest.getPersonId());
+        @BeforeEach
+        void setUp() {
+            certificateIds = new ArrayList<>();
+            certificateIds.addAll(List.of(CERTIFICATE_ID, CERTIFICATE_ID));
         }
 
         @Test
-        void shouldSetCareProviderId() {
-            final var actualRequest = csIntegrationRequestFactory.getPatientCertificatesWithQARequestDTO(request);
-            assertEquals(CARE_PROVIDER_ID, actualRequest.getCareProviderId());
-        }
-
-        @Test
-        void shouldSetUnitIds() {
-            final var actualRequest = csIntegrationRequestFactory.getPatientCertificatesWithQARequestDTO(request);
-            assertEquals(UNIT_IDS, actualRequest.getUnitIds());
+        void shouldSetCertificateIds() {
+            final var actualRequest = csIntegrationRequestFactory.getCertificatesWithQARequestDTO(certificateIds);
+            assertEquals(List.of(CERTIFICATE_ID, CERTIFICATE_ID), actualRequest.getCertificateIds());
         }
     }
 

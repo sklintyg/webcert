@@ -33,6 +33,7 @@ import java.time.chrono.ChronoLocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -95,7 +96,6 @@ import se.inera.intyg.webcert.web.service.intyg.decorator.UtkastIntygDecorator;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsRequest;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsResponse;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
@@ -675,20 +675,18 @@ public class IntygServiceImpl implements IntygService {
     }
 
     @Override
-    public List<IntygWithNotificationsResponse> listCertificatesForCareWithQA(IntygWithNotificationsRequest request,
-        List<String> certificateIdsFromCS) {
+    public List<IntygWithNotificationsResponse> listCertificatesForCareWithQA(List<Handelse> notificationsForWC) {
+        if (notificationsForWC.isEmpty()) {
+            return Collections.emptyList();
+        }
+
         final var intygWithNotificationsResponses = new ArrayList<IntygWithNotificationsResponse>();
 
-        final var allNotifications = notificationService.findNotifications(request);
-
-        final var notificationCertificateIdHash = getNotificationCertificateIdHash(allNotifications);
+        final var notificationCertificateIdHash = getNotificationCertificateIdHash(notificationsForWC);
 
         final var draftMap = getDraftMap(notificationCertificateIdHash.keySet());
 
         for (var certificateId : notificationCertificateIdHash.keySet()) {
-            if (certificateIdsFromCS.contains(certificateId)) {
-                continue;
-            }
 
             final var notifications = notificationCertificateIdHash.get(certificateId);
 

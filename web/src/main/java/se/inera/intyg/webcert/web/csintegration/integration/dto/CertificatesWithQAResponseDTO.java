@@ -23,17 +23,17 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.PatientCertificatesWithQAResponseDTO.PatientCertificatesWithQAResponseDTOBuilder;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesWithQAResponseDTO.CertificatesWithQAResponseDTOBuilder;
 
-@JsonDeserialize(builder = PatientCertificatesWithQAResponseDTOBuilder.class)
+@JsonDeserialize(builder = CertificatesWithQAResponseDTOBuilder.class)
 @Value
 @Builder
-public class PatientCertificatesWithQAResponseDTO {
+public class CertificatesWithQAResponseDTO {
 
     String list;
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class PatientCertificatesWithQAResponseDTOBuilder {
+    public static class CertificatesWithQAResponseDTOBuilder {
 
     }
 }
