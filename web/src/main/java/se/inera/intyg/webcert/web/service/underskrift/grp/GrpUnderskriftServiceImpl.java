@@ -38,6 +38,7 @@ import org.springframework.stereotype.Service;
 import se.funktionstjanster.grp.v2.AuthenticateRequestTypeV23;
 import se.funktionstjanster.grp.v2.GrpException;
 import se.funktionstjanster.grp.v2.GrpServicePortType;
+import se.funktionstjanster.grp.v2.OrderResponseTypeV23;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
@@ -110,9 +111,11 @@ public class GrpUnderskriftServiceImpl extends BaseSignatureService implements C
     public void startGrpCollectPoller(String personId, SignaturBiljett signaturBiljett) {
         final var authRequest = buildAuthRequest(personId, signaturBiljett);
 
-        OrderResponseType orderResponse;
+        OrderResponseTypeV23 orderResponse;
         try {
             orderResponse = grpService.authenticate(authRequest);
+            updateTicketProperties(signaturBiljett, orderResponse);
+            updateTicketTracker(signaturBiljett, orderResponse);
         } catch (GrpException grpException) {
             redisTicketTracker.updateStatus(signaturBiljett.getTicketId(), SignaturStatus.OKAND);
 
@@ -152,6 +155,18 @@ public class GrpUnderskriftServiceImpl extends BaseSignatureService implements C
             .certificate(certificate)
             .signaturBiljett(ticket)
             .build();
+    }
+
+    private void updateTicketProperties(SignaturBiljett ticket, OrderResponseTypeV23 response) {
+        ticket.setAutoStartToken(response.getAutoStartToken());
+        ticket.setQrStartToken(response.getQrStartToken());
+        ticket.setQrStartSecret(response.getQrStartSecret());
+    }
+
+    private void updateTicketTracker(SignaturBiljett ticket, OrderResponseTypeV23 response) {
+        final var ticketId = ticket.getTicketId();
+        redisTicketTracker.updateAutoStartToken(ticketId, response.getAutoStartToken());
+        redisTicketTracker.updateQrCodeProperties(ticketId, response.getQrStartToken(), response.getQrStartSecret());
     }
 
     // Used for BankID / Mobilt BankID.

@@ -356,7 +356,7 @@ class UserServiceImplTest {
                 .getAuthenticationMethod();
 
             final var actualUser = userService.getLoggedInUser();
-            assertEquals(se.inera.intyg.common.support.facade.model.user.SigningMethod.BANK_ID, actualUser.getSigningMethod());
+            assertEquals(se.inera.intyg.common.support.facade.model.user.SigningMethod.MOBILT_BANK_ID, actualUser.getSigningMethod());
         }
     }
 

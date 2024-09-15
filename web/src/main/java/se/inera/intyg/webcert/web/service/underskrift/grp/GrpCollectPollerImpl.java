@@ -102,7 +102,7 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
                     switch (resp.getProgressStatus()) {
                         case COMPLETE:
                             String subjectSerialNumber = getCollectResponseAttribute(resp.getAttributes());
-                            if (!subjectSerialNumber.replaceAll("\\-", "").equals(webCertUser.getPersonId().replaceAll("\\-", ""))) {
+                            if (!subjectSerialNumber.replace("-", "").equals(webCertUser.getPersonId().replace("-", ""))) {
                                 throw new IllegalStateException(
                                     "Could not process GRP Collect COMPLETE response, subject serialNumber did not match "
                                         + "issuing WebCertUser.");
