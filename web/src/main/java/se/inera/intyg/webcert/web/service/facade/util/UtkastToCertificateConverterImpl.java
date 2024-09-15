@@ -25,6 +25,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import se.inera.intyg.common.db.support.DbModuleEntryPoint;
+import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
@@ -137,7 +139,8 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
         );
 
         certificateToReturn.getMetadata().setAvailableForCitizen(
-            !(certificate.getIntygsTyp().equals("db") || certificate.getIntygsTyp().equals("doi"))
+            !(certificate.getIntygsTyp().equals(DbModuleEntryPoint.MODULE_ID)
+                || certificate.getIntygsTyp().equals(DoiModuleEntryPoint.MODULE_ID))
         );
 
         certificateToReturn.getMetadata().setResponsibleHospName(

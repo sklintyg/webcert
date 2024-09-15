@@ -43,6 +43,9 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.common.db.support.DbModuleEntryPoint;
+import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
+import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.facade.builder.CertificateBuilder;
 import se.inera.intyg.common.support.facade.model.Certificate;
@@ -545,21 +548,21 @@ class UtkastToCertificateConverterTest {
 
         @Test
         void shouldSetAvailableForCitizenToFalseForDb() {
-            draft.setIntygsTyp("db");
+            draft.setIntygsTyp(DbModuleEntryPoint.MODULE_ID);
             final var actualCertificate = utkastToCertificateConverter.convert(draft);
             assertFalse(actualCertificate.getMetadata().isAvailableForCitizen());
         }
 
         @Test
         void shouldSetAvailableForCitizenToFalseForDoi() {
-            draft.setIntygsTyp("doi");
+            draft.setIntygsTyp(DoiModuleEntryPoint.MODULE_ID);
             final var actualCertificate = utkastToCertificateConverter.convert(draft);
             assertFalse(actualCertificate.getMetadata().isAvailableForCitizen());
         }
 
         @Test
         void shouldSetAvailableForCitizenToTrueForCertificatesOtherThanDbAndDoi() {
-            draft.setIntygsTyp("lisjp");
+            draft.setIntygsTyp(LisjpEntryPoint.MODULE_ID);
             final var actualCertificate = utkastToCertificateConverter.convert(draft);
             assertTrue(actualCertificate.getMetadata().isAvailableForCitizen());
         }
