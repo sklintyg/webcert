@@ -66,6 +66,7 @@ class PDLLogServiceTest {
     @InjectMocks
     PDLLogService pdlLogService;
 
+
     @BeforeEach
     void setUp() {
         CERTIFICATE.setMetadata(
@@ -85,6 +86,7 @@ class PDLLogServiceTest {
         final var captor = ArgumentCaptor.forClass(LogRequest.class);
 
         doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, null);
+        doReturn(false).when(webCertUserService).hasAuthenticationContext();
 
         pdlLogService.logCreated(CERTIFICATE);
 
@@ -102,6 +104,7 @@ class PDLLogServiceTest {
         doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, ADDITIONAL_INFO);
         doReturn(mockedUser).when(webCertUserService).getUser();
         doReturn(additionalInfoIntegrationParameter()).when(mockedUser).getParameters();
+        doReturn(true).when(webCertUserService).hasAuthenticationContext();
 
         pdlLogService.logCreated(CERTIFICATE);
 
@@ -134,6 +137,7 @@ class PDLLogServiceTest {
         doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, ADDITIONAL_INFO);
         doReturn(mockedUser).when(webCertUserService).getUser();
         doReturn(additionalInfoIntegrationParameter()).when(mockedUser).getParameters();
+        doReturn(true).when(webCertUserService).hasAuthenticationContext();
 
         pdlLogService.logRead(CERTIFICATE);
 
@@ -165,6 +169,7 @@ class PDLLogServiceTest {
         doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, ADDITIONAL_INFO);
         doReturn(mockedUser).when(webCertUserService).getUser();
         doReturn(additionalInfoIntegrationParameter()).when(mockedUser).getParameters();
+        doReturn(true).when(webCertUserService).hasAuthenticationContext();
 
         pdlLogService.logSaved(CERTIFICATE);
 
@@ -196,6 +201,7 @@ class PDLLogServiceTest {
         doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, ADDITIONAL_INFO);
         doReturn(mockedUser).when(webCertUserService).getUser();
         doReturn(additionalInfoIntegrationParameter()).when(mockedUser).getParameters();
+        doReturn(true).when(webCertUserService).hasAuthenticationContext();
 
         pdlLogService.logDeleted(CERTIFICATE);
 
@@ -236,6 +242,7 @@ class PDLLogServiceTest {
             doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, ADDITIONAL_INFO);
             doReturn(mockedUser).when(webCertUserService).getUser();
             doReturn(additionalInfoIntegrationParameter()).when(mockedUser).getParameters();
+            doReturn(true).when(webCertUserService).hasAuthenticationContext();
 
             pdlLogService.logPrinted(CERTIFICATE);
 
@@ -272,6 +279,7 @@ class PDLLogServiceTest {
             doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, ADDITIONAL_INFO);
             doReturn(mockedUser).when(webCertUserService).getUser();
             doReturn(additionalInfoIntegrationParameter()).when(mockedUser).getParameters();
+            doReturn(true).when(webCertUserService).hasAuthenticationContext();
 
             pdlLogService.logPrinted(CERTIFICATE);
 
@@ -308,6 +316,7 @@ class PDLLogServiceTest {
             doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, ADDITIONAL_INFO);
             doReturn(mockedUser).when(webCertUserService).getUser();
             doReturn(additionalInfoIntegrationParameter()).when(mockedUser).getParameters();
+            doReturn(true).when(webCertUserService).hasAuthenticationContext();
 
             pdlLogService.logPrinted(CERTIFICATE);
 
@@ -344,6 +353,7 @@ class PDLLogServiceTest {
             doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, ADDITIONAL_INFO);
             doReturn(mockedUser).when(webCertUserService).getUser();
             doReturn(additionalInfoIntegrationParameter()).when(mockedUser).getParameters();
+            doReturn(true).when(webCertUserService).hasAuthenticationContext();
 
             pdlLogService.logPrinted(CERTIFICATE);
 
@@ -375,6 +385,7 @@ class PDLLogServiceTest {
         doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, ADDITIONAL_INFO);
         doReturn(mockedUser).when(webCertUserService).getUser();
         doReturn(additionalInfoIntegrationParameter()).when(mockedUser).getParameters();
+        doReturn(true).when(webCertUserService).hasAuthenticationContext();
 
         pdlLogService.logSign(CERTIFICATE);
 
@@ -406,6 +417,7 @@ class PDLLogServiceTest {
             .createLogRequestFromCertificate(CERTIFICATE, ADDITIONAL_INFO + ". " + ADDITIONAL_WITH_RECIPIENT_MESSAGE + RECIPIENT_NAME);
         doReturn(mockedUser).when(webCertUserService).getUser();
         doReturn(additionalInfoIntegrationParameter()).when(mockedUser).getParameters();
+        doReturn(true).when(webCertUserService).hasAuthenticationContext();
 
         pdlLogService.logSent(CERTIFICATE);
 
@@ -423,6 +435,7 @@ class PDLLogServiceTest {
             .createLogRequestFromCertificate(CERTIFICATE, ADDITIONAL_INFO + ". " + ADDITIONAL_WITH_RECIPIENT_MESSAGE + RECIPIENT_NAME);
         doReturn(mockedUser).when(webCertUserService).getUser();
         doReturn(additionalInfoIntegrationParameter()).when(mockedUser).getParameters();
+        doReturn(true).when(webCertUserService).hasAuthenticationContext();
 
         pdlLogService.logSent(CERTIFICATE);
 
@@ -451,6 +464,7 @@ class PDLLogServiceTest {
         doReturn(expectedLogRequest).when(logRequestFactory).createLogRequestFromCertificate(CERTIFICATE, ADDITIONAL_INFO);
         doReturn(mockedUser).when(webCertUserService).getUser();
         doReturn(additionalInfoIntegrationParameter()).when(mockedUser).getParameters();
+        doReturn(true).when(webCertUserService).hasAuthenticationContext();
 
         pdlLogService.logRevoke(CERTIFICATE);
 
@@ -458,11 +472,11 @@ class PDLLogServiceTest {
         assertEquals(expectedLogRequest, captor.getValue());
     }
 
+
     @Test
     void shouldLogCreateMessage() {
         final var webCertUser = new WebCertUser();
         doReturn(webCertUser).when(webCertUserService).getUser();
-
         pdlLogService.logCreateMessage(
             PERSON_ID, CERTIFICATE_ID
         );
