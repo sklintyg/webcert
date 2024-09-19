@@ -69,6 +69,9 @@ class RevokeCertificateFromCertificateServiceTest {
     @Mock
     MonitoringLogService monitoringLogService;
 
+    @Mock
+    DecorateCertificateFromCSWithInformationFromWC decorateCertificateFromCSWithInformationFromWC;
+
     @InjectMocks
     RevokeCertificateFromCertificateService revokeCertificateFromCertificateService;
 

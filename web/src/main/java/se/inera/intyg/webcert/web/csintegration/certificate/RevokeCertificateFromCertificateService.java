@@ -41,6 +41,7 @@ public class RevokeCertificateFromCertificateService implements RevokeCertificat
     private final PDLLogService pdlLogService;
     private final MonitoringLogService monitoringLogService;
     private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+    private final DecorateCertificateFromCSWithInformationFromWC decorateCertificateFromCSWithInformationFromWC;
 
     @Override
     public Certificate revokeCertificate(String certificateId, String reason, String message) {
@@ -59,6 +60,8 @@ public class RevokeCertificateFromCertificateService implements RevokeCertificat
         if (certificate == null) {
             throw new IllegalStateException("Received null when trying to revoke certificate from Certificate Service");
         }
+
+        decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
 
         log.debug("Certificate with id '{}' was revoked using certificate service", certificateId);
         pdlLogService.logRevoke(certificate);

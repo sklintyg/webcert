@@ -100,6 +100,9 @@ class ComplementCertificateFromCertificateServiceTest {
     @Mock
     PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
 
+    @Mock
+    DecorateCertificateFromCSWithInformationFromWC decorateCertificateFromCSWithInformationFromWC;
+
     @InjectMocks
     ComplementCertificateFromCertificateService complementCertificateFromCertificateService;
 

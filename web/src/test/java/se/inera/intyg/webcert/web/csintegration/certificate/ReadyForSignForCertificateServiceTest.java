@@ -51,6 +51,8 @@ class ReadyForSignForCertificateServiceTest {
     PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
     @Mock
     MonitoringLogService monitoringLogService;
+    @Mock
+    DecorateCertificateFromCSWithInformationFromWC decorateCertificateFromCSWithInformationFromWC;
     @InjectMocks
     ReadyForSignForCertificateService readyForSignForCertificateService;
 
@@ -86,7 +88,7 @@ class ReadyForSignForCertificateServiceTest {
 
         verify(publishCertificateStatusUpdateService, times(1)).publish(certificate, HandelsekodEnum.KFSIGN);
     }
-    
+
     @Test
     void shallMonitorLogUtkastMarkedAsSigned() {
         final var certificate = getCertificate();

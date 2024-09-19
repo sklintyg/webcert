@@ -55,6 +55,9 @@ class ForwardCertificateFromCertificateServiceTest {
     @Mock
     CSIntegrationRequestFactory csIntegrationRequestFactory;
 
+    @Mock
+    DecorateCertificateFromCSWithInformationFromWC decorateCertificateFromCSWithInformationFromWC;
+
 
     @InjectMocks
     ForwardCertificateFromCertificateService forwardCertificateFromCertificateService;
