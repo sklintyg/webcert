@@ -44,6 +44,7 @@ public class ComplementCertificateFromCertificateService implements ComplementCe
     private final IntegratedUnitRegistryHelper integratedUnitRegistryHelper;
     private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
     private final PDLLogService pdlLogService;
+    private final DecorateCertificateFromCSWithInformationFromWC decorateCertificateFromCSWithInformationFromWC;
 
     @Override
     public Certificate complement(String certificateId, String message) {
@@ -68,6 +69,7 @@ public class ComplementCertificateFromCertificateService implements ComplementCe
         );
 
         integratedUnitRegistryHelper.addUnitForCopy(certificateToComplement, certificate);
+        decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
 
         log.debug("Complemented certificate '{}' from Certificate Service", certificateId);
         monitoringLogService.logIntygCopiedCompletion(
@@ -93,6 +95,7 @@ public class ComplementCertificateFromCertificateService implements ComplementCe
             certificateId,
             csIntegrationRequestFactory.answerComplementOnCertificateRequest(message)
         );
+        decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
 
         monitoringLogService.logArendeCreated(
             certificate.getMetadata().getId(),

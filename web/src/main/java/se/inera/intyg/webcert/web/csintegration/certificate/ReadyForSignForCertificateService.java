@@ -38,6 +38,7 @@ public class ReadyForSignForCertificateService implements ReadyForSignFacadeServ
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
     private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
     private final MonitoringLogService monitoringLogService;
+    private final DecorateCertificateFromCSWithInformationFromWC decorateCertificateFromCSWithInformationFromWC;
 
     @Override
     public Certificate readyForSign(String certificateId) {
@@ -52,6 +53,8 @@ public class ReadyForSignForCertificateService implements ReadyForSignFacadeServ
             certificateId,
             csIntegrationRequestFactory.readyForSignRequest()
         );
+
+        decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
 
         publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.KFSIGN);
         monitoringLogService.logUtkastMarkedAsReadyToSignNotificationSent(

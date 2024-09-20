@@ -34,6 +34,7 @@ public class ForwardCertificateFromCertificateService implements ForwardCertific
 
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+    private final DecorateCertificateFromCSWithInformationFromWC decorateCertificateFromCSWithInformationFromWC;
 
     @Override
     public Certificate forwardCertificate(String certificateId, boolean forwarded) {
@@ -47,6 +48,8 @@ public class ForwardCertificateFromCertificateService implements ForwardCertific
         final var certificate = csIntegrationService.forwardCertificate(
             certificateId, csIntegrationRequestFactory.forwardCertificateRequest()
         );
+
+        decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
 
         log.debug("Forwarded certificate '{}' from Certificate Service", certificateId);
 
