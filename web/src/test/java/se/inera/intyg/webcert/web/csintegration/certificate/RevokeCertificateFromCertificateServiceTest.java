@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -152,6 +153,12 @@ class RevokeCertificateFromCertificateServiceTest {
             void shouldPublishCertificateStatusUpdate() {
                 revokeCertificateFromCertificateService.revokeCertificate(ID, REASON, MESSAGE);
                 verify(publishCertificateStatusUpdateService).publish(CERTIFICATE, HandelsekodEnum.MAKULE);
+            }
+
+            @Test
+            void shouldDecorateCertificateFromCSWithInformationFromWC() {
+                revokeCertificateFromCertificateService.revokeCertificate(ID, REASON, MESSAGE);
+                verify(decorateCertificateFromCSWithInformationFromWC, times(1)).decorate(CERTIFICATE);
             }
         }
 

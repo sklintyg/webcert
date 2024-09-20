@@ -103,6 +103,19 @@ class ReadyForSignForCertificateServiceTest {
         verify(monitoringLogService, times(1)).logUtkastMarkedAsReadyToSignNotificationSent(CERTIFICATE_ID, TYPE);
     }
 
+    @Test
+    void shouldDecorateCertificateFromCSWithInformationFromWC() {
+        final var certificate = getCertificate();
+
+        final var readyForSignRequestDTO = ReadyForSignRequestDTO.builder().build();
+        doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
+        doReturn(readyForSignRequestDTO).when(csIntegrationRequestFactory).readyForSignRequest();
+        doReturn(certificate).when(csIntegrationService).markCertificateReadyForSign(CERTIFICATE_ID, readyForSignRequestDTO);
+
+        readyForSignForCertificateService.readyForSign(CERTIFICATE_ID);
+        verify(decorateCertificateFromCSWithInformationFromWC, times(1)).decorate(certificate);
+    }
+
     private static Certificate getCertificate() {
         final var certificate = new Certificate();
         certificate.setMetadata(
