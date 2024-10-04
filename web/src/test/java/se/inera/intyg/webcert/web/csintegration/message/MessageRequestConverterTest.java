@@ -189,6 +189,7 @@ class MessageRequestConverterTest {
         final var res = new SendMessageToCareType();
         res.setAmne(new Amneskod());
         res.getAmne().setCode(MESSAGE_TYPE_COMPLEMENT);
+        res.getAmne().setDisplayName(SUBJECT);
         res.setIntygsId(createIntygsId());
         res.setMeddelandeId(MESSAGE_ID);
         res.setMeddelande(MESSAGE);
