@@ -56,7 +56,7 @@ public class MessageRequestConverter {
                     .build()
             )
             .referenceId(messageToCareType.getReferensId())
-            .subject(messageToCareType.getRubrik())
+            .subject(messageToCareType.getAmne().getDisplayName())
             .lastDateToAnswer(messageToCareType.getSistaDatumForSvar())
             .sentBy(SentByDTO.getByCode(messageToCareType.getSkickatAv().getPart().getCode()))
             .sent(messageToCareType.getSkickatTidpunkt())
