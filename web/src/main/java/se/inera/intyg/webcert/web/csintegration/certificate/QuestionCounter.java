@@ -30,23 +30,23 @@ public class QuestionCounter {
 
     public ArendeCount calculateArendeCount(List<Question> questions, FrageStallare frageStallare) {
         final var totalAmount = (int) questions.stream()
-            .filter(question -> frageStallare.isKodEqual(question.getAuthor()))
+            .filter(question -> frageStallare.isNameEqual(question.getAuthor()))
             .count();
 
         final var totalNotAnswered = (int) questions.stream()
-            .filter(question -> frageStallare.isKodEqual(question.getAuthor()))
+            .filter(question -> frageStallare.isNameEqual(question.getAuthor()))
             .filter(question -> Boolean.FALSE.equals(question.isHandled()))
             .filter(question -> question.getAnswer() == null)
             .count();
 
         final var totalAnswered = (int) questions.stream()
-            .filter(question -> frageStallare.isKodEqual(question.getAuthor()))
+            .filter(question -> frageStallare.isNameEqual(question.getAuthor()))
             .filter(question -> Boolean.FALSE.equals(question.isHandled()))
             .filter(question -> question.getAnswer() != null)
             .count();
 
         final var totalHandled = (int) questions.stream()
-            .filter(question -> frageStallare.isKodEqual(question.getAuthor()))
+            .filter(question -> frageStallare.isNameEqual(question.getAuthor()))
             .filter(Question::isHandled)
             .count();
 
