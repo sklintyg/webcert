@@ -60,6 +60,7 @@ class MessageRequestConverterTest {
     private static final LocalDateTime SENT_TIMESTAMP = LocalDateTime.now();
     private static final String ANSWER_MESSAGE_ID = "answerMessageId";
     private static final String ANSWER_REFERENCE_ID = "answerReferenceId";
+    private static final String HEADING = "heading";
     private MessageRequestConverter messageRequestConverter;
     private SendMessageToCareType sendMessageToCareType;
 
@@ -139,7 +140,7 @@ class MessageRequestConverterTest {
 
     @Test
     void shallIncludeSubject() {
-        assertEquals(SUBJECT, messageRequestConverter.convert(sendMessageToCareType).getSubject());
+        assertEquals(HEADING, messageRequestConverter.convert(sendMessageToCareType).getSubject());
     }
 
     @Test
@@ -198,7 +199,7 @@ class MessageRequestConverterTest {
         res.getKomplettering().add(createComplement());
         res.setPaminnelseMeddelandeId(REMINDER_MESSAGE_ID);
         res.setReferensId(REFERENCE_ID);
-        res.setRubrik(SUBJECT);
+        res.setRubrik(HEADING);
         res.setSistaDatumForSvar(LAST_DATE_TO_ANSWER);
         res.setSkickatTidpunkt(SENT_TIMESTAMP);
         return res;
