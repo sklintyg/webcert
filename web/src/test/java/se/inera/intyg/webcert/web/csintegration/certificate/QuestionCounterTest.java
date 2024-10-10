@@ -44,7 +44,7 @@ class QuestionCounterTest {
         @Test
         void shallReturnCorrectAmountOfTotal() {
             final var question = Question.builder()
-                .author(FrageStallare.FORSAKRINGSKASSAN.getKod())
+                .author(FrageStallare.FORSAKRINGSKASSAN.getName())
                 .isHandled(true)
                 .build();
 
@@ -54,7 +54,7 @@ class QuestionCounterTest {
         @Test
         void shallReturnCorrectAmountOfNotAnswered() {
             final var question = Question.builder()
-                .author(FrageStallare.FORSAKRINGSKASSAN.getKod())
+                .author(FrageStallare.FORSAKRINGSKASSAN.getName())
                 .isHandled(false)
                 .build();
 
@@ -64,7 +64,7 @@ class QuestionCounterTest {
         @Test
         void shallReturnCorrectAmountOfAnswered() {
             final var question = Question.builder()
-                .author(FrageStallare.FORSAKRINGSKASSAN.getKod())
+                .author(FrageStallare.FORSAKRINGSKASSAN.getName())
                 .isHandled(false)
                 .answer(
                     Answer.builder().build()
@@ -78,7 +78,7 @@ class QuestionCounterTest {
         @Test
         void shallReturnCorrectAmountOfHandled() {
             final var question = Question.builder()
-                .author(FrageStallare.FORSAKRINGSKASSAN.getKod())
+                .author(FrageStallare.FORSAKRINGSKASSAN.getName())
                 .isHandled(true)
                 .build();
 
