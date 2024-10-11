@@ -23,30 +23,24 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
-import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 
 @Component
 public class QuestionCounter {
 
-    public ArendeCount calculateArendeCount(List<Question> questions, FrageStallare frageStallare) {
-        final var totalAmount = (int) questions.stream()
-            .filter(question -> frageStallare.isNameEqual(question.getAuthor()))
-            .count();
+    public ArendeCount calculateArendeCount(List<Question> questions) {
+        final var totalAmount = questions.size();
 
         final var totalNotAnswered = (int) questions.stream()
-            .filter(question -> frageStallare.isNameEqual(question.getAuthor()))
             .filter(question -> Boolean.FALSE.equals(question.isHandled()))
             .filter(question -> question.getAnswer() == null)
             .count();
 
         final var totalAnswered = (int) questions.stream()
-            .filter(question -> frageStallare.isNameEqual(question.getAuthor()))
             .filter(question -> Boolean.FALSE.equals(question.isHandled()))
             .filter(question -> question.getAnswer() != null)
             .count();
 
         final var totalHandled = (int) questions.stream()
-            .filter(question -> frageStallare.isNameEqual(question.getAuthor()))
             .filter(Question::isHandled)
             .count();
 

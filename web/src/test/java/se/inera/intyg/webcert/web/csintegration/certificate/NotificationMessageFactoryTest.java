@@ -116,11 +116,21 @@ class NotificationMessageFactoryTest {
         final var marshall = marshall(registerCertificateType);
         xmlRepresentation = Base64.getEncoder().encodeToString(marshall.getBytes(StandardCharsets.UTF_8));
 
-        final var questions = List.of(Question.builder().build());
+        final var questionFromFK = Question.builder()
+            .author(FrageStallare.FORSAKRINGSKASSAN.getName())
+            .build();
+        final var questionFromWC = Question.builder()
+            .author(FrageStallare.WEBCERT.getName())
+            .build();
+
+        final var questions = List.of(
+            questionFromFK,
+            questionFromWC
+        );
 
         doReturn(questions).when(csIntegrationService).getQuestions(ID);
-        doReturn(ARENDE_COUNT).when(questionCounter).calculateArendeCount(questions, FrageStallare.WEBCERT);
-        doReturn(ARENDE_COUNT).when(questionCounter).calculateArendeCount(questions, FrageStallare.FORSAKRINGSKASSAN);
+        doReturn(ARENDE_COUNT).when(questionCounter).calculateArendeCount(List.of(questionFromFK));
+        doReturn(ARENDE_COUNT).when(questionCounter).calculateArendeCount(List.of(questionFromWC));
     }
 
     @Test
