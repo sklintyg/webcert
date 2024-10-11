@@ -48,7 +48,7 @@ class QuestionCounterTest {
                 .isHandled(true)
                 .build();
 
-            assertEquals(1, questionCounter.calculateArendeCount(List.of(question), FrageStallare.FORSAKRINGSKASSAN).getTotalt());
+            assertEquals(1, questionCounter.calculateArendeCount(List.of(question)).getTotalt());
         }
 
         @Test
@@ -58,7 +58,8 @@ class QuestionCounterTest {
                 .isHandled(false)
                 .build();
 
-            assertEquals(1, questionCounter.calculateArendeCount(List.of(question), FrageStallare.FORSAKRINGSKASSAN).getEjBesvarade());
+            assertEquals(1,
+                questionCounter.calculateArendeCount(List.of(question)).getEjBesvarade());
         }
 
         @Test
@@ -71,7 +72,8 @@ class QuestionCounterTest {
                 )
                 .build();
 
-            assertEquals(1, questionCounter.calculateArendeCount(List.of(question), FrageStallare.FORSAKRINGSKASSAN).getBesvarade());
+            assertEquals(1,
+                questionCounter.calculateArendeCount(List.of(question)).getBesvarade());
         }
 
 
@@ -82,7 +84,8 @@ class QuestionCounterTest {
                 .isHandled(true)
                 .build();
 
-            assertEquals(1, questionCounter.calculateArendeCount(List.of(question), FrageStallare.FORSAKRINGSKASSAN).getHanterade());
+            assertEquals(1,
+                questionCounter.calculateArendeCount(List.of(question)).getHanterade());
         }
     }
 }

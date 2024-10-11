@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
@@ -51,8 +52,16 @@ public class NotificationMessageFactory {
             certificate.getMetadata().getUnit().getUnitId(),
             null,
             FragorOchSvar.getEmpty(),
-            questionCounter.calculateArendeCount(questions, FrageStallare.WEBCERT),
-            questionCounter.calculateArendeCount(questions, FrageStallare.FORSAKRINGSKASSAN),
+            questionCounter.calculateArendeCount(
+                questions.stream()
+                    .filter(question -> !FrageStallare.FORSAKRINGSKASSAN.isNameEqual(question.getAuthor()))
+                    .collect(Collectors.toList())
+            ),
+            questionCounter.calculateArendeCount(
+                questions.stream()
+                    .filter(question -> FrageStallare.FORSAKRINGSKASSAN.isNameEqual(question.getAuthor()))
+                    .collect(Collectors.toList())
+            ),
             SchemaVersion.VERSION_3,
             certificate.getMetadata().getExternalReference()
         );
