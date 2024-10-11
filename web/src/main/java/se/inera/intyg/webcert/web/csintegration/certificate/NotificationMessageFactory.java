@@ -58,8 +58,15 @@ public class NotificationMessageFactory {
         );
 
         notificationMessage.setStatusUpdateXml(
-            CertificateStatusUpdateFactory.create(encodedXmlRepresentation, eventType, now, handledByHsaId,
-                certificate.getMetadata().getExternalReference())
+            CertificateStatusUpdateFactory.create(
+                encodedXmlRepresentation,
+                eventType,
+                now,
+                handledByHsaId,
+                certificate.getMetadata().getExternalReference(),
+                notificationMessage.getSkickadeFragor(),
+                notificationMessage.getMottagnaFragor()
+            )
         );
 
         return notificationMessage;
