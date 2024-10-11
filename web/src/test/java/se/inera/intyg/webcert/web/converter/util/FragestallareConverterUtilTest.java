@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.converter.util;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
@@ -35,6 +36,12 @@ public class FragestallareConverterUtilTest {
             .partToFrageStallarKod(PARTCODE_FKASSA));
         assertEquals(FrageStallare.WEBCERT.getKod(), FragestallareConverterUtil
             .partToFrageStallarKod(PARTCODE_HSVARD));
+    }
+
+    @Test
+    public void testPartNameToFrageStallareNamn() {
+        assertTrue(FrageStallare.FORSAKRINGSKASSAN.isNameEqual("Försäkringskassan"));
+        assertTrue(FrageStallare.WEBCERT.isNameEqual("Webcert"));
     }
 
     @Test(expected = WebCertServiceException.class)
