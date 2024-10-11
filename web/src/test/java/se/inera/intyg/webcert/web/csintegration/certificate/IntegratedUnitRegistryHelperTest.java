@@ -20,7 +20,6 @@
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -72,50 +71,10 @@ class IntegratedUnitRegistryHelperTest {
     class AddUnit {
 
         @Nested
-        class NoUser {
-
-            @BeforeEach
-            void setup() {
-                when(webCertUserService.getUser())
-                    .thenReturn(webCertUser);
-            }
-
-            @Test
-            void shouldAddIfDeepIntegration() {
-                when(webCertUser.getValdVardenhet())
-                    .thenReturn(new Vardenhet(UNIT_ID, UNIT_NAME));
-                when(webCertUser.getValdVardgivare())
-                    .thenReturn(new Vardenhet(CARE_PROVIDER_ID, CARE_PROVIDER_NAME));
-                final var expectedEntry = new IntegreradEnhetEntry(
-                    UNIT_ID,
-                    UNIT_NAME,
-                    CARE_PROVIDER_ID,
-                    CARE_PROVIDER_NAME
-                );
-                when(webCertUser.getOrigin())
-                    .thenReturn("DJUPINTEGRATION");
-
-                integratedUnitRegistryHelper.addUnit();
-
-                verify(enheterRegistry).putIntegreradEnhet(expectedEntry, false, true);
-            }
-
-            @Test
-            void shouldNotAddIfNotDeepIntegration() {
-                when(webCertUser.getOrigin())
-                    .thenReturn("NORMAL");
-
-                integratedUnitRegistryHelper.addUnit();
-
-                verify(enheterRegistry, times(0)).putIntegreradEnhet(any(), anyBoolean(), anyBoolean());
-            }
-        }
-
-        @Nested
         class HasUser {
 
             @Test
-            void shouldAddIfDeepIntegration() {
+            void shouldAdd() {
                 when(webCertUser.getValdVardenhet())
                     .thenReturn(new Vardenhet(UNIT_ID, UNIT_NAME));
                 when(webCertUser.getValdVardgivare())
@@ -126,22 +85,10 @@ class IntegratedUnitRegistryHelperTest {
                     CARE_PROVIDER_ID,
                     CARE_PROVIDER_NAME
                 );
-                when(webCertUser.getOrigin())
-                    .thenReturn("DJUPINTEGRATION");
-
+                
                 integratedUnitRegistryHelper.addUnit(webCertUser);
 
                 verify(enheterRegistry).putIntegreradEnhet(expectedEntry, false, true);
-            }
-
-            @Test
-            void shouldNotAddIfNotDeepIntegration() {
-                when(webCertUser.getOrigin())
-                    .thenReturn("NORMAL");
-
-                integratedUnitRegistryHelper.addUnit(webCertUser);
-
-                verify(enheterRegistry, times(0)).putIntegreradEnhet(any(), anyBoolean(), anyBoolean());
             }
         }
     }
@@ -209,7 +156,7 @@ class IntegratedUnitRegistryHelperTest {
 
             verify(enheterRegistry).addIfSameVardgivareButDifferentUnits(UNIT_ID, expectedEntry, TYPE);
         }
-        
+
         @Test
         void shouldNotAddUnitDataFromCopyUsingRegistryIfNotDeepIntegration() {
             when(webCertUser.getOrigin())
