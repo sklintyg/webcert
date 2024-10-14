@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -55,6 +56,8 @@ class ForwardCertificateFromCertificateServiceTest {
     @Mock
     CSIntegrationRequestFactory csIntegrationRequestFactory;
 
+    @Mock
+    DecorateCertificateFromCSWithInformationFromWC decorateCertificateFromCSWithInformationFromWC;
 
     @InjectMocks
     ForwardCertificateFromCertificateService forwardCertificateFromCertificateService;
@@ -111,6 +114,11 @@ class ForwardCertificateFromCertificateServiceTest {
                 assertEquals(REQUEST, captor.getValue());
             }
 
+            @Test
+            void shouldDecorateCertificateFromCSWithInformationFromWC() {
+                forwardCertificateFromCertificateService.forwardCertificate(ID, FORWARDED);
+                verify(decorateCertificateFromCSWithInformationFromWC, times(1)).decorate(CERTIFICATE);
+            }
         }
     }
 }

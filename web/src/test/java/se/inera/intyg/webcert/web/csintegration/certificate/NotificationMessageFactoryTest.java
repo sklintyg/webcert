@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.doReturn;
 import static se.inera.intyg.common.support.Constants.KV_HANDELSE_CODE_SYSTEM;
+import static se.inera.intyg.webcert.notification_sender.notifications.services.NotificationTypeConverter.toArenden;
 
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
@@ -69,6 +70,7 @@ class NotificationMessageFactoryTest {
     private static final Intyg EXPECTED_INTYG = new Intyg();
     private static final String CERTIFICATE_ID = "certificateId";
     private static final String HSA_ID = "hsaId";
+    private static final ArendeCount ARENDE_COUNT = new ArendeCount(1, 1, 1, 1);
     private Certificate certificate;
     private String xmlRepresentation;
     private HandelsekodEnum eventType;
@@ -113,6 +115,22 @@ class NotificationMessageFactoryTest {
         registerCertificateType.setIntyg(EXPECTED_INTYG);
         final var marshall = marshall(registerCertificateType);
         xmlRepresentation = Base64.getEncoder().encodeToString(marshall.getBytes(StandardCharsets.UTF_8));
+
+        final var questionFromFK = Question.builder()
+            .author(FrageStallare.FORSAKRINGSKASSAN.getName())
+            .build();
+        final var questionFromWC = Question.builder()
+            .author(FrageStallare.WEBCERT.getName())
+            .build();
+
+        final var questions = List.of(
+            questionFromFK,
+            questionFromWC
+        );
+
+        doReturn(questions).when(csIntegrationService).getQuestions(ID);
+        doReturn(ARENDE_COUNT).when(questionCounter).calculateArendeCount(List.of(questionFromFK));
+        doReturn(ARENDE_COUNT).when(questionCounter).calculateArendeCount(List.of(questionFromWC));
     }
 
     @Test
@@ -156,34 +174,20 @@ class NotificationMessageFactoryTest {
 
     @Test
     void shallConvertMottagnaFragor() {
-        final var questions = List.of(Question.builder().build());
-        final var expectedArendeCount = new ArendeCount(1, 1, 1, 1);
-
-        doReturn(questions).when(csIntegrationService).getQuestions(ID);
-        doReturn(new ArendeCount()).when(questionCounter).calculateArendeCount(questions, FrageStallare.WEBCERT);
-        doReturn(expectedArendeCount).when(questionCounter).calculateArendeCount(questions, FrageStallare.FORSAKRINGSKASSAN);
-
         final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID);
-
-        assertEquals(expectedArendeCount.getBesvarade(), result.getMottagnaFragor().getBesvarade());
-        assertEquals(expectedArendeCount.getHanterade(), result.getMottagnaFragor().getHanterade());
-        assertEquals(expectedArendeCount.getEjBesvarade(), result.getMottagnaFragor().getEjBesvarade());
-        assertEquals(expectedArendeCount.getTotalt(), result.getMottagnaFragor().getTotalt());
+        assertEquals(ARENDE_COUNT.getBesvarade(), result.getSkickadeFragor().getBesvarade());
+        assertEquals(ARENDE_COUNT.getHanterade(), result.getSkickadeFragor().getHanterade());
+        assertEquals(ARENDE_COUNT.getEjBesvarade(), result.getSkickadeFragor().getEjBesvarade());
+        assertEquals(ARENDE_COUNT.getTotalt(), result.getSkickadeFragor().getTotalt());
     }
 
     @Test
     void shallConvertSkickadeFragor() {
-        final var questions = List.of(Question.builder().build());
-        final var expectedArendeCount = new ArendeCount(1, 1, 1, 1);
-
-        doReturn(questions).when(csIntegrationService).getQuestions(ID);
-        doReturn(expectedArendeCount).when(questionCounter).calculateArendeCount(questions, FrageStallare.WEBCERT);
-
         final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID);
-        assertEquals(expectedArendeCount.getBesvarade(), result.getSkickadeFragor().getBesvarade());
-        assertEquals(expectedArendeCount.getHanterade(), result.getSkickadeFragor().getHanterade());
-        assertEquals(expectedArendeCount.getEjBesvarade(), result.getSkickadeFragor().getEjBesvarade());
-        assertEquals(expectedArendeCount.getTotalt(), result.getSkickadeFragor().getTotalt());
+        assertEquals(ARENDE_COUNT.getBesvarade(), result.getSkickadeFragor().getBesvarade());
+        assertEquals(ARENDE_COUNT.getHanterade(), result.getSkickadeFragor().getHanterade());
+        assertEquals(ARENDE_COUNT.getEjBesvarade(), result.getSkickadeFragor().getEjBesvarade());
+        assertEquals(ARENDE_COUNT.getTotalt(), result.getSkickadeFragor().getTotalt());
     }
 
     @Test
@@ -241,6 +245,28 @@ class NotificationMessageFactoryTest {
             final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID);
             final var careType = unmarshall(result.getStatusUpdateXml());
             assertEquals(EXTERNAL_REF, careType.getRef());
+        }
+
+        @Test
+        void shallIncludeSentQuestions() {
+            final var arenden = toArenden(ARENDE_COUNT);
+            final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID);
+            final var careType = unmarshall(result.getStatusUpdateXml());
+            assertEquals(arenden.getBesvarade(), careType.getSkickadeFragor().getBesvarade());
+            assertEquals(arenden.getHanterade(), careType.getSkickadeFragor().getHanterade());
+            assertEquals(arenden.getEjBesvarade(), careType.getSkickadeFragor().getEjBesvarade());
+            assertEquals(arenden.getTotalt(), careType.getSkickadeFragor().getTotalt());
+        }
+
+        @Test
+        void shallIncludeRecievedQuestions() {
+            final var arenden = toArenden(ARENDE_COUNT);
+            final var result = converter.create(certificate, xmlRepresentation, eventType, HSA_ID);
+            final var careType = unmarshall(result.getStatusUpdateXml());
+            assertEquals(arenden.getBesvarade(), careType.getSkickadeFragor().getBesvarade());
+            assertEquals(arenden.getHanterade(), careType.getSkickadeFragor().getHanterade());
+            assertEquals(arenden.getEjBesvarade(), careType.getSkickadeFragor().getEjBesvarade());
+            assertEquals(arenden.getTotalt(), careType.getSkickadeFragor().getTotalt());
         }
     }
 

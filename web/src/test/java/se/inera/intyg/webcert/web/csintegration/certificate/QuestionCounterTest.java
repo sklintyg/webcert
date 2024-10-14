@@ -44,45 +44,48 @@ class QuestionCounterTest {
         @Test
         void shallReturnCorrectAmountOfTotal() {
             final var question = Question.builder()
-                .author(FrageStallare.FORSAKRINGSKASSAN.getKod())
+                .author(FrageStallare.FORSAKRINGSKASSAN.getName())
                 .isHandled(true)
                 .build();
 
-            assertEquals(1, questionCounter.calculateArendeCount(List.of(question), FrageStallare.FORSAKRINGSKASSAN).getTotalt());
+            assertEquals(1, questionCounter.calculateArendeCount(List.of(question)).getTotalt());
         }
 
         @Test
         void shallReturnCorrectAmountOfNotAnswered() {
             final var question = Question.builder()
-                .author(FrageStallare.FORSAKRINGSKASSAN.getKod())
+                .author(FrageStallare.FORSAKRINGSKASSAN.getName())
                 .isHandled(false)
                 .build();
 
-            assertEquals(1, questionCounter.calculateArendeCount(List.of(question), FrageStallare.FORSAKRINGSKASSAN).getEjBesvarade());
+            assertEquals(1,
+                questionCounter.calculateArendeCount(List.of(question)).getEjBesvarade());
         }
 
         @Test
         void shallReturnCorrectAmountOfAnswered() {
             final var question = Question.builder()
-                .author(FrageStallare.FORSAKRINGSKASSAN.getKod())
+                .author(FrageStallare.FORSAKRINGSKASSAN.getName())
                 .isHandled(false)
                 .answer(
                     Answer.builder().build()
                 )
                 .build();
 
-            assertEquals(1, questionCounter.calculateArendeCount(List.of(question), FrageStallare.FORSAKRINGSKASSAN).getBesvarade());
+            assertEquals(1,
+                questionCounter.calculateArendeCount(List.of(question)).getBesvarade());
         }
 
 
         @Test
         void shallReturnCorrectAmountOfHandled() {
             final var question = Question.builder()
-                .author(FrageStallare.FORSAKRINGSKASSAN.getKod())
+                .author(FrageStallare.FORSAKRINGSKASSAN.getName())
                 .isHandled(true)
                 .build();
 
-            assertEquals(1, questionCounter.calculateArendeCount(List.of(question), FrageStallare.FORSAKRINGSKASSAN).getHanterade());
+            assertEquals(1,
+                questionCounter.calculateArendeCount(List.of(question)).getHanterade());
         }
     }
 }

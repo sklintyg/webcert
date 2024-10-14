@@ -123,7 +123,7 @@ public class PDLLogService {
     }
 
     private String additionalInfo() {
-        final var user = webCertUserService.getUser();
+        final var user = webCertUserService.hasAuthenticationContext() ? webCertUserService.getUser() : null;
         if (user == null) {
             return null;
         }

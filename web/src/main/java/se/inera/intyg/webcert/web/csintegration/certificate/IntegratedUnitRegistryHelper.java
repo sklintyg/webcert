@@ -36,22 +36,17 @@ public class IntegratedUnitRegistryHelper {
     private final IntegreradeEnheterRegistry integreradeEnheterRegistry;
 
     public void addUnit(IntygUser user) {
-        if (user.getOrigin().equals(UserOriginType.DJUPINTEGRATION.toString())) {
-            integreradeEnheterRegistry.putIntegreradEnhet(
-                new IntegreradEnhetEntry(
-                    user.getValdVardenhet().getId(),
-                    user.getValdVardenhet().getNamn(),
-                    user.getValdVardgivare().getId(),
-                    user.getValdVardgivare().getNamn()
-                ),
-                false,
-                true);
-        }
+        integreradeEnheterRegistry.putIntegreradEnhet(
+            new IntegreradEnhetEntry(
+                user.getValdVardenhet().getId(),
+                user.getValdVardenhet().getNamn(),
+                user.getValdVardgivare().getId(),
+                user.getValdVardgivare().getNamn()
+            ),
+            false,
+            true);
     }
 
-    public void addUnit() {
-        addUnit(webCertUserService.getUser());
-    }
 
     public void addUnitForCopy(Certificate certificate, Certificate copy) {
         if (webCertUserService.getUser().getOrigin().equals(UserOriginType.DJUPINTEGRATION.toString())) {

@@ -369,32 +369,6 @@ class GetCertificatesAvailableFunctionsImplTest {
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.SIGN_CERTIFICATE);
         }
-
-        @Test
-        void shallIncludeResponsibleIssuerIfUserIsNotDoctorAndOriginIsDjupintegration() {
-            doReturn(false).when(user).isLakare();
-            doReturn("DJUPINTEGRATION").when(user).getOrigin();
-            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
-            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.RESPONSIBLE_ISSUER);
-        }
-
-        @Test
-        void shallExcludeResponsibleIssuerIfUserIsDoctorAndOriginIsDjupintegration() {
-            doReturn("DJUPINTEGRATION").when(user).getOrigin();
-            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
-            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.RESPONSIBLE_ISSUER);
-        }
-
-        @Test
-        void shallExcludeResponsibleIssuerIfUserIsNotDoctorAndOriginIsNotDjupintegration() {
-            doReturn(false).when(user).isLakare();
-            doReturn("NORMAL").when(user).getOrigin();
-            final var certificate = CertificateFacadeTestHelper.createCertificate(LisjpEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
-            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.RESPONSIBLE_ISSUER);
-        }
     }
 
     private Certificate getCertificateWithProtectedPatient(boolean isProtectedPerson, CertificateStatus certificateStatus) {

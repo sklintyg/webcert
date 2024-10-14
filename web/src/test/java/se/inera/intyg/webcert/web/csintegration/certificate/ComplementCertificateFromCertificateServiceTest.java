@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -99,6 +100,9 @@ class ComplementCertificateFromCertificateServiceTest {
 
     @Mock
     PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+
+    @Mock
+    DecorateCertificateFromCSWithInformationFromWC decorateCertificateFromCSWithInformationFromWC;
 
     @InjectMocks
     ComplementCertificateFromCertificateService complementCertificateFromCertificateService;
@@ -219,6 +223,12 @@ class ComplementCertificateFromCertificateServiceTest {
                 complementCertificateFromCertificateService.complement(ID, MESSAGE);
                 verify(integratedUnitRegistryHelper).addUnitForCopy(CERTIFICATE, COMPLEMENTED_CERTIFICATE);
             }
+
+            @Test
+            void shouldDecorateCertificateFromCSWithInformationFromWC() {
+                complementCertificateFromCertificateService.complement(ID, MESSAGE);
+                verify(decorateCertificateFromCSWithInformationFromWC, times(1)).decorate(COMPLEMENTED_CERTIFICATE);
+            }
         }
 
         @Nested
@@ -255,7 +265,6 @@ class ComplementCertificateFromCertificateServiceTest {
                 assertEquals(ANSWER_COMPLEMENT_REQUEST_DTO, captor.getValue());
             }
 
-
             @Test
             void shouldMonitorArendeCreated() {
                 complementCertificateFromCertificateService.answerComplement(ID, MESSAGE);
@@ -272,6 +281,12 @@ class ComplementCertificateFromCertificateServiceTest {
             void shouldPublishStatusUpdate() {
                 complementCertificateFromCertificateService.answerComplement(ID, MESSAGE);
                 verify(publishCertificateStatusUpdateService).publish(CERTIFICATE, HandelsekodEnum.HANFRFM);
+            }
+
+            @Test
+            void shouldDecorateCertificateFromCSWithInformationFromWC() {
+                complementCertificateFromCertificateService.answerComplement(ID, MESSAGE);
+                verify(decorateCertificateFromCSWithInformationFromWC, times(1)).decorate(CERTIFICATE);
             }
         }
     }

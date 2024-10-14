@@ -101,5 +101,12 @@ class GetCertificateFromCertificateServiceTest {
             getCertificateFromCertificateService.getCertificate(CERTIFICATE_ID, false, true);
             verifyNoInteractions(pdlLogService);
         }
+        
+        @Test
+        void shouldDecorateCertificateFromCSWithInformationFromWC() {
+            getCertificateFromCertificateService.getCertificate(CERTIFICATE_ID, true, true);
+            verify(decorateCertificateFromCSWithInformationFromWC, times(1)).decorate(CERTIFICATE);
+        }
     }
+
 }

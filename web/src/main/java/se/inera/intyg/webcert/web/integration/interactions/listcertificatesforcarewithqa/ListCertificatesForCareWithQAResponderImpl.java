@@ -22,7 +22,6 @@ import static se.inera.intyg.webcert.notification_sender.notifications.services.
 
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -92,7 +91,7 @@ public class ListCertificatesForCareWithQAResponderImpl implements ListCertifica
         } finally {
             log.info(
                 "Request processing completed. PersonId: '{}' CareProviderId '{}' UnitIds '{}'."
-                    + " Returning '{}' number of certificates. Elapsed time: '{}' seconds",
+                    + " Returning '{}' number of certificates. Elapsed time: '{}' milliseconds",
                 HashUtility.hash(intygWithNotificationsRequest.getPersonnummer().getPersonnummer()),
                 intygWithNotificationsRequest.getVardgivarId(),
                 intygWithNotificationsRequest.getEnhetId(),
@@ -140,7 +139,7 @@ public class ListCertificatesForCareWithQAResponderImpl implements ListCertifica
     }
 
     private long timeElapsed(long startTime) {
-        return TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - startTime);
+        return System.currentTimeMillis() - startTime;
     }
 
     private static Predicate<Handelse> removeNotificationsRelatedToCertificatesFromCertificateService(

@@ -51,6 +51,8 @@ class ReadyForSignForCertificateServiceTest {
     PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
     @Mock
     MonitoringLogService monitoringLogService;
+    @Mock
+    DecorateCertificateFromCSWithInformationFromWC decorateCertificateFromCSWithInformationFromWC;
     @InjectMocks
     ReadyForSignForCertificateService readyForSignForCertificateService;
 
@@ -86,7 +88,7 @@ class ReadyForSignForCertificateServiceTest {
 
         verify(publishCertificateStatusUpdateService, times(1)).publish(certificate, HandelsekodEnum.KFSIGN);
     }
-    
+
     @Test
     void shallMonitorLogUtkastMarkedAsSigned() {
         final var certificate = getCertificate();
@@ -99,6 +101,19 @@ class ReadyForSignForCertificateServiceTest {
         readyForSignForCertificateService.readyForSign(CERTIFICATE_ID);
 
         verify(monitoringLogService, times(1)).logUtkastMarkedAsReadyToSignNotificationSent(CERTIFICATE_ID, TYPE);
+    }
+
+    @Test
+    void shouldDecorateCertificateFromCSWithInformationFromWC() {
+        final var certificate = getCertificate();
+
+        final var readyForSignRequestDTO = ReadyForSignRequestDTO.builder().build();
+        doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
+        doReturn(readyForSignRequestDTO).when(csIntegrationRequestFactory).readyForSignRequest();
+        doReturn(certificate).when(csIntegrationService).markCertificateReadyForSign(CERTIFICATE_ID, readyForSignRequestDTO);
+
+        readyForSignForCertificateService.readyForSign(CERTIFICATE_ID);
+        verify(decorateCertificateFromCSWithInformationFromWC, times(1)).decorate(certificate);
     }
 
     private static Certificate getCertificate() {

@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.integration.interactions.sendmessagetocare;
 
+import javax.ws.rs.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
@@ -70,7 +71,8 @@ public class SendMessageToCareResponderImpl implements SendMessageToCareResponde
                     LOG.error(
                         String.format(
                             "Could not process incoming message to care. Validation error. Question id %s. Certificate id %s. %s %s",
-                            request.getMeddelandeId(), request.getIntygsId().getExtension(), ex.getErrorCode(), ex.getMessage()
+                            request.getMeddelandeId(), request.getIntygsId().getExtension(),
+                            ex.getErrorCode(), ex.getMessage()
                         ),
                         ex
                     );
@@ -82,12 +84,22 @@ public class SendMessageToCareResponderImpl implements SendMessageToCareResponde
                     LOG.error(
                         String.format(
                             "Could not process incoming message to care. Application error. Question id %s. Certificate id %s. %s %s",
-                            request.getMeddelandeId(), request.getIntygsId().getExtension(), ex.getErrorCode(), ex.getMessage()
+                            request.getMeddelandeId(), request.getIntygsId().getExtension(),
+                            ex.getErrorCode(), ex.getMessage()
                         ),
                         ex
                     );
                     break;
             }
+        } catch (BadRequestException exception) {
+            result.setResultCode(ResultCodeType.ERROR);
+            result.setErrorId(ErrorIdType.VALIDATION_ERROR);
+            result.setResultText(exception.getMessage());
+            LOG.error(
+                String.format("Could not process incoming message to care. Bad request returned. Question id %s. Certificate id %s. %s",
+                    request.getMeddelandeId(), request.getIntygsId().getExtension(), exception.getMessage()),
+                exception
+            );
         } catch (Exception ex) {
             result.setResultCode(ResultCodeType.ERROR);
             result.setErrorId(ErrorIdType.APPLICATION_ERROR);
