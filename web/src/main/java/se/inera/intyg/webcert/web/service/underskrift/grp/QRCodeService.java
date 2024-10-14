@@ -53,7 +53,7 @@ public class QRCodeService {
             final var ticketInstant = ticket.getSkapad().atZone(ZoneId.systemDefault()).toInstant();
             final var secondsElapsed = Long.toString(ticketInstant.until(Instant.now(), ChronoUnit.SECONDS));
             final var qrStartSecretBytes = qrStartSecret.getBytes(StandardCharsets.US_ASCII);
-            final var qrAuthenticationCode = getMessageAutheticationCode(secondsElapsed, qrStartSecretBytes);
+            final var qrAuthenticationCode = getMessageAuthenticationCode(secondsElapsed, qrStartSecretBytes);
 
             return String.join(DELIMITER, BANK_ID, ticket.getQrStartToken(), secondsElapsed, qrAuthenticationCode);
 
@@ -64,7 +64,7 @@ public class QRCodeService {
         }
     }
 
-    private String getMessageAutheticationCode(String secondsElapsed, byte[] qrStartSecret) throws NoSuchAlgorithmException,
+    private String getMessageAuthenticationCode(String secondsElapsed, byte[] qrStartSecret) throws NoSuchAlgorithmException,
         InvalidKeyException {
         final var mac = Mac.getInstance(MAC_ALGORITHM);
         mac.init(new SecretKeySpec(qrStartSecret, MAC_ALGORITHM));
