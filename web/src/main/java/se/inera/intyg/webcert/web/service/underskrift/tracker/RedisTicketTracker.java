@@ -28,4 +28,8 @@ public interface RedisTicketTracker {
     SignaturBiljett findBiljett(String ticketId);
 
     SignaturBiljett updateStatus(String ticketId, SignaturStatus status);
+
+    void updateAutoStartToken(String ticketId, String autoStartToken);
+
+    void updateQrCodeProperties(String ticketId, String qrStartToken, String qrStartSecret);
 }

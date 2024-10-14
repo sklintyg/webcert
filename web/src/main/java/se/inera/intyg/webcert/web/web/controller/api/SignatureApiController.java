@@ -46,7 +46,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpHeaders;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
-import se.inera.intyg.infra.xmldsig.service.FakeSignatureService;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
@@ -55,16 +54,15 @@ import se.inera.intyg.webcert.web.service.underskrift.dss.DssMetadataService;
 import se.inera.intyg.webcert.web.service.underskrift.dss.DssSignMessageService;
 import se.inera.intyg.webcert.web.service.underskrift.dss.DssSignRequestDTO;
 import se.inera.intyg.webcert.web.service.underskrift.dss.DssSignatureService;
+import se.inera.intyg.webcert.web.service.underskrift.grp.QRCodeService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
-import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.KlientSignaturRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.SignaturStateDTO;
 import se.inera.intyg.webcert.web.web.controller.api.dto.SignaturStateDTO.SignaturStateDTOBuilder;
 import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
-
 
 @Path("/signature")
 public class SignatureApiController extends AbstractApiController {
@@ -74,7 +72,6 @@ public class SignatureApiController extends AbstractApiController {
     public static final String SIGN_SERVICE_METADATA_PATH = "/signservice/v1/metadata";
     private static final Logger LOG = LoggerFactory.getLogger(SignatureApiController.class);
     private static final String LAST_SAVED_DRAFT = "lastSavedDraft";
-    private static final String PARAM_CERT_ID = "certId";
 
     @Autowired
     private ReactUriFactory reactUriFactory;
@@ -86,9 +83,6 @@ public class SignatureApiController extends AbstractApiController {
     @Autowired
     private MonitoringLogService monitoringLogService;
 
-    @Autowired(required = false)
-    private FakeSignatureService fakeSignatureService;
-
     @Autowired
     private DssMetadataService dssMetadataService;
 
@@ -99,7 +93,7 @@ public class SignatureApiController extends AbstractApiController {
     private DssSignMessageService dssSignMessageService;
 
     @Autowired
-    private UtkastService utkastService;
+    private QRCodeService qrCodeService;
 
     @POST
     @Path("/{intygsTyp}/{intygsId}/{version}/signeringshash/{signMethod}")
@@ -108,7 +102,7 @@ public class SignatureApiController extends AbstractApiController {
     public SignaturStateDTO signeraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
         @PathParam("version") long version, @PathParam("signMethod") String signMethodStr, @Context HttpServletRequest request) {
 
-        SignMethod signMethod = null;
+        SignMethod signMethod;
         try {
             signMethod = SignMethod.valueOf(signMethodStr);
         } catch (IllegalArgumentException e) {
@@ -206,6 +200,8 @@ public class SignatureApiController extends AbstractApiController {
             .withStatus(sb.getStatus())
             .withVersion(sb.getVersion())
             .withSignaturTyp(sb.getSignaturTyp())
+            .withAutoStartToken(sb.getAutoStartToken())
+            .withQrCode(qrCodeService.qrCodeForBankId(sb))
             .withHash(sb.getHash()) // This is what you stuff into NetiD SIGN.
             .build();
     }
@@ -227,8 +223,7 @@ public class SignatureApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{ticketId}/signeringsstatus")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     public SignaturStateDTO signeringsStatus(@PathParam("intygsTyp") String intygsTyp, @PathParam("ticketId") String ticketId) {
-        SignaturBiljett sb = underskriftService.signeringsStatus(ticketId);
-
+        final var sb = underskriftService.signeringsStatus(ticketId);
         return convertToSignatureStateDTO(sb);
     }
 
