@@ -65,6 +65,6 @@ public class HandleQuestionFromCertificateService implements HandleQuestionFacad
     }
 
     private HandelsekodEnum eventType(String author) {
-        return FrageStallare.WEBCERT.isKodEqual(author) ? HandelsekodEnum.HANFRFV : HandelsekodEnum.HANFRFM;
+        return FrageStallare.FORSAKRINGSKASSAN.isNameEqual(author) ? HandelsekodEnum.HANFRFM : HandelsekodEnum.HANFRFV;
     }
 }

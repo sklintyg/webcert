@@ -50,7 +50,7 @@ class HandleQuestionFromCertificateServiceTest {
     private static final String PERSON_ID = "personId";
     private static final String WC = "WC";
     private static final String CERTIFICATE_ID = "certificateId";
-    private static final String FK = "FK";
+    private static final String FK = "Försäkringskassan";
     @Mock
     private CSIntegrationService csIntegrationService;
     @Mock
