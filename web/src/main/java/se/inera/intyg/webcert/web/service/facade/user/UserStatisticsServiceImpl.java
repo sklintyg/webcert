@@ -106,7 +106,7 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
                 final var subUnitIds = unit.getHsaIds();
                 subUnitIds.remove(unit.getId());
                 addUnitStatistics(statistics, unit.getId(), subUnitIds, draftMap, questionMap, careProvider.getId());
-                addSubUnitsStatistics(statistics, subUnitIds, draftMap, questionMap, careProvider.getId());
+                addSubUnitsStatistics(statistics, subUnitIds, draftMap, questionMap, careProvider.getId(), unit.getId());
             }
         }
     }
@@ -114,7 +114,7 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
     private void addUnitStatistics(UserStatisticsDTO statistics, String unitId, List<String> subUnitIds, Map<String, Long> draftMap,
         Map<String, Long> questionMap, String careProviderId) {
         if (unitId == null) {
-            LOG.warn("Care provider with id {} includes unit without id. Statistics will not be included for unit.", careProviderId);
+            LOG.warn("Care provider with id '{}' includes care unit without id. Statistics will not be included for unit.", careProviderId);
             return;
         }
         final var draftsOnSubUnits = sumStatisticsForUnits(subUnitIds, draftMap);
@@ -125,11 +125,12 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
     }
 
     private void addSubUnitsStatistics(UserStatisticsDTO statistics, List<String> unitIds, Map<String, Long> draftMap,
-        Map<String, Long> questionMap, String careProviderId) {
+        Map<String, Long> questionMap, String careProviderId, String careUnitId) {
         for (String unitId : unitIds) {
             if (unitId == null) {
-                LOG.warn("Care provider with id {} includes sub unit without id. Statistics will not be included for sub unit.",
-                    careProviderId);
+                LOG.warn(
+                    "Care provider with id '{}' & care unit with id '{}' includes sub unit without id. Statistics will not be included for sub unit.",
+                    careProviderId, careUnitId);
                 continue;
             }
             final var nbrOfDrafts = getFromMap(unitId, draftMap);
