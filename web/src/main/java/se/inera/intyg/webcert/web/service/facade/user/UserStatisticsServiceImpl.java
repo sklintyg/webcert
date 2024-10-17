@@ -129,8 +129,8 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
         for (String unitId : unitIds) {
             if (unitId == null) {
                 LOG.warn(
-                    "Care provider with id '{}' & care unit with id '{}' includes sub unit without id. Statistics will not be included for sub unit.",
-                    careProviderId, careUnitId);
+                    "Care provider with id '{}' & care unit with id '{}' includes sub unit without id. Statistics will not be included for"
+                        + " sub unit.", careProviderId, careUnitId);
                 continue;
             }
             final var nbrOfDrafts = getFromMap(unitId, draftMap);
