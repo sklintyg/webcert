@@ -105,14 +105,18 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
             for (Vardenhet unit : careProvider.getVardenheter()) {
                 final var subUnitIds = unit.getHsaIds();
                 subUnitIds.remove(unit.getId());
-                addUnitStatistics(statistics, unit.getId(), subUnitIds, draftMap, questionMap);
-                addSubUnitsStatistics(statistics, subUnitIds, draftMap, questionMap);
+                addUnitStatistics(statistics, unit.getId(), subUnitIds, draftMap, questionMap, careProvider.getId());
+                addSubUnitsStatistics(statistics, subUnitIds, draftMap, questionMap, careProvider.getId());
             }
         }
     }
 
     private void addUnitStatistics(UserStatisticsDTO statistics, String unitId, List<String> subUnitIds, Map<String, Long> draftMap,
-        Map<String, Long> questionMap) {
+        Map<String, Long> questionMap, String careProviderId) {
+        if (unitId == null) {
+            LOG.warn("Care provider with id {} includes unit without id. Statistics will not be included for unit.", careProviderId);
+            return;
+        }
         final var draftsOnSubUnits = sumStatisticsForUnits(subUnitIds, draftMap);
         final var questionsOnSubUnits = sumStatisticsForUnits(subUnitIds, questionMap);
         final var draftsOnUnit = getFromMap(unitId, draftMap);
@@ -121,8 +125,13 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
     }
 
     private void addSubUnitsStatistics(UserStatisticsDTO statistics, List<String> unitIds, Map<String, Long> draftMap,
-        Map<String, Long> questionMap) {
+        Map<String, Long> questionMap, String careProviderId) {
         for (String unitId : unitIds) {
+            if (unitId == null) {
+                LOG.warn("Care provider with id {} includes sub unit without id. Statistics will not be included for sub unit.",
+                    careProviderId);
+                continue;
+            }
             final var nbrOfDrafts = getFromMap(unitId, draftMap);
             final var nbrOfQuestions = getFromMap(unitId, questionMap);
             statistics.addUnitStatistics(unitId, new UnitStatisticsDTO(nbrOfDrafts, nbrOfQuestions));

@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.service.facade.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -30,6 +31,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -108,6 +110,30 @@ class UserStatisticsServiceImplTest {
 
         final var selectedUnit = new Vardenhet(SELECTED_UNIT_ID, SELECTED_UNIT_ID);
         selectedUnit.setMottagningar(List.of(new Mottagning(SUB_UNIT_TO_SELECTED, SUB_UNIT_TO_SELECTED)));
+
+        careProvider.setVardenheter(List.of(new Vardenhet(NOT_SELECTED_UNIT_ID, NOT_SELECTED_UNIT_ID), selectedUnit));
+
+        return careProvider;
+    }
+
+    private Vardgivare getCareProviderWithUnitsWithoutId() {
+        final var careProvider = new Vardgivare();
+        careProvider.setId("CARE_PROVIDER");
+
+        final var selectedUnit = new Vardenhet(null, SELECTED_UNIT_ID);
+        selectedUnit.setMottagningar(List.of(new Mottagning(SUB_UNIT_TO_SELECTED, SUB_UNIT_TO_SELECTED)));
+
+        careProvider.setVardenheter(List.of(new Vardenhet(NOT_SELECTED_UNIT_ID, NOT_SELECTED_UNIT_ID), selectedUnit));
+
+        return careProvider;
+    }
+
+    private Vardgivare getCareProviderWithSubUnitsWithoutId() {
+        final var careProvider = new Vardgivare();
+        careProvider.setId("CARE_PROVIDER");
+
+        final var selectedUnit = new Vardenhet(SELECTED_UNIT_ID, SELECTED_UNIT_ID);
+        selectedUnit.setMottagningar(List.of(new Mottagning(null, SUB_UNIT_TO_SELECTED)));
 
         careProvider.setVardenheter(List.of(new Vardenhet(NOT_SELECTED_UNIT_ID, NOT_SELECTED_UNIT_ID), selectedUnit));
 
@@ -193,10 +219,6 @@ class UserStatisticsServiceImplTest {
 
             @BeforeEach
             void setup() {
-                doReturn(List.of(getCareProvider()))
-                    .when(user)
-                    .getVardgivare();
-
                 draftsMap.put(SELECTED_UNIT_ID, expectedDraftsSelected);
                 draftsMap.put(NOT_SELECTED_UNIT_ID, expectedDraftsNotSelected);
                 draftsMap.put(SUB_UNIT_TO_SELECTED, expectedDraftsSubUnit);
@@ -212,6 +234,10 @@ class UserStatisticsServiceImplTest {
 
             @Test
             void shouldAddStatisticsForAllUnitsAndSubUnits() {
+                doReturn(List.of(getCareProvider()))
+                    .when(user)
+                    .getVardgivare();
+
                 final var result = userStatisticsService.getUserStatistics();
 
                 assertEquals(3, result.getUnitStatistics().size());
@@ -222,6 +248,10 @@ class UserStatisticsServiceImplTest {
 
                 @Test
                 void shouldAddDrafts() {
+                    doReturn(List.of(getCareProvider()))
+                        .when(user)
+                        .getVardgivare();
+
                     final var result = userStatisticsService.getUserStatistics();
 
                     assertEquals(expectedDraftsSelected, result.getUnitStatistics().get(SELECTED_UNIT_ID).getDraftsOnUnit());
@@ -229,6 +259,10 @@ class UserStatisticsServiceImplTest {
 
                 @Test
                 void shouldAddQuestions() {
+                    doReturn(List.of(getCareProvider()))
+                        .when(user)
+                        .getVardgivare();
+
                     final var result = userStatisticsService.getUserStatistics();
 
                     assertEquals(expectedQuestionsSelected, result.getUnitStatistics().get(SELECTED_UNIT_ID).getQuestionsOnUnit());
@@ -236,6 +270,10 @@ class UserStatisticsServiceImplTest {
 
                 @Test
                 void shouldAddDraftsOfSubUnits() {
+                    doReturn(List.of(getCareProvider()))
+                        .when(user)
+                        .getVardgivare();
+
                     final var result = userStatisticsService.getUserStatistics();
 
                     assertEquals(expectedDraftsSubUnit, result.getUnitStatistics().get(SELECTED_UNIT_ID).getDraftsOnSubUnits());
@@ -243,9 +281,23 @@ class UserStatisticsServiceImplTest {
 
                 @Test
                 void shouldAddQuestionsOfSubUnits() {
+                    doReturn(List.of(getCareProvider()))
+                        .when(user)
+                        .getVardgivare();
+
                     final var result = userStatisticsService.getUserStatistics();
 
                     assertEquals(expectedQuestionsSubUnit, result.getUnitStatistics().get(SELECTED_UNIT_ID).getQuestionsOnSubUnits());
+                }
+
+                @Test
+                void shouldExcludeUnitsWithoutUnitId() {
+                    doReturn(List.of(getCareProviderWithUnitsWithoutId()))
+                        .when(user)
+                        .getVardgivare();
+
+                    final var result = userStatisticsService.getUserStatistics();
+                    assertTrue(result.getUnitStatistics().keySet().stream().noneMatch(Objects::isNull));
                 }
             }
 
@@ -254,6 +306,10 @@ class UserStatisticsServiceImplTest {
 
                 @Test
                 void shouldAddDrafts() {
+                    doReturn(List.of(getCareProvider()))
+                        .when(user)
+                        .getVardgivare();
+
                     final var result = userStatisticsService.getUserStatistics();
 
                     assertEquals(expectedDraftsSubUnit, result.getUnitStatistics().get(SUB_UNIT_TO_SELECTED).getDraftsOnUnit());
@@ -261,9 +317,23 @@ class UserStatisticsServiceImplTest {
 
                 @Test
                 void shouldAddQuestions() {
+                    doReturn(List.of(getCareProvider()))
+                        .when(user)
+                        .getVardgivare();
+
                     final var result = userStatisticsService.getUserStatistics();
 
                     assertEquals(expectedQuestionsSubUnit, result.getUnitStatistics().get(SUB_UNIT_TO_SELECTED).getQuestionsOnUnit());
+                }
+
+                @Test
+                void shouldExcludeSubUnitsWithoutUnitId() {
+                    doReturn(List.of(getCareProviderWithSubUnitsWithoutId()))
+                        .when(user)
+                        .getVardgivare();
+
+                    final var result = userStatisticsService.getUserStatistics();
+                    assertTrue(result.getUnitStatistics().keySet().stream().noneMatch(Objects::isNull));
                 }
             }
         }
