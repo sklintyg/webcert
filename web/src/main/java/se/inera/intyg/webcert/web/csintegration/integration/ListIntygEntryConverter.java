@@ -164,7 +164,8 @@ public class ListIntygEntryConverter {
             return new ActionLink(ActionLinkType.LASA_INTYG);
         }
 
-        if (resourceLink.getType() == ResourceLinkTypeEnum.FORWARD_CERTIFICATE) {
+        if (resourceLink.getType() == ResourceLinkTypeEnum.FORWARD_CERTIFICATE
+            || resourceLink.getType() == ResourceLinkTypeEnum.FORWARD_CERTIFICATE_FROM_LIST) {
             return new ActionLink(ActionLinkType.VIDAREBEFORDRA_UTKAST);
         }
 
