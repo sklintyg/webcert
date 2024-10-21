@@ -10,7 +10,7 @@ plugins {
 ext {
     commonVersion = System.properties['commonVersion'] ?: '3.21.0-SNAPSHOT'
     infraVersion = System.properties['infraVersion'] ?: '3.21.0-SNAPSHOT'
-    refDataVersion = System.properties['refDataVersion'] ?: '1.0-SNAPSHOT'
+    refDataVersion = '20'
 
     funktionstjansterGrpSchemasVersion = "2.0.0.1"
     intygClinicalprocessSchemasVersion = "1.0.24.1"
@@ -86,7 +86,7 @@ allprojects {
         testImplementation "org.junit.jupiter:junit-jupiter-params"
         testImplementation "org.mockito:mockito-junit-jupiter"
         testImplementation "org.mockito:mockito-inline"
-        testImplementation "se.inera.intyg.refdata:refdata:${refDataVersion}"
+        //testImplementation "se.inera.intyg.refdata:refdata:${refDataVersion}"
 
         testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
         testRuntimeOnly "org.junit.vintage:junit-vintage-engine"

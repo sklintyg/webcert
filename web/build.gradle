@@ -37,10 +37,6 @@ gretty {
                "-Ddev.http.port.internal=${useInternalHttpPort}",
                "-Dxml.catalog.cacheEnabled=false"
     ]
-
-    dependencies {
-        gretty "se.inera.intyg.refdata:refdata:${refDataVersion}"
-    }
 }
 
 idea {
@@ -185,6 +181,8 @@ dependencies {
     implementation "org.springframework.session:spring-session-data-redis"
     implementation "org.springframework:spring-jms"
     implementation "org.springframework.ws:spring-xml"
+
+    implementation "se.inera.intyg.refdata:refdata-featureK1J-357:${refDataVersion}"
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
