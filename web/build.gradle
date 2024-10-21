@@ -60,14 +60,6 @@ configurations {
 
 test { exclude '**/*IT*' }
 
-tasks.register('unzipBuildTools', Copy) {
-    into "${buildDirectory}/build-tools/"
-    from {
-        def intygJar = project.rootProject.buildscript.configurations.classpath.find { it.name.contains("se.inera.intyg.plugin.common") }
-        zipTree(intygJar)
-    }
-}
-
 tasks.register('xsd2Java') {
     doLast {
         mkdir generatedJavaDir.path
@@ -89,13 +81,6 @@ tasks.register('xsd2Java') {
 
 compileJava.dependsOn(xsd2Java)
 sourceSets.main.java { srcDir generatedJavaDir }
-war.dependsOn createVersionPropertyFile
-
-if (project.hasProperty("codeQuality")) {
-    license {
-        exclude "**/dss/xsd/**/*.java"
-    }
-}
 
 dependencies {
     implementation project(':fk-stub')
