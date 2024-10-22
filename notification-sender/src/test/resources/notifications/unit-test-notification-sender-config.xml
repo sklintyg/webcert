@@ -35,14 +35,6 @@
 
   <bean id="customObjectMapper" class="se.inera.intyg.common.util.integration.json.CustomObjectMapper"/>
 
-  <bean id="transactionManager" class="org.mockito.Mockito" factory-method="mock">
-    <constructor-arg value="org.springframework.transaction.PlatformTransactionManager"/>
-  </bean>
-
-  <bean id="txTemplate" class="org.apache.camel.spring.spi.SpringTransactionPolicy">
-    <property name="transactionManager" ref="transactionManager" />
-  </bean>
-
   <bean id="notificationMessageDataFormat" class="org.apache.camel.component.jackson.JacksonDataFormat">
     <constructor-arg ref="customObjectMapper"/>
     <constructor-arg value="se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage"/>

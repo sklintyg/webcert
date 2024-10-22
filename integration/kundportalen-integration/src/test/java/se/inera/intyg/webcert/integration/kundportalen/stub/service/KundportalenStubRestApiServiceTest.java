@@ -23,13 +23,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.Response.Status;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import javax.ws.rs.core.GenericType;
-import javax.ws.rs.core.Response.Status;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;

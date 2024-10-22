@@ -18,10 +18,10 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift;
 
+import jakarta.persistence.OptimisticLockException;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Optional;
-import javax.persistence.OptimisticLockException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

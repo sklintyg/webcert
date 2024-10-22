@@ -20,10 +20,10 @@ package se.inera.intyg.webcert.web.service.user;
 
 import static se.inera.intyg.infra.security.filter.SessionTimeoutFilter.TIME_TO_INVALIDATE_ATTRIBUTE_NAME;
 
+import jakarta.servlet.http.HttpSession;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

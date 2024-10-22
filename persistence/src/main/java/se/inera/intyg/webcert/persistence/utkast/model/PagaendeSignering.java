@@ -18,17 +18,16 @@
  */
 package se.inera.intyg.webcert.persistence.utkast.model;
 
+import jakarta.persistence.Basic;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.Table;
 import java.time.LocalDateTime;
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.Table;
-import org.hibernate.annotations.Type;
 
 /**
  * Defines an ongoing signature operation. Started, but not yet ready to be commited to the INTYG table.
@@ -38,7 +37,7 @@ import org.hibernate.annotations.Type;
 public class PagaendeSignering {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "INTERN_REFERENS")
     private Long internReferens;
 
@@ -46,7 +45,6 @@ public class PagaendeSignering {
     private String intygsId;
 
     @Column(name = "SIGNERINGS_DATUM")
-    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime signeringsDatum;
 
     /**

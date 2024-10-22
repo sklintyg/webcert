@@ -21,11 +21,11 @@ package se.inera.intyg.webcert.web.auth;
 import static se.inera.intyg.webcert.web.security.WebCertUserOrigin.REGEXP_REQUESTURI_DJUPINTEGRATION;
 import static se.inera.intyg.webcert.web.web.controller.integration.IntygIntegrationController.PARAM_ENHET_ID;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.regex.Pattern;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.core.Authentication;

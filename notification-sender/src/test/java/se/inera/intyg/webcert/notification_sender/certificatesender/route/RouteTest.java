@@ -43,7 +43,7 @@ import se.inera.intyg.webcert.notification_sender.certificatesender.testconfig.C
 
 @CamelSpringTest
 @ContextConfiguration(classes = CertificateCamelTestConfig.class)
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
+@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 @MockEndpointsAndSkip("bean:certificateStoreProcessor|bean:certificateSendProcessor|bean:certificateRevokeProcessor|bean:sendMessageToRecipientProcessor|direct:certPermanentErrorHandlerEndpoint|direct:certTemporaryErrorHandlerEndpoint")
 class RouteTest {
 

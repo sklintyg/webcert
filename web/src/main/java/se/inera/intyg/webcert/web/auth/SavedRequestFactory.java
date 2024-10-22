@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.auth;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.web.savedrequest.SavedRequest;
 
 /**

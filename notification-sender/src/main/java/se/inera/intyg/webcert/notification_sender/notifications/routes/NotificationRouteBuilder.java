@@ -18,8 +18,8 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.routes;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Predicate;

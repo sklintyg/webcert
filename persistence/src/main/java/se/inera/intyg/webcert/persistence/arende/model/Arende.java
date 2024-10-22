@@ -18,26 +18,24 @@
  */
 package se.inera.intyg.webcert.persistence.arende.model;
 
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Table;
-
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.Type;
 import se.inera.intyg.webcert.persistence.model.Status;
 
 @Entity
@@ -45,12 +43,11 @@ import se.inera.intyg.webcert.persistence.model.Status;
 public class Arende {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
     private Long id;
 
     @Column(name = "TIMESTAMP")
-    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime timestamp;
 
     @Column(name = "MEDDELANDE_ID")
@@ -60,7 +57,6 @@ public class Arende {
     private String referensId;
 
     @Column(name = "SKICKAT_TIDPUNKT")
-    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime skickatTidpunkt;
 
     @Column(name = "INTYGS_ID")
@@ -102,7 +98,6 @@ public class Arende {
     private List<MedicinsktArende> komplettering;
 
     @Column(name = "SISTA_DATUM_FOR_SVAR")
-    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDate")
     private LocalDate sistaDatumForSvar;
 
     @Column(name = "INTYG_TYP")
@@ -125,7 +120,6 @@ public class Arende {
     private Status status;
 
     @Column(name = "SENASTE_HANDELSE")
-    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime senasteHandelse;
 
     @Column(name = "VIDAREBEFORDRAD", columnDefinition = "TINYINT(1)")

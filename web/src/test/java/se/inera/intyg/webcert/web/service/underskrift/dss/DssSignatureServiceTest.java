@@ -27,6 +27,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import jakarta.xml.bind.JAXBElement;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -37,7 +38,6 @@ import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import javax.xml.bind.JAXBElement;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -138,8 +138,8 @@ public class DssSignatureServiceTest {
 
         marshaller.setMarshallerProperties(new HashMap<String, Object>() {
             {
-                put(javax.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT, false);
-                put(javax.xml.bind.Marshaller.JAXB_ENCODING, "UTF-8");
+                put(jakarta.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT, false);
+                put(jakarta.xml.bind.Marshaller.JAXB_ENCODING, "UTF-8");
             }
         });
     }

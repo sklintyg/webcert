@@ -19,6 +19,13 @@
 package se.inera.intyg.webcert.web.service.facade.list;
 
 import com.google.common.base.Strings;
+import jakarta.xml.ws.WebServiceException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.integration.hsatk.model.PersonInformation;
 import se.inera.intyg.infra.integration.hsatk.services.HsatkEmployeeService;
@@ -40,10 +47,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelper;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
-
-import javax.xml.ws.WebServiceException;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class ListDecoratorImpl implements ListDecorator {

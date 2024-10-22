@@ -18,8 +18,8 @@
  */
 package se.inera.intyg.webcert.web.auth.oidc.jwt;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
-import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;

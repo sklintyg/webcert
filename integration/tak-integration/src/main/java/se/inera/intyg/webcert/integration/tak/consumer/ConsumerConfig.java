@@ -41,7 +41,6 @@ public class ConsumerConfig {
         HttpComponentsClientHttpRequestFactory httpRequestFactory = new HttpComponentsClientHttpRequestFactory();
         httpRequestFactory.setConnectionRequestTimeout(requestTimeout);
         httpRequestFactory.setConnectTimeout(connectionTimeout);
-        httpRequestFactory.setReadTimeout(readTimeout);
 
         return new RestTemplate(httpRequestFactory);
     }

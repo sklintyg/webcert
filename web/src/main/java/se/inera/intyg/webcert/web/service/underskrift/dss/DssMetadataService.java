@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift.dss;
 
+import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -27,7 +28,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
-import javax.annotation.PostConstruct;
 import javax.xml.crypto.KeySelector;
 import org.opensaml.common.xml.SAMLConstants;
 import org.opensaml.saml2.metadata.AssertionConsumerService;

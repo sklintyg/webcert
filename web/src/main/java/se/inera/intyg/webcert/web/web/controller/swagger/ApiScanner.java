@@ -23,30 +23,27 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.config.FilterFactory;
 import io.swagger.core.filter.SpecFilter;
 import io.swagger.core.filter.SwaggerSpecFilter;
-import io.swagger.jaxrs.Reader;
 import io.swagger.jaxrs.config.JaxrsScanner;
-import io.swagger.jaxrs.config.ReaderConfigUtils;
 import io.swagger.jaxrs.config.ReflectiveJaxrsScanner;
-import io.swagger.jaxrs.listing.SwaggerSerializers;
 import io.swagger.models.Swagger;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Application;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.Cookie;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 
 /**
  * This class intefaces with io.swagger core classes for on-the-fly generation of Swagger .JSON files for use by
@@ -113,19 +110,19 @@ public class ApiScanner {
 
         ReflectiveJaxrsScanner scanner = new ReflectiveJaxrsScanner();
         scanner.setResourcePackage(BASE_REST_PACKAGE_NAME + api);
-        scanner.setPrettyPrint(true);
+        //scanner.setPrettyPrint(true);
 
-        SwaggerSerializers.setPrettyPrint(scanner.getPrettyPrint());
+        //SwaggerSerializers.setPrettyPrint(scanner.getPrettyPrint());
 
         Set<Class<?>> classes = resolveClasses(app, sc, scanner);
         if (classes != null) {
-            Reader reader = new Reader(null, ReaderConfigUtils.getReaderConfig(context));
-            swagger = reader.read(classes);
-            swagger.setBasePath(resolveBasePathForApi(api));
-            swagger = scanner.configure(swagger);
-
-            context.setAttribute(SWAGGER_TOKEN + api, swagger);
-            apiInitialized.put(SWAGGER_TOKEN + api, Boolean.TRUE);
+//            Reader reader = new Reader(null, ReaderConfigUtils.getReaderConfig(context));
+//            swagger = reader.read(classes);
+//            swagger.setBasePath(resolveBasePathForApi(api));
+//            swagger = scanner.configure(swagger);
+//
+//            context.setAttribute(SWAGGER_TOKEN + api, swagger);
+//            apiInitialized.put(SWAGGER_TOKEN + api, Boolean.TRUE);
         }
         return swagger;
     }
@@ -135,11 +132,12 @@ public class ApiScanner {
         if (scanner instanceof JaxrsScanner) {
             JaxrsScanner jaxrsScanner = (JaxrsScanner) scanner;
 
-            classes = jaxrsScanner.classesFromContext(app, sc);
+//            classes = jaxrsScanner.classesFromContext(app, sc);
         } else {
-            classes = scanner.classes();
+//            classes = scanner.classes();
         }
-        return classes;
+//        return classes;
+        return null;
     }
 
     private String resolveBasePathForApi(String api) {

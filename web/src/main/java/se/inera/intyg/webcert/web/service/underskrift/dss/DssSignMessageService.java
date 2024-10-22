@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift.dss;
 
+import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
@@ -29,7 +30,6 @@ import java.security.PrivateKey;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Map;
-import javax.annotation.PostConstruct;
 import javax.xml.crypto.KeySelectorException;
 import javax.xml.crypto.MarshalException;
 import javax.xml.crypto.dsig.XMLSignatureException;
@@ -89,8 +89,8 @@ public class DssSignMessageService {
         String[] packages = {"se.inera.intyg.webcert.dss.xsd"};
         marshaller.setPackagesToScan(packages);
         marshaller.setMarshallerProperties(Map.of(
-            javax.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT, false,
-            javax.xml.bind.Marshaller.JAXB_ENCODING, "UTF-8")
+            jakarta.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT, false,
+            jakarta.xml.bind.Marshaller.JAXB_ENCODING, "UTF-8")
         );
     }
 

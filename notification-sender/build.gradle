@@ -3,6 +3,7 @@ test {
 }
 
 tasks.register('camelTest', Test) {
+    useJUnitPlatform()
     outputs.upToDateWhen { false }
     include '**/*IT*'
 }
@@ -59,4 +60,7 @@ dependencies {
     testImplementation "org.apache.camel:camel-test-spring-junit5:${camelVersion}"
     testImplementation "org.awaitility:awaitility"
     testImplementation "se.inera.intyg.common:lisjp:${commonVersion}"
+
+    implementation "com.sun.xml.bind:jaxb-impl"
+    implementation "jakarta.xml.bind:jakarta.xml.bind-api"
 }

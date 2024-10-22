@@ -47,7 +47,6 @@ public class RestConfig {
         final var httpRequestFactory = new HttpComponentsClientHttpRequestFactory();
         httpRequestFactory.setConnectionRequestTimeout(connectionRequestTimeout);
         httpRequestFactory.setConnectTimeout(connectionTimeout);
-        httpRequestFactory.setReadTimeout(readTimeout);
         return new RestTemplate(httpRequestFactory);
     }
 }

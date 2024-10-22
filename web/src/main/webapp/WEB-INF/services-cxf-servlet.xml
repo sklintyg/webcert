@@ -33,7 +33,6 @@
 
   <import resource="classpath:fk-stub-context.xml"/>
   <import resource="classpath:fmb-stub-context.xml"/>
-  <import resource="classpath:hsatk-stub-context.xml"/>
   <import resource="classpath:tak-stub-context.xml"/>
   <import resource="classpath:pu-stub-context.xml"/>
   <import resource="classpath:ia-stub-context.xml"/>
@@ -48,6 +47,7 @@
   <import resource="classpath:/servicenow-stub-context.xml"/>
   <!--  <import resource="classpath:/webcert-testability-api-context.xml" /> -->
   <import resource="classpath:/swagger-api-context.xml"/>
+  <import resource="classpath:/hsa-integration-intyg-proxy-service-config.xml"/>
 
   <cxf:bus>
     <cxf:features>

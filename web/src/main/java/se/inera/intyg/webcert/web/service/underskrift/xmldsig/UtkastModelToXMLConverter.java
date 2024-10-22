@@ -18,8 +18,8 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift.xmldsig;
 
+import jakarta.xml.bind.JAXBElement;
 import java.io.IOException;
-import javax.xml.bind.JAXBElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -43,7 +43,7 @@ public class NotificationPostProcessingService {
 
     private static final Logger LOG = LoggerFactory.getLogger(NotificationPostProcessingService.class);
 
-    private static final String SOAPFAULTEXCEPTION = "javax.xml.ws.soap.SOAPFaultException";
+    private static final String SOAPFAULTEXCEPTION = "jakarta.xml.ws.soap.SOAPFaultException";
     private static final String MARSHALLING_ERROR = "Marshalling Error";
     private static final String UNMARSHALLING_ERROR = "Unmarshalling Error";
 

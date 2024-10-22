@@ -21,9 +21,9 @@ package se.inera.intyg.webcert.web.auth;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Locale;
 import java.util.Vector;
-import javax.servlet.http.HttpServletRequest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;

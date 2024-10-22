@@ -18,12 +18,13 @@
  */
 package se.inera.intyg.webcert.mailstub;
 
+import jakarta.mail.Address;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.mail.Address;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
+
 
 /**
  * @author andreaskaltenbach

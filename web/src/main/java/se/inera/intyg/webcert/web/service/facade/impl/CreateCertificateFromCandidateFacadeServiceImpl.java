@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl;
 
-import javax.persistence.OptimisticLockException;
+import jakarta.persistence.OptimisticLockException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

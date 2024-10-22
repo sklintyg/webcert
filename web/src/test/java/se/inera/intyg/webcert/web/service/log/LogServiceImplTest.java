@@ -31,10 +31,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.jms.Session;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import javax.jms.Session;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

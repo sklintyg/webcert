@@ -22,9 +22,9 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.xml.ws.WebServiceException;
 import java.io.IOException;
 import java.util.List;
-import javax.xml.ws.WebServiceException;
 import org.apache.camel.Body;
 import org.apache.camel.Header;
 import org.apache.commons.lang3.StringUtils;

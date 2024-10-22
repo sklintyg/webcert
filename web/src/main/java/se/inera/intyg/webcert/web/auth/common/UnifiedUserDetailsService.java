@@ -22,8 +22,8 @@ import static se.inera.intyg.webcert.web.auth.common.AuthConstants.ELEG_AUTHN_CL
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SITHS_AUTHN_CLASSES;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_UNSPECIFIED;
 
+import jakarta.annotation.Resource;
 import java.util.Arrays;
-import javax.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.security.saml.SAMLCredential;

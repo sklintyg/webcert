@@ -18,8 +18,13 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.testconfig;
 
+import static org.mockito.Mockito.mock;
+
+import org.apache.camel.spring.spi.SpringTransactionPolicy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.jms.connection.JmsTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationPostProcessor;
 import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationTransformer;
 import se.inera.intyg.webcert.notification_sender.notifications.services.v3.NotificationWSSender;
@@ -44,5 +49,15 @@ public class NotificationCamelTestConfig {
     @Bean
     public NotificationPostProcessor notificationPostProcessor() {
         return null;
+    }
+
+    @Bean
+    public PlatformTransactionManager transactionManager() {
+        return mock(JmsTransactionManager.class);
+    }
+
+    @Bean
+    public SpringTransactionPolicy txTemplate(PlatformTransactionManager transactionManager) {
+        return new SpringTransactionPolicy(transactionManager);
     }
 }

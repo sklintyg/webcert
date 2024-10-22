@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.integration.interactions.sendmessagetocare;
 
-import javax.ws.rs.BadRequestException;
+import jakarta.ws.rs.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;

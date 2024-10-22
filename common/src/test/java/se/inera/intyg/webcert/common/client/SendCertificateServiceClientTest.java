@@ -29,7 +29,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import javax.xml.ws.WebServiceException;
+import jakarta.xml.ws.WebServiceException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

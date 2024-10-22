@@ -38,6 +38,6 @@ dependencies {
     implementation "info.picocli:picocli:${picocliVersion}"
     runtimeOnly "com.mysql:mysql-connector-j"
     runtimeOnly "org.liquibase:liquibase-core"
-    runtimeOnly "org.liquibase.ext:liquibase-hibernate5:" + liquibaseVersion
+    runtimeOnly "org.liquibase.ext:liquibase-hibernate6:" + liquibaseVersion
     runtimeOnly project(':webcert-persistence')
 }

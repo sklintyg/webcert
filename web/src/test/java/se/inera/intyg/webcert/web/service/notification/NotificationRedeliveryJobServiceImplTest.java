@@ -28,11 +28,11 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static se.inera.intyg.webcert.web.util.ReflectionUtils.setStaticFinalAttribute;
 
+import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.xml.bind.JAXBException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;

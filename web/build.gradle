@@ -16,7 +16,7 @@ gretty {
     def useInternalHttpPort = 8120 + (instance as Integer)
     def applicationDir = "${rootProject.projectDir}/devops/dev"
 
-    servletContainer = 'tomcat9'
+    servletContainer = 'tomcat10'
     contextPath = '/'
     integrationTestTask = null
     scanInterval = 0
@@ -103,7 +103,6 @@ dependencies {
     implementation "se.inera.intyg.infra:dynamiclink:${infraVersion}"
     implementation "se.inera.intyg.infra:grp-stub:${infraVersion}"
     implementation "se.inera.intyg.infra:hsa-integration-api:${infraVersion}"
-    implementation "se.inera.intyg.infra:hsatk-integration:${infraVersion}"
     implementation "se.inera.intyg.infra:ia-integration:${infraVersion}"
     implementation "se.inera.intyg.infra:integreradeenheter:${infraVersion}"
     implementation "se.inera.intyg.infra:intyginfo:${infraVersion}"
@@ -157,24 +156,24 @@ dependencies {
     implementation "se.riv.itintegration.monitoring:itintegration-monitoring-schemas:${rivtaItintegrationMonitoringSchemasVersion}"
     implementation "se.riv.strategicresourcemanagement.persons.person:strategicresourcemanagement-persons-person-schemas:${rivtaGetPersonsPersonSchemasVersion}"
 
+    implementation "codes.rafael.jaxb2_commons:jaxb2-basics:${jaxb2Version}"
     implementation "com.auth0:jwks-rsa:${jwksVersion}"
     implementation "com.google.guava:guava:${guavaVersion}"
-    implementation "com.sun.mail:jakarta.mail"
     implementation "commons-io:commons-io:${commonsIoVersion}"
     implementation "io.jsonwebtoken:jjwt-impl:${jsonwebtokenVersion}"
     implementation "io.jsonwebtoken:jjwt-jackson:${jsonwebtokenVersion}"
     implementation "io.prometheus:simpleclient_servlet"
     implementation("io.swagger:swagger-jaxrs:${swaggerJaxrsVersion}") { exclude(module: "jsr311-api") }
     implementation "io.vavr:vavr:${vavrVersion}"
+    implementation "jakarta.mail:jakarta.mail-api"
     implementation "jakarta.persistence:jakarta.persistence-api"
     implementation "net.javacrumbs.shedlock:shedlock-spring:${shedlockSpringVersion}"
     implementation "net.javacrumbs.shedlock:shedlock-provider-redis-spring:${shedlockSpringVersion}"
     implementation "org.apache.activemq:activemq-spring"
     implementation "org.apache.cxf:cxf-rt-frontend-jaxrs:${cxfVersion}"
-    implementation "org.apache.httpcomponents:httpclient"
+    //implementation "org.apache.httpcomponents.client5:httpclient"
     implementation "org.apache.lucene:lucene-analysis-common:${luceneAnalyzersCommonVersion}"
-    implementation "org.hibernate:hibernate-core"
-    implementation "org.jvnet.jaxb2_commons:jaxb2-basics-runtime:${jaxb2Version}"
+    implementation "org.hibernate.orm:hibernate-core"
     implementation "org.jxls:jxls-jexcel:${jexcelVersion}"
     implementation "org.springframework.data:spring-data-jpa"
     implementation "org.springframework.security.extensions:spring-security-saml2-core:${springSecuritySaml2CoreVersion}"
@@ -182,14 +181,16 @@ dependencies {
     implementation "org.springframework:spring-jms"
     implementation "org.springframework.ws:spring-xml"
 
+
     implementation "se.inera.intyg.refdata:refdata-featureK1J-357:${refDataVersion}"
+
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
     runtimeOnly "org.springframework:spring-webmvc"
     runtimeOnly "xerces:xercesImpl:${xercesVersion}"
-    runtimeOnly "se.inera.intyg.infra:hsa-integration-intyg-proxy-service:${infraVersion}"
+    implementation "se.inera.intyg.infra:hsa-integration-intyg-proxy-service:${infraVersion}"
 
     testAnnotationProcessor 'org.projectlombok:lombok'
     testCompileOnly 'org.projectlombok:lombok'
@@ -204,4 +205,5 @@ dependencies {
     testImplementation "se.inera.intyg.common:ag-parent:${commonVersion}"
 
     xsdgen "org.glassfish.jaxb:jaxb-xjc"
+    xsdgen  "com.sun.xml.bind:jaxb-impl"
 }
