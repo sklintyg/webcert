@@ -247,6 +247,18 @@ class ListIntygEntryConverterTest {
         }
 
         @Test
+        void shouldConvertForwardCertificateFromListLink() {
+            CERTIFICATE.setLinks(List.of(ResourceLink.builder()
+                    .type(ResourceLinkTypeEnum.FORWARD_CERTIFICATE_FROM_LIST)
+                    .build()
+                )
+            );
+
+            final var response = listIntygEntryConverter.convert(CERTIFICATE);
+            assertTrue(response.getLinks().stream().anyMatch(link -> link.getType() == ActionLinkType.VIDAREBEFORDRA_UTKAST));
+        }
+
+        @Test
         void shouldConvertRenewLink() {
             CERTIFICATE.setLinks(List.of(ResourceLink.builder()
                     .type(ResourceLinkTypeEnum.RENEW_CERTIFICATE)
