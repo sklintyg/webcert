@@ -242,12 +242,36 @@ class GetCertificateTypesFacadeServiceImplTest {
             }
 
             @Test
+            void shallAddCreateConfirmationResourceLinkIfCertificateIsLuaenaAndPatientOlderThanThirtyYearsAndTwoMonthsWithCoordinationNumber() {
+                final var module = createIntygModule("luae_na");
+                doReturn(List.of(module)).when(intygModuleRegistry).listAllModules();
+                when(authoritiesHelper.getIntygstyperForPrivilege(any(), any())).thenReturn(Set.of(module.getId()));
+
+                final var types = serviceUnderTest.get(getPatientIdAsCoordinationNumber(3));
+                assertEquals(1, types.get(0).getLinks().stream()
+                    .filter(link -> link.getType().equals(ResourceLinkTypeDTO.CREATE_LUAENA_CONFIRMATION)).count());
+                assertTrue(types.get(0).getLinks().stream().filter(link ->
+                    link.getType() == ResourceLinkTypeDTO.CREATE_LUAENA_CONFIRMATION).findFirst().orElseThrow().isEnabled());
+            }
+
+            @Test
             void shallNotAddCreateConfirmationResourceLinkIfCertificateIsLuaenaAndPatienYoungerThanThirtyYearsAndTwoMonths() {
                 final var module = createIntygModule("luae_na");
                 doReturn(List.of(module)).when(intygModuleRegistry).listAllModules();
                 when(authoritiesHelper.getIntygstyperForPrivilege(any(), any())).thenReturn(Set.of(module.getId()));
 
                 final var types = serviceUnderTest.get(getPatientId(1));
+                assertTrue(types.get(0).getLinks().stream()
+                    .noneMatch(link -> link.getType().equals(ResourceLinkTypeDTO.CREATE_LUAENA_CONFIRMATION)));
+            }
+
+            @Test
+            void shallNotAddCreateConfirmationResourceLinkIfCertificateIsLuaenaAndPatienYoungerThanThirtyYearsAndTwoMonthsWithCoordinationNumber() {
+                final var module = createIntygModule("luae_na");
+                doReturn(List.of(module)).when(intygModuleRegistry).listAllModules();
+                when(authoritiesHelper.getIntygstyperForPrivilege(any(), any())).thenReturn(Set.of(module.getId()));
+
+                final var types = serviceUnderTest.get(getPatientIdAsCoordinationNumber(1));
                 assertTrue(types.get(0).getLinks().stream()
                     .noneMatch(link -> link.getType().equals(ResourceLinkTypeDTO.CREATE_LUAENA_CONFIRMATION)));
             }
@@ -384,8 +408,16 @@ class GetCertificateTypesFacadeServiceImplTest {
     }
 
     private Personnummer getPatientId(int minusMonths) {
-        final var paientBirthDate = LocalDate.now(ZoneId.systemDefault()).minusYears(30).minusMonths(minusMonths);
-        final var patientId = paientBirthDate.toString().replace("-", "") + "4321";
+        final var patientBirthDate = LocalDate.now(ZoneId.systemDefault()).minusYears(30).minusMonths(minusMonths);
+        final var patientId = patientBirthDate.toString().replace("-", "") + "4321";
+        return Personnummer.createPersonnummer(patientId).orElseThrow();
+    }
+
+    private Personnummer getPatientIdAsCoordinationNumber(int minusMonths) {
+        final var patientBirthDate = LocalDate.now(ZoneId.systemDefault()).minusYears(30).minusMonths(minusMonths);
+        final var patientId = patientBirthDate.toString()
+            .replace(Integer.toString(patientBirthDate.getDayOfMonth()), Integer.toString(patientBirthDate.getMonthValue() + 60))
+            .replace("-", "") + "4321";
         return Personnummer.createPersonnummer(patientId).orElseThrow();
     }
 }
