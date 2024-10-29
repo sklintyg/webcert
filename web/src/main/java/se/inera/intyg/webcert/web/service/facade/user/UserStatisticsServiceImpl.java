@@ -22,9 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
@@ -40,7 +42,11 @@ import se.inera.intyg.webcert.web.service.util.StatisticsHelper;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
 @Service
+@Slf4j
 public class UserStatisticsServiceImpl implements UserStatisticsService {
+
+    @Value("${max.number.of.commissions.for.statistics:15}")
+    private Integer maxCommissionsForStatistics;
 
     private static final Logger LOG = LoggerFactory.getLogger(UserStatisticsServiceImpl.class);
 
@@ -71,10 +77,23 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
             return null;
         }
 
-        final var unitIds = getUnitIds(user);
+        List<String> unitIds = getUnitIds(user);
 
-        if (unitIds == null) {
+        if (unitIds.isEmpty()) {
             return null;
+        }
+
+        final var useLimitedStatistics = unitIds.size() > maxCommissionsForStatistics;
+
+        if (useLimitedStatistics) {
+            if (user.getValdVardenhet() == null) {
+                log.info("Number of Commissions ({}) exceeds maxCommissionsForStatistics ({}) without selected unit. No statistics will "
+                    + "be collected.", unitIds.size(), maxCommissionsForStatistics);
+                return null;
+            }
+            log.info("Number of Commissions ({}) exceeds maxCommissionsForStatistics ({}) with selected unit. Statistics will be collected "
+                + "for selected care provider only.", unitIds.size(), maxCommissionsForStatistics);
+            unitIds = user.getValdVardenhet().getHsaIds();
         }
 
         final var statistics = new UserStatisticsDTO();
@@ -94,8 +113,11 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
             );
         }
 
-        addCareProviderStatistics(statistics, user.getVardgivare(), draftsMap, questionsMap);
-        certificateServiceStatisticService.add(statistics, unitIds, user);
+        if (!useLimitedStatistics) {
+            addCareProviderStatistics(statistics, user.getVardgivare(), draftsMap, questionsMap);
+        }
+
+        certificateServiceStatisticService.add(statistics, unitIds, user, useLimitedStatistics);
         return statistics;
     }
 
@@ -184,13 +206,13 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
     }
 
     private List<String> getUnitIds(WebCertUser user) {
-        final var units = user.getIdsOfAllVardenheter();
-        if (units == null || units.isEmpty()) {
-            LOG.warn("getStatistics was called by user {} that have no id:s of vardenheter present in the user context: {}",
-                user.getHsaId(), user.getAsJson());
-            return null;
+        List<String> allIds = new ArrayList<>();
+        for (Vardgivare v : user.getVardgivare()) {
+            for (Vardenhet ve : v.getVardenheter()) {
+                allIds.add(ve.getId());
+            }
         }
-        return units;
+        return allIds;
     }
 
     private Map<String, Long> getMergedMapOfQuestions(List<String> unitIds, Set<String> certificateTypes) {

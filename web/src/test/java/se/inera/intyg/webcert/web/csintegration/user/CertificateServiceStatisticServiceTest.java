@@ -69,7 +69,7 @@ class CertificateServiceStatisticServiceTest {
     void shallNotAddAnythingIfCertificateServiceProfileIsNotActive() {
         final var userStatisticsDTO = new UserStatisticsDTO();
         doReturn(false).when(certificateServiceProfile).active();
-        certificateServiceStatisticService.add(userStatisticsDTO, Collections.emptyList(), user);
+        certificateServiceStatisticService.add(userStatisticsDTO, Collections.emptyList(), user, false);
         assertAll(
             () -> assertEquals(0, userStatisticsDTO.getNbrOfDraftsOnSelectedUnit()),
             () -> assertEquals(0, userStatisticsDTO.getTotalDraftsAndUnhandledQuestionsOnOtherUnits()),
@@ -98,21 +98,21 @@ class CertificateServiceStatisticServiceTest {
         @Test
         void shallIncrementNbrOfDraftsOnSelectedUnit() {
             final var userStatisticsDTO = buildUserStatisticsDTO();
-            certificateServiceStatisticService.add(userStatisticsDTO, UNIT_IDS, user);
+            certificateServiceStatisticService.add(userStatisticsDTO, UNIT_IDS, user, false);
             assertEquals(2, userStatisticsDTO.getNbrOfDraftsOnSelectedUnit());
         }
 
         @Test
         void shallIncrementNbrOfUnhandledQuestionsOnSelectedUnit() {
             final var userStatisticsDTO = buildUserStatisticsDTO();
-            certificateServiceStatisticService.add(userStatisticsDTO, UNIT_IDS, user);
+            certificateServiceStatisticService.add(userStatisticsDTO, UNIT_IDS, user, false);
             assertEquals(2, userStatisticsDTO.getNbrOfUnhandledQuestionsOnSelectedUnit());
         }
 
         @Test
         void shallIncrementTotalDraftsAndUnhandledQuestionsOnOtherUnits() {
             final var userStatisticsDTO = buildUserStatisticsDTO();
-            certificateServiceStatisticService.add(userStatisticsDTO, UNIT_IDS, user);
+            certificateServiceStatisticService.add(userStatisticsDTO, UNIT_IDS, user, false);
             assertEquals(5, userStatisticsDTO.getTotalDraftsAndUnhandledQuestionsOnOtherUnits());
         }
     }
@@ -136,7 +136,7 @@ class CertificateServiceStatisticServiceTest {
         doReturn(SELECTED_UNIT_IDS).when(user).getIdsOfSelectedVardenhet();
 
         final var userStatisticsDTO = buildUserStatisticsDTO();
-        certificateServiceStatisticService.add(userStatisticsDTO, UNIT_IDS, user);
+        certificateServiceStatisticService.add(userStatisticsDTO, UNIT_IDS, user, false);
         assertAll(
             () -> assertEquals(2, userStatisticsDTO.getUnitStatistics().get(UNIT_ID).getDraftsOnUnit()),
             () -> assertEquals(1, userStatisticsDTO.getUnitStatistics().get(UNIT_ID).getDraftsOnSubUnits()),
@@ -166,7 +166,7 @@ class CertificateServiceStatisticServiceTest {
         doReturn(SELECTED_UNIT_IDS).when(user).getIdsOfSelectedVardenhet();
 
         final var userStatisticsDTO = buildUserStatisticsDTO();
-        certificateServiceStatisticService.add(userStatisticsDTO, UNIT_IDS, user);
+        certificateServiceStatisticService.add(userStatisticsDTO, UNIT_IDS, user, false);
         assertAll(
             () -> assertEquals(2, userStatisticsDTO.getUnitStatistics().get(UNIT_ID).getDraftsOnUnit()),
             () -> assertEquals(2, userStatisticsDTO.getUnitStatistics().get(UNIT_ID).getDraftsOnSubUnits()),
