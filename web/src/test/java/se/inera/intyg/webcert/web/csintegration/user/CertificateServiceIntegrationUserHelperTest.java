@@ -103,10 +103,21 @@ class CertificateServiceIntegrationUserHelperTest {
         class Blocked {
 
             @Test
-            void shouldReturnBlockedFalseIfOriginIsNotNormal() {
+            void shouldReturnBlockedFalse() {
                 final var response = certificateServiceIntegrationUserHelper.get(intygUser);
 
                 assertFalse(response.getBlocked());
+            }
+        }
+
+        @Nested
+        class Agreement {
+
+            @Test
+            void shouldReturnAgreementTrue() {
+                final var response = certificateServiceIntegrationUserHelper.get(intygUser);
+
+                assertTrue(response.getAgreement());
             }
         }
 

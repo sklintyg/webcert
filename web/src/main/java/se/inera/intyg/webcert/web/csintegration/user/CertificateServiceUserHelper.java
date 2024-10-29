@@ -48,6 +48,7 @@ public class CertificateServiceUserHelper {
             .lastName(user.getEfternamn())
             .fullName(user.getNamn())
             .blocked(isBlocked(user))
+            .agreement(hasAgreement(user))
             .paTitles(paTitles(user.getBefattningar()))
             .specialities(user.getSpecialiseringar())
             .accessScope(getAccessScope(user))
@@ -85,13 +86,17 @@ public class CertificateServiceUserHelper {
             return false;
         }
 
-        if (hasSubscription(webCertUser)) {
-            return ofNullable(webCertUser.getFeatures().get(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL))
-                .filter(Feature::getGlobal)
-                .isPresent();
+        return ofNullable(webCertUser.getFeatures().get(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL))
+            .filter(Feature::getGlobal)
+            .isPresent();
+    }
+
+    private boolean hasAgreement(WebCertUser webCertUser) {
+        if (!webCertUser.getOrigin().equals(UserOriginType.NORMAL.name())) {
+            return true;
         }
 
-        return true;
+        return hasSubscription(webCertUser);
     }
 
     private boolean hasSubscription(WebCertUser webCertUser) {
