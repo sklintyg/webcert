@@ -42,7 +42,7 @@ public class CertificateServiceStatisticService {
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
 
-    public void add(UserStatisticsDTO statisticsFromWC, List<String> unitIds, WebCertUser user, boolean useLimitedStatistics) {
+    public void add(UserStatisticsDTO statisticsFromWC, List<String> unitIds, WebCertUser user, boolean maxCommissionsExceeded) {
         if (!certificateServiceProfile.active()) {
             return;
         }
@@ -59,7 +59,7 @@ public class CertificateServiceStatisticService {
             );
         }
 
-        if (!useLimitedStatistics) {
+        if (!maxCommissionsExceeded) {
             final var careUnitsWithRelatedSubUnits = getAvailableCareUnitsWithSubUnits(user.getVardgivare());
             final var unitStatisticsDTO = buildUnitStatisticsFromCS(statisticsFromCS, careUnitsWithRelatedSubUnits);
             statisticsFromWC.mergeUnitStatistics(unitStatisticsDTO);

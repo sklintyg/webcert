@@ -83,17 +83,17 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
             return null;
         }
 
-        final var useLimitedStatistics = careUnitIds.size() > maxCommissionsForStatistics;
+        final var maxCommissionsExceeded = careUnitIds.size() > maxCommissionsForStatistics;
 
-        if (useLimitedStatistics && user.getValdVardenhet() == null) {
+        if (maxCommissionsExceeded && user.getValdVardenhet() == null) {
             log.info("Number of commissions ({}) exceeds maxCommissionsForStatistics ({}) without selected unit. No statistics will "
                 + "be collected.", careUnitIds.size(), maxCommissionsForStatistics);
             return null;
         }
 
-        final var unitIds = useLimitedStatistics ? user.getValdVardenhet().getHsaIds() : getUnitIds(user);
+        final var unitIds = maxCommissionsExceeded ? user.getValdVardenhet().getHsaIds() : getUnitIds(user);
 
-        if (useLimitedStatistics) {
+        if (maxCommissionsExceeded) {
             log.info("Number of commissions ({}) exceeds maxCommissionsForStatistics ({}) with selected unit. Statistics will be collected "
                 + "for selected care unit only.", careUnitIds.size(), maxCommissionsForStatistics);
         }
@@ -115,11 +115,11 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
             );
         }
 
-        if (!useLimitedStatistics) {
+        if (!maxCommissionsExceeded) {
             addCareProviderStatistics(statistics, user.getVardgivare(), draftsMap, questionsMap);
         }
 
-        certificateServiceStatisticService.add(statistics, unitIds, user, useLimitedStatistics);
+        certificateServiceStatisticService.add(statistics, unitIds, user, maxCommissionsExceeded);
         return statistics;
     }
 
