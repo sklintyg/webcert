@@ -398,6 +398,7 @@ class UserStatisticsServiceImplTest {
 
         @Test
         void shouldAddStatisticsFromCertificateService() {
+            setUpUnit();
             userStatisticsService.getUserStatistics();
             verify(certificateServiceStatisticService).add(any(UserStatisticsDTO.class),
                 eq(List.of(SELECTED_UNIT_ID, NOT_SELECTED_UNIT_ID, SUB_UNIT_TO_SELECTED)), eq(user), eq(false));
