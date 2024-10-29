@@ -39,6 +39,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
@@ -55,9 +56,10 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 @ExtendWith(MockitoExtension.class)
 class UserStatisticsServiceImplTest {
 
-    final static String SELECTED_UNIT_ID = "UNITID";
-    final static String NOT_SELECTED_UNIT_ID = "NOT_SELECTED_UNIT_ID";
-    final static String SUB_UNIT_TO_SELECTED = "SUB_UNIT_ID";
+    static final String SELECTED_UNIT_ID = "UNITID";
+    static final String NOT_SELECTED_UNIT_ID = "NOT_SELECTED_UNIT_ID";
+    static final String SUB_UNIT_TO_SELECTED = "SUB_UNIT_ID";
+
     @Mock
     private CertificateServiceStatisticService certificateServiceStatisticService;
 
@@ -90,10 +92,12 @@ class UserStatisticsServiceImplTest {
     }
 
     void setUpUnit() {
-        final var unit = new Vardenhet();
-        unit.setId(SELECTED_UNIT_ID);
+        final var careProvider = getCareProvider();
 
-        doReturn(unit)
+        doReturn(List.of(careProvider))
+            .when(user).getVardgivare();
+
+        doReturn(careProvider.getVardenheter().get(1))
             .when(user)
             .getValdVardenhet();
 
@@ -176,17 +180,18 @@ class UserStatisticsServiceImplTest {
         @BeforeEach
         void setup() {
             setUpUser();
-            setUpUnit();
 
             doReturn(new HashSet<String>())
                 .when(authoritiesHelper)
                 .getIntygstyperForPrivilege(any(), any());
 
             map.put(SELECTED_UNIT_ID, expectedValue);
+            ReflectionTestUtils.setField(userStatisticsService, "maxCommissionsForStatistics", 15);
         }
 
         @Test
         void shouldReturnNbrOfDraftsForSelectedUnit() {
+            setUpUnit();
             doReturn(map).when(utkastService).getNbrOfUnsignedDraftsByCareUnits(any());
 
             final var result = userStatisticsService.getUserStatistics().getNbrOfDraftsOnSelectedUnit();
@@ -196,6 +201,7 @@ class UserStatisticsServiceImplTest {
 
         @Test
         void shouldReturnNbrOfQuestionsForSelectedUnit() {
+            setUpUnit();
             doReturn(map).when(arendeService).getNbrOfUnhandledArendenForCareUnits(any(), any());
             doReturn(map).when(fragaSvarService).getNbrOfUnhandledFragaSvarForCareUnits(any(), any());
 
@@ -205,7 +211,7 @@ class UserStatisticsServiceImplTest {
         }
 
         @Nested
-        class CareProviderStatistics {
+        class CareProviderStatisticsUnlimited {
 
             final Map<String, Long> draftsMap = new HashMap<String, Long>();
             final Map<String, Long> questionsMap = new HashMap<String, Long>();
@@ -229,7 +235,6 @@ class UserStatisticsServiceImplTest {
 
                 doReturn(questionsMap).when(arendeService).getNbrOfUnhandledArendenForCareUnits(any(), any());
                 doReturn(draftsMap).when(utkastService).getNbrOfUnsignedDraftsByCareUnits(any());
-
             }
 
             @Test
@@ -339,7 +344,12 @@ class UserStatisticsServiceImplTest {
         }
 
         @Nested
-        class totalDraftsAndUnhandledQuestionsOnOtherUnits {
+        class TotalDraftsAndUnhandledQuestionsOnOtherUnits {
+
+            @BeforeEach
+            void setup() {
+                setUpUnit();
+            }
 
             @Test
             void shouldReturn0IfOnlySelectedUnitStatisticsInMap() {
@@ -388,9 +398,10 @@ class UserStatisticsServiceImplTest {
 
         @Test
         void shouldAddStatisticsFromCertificateService() {
+            setUpUnit();
             userStatisticsService.getUserStatistics();
             verify(certificateServiceStatisticService).add(any(UserStatisticsDTO.class),
-                eq(List.of(SELECTED_UNIT_ID, NOT_SELECTED_UNIT_ID, SUB_UNIT_TO_SELECTED)), eq(user));
+                eq(List.of(SELECTED_UNIT_ID, NOT_SELECTED_UNIT_ID, SUB_UNIT_TO_SELECTED)), eq(user), eq(false));
         }
     }
 }

@@ -29,7 +29,7 @@ public class UserStatisticsDTO {
 
     private long totalDraftsAndUnhandledQuestionsOnOtherUnits;
 
-    private Map<String, UnitStatisticsDTO> unitStatistics;
+    private Map<String, UnitStatisticsDTO> unitStatistics = new HashMap<>();
 
     public UserStatisticsDTO() {
     }
@@ -63,10 +63,6 @@ public class UserStatisticsDTO {
     }
 
     public void addUnitStatistics(String unitId, UnitStatisticsDTO statistics) {
-        if (unitStatistics == null) {
-            unitStatistics = new HashMap<>();
-        }
-
         unitStatistics.put(unitId, statistics);
     }
 
