@@ -266,7 +266,7 @@ class GetCertificateTypesFacadeServiceImplTest {
             }
 
             @Test
-            void shallNotAddCreateConfirmationResourceLinkIfCertificateIsLuaenaAndPatientYoungerThanThirtyYearsAndTwoMonthsCoordinationNo() {
+            void shallNotAddCreateConfirmationResourceLinkIfCertificateIsLuaenaAndPatientYoungThanThirtyYearsAndTwoMonthsCoordinationNo() {
                 final var module = createIntygModule("luae_na");
                 doReturn(List.of(module)).when(intygModuleRegistry).listAllModules();
                 when(authoritiesHelper.getIntygstyperForPrivilege(any(), any())).thenReturn(Set.of(module.getId()));
