@@ -22,9 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
@@ -40,7 +42,11 @@ import se.inera.intyg.webcert.web.service.util.StatisticsHelper;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
 @Service
+@Slf4j
 public class UserStatisticsServiceImpl implements UserStatisticsService {
+
+    @Value("${max.number.of.commissions.for.statistics:15}")
+    private Integer maxCommissionsForStatistics;
 
     private static final Logger LOG = LoggerFactory.getLogger(UserStatisticsServiceImpl.class);
 
@@ -71,10 +77,25 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
             return null;
         }
 
-        final var unitIds = getUnitIds(user);
+        final var careUnitIds = getCareUnitIds(user);
 
-        if (unitIds == null) {
+        if (careUnitIds.isEmpty()) {
             return null;
+        }
+
+        final var maxCommissionsExceeded = careUnitIds.size() > maxCommissionsForStatistics;
+
+        if (maxCommissionsExceeded && user.getValdVardenhet() == null) {
+            log.info("Number of commissions ({}) exceeds maxCommissionsForStatistics ({}) without selected unit. No statistics will "
+                + "be collected.", careUnitIds.size(), maxCommissionsForStatistics);
+            return null;
+        }
+
+        final var unitIds = maxCommissionsExceeded ? user.getValdVardenhet().getHsaIds() : getUnitIds(user);
+
+        if (maxCommissionsExceeded) {
+            log.info("Number of commissions ({}) exceeds maxCommissionsForStatistics ({}) with selected unit. Statistics will be collected "
+                + "for selected care unit only.", careUnitIds.size(), maxCommissionsForStatistics);
         }
 
         final var statistics = new UserStatisticsDTO();
@@ -94,8 +115,11 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
             );
         }
 
-        addCareProviderStatistics(statistics, user.getVardgivare(), draftsMap, questionsMap);
-        certificateServiceStatisticService.add(statistics, unitIds, user);
+        if (!maxCommissionsExceeded) {
+            addCareProviderStatistics(statistics, user.getVardgivare(), draftsMap, questionsMap);
+        }
+
+        certificateServiceStatisticService.add(statistics, unitIds, user, maxCommissionsExceeded);
         return statistics;
     }
 
@@ -191,6 +215,16 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
             return null;
         }
         return units;
+    }
+
+    private List<String> getCareUnitIds(WebCertUser user) {
+        List<String> allIds = new ArrayList<>();
+        for (Vardgivare v : user.getVardgivare()) {
+            for (Vardenhet ve : v.getVardenheter()) {
+                allIds.add(ve.getId());
+            }
+        }
+        return allIds;
     }
 
     private Map<String, Long> getMergedMapOfQuestions(List<String> unitIds, Set<String> certificateTypes) {

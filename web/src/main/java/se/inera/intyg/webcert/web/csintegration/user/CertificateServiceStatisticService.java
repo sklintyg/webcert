@@ -42,7 +42,7 @@ public class CertificateServiceStatisticService {
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
 
-    public void add(UserStatisticsDTO statisticsFromWC, List<String> unitIds, WebCertUser user) {
+    public void add(UserStatisticsDTO statisticsFromWC, List<String> unitIds, WebCertUser user, boolean maxCommissionsExceeded) {
         if (!certificateServiceProfile.active()) {
             return;
         }
@@ -59,9 +59,11 @@ public class CertificateServiceStatisticService {
             );
         }
 
-        final var careUnitsWithRelatedSubUnits = getAvailableCareUnitsWithSubUnits(user);
-        final var unitStatisticsDTO = buildUnitStatisticsFromCS(statisticsFromCS, careUnitsWithRelatedSubUnits);
-        statisticsFromWC.mergeUnitStatistics(unitStatisticsDTO);
+        if (!maxCommissionsExceeded) {
+            final var careUnitsWithRelatedSubUnits = getAvailableCareUnitsWithSubUnits(user.getVardgivare());
+            final var unitStatisticsDTO = buildUnitStatisticsFromCS(statisticsFromCS, careUnitsWithRelatedSubUnits);
+            statisticsFromWC.mergeUnitStatistics(unitStatisticsDTO);
+        }
     }
 
     private static Map<String, UnitStatisticsDTO> buildUnitStatisticsFromCS(Map<String, StatisticsForUnitDTO> statisticsFromCS,
@@ -89,8 +91,8 @@ public class CertificateServiceStatisticService {
             ));
     }
 
-    private static Map<String, List<String>> getAvailableCareUnitsWithSubUnits(WebCertUser user) {
-        return user.getVardgivare().stream()
+    private static Map<String, List<String>> getAvailableCareUnitsWithSubUnits(List<Vardgivare> careProviders) {
+        return careProviders.stream()
             .map(Vardgivare::getVardenheter)
             .flatMap(List::stream)
             .collect(Collectors.toMap(
