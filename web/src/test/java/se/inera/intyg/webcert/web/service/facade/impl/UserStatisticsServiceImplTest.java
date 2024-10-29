@@ -178,7 +178,6 @@ class UserStatisticsServiceImplTest {
         @BeforeEach
         void setup() {
             setUpUser();
-            setUpUnit();
 
             doReturn(new HashSet<String>())
                 .when(authoritiesHelper)
@@ -190,6 +189,7 @@ class UserStatisticsServiceImplTest {
 
         @Test
         void shouldReturnNbrOfDraftsForSelectedUnit() {
+            setUpUnit();
             doReturn(map).when(utkastService).getNbrOfUnsignedDraftsByCareUnits(any());
 
             final var result = userStatisticsService.getUserStatistics().getNbrOfDraftsOnSelectedUnit();
@@ -199,6 +199,7 @@ class UserStatisticsServiceImplTest {
 
         @Test
         void shouldReturnNbrOfQuestionsForSelectedUnit() {
+            setUpUnit();
             doReturn(map).when(arendeService).getNbrOfUnhandledArendenForCareUnits(any(), any());
             doReturn(map).when(fragaSvarService).getNbrOfUnhandledFragaSvarForCareUnits(any(), any());
 
@@ -342,6 +343,11 @@ class UserStatisticsServiceImplTest {
 
         @Nested
         class TotalDraftsAndUnhandledQuestionsOnOtherUnits {
+
+            @BeforeEach
+            void setup() {
+                setUpUnit();
+            }
 
             @Test
             void shouldReturn0IfOnlySelectedUnitStatisticsInMap() {
