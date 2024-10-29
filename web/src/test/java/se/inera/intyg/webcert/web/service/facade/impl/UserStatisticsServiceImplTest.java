@@ -92,18 +92,18 @@ class UserStatisticsServiceImplTest {
     }
 
     void setUpUnit() {
-        final var unit = new Vardenhet();
-        unit.setId(SELECTED_UNIT_ID);
+        final var careProvider = getCareProvider();
 
-        doReturn(unit)
+        doReturn(List.of(careProvider))
+            .when(user).getVardgivare();
+
+        doReturn(careProvider.getVardenheter().get(1))
             .when(user)
             .getValdVardenhet();
 
         doReturn(List.of(SELECTED_UNIT_ID))
             .when(user)
             .getIdsOfSelectedVardenhet();
-
-        doReturn(List.of(SELECTED_UNIT_ID, NOT_SELECTED_UNIT_ID, SUB_UNIT_TO_SELECTED)).when(user).getIdsOfAllVardenheter();
     }
 
     private Vardgivare getCareProvider() {
