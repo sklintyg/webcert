@@ -77,23 +77,25 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
             return null;
         }
 
-        List<String> unitIds = getUnitIds(user);
+        final var careUnitIds = getCareUnitIds(user);
 
-        if (unitIds.isEmpty()) {
+        if (careUnitIds.isEmpty()) {
             return null;
         }
 
-        final var useLimitedStatistics = unitIds.size() > maxCommissionsForStatistics;
+        final var useLimitedStatistics = careUnitIds.size() > maxCommissionsForStatistics;
+
+        if (useLimitedStatistics && user.getValdVardenhet() == null) {
+            log.info("Number of commissions ({}) exceeds maxCommissionsForStatistics ({}) without selected unit. No statistics will "
+                + "be collected.", careUnitIds.size(), maxCommissionsForStatistics);
+            return null;
+        }
+
+        final var unitIds = useLimitedStatistics ? user.getValdVardenhet().getHsaIds() : getUnitIds(user);
 
         if (useLimitedStatistics) {
-            if (user.getValdVardenhet() == null) {
-                log.info("Number of Commissions ({}) exceeds maxCommissionsForStatistics ({}) without selected unit. No statistics will "
-                    + "be collected.", unitIds.size(), maxCommissionsForStatistics);
-                return null;
-            }
-            log.info("Number of Commissions ({}) exceeds maxCommissionsForStatistics ({}) with selected unit. Statistics will be collected "
-                + "for selected care provider only.", unitIds.size(), maxCommissionsForStatistics);
-            unitIds = user.getValdVardenhet().getHsaIds();
+            log.info("Number of commissions ({}) exceeds maxCommissionsForStatistics ({}) with selected unit. Statistics will be collected "
+                + "for selected care unit only.", careUnitIds.size(), maxCommissionsForStatistics);
         }
 
         final var statistics = new UserStatisticsDTO();
@@ -206,6 +208,16 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
     }
 
     private List<String> getUnitIds(WebCertUser user) {
+        final var units = user.getIdsOfAllVardenheter();
+        if (units == null || units.isEmpty()) {
+            LOG.warn("getStatistics was called by user {} that have no id:s of vardenheter present in the user context: {}",
+                user.getHsaId(), user.getAsJson());
+            return null;
+        }
+        return units;
+    }
+
+    private List<String> getCareUnitIds(WebCertUser user) {
         List<String> allIds = new ArrayList<>();
         for (Vardgivare v : user.getVardgivare()) {
             for (Vardenhet ve : v.getVardenheter()) {

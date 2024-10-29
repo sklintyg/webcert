@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.web.csintegration.user;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 
 import java.util.Collections;
@@ -74,7 +74,7 @@ class CertificateServiceStatisticServiceTest {
             () -> assertEquals(0, userStatisticsDTO.getNbrOfDraftsOnSelectedUnit()),
             () -> assertEquals(0, userStatisticsDTO.getTotalDraftsAndUnhandledQuestionsOnOtherUnits()),
             () -> assertEquals(0, userStatisticsDTO.getNbrOfUnhandledQuestionsOnSelectedUnit()),
-            () -> assertNull(userStatisticsDTO.getUnitStatistics())
+            () -> assertTrue(userStatisticsDTO.getUnitStatistics().isEmpty())
         );
     }
 

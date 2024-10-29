@@ -104,6 +104,8 @@ class UserStatisticsServiceImplTest {
         doReturn(List.of(SELECTED_UNIT_ID))
             .when(user)
             .getIdsOfSelectedVardenhet();
+
+        doReturn(List.of(SELECTED_UNIT_ID, NOT_SELECTED_UNIT_ID, SUB_UNIT_TO_SELECTED)).when(user).getIdsOfAllVardenheter();
     }
 
     private Vardgivare getCareProvider() {
@@ -399,34 +401,6 @@ class UserStatisticsServiceImplTest {
             userStatisticsService.getUserStatistics();
             verify(certificateServiceStatisticService).add(any(UserStatisticsDTO.class),
                 eq(List.of(SELECTED_UNIT_ID, NOT_SELECTED_UNIT_ID, SUB_UNIT_TO_SELECTED)), eq(user), eq(false));
-        }
-    }
-
-    @Nested
-    class CareProviderStatisticsUnlimited {
-
-        final Map<String, Long> draftsMap = new HashMap<String, Long>();
-        final Map<String, Long> questionsMap = new HashMap<String, Long>();
-
-        final long expectedDraftsSelected = 100;
-        final long expectedQuestionsSelected = 200;
-        final long expectedDraftsNotSelected = 1;
-        final long expectedQuestionsNotSelected = 2;
-        final long expectedDraftsSubUnit = 10;
-        final long expectedQuestionsSubUnit = 10;
-
-        @BeforeEach
-        void setup() {
-            draftsMap.put(SELECTED_UNIT_ID, expectedDraftsSelected);
-            draftsMap.put(NOT_SELECTED_UNIT_ID, expectedDraftsNotSelected);
-            draftsMap.put(SUB_UNIT_TO_SELECTED, expectedDraftsSubUnit);
-
-            questionsMap.put(SELECTED_UNIT_ID, expectedQuestionsSelected);
-            questionsMap.put(NOT_SELECTED_UNIT_ID, expectedQuestionsNotSelected);
-            questionsMap.put(SUB_UNIT_TO_SELECTED, expectedQuestionsSubUnit);
-
-            doReturn(questionsMap).when(arendeService).getNbrOfUnhandledArendenForCareUnits(any(), any());
-            doReturn(draftsMap).when(utkastService).getNbrOfUnsignedDraftsByCareUnits(any());
         }
     }
 }
