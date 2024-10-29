@@ -26,7 +26,6 @@ import static se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkT
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -39,8 +38,10 @@ import se.inera.intyg.common.support.facade.model.CertificateRelationType;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
+import se.inera.intyg.common.support.facade.util.PatientToolkit;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.GetCertificatesAvailableFunctions;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
 import se.inera.intyg.webcert.web.service.facade.user.UserService;
@@ -521,7 +522,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     }
 
     private boolean patientOlderThanThirtyYearsAndTwoMonths(String patientId) {
-        final var birthDate = LocalDate.parse(patientId.substring(0, 8), DateTimeFormatter.ofPattern("yyyyMMdd"));
+        final var birthDate = PatientToolkit.birthDate(Personnummer.createPersonnummer(patientId).orElseThrow());
         return LocalDate.now(ZoneId.systemDefault()).isAfter(birthDate.plusYears(30).plusMonths(2));
     }
 }

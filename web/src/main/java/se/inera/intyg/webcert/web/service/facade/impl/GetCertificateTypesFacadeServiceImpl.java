@@ -20,7 +20,6 @@ package se.inera.intyg.webcert.web.service.facade.impl;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -29,6 +28,7 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.luae_na.support.LuaenaEntryPoint;
 import se.inera.intyg.common.services.texts.IntygTextsService;
+import se.inera.intyg.common.support.facade.util.PatientToolkit;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -144,7 +144,7 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
     }
 
     private boolean patientOlderThanThirtyYearsAndTwoMonths(Personnummer patientId) {
-        final var birthDate = LocalDate.parse(patientId.getPersonnummer().substring(0, 8), DateTimeFormatter.ofPattern("yyyyMMdd"));
+        final var birthDate = PatientToolkit.birthDate(patientId);
         return LocalDate.now(ZoneId.systemDefault()).isAfter(birthDate.plusYears(30).plusMonths(2));
     }
 }
