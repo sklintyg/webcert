@@ -242,7 +242,7 @@ class GetCertificateTypesFacadeServiceImplTest {
             }
 
             @Test
-            void shallAddCreateConfirmationResourceLinkIfCertificateIsLuaenaAndPatientOlderThanThirtyYearsAndTwoMonthsWithCoordinationNumber() {
+            void shallAddCreateConfirmationResourceLinkIfCertificateIsLuaenaAndPatientOlderThanThirtyYearsAndTwoMonthsWithCoordinationNo() {
                 final var module = createIntygModule("luae_na");
                 doReturn(List.of(module)).when(intygModuleRegistry).listAllModules();
                 when(authoritiesHelper.getIntygstyperForPrivilege(any(), any())).thenReturn(Set.of(module.getId()));
@@ -255,7 +255,7 @@ class GetCertificateTypesFacadeServiceImplTest {
             }
 
             @Test
-            void shallNotAddCreateConfirmationResourceLinkIfCertificateIsLuaenaAndPatienYoungerThanThirtyYearsAndTwoMonths() {
+            void shallNotAddCreateConfirmationResourceLinkIfCertificateIsLuaenaAndPatientYoungerThanThirtyYearsAndTwoMonths() {
                 final var module = createIntygModule("luae_na");
                 doReturn(List.of(module)).when(intygModuleRegistry).listAllModules();
                 when(authoritiesHelper.getIntygstyperForPrivilege(any(), any())).thenReturn(Set.of(module.getId()));
@@ -266,7 +266,7 @@ class GetCertificateTypesFacadeServiceImplTest {
             }
 
             @Test
-            void shallNotAddCreateConfirmationResourceLinkIfCertificateIsLuaenaAndPatienYoungerThanThirtyYearsAndTwoMonthsWithCoordinationNumber() {
+            void shallNotAddCreateConfirmationResourceLinkIfCertificateIsLuaenaAndPatientYoungerThanThirtyYearsAndTwoMonthsCoordinationNo() {
                 final var module = createIntygModule("luae_na");
                 doReturn(List.of(module)).when(intygModuleRegistry).listAllModules();
                 when(authoritiesHelper.getIntygstyperForPrivilege(any(), any())).thenReturn(Set.of(module.getId()));
