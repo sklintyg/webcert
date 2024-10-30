@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import se.inera.intyg.webcert.web.logging.HashPatientIdHelper;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
@@ -64,12 +65,12 @@ public class UnitSelectedAssuranceFilter extends OncePerRequestFilter {
         WebCertUser user = getUser();
         boolean continueRequestIf = user == null || user.getValdVardenhet() != null || isIgnoredUrl(request);
 
-        LOG.debug("continueRequestIf " + request.getRequestURI() + " = " + continueRequestIf);
+        LOG.debug("continueRequestIf " + HashPatientIdHelper.fromUrl(request.getRequestURI()) + " = " + continueRequestIf);
 
         if (continueRequestIf) {
             filterChain.doFilter(request, response);
         } else {
-            LOG.error("User accessed " + request.getRequestURI() + " but has not selected a care unit");
+            LOG.error("User accessed " + HashPatientIdHelper.fromUrl(request.getRequestURI()) + " but has not selected a care unit");
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
