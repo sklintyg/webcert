@@ -197,17 +197,11 @@ class CertificateServiceUserHelperTest {
                     @BeforeEach
                     void setup() {
                         feature = mock(Feature.class);
-                        final var careProvider = mock(SelectableVardenhet.class);
-
-                        when(webCertUser.getSubscriptionInfo()).thenReturn(subscription);
                         when(webCertUser.getOrigin()).thenReturn("NORMAL");
-                        when(webCertUser.getValdVardgivare()).thenReturn(careProvider);
-                        when(careProvider.getId()).thenReturn(CARE_PROVIDER_ID);
                     }
 
                     @Test
-                    void shouldReturnBlockedFalseIfSubscriptionExistsAndNotBlocked() {
-                        when(subscription.getCareProvidersMissingSubscription()).thenReturn(HAS_SUBSCRIPTION);
+                    void shouldReturnBlockedFalseIfNotBlocked() {
                         when(feature.getGlobal()).thenReturn(false);
                         when(webCertUser.getFeatures())
                             .thenReturn(Map.of(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL, feature));
@@ -218,18 +212,7 @@ class CertificateServiceUserHelperTest {
                     }
 
                     @Test
-                    void shouldReturnBlockedTrueIfSubscriptionIsMissing() {
-                        when(subscription.getCareProvidersMissingSubscription())
-                            .thenReturn(HAS_NOT_SUBSCRIPTION);
-
-                        final var response = certificateServiceUserHelper.get();
-
-                        assertTrue(response.getBlocked());
-                    }
-
-                    @Test
                     void shouldReturnBlockedTrueIfBlocked() {
-                        when(subscription.getCareProvidersMissingSubscription()).thenReturn(HAS_SUBSCRIPTION);
                         when(feature.getGlobal()).thenReturn(true);
                         when(webCertUser.getFeatures())
                             .thenReturn(Map.of(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL, feature));
@@ -239,19 +222,59 @@ class CertificateServiceUserHelperTest {
                         assertTrue(response.getBlocked());
                     }
                 }
+            }
+
+            @Nested
+            class Agreement {
 
                 @Test
-                void shouldReturnBlockedTrueIfUserHasntSelectedCareProviderYet() {
-                    final var feature = mock(Feature.class);
+                void shouldReturnAgreementTrueIfOriginIsNotNormal() {
+                    final var response = certificateServiceUserHelper.get();
 
+                    assertTrue(response.getAgreement());
+                }
+
+                @Nested
+                class OriginNormal {
+
+                    Feature feature;
+
+                    @BeforeEach
+                    void setup() {
+                        final var careProvider = mock(SelectableVardenhet.class);
+
+                        when(webCertUser.getSubscriptionInfo()).thenReturn(subscription);
+                        when(webCertUser.getOrigin()).thenReturn("NORMAL");
+                        when(webCertUser.getValdVardgivare()).thenReturn(careProvider);
+                        when(careProvider.getId()).thenReturn(CARE_PROVIDER_ID);
+                    }
+
+                    @Test
+                    void shouldReturnAgreementTrueIfSubscriptionExists() {
+                        when(subscription.getCareProvidersMissingSubscription()).thenReturn(HAS_SUBSCRIPTION);
+
+                        final var response = certificateServiceUserHelper.get();
+
+                        assertTrue(response.getAgreement());
+                    }
+
+                    @Test
+                    void shouldReturnAgreementFalseIfSubscriptionIsMissing() {
+                        when(subscription.getCareProvidersMissingSubscription()).thenReturn(HAS_NOT_SUBSCRIPTION);
+
+                        final var response = certificateServiceUserHelper.get();
+
+                        assertFalse(response.getAgreement());
+                    }
+                }
+
+                @Test
+                void shouldReturnAgreementTrueIfUserHasntSelectedCareProviderYet() {
                     when(webCertUser.getOrigin()).thenReturn("NORMAL");
-                    when(feature.getGlobal()).thenReturn(true);
-                    when(webCertUser.getFeatures())
-                        .thenReturn(Map.of(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL, feature));
 
                     final var response = certificateServiceUserHelper.get();
 
-                    assertTrue(response.getBlocked());
+                    assertTrue(response.getAgreement());
                 }
             }
 

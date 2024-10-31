@@ -39,6 +39,7 @@ public class CertificateServiceIntegrationUserHelper {
             .lastName(user.getEfternamn())
             .fullName(user.getNamn())
             .blocked(false)
+            .agreement(true)
             .paTitles(paTitles(user.getBefattningar()))
             .specialities(user.getSpecialiseringar())
             .role(getRole(user))

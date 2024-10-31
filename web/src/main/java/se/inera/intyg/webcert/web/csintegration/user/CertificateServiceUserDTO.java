@@ -40,6 +40,7 @@ public class CertificateServiceUserDTO {
     List<PaTitleDTO> paTitles;
     List<String> specialities;
     Boolean blocked;
+    Boolean agreement;
     AccessScopeType accessScope;
     Boolean allowCopy;
     List<String> healthCareProfessionalLicence;

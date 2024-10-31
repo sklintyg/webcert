@@ -309,8 +309,24 @@ class GetCertificatesAvailableFunctionsImplTest {
         }
 
         @Test
+        void shallIncludeWarningWhenLuaenaIntegratedAndPatientOlderThanThirtyYearsAndTwoMonthsWithCoordinationNumber() {
+            final var certificate = getUnsignedLuaenaForPatientOfAgeWithCoordinationNumber(30, 3);
+            when(webCertUserService.getUser()).thenReturn(getUserWithOrigin("DJUPINTEGRATION"));
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.WARNING_LUAENA_INTEGRATED);
+        }
+
+        @Test
         void shallExcludeWarningWhenLuaenaIntegratedAndPatientYoungerThanhirtyYearsAndTwoMonths() {
             final var certificate = getUnsignedLuaenaForPatientOfAge(30, 1);
+            when(webCertUserService.getUser()).thenReturn(getUserWithOrigin("DJUPINTEGRATION"));
+            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
+            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.WARNING_LUAENA_INTEGRATED);
+        }
+
+        @Test
+        void shallExcludeWarningWhenLuaenaIntegratedAndPatientYoungerThanhirtyYearsAndTwoMonthsWithCoordinationNumber() {
+            final var certificate = getUnsignedLuaenaForPatientOfAgeWithCoordinationNumber(30, 1);
             when(webCertUserService.getUser()).thenReturn(getUserWithOrigin("DJUPINTEGRATION"));
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.WARNING_LUAENA_INTEGRATED);
@@ -1089,6 +1105,23 @@ class GetCertificatesAvailableFunctionsImplTest {
     private Certificate getUnsignedLuaenaForPatientOfAge(int years, int months) {
         final var paientBirthDate = LocalDate.now(ZoneId.systemDefault()).minusYears(years).minusMonths(months);
         final var personId = PersonId.builder().id(paientBirthDate.toString().replace("-", "") + "-4321").build();
+        final var patient = Patient.builder().personId(personId).build();
+        return CertificateBuilder.create().metadata(CertificateMetadata.builder()
+            .id("certificateId")
+            .type(LuaenaEntryPoint.MODULE_ID)
+            .status(CertificateStatus.UNSIGNED)
+            .patient(patient)
+            .build()
+        ).build();
+    }
+
+    private Certificate getUnsignedLuaenaForPatientOfAgeWithCoordinationNumber(int years, int months) {
+        final var patientBirthDate = LocalDate.now(ZoneId.systemDefault()).minusYears(years).minusMonths(months);
+        final var personId = PersonId.builder().id(
+                patientBirthDate.toString()
+                    .replace(Integer.toString(patientBirthDate.getDayOfMonth()), Integer.toString(patientBirthDate.getMonthValue() + 60))
+                    .replace("-", "") + "-4321")
+            .build();
         final var patient = Patient.builder().personId(personId).build();
         return CertificateBuilder.create().metadata(CertificateMetadata.builder()
             .id("certificateId")

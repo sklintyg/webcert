@@ -24,12 +24,13 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import jakarta.ws.rs.BadRequestException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
@@ -139,11 +140,22 @@ public class SendMessageToCareResponderImplTest {
     @Test
     public void testSendRequestToServiceFailedWithBadRequestException() throws WebCertServiceException {
         when(processIncomingMessageAggregator.process(any()))
-            .thenThrow(new BadRequestException("Exception message"));
+            .thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Exception message"));
         SendMessageToCareResponseType response = responder.sendMessageToCare(DEFAULT_LOGICAL_ADDRESS, createNewRequest());
         assertNotNull(response.getResult());
         assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
         assertEquals(ErrorIdType.VALIDATION_ERROR, response.getResult().getErrorId());
+    }
+
+
+    @Test
+    public void testSendRequestToServiceFailedWithHttpClientException() throws WebCertServiceException {
+        when(processIncomingMessageAggregator.process(any()))
+            .thenThrow(new HttpClientErrorException(HttpStatus.BANDWIDTH_LIMIT_EXCEEDED, "Exception message"));
+        SendMessageToCareResponseType response = responder.sendMessageToCare(DEFAULT_LOGICAL_ADDRESS, createNewRequest());
+        assertNotNull(response.getResult());
+        assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
+        assertEquals(ErrorIdType.APPLICATION_ERROR, response.getResult().getErrorId());
     }
 
     private SendMessageToCareType createNewRequest() {

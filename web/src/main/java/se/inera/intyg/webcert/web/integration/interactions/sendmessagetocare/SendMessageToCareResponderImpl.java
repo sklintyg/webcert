@@ -18,11 +18,12 @@
  */
 package se.inera.intyg.webcert.web.integration.interactions.sendmessagetocare;
 
-import jakarta.ws.rs.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.apache.cxf.annotations.SchemaValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.csintegration.aggregate.ProcessIncomingMessageAggregator;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareResponderInterface;
@@ -91,15 +92,25 @@ public class SendMessageToCareResponderImpl implements SendMessageToCareResponde
                     );
                     break;
             }
-        } catch (BadRequestException exception) {
+        } catch (HttpClientErrorException exception) {
             result.setResultCode(ResultCodeType.ERROR);
-            result.setErrorId(ErrorIdType.VALIDATION_ERROR);
+
+            if (exception.getRawStatusCode() == HttpStatus.BAD_REQUEST.value()) {
+                result.setErrorId(ErrorIdType.VALIDATION_ERROR);
+                LOG.error(
+                    String.format("Could not process incoming message to care. Bad request returned. Question id %s. Certificate id %s. %s",
+                        request.getMeddelandeId(), request.getIntygsId().getExtension(), exception.getMessage()),
+                    exception
+                );
+            } else {
+                result.setErrorId(ErrorIdType.APPLICATION_ERROR);
+                LOG.error(
+                    String.format("Could not process incoming message to care. Application error. Question id %s. Certificate id %s. %s",
+                        request.getMeddelandeId(), request.getIntygsId().getExtension(), exception.getMessage()),
+                    exception
+                );
+            }
             result.setResultText(exception.getMessage());
-            LOG.error(
-                String.format("Could not process incoming message to care. Bad request returned. Question id %s. Certificate id %s. %s",
-                    request.getMeddelandeId(), request.getIntygsId().getExtension(), exception.getMessage()),
-                exception
-            );
         } catch (Exception ex) {
             result.setResultCode(ResultCodeType.ERROR);
             result.setErrorId(ErrorIdType.APPLICATION_ERROR);
