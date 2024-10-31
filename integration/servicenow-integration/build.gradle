@@ -2,7 +2,7 @@ dependencies {
     implementation project(":integration-api")
 
     implementation "com.fasterxml.jackson.core:jackson-annotations"
-    implementation "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider"
+    implementation "com.fasterxml.jackson.jakarta.rs:jackson-jakarta-rs-json-provider"
     implementation "jakarta.ws.rs:jakarta.ws.rs-api"
     implementation "org.apache.cxf:cxf-rt-frontend-jaxrs:${cxfVersion}"
     implementation "org.springframework:spring-context-support"

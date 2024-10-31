@@ -28,19 +28,20 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.ExceptionMappingAuthenticationFailureHandler;
+import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.security.exception.HsaServiceException;
 import se.inera.intyg.infra.security.exception.MissingMedarbetaruppdragException;
 import se.inera.intyg.webcert.web.auth.exceptions.MissingSubscriptionException;
 import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerAuthorizationException;
 
-
-public class WebcertAuthenticationFailureHandler extends ExceptionMappingAuthenticationFailureHandler {
+@Service
+public class CustomAuthenticationFailureHandler extends ExceptionMappingAuthenticationFailureHandler {
 
     private static final String WC_DEFAULT_FAILURE_URL = "/error?reason=login.failed";
     private final String privatePractitionerPortalRegistrationUrl;
     private  Map<String, String> failureUrlMap = new HashMap<>();
 
-    public WebcertAuthenticationFailureHandler(
+    public CustomAuthenticationFailureHandler(
         @Value("${privatepractitioner.portal.registration.url}") String privatePractitionerPortalRegistrationUrl) {
         this.privatePractitionerPortalRegistrationUrl = privatePractitionerPortalRegistrationUrl;
     }

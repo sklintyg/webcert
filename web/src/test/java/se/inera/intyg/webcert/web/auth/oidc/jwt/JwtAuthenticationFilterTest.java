@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.auth.oidc.jwt;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -40,11 +39,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.providers.ExpiringUsernameAuthenticationToken;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import se.inera.intyg.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.webcert.web.service.jwt.JwtValidationService;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @RunWith(MockitoJUnitRunner.class)
 public class JwtAuthenticationFilterTest {
@@ -76,8 +73,8 @@ public class JwtAuthenticationFilterTest {
         when(featuresHelper.isFeatureActive(anyString())).thenReturn(true);
         when(req.getMethod()).thenReturn("POST");
         when(req.getParameter("access_token")).thenReturn("access-token");
-        when(authenticationManager.authenticate(any(JwtAuthenticationToken.class)))
-            .thenReturn(new ExpiringUsernameAuthenticationToken(mock(WebCertUser.class), mock(WebCertUser.class)));
+//        when(authenticationManager.authenticate(any(JwtAuthenticationToken.class)))
+//            .thenReturn(new ExpiringUsernameAuthenticationToken(mock(WebCertUser.class), mock(WebCertUser.class)));
     }
 
     @Test

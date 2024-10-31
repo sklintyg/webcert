@@ -54,7 +54,7 @@ import se.inera.intyg.webcert.web.web.controller.integration.IntygIntegrationCon
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 @RunWith(MockitoJUnitRunner.class)
-public class WebcertAuthenticationSuccessHandlerTest {
+public class CustomAuthenticationSuccessHandlerTest {
 
     private static final String PNR = "20121212-1212";
     private static final String LAUNCH_ID = "97f279ba-7d2b-4b0a-8665-7adde08f26f4";
@@ -82,7 +82,7 @@ public class WebcertAuthenticationSuccessHandlerTest {
     private RedirectStrategy redirectStrategy;
 
     @InjectMocks
-    private WebcertAuthenticationSuccessHandler testee;
+    private CustomAuthenticationSuccessHandler testee;
 
     @Before
     public void init() {

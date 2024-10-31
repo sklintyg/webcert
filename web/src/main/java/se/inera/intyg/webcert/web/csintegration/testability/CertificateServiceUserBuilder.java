@@ -43,7 +43,7 @@ public class CertificateServiceUserBuilder {
     }
 
     public CertificateServiceUserDTO build(HoSPersonal hoSPersonal) {
-        final var user = webcertUserDetailsService.loadUserByHsaId(hoSPersonal.getPersonId());
+        final var user = webcertUserDetailsService.buildUserPrincipal(hoSPersonal.getPersonId(), "");
         final var role = getRole(user.getRoles());
         return CertificateServiceUserDTO.builder()
             .id(hoSPersonal.getPersonId())

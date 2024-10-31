@@ -35,6 +35,7 @@ import org.springframework.security.web.savedrequest.DefaultSavedRequest;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
+import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
@@ -42,8 +43,8 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.IntygIntegrationController;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
-public class WebcertAuthenticationSuccessHandler extends
-    SimpleUrlAuthenticationSuccessHandler {
+@Service
+public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     @Value("${webcert.domain.name}")
     private String webcertDomainName;
@@ -65,8 +66,7 @@ public class WebcertAuthenticationSuccessHandler extends
         }
         String targetUrlParameter = getTargetUrlParameter();
         if (isAlwaysUseDefaultTargetUrl()
-            || (targetUrlParameter != null && StringUtils.hasText(request
-            .getParameter(targetUrlParameter)))) {
+            || (targetUrlParameter != null && StringUtils.hasText(request.getParameter(targetUrlParameter)))) {
             requestCache.removeRequest(request, response);
             super.onAuthenticationSuccess(request, response, authentication);
 

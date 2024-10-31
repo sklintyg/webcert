@@ -22,15 +22,13 @@ import static se.inera.intyg.webcert.web.auth.common.AuthConstants.ELEG_AUTHN_CL
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SITHS_AUTHN_CLASSES;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_UNSPECIFIED;
 
-import jakarta.annotation.Resource;
 import java.util.Arrays;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
-import org.springframework.security.saml.SAMLCredential;
-import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
 import se.inera.intyg.webcert.web.auth.eleg.ElegWebCertUserDetailsService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 /**
  * Created by eriklupander on 2015-08-12.
@@ -48,53 +46,35 @@ import se.inera.intyg.webcert.web.auth.eleg.ElegWebCertUserDetailsService;
  * initiate authorization if the application has the "dev" spring profile active.
  */
 @Service
-public class UnifiedUserDetailsService implements SAMLUserDetailsService {
+@RequiredArgsConstructor
+public class UnifiedUserDetailsService {
 
-    @Resource
-    private Environment environment;
+    private final Environment environment;
+    private final ElegWebCertUserDetailsService elegWebCertUserDetailsService;
+    private final WebcertUserDetailsService webcertUserDetailsService;
 
-    /**
-     * User details service for e-leg authenticated private practitioners.
-     */
-    @Autowired
-    private ElegWebCertUserDetailsService elegWebCertUserDetailsService;
-
-    /**
-     * User details service for SITHS authenticated personnel.
-     */
-    @Autowired
-    private WebcertUserDetailsService webcertUserDetailsService;
-
-    @Override
-    public Object loadUserBySAML(SAMLCredential samlCredential) {
-        if (samlCredential.getAuthenticationAssertion() == null) {
+    public WebCertUser buildUserPrincipal(String userId, String authenticationScheme) {
+        if (authenticationScheme == null) {
             throw new IllegalArgumentException("Cannot determine which underlying UserDetailsService to use for SAMLCredential. "
                 + "Must contain an authenticationAssertion");
         }
 
-        var originalAuthnContextClassRef = samlCredential.getAuthenticationAssertion().getAuthnStatements().get(0).getAuthnContext()
-            .getAuthnContextClassRef().getAuthnContextClassRef();
+        if (ELEG_AUTHN_CLASSES.contains(authenticationScheme)) {
+            return elegWebCertUserDetailsService.buildUserPrincipal(userId, authenticationScheme);
 
-        // Prevent nullpointer from underlying List implementation in the following if statements.
-        var authnContextClassRef = originalAuthnContextClassRef == null ? "" : originalAuthnContextClassRef;
+        } else if (SITHS_AUTHN_CLASSES.contains(authenticationScheme)) {
+            return webcertUserDetailsService.buildUserPrincipal(userId, authenticationScheme);
 
-        if (ELEG_AUTHN_CLASSES.contains(authnContextClassRef)) {
-            return elegWebCertUserDetailsService.loadUserBySAML(samlCredential);
-
-        } else if (SITHS_AUTHN_CLASSES.contains(authnContextClassRef)) {
-            return webcertUserDetailsService.loadUserBySAML(samlCredential);
-
-        } else if (URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_UNSPECIFIED.equals(authnContextClassRef)) {
+        } else if (URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_UNSPECIFIED.equals(authenticationScheme)) {
             if (Arrays.stream(environment.getActiveProfiles()).anyMatch("wc-security-test"::equalsIgnoreCase)) {
-                return webcertUserDetailsService.loadUserBySAML(samlCredential);
+                return webcertUserDetailsService.buildUserPrincipal(userId, authenticationScheme);
             }
             throw new IllegalArgumentException(
-                "AuthorizationContextClassRef " + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_UNSPECIFIED + " is not allowed");
+                "Authentication scheme " + URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_UNSPECIFIED + " is not allowed");
 
         } else {
-            throw new IllegalArgumentException("AuthorizationContextClassRef was " + originalAuthnContextClassRef + ", expected one of: "
-                + SITHS_AUTHN_CLASSES.toString() + " or "
-                + ELEG_AUTHN_CLASSES.toString());
+            throw new IllegalArgumentException("Authentication scheme was " + authenticationScheme + ", expected one of: "
+                + SITHS_AUTHN_CLASSES + " or " + ELEG_AUTHN_CLASSES);
         }
     }
 }

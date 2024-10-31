@@ -27,7 +27,13 @@ import java.util.List;
  */
 public final class AuthConstants {
 
-    // CHECKSTYLE:OFF LineLength
+    public static final String RELYING_PARTY_REGISTRATION_ID_SITHS = "siths";
+    public static final String RELYING_PARTY_REGISTRATION_ID_ELEG = "eleg";
+    public static final String RELYING_PARTY_REGISTRATION_ID_SITHS_NORMAL = "defaultAliasNormal";
+    public static final String AUTHN_METHOD = "urn:sambi:names:attribute:authnMethod";
+    public static final String EMPLOYEE_HSA_ID = "http://sambi.se/attributes/1/employeeHsaId";
+
+
     public static final String ALIAS_SITHS = "defaultAlias";
     public static final String ALIAS_SITHS_NORMAL = "defaultAliasNormal";
     public static final String ALIAS_ELEG = "eleg";
@@ -50,7 +56,6 @@ public final class AuthConstants {
 
     public static final String URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_UNSPECIFIED = "urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified";
 
-    // CHECKSTYLE:ON LineLength
     private AuthConstants() {
     }
 

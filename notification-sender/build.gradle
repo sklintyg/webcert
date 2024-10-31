@@ -24,7 +24,7 @@ dependencies {
 
     implementation "com.fasterxml.jackson.core:jackson-databind"
     implementation "com.google.guava:guava:${guavaVersion}"
-    implementation ("com.helger:ph-schematron:${phSchematronVersion}") { exclude group: "com.helger", module: "ph-jaxb-pom" }
+    implementation "com.helger.schematron:ph-schematron-xslt:${phSchematronVersion}"
     implementation "jakarta.persistence:jakarta.persistence-api"
     implementation "jakarta.transaction:jakarta.transaction-api"
     implementation "org.apache.camel:camel-activemq:${camelVersion}"

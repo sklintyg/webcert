@@ -51,6 +51,7 @@ import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.web.auth.CustomAuthenticationSuccessHandler;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
@@ -204,7 +205,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
      * the certificate.
      *
      * This entry point is only used when redirecting a POST after authentication from the
-     * {@link se.inera.intyg.webcert.web.auth.WebcertAuthenticationSuccessHandler}
+     * {@link CustomAuthenticationSuccessHandler}
      * where the custom handler has applied the deep-integration parameters on the session.
      *
      * This is a work-around for the issue where Springs default SavedRequestAuthenticationSuccessHandler only performs

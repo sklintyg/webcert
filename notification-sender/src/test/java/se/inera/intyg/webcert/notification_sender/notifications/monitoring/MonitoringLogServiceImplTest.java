@@ -49,15 +49,15 @@ public class MonitoringLogServiceImplTest {
 
     final private MonitoringLogService logService = new MonitoringLogServiceImpl();
 
-    private final static long EVENT_ID = 1234L;
-    private final static String EVENT_TYPE = "EVENT_TYPE";
-    private final static String CORRELATION_ID = "CORRELATION_ID";
-    private final static String LOGICAL_ADDRESS = "LOGICAL_ADDRESS";
-    private final static String CERTIFICATE_ID = "CERTIFICATE_ID";
-    private final static String ERROR_CODE = "ERROR_CODE";
-    private final static String ERROR_MESSAGE = "ERROR_MESSAGE";
-    private final static int DELIVERY_ATTEMPT = 14;
-    private final static LocalDateTime NEXT_REDELIEVERY_TIME = LocalDateTime.of(
+    private static final long EVENT_ID = 1234L;
+    private static final String EVENT_TYPE = "EVENT_TYPE";
+    private static final String CORRELATION_ID = "CORRELATION_ID";
+    private static final String LOGICAL_ADDRESS = "LOGICAL_ADDRESS";
+    private static final String CERTIFICATE_ID = "CERTIFICATE_ID";
+    private static final String ERROR_CODE = "ERROR_CODE";
+    private static final String ERROR_MESSAGE = "ERROR_MESSAGE";
+    private static final int DELIVERY_ATTEMPT = 14;
+    private static final LocalDateTime NEXT_REDELIEVERY_TIME = LocalDateTime.of(
         2021, 2, 21, 16, 1, 23, 123456789
     );
 

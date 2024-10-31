@@ -22,7 +22,7 @@ package se.inera.intyg.webcert.integration.servicenow.client;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -34,7 +34,6 @@ import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationRequest;
 import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationResponse;
 
 @Service
-@RequiredArgsConstructor
 public class SubscriptionRestClient {
 
     @Value("${servicenow.username}")
@@ -50,6 +49,10 @@ public class SubscriptionRestClient {
     private String serviceNowSubscriptionServiceName;
 
     private final RestTemplate serviceNowRestTemplate;
+
+    public SubscriptionRestClient(@Qualifier("serviceNowRestTemplate") RestTemplate serviceNowRestTemplate) {
+        this.serviceNowRestTemplate = serviceNowRestTemplate;
+    }
 
     public OrganizationResponse getSubscriptionServiceResponse(Set<String> organizationNumbers) {
         final var httpEntity = getRequestEntity(organizationNumbers);

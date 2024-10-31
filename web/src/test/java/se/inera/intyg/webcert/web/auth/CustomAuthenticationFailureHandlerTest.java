@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -34,8 +35,7 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationException;
@@ -45,19 +45,20 @@ import se.inera.intyg.webcert.web.auth.exceptions.MissingSubscriptionException;
 import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerAuthorizationException;
 
 @ExtendWith(MockitoExtension.class)
-class WebcertAuthenticationFailureHandlerTest {
+class CustomAuthenticationFailureHandlerTest {
 
     @Mock
     private RedirectStrategy redirectStrategy;
+    @Mock
+    private HttpServletRequest request;
+    @Mock
+    private HttpServletResponse response;
 
     @InjectMocks
-    private WebcertAuthenticationFailureHandler handler = new WebcertAuthenticationFailureHandler("/ppRegistrationUrl");
+    private CustomAuthenticationFailureHandler handler = new CustomAuthenticationFailureHandler("/ppRegistrationUrl");
 
     @Captor
     private ArgumentCaptor<String> urlCaptor;
-
-    private final HttpServletRequest request = new MockHttpServletRequest();
-    private final HttpServletResponse response = new MockHttpServletResponse();
 
     private static final int ONE = 1;
     private static final BadCredentialsException BAD_CREDENTIALS = new BadCredentialsException("Bad credentials exception");
@@ -76,7 +77,7 @@ class WebcertAuthenticationFailureHandlerTest {
     }
 
     @Test
-    public void shouldRedirectToLoginFailed() throws IOException {
+    void shouldRedirectToLoginFailed() throws IOException {
         handler.onAuthenticationFailure(request, response, BAD_CREDENTIALS);
 
         verify(redirectStrategy, times(ONE)).sendRedirect(eq(request), eq(response), urlCaptor.capture());
@@ -84,7 +85,7 @@ class WebcertAuthenticationFailureHandlerTest {
     }
 
     @Test
-    public void shouldRedirectToHsaError() throws IOException {
+    void shouldRedirectToHsaError() throws IOException {
         handler.onAuthenticationFailure(request, response, HSA_SERVICE);
 
         verify(redirectStrategy, times(ONE)).sendRedirect(eq(request), eq(response), urlCaptor.capture());
@@ -92,7 +93,7 @@ class WebcertAuthenticationFailureHandlerTest {
     }
 
     @Test
-    public void shouldRedirectToLoginMedarbetaruppdragError() throws IOException {
+    void shouldRedirectToLoginMedarbetaruppdragError() throws IOException {
         handler.onAuthenticationFailure(request, response, MISSING_ASSIGNMENT);
 
         verify(redirectStrategy, times(ONE)).sendRedirect(eq(request), eq(response), urlCaptor.capture());
@@ -100,7 +101,7 @@ class WebcertAuthenticationFailureHandlerTest {
     }
 
     @Test
-    public void shouldRedirectToSubscriptionError() throws IOException {
+    void shouldRedirectToSubscriptionError() throws IOException {
         handler.onAuthenticationFailure(request, response, MISSING_SUBSCRIPTION);
 
         verify(redirectStrategy, times(ONE)).sendRedirect(eq(request), eq(response), urlCaptor.capture());
@@ -108,7 +109,7 @@ class WebcertAuthenticationFailureHandlerTest {
     }
 
     @Test
-    public void shouldRedirectToPPRegistration() throws IOException {
+    void shouldRedirectToPPRegistration() throws IOException {
         handler.onAuthenticationFailure(request, response, PP_AUTHORIZATION);
 
         verify(redirectStrategy, times(ONE)).sendRedirect(eq(request), eq(response), urlCaptor.capture());
@@ -116,7 +117,9 @@ class WebcertAuthenticationFailureHandlerTest {
     }
 
     @Test
-    public void shouldRedirectToDefaultError() throws IOException {
+    void shouldRedirectToDefaultError() throws IOException {
+        when(request.getSession(false)).thenReturn(new MockHttpSession());
+        when(request.getSession()).thenReturn(new MockHttpSession());
         handler.onAuthenticationFailure(request, response, OTHER_AUTH_EXCEPTION);
 
         verify(redirectStrategy, times(ONE)).sendRedirect(eq(request), eq(response), urlCaptor.capture());

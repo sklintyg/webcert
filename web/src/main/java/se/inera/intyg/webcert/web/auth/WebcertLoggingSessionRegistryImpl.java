@@ -24,6 +24,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
 import org.springframework.session.security.SpringSessionBackedSessionRegistry;
+import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
@@ -32,6 +33,8 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
  *
  * @author npet
  */
+
+@Service
 public class WebcertLoggingSessionRegistryImpl<T extends Session> extends SpringSessionBackedSessionRegistry<T> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WebcertLoggingSessionRegistryImpl.class);

@@ -44,7 +44,6 @@ import java.util.stream.Collectors;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -74,7 +73,7 @@ import se.inera.intyg.webcert.persistence.fmb.repository.DiagnosInformationRepos
 
 @Service
 @Transactional
-@Configuration
+//@Configuration
 @EnableScheduling
 public class FmbServiceImpl implements FmbService {
 

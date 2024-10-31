@@ -22,6 +22,7 @@ import com.google.common.base.Strings;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Collections;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -33,16 +34,15 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
  * <p>
  * Created by eriklupander on 2015-06-16.
  */
+@Getter
 public abstract class BaseWebCertUserDetailsService {
+
+    protected abstract WebCertUser buildUserPrincipal(String userId, String autheticationScheme);
 
     protected static final String COMMA = ", ";
     protected static final String SPACE = " ";
 
     private CommonAuthoritiesResolver authoritiesResolver;
-
-    public CommonAuthoritiesResolver getAuthoritiesResolver() {
-        return authoritiesResolver;
-    }
 
     @Autowired
     public void setAuthoritiesResolver(CommonAuthoritiesResolver authoritiesResolver) {
@@ -55,7 +55,7 @@ public abstract class BaseWebCertUserDetailsService {
 
         sb.append(Strings.nullToEmpty(fornamn).trim());
 
-        if (sb.length() > 0) {
+        if (!sb.isEmpty()) {
             sb.append(SPACE);
         }
         sb.append(Strings.nullToEmpty(mellanOchEfterNamn).trim());

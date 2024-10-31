@@ -18,17 +18,15 @@
  */
 package se.inera.intyg.webcert.web.auth.common;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.security.saml.SAMLCredential;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
 import se.inera.intyg.webcert.web.auth.eleg.ElegWebCertUserDetailsService;
 
@@ -42,51 +40,52 @@ import se.inera.intyg.webcert.web.auth.eleg.ElegWebCertUserDetailsService;
  *
  * Created by eriklupander on 2015-08-20.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class UnifiedUserDetailsServiceTest extends BaseSAMLCredentialTest {
+@ExtendWith(MockitoExtension.class)
+class UnifiedUserDetailsServiceTest  {
+
+    private static final int ONE = 1;
+    private static final String USER_ID = "userId";
+    private static final String UNKNOWN = "unknown";
+    private static final String SAMBI_LOA3 = "http://id.sambi.se/loa/loa3";
+    private static final String SOFTWARE_PKI = "urn:oasis:names:tc:SAML:2.0:ac:classes:SoftwarePKI";
+    private static final String SMARTCARD_PKI = "urn:oasis:names:tc:SAML:2.0:ac:classes:SmartcardPKI";
+    private static final String MOBILITY_TWO_FACTOR_CONTRACT = "urn:oasis:names:tc:SAML:2.0:ac:classes:MobileTwofactorContract";
 
     @Mock
     private ElegWebCertUserDetailsService elegWebCertUserDetailsService;
-
     @Mock
     private WebcertUserDetailsService webCertUserDetailsService;
 
     @InjectMocks
     private UnifiedUserDetailsService unifiedUserDetailsService;
 
-    @BeforeClass
-    public static void readSamlAssertions() throws Exception {
-        bootstrapSamlAssertions();
+    @Test
+    void testSoftwarePKI() {
+        unifiedUserDetailsService.buildUserPrincipal(USER_ID, SOFTWARE_PKI);
+        verify(elegWebCertUserDetailsService, times(ONE)).buildUserPrincipal(USER_ID, SOFTWARE_PKI);
     }
 
     @Test
-    public void testSoftwarePKI() {
-        unifiedUserDetailsService.loadUserBySAML(buildPrivatlakareSamlCredential());
-        verify(elegWebCertUserDetailsService, times(1)).loadUserBySAML(any(SAMLCredential.class));
+    void testSmartcardPKI() {
+        unifiedUserDetailsService.buildUserPrincipal(USER_ID, SMARTCARD_PKI);
+        verify(elegWebCertUserDetailsService, times(ONE)).buildUserPrincipal(USER_ID, SMARTCARD_PKI);
     }
 
     @Test
-    public void testSmartcardPKI() {
-        unifiedUserDetailsService.loadUserBySAML(buildPrivatlakareSamlCredentialSmartcardPKI());
-        verify(elegWebCertUserDetailsService, times(1)).loadUserBySAML(any(SAMLCredential.class));
+    void testMobileTwoFactorContract() {
+        unifiedUserDetailsService.buildUserPrincipal(USER_ID, MOBILITY_TWO_FACTOR_CONTRACT);
+        verify(elegWebCertUserDetailsService, times(ONE)).buildUserPrincipal(USER_ID, MOBILITY_TWO_FACTOR_CONTRACT);
     }
 
     @Test
-    public void testMobileTwoFactorContract() {
-        unifiedUserDetailsService.loadUserBySAML(buildPrivatlakareSamlCredentialMobileTwoFactorContract());
-        verify(elegWebCertUserDetailsService, times(1)).loadUserBySAML(any(SAMLCredential.class));
+    void testTLSClient() {
+        unifiedUserDetailsService.buildUserPrincipal(USER_ID, SAMBI_LOA3);
+        verify(webCertUserDetailsService, times(ONE)).buildUserPrincipal(USER_ID, SAMBI_LOA3);
     }
 
     @Test
-    public void testTLSClient() {
-        unifiedUserDetailsService.loadUserBySAML(buildLandstingslakareSamlCredential());
-        verify(webCertUserDetailsService, times(1)).loadUserBySAML(any(SAMLCredential.class));
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testUnknownAuthContext() {
-        unifiedUserDetailsService.loadUserBySAML(buildUnknownSamlCredential());
-        verify(webCertUserDetailsService, times(0)).loadUserBySAML(any(SAMLCredential.class));
+    void testUnknownAuthContext() {
+        assertThrows(IllegalArgumentException.class, () -> unifiedUserDetailsService.buildUserPrincipal(USER_ID, UNKNOWN));
     }
 
 }

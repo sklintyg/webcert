@@ -76,7 +76,7 @@ public class MailNotificationServiceImplTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         ReflectionTestUtils.setField(mailNotificationService, "adminMailAddress", "AdminMail");
         ReflectionTestUtils.setField(mailNotificationService, "fromAddress", "FromAddress");
         ReflectionTestUtils.setField(mailNotificationService, "webCertHostUrl", "WebCertHostUrl");

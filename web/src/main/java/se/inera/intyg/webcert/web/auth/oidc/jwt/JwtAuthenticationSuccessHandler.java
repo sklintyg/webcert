@@ -30,7 +30,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.web.auth.WebcertAuthenticationSuccessHandler;
+import se.inera.intyg.webcert.web.auth.CustomAuthenticationSuccessHandler;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.IntygIntegrationController;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
@@ -40,7 +40,7 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
  * session with {@link IntegrationParameters} and redirect the user to the originally requested resource given a certId
  * parameter.
  *
- * Uses the same /visa/intyg/{intygsId}/saved controller as the {@link WebcertAuthenticationSuccessHandler} or .
+ * Uses the same /visa/intyg/{intygsId}/saved controller as the {@link CustomAuthenticationSuccessHandler} or .
  *
  * @author eriklupander
  */

@@ -26,12 +26,12 @@
         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
         http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
 
-  <bean id="utkastRepository" class="org.mockito.Mockito" factory-method="mock">
-    <constructor-arg value="se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository" />
-  </bean>
+<!--  <bean id="utkastRepository" class="org.mockito.Mockito" factory-method="mock">-->
+<!--    <constructor-arg value="se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository" />-->
+<!--  </bean>-->
 
   <context:annotation-config/>
-  <context:property-placeholder location="classpath:MailNotificationServiceTest/test.properties" ignore-unresolvable="false" ignore-resource-not-found="false" />
+  <context:property-placeholder location="classpath:MailNotificationServiceTest/test.properties"/>
   <context:component-scan base-package="se.inera.intyg.webcert.web.service.mail"/>
 
   <!-- Intercept JavaMailSender calls and put outgoing mails into MailStore -->
@@ -44,7 +44,7 @@
   <bean class="se.inera.intyg.common.integration.hsa.ifv.webcert.spi.authorization.impl.HSAWebServiceCalls"/>
   <bean class="se.inera.intyg.common.integration.hsa.stub.HsaWebServiceStub"/>
      -->
-  <bean class="se.inera.intyg.infra.integration.hsa.stub.GetAuthorizationsForPersonResponderStub" />
+  <!--<bean class="se.inera.intyg.infra.integration.hsa.stub.GetAuthorizationsForPersonResponderStub" />
   <bean class="se.inera.intyg.infra.integration.hsa.stub.GetEmployeeResponderStub" />
   <bean class="se.inera.intyg.infra.integration.hsatk.stub.GetHealthCareProviderResponderStub" />
   <bean class="se.inera.intyg.infra.integration.hsatk.stub.GetHealthCareUnitResponderStub" />
@@ -57,17 +57,17 @@
   <bean class="se.inera.intyg.infra.integration.hsatk.client.OrganizationClient" />
   <bean class="se.inera.intyg.infra.integration.hsatk.client.AuthorizationManagementClient" />
   <bean class="se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsServiceImpl" />
-  <bean class="se.inera.intyg.infra.integration.hsatk.stub.HsaServiceStub"/>
+  <bean class="se.inera.intyg.infra.integration.hsatk.stub.HsaServiceStub"/>-->
 
   <bean class="se.inera.intyg.webcert.web.service.monitoring.MonitoringLogServiceImpl" />
 
-  <bean class="org.mockito.Mockito" factory-method="mock">
-    <constructor-arg value="se.inera.intyg.webcert.web.service.user.WebCertUserService" />
-  </bean>
+<!--  <bean class="org.mockito.Mockito" factory-method="mock">-->
+<!--    <constructor-arg value="se.inera.intyg.webcert.web.service.user.WebCertUserService" />-->
+<!--  </bean>-->
 
-  <bean id="ppService" class="org.mockito.Mockito" factory-method="mock">
-    <constructor-arg value="se.inera.intyg.webcert.integration.pp.services.PPService" />
-  </bean>
+<!--  <bean id="ppService" class="org.mockito.Mockito" factory-method="mock">-->
+<!--    <constructor-arg value="se.inera.intyg.webcert.integration.pp.services.PPService" />-->
+<!--  </bean>-->
 
   <task:executor id="threadPoolTaskExecutor" pool-size="10" queue-capacity="100" rejection-policy="CALLER_RUNS" />
   <task:annotation-driven executor="threadPoolTaskExecutor"/>

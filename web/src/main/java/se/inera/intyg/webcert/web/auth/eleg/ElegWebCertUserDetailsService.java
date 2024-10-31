@@ -27,11 +27,8 @@ import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.saml.SAMLCredential;
-import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
@@ -62,73 +59,64 @@ import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.LegitimeradYrkesgruppType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.SpecialitetType;
 
-/**
- * Created by eriklupander on 2015-06-16.
- *
- * Note that privatlakare must accept webcert terms in order to use the software. However, that's
- * handled separately in the TermsFilter.
- */
 @Component
-public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService implements SAMLUserDetailsService {
+public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ElegWebCertUserDetailsService.class);
 
     @Value("${privatepractitioner.logicaladdress}")
     private String logicalAddress;
 
-    @Autowired
-    private PPService ppService;
+    private final PPService ppService;
+    private final PPRestService ppRestService;
+    private final PUService puService;
+    private final AvtalService avtalService;
+    //private final ElegAuthenticationAttributeHelper elegAuthenticationAttributeHelper;
+    private final ElegAuthenticationMethodResolver elegAuthenticationMethodResolver;
+    private final AnvandarPreferenceRepository anvandarPreferenceRepository;
+    private final Optional<UserOrigin> userOrigin;
+    private final SubscriptionService subscriptionService;
 
-    @Autowired
-    private PPRestService ppRestService;
-
-    @Autowired
-    private PUService puService;
-
-    @Autowired
-    private AvtalService avtalService;
-
-    @Autowired
-    private ElegAuthenticationAttributeHelper elegAuthenticationAttributeHelper;
-
-    @Autowired
-    private ElegAuthenticationMethodResolver elegAuthenticationMethodResolver;
-
-    @Autowired
-    private AnvandarPreferenceRepository anvandarPreferenceRepository;
-
-    @Autowired(required = false)
-    private Optional<UserOrigin> userOrigin;
-
-    @Autowired
-    private SubscriptionService subscriptionService;
+    public ElegWebCertUserDetailsService(PPService ppService, PPRestService ppRestService, PUService puService, AvtalService avtalService,
+        //ElegAuthenticationAttributeHelper elegAuthenticationAttributeHelper,
+        ElegAuthenticationMethodResolver elegAuthenticationMethodResolver, AnvandarPreferenceRepository anvandarPreferenceRepository,
+        Optional<UserOrigin> userOrigin, SubscriptionService subscriptionService) {
+        this.ppService = ppService;
+        this.ppRestService = ppRestService;
+        this.puService = puService;
+        this.avtalService = avtalService;
+        //this.elegAuthenticationAttributeHelper = elegAuthenticationAttributeHelper;
+        this.elegAuthenticationMethodResolver = elegAuthenticationMethodResolver;
+        this.anvandarPreferenceRepository = anvandarPreferenceRepository;
+        this.userOrigin = userOrigin;
+        this.subscriptionService = subscriptionService;
+    }
 
     @Override
-    public Object loadUserBySAML(SAMLCredential samlCredential) {
+    public WebCertUser buildUserPrincipal(String personId, String authenticationScheme) {
 
         try {
-            return createUser(samlCredential);
+            return createUser(personId, authenticationScheme);
         } catch (Exception e) {
             if (e instanceof AuthenticationException) {
                 throw e;
             }
 
-            LOG.error("Error building user with error message {}", e.getMessage());
+            LOG.error("Error building user with error message {}", e.getMessage(), e);
             throw new HsaServiceException("privatlakare, ej hsa", e);
         }
     }
 
     // - - - - - Default scope - - - - -
 
-    protected WebCertUser createUser(SAMLCredential samlCredential) {
-        final var personId = elegAuthenticationAttributeHelper.getAttribute(samlCredential, CgiElegAssertion.PERSON_ID_ATTRIBUTE);
+    protected WebCertUser createUser(String personId, String authenticationScheme) {
         final var ppAuthStatus = ppRestService.validatePrivatePractitioner(personId).getResultCode();
         redirectUnregisteredUsers(personId, ppAuthStatus);
 
         final var hosPerson = getAuthorizedHosPerson(personId);
         final var requestOrigin = resolveRequestOrigin();
         final var role = lookupUserRole();
-        final var webCertUser = createWebCertUser(hosPerson, requestOrigin, role, samlCredential);
+        final var webCertUser = createWebCertUser(hosPerson, requestOrigin, role, authenticationScheme);
         assertWebCertUserIsAuthorized(webCertUser, ppAuthStatus);
 
         return webCertUser;
@@ -194,7 +182,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         return getAuthoritiesResolver().getRequestOrigin(requestOrigin).getName();
     }
 
-    private WebCertUser createWebCertUser(HoSPersonType hosPerson, String requestOrigin, Role role, SAMLCredential samlCredential) {
+    private WebCertUser createWebCertUser(HoSPersonType hosPerson, String requestOrigin, Role role, String authenticationScheme) {
         WebCertUser user = new WebCertUser();
 
         user.setRoles(AuthoritiesResolverUtil.toMap(lookupUserRole()));
@@ -215,8 +203,8 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         // Forskrivarkod should be always be seven zeros
         user.setForskrivarkod("0000000");
 
-        decorateWebCertUserWithAuthenticationScheme(samlCredential, user);
-        decorateWebCertUserWithAuthenticationMethod(samlCredential, user);
+        decorateWebCertUserWithAuthenticationScheme(authenticationScheme, user);
+        decorateWebCertUserWithAuthenticationMethod(authenticationScheme, user);
         decorateWebCertUserWithAvailableFeatures(user);
         decorateWebCertUserWithLegitimeradeYrkesgrupper(hosPerson, user);
         decorateWebCertUserWithSpecialiceringar(hosPerson, user);
@@ -255,19 +243,17 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         }
     }
 
-    private void decorateWebCertUserWithAuthenticationMethod(SAMLCredential samlCredential, WebCertUser webCertUser) {
+    private void decorateWebCertUserWithAuthenticationMethod(String authenticationScheme, WebCertUser webCertUser) {
         if (!webCertUser.getAuthenticationScheme().endsWith(":fake")) {
-            webCertUser.setAuthenticationMethod(elegAuthenticationMethodResolver.resolveAuthenticationMethod(samlCredential));
+            webCertUser.setAuthenticationMethod(elegAuthenticationMethodResolver.resolveAuthenticationMethod(authenticationScheme));
         } else {
             webCertUser.setAuthenticationMethod(AuthenticationMethod.FAKE);
         }
     }
 
-    private void decorateWebCertUserWithAuthenticationScheme(SAMLCredential samlCredential, WebCertUser webCertUser) {
-        if (samlCredential.getAuthenticationAssertion() != null) {
-            String authnContextClassRef = samlCredential.getAuthenticationAssertion().getAuthnStatements().get(0).getAuthnContext()
-                .getAuthnContextClassRef().getAuthnContextClassRef();
-            webCertUser.setAuthenticationScheme(authnContextClassRef);
+    private void decorateWebCertUserWithAuthenticationScheme(String authenticationScheme, WebCertUser webCertUser) {
+        if (authenticationScheme != null) {
+            webCertUser.setAuthenticationScheme(authenticationScheme);
         }
     }
 

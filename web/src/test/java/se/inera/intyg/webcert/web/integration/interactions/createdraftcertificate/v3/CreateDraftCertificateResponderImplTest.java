@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.integration.interactions.createdraftcertifica
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -50,10 +51,10 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCertificateTest {
 
     private static final String LOGICAL_ADDR = "1234567890";
-
     private static final String USER_HSAID = "SE1234567890";
     private static final String UNIT_HSAID = "SE0987654321";
     private static final String FULL_NAME = "fullName";
+    protected static final String AUTH_METHOD = "http://id.sambi.se/loa/loa3";
 
     @Mock
     private CreateDraftCertificateValidator createDraftCertificateValidator;
@@ -71,7 +72,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
 
     @Test
     public void shallReturnMIUErrorIfWebcertUserDetailsServiceThrows() {
-        doThrow(IllegalStateException.class).when(webcertUserDetailsService).loadUserByHsaId(USER_HSAID);
+        doThrow(IllegalStateException.class).when(webcertUserDetailsService).buildUserPrincipal(anyString(), anyString());
         final var result = responder.createDraftCertificate(LOGICAL_ADDR, createCertificateType());
         assertEquals(ErrorIdType.VALIDATION_ERROR, result.getResult().getErrorId());
         assertTrue(result.getResult().getResultText().contains("No valid MIU was found for person"));
@@ -100,7 +101,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
         final var webCertUser = buildWebCertUser();
         webCertUser.setVardgivare(Collections.emptyList());
 
-        when(webcertUserDetailsService.loadUserByHsaId(USER_HSAID)).thenReturn(webCertUser);
+        when(webcertUserDetailsService.buildUserPrincipal(anyString(), anyString())).thenReturn(webCertUser);
         doReturn(resultValidator).when(createDraftCertificateValidator).validate(certificateType.getIntyg());
         doReturn(false).when(resultValidator).hasErrors();
 
@@ -119,7 +120,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
         final var applicationErrors = mock(ResultValidator.class);
         final var webCertUser = buildWebCertUser();
 
-        when(webcertUserDetailsService.loadUserByHsaId(USER_HSAID)).thenReturn(webCertUser);
+        when(webcertUserDetailsService.buildUserPrincipal(anyString(), anyString())).thenReturn(webCertUser);
         doReturn(validationErrors).when(createDraftCertificateValidator).validate(any(Intyg.class));
         doReturn(applicationErrors).when(createDraftCertificateValidator)
             .validateApplicationErrors(certificateType.getIntyg(), webCertUser);
@@ -141,7 +142,7 @@ public class CreateDraftCertificateResponderImplTest extends BaseCreateDraftCert
         final var applicationErrors = mock(ResultValidator.class);
         final var webCertUser = buildWebCertUser();
 
-        when(webcertUserDetailsService.loadUserByHsaId(USER_HSAID)).thenReturn(webCertUser);
+        when(webcertUserDetailsService.buildUserPrincipal(anyString(), anyString())).thenReturn(webCertUser);
         doReturn(validationErrors).when(createDraftCertificateValidator).validate(any(Intyg.class));
         doReturn(applicationErrors).when(createDraftCertificateValidator)
             .validateApplicationErrors(certificateType.getIntyg(), webCertUser);

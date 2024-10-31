@@ -270,7 +270,7 @@ public class CreateCertificateTestabilityUtil {
 
     private IntygUser getUser(String personId) {
         try {
-            return webcertUserDetailsService.loadUserByHsaId(personId);
+            return webcertUserDetailsService.buildUserPrincipal(personId, "");
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }

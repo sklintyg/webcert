@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.auth.eleg;
 
-import org.springframework.security.saml.SAMLCredential;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 
 /**
@@ -30,6 +29,6 @@ import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
  */
 public interface ElegAuthenticationMethodResolver {
 
-    AuthenticationMethod resolveAuthenticationMethod(SAMLCredential samlCredential);
+    AuthenticationMethod resolveAuthenticationMethod(String authenticationScheme);
 
 }

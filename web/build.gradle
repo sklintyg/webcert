@@ -167,23 +167,25 @@ dependencies {
     implementation "io.vavr:vavr:${vavrVersion}"
     implementation "jakarta.mail:jakarta.mail-api"
     implementation "jakarta.persistence:jakarta.persistence-api"
+    implementation "joda-time:joda-time:${jodaTimeVersion}"
     implementation "net.javacrumbs.shedlock:shedlock-spring:${shedlockSpringVersion}"
     implementation "net.javacrumbs.shedlock:shedlock-provider-redis-spring:${shedlockSpringVersion}"
     implementation "org.apache.activemq:activemq-spring"
     implementation "org.apache.cxf:cxf-rt-frontend-jaxrs:${cxfVersion}"
-    //implementation "org.apache.httpcomponents.client5:httpclient"
+    implementation "org.apache.httpcomponents.client5:httpclient5"
     implementation "org.apache.lucene:lucene-analysis-common:${luceneAnalyzersCommonVersion}"
+    implementation "org.apache.santuario:xmlsec:${xmlSecVersion}"
     implementation "org.hibernate.orm:hibernate-core"
     implementation "org.jxls:jxls-jexcel:${jexcelVersion}"
     implementation "org.springframework.data:spring-data-jpa"
-    implementation "org.springframework.security.extensions:spring-security-saml2-core:${springSecuritySaml2CoreVersion}"
+    implementation 'org.springframework.security:spring-security-config'
+    implementation 'org.springframework.security:spring-security-saml2-service-provider'
     implementation "org.springframework.session:spring-session-data-redis"
     implementation "org.springframework:spring-jms"
+    implementation "org.springframework:spring-webmvc"
     implementation "org.springframework.ws:spring-xml"
 
-
     implementation "se.inera.intyg.refdata:refdata-featureK1J-357:${refDataVersion}"
-
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
@@ -195,7 +197,7 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok'
     testCompileOnly 'org.projectlombok:lombok'
 
-    testImplementation("com.helger:ph-schematron:${phSchematronVersion}") { exclude group: "com.helger", module: "ph-jaxb-pom" }
+    testImplementation "com.helger.schematron:ph-schematron-xslt:${phSchematronVersion}"
     testImplementation "org.assertj:assertj-core"
     testImplementation "org.springframework.boot:spring-boot-test"
     testImplementation "org.springframework:spring-test"

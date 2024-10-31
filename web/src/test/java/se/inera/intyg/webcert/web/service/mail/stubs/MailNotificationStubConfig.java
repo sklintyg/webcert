@@ -16,33 +16,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.auth.eleg;
 
-import org.springframework.security.authentication.AbstractAuthenticationToken;
+package se.inera.intyg.webcert.web.service.mail.stubs;
 
-/**
- * Simple auth token for fake logins for e-leg.
- *
- * Created by eriklupander on 2015-06-16.
- */
-public class FakeElegAuthenticationToken extends AbstractAuthenticationToken {
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ImportResource;
+import se.inera.intyg.webcert.integration.pp.services.PPService;
+import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
-    private static final long serialVersionUID = -2796850504529240890L;
+@ImportResource("classpath:MailNotificationServiceTest/test-context.xml")
+public class MailNotificationStubConfig {
 
-    private FakeElegCredentials fakeElegCredentials;
-
-    public FakeElegAuthenticationToken(FakeElegCredentials fakeElegCredentials) {
-        super(null);
-        this.fakeElegCredentials = fakeElegCredentials;
-    }
-
-    @Override
-    public Object getCredentials() {
-        return fakeElegCredentials;
-    }
-
-    @Override
-    public Object getPrincipal() {
+    @Bean
+    public WebCertUserService webCertUserService() {
         return null;
     }
+
+    @Bean
+    public PPService ppService() {
+        return null;
+    }
+
+    @Bean
+    public UtkastRepository utkastRepository() {
+        return null;
+    }
+
 }

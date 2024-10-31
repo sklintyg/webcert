@@ -35,7 +35,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static se.inera.intyg.webcert.web.util.ReflectionUtils.setStaticFinalAttribute;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
@@ -169,11 +168,6 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
 
     @InjectMocks
     private FragaSvarServiceImpl service;
-
-    @Before
-    public void setUpLoggerFactory() throws Exception {
-        setStaticFinalAttribute(FragaSvarServiceImpl.class, "LOGGER", loggerMock);
-    }
 
     @Before
     public void setupCommonBehaviour() {

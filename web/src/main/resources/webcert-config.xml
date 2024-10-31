@@ -31,7 +31,7 @@
   <context:annotation-config />
   <import resource="classpath:webcert-common-config.xml" />
   <import resource="classpath:repository-context.xml" />
-  <import resource="security/securityContext.xml" />
+  <!--<import resource="security/securityContext.xml" />-->
   <import resource="classpath:fmb-services-config.xml" />
   <import resource="classpath:tak-services-config.xml" />
   <import resource="classpath:kundportalen-services-config.xml" />
@@ -52,8 +52,9 @@
   <import resource="classpath:/hsa-integration-intyg-proxy-service-config.xml"/>
 
   <context:component-scan base-package="se.inera.intyg.webcert.web">
-    <context:exclude-filter type="regex" expression="se\.inera\.intyg\.webcert\.web\.auth.*"/>
+<!--    <context:exclude-filter type="regex" expression="se\.inera\.intyg\.webcert\.web\.auth.*"/>-->
   </context:component-scan>
+
 
   <!-- Load dynamic link classes -->
   <context:component-scan base-package="se.inera.intyg.infra.dynamiclink" />
@@ -66,6 +67,9 @@
 
   <beans>
     <bean id="userAgentParser" class="se.inera.intyg.infra.monitoring.logging.UserAgentParser" />
+
+    <bean id="parserPool" class="net.shibboleth.utilities.java.support.xml.BasicParserPool" scope="singleton"
+        init-method="initialize"/>
 
     <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
       <property name="ignoreUnresolvablePlaceholders" value="true"/>

@@ -18,9 +18,11 @@
  */
 package se.inera.intyg.webcert.web.auth;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.saml.SAMLCredential;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
@@ -29,36 +31,27 @@ import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPr
 import se.inera.intyg.webcert.web.service.subscription.SubscriptionService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-/**
- * As each application shall implement its own UserDetailsService, we simply extend the base one and implement all the
- * abstract methods.
- *
- * Created by eriklupander on 2016-05-17.
- */
 @Service(value = "webcertUserDetailsService")
+@RequiredArgsConstructor
 public class WebcertUserDetailsService extends BaseUserDetailsService {
 
-    @Autowired
-    AnvandarPreferenceRepository anvandarMetadataRepository;
-
-    @Autowired
-    private SubscriptionService subscriptionService;
+    private final AnvandarPreferenceRepository anvandarMetadataRepository;
+    private final SubscriptionService subscriptionService;
 
     /**
      * Calls the default super() impl. from the base class and then builds a {@link WebCertUser} which is passed upwards
      * as Principal.
      *
-     * @param credential The SAMLCredential.
+     * @param employeeHsaId The user's HsaId
+     * @param authenticationScheme Authentication scheme used for login
      * @return WebCertUser as Principal.
      */
     @Override
-    protected WebCertUser buildUserPrincipal(SAMLCredential credential) {
-        IntygUser user = super.buildUserPrincipal(credential);
-        WebCertUser webCertUser = new WebCertUser(user);
+    public WebCertUser buildUserPrincipal(String employeeHsaId, String authenticationScheme) {
+        final var user = super.buildUserPrincipal(employeeHsaId, authenticationScheme);
+        final var  webCertUser = new WebCertUser(user);
         webCertUser.setAnvandarPreference(anvandarMetadataRepository.getAnvandarPreference(webCertUser.getHsaId()));
-        webCertUser.setIdentityProviderForSign(
-            getAssertion(credential).getIdentityProviderForSign()
-        );
+        webCertUser.setIdentityProviderForSign(authenticationScheme);
         subscriptionService.checkSubscriptions(webCertUser);
         return webCertUser;
     }
@@ -77,7 +70,7 @@ public class WebcertUserDetailsService extends BaseUserDetailsService {
      * Webcert overrides the default (i.e. fallback) behaviour from the base class which specifies a pre-selected
      * Vårdenhet during the
      * authorization process:
-     *
+     * <p>
      * For users with origin {@link UserOriginType#NORMAL} users will be redirected to the Vårdenhet selection page if
      * they have more than one (1) possible vårdenhet they have the requisite medarbetaruppdrag to select. (INTYG-3211)
      *
@@ -85,17 +78,20 @@ public class WebcertUserDetailsService extends BaseUserDetailsService {
      */
     @Override
     protected void decorateIntygUserWithDefaultVardenhet(IntygUser intygUser) {
-        // This override should only apply to NORMAL origin logins. Other types of origins gets default behaviour.
         if (!UserOriginType.NORMAL.name().equals(intygUser.getOrigin())) {
             super.decorateIntygUserWithDefaultVardenhet(intygUser);
             return;
         }
 
-        final long nrUnitsToSelectFrom = intygUser.getVardgivare().stream().flatMap(vg -> vg.getVardenheter().stream()).count();
+        final var  nrUnitsToSelectFrom = intygUser.getVardgivare().stream().mapToLong(vg -> vg.getVardenheter().size()).sum();
 
-        // If only 1 unit to select from - select it for them. Otherwise leave it unselected.
         if (nrUnitsToSelectFrom == 1) {
             super.decorateIntygUserWithDefaultVardenhet(intygUser);
         }
+    }
+
+    @Override
+    protected HttpServletRequest getCurrentRequest() {
+        return ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
     }
 }

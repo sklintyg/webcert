@@ -55,11 +55,8 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
     @Override
     public void resendScheduledNotifications(int batchSize) {
         final var startTimeInMilliseconds = System.currentTimeMillis();
-
         final var notificationsToResend = notificationRedeliveryService.getNotificationsForRedelivery(batchSize);
-
         final var successfullySent = resend(notificationsToResend);
-
         final var endTimeInMilliseconds = System.currentTimeMillis();
 
         LOG.debug("Processed {} notification for redelivery in {} seconds. Number of failures: {}.",

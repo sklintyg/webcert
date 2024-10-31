@@ -18,6 +18,15 @@
  */
 package se.inera.intyg.webcert.web.service.util;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,12 +47,6 @@ import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSet
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import java.util.*;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by eriklupander on 2017-08-30.
@@ -102,7 +105,7 @@ public class StatisticsGroupByUtilTest extends AuthoritiesConfigurationTestSetup
         Map<String, Long> result = testee.toSekretessFilteredMap(queryResult);
 
         assertEquals(1, result.size());
-        assertEquals(new Long(2L), result.get(HSA1));
+        assertEquals(Long.valueOf(2L), result.get(HSA1));
     }
 
     @Test
@@ -126,7 +129,7 @@ public class StatisticsGroupByUtilTest extends AuthoritiesConfigurationTestSetup
         Map<String, Long> result = testee.toSekretessFilteredMap(queryResult);
 
         assertEquals(1, result.size());
-        assertEquals(new Long(1L), result.get(HSA1));
+        assertEquals(Long.valueOf(1L), result.get(HSA1));
     }
 
     @Test
@@ -143,7 +146,7 @@ public class StatisticsGroupByUtilTest extends AuthoritiesConfigurationTestSetup
         Map<String, Long> result = testee.toSekretessFilteredMap(queryResult);
 
         assertEquals(1, result.size());
-        assertEquals(new Long(3L), result.get(HSA1));
+        assertEquals(Long.valueOf(3L), result.get(HSA1));
     }
 
 
@@ -164,8 +167,8 @@ public class StatisticsGroupByUtilTest extends AuthoritiesConfigurationTestSetup
 
         Map<String, Long> result = testee.toSekretessFilteredMap(queryResult);
         assertEquals(2, result.size());
-        assertEquals(new Long(3L), result.get(HSA1));
-        assertEquals(new Long(4L), result.get(HSA2));
+        assertEquals(Long.valueOf(3L), result.get(HSA1));
+        assertEquals(Long.valueOf(4L), result.get(HSA2));
     }
 
     @Test
@@ -185,8 +188,8 @@ public class StatisticsGroupByUtilTest extends AuthoritiesConfigurationTestSetup
 
         Map<String, Long> result = testee.toSekretessFilteredMap(queryResult);
         assertEquals(2, result.size());
-        assertEquals(new Long(2L), result.get(HSA1));
-        assertEquals(new Long(4L), result.get(HSA2));
+        assertEquals(Long.valueOf(2L), result.get(HSA1));
+        assertEquals(Long.valueOf(4L), result.get(HSA2));
     }
 
     @Test
@@ -200,7 +203,7 @@ public class StatisticsGroupByUtilTest extends AuthoritiesConfigurationTestSetup
 
         Map<String, Long> result = testee.toSekretessFilteredMap(queryResult);
         assertEquals(1, result.size());
-        assertEquals(new Long(2L), result.get(HSA1));
+        assertEquals(Long.valueOf(2L), result.get(HSA1));
     }
 
     @Test

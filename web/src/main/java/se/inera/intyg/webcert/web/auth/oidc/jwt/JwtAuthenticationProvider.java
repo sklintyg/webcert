@@ -19,13 +19,11 @@
 package se.inera.intyg.webcert.web.auth.oidc.jwt;
 
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.providers.ExpiringUsernameAuthenticationToken;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import se.inera.intyg.infra.security.common.model.IntygUser;
@@ -53,16 +51,17 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         }
 
         JwtAuthenticationToken jwtAuthenticationToken = (JwtAuthenticationToken) authentication;
-        Object principal = webcertUserDetailsService.loadUserByHsaId(jwtAuthenticationToken.getUserHsaId());
+        Object principal = webcertUserDetailsService.buildUserPrincipal("", jwtAuthenticationToken.getUserHsaId());
         if (principal != null) {
             WebCertUser webCertUser = new WebCertUser((IntygUser) principal);
 
             webCertUser.setOrigin(getUserOrigin().name());
 
-            ExpiringUsernameAuthenticationToken result = new ExpiringUsernameAuthenticationToken(null, webCertUser, jwtAuthenticationToken,
-                new ArrayList<>());
-            result.setDetails(webCertUser);
-            return result;
+//            ExpiringUsernameAuthenticationToken result = new ExpiringUsernameAuthenticationToken(null, webCertUser,
+//            jwtAuthenticationToken,
+//                new ArrayList<>());
+//            result.setDetails(webCertUser);
+            return null;
         }
         throw new AuthenticationServiceException("User principal returned from UserDetailsService was not of type WebCertUser,"
             + " throwing exception.");

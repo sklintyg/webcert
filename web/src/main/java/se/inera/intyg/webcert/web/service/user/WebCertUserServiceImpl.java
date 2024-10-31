@@ -59,7 +59,7 @@ public class WebCertUserServiceImpl implements WebCertUserService {
     private ThreadPoolTaskScheduler scheduler;
 
     @Autowired
-    private FindByIndexNameSessionRepository sessionRepository;
+    private FindByIndexNameSessionRepository<?> sessionRepository;
 
     @Value("${logout.timeout.seconds}")
     private int logoutTimeout;
@@ -67,12 +67,15 @@ public class WebCertUserServiceImpl implements WebCertUserService {
     @Override
     public boolean hasAuthenticationContext() {
         return SecurityContextHolder.getContext() != null && SecurityContextHolder.getContext().getAuthentication() != null
-            && SecurityContextHolder.getContext().getAuthentication().getPrincipal() != null;
+            && SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof WebCertUser;
     }
 
     @Override
     public WebCertUser getUser() {
-        return (WebCertUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof WebCertUser webCertUser) {
+            return webCertUser;
+        }
+        return null;
     }
 
     @Override

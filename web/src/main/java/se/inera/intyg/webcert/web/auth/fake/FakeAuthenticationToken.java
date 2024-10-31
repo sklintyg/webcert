@@ -18,29 +18,52 @@
  */
 package se.inera.intyg.webcert.web.auth.fake;
 
+import java.io.Serial;
+import java.util.Collections;
+import java.util.Objects;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-/**
- * @author andreaskaltenbach
- */
 public class FakeAuthenticationToken extends AbstractAuthenticationToken {
 
-    private static final long serialVersionUID = 6816599869136456844L;
+    @Serial
+    private static final long serialVersionUID = 1L;
 
-    private FakeCredentials fakeCredentials;
+    private final WebCertUser webCertUser;
 
-    public FakeAuthenticationToken(FakeCredentials fakeCredentials) {
-        super(null);
-        this.fakeCredentials = fakeCredentials;
+    public FakeAuthenticationToken(WebCertUser webCertUser) {
+        super(Collections.emptyList());
+        this.webCertUser = webCertUser;
+        setAuthenticated(true);
     }
 
     @Override
     public Object getCredentials() {
-        return fakeCredentials;
+        return webCertUser.getPersonId();
     }
 
     @Override
     public Object getPrincipal() {
-        return null;
+        return webCertUser;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+        final var that = (FakeAuthenticationToken) o;
+        return Objects.equals(webCertUser, that.webCertUser);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), webCertUser);
     }
 }

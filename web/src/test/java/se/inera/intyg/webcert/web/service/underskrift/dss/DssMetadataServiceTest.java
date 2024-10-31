@@ -18,36 +18,56 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift.dss;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
-import java.security.KeyStore;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.security.KeyStoreException;
-import java.security.cert.Certificate;
-import javax.xml.crypto.KeySelector;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.opensaml.Configuration;
-import org.opensaml.DefaultBootstrap;
-import org.opensaml.xml.ConfigurationException;
+import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
+import net.shibboleth.utilities.java.support.xml.BasicParserPool;
+import net.shibboleth.utilities.java.support.xml.ParserPool;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.opensaml.core.config.ConfigurationService;
+import org.opensaml.core.config.InitializationException;
+import org.opensaml.core.config.InitializationService;
+import org.opensaml.core.xml.config.XMLObjectProviderRegistry;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.util.ReflectionTestUtils;
 
+@ExtendWith(MockitoExtension.class)
 public class DssMetadataServiceTest {
 
-    @BeforeClass
-    public static void init() throws ConfigurationException {
-        DefaultBootstrap.bootstrap();
+    private DssMetadataService service;
+
+    @BeforeAll
+    public static void init() throws InitializationException, ComponentInitializationException {
+        final var registry = new XMLObjectProviderRegistry();
+        ConfigurationService.register(XMLObjectProviderRegistry.class, registry);
+        registry.setParserPool(getParserPool());
+        InitializationService.initialize();
+    }
+
+    private static ParserPool getParserPool() throws ComponentInitializationException {
+        final var parserPool = new BasicParserPool();
+        parserPool.initialize();
+        return parserPool;
+    }
+
+    @BeforeEach
+    void setup() {
+        service = new DssMetadataService();
     }
 
     @Test
-    public void getDssActionUrl_useMetadata() {
-
-        DssMetadataService service = new DssMetadataService(Configuration.getParserPool());
-        ReflectionTestUtils.setField(service, "dssServiceMetadataEntityId",
-            "http://localhost:8020/api/signature/signservice/v1/metadata");
+    void getDssActionUrl_useMetadata() {
         ReflectionTestUtils.setField(service, "dssServiceMetadataResource", new ClassPathResource("dss/dss_valid_metadata.xml"));
         ReflectionTestUtils.setField(service, "keystorePassword", "password");
+        ReflectionTestUtils.setField(service, "dssServiceMetadataEntityId",
+            "http://localhost:8020/api/signature/signservice/v1/metadata");
 
         service.initDssMetadata();
         assertEquals("http://localhost:8020/api/signature/signservice/v1/response", service.getDssActionUrl());
@@ -58,16 +78,13 @@ public class DssMetadataServiceTest {
     }
 
     @Test
-    public void getDssActionUrl_useProperty() {
-
-        String actionUrlProperty = "http://test.me";
-
-        DssMetadataService service = new DssMetadataService(Configuration.getParserPool());
+    void getDssActionUrl_useProperty() {
+        final var actionUrlProperty = "http://test.me";
         ReflectionTestUtils.setField(service, "actionUrlProperty", actionUrlProperty);
+        ReflectionTestUtils.setField(service, "keystorePassword", "password");
+        ReflectionTestUtils.setField(service, "dssServiceMetadataResource", new ClassPathResource("dss/dss_valid_metadata.xml"));
         ReflectionTestUtils.setField(service, "dssServiceMetadataEntityId",
             "http://localhost:8020/api/signature/signservice/v1/metadata");
-        ReflectionTestUtils.setField(service, "dssServiceMetadataResource", new ClassPathResource("dss/dss_valid_metadata.xml"));
-        ReflectionTestUtils.setField(service, "keystorePassword", "password");
 
         service.initDssMetadata();
         assertEquals(actionUrlProperty, service.getDssActionUrl());
@@ -75,46 +92,39 @@ public class DssMetadataServiceTest {
     }
 
     @Test
-    public void getDssKeyStore() throws KeyStoreException {
-        DssMetadataService service = new DssMetadataService(Configuration.getParserPool());
+    void getDssKeyStore() throws KeyStoreException {
+        ReflectionTestUtils.setField(service, "dssServiceMetadataResource", new ClassPathResource("dss/dss_valid_metadata.xml"));
         ReflectionTestUtils.setField(service, "keystorePassword", "password");
         ReflectionTestUtils.setField(service, "dssServiceMetadataEntityId",
             "http://localhost:8020/api/signature/signservice/v1/metadata");
-        ReflectionTestUtils.setField(service, "dssServiceMetadataResource", new ClassPathResource("dss/dss_valid_metadata.xml"));
 
         service.initDssMetadata();
-        KeyStore dssKeyStore = service.getDssKeyStore();
-        Certificate dss0 = dssKeyStore.getCertificate("dss0");
 
+        final var dssKeyStore = service.getDssKeyStore();
+        final var dss0 = dssKeyStore.getCertificate("dss0");
         assertNotNull(dss0);
-        assertEquals("Certificate Type", "X.509", dss0.getType());
+        assertEquals("X.509", dss0.getType(), "Certificate Type");
     }
 
     @Test
-    public void getDssKeySelector() throws KeyStoreException {
-        DssMetadataService service = new DssMetadataService(Configuration.getParserPool());
+    void getDssKeySelector() {
+        ReflectionTestUtils.setField(service, "dssServiceMetadataResource", new ClassPathResource("dss/dss_valid_metadata.xml"));
         ReflectionTestUtils.setField(service, "keystorePassword", "password");
         ReflectionTestUtils.setField(service, "dssServiceMetadataEntityId",
             "http://localhost:8020/api/signature/signservice/v1/metadata");
-        ReflectionTestUtils.setField(service, "dssServiceMetadataResource", new ClassPathResource("dss/dss_valid_metadata.xml"));
 
         service.initDssMetadata();
-        KeySelector dssKeySelector = service.getDssKeySelector();
-        assertNotNull(dssKeySelector);
-
+        assertNotNull(service.getDssKeySelector());
     }
 
     @Test
-    public void getClientMetadataAsString() {
-        DssMetadataService service = new DssMetadataService(Configuration.getParserPool());
-
+    void getClientMetadataAsString() {
         ReflectionTestUtils.setField(service, "keystoreAlias", "localhost");
         ReflectionTestUtils.setField(service, "keystorePassword", "password");
         ReflectionTestUtils.setField(service, "keystoreFile", new ClassPathResource("dss/localhost.p12"));
         ReflectionTestUtils.setField(service, "dssClientEntityHostUrl", "https://wc.localtest.me");
         ReflectionTestUtils.setField(service, "dssClientResponseHostUrl", "https://other.se");
-//        ReflectionTestUtils.setField(service, "dssClientResponseHostUrl", "https://wc.localtest.me");
-
+        ReflectionTestUtils.setField(service, "dssClientResponseHostUrl", "https://wc.localtest.me");
         ReflectionTestUtils.setField(service, "organizationName", "Inera AB");
         ReflectionTestUtils.setField(service, "organizationDisplayName", "Webcert");
         ReflectionTestUtils.setField(service, "organizationUrl", "https://inera.se");
