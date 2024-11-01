@@ -510,7 +510,6 @@ public class CSIntegrationService {
         return response;
     }
 
-
     public Certificate answerComplementOnCertificate(String certificateId,
         AnswerComplementRequestDTO request) {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/answerComplement";

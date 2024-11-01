@@ -23,9 +23,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
+import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -38,9 +40,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.CertificateRelationType;
 import se.inera.intyg.common.support.facade.model.link.ResourceLink;
 import se.inera.intyg.common.support.facade.model.link.ResourceLinkTypeEnum;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
+import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.common.support.facade.model.question.QuestionType;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -63,11 +71,14 @@ class FinalizeCertificateSignServiceTest {
     private WebCertUserService webCertUserService;
     @Mock
     private MonitoringLogService monitoringLogService;
+    @Mock
+    private CSIntegrationService csIntegrationService;
     @InjectMocks
     private FinalizeCertificateSignService finalizeCertificateSignService;
 
-    private static final Certificate CERTIFICATE = new Certificate();
     private static final WebCertUser USER = new WebCertUser();
+
+    private final Certificate certificate = new Certificate();
 
     @BeforeEach
     void setUp() {
@@ -75,12 +86,14 @@ class FinalizeCertificateSignServiceTest {
         USER.setAuthenticationScheme(AUTH_SCHEME);
         doReturn(USER).when(webCertUserService).getUser();
 
-        CERTIFICATE.setMetadata(
+        certificate.setMetadata(
             CertificateMetadata.builder()
                 .id(ID)
                 .type(TYPE)
                 .build()
         );
+
+        certificate.setLinks(Collections.emptyList());
     }
 
     @Nested
@@ -91,7 +104,7 @@ class FinalizeCertificateSignServiceTest {
 
         @Test
         void shouldLogIntygSignedWithIdFromCertificate() {
-            finalizeCertificateSignService.finalizeSign(CERTIFICATE);
+            finalizeCertificateSignService.finalizeSign(certificate);
             verify(monitoringLogService).logIntygSigned(argumentCaptor.capture(), eq(TYPE), eq(HSA_ID), eq(AUTH_SCHEME), eq(null));
 
             assertEquals(ID, argumentCaptor.getValue());
@@ -99,7 +112,7 @@ class FinalizeCertificateSignServiceTest {
 
         @Test
         void shouldLogIntygSignedWithTypeFromCertificate() {
-            finalizeCertificateSignService.finalizeSign(CERTIFICATE);
+            finalizeCertificateSignService.finalizeSign(certificate);
             verify(monitoringLogService).logIntygSigned(eq(ID), argumentCaptor.capture(), eq(HSA_ID), eq(AUTH_SCHEME), eq(null));
 
             assertEquals(TYPE, argumentCaptor.getValue());
@@ -107,7 +120,7 @@ class FinalizeCertificateSignServiceTest {
 
         @Test
         void shouldLogIntygSignedWithHsaIdFromWebcertUser() {
-            finalizeCertificateSignService.finalizeSign(CERTIFICATE);
+            finalizeCertificateSignService.finalizeSign(certificate);
             verify(monitoringLogService).logIntygSigned(eq(ID), eq(TYPE), argumentCaptor.capture(), eq(AUTH_SCHEME), eq(null));
 
             assertEquals(HSA_ID, argumentCaptor.getValue());
@@ -115,7 +128,7 @@ class FinalizeCertificateSignServiceTest {
 
         @Test
         void shouldLogIntygSignedWithAuthSchemaFromWebcertUser() {
-            finalizeCertificateSignService.finalizeSign(CERTIFICATE);
+            finalizeCertificateSignService.finalizeSign(certificate);
             verify(monitoringLogService).logIntygSigned(eq(ID), eq(TYPE), eq(HSA_ID), argumentCaptor.capture(), eq(null));
 
             assertEquals(AUTH_SCHEME, argumentCaptor.getValue());
@@ -123,7 +136,7 @@ class FinalizeCertificateSignServiceTest {
 
         @Test
         void shouldLogIntygSignedWithRelationCodeNull() {
-            finalizeCertificateSignService.finalizeSign(CERTIFICATE);
+            finalizeCertificateSignService.finalizeSign(certificate);
             verify(monitoringLogService).logIntygSigned(eq(ID), eq(TYPE), eq(HSA_ID), eq(AUTH_SCHEME), argumentCaptorRelation.capture());
 
             assertNull(argumentCaptorRelation.getValue());
@@ -137,10 +150,10 @@ class FinalizeCertificateSignServiceTest {
 
         @Test
         void shouldLogSignWithProvidedCertificate() {
-            finalizeCertificateSignService.finalizeSign(CERTIFICATE);
+            finalizeCertificateSignService.finalizeSign(certificate);
             verify(pdlLogService).logSign(certificateArgumentCaptor.capture());
 
-            assertEquals(CERTIFICATE, certificateArgumentCaptor.getValue());
+            assertEquals(certificate, certificateArgumentCaptor.getValue());
         }
     }
 
@@ -149,8 +162,8 @@ class FinalizeCertificateSignServiceTest {
 
         @Test
         void shouldPublishCertificateStatusUpdate() {
-            finalizeCertificateSignService.finalizeSign(CERTIFICATE);
-            verify(publishCertificateStatusUpdateService).publish(CERTIFICATE, HandelsekodEnum.SIGNAT);
+            finalizeCertificateSignService.finalizeSign(certificate);
+            verify(publishCertificateStatusUpdateService).publish(certificate, HandelsekodEnum.SIGNAT);
         }
     }
 
@@ -159,24 +172,154 @@ class FinalizeCertificateSignServiceTest {
 
         @Test
         void shouldSendCertificateIfResourceLinkSendAfterSignIsPresentOnCertificate() {
-            CERTIFICATE.setLinks(
+            certificate.setLinks(
                 List.of(ResourceLink.builder()
                     .type(ResourceLinkTypeEnum.SEND_AFTER_SIGN_CERTIFICATE)
                     .build())
             );
-            finalizeCertificateSignService.finalizeSign(CERTIFICATE);
+            finalizeCertificateSignService.finalizeSign(certificate);
             verify(sendCertificateFromCertificateService).sendCertificate(ID);
         }
 
         @Test
         void shouldNotSendCertificateIfResourceLinkSendAfterSignIsNotPresentOnCertificate() {
-            CERTIFICATE.setLinks(
+            certificate.setLinks(
                 List.of(ResourceLink.builder()
                     .type(ResourceLinkTypeEnum.SEND_CERTIFICATE)
                     .build())
             );
-            finalizeCertificateSignService.finalizeSign(CERTIFICATE);
+            finalizeCertificateSignService.finalizeSign(certificate);
             verifyNoInteractions(sendCertificateFromCertificateService);
+        }
+    }
+
+    @Nested
+    class NotifyHandledComplementQuestionsForParentCertificate {
+
+        private List<Question> questionsWithoutComplement;
+        private List<Question> questionsWithComplement;
+
+        @BeforeEach
+        void setUp() {
+            questionsWithoutComplement = List.of(Question.builder().type(QuestionType.CONTACT).build());
+            questionsWithComplement = List.of(Question.builder().type(QuestionType.COMPLEMENT).build());
+        }
+
+        @Test
+        void shouldNotNotifyHandledComplementQuestionWhenNoRelations() {
+            finalizeCertificateSignService.finalizeSign(certificate);
+            verify(publishCertificateStatusUpdateService, never()).publish(certificate, HandelsekodEnum.HANFRFM);
+        }
+
+        @Test
+        void shouldNotNotifyHandledComplementQuestionWhenNoParent() {
+            certificate.getMetadata().setRelations(CertificateRelations.builder().build());
+            finalizeCertificateSignService.finalizeSign(certificate);
+            verify(publishCertificateStatusUpdateService, never()).publish(certificate, HandelsekodEnum.HANFRFM);
+        }
+
+        @Test
+        void shouldNotNotifyHandledComplementQuestionWhenParentIsCopied() {
+            certificate.getMetadata().setRelations(
+                CertificateRelations.builder()
+                    .parent(
+                        CertificateRelation.builder()
+                            .type(CertificateRelationType.COPIED)
+                            .build()
+                    )
+                    .build()
+            );
+            finalizeCertificateSignService.finalizeSign(certificate);
+            verify(publishCertificateStatusUpdateService, never()).publish(certificate, HandelsekodEnum.HANFRFM);
+        }
+
+        @Test
+        void shouldNotNotifyHandledComplementQuestionWhenParentHasNoComplementQuestions() {
+            final var parentCertificateId = "parentCertificateId";
+            certificate.getMetadata().setRelations(
+                CertificateRelations.builder()
+                    .parent(
+                        CertificateRelation.builder()
+                            .certificateId(parentCertificateId)
+                            .type(CertificateRelationType.REPLACED)
+                            .build()
+                    )
+                    .build()
+            );
+
+            doReturn(questionsWithoutComplement).when(csIntegrationService).getQuestions(parentCertificateId);
+
+            finalizeCertificateSignService.finalizeSign(certificate);
+            verify(publishCertificateStatusUpdateService, never()).publish(certificate, HandelsekodEnum.HANFRFM);
+        }
+
+        @Test
+        void shouldNotifyHandledComplementQuestionWhenReplacedParentHasComplementQuestions() {
+            final var parentCertificateId = "parentCertificateId";
+            final var parentCertificate = new Certificate();
+            certificate.getMetadata().setRelations(
+                CertificateRelations.builder()
+                    .parent(
+                        CertificateRelation.builder()
+                            .certificateId(parentCertificateId)
+                            .type(CertificateRelationType.REPLACED)
+                            .build()
+                    )
+                    .build()
+            );
+
+            doReturn(questionsWithComplement).when(csIntegrationService).getQuestions(parentCertificateId);
+            doReturn(parentCertificate).when(csIntegrationService).getInternalCertificate(parentCertificateId);
+
+            finalizeCertificateSignService.finalizeSign(certificate);
+
+            verify(publishCertificateStatusUpdateService).publish(parentCertificate, HandelsekodEnum.HANFRFM);
+        }
+
+        @Test
+        void shouldNotifyHandledComplementQuestionWhenComplementedParentHasComplementQuestions() {
+            final var parentCertificateId = "parentCertificateId";
+            final var parentCertificate = new Certificate();
+            certificate.getMetadata().setRelations(
+                CertificateRelations.builder()
+                    .parent(
+                        CertificateRelation.builder()
+                            .certificateId(parentCertificateId)
+                            .type(CertificateRelationType.COMPLEMENTED)
+                            .build()
+                    )
+                    .build()
+            );
+
+            doReturn(questionsWithComplement).when(csIntegrationService).getQuestions(parentCertificateId);
+            doReturn(parentCertificate).when(csIntegrationService).getInternalCertificate(parentCertificateId);
+
+            finalizeCertificateSignService.finalizeSign(certificate);
+
+            verify(publishCertificateStatusUpdateService).publish(parentCertificate, HandelsekodEnum.HANFRFM);
+        }
+
+        @Test
+        void shouldNotifyHandledComplementQuestionWhenExtendedParentHasComplementQuestions() {
+            final var parentCertificateId = "parentCertificateId";
+            final var parentCertificate = new Certificate();
+            certificate.getMetadata().setRelations(
+                CertificateRelations.builder()
+                    .parent(
+                        CertificateRelation.builder()
+                            .certificateId(parentCertificateId)
+                            .type(CertificateRelationType.EXTENDED)
+                            .build()
+                    )
+                    .build()
+            );
+
+            doReturn(questionsWithComplement).when(csIntegrationService).getQuestions(parentCertificateId);
+            doReturn(parentCertificate).when(csIntegrationService).getInternalCertificate(parentCertificateId);
+
+            finalizeCertificateSignService.finalizeSign(certificate);
+
+            verify(publishCertificateStatusUpdateService).publish(parentCertificate, HandelsekodEnum.HANFRFM);
         }
     }
 }

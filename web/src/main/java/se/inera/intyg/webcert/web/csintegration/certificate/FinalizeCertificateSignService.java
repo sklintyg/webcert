@@ -19,11 +19,19 @@
 
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
+import static se.inera.intyg.common.support.facade.model.CertificateRelationType.COMPLEMENTED;
+import static se.inera.intyg.common.support.facade.model.CertificateRelationType.EXTENDED;
+import static se.inera.intyg.common.support.facade.model.CertificateRelationType.REPLACED;
+
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.CertificateRelationType;
 import se.inera.intyg.common.support.facade.model.link.ResourceLinkTypeEnum;
+import se.inera.intyg.common.support.facade.model.question.QuestionType;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -37,6 +45,7 @@ public class FinalizeCertificateSignService {
     private final MonitoringLogService monitoringLogService;
     private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
     private final SendCertificateFromCertificateService sendCertificateFromCertificateService;
+    private final CSIntegrationService csIntegrationService;
 
     public void finalizeSign(Certificate certificate) {
         final var user = webCertUserService.getUser();
@@ -55,9 +64,33 @@ public class FinalizeCertificateSignService {
 
         publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SIGNAT);
 
+        if (shouldPublishHandledEventForParent(certificate)) {
+            final var parentCertificateId = certificate.getMetadata().getRelations().getParent().getCertificateId();
+            final var parentCertificate = csIntegrationService.getInternalCertificate(parentCertificateId);
+            publishCertificateStatusUpdateService.publish(parentCertificate, HandelsekodEnum.HANFRFM);
+        }
+
         if (certificate.getLinks().stream()
             .anyMatch(resourceLink -> resourceLink.getType().equals(ResourceLinkTypeEnum.SEND_AFTER_SIGN_CERTIFICATE))) {
             sendCertificateFromCertificateService.sendCertificate(certificate.getMetadata().getId());
         }
+    }
+
+    private boolean shouldPublishHandledEventForParent(Certificate certificate) {
+        if (!hasParentRelationOfType(certificate, List.of(COMPLEMENTED, REPLACED, EXTENDED))) {
+            return false;
+        }
+        final var parentCertificateId = certificate.getMetadata().getRelations().getParent().getCertificateId();
+        final var questions = csIntegrationService.getQuestions(parentCertificateId);
+        return questions.stream().anyMatch(question -> QuestionType.COMPLEMENT.equals(question.getType()));
+    }
+
+    private boolean hasParentRelationOfType(Certificate certificate, List<CertificateRelationType> relationTypes) {
+        if (certificate.getMetadata().getRelations() == null || certificate.getMetadata().getRelations().getParent() == null) {
+            return false;
+        }
+        return relationTypes.contains(
+            certificate.getMetadata().getRelations().getParent().getType()
+        );
     }
 }
