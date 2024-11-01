@@ -285,22 +285,6 @@ class GetCertificatesAvailableFunctionsImplTest {
         }
 
         @Test
-        void shallIncludeWarningIntegrated() {
-            final var certificate = CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
-            when(webCertUserService.getUser()).thenReturn(getUserWithOrigin("DJUPINTEGRATION"));
-            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.WARNING_DODSBEVIS_INTEGRATED);
-        }
-
-        @Test
-        void shallExcludeWarningIntegrated() {
-            final var certificate = CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
-            when(webCertUserService.getUser()).thenReturn(getUserWithOrigin("ORIGIN"));
-            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.WARNING_DODSBEVIS_INTEGRATED);
-        }
-
-        @Test
         void shallIncludeWarningWhenLuaenaIntegratedAndPatientOlderThanThirtyYearsAndTwoMonths() {
             final var certificate = getUnsignedLuaenaForPatientOfAge(30, 3);
             when(webCertUserService.getUser()).thenReturn(getUserWithOrigin("DJUPINTEGRATION"));

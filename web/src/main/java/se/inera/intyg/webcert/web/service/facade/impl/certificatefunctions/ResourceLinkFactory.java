@@ -25,6 +25,10 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
 public class ResourceLinkFactory {
 
+    private ResourceLinkFactory() {
+
+    }
+
     public static ResourceLinkDTO read() {
         return ResourceLinkDTO.create(
             ResourceLinkTypeDTO.READ_CERTIFICATE,
@@ -39,15 +43,6 @@ public class ResourceLinkFactory {
             ResourceLinkTypeDTO.CREATE_CERTIFICATE,
             "Skapa intyg",
             enabled ? "Skapa ett intygsutkast." : "",
-            enabled
-        );
-    }
-
-    public static ResourceLinkDTO confirmDodsbevis(boolean enabled) {
-        return ResourceLinkDTO.create(
-            ResourceLinkTypeDTO.CREATE_DODSBEVIS_CONFIRMATION,
-            "Visa bekräftelsemodal för dödsbevis",
-            "Visa modal med ett bekräftelsemeddelande.",
             enabled
         );
     }

@@ -25,9 +25,9 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.luae_na.support.LuaenaEntryPoint;
 import se.inera.intyg.common.services.texts.IntygTextsService;
+import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.util.PatientToolkit;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
@@ -37,6 +37,8 @@ import se.inera.intyg.webcert.web.service.facade.CertificateTypeMessageService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateTypesFacadeService;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.MissingRelatedCertificateConfirmation;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.ResourceLinkFactory;
+import se.inera.intyg.webcert.web.service.facade.modal.confirmation.ConfirmationModalProviderResolver;
+import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygModuleDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
@@ -55,6 +57,7 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
     private final WebCertUserService webCertUserService;
     private final IntygTextsService intygTextsService;
     private final CertificateTypeMessageService certificateTypeMessageService;
+    private final PatientDetailsResolver patientDetailsResolver;
 
     private final MissingRelatedCertificateConfirmation missingRelatedCertificateConfirmation;
 
@@ -62,6 +65,7 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
     public GetCertificateTypesFacadeServiceImpl(IntygModuleRegistry intygModuleRegistry, ResourceLinkHelper resourceLinkHelper,
         AuthoritiesHelper authoritiesHelper, WebCertUserService webCertUserService,
         IntygTextsService intygTextsService, CertificateTypeMessageService certificateTypeMessageService,
+        PatientDetailsResolver patientDetailsResolver,
         MissingRelatedCertificateConfirmation missingRelatedCertificateConfirmation) {
         this.intygModuleRegistry = intygModuleRegistry;
         this.resourceLinkHelper = resourceLinkHelper;
@@ -69,6 +73,7 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
         this.webCertUserService = webCertUserService;
         this.intygTextsService = intygTextsService;
         this.certificateTypeMessageService = certificateTypeMessageService;
+        this.patientDetailsResolver = patientDetailsResolver;
         this.missingRelatedCertificateConfirmation = missingRelatedCertificateConfirmation;
     }
 
@@ -78,18 +83,29 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
         return certificateModuleList.stream()
             .map(module -> convertModuleToTypeInfo(module, patientId))
             .map(certificateTypeInfoDTO -> addAdditionalResourceLinks(certificateTypeInfoDTO, patientId))
+            .map(certificateTypeInfoDTO -> addConfirmationModal(certificateTypeInfoDTO, patientId))
             .collect(Collectors.toList());
     }
 
     private CertificateTypeInfoDTO addAdditionalResourceLinks(CertificateTypeInfoDTO intygModule, Personnummer patientId) {
-        if (intygModule.getId().equals(DbModuleEntryPoint.MODULE_ID)) {
-            intygModule.getLinks().add(ResourceLinkFactory.confirmDodsbevis(true));
-        }
         if (intygModule.getId().equals(LuaenaEntryPoint.MODULE_ID) && patientOlderThanThirtyYearsAndTwoMonths(patientId)) {
             intygModule.getLinks().add(ResourceLinkFactory.confirmLuaena(true));
         }
         missingRelatedCertificateConfirmation.get(intygModule.getId(), patientId)
             .ifPresent(resourceLinkDTO -> intygModule.getLinks().add(resourceLinkDTO));
+        return intygModule;
+    }
+
+    private CertificateTypeInfoDTO addConfirmationModal(CertificateTypeInfoDTO intygModule, Personnummer patientId) {
+        final var provider = ConfirmationModalProviderResolver.get(intygModule.getId(), CertificateStatus.UNSIGNED, "NORMAL", true);
+        final var latestCertificateVersion = intygTextsService.getLatestVersion(intygModule.getId());
+        final var patient = patientDetailsResolver.resolvePatient(patientId, intygModule.getId(), latestCertificateVersion);
+        if (provider != null) {
+            intygModule.setConfirmationModal(
+                provider.create(patient.getFullstandigtNamn(), patientId.getPersonnummerWithDash(), "NORMAL")
+            );
+        }
+
         return intygModule;
     }
 

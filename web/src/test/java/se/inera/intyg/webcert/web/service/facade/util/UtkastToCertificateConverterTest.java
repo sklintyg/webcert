@@ -111,6 +111,15 @@ class UtkastToCertificateConverterTest {
     private static final String PERSON_ID_FROM_JSON = "PersonId - json";
     private static final String PERSON_NAME_FROM_JSON = "Doctor Alpha - json";
 
+    @BeforeEach
+    void setup() {
+        final var user = mock(WebCertUser.class);
+        when(webCertUserService.getUser())
+            .thenReturn(user);
+        when(user.getOrigin())
+            .thenReturn("NORMAL");
+    }
+
     @Nested
     class TestConvert {
 
@@ -119,7 +128,7 @@ class UtkastToCertificateConverterTest {
             final var moduleApi = mock(ModuleApi.class);
 
             doReturn(moduleApi)
-                .when(moduleRegistry).getModuleApi(draft.getIntygsTyp(), draft.getIntygTypeVersion());
+                .when(moduleRegistry).getModuleApi(anyString(), anyString());
 
             doReturn(createCertificate())
                 .when(moduleApi).getCertificateFromJson(draft.getModel(), typeAheadProvider);
@@ -179,6 +188,21 @@ class UtkastToCertificateConverterTest {
                 final var actualCertificate = utkastToCertificateConverter.convert(draft);
 
                 assertEquals(expectedCreated, actualCertificate.getMetadata().getCreated());
+            }
+
+            @Test
+            void shallIncludeConfirmationModalIfProviderIsAvailable() {
+                draft.setIntygsTyp("db");
+                final var actualCertificate = utkastToCertificateConverter.convert(draft);
+
+                assertNotNull(actualCertificate.getMetadata().getConfirmationModal());
+            }
+
+            @Test
+            void shallNotIncludeConfirmationModalIfProviderIsNotAvailable() {
+                final var actualCertificate = utkastToCertificateConverter.convert(draft);
+
+                assertNull(actualCertificate.getMetadata().getConfirmationModal());
             }
 
             @ParameterizedTest
@@ -502,7 +526,6 @@ class UtkastToCertificateConverterTest {
             @Test
             void shallNotSetResponsibleHospNameWhenIntegrationParametersIsNull() {
                 doReturn(true).when(webCertUserService).hasAuthenticationContext();
-                when(webCertUserService.getUser()).thenReturn(mock(WebCertUser.class));
                 when(webCertUserService.getUser().getParameters()).thenReturn(null);
 
                 final var actualCertificate = utkastToCertificateConverter.convert(draft);
@@ -514,7 +537,6 @@ class UtkastToCertificateConverterTest {
             void shallSetResponsibleHospNameWhenIntegrationParametersArePresent() {
                 final var expectedResponsibleHospName = "responsibleHospName";
                 doReturn(true).when(webCertUserService).hasAuthenticationContext();
-                when(webCertUserService.getUser()).thenReturn(mock(WebCertUser.class));
                 when(webCertUserService.getUser().getParameters()).thenReturn(mock(IntegrationParameters.class));
                 when(webCertUserService.getUser().getParameters().getResponsibleHospName()).thenReturn(expectedResponsibleHospName);
 
