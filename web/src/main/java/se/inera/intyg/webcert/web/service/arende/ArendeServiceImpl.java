@@ -542,7 +542,6 @@ public class ArendeServiceImpl implements ArendeService {
 
         List<ArendeListItem> results = arendeRepository.filterArende(filter).stream()
             .map(ArendeListItemConverter::convert)
-            .filter(this::isUnhandled)
             // We need to decorate the ArendeListItem with information whether there exist a reminder or not because
             // they want to display this information to the user. We cannot do this without a database access, hence
             // we do it after the convertToDto
@@ -580,17 +579,6 @@ public class ArendeServiceImpl implements ArendeService {
         response.setResults(results);
 
         return response;
-    }
-
-    private boolean isUnhandled(ArendeListItem item) {
-        return !((item.getStatus() == Status.PENDING_INTERNAL_ACTION && isReminder(item) && item.getFragestallare().equals("FK"))
-            || item.getStatus() == Status.ANSWERED
-            || item.getStatus() == Status.CLOSED
-            || item.getAmne().equals(MAKULERING));
-    }
-
-    private boolean isReminder(ArendeListItem item) {
-        return item.getAmne().equals(PAMINNELSE) || item.getAmne().equals(PAMINN);
     }
 
     Map<String, String> getNamesByHsaIds(Set<String> hsaIds) {
