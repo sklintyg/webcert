@@ -416,8 +416,16 @@ class GetCertificateTypesFacadeServiceImplTest {
     private Personnummer getPatientIdAsCoordinationNumber(int minusMonths) {
         final var patientBirthDate = LocalDate.now(ZoneId.systemDefault()).minusYears(30).minusMonths(minusMonths);
         final var patientId = patientBirthDate.toString()
-            .replace(Integer.toString(patientBirthDate.getDayOfMonth()), Integer.toString(patientBirthDate.getMonthValue() + 60))
+            .replace(getDayOfMonth(patientBirthDate), Integer.toString(patientBirthDate.getDayOfMonth() + 60))
             .replace("-", "") + "4321";
         return Personnummer.createPersonnummer(patientId).orElseThrow();
+    }
+
+    private static String getDayOfMonth(LocalDate patientBirthDate) {
+        final var dayOfMonth = Integer.toString(patientBirthDate.getDayOfMonth());
+        if (dayOfMonth.length() == 1) {
+            return "0" + dayOfMonth;
+        }
+        return dayOfMonth;
     }
 }
