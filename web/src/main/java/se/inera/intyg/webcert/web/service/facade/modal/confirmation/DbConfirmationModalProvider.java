@@ -20,8 +20,8 @@
 package se.inera.intyg.webcert.web.service.facade.modal.confirmation;
 
 import org.springframework.stereotype.Component;
+import se.inera.intyg.common.support.facade.model.config.MessageLevel;
 import se.inera.intyg.common.support.facade.model.metadata.Alert;
-import se.inera.intyg.common.support.facade.model.metadata.AlertType;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateConfirmationModal;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateModalActionType;
 
@@ -35,7 +35,7 @@ public class DbConfirmationModalProvider implements ConfirmationModalProvider {
             .title("Kontrollera namn och personnummer på den avlidne")
             .alert(
                 Alert.builder()
-                    .type(AlertType.ERROR)
+                    .type(MessageLevel.ERROR)
                     .text(getAlertText(patientName, patientId))
                     .build()
             )

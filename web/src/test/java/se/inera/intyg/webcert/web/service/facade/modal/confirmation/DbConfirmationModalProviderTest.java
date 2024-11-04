@@ -22,8 +22,8 @@ package se.inera.intyg.webcert.web.service.facade.modal.confirmation;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
+import se.inera.intyg.common.support.facade.model.config.MessageLevel;
 import se.inera.intyg.common.support.facade.model.metadata.Alert;
-import se.inera.intyg.common.support.facade.model.metadata.AlertType;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateConfirmationModal;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateModalActionType;
 
@@ -40,7 +40,7 @@ class DbConfirmationModalProviderTest {
             .title("Kontrollera namn och personnummer på den avlidne")
             .alert(
                 Alert.builder()
-                    .type(AlertType.ERROR)
+                    .type(MessageLevel.ERROR)
                     .text("Du är på väg att utfärda ett dödsbevis för\nNAME MIDDLE LAST - ID")
                     .build()
             )
@@ -61,7 +61,7 @@ class DbConfirmationModalProviderTest {
             .title("Kontrollera namn och personnummer på den avlidne")
             .alert(
                 Alert.builder()
-                    .type(AlertType.ERROR)
+                    .type(MessageLevel.ERROR)
                     .text("Du är på väg att utfärda ett dödsbevis för\nNAME MIDDLE LAST - ID")
                     .build()
             )
