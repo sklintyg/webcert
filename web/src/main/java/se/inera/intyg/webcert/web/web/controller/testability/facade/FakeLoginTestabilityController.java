@@ -46,13 +46,7 @@ public class FakeLoginTestabilityController {
     @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
     public Response login(@FormParam("userJsonDisplay") String loginObject, @Context HttpServletRequest request)
         throws JsonProcessingException {
-//        @FormParam("enhetId") String enhetId,
-//        @FormParam("sekretessMarkerad") String sekretessMarkerad,
-//        @FormParam("forNamn") String forNamn,
-//        @FormParam("efterNamn") String efterNamn,
-//        @FormParam("origin") String origin,
-//        @FormParam("authenticationMethod") String authenticationMethod,
-//        @FormParam("legitimeradeYrkesgrupper") List<String> legitimeradeYrkesgrupper) {
+
 
         final var fakeLoginDTO = objectMapper.readValue(loginObject, FakeLoginDTO.class);
         fakeLoginService.login(fakeLoginDTO, request);
@@ -60,8 +54,10 @@ public class FakeLoginTestabilityController {
     }
 
     @Path("/logout")
-    public void logout(@Context HttpServletRequest request) {
+    @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
+    public Response logout(@Context HttpServletRequest request) {
         fakeLoginService.logout(request.getSession(false));
+        return Response.ok().build();
     }
 
 }

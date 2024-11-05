@@ -171,9 +171,9 @@
 
     <bean id="savedRequestFactory" class="se.inera.intyg.webcert.web.auth.SavedRequestFactoryImpl"/>
 
-    <bean id="idpSelectionFilter" class="se.inera.intyg.webcert.web.auth.IdpSelectionFilter">
-        <property name="savedRequestFactory" ref="savedRequestFactory"/>
-    </bean>
+<!--    <bean id="idpSelectionFilter" class="se.inera.intyg.webcert.web.auth.IdpSelectionFilter">-->
+<!--        <property name="savedRequestFactory" ref="savedRequestFactory"/>-->
+<!--    </bean>-->
 
     <bean id="defaultCharacterEncodingFilter" class="se.inera.intyg.webcert.web.web.filter.DefaultCharacterEncodingFilter" />
 

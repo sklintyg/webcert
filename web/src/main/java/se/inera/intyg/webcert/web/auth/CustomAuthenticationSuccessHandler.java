@@ -26,14 +26,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.regex.Pattern;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.savedrequest.DefaultSavedRequest;
-import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
-import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -49,13 +48,14 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     @Value("${webcert.domain.name}")
     private String webcertDomainName;
 
-    private RequestCache requestCache = new HttpSessionRequestCache();
+    //private RequestCache requestCache = new HttpSessionRequestCache();
+    @Autowired
+    private RedisSavedRequestCache requestCache;
 
     private final Pattern djupintegrationPattern = Pattern.compile(REGEXP_REQUESTURI_DJUPINTEGRATION);
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request,
-        HttpServletResponse response, Authentication authentication)
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
         throws ServletException, IOException {
         SavedRequest savedRequest = requestCache.getRequest(request, response);
 
@@ -148,7 +148,7 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         return defaultValue;
     }
 
-    public void setRequestCache(RequestCache requestCache) {
-        this.requestCache = requestCache;
-    }
+    //public void setRequestCache(RequestCache requestCache) {
+    //    this.requestCache = requestCache;
+    //}
 }

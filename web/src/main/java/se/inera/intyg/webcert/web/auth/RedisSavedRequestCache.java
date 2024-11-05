@@ -81,7 +81,7 @@ public class RedisSavedRequestCache implements RequestCache {
      */
     @Override
     public void saveRequest(HttpServletRequest request, HttpServletResponse response) {
-        if (requestMatcher.matches(request)) {
+        //if (requestMatcher.matches(request)) {
             DefaultSavedRequest savedRequest = new DefaultSavedRequest(request,
                 portResolver);
             String requestedSessionId = getSessionId(request);
@@ -94,9 +94,9 @@ public class RedisSavedRequestCache implements RequestCache {
                     TimeUnit.MINUTES);
                 logger.debug("DefaultSavedRequest added to Redis: " + savedRequest);
             }
-        } else {
-            logger.debug("Request not saved as configured RequestMatcher did not match");
-        }
+        //} else {
+        //    logger.debug("Request not saved as configured RequestMatcher did not match");
+        //}
     }
 
     /**
@@ -158,15 +158,15 @@ public class RedisSavedRequestCache implements RequestCache {
      * @param requestMatcher a request matching strategy which defines which requests
      * should be cached.
      */
-    public void setRequestMatcher(RequestMatcher requestMatcher) {
-        this.requestMatcher = requestMatcher;
-    }
+//    public void setRequestMatcher(RequestMatcher requestMatcher) {
+//        this.requestMatcher = requestMatcher;
+//    }
 
     private String buildKey(String requestedSessionId) {
         return SAVED_REQ_REDIS_PREFIX + requestedSessionId;
     }
 
     private String getSessionId(HttpServletRequest request) {
-        return request.getSession().getId();
+        return request.getRequestedSessionId();
     }
 }

@@ -56,7 +56,7 @@ public class FakeLoginService {
     private final CommonAuthoritiesResolver authoritiesResolver;
 
     private static final String FAKE_AUTH_SCHEME_ELEG = "urn:inera:webcert:eleg:fake";
-    private static final String FAKE_AUTH_SCHEME_SITHS = "urn:inera:rehabstod:siths:fake";
+    private static final String FAKE_AUTH_SCHEME_SITHS = "urn:inera:webcert:siths:fake";
 
     public void login(FakeLoginDTO fakeProps, HttpServletRequest request) {
         final var oldSession = request.getSession(false);

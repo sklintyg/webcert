@@ -51,7 +51,7 @@ public class WebcertUserDetailsService extends BaseUserDetailsService {
         final var user = super.buildUserPrincipal(employeeHsaId, authenticationScheme);
         final var  webCertUser = new WebCertUser(user);
         webCertUser.setAnvandarPreference(anvandarMetadataRepository.getAnvandarPreference(webCertUser.getHsaId()));
-        webCertUser.setIdentityProviderForSign(authenticationScheme);
+        //webCertUser.setIdentityProviderForSign(authenticationScheme);
         subscriptionService.checkSubscriptions(webCertUser);
         return webCertUser;
     }

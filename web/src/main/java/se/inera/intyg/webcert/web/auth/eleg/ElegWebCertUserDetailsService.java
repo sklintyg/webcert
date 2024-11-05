@@ -204,7 +204,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         user.setForskrivarkod("0000000");
 
         decorateWebCertUserWithAuthenticationScheme(authenticationScheme, user);
-        decorateWebCertUserWithAuthenticationMethod(authenticationScheme, user);
+        //decorateWebCertUserWithAuthenticationMethod(authenticationScheme, user);
         decorateWebCertUserWithAvailableFeatures(user);
         decorateWebCertUserWithLegitimeradeYrkesgrupper(hosPerson, user);
         decorateWebCertUserWithSpecialiceringar(hosPerson, user);

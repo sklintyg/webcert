@@ -27,15 +27,15 @@ import java.util.List;
  */
 public final class AuthConstants {
 
-    public static final String RELYING_PARTY_REGISTRATION_ID_SITHS = "siths";
     public static final String RELYING_PARTY_REGISTRATION_ID_ELEG = "eleg";
-    public static final String RELYING_PARTY_REGISTRATION_ID_SITHS_NORMAL = "defaultAliasNormal";
+    public static final String RELYING_PARTY_REGISTRATION_ID_SITHS = "siths";
+    public static final String RELYING_PARTY_REGISTRATION_ID_SITHS_NORMAL = "sithsNormal";
     public static final String AUTHN_METHOD = "urn:sambi:names:attribute:authnMethod";
     public static final String EMPLOYEE_HSA_ID = "http://sambi.se/attributes/1/employeeHsaId";
 
 
-    public static final String ALIAS_SITHS = "defaultAlias";
-    public static final String ALIAS_SITHS_NORMAL = "defaultAliasNormal";
+    public static final String ALIAS_SITHS = "siths";
+    public static final String ALIAS_SITHS_NORMAL = "sithsNormal";
     public static final String ALIAS_ELEG = "eleg";
 
     public static final String SPRING_SECURITY_CONTEXT = "SPRING_SECURITY_CONTEXT";

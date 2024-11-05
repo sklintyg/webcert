@@ -317,11 +317,11 @@ public class DssMetadataService {
                 final var keyInfo = keyDescriptor.getKeyInfo();
                 final var x509Datas = Objects.requireNonNull(keyInfo).getX509Datas();
                 for (final var x509Data : x509Datas) {
-                    var x509Certificates = x509Data.getX509Certificates();
+                    final var x509Certificates = Objects.requireNonNull(x509Data).getX509Certificates();
                     for (final var x509Certificate : x509Certificates) {
                         final var cf = CertificateFactory.getInstance("X.509");
-                        final var inputStream = new ByteArrayInputStream(Base64.getMimeDecoder()
-                            .decode(x509Certificate.getValue()));
+                        final var decodedX509Cert = Base64.getMimeDecoder().decode(Objects.requireNonNull(x509Certificate).getValue());
+                        final var inputStream = new ByteArrayInputStream(decodedX509Cert);
                         final var base64Certificate = (X509Certificate) cf.generateCertificate(inputStream);
                         dssKeyStore.setCertificateEntry("dss" + aliasNumber, base64Certificate);
                         aliasNumber++;

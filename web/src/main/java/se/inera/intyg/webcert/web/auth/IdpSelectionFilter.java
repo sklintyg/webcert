@@ -32,7 +32,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.web.savedrequest.SavedRequest;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import se.inera.intyg.webcert.web.auth.common.AuthConstants;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -45,7 +44,7 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
  *
  * Created by eriklupander on 2015-10-12.
  */
-@Component(value = "idpSelectionFilter")
+//@Component(value = "idpSelectionFilter")
 public class IdpSelectionFilter extends OncePerRequestFilter {
 
     @Value("${cgi.funktionstjanster.saml.idp.metadata.url}")
