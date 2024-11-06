@@ -21,7 +21,9 @@ package se.inera.intyg.webcert.web.config;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
-import static org.springframework.security.web.util.matcher.RegexRequestMatcher.regexMatcher;
+import static se.inera.intyg.webcert.web.auth.CustomAuthenticationEntrypoint.ELEG_REQUEST_MATCHER;
+import static se.inera.intyg.webcert.web.auth.CustomAuthenticationEntrypoint.SITHS_NORMAL_REQUEST_MATCHER;
+import static se.inera.intyg.webcert.web.auth.CustomAuthenticationEntrypoint.SITHS_REQUEST_MATCHER;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.EMPLOYEE_HSA_ID;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.RELYING_PARTY_REGISTRATION_ID_ELEG;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.RELYING_PARTY_REGISTRATION_ID_SITHS;
@@ -55,6 +57,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
 import org.springframework.security.saml2.core.Saml2X509Credential;
 import org.springframework.security.saml2.provider.service.authentication.DefaultSaml2AuthenticatedPrincipal;
 import org.springframework.security.saml2.provider.service.authentication.OpenSaml4AuthenticationProvider;
@@ -69,23 +72,22 @@ import org.springframework.security.saml2.provider.service.web.authentication.Sa
 import org.springframework.security.saml2.provider.service.web.authentication.logout.OpenSaml4LogoutRequestResolver;
 import org.springframework.security.saml2.provider.service.web.authentication.logout.Saml2LogoutRequestResolver;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.savedrequest.RequestCache;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisIndexedHttpSession;
 import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 import se.inera.intyg.infra.security.common.cookie.IneraCookieSerializer;
 import se.inera.intyg.webcert.web.auth.CsrfCookieFilter;
+import se.inera.intyg.webcert.web.auth.CustomAuthenticationEntrypoint;
 import se.inera.intyg.webcert.web.auth.CustomAuthenticationFailureHandler;
 import se.inera.intyg.webcert.web.auth.CustomAuthenticationSuccessHandler;
-import se.inera.intyg.webcert.web.auth.RedisSavedRequestCache;
+import se.inera.intyg.webcert.web.auth.CustomXFrameOptionsHeaderWriter;
 import se.inera.intyg.webcert.web.auth.Saml2AuthenticationToken;
 import se.inera.intyg.webcert.web.auth.SpaCsrfTokenRequestHandler;
-import se.inera.intyg.webcert.web.auth.TestAuthenticationEntrypoint;
-import se.inera.intyg.webcert.web.auth.TestAuthenticationEntrypoint2;
 import se.inera.intyg.webcert.web.auth.common.AuthConstants;
 import se.inera.intyg.webcert.web.auth.common.UnifiedUserDetailsService;
 import se.inera.intyg.webcert.web.auth.eleg.ElegAuthenticationMethodResolver;
@@ -127,7 +129,6 @@ public class WebSecurityConfig {
     @Value("${saml.sp.single.logout.service.response.location}")
     private String singleLogoutServiceResponseLocation;
 
-
     @Value("${saml.logout.success.url}")
     private String samlLogoutSuccessUrl;
     @Value("${saml.keystore.type:PKCS12}")
@@ -152,7 +153,6 @@ public class WebSecurityConfig {
         keyStoreSiths.load(new FileInputStream(ResourceUtils.getFile(keyStorePath)), keyStorePassword.toCharArray());
         final var appPrivateKey = (PrivateKey) keyStoreSiths.getKey(keyAlias, keyStorePassword.toCharArray());
         final var appCertificate = (X509Certificate) keyStoreSiths.getCertificate(keyAlias);
-
 
         final var registrationSiths = RelyingPartyRegistrations
             .fromMetadataLocation(samlIdpMetadataLocationSiths)
@@ -189,9 +189,10 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, RelyingPartyRegistrationRepository relyingPartyRegistrationRepository,
-        Saml2LogoutRequestResolver logoutRequestResolver, RedisSavedRequestCache redisSavedRequestCache,
-        TestAuthenticationEntrypoint testAuthenticationEntrypoint,
-        TestAuthenticationEntrypoint2 testAuthenticationEntrypoint2) throws Exception {
+        Saml2LogoutRequestResolver logoutRequestResolver,
+        CustomAuthenticationEntrypoint customAuthenticationEntrypoint,
+        CustomXFrameOptionsHeaderWriter customXFrameOptionsHeaderWriter,
+        RequestCache requestCache) throws Exception {
 
         if (environment.matchesProfiles("dev", "testability-api")) {
             configureTestability(http);
@@ -199,7 +200,7 @@ public class WebSecurityConfig {
 
         http
             .authorizeHttpRequests(request -> request
-                .requestMatchers(antMatcher("/")).permitAll()
+                //.requestMatchers(antMatcher("/")).permitAll()
                 .requestMatchers(antMatcher("/metrics")).permitAll()
                 .requestMatchers(antMatcher("/services/**")).permitAll()
                 .requestMatchers(antMatcher("/api/config/**")).permitAll()
@@ -212,8 +213,7 @@ public class WebSecurityConfig {
                 .requestMatchers(antMatcher("/api/v1/session/invalidate")).permitAll()
                 .requestMatchers(antMatcher("/api/modules/map")).permitAll()
                 .requestMatchers(antMatcher("/api/modules/active")).permitAll()
-                .anyRequest().fullyAuthenticated()
-            )
+                .anyRequest().fullyAuthenticated())
             .saml2Metadata(withDefaults())
             .saml2Login(saml2 -> saml2
                 .relyingPartyRegistrationRepository(relyingPartyRegistrationRepository)
@@ -221,31 +221,33 @@ public class WebSecurityConfig {
                 .failureHandler(customAuthenticationFailureHandler)
                 .successHandler(customAuthenticationSuccessHandler)
             )
-            .saml2Logout(saml2 -> saml2.logoutRequest(logout -> logout.logoutRequestResolver(logoutRequestResolver)))
-            .logout(logout ->
-                logout.logoutSuccessUrl(samlLogoutSuccessUrl)
+            .saml2Logout(saml2 -> saml2
+                .logoutRequest(logout -> logout
+                    .logoutRequestResolver(logoutRequestResolver))
+            )
+            .logout(logout -> logout
+                .logoutSuccessUrl(samlLogoutSuccessUrl)
             )
             .requestCache(cacheConfigurer -> cacheConfigurer
-                .requestCache(new HttpSessionRequestCache())
+                .requestCache(requestCache)
             )
             .exceptionHandling(exceptionConfigurer -> exceptionConfigurer
-                .defaultAccessDeniedHandlerFor(testAuthenticationEntrypoint,
-                    regexMatcher("(\\/visa\\/intyg\\/.*)|(\\/v2\\/visa\\/intyg\\/.*)|(\\/webcert\\/web\\/.*)|(\\/web\\/maillink\\/.*)"))
-
-
-                .defaultAuthenticationEntryPointFor(testAuthenticationEntrypoint2,
-                    regexMatcher("(\\/visa\\/intyg\\/.*)|(\\/v2\\/visa\\/intyg\\/.*)|(\\/webcert\\/web\\/.*)|(\\/web\\/maillink\\/.*)"))
-
-                .authenticationEntryPoint(new Http403ForbiddenEntryPoint())
-
+                .defaultAuthenticationEntryPointFor(customAuthenticationEntrypoint,
+                    new OrRequestMatcher(ELEG_REQUEST_MATCHER, SITHS_REQUEST_MATCHER, SITHS_NORMAL_REQUEST_MATCHER))
+            )
+            .headers(headersConfigurer -> headersConfigurer
+                .frameOptions(FrameOptionsConfig::disable)
+                .addHeaderWriter(customXFrameOptionsHeaderWriter)
             )
             .csrf(csrfConfigurer -> csrfConfigurer
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 .csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler())
                 .ignoringRequestMatchers(
+                    SITHS_REQUEST_MATCHER,
+                    antMatcher("/api/signature/**"),
+                    antMatcher("/api/signature/**"),
                     antMatcher("/api/testability/**"),
-                    antMatcher("/services/**")
-                )
+                    antMatcher("/services/**"))
             )
             .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class);
 
@@ -293,7 +295,8 @@ public class WebSecurityConfig {
             }
 
             final var saml2Response = authentication.getSaml2Response();
-            final var matcher = Pattern.compile("(?<=<saml2:AuthnContextClassRef>).*(?=</saml2:AuthnContextClassRef>)").matcher(saml2Response);
+            final var matcher = Pattern.compile("(?<=<saml2:AuthnContextClassRef>).*(?=</saml2:AuthnContextClassRef>)")
+                .matcher(saml2Response);
             final var authMethod = matcher.find() ? matcher.group() : null;
 
             final var personId = getAttribute(authentication, EMPLOYEE_HSA_ID);

@@ -22,50 +22,37 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.web.savedrequest.DefaultSavedRequest;
+import org.springframework.security.web.savedrequest.RequestCache;
+import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.infra.security.common.model.UserOrigin;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
-import se.inera.intyg.webcert.web.auth.RedisSavedRequestCache;
 
 @Component
 @Slf4j
 @RequiredArgsConstructor
 public class WebCertUserOrigin implements UserOrigin {
 
-//    @Resource
-//    private Environment environment;
-
-    private final RedisSavedRequestCache redisSavedRequestCache;
+    private final RequestCache requestCache;
 
     public static final String REGEXP_REQUESTURI_DJUPINTEGRATION = "(/v\\d+)?/visa/intyg/.+$";
-    private static final String FAKE = "/fake";
     private static final String USER_JSON_DISPLAY = "userJsonDisplay";
     private static final String ORIGIN = "origin";
+    private static final String FAKE = "/fake";
 
     @Override
     public String resolveOrigin(HttpServletRequest request) {
-        //Assert.notNull(request, "Request required");
-
-//        DefaultSavedRequest savedRequest = getSavedRequest(request);
-//        if (savedRequest == null) {
-//            // Try to get saved request directly from Redis
-//            savedRequest = (DefaultSavedRequest) redisSavedRequestCache.getRequest(request, null); // valueOps.get(requestedSessionId);
-//            if (savedRequest == null) {
-//                return UserOriginType.NORMAL.name();
-//            }
-//        }
 
         if (request == null) {
-            throw new IllegalStateException("Failure resolving user origin. HttpServletRequest was null");
+            throw new IllegalArgumentException("Failure resolving user origin. HttpServletRequest was null");
         }
 
-        final var savedRequest = (DefaultSavedRequest) redisSavedRequestCache.getRequest(request, null);
+        final var savedRequest = requestCache.getRequest(request, null);
         return savedRequest == null ? UserOriginType.NORMAL.name() : getUserOrigin(savedRequest);
     }
 
-    private String getUserOrigin(DefaultSavedRequest savedRequest) {
-        final var requestUrl = savedRequest.getRequestURI();
+    private String getUserOrigin(SavedRequest savedRequest) {
+        final var requestUrl = savedRequest.getRedirectUrl();
         if (requestUrl.matches(REGEXP_REQUESTURI_DJUPINTEGRATION)) {
             return UserOriginType.DJUPINTEGRATION.name();
         }
@@ -75,7 +62,7 @@ public class WebCertUserOrigin implements UserOrigin {
         return UserOriginType.NORMAL.name();
     }
 
-    private String extractOriginFromRequest(DefaultSavedRequest savedRequest) {
+    private String extractOriginFromRequest(SavedRequest savedRequest) {
         final var mapper = new ObjectMapper();
         try {
             final var content = String.valueOf(savedRequest.getParameterMap().get(USER_JSON_DISPLAY)[0]);
@@ -88,7 +75,4 @@ public class WebCertUserOrigin implements UserOrigin {
         }
     }
 
-//    private DefaultSavedRequest getSavedRequest(HttpServletRequest request) {
-//        return (DefaultSavedRequest) request.getSession().getAttribute(SPRING_SECURITY_SAVED_REQUEST_KEY);
-//    }
 }

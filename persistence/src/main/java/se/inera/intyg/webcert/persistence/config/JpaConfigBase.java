@@ -48,8 +48,6 @@ public abstract class JpaConfigBase {
     @Value("${db.pool.maxSize}")
     private int dbPoolMaxSize;
 
-    @Value("${hibernate.dialect}")
-    private String hibernateDialect;
     @Value("${hibernate.hbm2ddl.auto}")
     private String hibernateHbm2ddl;
     @Value("${hibernate.ejb.naming_strategy}")
@@ -69,7 +67,6 @@ public abstract class JpaConfigBase {
         entityManagerFactoryBean.setPackagesToScan(BASE_PACKAGES);
 
         final Properties jpaProperties = new Properties();
-        jpaProperties.put("hibernate.dialect", hibernateDialect);
         jpaProperties.put("hibernate.hbm2ddl.auto", hibernateHbm2ddl);
         jpaProperties.put("hibernate.ejb.naming_strategy", hibernateNamingStrategy);
         jpaProperties.put("hibernate.show_sql", hibernateShowSql);

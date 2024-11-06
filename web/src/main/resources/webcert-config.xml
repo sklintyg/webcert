@@ -169,16 +169,12 @@
 
     <bean id="patientDetailsResolver" class="se.inera.intyg.webcert.web.service.patient.PatientDetailsResolverImpl"/>
 
-    <bean id="savedRequestFactory" class="se.inera.intyg.webcert.web.auth.SavedRequestFactoryImpl"/>
-
-<!--    <bean id="idpSelectionFilter" class="se.inera.intyg.webcert.web.auth.IdpSelectionFilter">-->
-<!--        <property name="savedRequestFactory" ref="savedRequestFactory"/>-->
-<!--    </bean>-->
+<!--    <bean id="savedRequestFactory" class="se.inera.intyg.webcert.web.auth.SavedRequestFactoryImpl"/>-->
 
     <bean id="defaultCharacterEncodingFilter" class="se.inera.intyg.webcert.web.web.filter.DefaultCharacterEncodingFilter" />
 
     <!-- Eleg login redirect filter for easier URL handling in PP -->
-    <bean id="elegRedirectFilter" class="se.inera.intyg.webcert.web.auth.eleg.ElegRedirectFilter" />
+<!--    <bean id="elegRedirectFilter" class="se.inera.intyg.webcert.web.auth.eleg.ElegRedirectFilter" />-->
 
     <bean id="internalApiFilter" class="se.inera.intyg.infra.security.filter.InternalApiFilter" />
 

@@ -254,14 +254,14 @@
 <!--        <url-pattern>/web/maillink/*</url-pattern>-->
 <!--    </filter-mapping>-->
 
-    <filter>
-        <filter-name>elegRedirectFilter</filter-name>
-        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>elegRedirectFilter</filter-name>
-        <url-pattern>/web/eleglogin</url-pattern>
-    </filter-mapping>
+<!--    <filter>-->
+<!--        <filter-name>elegRedirectFilter</filter-name>-->
+<!--        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>-->
+<!--    </filter>-->
+<!--    <filter-mapping>-->
+<!--        <filter-name>elegRedirectFilter</filter-name>-->
+<!--        <url-pattern>/web/eleglogin</url-pattern>-->
+<!--    </filter-mapping>-->
 
     <filter>
         <filter-name>sessionTimeoutFilter</filter-name>

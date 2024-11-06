@@ -20,13 +20,6 @@ package se.inera.intyg.webcert.web.auth.eleg;
 
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 
-/**
- * Resolves {@link AuthenticationMethod} used for a e-leg authentication.
- *
- * E.g. NetID, BankID or Mobilt BankID.
- *
- * Created by eriklupander on 2015-08-24.
- */
 public interface ElegAuthenticationMethodResolver {
 
     AuthenticationMethod resolveAuthenticationMethod(String authenticationScheme);

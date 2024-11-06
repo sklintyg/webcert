@@ -26,6 +26,7 @@ import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 @Slf4j
 public class ElegAuthenticationMethodResolverImpl implements ElegAuthenticationMethodResolver {
 
+    @Override
     public AuthenticationMethod resolveAuthenticationMethod(String loginMethod) {
 
         if (loginMethod == null) {
@@ -36,8 +37,8 @@ public class ElegAuthenticationMethodResolverImpl implements ElegAuthenticationM
         try {
             loginMethodEnum = ElegLoginMethod.valueOf(loginMethod.toUpperCase());
         } catch (IllegalArgumentException e) {
-            log.warn("Cannot resolve AuthenticationMethod from SAML attribute 'LoginMethod': {}", loginMethod);
-            throw new IllegalArgumentException("Could not parse AuthenticationMethod from SAML attribute 'LoginMethod': " + loginMethod, e);
+            throw new IllegalArgumentException("Failure parsing AuthenticationMethod from SAML attribute 'LoginMethod': %s"
+                .formatted(loginMethod), e);
         }
         return switch (loginMethodEnum) {
             case CCP1, CCP2, CCP8 -> AuthenticationMethod.NET_ID;

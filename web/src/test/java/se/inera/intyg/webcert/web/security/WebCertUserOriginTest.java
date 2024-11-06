@@ -24,29 +24,25 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SPRING_SECURITY_SAVED_REQUEST_KEY;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.web.savedrequest.DefaultSavedRequest;
-import se.inera.intyg.webcert.web.auth.RedisSavedRequestCache;
+import org.springframework.security.web.savedrequest.RequestCache;
+import org.springframework.security.web.savedrequest.SavedRequest;
 
-/**
- * Created by Magnus Ekstrand on 03/12/15.
- */
 @RunWith(MockitoJUnitRunner.class)
 public class WebCertUserOriginTest {
 
     @Mock
-    private RedisSavedRequestCache redisSavedRequestCache;
+    private RequestCache requestCache;
 
     @InjectMocks
-    private WebCertUserOrigin webcertUserOrigin = new WebCertUserOrigin();
+    private WebCertUserOrigin webcertUserOrigin;
 
     @Test
     public void testDjupintegrationRegexp() {
@@ -61,45 +57,40 @@ public class WebCertUserOriginTest {
 
     @Test
     public void testResolveOriginNormal() {
-        String res = webcertUserOrigin.resolveOrigin(buildRequest("non/matching/url"));
-
+        final var res = webcertUserOrigin.resolveOrigin(buildRequest("non/matching/url"));
         assertEquals("NORMAL", res);
     }
 
     @Test
     public void testResolveOriginNormalNoSavedRequest() {
-        when(redisSavedRequestCache.getRequest(any(HttpServletRequest.class), isNull())).thenReturn(null);
-        String res = webcertUserOrigin.resolveOrigin(buildRequest(null));
+        when(requestCache.getRequest(any(HttpServletRequest.class), isNull())).thenReturn(null);
 
+        final var res = webcertUserOrigin.resolveOrigin(buildRequest(null));
         assertEquals("NORMAL", res);
     }
 
     @Test
     public void testResolveOriginDjupintegrationFromRedisSavedRequest() {
-        DefaultSavedRequest defaultSavedRequest = mock(DefaultSavedRequest.class);
-        when(defaultSavedRequest.getRequestURI()).thenReturn("/visa/intyg/luse/99aaa4f1-d862-4750-a628-f7dcb9c8bac0");
+        SavedRequest defaultSavedRequest = mock(DefaultSavedRequest.class);
+        when(defaultSavedRequest.getRedirectUrl()).thenReturn("/visa/intyg/luse/99aaa4f1-d862-4750-a628-f7dcb9c8bac0");
+        when(requestCache.getRequest(any(HttpServletRequest.class), isNull())).thenReturn(defaultSavedRequest);
 
-        when(redisSavedRequestCache.getRequest(any(HttpServletRequest.class), isNull()))
-            .thenReturn(defaultSavedRequest);
-        String res = webcertUserOrigin.resolveOrigin(buildRequest(null));
-
+        final var res = webcertUserOrigin.resolveOrigin(buildRequest(null));
         assertEquals("DJUPINTEGRATION", res);
     }
 
     @Test
     public void testResolveOriginDjupintegration() {
-        String res = webcertUserOrigin.resolveOrigin(buildRequest("/visa/intyg/luse/99aaa4f1-d862-4750-a628-f7dcb9c8bac0"));
-
+        final var res = webcertUserOrigin.resolveOrigin(buildRequest("/visa/intyg/luse/99aaa4f1-d862-4750-a628-f7dcb9c8bac0"));
         assertEquals("DJUPINTEGRATION", res);
     }
 
     private HttpServletRequest buildRequest(String uri) {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getSession()).thenReturn(mock(HttpSession.class));
+        final var request = mock(HttpServletRequest.class);
         if (uri != null) {
-            DefaultSavedRequest defaultSavedRequest = mock(DefaultSavedRequest.class);
-            when(defaultSavedRequest.getRequestURI()).thenReturn(uri);
-            when(request.getSession().getAttribute(SPRING_SECURITY_SAVED_REQUEST_KEY)).thenReturn(defaultSavedRequest);
+            final var defaultSavedRequest = mock(DefaultSavedRequest.class);
+            when(defaultSavedRequest.getRedirectUrl()).thenReturn(uri);
+            when(requestCache.getRequest(any(HttpServletRequest.class), isNull())).thenReturn(defaultSavedRequest);
         }
         return request;
     }

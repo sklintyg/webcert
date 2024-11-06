@@ -16,35 +16,40 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package se.inera.intyg.webcert.web.auth;
 
-import jakarta.servlet.ServletException;
+import static org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter.XFRAME_OPTIONS_HEADER;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.AuthenticationEntryPoint;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.web.header.HeaderWriter;
 import org.springframework.stereotype.Component;
 
+/**
+ * Created by marced on 2017-10-25.
+ */
+
 @Component
-public class TestAuthenticationEntrypoint2 implements AuthenticationEntryPoint {
+@Slf4j
+public class CustomXFrameOptionsHeaderWriter implements HeaderWriter {
 
-    @Autowired
-    private RedisSavedRequestCache redisSavedRequestCache;
-
+    private static final String PDF_API_IDENTIFIER = "/pdf";
 
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
-        throws IOException, ServletException {
+    public void writeHeaders(HttpServletRequest request, HttpServletResponse response) {
 
-        final var authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            response.sendRedirect("/saml2/authenticate/siths");
-            redisSavedRequestCache.saveRequest(request, response);
+        final var requestUri = request.getRequestURI();
+
+        if (shouldSkipHeader(requestUri)) {
+            log.debug("Skipping {} header for request to {}", XFRAME_OPTIONS_HEADER, requestUri);
+        } else {
+            response.addHeader(XFRAME_OPTIONS_HEADER, "DENY");
         }
-
     }
+
+    private boolean shouldSkipHeader(String requestUri) {
+        return requestUri.contains(PDF_API_IDENTIFIER);
+    }
+
 }

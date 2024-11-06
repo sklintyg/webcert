@@ -62,8 +62,8 @@ public class AuthenticationEventListener {
     }
 
     private static Optional<WebCertUser> getWebcertUser(Object principal) {
-        if (principal instanceof WebCertUser rehabstodUser) {
-            return Optional.of(rehabstodUser);
+        if (principal instanceof WebCertUser webCertUser) {
+            return Optional.of(webCertUser);
         }
         log.warn("Invalid principal [{}]", principal.getClass().getSimpleName());
         return Optional.empty();

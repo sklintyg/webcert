@@ -26,13 +26,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.regex.Pattern;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.security.web.savedrequest.DefaultSavedRequest;
+import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -43,14 +44,13 @@ import se.inera.intyg.webcert.web.web.controller.integration.IntygIntegrationCon
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 @Service
+@RequiredArgsConstructor
 public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     @Value("${webcert.domain.name}")
     private String webcertDomainName;
 
-    //private RequestCache requestCache = new HttpSessionRequestCache();
-    @Autowired
-    private RedisSavedRequestCache requestCache;
+    private final RequestCache requestCache;
 
     private final Pattern djupintegrationPattern = Pattern.compile(REGEXP_REQUESTURI_DJUPINTEGRATION);
 
@@ -148,7 +148,4 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         return defaultValue;
     }
 
-    //public void setRequestCache(RequestCache requestCache) {
-    //    this.requestCache = requestCache;
-    //}
 }
