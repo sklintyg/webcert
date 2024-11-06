@@ -111,15 +111,6 @@ class UtkastToCertificateConverterTest {
     private static final String PERSON_ID_FROM_JSON = "PersonId - json";
     private static final String PERSON_NAME_FROM_JSON = "Doctor Alpha - json";
 
-    @BeforeEach
-    void setup() {
-        final var user = mock(WebCertUser.class);
-        when(webCertUserService.getUser())
-            .thenReturn(user);
-        when(user.getOrigin())
-            .thenReturn("NORMAL");
-    }
-
     @Nested
     class TestConvert {
 
@@ -138,11 +129,14 @@ class UtkastToCertificateConverterTest {
 
             doReturn(patient)
                 .when(patientConverter).convert(
-                    patient,
-                    draft.getPatientPersonnummer(),
-                    draft.getIntygsTyp(),
-                    draft.getIntygTypeVersion()
+                    any(), any(), any(), any()
                 );
+
+            final var user = mock(WebCertUser.class);
+            when(webCertUserService.getUser())
+                .thenReturn(user);
+            when(user.getOrigin())
+                .thenReturn("DJUPINTEGRATION");
         }
 
         @Test
@@ -566,6 +560,11 @@ class UtkastToCertificateConverterTest {
             final var moduleApi = mock(ModuleApi.class);
             doReturn(moduleApi).when(moduleRegistry).getModuleApi(anyString(), eq(draft.getIntygTypeVersion()));
             doReturn(createCertificate()).when(moduleApi).getCertificateFromJson(draft.getModel(), typeAheadProvider);
+            final var user = mock(WebCertUser.class);
+            when(webCertUserService.getUser())
+                .thenReturn(user);
+            when(user.getOrigin())
+                .thenReturn("NORMAL");
         }
 
         @Test
