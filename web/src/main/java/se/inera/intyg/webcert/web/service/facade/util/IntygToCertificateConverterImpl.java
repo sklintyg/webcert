@@ -36,7 +36,9 @@ import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.facade.TypeAheadProvider;
 import se.inera.intyg.infra.integration.hsatk.services.HsatkOrganizationService;
+import se.inera.intyg.webcert.web.service.facade.modal.confirmation.ConfirmationModalProviderResolver;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 @Component
 public class IntygToCertificateConverterImpl implements IntygToCertificateConverter {
@@ -58,6 +60,8 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
 
     private final CertificateRecipientConverter certificateRecipientConverter;
 
+    private final WebCertUserService webCertUserService;
+
     @Autowired
     public IntygToCertificateConverterImpl(IntygModuleRegistry moduleRegistry,
         IntygTextsService intygTextsService,
@@ -65,7 +69,7 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
         CertificateRelationsConverter certificateRelationsConverter,
         HsatkOrganizationService hsatkOrganizationService,
         TypeAheadProvider typeAheadProvider,
-        CertificateRecipientConverter certificateRecipientConverter) {
+        CertificateRecipientConverter certificateRecipientConverter, WebCertUserService webCertUserService) {
         this.moduleRegistry = moduleRegistry;
         this.intygTextsService = intygTextsService;
         this.patientConverter = patientConverter;
@@ -73,6 +77,7 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
         this.hsatkOrganizationService = hsatkOrganizationService;
         this.typeAheadProvider = typeAheadProvider;
         this.certificateRecipientConverter = certificateRecipientConverter;
+        this.webCertUserService = webCertUserService;
     }
 
     @Override
@@ -145,6 +150,17 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
         certificateToReturn.getMetadata().setAvailableForCitizen(
             !(certificate.getUtlatande().getTyp().equals(DbModuleEntryPoint.MODULE_ID)
                 || certificate.getUtlatande().getTyp().equals(DoiModuleEntryPoint.MODULE_ID))
+        );
+
+        final var origin = webCertUserService.getUser().getOrigin();
+        final var confirmationModelProvider = ConfirmationModalProviderResolver.get(certificateToReturn.getMetadata().getType(),
+            certificateToReturn.getMetadata().getStatus(), origin, false);
+        certificateToReturn.getMetadata().setConfirmationModal(
+            confirmationModelProvider != null ? confirmationModelProvider.create(
+                certificateToReturn.getMetadata().getPatient().getFullName(),
+                certificateToReturn.getMetadata().getPatient().getPersonId().getId(),
+                origin
+            ) : null
         );
 
         return certificateToReturn;

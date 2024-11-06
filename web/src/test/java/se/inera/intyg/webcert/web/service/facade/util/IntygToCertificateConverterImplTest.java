@@ -75,6 +75,8 @@ import se.inera.intyg.infra.integration.hsatk.model.HealthCareUnit;
 import se.inera.intyg.infra.integration.hsatk.services.HsatkOrganizationService;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
 @ExtendWith(MockitoExtension.class)
@@ -129,6 +131,9 @@ public class IntygToCertificateConverterImplTest {
     @Mock
     private CertificateRecipientConverter certificateRecipientConverter;
 
+    @Mock
+    private WebCertUserService webCertUserService;
+
     @InjectMocks
     private IntygToCertificateConverterImpl intygToCertificateConverter;
 
@@ -136,6 +141,15 @@ public class IntygToCertificateConverterImplTest {
     private final IntygContentHolder intygContentHolder = createIntygContentHolder();
     private final CertificateRelations certificateRelations = CertificateRelations.builder().build();
     private final Patient patient = getPatient();
+
+    @BeforeEach
+    void setup() {
+        final var user = mock(WebCertUser.class);
+        when(webCertUserService.getUser())
+            .thenReturn(user);
+        when(user.getOrigin())
+            .thenReturn("DJUPINTEGRATION");
+    }
 
     @Nested
     class TestConvert {
@@ -145,7 +159,7 @@ public class IntygToCertificateConverterImplTest {
             final var moduleApi = mock(ModuleApi.class);
             doReturn(moduleApi)
                 .when(moduleRegistry)
-                .getModuleApi(CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION);
+                .getModuleApi(anyString(), anyString());
 
             doReturn(createCertificate())
                 .when(moduleApi).getCertificateFromJson(CONTENT_JSON, typeAheadProvider);
@@ -155,10 +169,10 @@ public class IntygToCertificateConverterImplTest {
 
             doReturn(patient)
                 .when(patientConverter).convert(
-                    patient,
-                    PATIENT_PERSONNUMMER,
-                    CERTIFICATE_TYPE,
-                    CERTIFICATE_TYPE_VERSION
+                    any(),
+                    any(),
+                    anyString(),
+                    anyString()
                 );
         }
 
@@ -222,6 +236,13 @@ public class IntygToCertificateConverterImplTest {
                 final var actualCertificate = intygToCertificateConverter.convert(intygContentHolder);
 
                 assertEquals(expectedCreated, actualCertificate.getMetadata().getCreated());
+            }
+
+            @Test
+            void shallNotIncludeConfirmationModalIfProviderIsNotAvailable() {
+                final var actualCertificate = intygToCertificateConverter.convert(intygContentHolder);
+
+                assertNull(actualCertificate.getMetadata().getConfirmationModal());
             }
 
             @Test
