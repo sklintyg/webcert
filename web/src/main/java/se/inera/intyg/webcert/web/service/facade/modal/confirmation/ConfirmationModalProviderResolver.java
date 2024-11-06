@@ -30,8 +30,9 @@ public class ConfirmationModalProviderResolver {
 
     public static ConfirmationModalProvider get(String type, CertificateStatus status, String origin, boolean isCreatedFromList) {
         final var isIntegratedOrigin = origin.equals("DJUPINTEGRATION");
+        final var isValid = isIntegratedOrigin ? isValidForIntegratedOrigin() : isValidForNormalOrigin(isCreatedFromList);
 
-        if (!isIntegratedOrigin && !isCreatedFromList) {
+        if (!isValid) {
             return null;
         }
 
@@ -44,6 +45,14 @@ public class ConfirmationModalProviderResolver {
         }
 
         return null;
+    }
+
+    private static boolean isValidForIntegratedOrigin() {
+        return true;
+    }
+
+    private static boolean isValidForNormalOrigin(boolean isCreatedFromList) {
+        return isCreatedFromList;
     }
 
 }
