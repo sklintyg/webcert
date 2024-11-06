@@ -107,9 +107,8 @@ public class ListPreviousCertificatesFacadeServiceImpl implements ListPreviousCe
         final var user = webCertUserService.getUser();
         final var units = getUnits();
 
-        final var protectedPatientStatus = checkUserAccess(user, patientId);
         final var certificatesForPatient = certificateForPatientService.get(filter, patientId, units);
-        final var filteredList = filterProtectedPatients(protectedPatientStatus, certificatesForPatient);
+        final var filteredList = filterProtectedPatients(user, patientId, certificatesForPatient);
 
         resourceLinkHelper.decorateIntygWithValidActionLinks(filteredList, patientId);
         listDecorator.decorateWithCertificateTypeName(filteredList);
@@ -139,14 +138,25 @@ public class ListPreviousCertificatesFacadeServiceImpl implements ListPreviousCe
         return value.getValue();
     }
 
-    private List<ListIntygEntry> filterProtectedPatients(SekretessStatus protectedPatientStatus, List<ListIntygEntry> list) {
-        if (protectedPatientStatus == SekretessStatus.TRUE) {
-            final var allowedTypes = authoritiesHelper.getIntygstyperAllowedForSekretessmarkering();
-            return list.stream()
-                .filter(certificate -> allowedTypes.contains(certificate.getIntygType()))
-                .collect(Collectors.toList());
+    private List<ListIntygEntry> filterProtectedPatients(WebCertUser user, Personnummer patientId, List<ListIntygEntry> list) {
+        final var protectedPatientStatus = patientDetailsResolver.getSekretessStatus(patientId);
+        if (protectedPatientStatus == SekretessStatus.UNDEFINED) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
+                "Error checking sekretessmarkering state in PU-service.");
         }
-        return list;
+
+        if (protectedPatientStatus == SekretessStatus.FALSE) {
+            return list;
+        }
+        
+        return list.stream()
+            .filter(certificate ->
+                authoritiesValidator
+                    .given(user, certificate.getIntygType())
+                    .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
+                    .isVerified()
+            )
+            .collect(Collectors.toList());
     }
 
     private Personnummer formatPatientId(ListFilter filter) {
@@ -192,23 +202,6 @@ public class ListPreviousCertificatesFacadeServiceImpl implements ListPreviousCe
         }
 
         return statusFilter.getValue().equals(statusType.toString());
-    }
-
-    private SekretessStatus checkUserAccess(WebCertUser user, Personnummer patientId) {
-        final var protectedPatientStatus = patientDetailsResolver.getSekretessStatus(patientId);
-        if (protectedPatientStatus == SekretessStatus.UNDEFINED) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
-                "Error checking sekretessmarkering state in PU-service.");
-        }
-
-        authoritiesValidator.given(user)
-            .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, protectedPatientStatus == SekretessStatus.TRUE)
-            .orThrow(
-                new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING,
-                    "User missing required privilege or cannot handle sekretessmarkerad patient")
-            );
-
-        return protectedPatientStatus;
     }
 
     private void logListUsage(Personnummer patientId, WebCertUser user) {
