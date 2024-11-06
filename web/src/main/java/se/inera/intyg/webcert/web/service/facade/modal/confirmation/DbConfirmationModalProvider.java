@@ -28,6 +28,7 @@ import se.inera.intyg.common.support.facade.model.metadata.CertificateModalActio
 @Component
 public class DbConfirmationModalProvider implements ConfirmationModalProvider {
 
+    @Override
     public CertificateConfirmationModal create(String patientName, String patientId, String origin) {
         final var isIntegratedOrigin = origin.equals("DJUPINTEGRATION");
 
