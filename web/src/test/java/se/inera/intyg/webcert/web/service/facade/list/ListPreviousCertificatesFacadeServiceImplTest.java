@@ -36,6 +36,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
+import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.web.csintegration.aggregate.ListCertificatesAggregator;
 import se.inera.intyg.webcert.web.service.facade.list.config.GetStaffInfoFacadeService;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterBooleanValue;
@@ -106,6 +108,9 @@ class ListPreviousCertificatesFacadeServiceImplTest {
     void setup() {
         final var webCertUser = new WebCertUser();
         when(webCertUserService.getUser()).thenReturn(webCertUser);
+
+        when(patientDetailsResolver.getSekretessStatus(Personnummer.createPersonnummer("19121212-1212").orElseThrow()))
+            .thenReturn(SekretessStatus.FALSE);
 
         when(getStaffInfoFacadeService.getIdsOfSelectedUnit()).thenReturn(UNITS);
         when(listPaginationHelper.paginate(anyList(), any())).thenReturn(EXPECTED_LIST);
