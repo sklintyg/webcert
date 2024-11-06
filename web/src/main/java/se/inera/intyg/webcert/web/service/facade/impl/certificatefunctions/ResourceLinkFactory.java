@@ -26,7 +26,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 public class ResourceLinkFactory {
 
     private ResourceLinkFactory() {
-
+        throw new IllegalStateException("Utility class");
     }
 
     public static ResourceLinkDTO read() {

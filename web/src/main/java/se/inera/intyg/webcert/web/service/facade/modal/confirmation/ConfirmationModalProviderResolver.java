@@ -25,7 +25,7 @@ import se.inera.intyg.common.support.facade.model.CertificateStatus;
 public class ConfirmationModalProviderResolver {
 
     private ConfirmationModalProviderResolver() {
-
+        throw new IllegalStateException("Utility class");
     }
 
     public static ConfirmationModalProvider get(String type, CertificateStatus status, String origin, boolean isCreatedFromList) {
