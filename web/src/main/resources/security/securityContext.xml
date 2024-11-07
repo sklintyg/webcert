@@ -83,7 +83,7 @@
   <bean id="webcertUserDetailsService" class="se.inera.intyg.webcert.web.auth.WebcertUserDetailsService"/>
   <bean id="elegWebCertUserDetailsService" class="se.inera.intyg.webcert.web.auth.eleg.ElegWebCertUserDetailsService"/>
 <!--  <bean id="elegAuthenticationAttributeHelper" class="se.inera.intyg.webcert.web.auth.eleg.ElegAuthenticationAttributeHelperImpl"/>-->
-  <bean id="elegAuthenticationMethodResolver" class="se.inera.intyg.webcert.web.auth.eleg.ElegAuthenticationMethodResolverImpl"/>
+<!--  <bean id="elegAuthenticationMethodResolver" class="se.inera.intyg.webcert.web.auth.eleg.ElegAuthenticationMethodResolver->
 
   <!-- Initialization of OpenSAML library-->
 <!--  <bean class="org.springframework.security.saml.SAMLBootstrap"/>-->
