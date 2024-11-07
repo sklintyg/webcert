@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.web.savedrequest.DefaultSavedRequest;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Component;
@@ -52,7 +53,10 @@ public class WebCertUserOrigin implements UserOrigin {
     }
 
     private String getUserOrigin(SavedRequest savedRequest) {
-        final var requestUrl = savedRequest.getRedirectUrl();
+        final var requestUrl = ((DefaultSavedRequest) savedRequest).getRequestURI();
+        if (requestUrl == null) {
+            return UserOriginType.NORMAL.name();
+        }
         if (requestUrl.matches(REGEXP_REQUESTURI_DJUPINTEGRATION)) {
             return UserOriginType.DJUPINTEGRATION.name();
         }
