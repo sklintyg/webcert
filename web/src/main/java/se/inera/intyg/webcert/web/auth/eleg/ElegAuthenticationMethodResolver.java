@@ -33,8 +33,9 @@ public class ElegAuthenticationMethodResolver {
         ElegLoginMethod loginMethodEnum;
         try {
             loginMethodEnum = ElegLoginMethod.valueOf(loginMethod.toUpperCase());
+
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Failure parsing AuthenticationMethod from SAML attribute 'LoginMethod': %s"
+            throw new IllegalArgumentException("Failure parsing AuthenticationMethod '%s' received in SAML attribute 'LoginMethod'."
                 .formatted(loginMethod), e);
         }
         return switch (loginMethodEnum) {
