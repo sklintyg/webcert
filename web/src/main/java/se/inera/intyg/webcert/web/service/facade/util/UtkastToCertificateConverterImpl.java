@@ -149,10 +149,19 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
         );
 
         final var origin = webCertUserService.getUser().getOrigin();
-        final var confirmationModelProvider = ConfirmationModalProviderResolver.get(certificate.getIntygsTyp(),
+        final var confirmationModalProvider = ConfirmationModalProviderResolver.getConfirmation(certificate.getIntygsTyp(),
             certificateToReturn.getMetadata().getStatus(), origin, false);
         certificateToReturn.getMetadata().setConfirmationModal(
-            confirmationModelProvider != null ? confirmationModelProvider.create(
+            confirmationModalProvider != null ? confirmationModalProvider.create(
+                certificateToReturn.getMetadata().getPatient().getFullName(),
+                certificateToReturn.getMetadata().getPatient().getPersonId().getId(),
+                origin
+            ) : null
+        );
+
+        final var signConfirmationModelProvider = ConfirmationModalProviderResolver.getSignConfirmation(certificate.getIntygsTyp());
+        certificateToReturn.getMetadata().setSignConfirmationModal(
+            signConfirmationModelProvider != null ? signConfirmationModelProvider.create(
                 certificateToReturn.getMetadata().getPatient().getFullName(),
                 certificateToReturn.getMetadata().getPatient().getPersonId().getId(),
                 origin

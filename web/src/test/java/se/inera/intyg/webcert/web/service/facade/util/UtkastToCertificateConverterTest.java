@@ -193,6 +193,14 @@ class UtkastToCertificateConverterTest {
             }
 
             @Test
+            void shallIncludeSignModalIfProviderIsAvailable() {
+                draft.setIntygsTyp("db");
+                final var actualCertificate = utkastToCertificateConverter.convert(draft);
+
+                assertNotNull(actualCertificate.getMetadata().getSignConfirmationModal());
+            }
+
+            @Test
             void shallNotIncludeConfirmationModalIfProviderIsNotAvailable() {
                 final var actualCertificate = utkastToCertificateConverter.convert(draft);
 
@@ -565,6 +573,10 @@ class UtkastToCertificateConverterTest {
                 .thenReturn(user);
             when(user.getOrigin())
                 .thenReturn("NORMAL");
+            doReturn(patient)
+                .when(patientConverter).convert(
+                    any(), any(), any(), any()
+                );
         }
 
         @Test

@@ -28,7 +28,8 @@ public class ConfirmationModalProviderResolver {
         throw new IllegalStateException("Utility class");
     }
 
-    public static ConfirmationModalProvider get(String type, CertificateStatus status, String origin, boolean isCreatedFromList) {
+    public static ConfirmationModalProvider getConfirmation(String type, CertificateStatus status, String origin,
+        boolean isCreatedFromList) {
         final var isIntegratedOrigin = origin.equals("DJUPINTEGRATION");
         final var isValid = isIntegratedOrigin ? isValidForIntegratedOrigin() : isValidForNormalOrigin(isCreatedFromList);
 
@@ -47,12 +48,19 @@ public class ConfirmationModalProviderResolver {
         return null;
     }
 
+    public static ConfirmationModalProvider getSignConfirmation(String type) {
+        if (type.equals(DbModuleEntryPoint.MODULE_ID)) {
+            return new DbSignConfirmationModalProvider();
+        }
+
+        return null;
+    }
+
     private static boolean isValidForIntegratedOrigin() {
-        return true;
+        return Boolean.TRUE;
     }
 
     private static boolean isValidForNormalOrigin(boolean isCreatedFromList) {
         return isCreatedFromList;
     }
-
 }

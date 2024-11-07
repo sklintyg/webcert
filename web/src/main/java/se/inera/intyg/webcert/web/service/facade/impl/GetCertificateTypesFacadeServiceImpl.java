@@ -97,7 +97,7 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
     }
 
     private CertificateTypeInfoDTO addConfirmationModal(CertificateTypeInfoDTO intygModule, Personnummer patientId) {
-        final var provider = ConfirmationModalProviderResolver.get(intygModule.getId(), CertificateStatus.UNSIGNED, "NORMAL",
+        final var provider = ConfirmationModalProviderResolver.getConfirmation(intygModule.getId(), CertificateStatus.UNSIGNED, "NORMAL",
             true);
         if (provider != null) {
             final var latestCertificateVersion = intygTextsService.getLatestVersion(intygModule.getId());

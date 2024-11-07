@@ -153,7 +153,7 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
         );
 
         final var origin = webCertUserService.getUser().getOrigin();
-        final var confirmationModelProvider = ConfirmationModalProviderResolver.get(certificateToReturn.getMetadata().getType(),
+        final var confirmationModelProvider = ConfirmationModalProviderResolver.getConfirmation(certificateToReturn.getMetadata().getType(),
             certificateToReturn.getMetadata().getStatus(), origin, false);
         certificateToReturn.getMetadata().setConfirmationModal(
             confirmationModelProvider != null ? confirmationModelProvider.create(

@@ -33,18 +33,18 @@ class ConfirmationModalProviderResolverTest {
     @Test
     void shouldReturnProviderForDBIfNormalOriginAndCreatedFromList() {
         assertEquals(DbConfirmationModalProvider.class,
-            ConfirmationModalProviderResolver.get("db", CertificateStatus.UNSIGNED, "NORMAL", true).getClass());
+            ConfirmationModalProviderResolver.getConfirmation("db", CertificateStatus.UNSIGNED, "NORMAL", true).getClass());
     }
 
     @Test
     void shouldReturnNullIfUnsupportedType() {
-        assertNull(ConfirmationModalProviderResolver.get("doi", CertificateStatus.UNSIGNED, "NORMAL", true));
+        assertNull(ConfirmationModalProviderResolver.getConfirmation("doi", CertificateStatus.UNSIGNED, "NORMAL", true));
     }
 
     @ParameterizedTest
     @EnumSource(CertificateStatus.class)
     void testStatusShouldReturnNullOrProvider(CertificateStatus status) {
-        final var response = ConfirmationModalProviderResolver.get("db", status, "NORMAL", true);
+        final var response = ConfirmationModalProviderResolver.getConfirmation("db", status, "NORMAL", true);
         if (status == CertificateStatus.UNSIGNED) {
             assertNotNull(response);
         } else {
@@ -54,13 +54,13 @@ class ConfirmationModalProviderResolverTest {
 
     @Test
     void shouldReturnNullIfNormalAndNotNewDraft() {
-        final var response = ConfirmationModalProviderResolver.get("db", CertificateStatus.UNSIGNED, "NORMAL", false);
+        final var response = ConfirmationModalProviderResolver.getConfirmation("db", CertificateStatus.UNSIGNED, "NORMAL", false);
         assertNull(response);
     }
 
     @Test
     void shouldReturnProviderIfIntegratedAndNotCreatedFromList() {
-        final var response = ConfirmationModalProviderResolver.get("db", CertificateStatus.UNSIGNED, "DJUPINTEGRATION", false);
+        final var response = ConfirmationModalProviderResolver.getConfirmation("db", CertificateStatus.UNSIGNED, "DJUPINTEGRATION", false);
         assertEquals(DbConfirmationModalProvider.class, response.getClass());
     }
 }
