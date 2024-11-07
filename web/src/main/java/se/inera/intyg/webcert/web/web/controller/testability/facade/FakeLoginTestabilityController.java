@@ -27,7 +27,6 @@ import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
@@ -44,20 +43,16 @@ public class FakeLoginTestabilityController {
 
     @Path(value = "/fake")
     @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
-    public Response login(@FormParam("userJsonDisplay") String loginObject, @Context HttpServletRequest request)
+    public void login(@FormParam("userJsonDisplay") String loginObject, @Context HttpServletRequest request)
         throws JsonProcessingException {
-
-
         final var fakeLoginDTO = objectMapper.readValue(loginObject, FakeLoginDTO.class);
         fakeLoginService.login(fakeLoginDTO, request);
-        return Response.ok().build();
     }
 
     @Path("/logout")
     @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
-    public Response logout(@Context HttpServletRequest request) {
+    public void logout(@Context HttpServletRequest request) {
         fakeLoginService.logout(request.getSession(false));
-        return Response.ok().build();
     }
 
 }

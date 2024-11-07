@@ -24,6 +24,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
@@ -35,6 +36,7 @@ import se.inera.intyg.webcert.web.auth.exceptions.MissingSubscriptionException;
 import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerAuthorizationException;
 
 @Service
+@Slf4j
 public class CustomAuthenticationFailureHandler extends ExceptionMappingAuthenticationFailureHandler {
 
     private static final String WC_DEFAULT_FAILURE_URL = "/error?reason=login.failed";
@@ -55,6 +57,7 @@ public class CustomAuthenticationFailureHandler extends ExceptionMappingAuthenti
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception)
         throws IOException {
         final var exceptionName = exception.getClass().getName();
+        log.error("Failure on authentication.", exception);
 
         String url;
         if (failureUrlMap.containsKey(exceptionName)) {

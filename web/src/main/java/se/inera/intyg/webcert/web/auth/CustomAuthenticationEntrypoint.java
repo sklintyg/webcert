@@ -19,9 +19,9 @@
 
 package se.inera.intyg.webcert.web.auth;
 
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.RELYING_PARTY_REGISTRATION_ID_ELEG;
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.RELYING_PARTY_REGISTRATION_ID_SITHS;
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.RELYING_PARTY_REGISTRATION_ID_SITHS_NORMAL;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.REGISTRATION_ID_ELEG;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.REGISTRATION_ID_SITHS;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.REGISTRATION_ID_SITHS_NORMAL;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -64,13 +64,13 @@ public class CustomAuthenticationEntrypoint implements AuthenticationEntryPoint 
         throws IOException {
 
         if (ELEG_REQUEST_MATCHER.matches(request)) {
-            response.sendRedirect(SAML2_AUTHENTICATION_PATH + RELYING_PARTY_REGISTRATION_ID_ELEG);
+            response.sendRedirect(SAML2_AUTHENTICATION_PATH + REGISTRATION_ID_ELEG);
         }
         if (SITHS_REQUEST_MATCHER.matches(request)) {
-            response.sendRedirect(SAML2_AUTHENTICATION_PATH + RELYING_PARTY_REGISTRATION_ID_SITHS);
+            response.sendRedirect(SAML2_AUTHENTICATION_PATH + REGISTRATION_ID_SITHS);
         }
         if (SITHS_NORMAL_REQUEST_MATCHER.matches(request)) {
-            response.sendRedirect(SAML2_AUTHENTICATION_PATH + RELYING_PARTY_REGISTRATION_ID_SITHS_NORMAL);
+            response.sendRedirect(SAML2_AUTHENTICATION_PATH + REGISTRATION_ID_SITHS_NORMAL);
         }
     }
 

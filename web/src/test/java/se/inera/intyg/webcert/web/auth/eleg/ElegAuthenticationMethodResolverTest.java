@@ -39,7 +39,7 @@ class ElegAuthenticationMethodResolverTest  {
     private static final String UNKNOWN_LOGIN_METHOD = "ccp7";
 
     @InjectMocks
-    private ElegAuthenticationMethodResolverImpl elegAuthenticationMethodResolver;
+    private ElegAuthenticationMethodResolver elegAuthenticationMethodResolver;
 
 
    @Test

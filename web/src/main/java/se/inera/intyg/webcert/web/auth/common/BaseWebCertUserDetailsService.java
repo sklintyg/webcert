@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
+import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 /**
@@ -37,7 +38,7 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 @Getter
 public abstract class BaseWebCertUserDetailsService {
 
-    protected abstract WebCertUser buildUserPrincipal(String userId, String autheticationScheme);
+    protected abstract WebCertUser buildUserPrincipal(String userId, String autheticationScheme, AuthenticationMethod authenticationMethod);
 
     protected static final String COMMA = ", ";
     protected static final String SPACE = " ";
@@ -50,16 +51,13 @@ public abstract class BaseWebCertUserDetailsService {
     }
 
     protected String compileName(String fornamn, String mellanOchEfterNamn) {
-
         StringBuilder sb = new StringBuilder();
-
         sb.append(Strings.nullToEmpty(fornamn).trim());
 
         if (!sb.isEmpty()) {
             sb.append(SPACE);
         }
         sb.append(Strings.nullToEmpty(mellanOchEfterNamn).trim());
-
         return sb.toString();
     }
 

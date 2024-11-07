@@ -19,6 +19,9 @@
 
 package se.inera.intyg.webcert.web.service.testability;
 
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.FAKE_AUTHENTICATION_ELEG_CONTEXT_REF;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.FAKE_AUTHENTICATION_SITHS_CONTEXT_REF;
+
 import com.google.common.base.Strings;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -55,9 +58,6 @@ public class FakeLoginService {
     private final WebcertUserDetailsService webcertUserDetailsService;
     private final CommonAuthoritiesResolver authoritiesResolver;
 
-    private static final String FAKE_AUTH_SCHEME_ELEG = "urn:inera:webcert:eleg:fake";
-    private static final String FAKE_AUTH_SCHEME_SITHS = "urn:inera:webcert:siths:fake";
-
     public void login(FakeLoginDTO fakeProps, HttpServletRequest request) {
         final var oldSession = request.getSession(false);
         Optional.ofNullable(oldSession).ifPresent(HttpSession::invalidate);
@@ -67,9 +67,9 @@ public class FakeLoginService {
 
         if (personId.isPresent()) {
             final var userId = personId.get().getPersonnummer();
-            webCertUser = elegWebCertUserDetailsService.buildUserPrincipal(userId, FAKE_AUTH_SCHEME_ELEG);
+            webCertUser = elegWebCertUserDetailsService.buildUserPrincipal(userId, FAKE_AUTHENTICATION_ELEG_CONTEXT_REF);
         } else {
-            webCertUser = webcertUserDetailsService.buildUserPrincipal(fakeProps.getHsaId(), FAKE_AUTH_SCHEME_SITHS);
+            webCertUser = webcertUserDetailsService.buildUserPrincipal(fakeProps.getHsaId(), FAKE_AUTHENTICATION_SITHS_CONTEXT_REF, "");
         }
 
         updateUserWithFakeloginProperties(webCertUser, fakeProps);

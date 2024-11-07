@@ -38,20 +38,17 @@ public class WebcertUserDetailsService extends BaseUserDetailsService {
     private final AnvandarPreferenceRepository anvandarMetadataRepository;
     private final SubscriptionService subscriptionService;
 
-    /**
-     * Calls the default super() impl. from the base class and then builds a {@link WebCertUser} which is passed upwards
-     * as Principal.
-     *
-     * @param employeeHsaId The user's HsaId
-     * @param authenticationScheme Authentication scheme used for login
-     * @return WebCertUser as Principal.
-     */
+    public WebCertUser buildUserPrincipal(String employeeHsaId, String authenticationScheme, String identityProviderForSign) {
+        final var webCertUser = buildUserPrincipal(employeeHsaId, authenticationScheme);
+        webCertUser.setIdentityProviderForSign(identityProviderForSign);
+        return webCertUser;
+    }
+
     @Override
     public WebCertUser buildUserPrincipal(String employeeHsaId, String authenticationScheme) {
         final var user = super.buildUserPrincipal(employeeHsaId, authenticationScheme);
         final var  webCertUser = new WebCertUser(user);
         webCertUser.setAnvandarPreference(anvandarMetadataRepository.getAnvandarPreference(webCertUser.getHsaId()));
-        //webCertUser.setIdentityProviderForSign(authenticationScheme);
         subscriptionService.checkSubscriptions(webCertUser);
         return webCertUser;
     }

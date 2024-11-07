@@ -61,39 +61,25 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
         if (savedRequest == null) {
             super.onAuthenticationSuccess(request, response, authentication);
-
             return;
         }
+
         String targetUrlParameter = getTargetUrlParameter();
         if (isAlwaysUseDefaultTargetUrl()
             || (targetUrlParameter != null && StringUtils.hasText(request.getParameter(targetUrlParameter)))) {
             requestCache.removeRequest(request, response);
             super.onAuthenticationSuccess(request, response, authentication);
-
             return;
         }
 
         clearAuthenticationAttributes(request);
 
-        // Use the DefaultSavedRequest URL
         String targetUrl = savedRequest.getRedirectUrl().replace("localhost", webcertDomainName);
         String targetUri = ((DefaultSavedRequest) savedRequest).getRequestURI();
 
         // If original req was POST for djupintegration, we need to extract parameters
         if (savedRequest.getMethod().equalsIgnoreCase(HttpMethod.POST.name()) && djupintegrationPattern.matcher(targetUri).matches()) {
-            WebCertUser webCertUser = (WebCertUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-            if (webCertUser == null) {
-                // Should never happen...
-                throw new IllegalStateException("No user principal, cannot bind integration params.");
-            }
-
-            // Make sure this is a fresh session, e.g. must NOT have any existing params.
-            if (webCertUser.getParameters() != null) {
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
-                    "This user session is already active and using Webcert. "
-                        + "Please use a new user session for each deep integration link.");
-            }
+            final var webCertUser = getWebCertUser();
 
             IntegrationParameters integrationParameters = IntegrationParameters.of(
                 fromSavedReq(savedRequest, IntygIntegrationController.PARAM_REFERENCE),
@@ -126,6 +112,23 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
         logger.debug("Redirecting to DefaultSavedRequest Url: " + targetUrl);
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
+    }
+
+    private static WebCertUser getWebCertUser() {
+        WebCertUser webCertUser = (WebCertUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (webCertUser == null) {
+            // Should never happen...
+            throw new IllegalStateException("No user principal, cannot bind integration params.");
+        }
+
+        // Make sure this is a fresh session, e.g. must NOT have any existing params.
+        if (webCertUser.getParameters() != null) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
+                "This user session is already active and using Webcert. "
+                    + "Please use a new user session for each deep integration link.");
+        }
+        return webCertUser;
     }
 
     private String fromSavedReq(SavedRequest savedRequest, String paramName) {

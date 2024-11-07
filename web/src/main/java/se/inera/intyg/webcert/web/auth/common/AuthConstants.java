@@ -22,24 +22,22 @@ import java.util.List;
 
 /**
  * Defines some constant strings related to Security, SAML or other auth mechanisms.
- *
- * Created by eriklupander on 2015-10-13.
  */
 public final class AuthConstants {
 
-    public static final String RELYING_PARTY_REGISTRATION_ID_ELEG = "eleg";
-    public static final String RELYING_PARTY_REGISTRATION_ID_SITHS = "siths";
-    public static final String RELYING_PARTY_REGISTRATION_ID_SITHS_NORMAL = "sithsNormal";
+    public static final String REGISTRATION_ID_ELEG = "eleg";
+    public static final String REGISTRATION_ID_SITHS = "siths";
+    public static final String REGISTRATION_ID_SITHS_NORMAL = "sithsNormal";
     public static final String AUTHN_METHOD = "urn:sambi:names:attribute:authnMethod";
-    public static final String EMPLOYEE_HSA_ID = "http://sambi.se/attributes/1/employeeHsaId";
-
-
-    public static final String ALIAS_SITHS = "siths";
-    public static final String ALIAS_SITHS_NORMAL = "sithsNormal";
-    public static final String ALIAS_ELEG = "eleg";
-
-    public static final String SPRING_SECURITY_CONTEXT = "SPRING_SECURITY_CONTEXT";
-    public static final String SPRING_SECURITY_SAVED_REQUEST_KEY = "SPRING_SECURITY_SAVED_REQUEST";
+    public static final String ATTRIBUTE_EMPLOYEE_HSA_ID = "http://sambi.se/attributes/1/employeeHsaId";
+    public static final String ATTRIBUTE_SUBJECT_SERIAL_NUMBER = "Subject_SerialNumber";
+    public static final String ATTRIBUTE_LOGIN_METHOD = "LoginMethod";
+    public static final String ATTRIBUTE_IDENTITY_PROVIDER_FOR_SIGN = "urn:identityProviderForSign";
+    public static final String ATTRIBUTE_SECURITY_LEVEL_DESCRIPTION = "SecurityLevelDescription";
+    public static final String SAML_2_0_NAMEID_FORMAT_TRANSIENT = "urn:oasis:names:tc:SAML:2.0:nameid-format:transient";
+    public static final String SAML_2_0_PROTOCOL = "urn:oasis:names:tc:SAML:2.0:protocol";
+    public static final String NAMESPACE_PREFIX_SAML2P = "saml2p";
+    public static final String ELEMENT_LOCAL_NAME_SESSION_INDEX = "SessionIndex";
 
     public static final String FAKE_AUTHENTICATION_SITHS_CONTEXT_REF = "urn:inera:webcert:siths:fake";
     public static final String FAKE_AUTHENTICATION_ELEG_CONTEXT_REF = "urn:inera:webcert:eleg:fake";
@@ -53,8 +51,6 @@ public final class AuthConstants {
         "urn:oasis:names:tc:SAML:2.0:ac:classes:SmartcardPKI",
         "urn:oasis:names:tc:SAML:2.0:ac:classes:MobileTwofactorContract",
         "http://id.elegnamnden.se/loa/1.0/loa3");
-
-    public static final String URN_OASIS_NAMES_TC_SAML_2_0_AC_CLASSES_UNSPECIFIED = "urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified";
 
     private AuthConstants() {
     }

@@ -24,10 +24,18 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
 import static se.inera.intyg.webcert.web.auth.CustomAuthenticationEntrypoint.ELEG_REQUEST_MATCHER;
 import static se.inera.intyg.webcert.web.auth.CustomAuthenticationEntrypoint.SITHS_NORMAL_REQUEST_MATCHER;
 import static se.inera.intyg.webcert.web.auth.CustomAuthenticationEntrypoint.SITHS_REQUEST_MATCHER;
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.EMPLOYEE_HSA_ID;
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.RELYING_PARTY_REGISTRATION_ID_ELEG;
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.RELYING_PARTY_REGISTRATION_ID_SITHS;
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.RELYING_PARTY_REGISTRATION_ID_SITHS_NORMAL;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.ATTRIBUTE_EMPLOYEE_HSA_ID;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.ATTRIBUTE_IDENTITY_PROVIDER_FOR_SIGN;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.ATTRIBUTE_LOGIN_METHOD;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.ATTRIBUTE_SECURITY_LEVEL_DESCRIPTION;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.ATTRIBUTE_SUBJECT_SERIAL_NUMBER;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.ELEMENT_LOCAL_NAME_SESSION_INDEX;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.NAMESPACE_PREFIX_SAML2P;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.REGISTRATION_ID_ELEG;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.REGISTRATION_ID_SITHS;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.REGISTRATION_ID_SITHS_NORMAL;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SAML_2_0_NAMEID_FORMAT_TRANSIENT;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SAML_2_0_PROTOCOL;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -88,9 +96,10 @@ import se.inera.intyg.webcert.web.auth.CustomAuthenticationSuccessHandler;
 import se.inera.intyg.webcert.web.auth.CustomXFrameOptionsHeaderWriter;
 import se.inera.intyg.webcert.web.auth.Saml2AuthenticationToken;
 import se.inera.intyg.webcert.web.auth.SpaCsrfTokenRequestHandler;
+import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
 import se.inera.intyg.webcert.web.auth.common.AuthConstants;
-import se.inera.intyg.webcert.web.auth.common.UnifiedUserDetailsService;
 import se.inera.intyg.webcert.web.auth.eleg.ElegAuthenticationMethodResolver;
+import se.inera.intyg.webcert.web.auth.eleg.ElegWebCertUserDetailsService;
 
 @Configuration(proxyBeanMethods = false)
 @EnableWebSecurity
@@ -99,10 +108,11 @@ import se.inera.intyg.webcert.web.auth.eleg.ElegAuthenticationMethodResolver;
 @Slf4j
 public class WebSecurityConfig {
 
-    private final UnifiedUserDetailsService unifiedUserDetailsService;
+    private final ElegWebCertUserDetailsService elegWebCertUserDetailsService;
+    private final ElegAuthenticationMethodResolver elegAuthMethodResolver;
+    private final WebcertUserDetailsService webcertUserDetailsService;
     private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
     private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
-    private final ElegAuthenticationMethodResolver elegAuthenticationMethodResolver;
     private final Environment environment;
 
     @Value("${saml.sp.entity.id.eleg}")
@@ -111,24 +121,20 @@ public class WebSecurityConfig {
     private String samlEntityIdSiths;
     @Value("${saml.sp.entity.id.siths.normal}")
     private String samlEntityIdSithsNormal;
-
     @Value("${saml.sp.assertion.consumer.service.location.siths}")
     private String assertionConsumerServiceLocationSiths;
     @Value("${saml.sp.assertion.consumer.service.location.eleg}")
     private String assertionConsumerServiceLocationEleg;
     @Value("${saml.sp.assertion.consumer.service.location.siths.normal}")
     private String assertionConsumerServiceLocationSithsNormal;
-
     @Value("${saml.idp.metadata.location.siths}")
     private String samlIdpMetadataLocationSiths;
     @Value("${saml.idp.metadata.location.eleg}")
     private String samlIdpMetadataLocationEleg;
-
     @Value("${saml.sp.single.logout.service.location}")
     private String singleLogoutServiceLocation;
     @Value("${saml.sp.single.logout.service.response.location}")
     private String singleLogoutServiceResponseLocation;
-
     @Value("${saml.logout.success.url}")
     private String samlLogoutSuccessUrl;
     @Value("${saml.keystore.type:PKCS12}")
@@ -139,11 +145,11 @@ public class WebSecurityConfig {
     private String keyAlias;
     @Value("${sakerhetstjanst.saml.keystore.password}")
     private String keyStorePassword;
+    @Value("${webcert.domain.name}")
+    private String webcertDomainName;
 
-    @Bean(name = "mvcHandlerMappingIntrospector")
-    public HandlerMappingIntrospector mvcHandlerMappingIntrospector() {
-        return new HandlerMappingIntrospector();
-    }
+    private static final String AUTHN_CONTEXT_CLASS_REF_REGEX = "(?<=<saml2:AuthnContextClassRef>).*(?=</saml2:AuthnContextClassRef>)";
+    private static final Pattern AUTHN_CONTEXT_CLASS_REF_PATTERN = Pattern.compile(AUTHN_CONTEXT_CLASS_REF_REGEX);
 
     @Bean
     public RelyingPartyRegistrationRepository relyingPartyRegistrationRepository()
@@ -154,35 +160,14 @@ public class WebSecurityConfig {
         final var appPrivateKey = (PrivateKey) keyStoreSiths.getKey(keyAlias, keyStorePassword.toCharArray());
         final var appCertificate = (X509Certificate) keyStoreSiths.getCertificate(keyAlias);
 
-        final var registrationSiths = RelyingPartyRegistrations
-            .fromMetadataLocation(samlIdpMetadataLocationSiths)
-            .registrationId(RELYING_PARTY_REGISTRATION_ID_SITHS)
-            .entityId(samlEntityIdSiths)
-            .assertionConsumerServiceLocation(assertionConsumerServiceLocationSiths)
-            .singleLogoutServiceLocation(singleLogoutServiceLocation)
-            .singleLogoutServiceResponseLocation(singleLogoutServiceResponseLocation)
-            .signingX509Credentials(signing -> signing.add(Saml2X509Credential.signing(appPrivateKey, appCertificate)))
-            .build();
+        final var registrationEleg = buildRegistration(samlIdpMetadataLocationEleg, REGISTRATION_ID_ELEG,
+            samlEntityIdEleg, assertionConsumerServiceLocationEleg, appPrivateKey, appCertificate);
 
-        final var registrationSithsNormal = RelyingPartyRegistrations
-            .fromMetadataLocation(samlIdpMetadataLocationSiths)
-            .registrationId(RELYING_PARTY_REGISTRATION_ID_SITHS_NORMAL)
-            .entityId(samlEntityIdSithsNormal)
-            .assertionConsumerServiceLocation(assertionConsumerServiceLocationSithsNormal)
-            .singleLogoutServiceLocation(singleLogoutServiceLocation)
-            .singleLogoutServiceResponseLocation(singleLogoutServiceResponseLocation)
-            .signingX509Credentials(signing -> signing.add(Saml2X509Credential.signing(appPrivateKey, appCertificate)))
-            .build();
+        final var registrationSiths = buildRegistration(samlIdpMetadataLocationSiths, REGISTRATION_ID_SITHS,
+            samlEntityIdSiths, assertionConsumerServiceLocationSiths, appPrivateKey, appCertificate);
 
-        final var registrationEleg = RelyingPartyRegistrations
-            .fromMetadataLocation(samlIdpMetadataLocationEleg)
-            .registrationId(RELYING_PARTY_REGISTRATION_ID_ELEG)
-            .entityId(samlEntityIdEleg)
-            .assertionConsumerServiceLocation(assertionConsumerServiceLocationEleg)
-            .singleLogoutServiceLocation(singleLogoutServiceLocation)
-            .singleLogoutServiceResponseLocation(singleLogoutServiceResponseLocation)
-            .signingX509Credentials(signing -> signing.add(Saml2X509Credential.signing(appPrivateKey, appCertificate)))
-            .build();
+        final var registrationSithsNormal = buildRegistration(samlIdpMetadataLocationSiths, REGISTRATION_ID_SITHS_NORMAL,
+            samlEntityIdSithsNormal, assertionConsumerServiceLocationSithsNormal, appPrivateKey, appCertificate);
 
         return new InMemoryRelyingPartyRegistrationRepository(List.of(registrationSiths, registrationEleg, registrationSithsNormal));
     }
@@ -200,7 +185,6 @@ public class WebSecurityConfig {
 
         http
             .authorizeHttpRequests(request -> request
-                //.requestMatchers(antMatcher("/")).permitAll()
                 .requestMatchers(antMatcher("/metrics")).permitAll()
                 .requestMatchers(antMatcher("/services/**")).permitAll()
                 .requestMatchers(antMatcher("/api/config/**")).permitAll()
@@ -254,69 +238,14 @@ public class WebSecurityConfig {
         return http.build();
     }
 
-    private void configureTestability(HttpSecurity http) throws Exception {
-        http
-            .authorizeHttpRequests(request -> request
-                .requestMatchers(antMatcher("/testability/**")).permitAll()
-                .requestMatchers(antMatcher("/api/hsa-api/**")).permitAll()
-            );
+    @Bean(name = "mvcHandlerMappingIntrospector")
+    public HandlerMappingIntrospector mvcHandlerMappingIntrospector() {
+        return new HandlerMappingIntrospector();
     }
 
     @Bean
     public DefaultCookieSerializer cookieSerializer() {
         return new IneraCookieSerializer(true);
-    }
-
-    private OpenSaml4AuthenticationProvider getOpenSaml4AuthenticationProvider() {
-        final var authenticationProvider = new OpenSaml4AuthenticationProvider();
-        authenticationProvider.setResponseAuthenticationConverter(responseToken -> {
-            final var authentication = OpenSaml4AuthenticationProvider
-                .createDefaultResponseAuthenticationConverter()
-                .convert(responseToken);
-            if (!(authentication != null && authentication.isAuthenticated())) {
-                return null;
-            }
-
-            if (((DefaultSaml2AuthenticatedPrincipal) authentication.getPrincipal()).getRelyingPartyRegistrationId().equals(
-                RELYING_PARTY_REGISTRATION_ID_ELEG)) {
-                final var personId = getAttribute(authentication, "Subject_SerialNumber");
-                final var loginMethod = getAttribute(authentication, "LoginMethod");
-                final var securityLevelDescription = getAttribute(authentication, "SecurityLevelDescription");
-                final var authScheme = AuthConstants.ELEG_AUTHN_CLASSES.stream()
-                    .filter(authClass -> authClass.endsWith(securityLevelDescription))
-                    .findFirst()
-                    .orElse(securityLevelDescription);
-                final var principal = unifiedUserDetailsService.buildUserPrincipal(personId, authScheme);
-                principal.setAuthenticationMethod(elegAuthenticationMethodResolver.resolveAuthenticationMethod(loginMethod));
-                final var saml2AuthenticationToken = new Saml2AuthenticationToken(principal, authentication);
-                saml2AuthenticationToken.setAuthenticated(true);
-                return saml2AuthenticationToken;
-
-            }
-
-            final var saml2Response = authentication.getSaml2Response();
-            final var matcher = Pattern.compile("(?<=<saml2:AuthnContextClassRef>).*(?=</saml2:AuthnContextClassRef>)")
-                .matcher(saml2Response);
-            final var authMethod = matcher.find() ? matcher.group() : null;
-
-            final var personId = getAttribute(authentication, EMPLOYEE_HSA_ID);
-            //final var authMethod = getAttribute(authentication, AUTHN_METHOD);
-            final var principal = unifiedUserDetailsService.buildUserPrincipal(personId, authMethod);
-            principal.setIdentityProviderForSign(getAttribute(authentication, "urn:identityProviderForSign"));
-            final var saml2AuthenticationToken = new Saml2AuthenticationToken(principal, authentication);
-            saml2AuthenticationToken.setAuthenticated(true);
-            return saml2AuthenticationToken;
-        });
-        return authenticationProvider;
-    }
-
-    private String getAttribute(Saml2Authentication samlCredential, String attributeId) {
-        final var principal = (DefaultSaml2AuthenticatedPrincipal) samlCredential.getPrincipal();
-        final var attributes = principal.getAttributes();
-        if (attributes.containsKey(attributeId)) {
-            return (String) attributes.get(attributeId).getFirst();
-        }
-        throw new IllegalArgumentException("Could not extract attribute '%s' from Saml2Authentication.".formatted(attributeId));
     }
 
     @Bean
@@ -337,40 +266,126 @@ public class WebSecurityConfig {
         logoutRequestResolver.setParametersConsumer(parameters -> {
             final var token = (Saml2AuthenticationToken) parameters.getAuthentication();
             final var principal = (DefaultSaml2AuthenticatedPrincipal) token.getSaml2Authentication().getPrincipal();
+            final var registrationId = principal.getRelyingPartyRegistrationId();
             final var name = principal.getName();
-            final var format = "urn:oasis:names:tc:SAML:2.0:nameid-format:transient";
             final var logoutRequest = parameters.getLogoutRequest();
             final var nameId = logoutRequest.getNameID();
-            nameId.setValue(name);
-            nameId.setFormat(format);
-
+            final var sessionIndex = new MySessionIndex(SAML_2_0_PROTOCOL, ELEMENT_LOCAL_NAME_SESSION_INDEX, NAMESPACE_PREFIX_SAML2P);
             final var issuer = logoutRequest.getIssuer();
-            final var registrationId = principal.getRelyingPartyRegistrationId();
-            issuer.setValue("https://wc.localtest.me/saml2/service-provider-metadata/%s".formatted(registrationId));
 
-            final var sessionIndex = new MySessionIndex("urn:oasis:names:tc:SAML:2.0:protocol", "SessionIndex", "saml2p");
+            nameId.setValue(name);
+            nameId.setFormat(SAML_2_0_NAMEID_FORMAT_TRANSIENT);
             sessionIndex.setValue(principal.getSessionIndexes().getFirst());
             logoutRequest.getSessionIndexes().add(sessionIndex);
+
+            if (registrationId.equals(REGISTRATION_ID_SITHS) || registrationId.equals(REGISTRATION_ID_SITHS_NORMAL)) {
+                final var issuerValue = "https://%s/saml2/service-provider-metadata/%s".formatted(webcertDomainName, registrationId);
+                issuer.setValue(issuerValue);
+            }
         });
         return logoutRequestResolver;
     }
 
-    public static class MySessionIndex extends XSStringImpl implements SessionIndex {
+    private RelyingPartyRegistration buildRegistration(String metadataLocation, String registrationId, String entityId,
+        String assertionConsumerLocation, PrivateKey key, X509Certificate certificate) {
+        return RelyingPartyRegistrations.fromMetadataLocation(metadataLocation)
+            .registrationId(registrationId)
+            .entityId(entityId)
+            .assertionConsumerServiceLocation(assertionConsumerLocation)
+            .singleLogoutServiceLocation(singleLogoutServiceLocation)
+            .singleLogoutServiceResponseLocation(singleLogoutServiceResponseLocation)
+            .signingX509Credentials(signing -> signing.add(Saml2X509Credential.signing(key, certificate)))
+            .build();
+    }
 
+    private OpenSaml4AuthenticationProvider getOpenSaml4AuthenticationProvider() {
+        final var authenticationProvider = new OpenSaml4AuthenticationProvider();
+        authenticationProvider.setResponseAuthenticationConverter(responseToken -> {
+            final var authentication = OpenSaml4AuthenticationProvider.createDefaultResponseAuthenticationConverter()
+                .convert(responseToken);
+
+            if (authentication == null || !authentication.isAuthenticated()) {
+                return null;
+            }
+
+            if (getRegistrationId(authentication).equals(REGISTRATION_ID_ELEG)) {
+                return elegSaml2AuthenticationToken(authentication);
+            }
+
+            return sithsSaml2AuthenticationToken(authentication);
+        });
+        return authenticationProvider;
+    }
+
+    private Saml2AuthenticationToken sithsSaml2AuthenticationToken(Saml2Authentication authentication) {
+        final var authMethod = getSithsAuthMethod(authentication);
+        final var personId = getAttribute(authentication, ATTRIBUTE_EMPLOYEE_HSA_ID);
+        final var identityProviderForSign = getAttribute(authentication, ATTRIBUTE_IDENTITY_PROVIDER_FOR_SIGN);
+        final var principal = webcertUserDetailsService.buildUserPrincipal(personId, authMethod, identityProviderForSign);
+        final var saml2AuthenticationToken = new Saml2AuthenticationToken(principal, authentication);
+        saml2AuthenticationToken.setAuthenticated(true);
+        return saml2AuthenticationToken;
+    }
+
+    private Saml2AuthenticationToken elegSaml2AuthenticationToken(Saml2Authentication authentication) {
+        final var personId = getAttribute(authentication, ATTRIBUTE_SUBJECT_SERIAL_NUMBER);
+        final var authScheme = getElegAuthScheme(authentication);
+        final var loginMethod = getAttribute(authentication, ATTRIBUTE_LOGIN_METHOD);
+        final var authMethod = elegAuthMethodResolver.resolveAuthenticationMethod(loginMethod);
+        final var principal = elegWebCertUserDetailsService.buildUserPrincipal(personId, authScheme, authMethod);
+        final var saml2AuthenticationToken = new Saml2AuthenticationToken(principal, authentication);
+        saml2AuthenticationToken.setAuthenticated(true);
+        return saml2AuthenticationToken;
+    }
+
+    private void configureTestability(HttpSecurity http) throws Exception {
+        http
+            .authorizeHttpRequests(request -> request
+                .requestMatchers(antMatcher("/testability/**")).permitAll()
+                .requestMatchers(antMatcher("/api/hsa-api/**")).permitAll()
+            );
+    }
+
+    private String getSithsAuthMethod(Saml2Authentication authentication) {
+        final var saml2Response = authentication.getSaml2Response();
+        final var matcher = AUTHN_CONTEXT_CLASS_REF_PATTERN.matcher(saml2Response);
+        return matcher.find() ? matcher.group() : null;
+    }
+
+    private String getRegistrationId(Saml2Authentication saml2Authentication) {
+        return ((DefaultSaml2AuthenticatedPrincipal) saml2Authentication.getPrincipal()).getRelyingPartyRegistrationId();
+    }
+
+    private String getElegAuthScheme(Saml2Authentication saml2Authentication) {
+        final var securityLevelDescription = getAttribute(saml2Authentication, ATTRIBUTE_SECURITY_LEVEL_DESCRIPTION);
+        return AuthConstants.ELEG_AUTHN_CLASSES.stream()
+            .filter(authClass -> authClass.endsWith(securityLevelDescription))
+            .findFirst()
+            .orElse(securityLevelDescription);
+    }
+
+    private String getAttribute(Saml2Authentication samlCredential, String attributeId) {
+        final var principal = (DefaultSaml2AuthenticatedPrincipal) samlCredential.getPrincipal();
+        final var attributes = principal.getAttributes();
+        if (attributes.containsKey(attributeId)) {
+            return (String) attributes.get(attributeId).getFirst();
+        }
+        throw new IllegalArgumentException("Could not extract attribute '%s' from Saml2Authentication.".formatted(attributeId));
+    }
+
+    public static class MySessionIndex extends XSStringImpl implements SessionIndex {
         public MySessionIndex(String namespaceURI, String elementLocalName, String namespacePrefix) {
             super(namespaceURI, elementLocalName, namespacePrefix);
         }
     }
 
     private RequestedAuthnContext buildRequestedAuthnContext(RelyingPartyRegistration registration) {
-        if (registration.getRegistrationId().equals("eleg")) {
+        if (registration.getRegistrationId().equals(REGISTRATION_ID_ELEG)) {
             return new RequestedAuthnContextBuilder().buildObject();
         }
-        final var authnContextClassRefBuilder = new AuthnContextClassRefBuilder();
-        final var authnContextClassRefLoa2 = authnContextClassRefBuilder.buildObject(SAMLConstants.SAML20_NS,
-            AuthnContextClassRef.DEFAULT_ELEMENT_LOCAL_NAME, SAMLConstants.SAML20_PREFIX);
-        final var authnContextClassRefLoa3 = authnContextClassRefBuilder.buildObject(SAMLConstants.SAML20_NS,
-            AuthnContextClassRef.DEFAULT_ELEMENT_LOCAL_NAME, SAMLConstants.SAML20_PREFIX);
+
+        final var authnContextClassRefLoa2 = getAuthnContextClassRef();
+        final var authnContextClassRefLoa3 = getAuthnContextClassRef();
         authnContextClassRefLoa2.setURI("http://id.sambi.se/loa/loa2");
         authnContextClassRefLoa3.setURI("http://id.sambi.se/loa/loa3");
 
@@ -379,8 +394,13 @@ public class WebSecurityConfig {
         requestedAuthnContext.setComparison(AuthnContextComparisonTypeEnumeration.EXACT);
         requestedAuthnContext.getAuthnContextClassRefs().add(authnContextClassRefLoa2);
         requestedAuthnContext.getAuthnContextClassRefs().add(authnContextClassRefLoa3);
-
         return requestedAuthnContext;
+    }
+
+    private AuthnContextClassRef getAuthnContextClassRef() {
+        final var authnContextClassRefBuilder = new AuthnContextClassRefBuilder();
+        return authnContextClassRefBuilder.buildObject(SAMLConstants.SAML20_NS, AuthnContextClassRef.DEFAULT_ELEMENT_LOCAL_NAME,
+            SAMLConstants.SAML20_PREFIX);
     }
 
 }

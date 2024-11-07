@@ -20,9 +20,9 @@ package se.inera.intyg.webcert.web.service.underskrift.dss;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.chrono.ChronoLocalDateTime;
+import java.time.ZonedDateTime;
+import java.time.chrono.ChronoZonedDateTime;
 import java.util.Timer;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import net.shibboleth.utilities.java.support.resolver.ResolverException;
@@ -86,9 +86,10 @@ public class SpringResourceBackedMetadataProvider extends AbstractReloadingMetad
     @Override
     protected byte[] fetchMetadata() throws ResolverException {
         try {
-            final var metadataUpdateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(metadataResource.lastModified()), ZoneId.systemDefault());
+            final var metadataUpdateTime = ZonedDateTime
+                .ofInstant(Instant.ofEpochSecond(metadataResource.lastModified()), ZoneId.systemDefault());
             log.debug("resource {} was last modified {}", getMetadataIdentifier(), metadataUpdateTime);
-            if (getLastRefresh() == null || metadataUpdateTime.isAfter(ChronoLocalDateTime.from(getLastRefresh()))) {
+            if (getLastRefresh() == null || metadataUpdateTime.isAfter(ChronoZonedDateTime.from(getLastRefresh()))) {
                 return inputstreamToByteArray(metadataResource.getInputStream());
             }
 

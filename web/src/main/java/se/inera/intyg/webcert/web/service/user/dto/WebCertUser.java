@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.user.dto;
 
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.RELYING_PARTY_REGISTRATION_ID_SITHS;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.REGISTRATION_ID_SITHS;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serial;
@@ -139,6 +139,6 @@ public class WebCertUser extends IntygUser implements Serializable, Saml2Authent
 
     @Override
     public String getRelyingPartyRegistrationId() {
-        return RELYING_PARTY_REGISTRATION_ID_SITHS;
+        return REGISTRATION_ID_SITHS;
     }
 }

@@ -18,10 +18,29 @@
  */
 package se.inera.intyg.webcert.web.auth.eleg;
 
+import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 
-public interface ElegAuthenticationMethodResolver {
+@Service
+public class ElegAuthenticationMethodResolver {
 
-    AuthenticationMethod resolveAuthenticationMethod(String authenticationScheme);
+    public AuthenticationMethod resolveAuthenticationMethod(String loginMethod) {
 
+        if (loginMethod == null) {
+            throw new IllegalArgumentException("Authentication method must not be null");
+        }
+
+        ElegLoginMethod loginMethodEnum;
+        try {
+            loginMethodEnum = ElegLoginMethod.valueOf(loginMethod.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Failure parsing AuthenticationMethod from SAML attribute 'LoginMethod': %s"
+                .formatted(loginMethod), e);
+        }
+        return switch (loginMethodEnum) {
+            case CCP1, CCP2, CCP8 -> AuthenticationMethod.NET_ID;
+            case CCP10, CCP12 -> AuthenticationMethod.BANK_ID;
+            case CCP11, CCP13, CCP19, CCP28 -> AuthenticationMethod.MOBILT_BANK_ID;
+        };
+    }
 }
