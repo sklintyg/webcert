@@ -27,7 +27,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.HttpMethod;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -36,25 +38,28 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
 
 @Component
+@Slf4j
 public class CustomAuthenticationEntrypoint implements AuthenticationEntryPoint {
 
-    private static final Map<String, String> ELEG_PATTERNS = Map.of(
-        "/webcert/web/user/pp-certificate/**", HttpMethod.GET
+    private static final Map<String, List<String>> ELEG_PATTERNS = Map.of(
+        "/webcert/web/user/pp-certificate/**", List.of(HttpMethod.GET)
     );
 
-    private static final Map<String, String> SITHS_PATTERNS = Map.of(
-        "/visa/intyg/*", HttpMethod.POST,
-        "/v2/visa/intyg/*", HttpMethod.POST
+    private static final Map<String, List<String>> SITHS_PATTERNS = Map.of(
+        "/visa/intyg/*", List.of(HttpMethod.GET, HttpMethod.POST),
+        "/v2/visa/intyg/*", List.of(HttpMethod.POST)
     );
 
-    private static final Map<String, String> SITHS_NORMAL_PATTERNS = Map.of(
-        "/web/maillink/**", HttpMethod.GET,
-        "/webcert/web/user/launch/**", HttpMethod.GET,
-        "/webcert/web/user/certificate/**", HttpMethod.GET,
-        "/webcert/web/user/basic-certificate/**", HttpMethod.GET
+    private static final Map<String, List<String>> SITHS_NORMAL_PATTERNS = Map.of(
+        "/web/maillink/**", List.of(HttpMethod.GET),
+        "/webcert/web/user/launch/**", List.of(HttpMethod.GET),
+        "/webcert/web/user/certificate/**", List.of(HttpMethod.GET),
+        "/webcert/web/user/basic-certificate/**", List.of(HttpMethod.GET)
     );
 
     private static final String SAML2_AUTHENTICATION_PATH = "/saml2/authenticate/";
+    private static final String ACCESS_DENIED_REDIRECT_PATH = "/error?reason=auth-exception-resource";
+
     public static final RequestMatcher ELEG_REQUEST_MATCHER = addPatterns(ELEG_PATTERNS);
     public static final RequestMatcher SITHS_REQUEST_MATCHER = addPatterns(SITHS_PATTERNS);
     public static final RequestMatcher SITHS_NORMAL_REQUEST_MATCHER = addPatterns(SITHS_NORMAL_PATTERNS);
@@ -65,20 +70,24 @@ public class CustomAuthenticationEntrypoint implements AuthenticationEntryPoint 
 
         if (ELEG_REQUEST_MATCHER.matches(request)) {
             response.sendRedirect(SAML2_AUTHENTICATION_PATH + REGISTRATION_ID_ELEG);
-        }
-        if (SITHS_REQUEST_MATCHER.matches(request)) {
+
+        } else if (SITHS_REQUEST_MATCHER.matches(request)) {
             response.sendRedirect(SAML2_AUTHENTICATION_PATH + REGISTRATION_ID_SITHS);
-        }
-        if (SITHS_NORMAL_REQUEST_MATCHER.matches(request)) {
+
+        } else if (SITHS_NORMAL_REQUEST_MATCHER.matches(request)) {
             response.sendRedirect(SAML2_AUTHENTICATION_PATH + REGISTRATION_ID_SITHS_NORMAL);
+
+        } else {
+            log.warn("Unauthenticated user was denied access to secured location '{}'", request.getRequestURI());
+            response.sendRedirect(ACCESS_DENIED_REDIRECT_PATH);
         }
     }
 
-    private static RequestMatcher addPatterns(Map<String, String> antPatterns) {
+    private static RequestMatcher addPatterns(Map<String, List<String>> antPatterns) {
         final var antMatchers = antPatterns.entrySet().stream()
-            .map(entrySet -> (RequestMatcher) new AntPathRequestMatcher(entrySet.getKey(), entrySet.getValue()))
-            .toList();
-
+            .flatMap(entrySet -> entrySet.getValue().stream()
+                .map(value -> (RequestMatcher) new AntPathRequestMatcher(entrySet.getKey(), value))).toList();
         return new OrRequestMatcher(antMatchers);
     }
+
 }

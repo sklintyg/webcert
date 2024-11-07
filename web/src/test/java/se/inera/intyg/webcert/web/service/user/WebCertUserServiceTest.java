@@ -41,7 +41,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -75,17 +74,13 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
 
     private static final String MOTTAGNING_3 = "VG1VE2M1";
 
-    @InjectMocks
-    public WebCertUserServiceImpl webcertUserService = new WebCertUserServiceImpl();
-
     @Mock
     private AnvandarPreferenceRepository anvandarPreferenceRepository;
-
-    @Mock
-    private ThreadPoolTaskScheduler scheduler;
-
     @Mock
     private FindByIndexNameSessionRepository<?> sessionRepository;
+
+    @InjectMocks
+    public WebCertUserServiceImpl webcertUserService;
 
     @Test
     public void testCheckIfAuthorizedForUnit() {

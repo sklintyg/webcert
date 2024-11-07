@@ -29,11 +29,9 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Profile;
 import se.inera.intyg.webcert.web.service.testability.FakeLoginService;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.FakeLoginDTO;
 
-@Profile("!prod")
 @RequiredArgsConstructor
 @Slf4j
 public class FakeLoginTestabilityController {

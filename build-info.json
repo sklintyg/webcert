@@ -1,9 +1,0 @@
-{
-  "appVersion": "7.0.1",
-  "commonVersion": "3.19.1.+",
-  "infraVersion": "3.19.1.+",
-  "buildArgs": "--refresh-dependencies clean build camelTest testReport -PcodeQuality -DgruntColors=false",
-  "tests": [ "restAssuredTest"
-  ],
-  "backingService": "intygstjanst:3.18.1.+"
-}

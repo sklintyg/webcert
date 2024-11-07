@@ -72,7 +72,7 @@ public class CustomAuthenticationFailureHandler extends ExceptionMappingAuthenti
 
     private Map<String, String> getFalureUrlMap() {
         return Map.of(
-            BadCredentialsException.class.getName(), "/error?reason=login.failed",
+            BadCredentialsException.class.getName(), WC_DEFAULT_FAILURE_URL,
             HsaServiceException.class.getName(), "/error?reason=login.hsaerror",
             MissingMedarbetaruppdragException.class.getName(), "/error?reason=login.medarbetaruppdrag",
             MissingSubscriptionException.class.getName(), "/error?reason=auth-exception-subscription",

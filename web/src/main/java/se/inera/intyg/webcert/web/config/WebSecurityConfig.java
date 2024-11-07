@@ -21,15 +21,15 @@ package se.inera.intyg.webcert.web.config;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
-import static se.inera.intyg.webcert.web.auth.CustomAuthenticationEntrypoint.ELEG_REQUEST_MATCHER;
-import static se.inera.intyg.webcert.web.auth.CustomAuthenticationEntrypoint.SITHS_NORMAL_REQUEST_MATCHER;
 import static se.inera.intyg.webcert.web.auth.CustomAuthenticationEntrypoint.SITHS_REQUEST_MATCHER;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.ATTRIBUTE_EMPLOYEE_HSA_ID;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.ATTRIBUTE_IDENTITY_PROVIDER_FOR_SIGN;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.ATTRIBUTE_LOGIN_METHOD;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.ATTRIBUTE_SECURITY_LEVEL_DESCRIPTION;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.ATTRIBUTE_SUBJECT_SERIAL_NUMBER;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.AUTHN_CONTEXT_CLASS_REF_PATTERN;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.ELEMENT_LOCAL_NAME_SESSION_INDEX;
+import static se.inera.intyg.webcert.web.auth.common.AuthConstants.METADATA_LOCATION_STRING_TEMPLATE;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.NAMESPACE_PREFIX_SAML2P;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.REGISTRATION_ID_ELEG;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.REGISTRATION_ID_SITHS;
@@ -47,7 +47,6 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.List;
-import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.opensaml.core.xml.schema.impl.XSStringImpl;
@@ -83,13 +82,13 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.savedrequest.RequestCache;
-import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisIndexedHttpSession;
 import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 import se.inera.intyg.infra.security.common.cookie.IneraCookieSerializer;
 import se.inera.intyg.webcert.web.auth.CsrfCookieFilter;
+import se.inera.intyg.webcert.web.auth.CustomAccessDeniedHandler;
 import se.inera.intyg.webcert.web.auth.CustomAuthenticationEntrypoint;
 import se.inera.intyg.webcert.web.auth.CustomAuthenticationFailureHandler;
 import se.inera.intyg.webcert.web.auth.CustomAuthenticationSuccessHandler;
@@ -102,10 +101,10 @@ import se.inera.intyg.webcert.web.auth.eleg.ElegAuthenticationMethodResolver;
 import se.inera.intyg.webcert.web.auth.eleg.ElegWebCertUserDetailsService;
 
 @Configuration(proxyBeanMethods = false)
-@EnableWebSecurity
-@EnableRedisIndexedHttpSession
-@RequiredArgsConstructor
 @Slf4j
+@EnableWebSecurity
+@RequiredArgsConstructor
+@EnableRedisIndexedHttpSession
 public class WebSecurityConfig {
 
     private final ElegWebCertUserDetailsService elegWebCertUserDetailsService;
@@ -148,9 +147,6 @@ public class WebSecurityConfig {
     @Value("${webcert.domain.name}")
     private String webcertDomainName;
 
-    private static final String AUTHN_CONTEXT_CLASS_REF_REGEX = "(?<=<saml2:AuthnContextClassRef>).*(?=</saml2:AuthnContextClassRef>)";
-    private static final Pattern AUTHN_CONTEXT_CLASS_REF_PATTERN = Pattern.compile(AUTHN_CONTEXT_CLASS_REF_REGEX);
-
     @Bean
     public RelyingPartyRegistrationRepository relyingPartyRegistrationRepository()
         throws KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, IOException, CertificateException {
@@ -174,9 +170,8 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, RelyingPartyRegistrationRepository relyingPartyRegistrationRepository,
-        Saml2LogoutRequestResolver logoutRequestResolver,
-        CustomAuthenticationEntrypoint customAuthenticationEntrypoint,
-        CustomXFrameOptionsHeaderWriter customXFrameOptionsHeaderWriter,
+        Saml2LogoutRequestResolver logoutRequestResolver, CustomAuthenticationEntrypoint customAuthenticationEntrypoint,
+        CustomAccessDeniedHandler customAccessDeniedHandler, CustomXFrameOptionsHeaderWriter customXFrameOptionsHeaderWriter,
         RequestCache requestCache) throws Exception {
 
         if (environment.matchesProfiles("dev", "testability-api")) {
@@ -216,8 +211,8 @@ public class WebSecurityConfig {
                 .requestCache(requestCache)
             )
             .exceptionHandling(exceptionConfigurer -> exceptionConfigurer
-                .defaultAuthenticationEntryPointFor(customAuthenticationEntrypoint,
-                    new OrRequestMatcher(ELEG_REQUEST_MATCHER, SITHS_REQUEST_MATCHER, SITHS_NORMAL_REQUEST_MATCHER))
+                .authenticationEntryPoint(customAuthenticationEntrypoint)
+                .accessDeniedHandler(customAccessDeniedHandler)
             )
             .headers(headersConfigurer -> headersConfigurer
                 .frameOptions(FrameOptionsConfig::disable)
@@ -228,7 +223,6 @@ public class WebSecurityConfig {
                 .csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler())
                 .ignoringRequestMatchers(
                     SITHS_REQUEST_MATCHER,
-                    antMatcher("/api/signature/**"),
                     antMatcher("/api/signature/**"),
                     antMatcher("/api/testability/**"),
                     antMatcher("/services/**"))
@@ -279,7 +273,7 @@ public class WebSecurityConfig {
             logoutRequest.getSessionIndexes().add(sessionIndex);
 
             if (registrationId.equals(REGISTRATION_ID_SITHS) || registrationId.equals(REGISTRATION_ID_SITHS_NORMAL)) {
-                final var issuerValue = "https://%s/saml2/service-provider-metadata/%s".formatted(webcertDomainName, registrationId);
+                final var issuerValue = METADATA_LOCATION_STRING_TEMPLATE.formatted(webcertDomainName, registrationId);
                 issuer.setValue(issuerValue);
             }
         });
@@ -298,9 +292,17 @@ public class WebSecurityConfig {
             .build();
     }
 
+    private void configureTestability(HttpSecurity http) throws Exception {
+        http.authorizeHttpRequests(request -> request
+            .requestMatchers(antMatcher("/testability/**")).permitAll()
+            .requestMatchers(antMatcher("/api/hsa-api/**")).permitAll()
+        );
+    }
+
     private OpenSaml4AuthenticationProvider getOpenSaml4AuthenticationProvider() {
         final var authenticationProvider = new OpenSaml4AuthenticationProvider();
         authenticationProvider.setResponseAuthenticationConverter(responseToken -> {
+
             final var authentication = OpenSaml4AuthenticationProvider.createDefaultResponseAuthenticationConverter()
                 .convert(responseToken);
 
@@ -308,12 +310,10 @@ public class WebSecurityConfig {
                 return null;
             }
 
-            if (getRegistrationId(authentication).equals(REGISTRATION_ID_ELEG)) {
-                return elegSaml2AuthenticationToken(authentication);
-            }
-
-            return sithsSaml2AuthenticationToken(authentication);
+            final var isElegLogin = getRegistrationId(authentication).equals(REGISTRATION_ID_ELEG);
+            return isElegLogin ? elegSaml2AuthenticationToken(authentication) : sithsSaml2AuthenticationToken(authentication);
         });
+
         return authenticationProvider;
     }
 
@@ -336,14 +336,6 @@ public class WebSecurityConfig {
         final var saml2AuthenticationToken = new Saml2AuthenticationToken(principal, authentication);
         saml2AuthenticationToken.setAuthenticated(true);
         return saml2AuthenticationToken;
-    }
-
-    private void configureTestability(HttpSecurity http) throws Exception {
-        http
-            .authorizeHttpRequests(request -> request
-                .requestMatchers(antMatcher("/testability/**")).permitAll()
-                .requestMatchers(antMatcher("/api/hsa-api/**")).permitAll()
-            );
     }
 
     private String getSithsAuthMethod(Saml2Authentication authentication) {
