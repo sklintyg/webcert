@@ -34,6 +34,7 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.facade.TypeAheadProvider;
 import se.inera.intyg.infra.integration.hsatk.services.HsatkOrganizationService;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.web.service.facade.modal.confirmation.ConfirmationModalProviderResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 @Component
@@ -145,6 +146,17 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
 
         certificateToReturn.getMetadata().setResponsibleHospName(
             getResponsibleHospName()
+        );
+
+        final var origin = webCertUserService.getUser().getOrigin();
+        final var confirmationModelProvider = ConfirmationModalProviderResolver.get(certificate.getIntygsTyp(),
+            certificateToReturn.getMetadata().getStatus(), origin, false);
+        certificateToReturn.getMetadata().setConfirmationModal(
+            confirmationModelProvider != null ? confirmationModelProvider.create(
+                certificateToReturn.getMetadata().getPatient().getFullName(),
+                certificateToReturn.getMetadata().getPatient().getPersonId().getId(),
+                origin
+            ) : null
         );
 
         return certificateToReturn;

@@ -142,11 +142,6 @@ public class GetCertificateResourceLinksImpl implements GetCertificateResourceLi
                 draftAccessServiceHelper.isAllowToSignWithConfirmation(accessEvaluationParameters)
         );
 
-        functions.put(ResourceLinkTypeDTO.WARNING_DODSBEVIS_INTEGRATED,
-            (accessEvaluationParameters, certificate) ->
-                draftAccessServiceHelper.isAllowToEditUtkast(accessEvaluationParameters)
-        );
-
         functions.put(ResourceLinkTypeDTO.WARNING_LUAENA_INTEGRATED,
             (accessEvaluationParameters, certificate) ->
                 draftAccessServiceHelper.isAllowToEditUtkast(accessEvaluationParameters)

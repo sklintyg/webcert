@@ -181,24 +181,6 @@ class GetCertificateResourceLinksImplTest {
         class Draft {
 
             @Test
-            void shallIncludeWarningDodsbevisIntegrated() {
-                resourceLinkDTO.setType(ResourceLinkTypeDTO.WARNING_DODSBEVIS_INTEGRATED);
-                when(draftAccessServiceHelper.isAllowToEditUtkast(any(AccessEvaluationParameters.class))).thenReturn(true);
-                final var actualResourceLinks = getCertificationResourceLinks
-                    .get(CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED));
-                assertInclude(actualResourceLinks, ResourceLinkTypeDTO.WARNING_DODSBEVIS_INTEGRATED);
-            }
-
-            @Test
-            void shallExcludeWarningDodsbevisIntegrated() {
-                resourceLinkDTO.setType(ResourceLinkTypeDTO.WARNING_DODSBEVIS_INTEGRATED);
-                when(draftAccessServiceHelper.isAllowToEditUtkast(any(AccessEvaluationParameters.class))).thenReturn(false);
-                final var actualResourceLinks = getCertificationResourceLinks
-                    .get(CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED));
-                assertExclude(actualResourceLinks, ResourceLinkTypeDTO.WARNING_DODSBEVIS_INTEGRATED);
-            }
-
-            @Test
             void shallIncludeWarningLuaenaIntegrated() {
                 resourceLinkDTO.setType(ResourceLinkTypeDTO.WARNING_LUAENA_INTEGRATED);
                 when(draftAccessServiceHelper.isAllowToEditUtkast(any(AccessEvaluationParameters.class))).thenReturn(true);

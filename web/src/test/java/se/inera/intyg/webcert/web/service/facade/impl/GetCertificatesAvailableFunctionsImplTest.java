@@ -285,22 +285,6 @@ class GetCertificatesAvailableFunctionsImplTest {
         }
 
         @Test
-        void shallIncludeWarningIntegrated() {
-            final var certificate = CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
-            when(webCertUserService.getUser()).thenReturn(getUserWithOrigin("DJUPINTEGRATION"));
-            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-            assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.WARNING_DODSBEVIS_INTEGRATED);
-        }
-
-        @Test
-        void shallExcludeWarningIntegrated() {
-            final var certificate = CertificateFacadeTestHelper.createCertificate(DbModuleEntryPoint.MODULE_ID, CertificateStatus.UNSIGNED);
-            when(webCertUserService.getUser()).thenReturn(getUserWithOrigin("ORIGIN"));
-            final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
-            assertExclude(actualAvailableFunctions, ResourceLinkTypeDTO.WARNING_DODSBEVIS_INTEGRATED);
-        }
-
-        @Test
         void shallIncludeWarningWhenLuaenaIntegratedAndPatientOlderThanThirtyYearsAndTwoMonths() {
             final var certificate = getUnsignedLuaenaForPatientOfAge(30, 3);
             when(webCertUserService.getUser()).thenReturn(getUserWithOrigin("DJUPINTEGRATION"));
@@ -1119,8 +1103,9 @@ class GetCertificatesAvailableFunctionsImplTest {
         final var patientBirthDate = LocalDate.now(ZoneId.systemDefault()).minusYears(years).minusMonths(months);
         final var personId = PersonId.builder().id(
                 patientBirthDate.toString()
-                    .replace(Integer.toString(patientBirthDate.getDayOfMonth()), Integer.toString(patientBirthDate.getMonthValue() + 60))
-                    .replace("-", "") + "-4321")
+                    .replace(getDayOfMonth(patientBirthDate), Integer.toString(patientBirthDate.getDayOfMonth() + 60))
+                    .replace("-", "") + "-4321"
+            )
             .build();
         final var patient = Patient.builder().personId(personId).build();
         return CertificateBuilder.create().metadata(CertificateMetadata.builder()
@@ -1130,5 +1115,13 @@ class GetCertificatesAvailableFunctionsImplTest {
             .patient(patient)
             .build()
         ).build();
+    }
+
+    private static String getDayOfMonth(LocalDate patientBirthDate) {
+        final var dayOfMonth = Integer.toString(patientBirthDate.getDayOfMonth());
+        if (dayOfMonth.length() == 1) {
+            return "0" + dayOfMonth;
+        }
+        return dayOfMonth;
     }
 }
