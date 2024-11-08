@@ -18,11 +18,11 @@
  */
 package se.inera.intyg.webcert.web.auth;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -32,16 +32,19 @@ import static org.mockito.Mockito.when;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.RedirectStrategy;
@@ -53,111 +56,128 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.IntygIntegrationController;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
-@RunWith(MockitoJUnitRunner.class)
-public class CustomAuthenticationSuccessHandlerTest {
+@ExtendWith(MockitoExtension.class)
+class CustomAuthenticationSuccessHandlerTest {
 
+    private static final int ONE = 1;
+    private static final String GET = "GET";
+    private static final String POST = "POST";
     private static final String PNR = "20121212-1212";
     private static final String LAUNCH_ID = "97f279ba-7d2b-4b0a-8665-7adde08f26f4";
-    private static final String URL = "/visa/intyg/intyg-123";
+    private static final String REDIRECT_URL = "/visa/intyg/1ff83a34-1f90-4859-90db-2a1ec65dd741";
+    private static final String WEBCERT_DOMAIN_NAME = "webcertDomainName";
+    private static final String WEBCERT_DOMAIN_NAME_VALUE = "webcert.domain.name";
 
     @Mock
     private HttpServletRequest req;
-
     @Mock
     private HttpServletResponse resp;
-
-    @Mock
-    private Authentication auth;
-
     @Mock
     private RequestCache requestCache;
-
     @Mock
     private DefaultSavedRequest savedRequest;
-
     @Mock
     private WebCertUser user;
-
     @Mock
     private RedirectStrategy redirectStrategy;
+    @Mock
+    private Authentication authentication;
+    @Mock
+    private HttpSession session;
+
+    @Captor
+    private ArgumentCaptor<IntegrationParameters> captor = ArgumentCaptor.forClass(IntegrationParameters.class);
 
     @InjectMocks
-    private CustomAuthenticationSuccessHandler testee;
+    private CustomAuthenticationSuccessHandler successHandler;
 
-    @Before
-    public void init() {
-        when(savedRequest.getMethod()).thenReturn("GET");
-        when(savedRequest.getRedirectUrl()).thenReturn(URL);
+    @Nested
+    class TestsWitnNoOrGetSavedRequest {
 
-        ReflectionTestUtils.setField(testee, "webcertDomainName", "webcert.test.se");
+        @BeforeEach
+        void init() {
+            ReflectionTestUtils.setField(successHandler, WEBCERT_DOMAIN_NAME, WEBCERT_DOMAIN_NAME_VALUE);
+            successHandler.setRedirectStrategy(redirectStrategy);
+        }
 
-        Authentication auth = mock(Authentication.class);
-        when(auth.getPrincipal()).thenReturn(user);
-        SecurityContextHolder.getContext().setAuthentication(auth);
+        @Test
+        void shouldRedirectToOriginalWhenNoSavedRequest() throws ServletException, IOException {
+            when(requestCache.getRequest(req, resp)).thenReturn(null);
+            successHandler.onAuthenticationSuccess(req, resp, authentication);
+            verify(redirectStrategy, times(ONE)).sendRedirect(req, resp, "/");
+        }
+
+        @Test
+        void shouldRedirectWhenGetReqest() throws ServletException, IOException {
+            when(requestCache.getRequest(req, resp)).thenReturn(savedRequest);
+            when(savedRequest.getRedirectUrl()).thenReturn(REDIRECT_URL);
+            when(savedRequest.getMethod()).thenReturn(GET);
+            successHandler.onAuthenticationSuccess(req, resp, authentication);
+            verify(redirectStrategy, times(ONE)).sendRedirect(req, resp, REDIRECT_URL);
+        }
     }
 
-    @Test
-    public void testOkNoSaved() throws ServletException, IOException {
-        when(requestCache.getRequest(req, resp)).thenReturn(null);
-        RedirectStrategy redirectStrategy = mock(RedirectStrategy.class);
-        testee.setRedirectStrategy(redirectStrategy);
+    @Nested
+    class TestsWitnPostSavedRequest {
 
-        testee.onAuthenticationSuccess(req, resp, auth);
-        verify(redirectStrategy, times(1)).sendRedirect(any(HttpServletRequest.class), any(HttpServletResponse.class), anyString());
-    }
+        @BeforeEach
+        void init() {
+            ReflectionTestUtils.setField(successHandler, WEBCERT_DOMAIN_NAME, WEBCERT_DOMAIN_NAME_VALUE);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            when(requestCache.getRequest(req, resp)).thenReturn(savedRequest);
+            when(savedRequest.getMethod()).thenReturn(POST);
+            when(savedRequest.getRedirectUrl()).thenReturn(REDIRECT_URL);
+            when(savedRequest.getRequestURI()).thenReturn(REDIRECT_URL);
+            when(authentication.getPrincipal()).thenReturn(user);
+            successHandler.setRedirectStrategy(redirectStrategy);
+        }
 
-    @Test
-    public void testOkWithSavedGET() throws ServletException, IOException {
-        when(requestCache.getRequest(req, resp)).thenReturn(savedRequest);
-        RedirectStrategy redirectStrategy = mock(RedirectStrategy.class);
-        testee.setRedirectStrategy(redirectStrategy);
+        @Test
+        void shallRedirectToSavedEndpoint() throws ServletException, IOException {
+            when(savedRequest.getParameterMap()).thenReturn(buildParameterMap());
+            successHandler.onAuthenticationSuccess(req, resp, authentication);
+            verify(redirectStrategy, times(ONE)).sendRedirect(req, resp, REDIRECT_URL + "/saved");
+        }
 
-        testee.onAuthenticationSuccess(req, resp, auth);
-        verify(redirectStrategy, times(1)).sendRedirect(any(HttpServletRequest.class), any(HttpServletResponse.class), eq(URL));
-    }
+        @Test
+        void shallClearAutheticationAttributes() throws ServletException, IOException {
+            when(savedRequest.getParameterMap()).thenReturn(buildParameterMap());
+            when(req.getSession(false)).thenReturn(session);
+            doNothing().when(session).removeAttribute("SPRING_SECURITY_LAST_EXCEPTION");
+            successHandler.onAuthenticationSuccess(req, resp, authentication);
+            verify(session, times(ONE)).removeAttribute("SPRING_SECURITY_LAST_EXCEPTION");
+        }
 
-    @Test
-    public void testOkWithSavedPOST() throws ServletException, IOException {
-        when(savedRequest.getMethod()).thenReturn("POST");
-        when(savedRequest.getRequestURI()).thenReturn(URL);
-        when(savedRequest.getParameterMap()).thenReturn(buildParameterMap());
-        when(requestCache.getRequest(req, resp)).thenReturn(savedRequest);
+        @Test
+        void shallThrowWebCertServiceExceptionIfIntegrationParametersExist() {
+            when(user.getParameters()).thenReturn(mock(IntegrationParameters.class));
+            assertThrows(WebCertServiceException.class, () -> successHandler.onAuthenticationSuccess(req, resp, authentication));
+            verifyNoInteractions(redirectStrategy);
+        }
 
-        testee.onAuthenticationSuccess(req, resp, auth);
-        verify(redirectStrategy, times(1)).sendRedirect(any(HttpServletRequest.class), any(HttpServletResponse.class), eq(URL + "/saved"));
+        @Test
+        void shallIncludeAlternateSsnIfExists() throws ServletException, IOException {
+            when(savedRequest.getParameterMap()).thenReturn(buildParameterMap());
+            successHandler.onAuthenticationSuccess(req, resp, authentication);
+            verify(user).setParameters(captor.capture());
+            assertEquals(PNR, captor.getValue().getAlternateSsn());
+        }
 
-        ArgumentCaptor<IntegrationParameters> captor = ArgumentCaptor.forClass(IntegrationParameters.class);
-        verify(user).setParameters(captor.capture());
+        @Test
+        void shallIncludeIsPatientDeceasedIfExists() throws ServletException, IOException {
+            when(savedRequest.getParameterMap()).thenReturn(buildParameterMap());
+            successHandler.onAuthenticationSuccess(req, resp, authentication);
+            verify(user).setParameters(captor.capture());
+            assertTrue(captor.getValue().isPatientDeceased());
+        }
 
-        assertEquals(PNR, captor.getValue().getAlternateSsn());
-        assertTrue(captor.getValue().isPatientDeceased());
-    }
-
-    @Test(expected = WebCertServiceException.class)
-    public void testSavedPOSTFailsWhenUserHasParameters() throws ServletException, IOException {
-        when(savedRequest.getMethod()).thenReturn("POST");
-        when(savedRequest.getRequestURI()).thenReturn(URL);
-        when(requestCache.getRequest(req, resp)).thenReturn(savedRequest);
-        when(user.getParameters()).thenReturn(IntegrationParameters.of("", "", "", "", "", "", "", "", "", false, false, false, false));
-
-        testee.onAuthenticationSuccess(req, resp, auth);
-        verifyNoInteractions(redirectStrategy);
-    }
-
-    @Test
-    public void shallIncludeLaunchIdIfExists() throws ServletException, IOException {
-        when(savedRequest.getMethod()).thenReturn("POST");
-        when(savedRequest.getRequestURI()).thenReturn(URL);
-        when(savedRequest.getParameterMap()).thenReturn(buildParameterMap());
-        when(requestCache.getRequest(req, resp)).thenReturn(savedRequest);
-
-        testee.onAuthenticationSuccess(req, resp, auth);
-        verify(redirectStrategy, times(1)).sendRedirect(any(HttpServletRequest.class), any(HttpServletResponse.class), eq(URL + "/saved"));
-
-        ArgumentCaptor<IntegrationParameters> captor = ArgumentCaptor.forClass(IntegrationParameters.class);
-        verify(user).setParameters(captor.capture());
-
-        assertEquals(LAUNCH_ID, captor.getValue().getLaunchId());
+        @Test
+        void shallIncludeLaunchIdIfExists() throws ServletException, IOException {
+            when(savedRequest.getParameterMap()).thenReturn(buildParameterMap());
+            successHandler.onAuthenticationSuccess(req, resp, authentication);
+            verify(user).setParameters(captor.capture());
+            assertEquals(LAUNCH_ID, captor.getValue().getLaunchId());
+        }
     }
 
     private Map<String, String[]> buildParameterMap() {

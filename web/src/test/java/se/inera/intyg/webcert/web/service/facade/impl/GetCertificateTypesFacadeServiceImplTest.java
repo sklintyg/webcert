@@ -33,6 +33,7 @@ import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -147,37 +148,37 @@ class GetCertificateTypesFacadeServiceImplTest {
             void shallConvertConfirmationModalToNullIfNoProvider() {
                 types = getCertificateTypesFacadeService.get(PATIENT_ID);
 
-                assertNull(types.get(0).getConfirmationModal());
+                assertNull(types.getFirst().getConfirmationModal());
             }
 
             @Test
             void shallConvertId() {
                 types = getCertificateTypesFacadeService.get(PATIENT_ID);
-                assertEquals(module.getId(), types.get(0).getId());
+                assertEquals(module.getId(), types.getFirst().getId());
             }
 
             @Test
             void shallConvertLabel() {
                 types = getCertificateTypesFacadeService.get(PATIENT_ID);
-                assertEquals(module.getLabel(), types.get(0).getLabel());
+                assertEquals(module.getLabel(), types.getFirst().getLabel());
             }
 
             @Test
             void shallConvertDescription() {
                 types = getCertificateTypesFacadeService.get(PATIENT_ID);
-                assertEquals(module.getDescription(), types.get(0).getDescription());
+                assertEquals(module.getDescription(), types.getFirst().getDescription());
             }
 
             @Test
             void shallConvertDetailedDescription() {
                 types = getCertificateTypesFacadeService.get(PATIENT_ID);
-                assertEquals(module.getDetailedDescription(), types.get(0).getDetailedDescription());
+                assertEquals(module.getDetailedDescription(), types.getFirst().getDetailedDescription());
             }
 
             @Test
             void shallConvertIssuerTypeId() {
                 types = getCertificateTypesFacadeService.get(PATIENT_ID);
-                assertEquals(module.getIssuerTypeId(), types.get(0).getIssuerTypeId());
+                assertEquals(module.getIssuerTypeId(), types.getFirst().getIssuerTypeId());
             }
         }
 
@@ -197,7 +198,7 @@ class GetCertificateTypesFacadeServiceImplTest {
                 final var message = new CertificateMessage(CertificateMessageType.CERTIFICATE_ON_SAME_CARE_UNIT, expectedMessage);
                 when(certificateTypeMessageService.get(CERTIFICATE_TYPE, PATIENT_ID)).thenReturn(Optional.of(message));
                 types = getCertificateTypesFacadeService.get(PATIENT_ID);
-                assertEquals(expectedMessage, types.get(0).getMessage());
+                assertEquals(expectedMessage, types.getFirst().getMessage());
             }
 
             @Test
@@ -205,7 +206,7 @@ class GetCertificateTypesFacadeServiceImplTest {
                 final String expectedMessage = null;
                 when(certificateTypeMessageService.get(CERTIFICATE_TYPE, PATIENT_ID)).thenReturn(Optional.empty());
                 types = getCertificateTypesFacadeService.get(PATIENT_ID);
-                assertEquals(expectedMessage, types.get(0).getMessage());
+                assertEquals(expectedMessage, types.getFirst().getMessage());
             }
         }
 
@@ -228,8 +229,8 @@ class GetCertificateTypesFacadeServiceImplTest {
                     .decorateIntygModuleWithValidActionLinks(ArgumentMatchers.<List<IntygModuleDTO>>any(), any(Personnummer.class));
 
                 final var types = getCertificateTypesFacadeService.get(PATIENT_ID);
-                assertEquals(ResourceLinkTypeDTO.CREATE_CERTIFICATE, types.get(0).getLinks().get(0).getType());
-                assertTrue(types.get(0).getLinks().get(0).isEnabled());
+                assertEquals(ResourceLinkTypeDTO.CREATE_CERTIFICATE, types.getFirst().getLinks().getFirst().getType());
+                assertTrue(types.getFirst().getLinks().getFirst().isEnabled());
             }
 
             @Test
@@ -240,8 +241,8 @@ class GetCertificateTypesFacadeServiceImplTest {
                     .listAllModules();
 
                 final var types = getCertificateTypesFacadeService.get(PATIENT_ID);
-                assertEquals(ResourceLinkTypeDTO.CREATE_CERTIFICATE, types.get(0).getLinks().get(0).getType());
-                assertFalse(types.get(0).getLinks().get(0).isEnabled());
+                assertEquals(ResourceLinkTypeDTO.CREATE_CERTIFICATE, types.getFirst().getLinks().getFirst().getType());
+                assertFalse(types.getFirst().getLinks().getFirst().isEnabled());
             }
 
             @Test
@@ -251,9 +252,9 @@ class GetCertificateTypesFacadeServiceImplTest {
                 when(authoritiesHelper.getIntygstyperForPrivilege(any(), any())).thenReturn(Set.of(module.getId()));
 
                 final var types = getCertificateTypesFacadeService.get(getPatientId(3));
-                assertEquals(1, types.get(0).getLinks().stream()
+                assertEquals(1, types.getFirst().getLinks().stream()
                     .filter(link -> link.getType().equals(ResourceLinkTypeDTO.CREATE_LUAENA_CONFIRMATION)).count());
-                assertTrue(types.get(0).getLinks().stream().filter(link ->
+                assertTrue(types.getFirst().getLinks().stream().filter(link ->
                     link.getType() == ResourceLinkTypeDTO.CREATE_LUAENA_CONFIRMATION).findFirst().orElseThrow().isEnabled());
             }
 
@@ -264,9 +265,9 @@ class GetCertificateTypesFacadeServiceImplTest {
                 when(authoritiesHelper.getIntygstyperForPrivilege(any(), any())).thenReturn(Set.of(module.getId()));
 
                 final var types = getCertificateTypesFacadeService.get(getPatientIdAsCoordinationNumber(3));
-                assertEquals(1, types.get(0).getLinks().stream()
+                assertEquals(1, types.getFirst().getLinks().stream()
                     .filter(link -> link.getType().equals(ResourceLinkTypeDTO.CREATE_LUAENA_CONFIRMATION)).count());
-                assertTrue(types.get(0).getLinks().stream().filter(link ->
+                assertTrue(types.getFirst().getLinks().stream().filter(link ->
                     link.getType() == ResourceLinkTypeDTO.CREATE_LUAENA_CONFIRMATION).findFirst().orElseThrow().isEnabled());
             }
 
@@ -277,7 +278,7 @@ class GetCertificateTypesFacadeServiceImplTest {
                 when(authoritiesHelper.getIntygstyperForPrivilege(any(), any())).thenReturn(Set.of(module.getId()));
 
                 final var types = getCertificateTypesFacadeService.get(getPatientId(1));
-                assertTrue(types.get(0).getLinks().stream()
+                assertTrue(types.getFirst().getLinks().stream()
                     .noneMatch(link -> link.getType().equals(ResourceLinkTypeDTO.CREATE_LUAENA_CONFIRMATION)));
             }
 
@@ -288,7 +289,7 @@ class GetCertificateTypesFacadeServiceImplTest {
                 when(authoritiesHelper.getIntygstyperForPrivilege(any(), any())).thenReturn(Set.of(module.getId()));
 
                 final var types = getCertificateTypesFacadeService.get(getPatientIdAsCoordinationNumber(1));
-                assertTrue(types.get(0).getLinks().stream()
+                assertTrue(types.getFirst().getLinks().stream()
                     .noneMatch(link -> link.getType().equals(ResourceLinkTypeDTO.CREATE_LUAENA_CONFIRMATION)));
             }
 
@@ -311,8 +312,8 @@ class GetCertificateTypesFacadeServiceImplTest {
 
                 final var types = getCertificateTypesFacadeService.get(PATIENT_ID);
 
-                assertEquals(ResourceLinkTypeDTO.CREATE_CERTIFICATE, types.get(0).getLinks().get(0).getType());
-                assertEquals(ResourceLinkTypeDTO.MISSING_RELATED_CERTIFICATE_CONFIRMATION, types.get(0).getLinks().get(1).getType());
+                assertEquals(ResourceLinkTypeDTO.CREATE_CERTIFICATE, types.getFirst().getLinks().getFirst().getType());
+                assertEquals(ResourceLinkTypeDTO.MISSING_RELATED_CERTIFICATE_CONFIRMATION, types.getFirst().getLinks().get(1).getType());
             }
 
             @Test
@@ -329,7 +330,7 @@ class GetCertificateTypesFacadeServiceImplTest {
 
                 final var types = getCertificateTypesFacadeService.get(PATIENT_ID);
 
-                assertTrue(types.get(0).getLinks().stream().noneMatch(
+                assertTrue(types.getFirst().getLinks().stream().noneMatch(
                         resourceLinkDTO -> resourceLinkDTO.getType() == ResourceLinkTypeDTO.MISSING_RELATED_CERTIFICATE_CONFIRMATION),
                     "Should not contain a ResourceLinkTypeDTO.MISSING_RELATED_CERTIFICATE_CONFIRMATION");
             }
@@ -350,7 +351,7 @@ class GetCertificateTypesFacadeServiceImplTest {
                 final var types = getCertificateTypesFacadeService.get(PATIENT_ID);
 
                 assertEquals(1, types.size());
-                assertEquals(CERTIFICATE_TYPE, types.get(0).getId());
+                assertEquals(CERTIFICATE_TYPE, types.getFirst().getId());
             }
         }
     }
@@ -358,8 +359,8 @@ class GetCertificateTypesFacadeServiceImplTest {
     @Nested
     class DeprecatedIntygModules {
 
-        void setup(boolean isDeprecated, boolean showDeprecated, boolean hasTextVersion) throws Exception {
-            final var module = createIntygModule(isDeprecated, showDeprecated);
+        void setup(boolean showDeprecated, boolean hasTextVersion) throws Exception {
+            final var module = createIntygModule(true, showDeprecated);
 
             if (hasTextVersion) {
                 doReturn("1.0")
@@ -387,21 +388,21 @@ class GetCertificateTypesFacadeServiceImplTest {
 
         @Test
         void shouldFilterOutDeprectatedIntygModules() throws Exception {
-            setup(true, false, false);
+            setup(false, false);
             final var result = getCertificateTypesFacadeService.get(PATIENT_ID);
             assertEquals(0, result.size());
         }
 
         @Test
         void shouldNotFilterOutDeprectatedIntygModulesIfShowDeprecated() throws Exception {
-            setup(true, true, true);
+            setup(true, true);
             final var result = getCertificateTypesFacadeService.get(PATIENT_ID);
             assertEquals(1, result.size());
         }
 
         @Test
         void shouldNotFilterOutIntygModulesWithoutTextVersion() throws Exception {
-            setup(true, true, false);
+            setup(true, false);
             final var result = getCertificateTypesFacadeService.get(PATIENT_ID);
             assertEquals(0, result.size());
         }
@@ -430,18 +431,11 @@ class GetCertificateTypesFacadeServiceImplTest {
     }
 
     private Personnummer getPatientIdAsCoordinationNumber(int minusMonths) {
-        final var patientBirthDate = LocalDate.now(ZoneId.systemDefault()).minusYears(30).minusMonths(minusMonths);
-        final var patientId = patientBirthDate.toString()
-            .replace(getDayOfMonth(patientBirthDate), Integer.toString(patientBirthDate.getDayOfMonth() + 60))
-            .replace("-", "") + "4321";
-        return Personnummer.createPersonnummer(patientId).orElseThrow();
+        final var patientBirthDate = LocalDate.now(ZoneId.systemDefault()).minusYears(30).minusMonths(minusMonths)
+            .format(DateTimeFormatter.BASIC_ISO_DATE);
+        final var dayOfBirth = Integer.parseInt(patientBirthDate.substring(6, 8));
+        final var coordinationNumber = patientBirthDate.substring(0, 6) + (dayOfBirth + 60) + "1234";
+        return Personnummer.createPersonnummer(coordinationNumber).orElseThrow();
     }
 
-    private static String getDayOfMonth(LocalDate patientBirthDate) {
-        final var dayOfMonth = Integer.toString(patientBirthDate.getDayOfMonth());
-        if (dayOfMonth.length() == 1) {
-            return "0" + dayOfMonth;
-        }
-        return dayOfMonth;
-    }
 }

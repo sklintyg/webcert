@@ -77,7 +77,6 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         String targetUrl = savedRequest.getRedirectUrl().replace("localhost", webcertDomainName);
         String targetUri = ((DefaultSavedRequest) savedRequest).getRequestURI();
 
-        // If original req was POST for djupintegration, we need to extract parameters
         if (savedRequest.getMethod().equalsIgnoreCase(HttpMethod.POST.name()) && djupintegrationPattern.matcher(targetUri).matches()) {
             final var webCertUser = getWebCertUser();
 
