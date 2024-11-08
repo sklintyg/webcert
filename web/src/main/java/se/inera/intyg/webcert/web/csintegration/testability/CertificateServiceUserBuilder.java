@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.services.BefattningService;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserDTO;
@@ -34,10 +35,6 @@ import se.inera.intyg.webcert.web.csintegration.user.PaTitleDTO;
 @Component
 public class CertificateServiceUserBuilder {
 
-    private static final String LAKARE = "LAKARE";
-    private static final String VARDADMIN = "VARDADMINISTRATOR";
-    private static final String SJUKSKOTERSKA = "SJUKSKOTERSKA";
-    private static final String BARNMORSKA = "BARNMORSKA";
     private final WebcertUserDetailsService webcertUserDetailsService;
 
     public CertificateServiceUserBuilder(WebcertUserDetailsService webcertUserDetailsService) {
@@ -63,17 +60,23 @@ public class CertificateServiceUserBuilder {
     }
 
     private CertificateServiceUserRole getRole(Map<String, Role> roles) {
-        if (roles.containsKey(LAKARE)) {
+        if (roles.containsKey(AuthoritiesConstants.ROLE_LAKARE)) {
             return CertificateServiceUserRole.DOCTOR;
         }
-        if (roles.containsKey(VARDADMIN)) {
+        if (roles.containsKey(AuthoritiesConstants.ROLE_ADMIN)) {
             return CertificateServiceUserRole.CARE_ADMIN;
         }
-        if (roles.containsKey(SJUKSKOTERSKA)) {
+        if (roles.containsKey(AuthoritiesConstants.ROLE_SJUKSKOTERSKA)) {
             return CertificateServiceUserRole.NURSE;
         }
-        if (roles.containsKey(BARNMORSKA)) {
+        if (roles.containsKey(AuthoritiesConstants.ROLE_BARNMORSKA)) {
             return CertificateServiceUserRole.MIDWIFE;
+        }
+        if (roles.containsKey(AuthoritiesConstants.ROLE_PRIVATLAKARE)) {
+            return CertificateServiceUserRole.PRIVATE_DOCTOR;
+        }
+        if (roles.containsKey(AuthoritiesConstants.ROLE_TANDLAKARE)) {
+            return CertificateServiceUserRole.DENTIST;
         }
         return CertificateServiceUserRole.UNKNOWN;
     }
