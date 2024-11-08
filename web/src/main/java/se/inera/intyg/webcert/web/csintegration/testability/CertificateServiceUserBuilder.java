@@ -36,6 +36,8 @@ public class CertificateServiceUserBuilder {
 
     private static final String LAKARE = "LAKARE";
     private static final String VARDADMIN = "VARDADMINISTRATOR";
+    private static final String SJUKSKOTERSKA = "SJUKSKOTERSKA";
+    private static final String BARNMORSKA = "BARNMORSKA";
     private final WebcertUserDetailsService webcertUserDetailsService;
 
     public CertificateServiceUserBuilder(WebcertUserDetailsService webcertUserDetailsService) {
@@ -66,6 +68,12 @@ public class CertificateServiceUserBuilder {
         }
         if (roles.containsKey(VARDADMIN)) {
             return CertificateServiceUserRole.CARE_ADMIN;
+        }
+        if (roles.containsKey(SJUKSKOTERSKA)) {
+            return CertificateServiceUserRole.NURSE;
+        }
+        if (roles.containsKey(BARNMORSKA)) {
+            return CertificateServiceUserRole.MIDWIFE;
         }
         return CertificateServiceUserRole.UNKNOWN;
     }
