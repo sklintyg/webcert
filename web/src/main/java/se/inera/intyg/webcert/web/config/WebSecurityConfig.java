@@ -224,7 +224,7 @@ public class WebSecurityConfig {
                 .ignoringRequestMatchers(
                     SITHS_REQUEST_MATCHER,
                     antMatcher("/api/signature/**"),
-                    antMatcher("/api/testability/**"),
+                    antMatcher("/testability/**"),
                     antMatcher("/services/**"))
             )
             .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class);

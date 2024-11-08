@@ -26,15 +26,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.web.header.HeaderWriter;
 import org.springframework.stereotype.Component;
 
-/**
- * Created by marced on 2017-10-25.
- */
-
 @Component
 @Slf4j
 public class CustomXFrameOptionsHeaderWriter implements HeaderWriter {
 
     private static final String PDF_API_IDENTIFIER = "/pdf";
+    private static final String DENY = "DENY";
 
     @Override
     public void writeHeaders(HttpServletRequest request, HttpServletResponse response) {
@@ -44,7 +41,7 @@ public class CustomXFrameOptionsHeaderWriter implements HeaderWriter {
         if (shouldSkipHeader(requestUri)) {
             log.debug("Skipping {} header for request to {}", XFRAME_OPTIONS_HEADER, requestUri);
         } else {
-            response.addHeader(XFRAME_OPTIONS_HEADER, "DENY");
+            response.addHeader(XFRAME_OPTIONS_HEADER, DENY);
         }
     }
 

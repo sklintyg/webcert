@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.chrono.ChronoZonedDateTime;
 import java.util.Timer;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import net.shibboleth.utilities.java.support.resolver.ResolverException;
@@ -89,7 +88,8 @@ public class SpringResourceBackedMetadataProvider extends AbstractReloadingMetad
             final var metadataUpdateTime = ZonedDateTime
                 .ofInstant(Instant.ofEpochSecond(metadataResource.lastModified()), ZoneId.systemDefault());
             log.debug("resource {} was last modified {}", getMetadataIdentifier(), metadataUpdateTime);
-            if (getLastRefresh() == null || metadataUpdateTime.isAfter(ChronoZonedDateTime.from(getLastRefresh()))) {
+
+            if (getLastRefresh() == null || metadataUpdateTime.isAfter(ZonedDateTime.ofInstant(getLastRefresh(), ZoneId.systemDefault()))) {
                 return inputstreamToByteArray(metadataResource.getInputStream());
             }
 
