@@ -73,7 +73,6 @@ import se.inera.intyg.webcert.persistence.fmb.repository.DiagnosInformationRepos
 
 @Service
 @Transactional
-//@Configuration
 @EnableScheduling
 public class FmbServiceImpl implements FmbService {
 
@@ -154,7 +153,7 @@ public class FmbServiceImpl implements FmbService {
                     .referensList(convertToReferensList(attributes))
                     .senastUppdaterad(senasteAndring.orElse(null))
                     .build();
-            }).collect(Collectors.toList());
+            }).toList();
     }
 
     private void validateResponse(final FmdxInformation diagnosinformation, final Typfall typfall) {
@@ -183,7 +182,7 @@ public class FmbServiceImpl implements FmbService {
                     ? kod.getOptionalKod().get().replaceAll("\\.", "").toUpperCase(Locale.ENGLISH)
                     : null)
                 .build())
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private List<TypFall> convertToTypFallList(final Typfall typfall, final Kod kod) {
@@ -196,7 +195,7 @@ public class FmbServiceImpl implements FmbService {
                 .maximalSjukrivningstidSourceValue(attributes.getRekommenderadsjukskrivning().getMaximalsjukskrivningstid())
                 .maximalSjukrivningstidSourceUnit(attributes.getRekommenderadsjukskrivning().getMaximalsjukskrivningsenhet())
                 .build())
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private Integer convertToAntalDagar(final Rekommenderadsjukskrivning rekommenderadsjukskrivning) {
@@ -204,7 +203,7 @@ public class FmbServiceImpl implements FmbService {
             return null;
         }
 
-        final int antal = Integer.valueOf(rekommenderadsjukskrivning.getMaximalsjukskrivningstid());
+        final int antal = Integer.parseInt(rekommenderadsjukskrivning.getMaximalsjukskrivningstid());
         final TidEnhet enhet = TidEnhet.of(rekommenderadsjukskrivning.getMaximalsjukskrivningsenhet()).get();
         return antal * enhet.getInDays();
     }
@@ -240,6 +239,6 @@ public class FmbServiceImpl implements FmbService {
                 .text(referens.getText())
                 .uri(referens.getUri())
                 .build())
-            .collect(Collectors.toList());
+            .toList();
     }
 }
