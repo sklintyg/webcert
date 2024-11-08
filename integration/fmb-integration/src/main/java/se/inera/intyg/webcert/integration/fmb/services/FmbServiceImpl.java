@@ -40,7 +40,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -179,7 +178,7 @@ public class FmbServiceImpl implements FmbService {
             .map(kod -> anIcfKod()
                 .icfKodTyp(kodTyp)
                 .kod(kod.getOptionalKod().isPresent()
-                    ? kod.getOptionalKod().get().replaceAll("\\.", "").toUpperCase(Locale.ENGLISH)
+                    ? kod.getOptionalKod().get().replace(".", "").toUpperCase(Locale.ENGLISH)
                     : null)
                 .build())
             .toList();
@@ -204,7 +203,7 @@ public class FmbServiceImpl implements FmbService {
         }
 
         final int antal = Integer.parseInt(rekommenderadsjukskrivning.getMaximalsjukskrivningstid());
-        final TidEnhet enhet = TidEnhet.of(rekommenderadsjukskrivning.getMaximalsjukskrivningsenhet()).get();
+        final TidEnhet enhet = TidEnhet.of(rekommenderadsjukskrivning.getMaximalsjukskrivningsenhet()).orElseThrow();
         return antal * enhet.getInDays();
     }
 
@@ -225,12 +224,12 @@ public class FmbServiceImpl implements FmbService {
         return attributes.getDiagnoskod().stream()
             .map(kod -> anIcd10Kod()
                 .kod(kod.getOptionalKod().isPresent()
-                    ? kod.getOptionalKod().get().replaceAll("\\.", "").toUpperCase(Locale.ENGLISH)
+                    ? kod.getOptionalKod().get().replace(".", "").toUpperCase(Locale.ENGLISH)
                     : null)
                 .beskrivning(kod.getBeskrivning())
                 .typFallList(convertToTypFallList(typfallList, kod))
                 .build())
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private List<Referens> convertToReferensList(final Attributes attributes) {
