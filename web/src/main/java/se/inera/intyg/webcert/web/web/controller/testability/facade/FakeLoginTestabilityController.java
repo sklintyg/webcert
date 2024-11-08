@@ -19,11 +19,10 @@
 
 package se.inera.intyg.webcert.web.web.controller.testability.facade;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
@@ -39,18 +38,16 @@ public class FakeLoginTestabilityController {
     private final FakeLoginService fakeLoginService;
     private final ObjectMapper objectMapper;
 
+    @POST
     @Path(value = "/fake")
-    @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
-    public void login(@FormParam("userJsonDisplay") String loginObject, @Context HttpServletRequest request)
-        throws JsonProcessingException {
-        final var fakeLoginDTO = objectMapper.readValue(loginObject, FakeLoginDTO.class);
+    @Consumes(MediaType.APPLICATION_JSON)
+    public void login(@Context HttpServletRequest request, FakeLoginDTO fakeLoginDTO) {
         fakeLoginService.login(fakeLoginDTO, request);
     }
 
+    @POST
     @Path("/logout")
-    @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
     public void logout(@Context HttpServletRequest request) {
         fakeLoginService.logout(request.getSession(false));
     }
-
 }
