@@ -28,6 +28,7 @@ import se.inera.intyg.common.support.facade.model.metadata.CertificateModalActio
 @Component
 public class DbSignConfirmationModalProvider implements ConfirmationModalProvider {
 
+    @Override
     public CertificateConfirmationModal create(String patientName, String patientId, String origin) {
         return CertificateConfirmationModal.builder()
             .title("Kontrollera namn och personnummer på den avlidne")
