@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.service.facade.modal.confirmation;
 
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 public class ConfirmationModalProviderResolver {
 
@@ -28,10 +29,10 @@ public class ConfirmationModalProviderResolver {
         throw new IllegalStateException("Utility class");
     }
 
-    public static ConfirmationModalProvider getConfirmation(String type, CertificateStatus status, String origin,
+    public static ConfirmationModalProvider getConfirmation(String type, CertificateStatus status, WebCertUser user,
         boolean isCreatedFromList) {
-        final var isIntegratedOrigin = origin.equals("DJUPINTEGRATION");
-        final var isValid = isIntegratedOrigin ? isValidForIntegratedOrigin() : isValidForNormalOrigin(isCreatedFromList);
+        final var isIntegratedOrigin = user.getOrigin().equals("DJUPINTEGRATION");
+        final var isValid = isIntegratedOrigin ? isValidForIntegratedOrigin(user.isSjfActive()) : isValidForNormalOrigin(isCreatedFromList);
 
         if (!isValid) {
             return null;
@@ -56,8 +57,8 @@ public class ConfirmationModalProviderResolver {
         return null;
     }
 
-    private static boolean isValidForIntegratedOrigin() {
-        return Boolean.TRUE;
+    private static boolean isValidForIntegratedOrigin(boolean isSvodActivated) {
+        return !isSvodActivated;
     }
 
     private static boolean isValidForNormalOrigin(boolean isCreatedFromList) {

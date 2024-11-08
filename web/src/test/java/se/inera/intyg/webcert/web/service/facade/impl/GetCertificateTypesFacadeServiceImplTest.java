@@ -115,6 +115,9 @@ class GetCertificateTypesFacadeServiceImplTest {
             doReturn(user)
                 .when(webCertUserService)
                 .getUser();
+            doReturn("NORMAL")
+                .when(user)
+                .getOrigin();
 
             doReturn(Set.of(module.getId(), moduleDb.getId()))
                 .when(authoritiesHelper)
@@ -358,6 +361,8 @@ class GetCertificateTypesFacadeServiceImplTest {
     @Nested
     class DeprecatedIntygModules {
 
+        WebCertUser user;
+
         void setup(boolean isDeprecated, boolean showDeprecated, boolean hasTextVersion) throws Exception {
             final var module = createIntygModule(isDeprecated, showDeprecated);
 
@@ -375,7 +380,7 @@ class GetCertificateTypesFacadeServiceImplTest {
                 .when(resourceLinkHelper)
                 .decorateIntygModuleWithValidActionLinks(ArgumentMatchers.<List<IntygModuleDTO>>any(), any(Personnummer.class));
 
-            final var user = mock(WebCertUser.class);
+            user = mock(WebCertUser.class);
             doReturn(user)
                 .when(webCertUserService)
                 .getUser();
@@ -395,7 +400,12 @@ class GetCertificateTypesFacadeServiceImplTest {
         @Test
         void shouldNotFilterOutDeprectatedIntygModulesIfShowDeprecated() throws Exception {
             setup(true, true, true);
+            doReturn("NORMAL")
+                .when(user)
+                .getOrigin();
+
             final var result = getCertificateTypesFacadeService.get(PATIENT_ID);
+            
             assertEquals(1, result.size());
         }
 
