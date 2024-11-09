@@ -171,7 +171,6 @@ dependencies {
     implementation "org.apache.cxf:cxf-rt-frontend-jaxrs:${cxfVersion}"
     implementation "org.apache.httpcomponents.client5:httpclient5"
     implementation "org.apache.lucene:lucene-analysis-common:${luceneAnalyzersCommonVersion}"
-    implementation "org.apache.santuario:xmlsec:${xmlSecVersion}"
     implementation "org.hibernate.orm:hibernate-core"
     implementation "org.jxls:jxls-jexcel:${jexcelVersion}"
     implementation "org.springframework.data:spring-data-jpa"

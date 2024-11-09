@@ -43,7 +43,6 @@ ext {
     swaggerJaxrsVersion = "1.6.14"
     vavrVersion = "0.10.4"
     xercesVersion = "2.12.2"
-    xmlSecVersion = "4.0.2"
 
     springbootMavenBomVersion = "3.3.4"
 
