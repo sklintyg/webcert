@@ -157,11 +157,8 @@ dependencies {
     implementation "se.riv.strategicresourcemanagement.persons.person:strategicresourcemanagement-persons-person-schemas:${rivtaGetPersonsPersonSchemasVersion}"
 
     implementation "codes.rafael.jaxb2_commons:jaxb2-basics:${jaxb2Version}"
-    implementation "com.auth0:jwks-rsa:${jwksVersion}"
     implementation "com.google.guava:guava:${guavaVersion}"
     implementation "commons-io:commons-io:${commonsIoVersion}"
-    implementation "io.jsonwebtoken:jjwt-impl:${jsonwebtokenVersion}"
-    implementation "io.jsonwebtoken:jjwt-jackson:${jsonwebtokenVersion}"
     implementation "io.prometheus:simpleclient_servlet"
     implementation("io.swagger:swagger-jaxrs:${swaggerJaxrsVersion}") { exclude(module: "jsr311-api") }
     implementation "io.vavr:vavr:${vavrVersion}"
