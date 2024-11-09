@@ -426,7 +426,7 @@ public class NotificationServiceImpl implements NotificationService {
         ArendeAmne amne, LocalDate sistaDatumForSvar) {
 
         Optional<SchemaVersion> version = sendNotificationStrategy.decideNotificationForIntyg(utkast);
-        if (!version.isPresent()) {
+        if (version.isEmpty()) {
             LOGGER.debug("Schema version is not present. Notification message not sent for event {}", handelse);
             return;
         }
@@ -459,7 +459,7 @@ public class NotificationServiceImpl implements NotificationService {
         LocalDate sistaDatumForSvar) {
 
         final var optionalSchemaVersion = sendNotificationStrategy.decideNotificationForIntyg(certificate.getUtlatande());
-        if (!optionalSchemaVersion.isPresent()) {
+        if (optionalSchemaVersion.isEmpty()) {
             LOGGER.debug("Schema version is not present. Notification message not sent for event {}", handelse);
             return;
         }
@@ -535,46 +535,25 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private HandelsekodEnum getHandelseV1(NotificationEvent event) {
-        switch (event) {
-            case QUESTION_FROM_CARE_WITH_ANSWER_HANDLED:
-                return HANFRFV;
-            case QUESTION_FROM_CARE_WITH_ANSWER_UNHANDLED:
-            case NEW_ANSWER_FROM_RECIPIENT:
-                return NYSVFM;
-            case NEW_ANSWER_FROM_CARE:
-            case QUESTION_FROM_RECIPIENT_HANDLED:
-                return HANFRFM;
-            case NEW_QUESTION_FROM_RECIPIENT:
-            case QUESTION_FROM_RECIPIENT_UNHANDLED:
-                return NYFRFM;
-            case NEW_QUESTION_FROM_CARE:
-                return NYFRFV;
-            case QUESTION_FROM_CARE_HANDLED:
-            case QUESTION_FROM_CARE_UNHANDLED:
-                return null;
-        }
-        return null;
+        return switch (event) {
+            case QUESTION_FROM_CARE_WITH_ANSWER_HANDLED -> HANFRFV;
+            case QUESTION_FROM_CARE_WITH_ANSWER_UNHANDLED, NEW_ANSWER_FROM_RECIPIENT -> NYSVFM;
+            case NEW_ANSWER_FROM_CARE, QUESTION_FROM_RECIPIENT_HANDLED -> HANFRFM;
+            case NEW_QUESTION_FROM_RECIPIENT, QUESTION_FROM_RECIPIENT_UNHANDLED -> NYFRFM;
+            case NEW_QUESTION_FROM_CARE -> NYFRFV;
+            case QUESTION_FROM_CARE_HANDLED, QUESTION_FROM_CARE_UNHANDLED -> null;
+        };
     }
 
     private HandelsekodEnum getHandelseV3(NotificationEvent event) {
-        switch (event) {
-            case QUESTION_FROM_CARE_WITH_ANSWER_HANDLED:
-            case QUESTION_FROM_CARE_WITH_ANSWER_UNHANDLED:
-            case QUESTION_FROM_CARE_HANDLED:
-            case QUESTION_FROM_CARE_UNHANDLED:
-                return HANFRFV;
-            case NEW_ANSWER_FROM_CARE:
-            case QUESTION_FROM_RECIPIENT_HANDLED:
-            case QUESTION_FROM_RECIPIENT_UNHANDLED:
-                return HANFRFM;
-            case NEW_QUESTION_FROM_CARE:
-                return NYFRFV;
-            case NEW_QUESTION_FROM_RECIPIENT:
-                return NYFRFM;
-            case NEW_ANSWER_FROM_RECIPIENT:
-                return NYSVFM;
-        }
-        return null;
+        return switch (event) {
+            case QUESTION_FROM_CARE_WITH_ANSWER_HANDLED, QUESTION_FROM_CARE_WITH_ANSWER_UNHANDLED, QUESTION_FROM_CARE_HANDLED, QUESTION_FROM_CARE_UNHANDLED ->
+                HANFRFV;
+            case NEW_ANSWER_FROM_CARE, QUESTION_FROM_RECIPIENT_HANDLED, QUESTION_FROM_RECIPIENT_UNHANDLED -> HANFRFM;
+            case NEW_QUESTION_FROM_CARE -> NYFRFV;
+            case NEW_QUESTION_FROM_RECIPIENT -> NYFRFM;
+            case NEW_ANSWER_FROM_RECIPIENT -> NYSVFM;
+        };
     }
 
     @Override
@@ -609,7 +588,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     private String currentUserId() {
         final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return (Objects.isNull(auth)) ? null : ((WebCertUser) auth.getPrincipal()).getHsaId();
+        return auth == null || !(auth.getPrincipal() instanceof WebCertUser) ? null : ((WebCertUser) auth.getPrincipal()).getHsaId();
     }
 
     private Utkast getUtkast(String intygsId) {
@@ -632,10 +611,7 @@ public class NotificationServiceImpl implements NotificationService {
             LOGGER.error(
                 String.format("Notification mail for question '%s' concerning certificate '%s' couldn't be sent to '%s' (%s)",
                     mailNotification.getQaId(), mailNotification.getCertificateId(), mailNotification.getCareUnitId(),
-                    mailNotification.getCareUnitName()
-                ),
-                ex
-            );
+                    mailNotification.getCareUnitName()), ex);
         }
     }
 
