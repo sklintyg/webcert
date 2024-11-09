@@ -18,24 +18,23 @@
  */
 package se.inera.intyg.webcert.web.service.diagnos.repo;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration("classpath:/DiagnosService/DiagnosRepositoryFactoryTest-context.xml")
-public class DiagnosRepositoryFactoryTest {
+class DiagnosRepositoryFactoryTest {
 
     private static final String LINE_1 = "A00-   Tyfoidfeber";
     private static final String LINE_1_KOD = "A00-";
@@ -59,14 +58,14 @@ public class DiagnosRepositoryFactoryTest {
     @Autowired
     private DiagnosRepositoryFactory factory;
 
-    @Before
+    @BeforeEach
     public void setup() {
 
     }
 
     @Test
-    public void testCreateRepository() {
-        List<String> fileList = Arrays.asList(FILE_1);
+    void testCreateRepository() {
+        List<String> fileList = List.of(FILE_1);
         DiagnosRepositoryImpl repository = (DiagnosRepositoryImpl) factory.createAndInitDiagnosRepository(fileList,
             StandardCharsets.UTF_8);
         assertNotNull(repository);
@@ -74,7 +73,7 @@ public class DiagnosRepositoryFactoryTest {
     }
 
     @Test
-    public void testReadDiagnosFile() throws Exception {
+    void testReadDiagnosFile() throws Exception {
         DiagnosRepositoryImpl diagnosRepository = new DiagnosRepositoryImpl();
         factory.populateRepoFromDiagnosisCodeFile(FILE_3, diagnosRepository, StandardCharsets.ISO_8859_1);
         diagnosRepository.openLuceneIndexReader();
@@ -83,7 +82,7 @@ public class DiagnosRepositoryFactoryTest {
     }
 
     @Test
-    public void testCreateDiagnosFromString() {
+    void testCreateDiagnosFromString() {
 
         Diagnos res = factory.createDiagnosFromString(LINE_1, false, StandardCharsets.ISO_8859_1);
 
@@ -112,7 +111,7 @@ public class DiagnosRepositoryFactoryTest {
     }
 
     @Test
-    public void testWithStandardCharsetAndEmpty() {
+    void testWithStandardCharsetAndEmpty() {
 
         Diagnos res = factory.createDiagnosFromString(null, false, StandardCharsets.ISO_8859_1);
         assertNull(res);
@@ -125,7 +124,7 @@ public class DiagnosRepositoryFactoryTest {
     }
 
     @Test
-    public void testWithMessyString() {
+    void testWithMessyString() {
 
         Diagnos res = factory.createDiagnosFromString(REALLY_MESSY_LINE, false, StandardCharsets.ISO_8859_1);
         assertNotNull(res);
@@ -135,7 +134,7 @@ public class DiagnosRepositoryFactoryTest {
     }
 
     @Test
-    public void testRemoveBOMFromString() {
+    void testRemoveBOMFromString() {
 
         Diagnos res = factory.createDiagnosFromString(LINE_WITH_BOM, true, StandardCharsets.ISO_8859_1);
         assertNotNull(res);
@@ -145,7 +144,7 @@ public class DiagnosRepositoryFactoryTest {
     }
 
     @Test
-    public void testGetDiagnosisFromIcdCodeConverter() {
+    void testGetDiagnosisFromIcdCodeConverter() {
         final var tsvContent = "\"A02.2\"\t\"1997-01-01\"\t\"A02\"\t\"Lokaliserade salmonellainfektioner"
             + "\"\t\"\"\t\"\"\t\"Renal tubulo-interstitiell sjukdom orsakad av salmonella (N16.0*)\"\t\"\""
             + "\t\"\"\t\"\"\t\"\"\t\"\"\t\"Etiologisk kod (†)\"\t\"\"\t\"\"\t\"Subkategorikod, fyrställig (fem tecken med punkt)\"";
