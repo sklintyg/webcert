@@ -126,6 +126,8 @@ public class CreateCertificateTestabilityUtil {
             patient
         );
 
+        createNewDraftRequest.setTestability(true);
+
         final var utkast = createNewDraft(createNewDraftRequest);
         final var updateJsonModel = getUpdateJsonModel(utkast, createCertificateRequest);
         utkast.setModel(updateJsonModel);

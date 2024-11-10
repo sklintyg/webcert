@@ -221,6 +221,13 @@ public class UtkastServiceImpl implements UtkastService {
             generateCertificateEvent(savedUtkast, EventCode.KFSIGN);
         }
 
+        // If testability is set, return the draft without sending notifications or pdl log
+        if (request.isTestability()) {
+            monitoringService.logUtkastCreated(savedUtkast.getIntygsId(), savedUtkast.getIntygsTyp(),
+                savedUtkast.getEnhetsId(), savedUtkast.getSkapadAv().getHsaId(), nrPrefillElements);
+            return savedUtkast;
+        }
+
         // Notify stakeholders when a draft has been created
         sendNotification(savedUtkast, Event.CREATED);
 
