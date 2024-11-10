@@ -66,7 +66,7 @@ public class FakeLoginService {
         final var personId = Personnummer.createPersonnummer(fakeProps.getHsaId());
 
         if (personId.isPresent()) {
-            final var userId = personId.get().getPersonnummer();
+            final var userId = personId.get().getPersonnummerWithDash();
             webCertUser = elegWebCertUserDetailsService.buildUserPrincipal(userId, FAKE_AUTHENTICATION_ELEG_CONTEXT_REF);
         } else {
             webCertUser = webcertUserDetailsService.buildUserPrincipal(fakeProps.getHsaId(), FAKE_AUTHENTICATION_SITHS_CONTEXT_REF, "");
