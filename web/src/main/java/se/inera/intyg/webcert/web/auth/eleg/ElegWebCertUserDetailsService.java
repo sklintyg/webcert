@@ -69,7 +69,6 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
     private final PPService ppService;
     private final PPRestService ppRestService;
     private final PUService puService;
-    private final ElegAuthenticationMethodResolver elegAuthenticationMethodResolver;
     private final AnvandarPreferenceRepository anvandarPreferenceRepository;
     private final Optional<UserOrigin> userOrigin;
     private final SubscriptionService subscriptionService;
@@ -116,6 +115,8 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         user.setHsaId(hosPerson.getHsaId().getExtension());
         user.setPersonId(hosPerson.getPersonId().getExtension());
         user.setNamn(getFullName(hosPerson, user));
+
+        // Forskrivarkod should be always be seven zeros
         user.setForskrivarkod("0000000");
 
         decorateWebCertUserWithAvailableFeatures(user);
@@ -252,7 +253,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         webCertUser.setValdVardenhet(vardenhet);
         webCertUser.setValdVardgivare(vardgivare);
 
-        // Since privatläkare doesn't have "Medarbetaruppdrag" we cannot reliably populate "miuNamnPerVardenhetsId".
+        // Since privatläkare do not have "Medarbetaruppdrag" we cannot reliably populate "miuNamnPerVardenhetsId".
         // Populate with an empty map.
         webCertUser.setMiuNamnPerEnhetsId(new HashMap<>());
     }

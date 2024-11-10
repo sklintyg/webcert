@@ -65,8 +65,7 @@ public class WebcertUserDetailsService extends BaseUserDetailsService {
 
     /**
      * Webcert overrides the default (i.e. fallback) behaviour from the base class which specifies a pre-selected
-     * Vårdenhet during the
-     * authorization process:
+     * Vårdenhet during the authorization process:
      * <p>
      * For users with origin {@link UserOriginType#NORMAL} users will be redirected to the Vårdenhet selection page if
      * they have more than one (1) possible vårdenhet they have the requisite medarbetaruppdrag to select. (INTYG-3211)

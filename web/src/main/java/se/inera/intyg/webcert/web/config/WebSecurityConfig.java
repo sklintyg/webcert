@@ -193,7 +193,9 @@ public class WebSecurityConfig {
                 .requestMatchers(antMatcher("/api/modules/map")).permitAll()
                 .requestMatchers(antMatcher("/api/modules/active")).permitAll()
                 .anyRequest().fullyAuthenticated())
-            .saml2Metadata(withDefaults())
+            .saml2Metadata(
+                withDefaults()
+            )
             .saml2Login(saml2 -> saml2
                 .relyingPartyRegistrationRepository(relyingPartyRegistrationRepository)
                 .authenticationManager(new ProviderManager(getOpenSaml4AuthenticationProvider()))
