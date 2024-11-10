@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (C) 2016 Inera AB (http://www.inera.se)
+  ~ Copyright (C) 2024 Inera AB (http://www.inera.se)
   ~
   ~ This file is part of sklintyg (https://github.com/sklintyg).
   ~
@@ -26,19 +26,8 @@
     http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
   <mvc:annotation-driven/>
-  <!--<mvc:resources mapping="/webjars/**" location="classpath:/META-INF/resources/webjars/">
-    <mvc:resource-chain resource-cache="true" />
-  </mvc:resources>-->
 
   <context:annotation-config/>
   <context:component-scan base-package="se.inera.intyg.webcert.web.web.controller"/>
-
-  <!--<beans>
-    <bean id="viewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
-      <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
-      <property name="prefix" value="/"/>
-      <property name="suffix" value=".jsp"/>
-    </bean>
-  </beans>-->
 
 </beans>

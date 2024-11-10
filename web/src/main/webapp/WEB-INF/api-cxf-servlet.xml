@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (C) 2016 Inera AB (http://www.inera.se)
+  ~ Copyright (C) 2024 Inera AB (http://www.inera.se)
   ~
   ~ This file is part of sklintyg (https://github.com/sklintyg).
   ~
@@ -104,22 +104,4 @@
     </jaxrs:server>
   </beans>
 
-  <!--
-  <beans profile="dev,testability-api">
-    <jaxrs:server address="/testability">
-      <jaxrs:serviceBeans>
-        <bean class="se.inera.intyg.webcert.web.web.controller.authtestability.UserRoleResource" />
-      </jaxrs:serviceBeans>
-      <jaxrs:providers>
-        <ref bean="jacksonJsonProvider" />
-        <ref bean="webcertRestExceptionHandler"/>
-        <ref bean="localDateTimeHandler"/>
-      </jaxrs:providers>
-      <jaxrs:extensionMappings>
-        <entry key="json" value="application/json" />
-      </jaxrs:extensionMappings>
-    </jaxrs:server>
-
-  </beans>
-  -->
 </beans>

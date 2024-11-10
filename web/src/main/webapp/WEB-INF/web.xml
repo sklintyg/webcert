@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (C) 2016 Inera AB (http://www.inera.se)
+  ~ Copyright (C) 2024 Inera AB (http://www.inera.se)
   ~
   ~ This file is part of sklintyg (https://github.com/sklintyg).
   ~
@@ -243,25 +243,6 @@
         <filter-name>defaultCharacterEncodingFilter</filter-name>
         <url-pattern>/v2/visa/intyg/*</url-pattern>
     </filter-mapping>
-
-<!--    <filter>-->
-<!--        <filter-name>idpSelectionFilter</filter-name>-->
-<!--        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>-->
-<!--    </filter>-->
-<!--    <filter-mapping>-->
-<!--        <filter-name>idpSelectionFilter</filter-name>-->
-<!--        <url-pattern>/webcert/web/user/*</url-pattern>-->
-<!--        <url-pattern>/web/maillink/*</url-pattern>-->
-<!--    </filter-mapping>-->
-
-<!--    <filter>-->
-<!--        <filter-name>elegRedirectFilter</filter-name>-->
-<!--        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>-->
-<!--    </filter>-->
-<!--    <filter-mapping>-->
-<!--        <filter-name>elegRedirectFilter</filter-name>-->
-<!--        <url-pattern>/web/eleglogin</url-pattern>-->
-<!--    </filter-mapping>-->
 
     <filter>
         <filter-name>sessionTimeoutFilter</filter-name>

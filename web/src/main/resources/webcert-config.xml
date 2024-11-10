@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (C) 2016 Inera AB (http://www.inera.se)
+  ~ Copyright (C) 2024 Inera AB (http://www.inera.se)
   ~
   ~ This file is part of sklintyg (https://github.com/sklintyg).
   ~
@@ -166,14 +166,7 @@
     <bean id="createUtkastCopyBuilder" class="se.inera.intyg.webcert.web.service.utkast.CreateUtkastCopyBuilder"/>
 
     <bean id="patientDetailsResolver" class="se.inera.intyg.webcert.web.service.patient.PatientDetailsResolverImpl"/>
-
-<!--    <bean id="savedRequestFactory" class="se.inera.intyg.webcert.web.auth.SavedRequestFactoryImpl"/>-->
-
     <bean id="defaultCharacterEncodingFilter" class="se.inera.intyg.webcert.web.web.filter.DefaultCharacterEncodingFilter" />
-
-    <!-- Eleg login redirect filter for easier URL handling in PP -->
-<!--    <bean id="elegRedirectFilter" class="se.inera.intyg.webcert.web.auth.eleg.ElegRedirectFilter" />-->
-
     <bean id="internalApiFilter" class="se.inera.intyg.infra.security.filter.InternalApiFilter" />
 
     <!-- JSON mappers and providers -->
