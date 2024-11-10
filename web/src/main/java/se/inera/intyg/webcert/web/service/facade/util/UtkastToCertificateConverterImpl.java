@@ -29,6 +29,7 @@ import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateConfirmationModal;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.facade.TypeAheadProvider;
@@ -148,18 +149,34 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
             getResponsibleHospName()
         );
 
-        final var origin = webCertUserService.getUser().getOrigin();
-        final var confirmationModelProvider = ConfirmationModalProviderResolver.get(certificate.getIntygsTyp(),
-            certificateToReturn.getMetadata().getStatus(), origin, false);
         certificateToReturn.getMetadata().setConfirmationModal(
-            confirmationModelProvider != null ? confirmationModelProvider.create(
-                certificateToReturn.getMetadata().getPatient().getFullName(),
-                certificateToReturn.getMetadata().getPatient().getPersonId().getId(),
-                origin
-            ) : null
+            getConfigurationModal(certificate, certificateToReturn)
         );
 
         return certificateToReturn;
+    }
+
+    private CertificateConfirmationModal getConfigurationModal(Utkast certificate, Certificate certificateToReturn) {
+        if (!webCertUserService.hasAuthenticationContext()) {
+            return null;
+        }
+
+        final var origin = webCertUserService.getUser().getOrigin();
+        final var confirmationModelProvider = ConfirmationModalProviderResolver.get(
+            certificate.getIntygsTyp(),
+            certificateToReturn.getMetadata().getStatus(),
+            origin,
+            false
+        );
+
+        if (confirmationModelProvider == null) {
+            return null;
+        }
+
+        return confirmationModelProvider.create(
+                certificateToReturn.getMetadata().getPatient().getFullName(),
+                certificateToReturn.getMetadata().getPatient().getPersonId().getId(),
+                origin);
     }
 
     private Unit getCareProvider(Utkast certificate) {
