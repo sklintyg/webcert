@@ -111,8 +111,8 @@ public class FakeLoginService {
         setName(user, fakeProps.getForNamn(), fakeProps.getEfterNamn());
         setUnit(user, fakeProps.getEnhetId());
         setProtectedPerson(user, fakeProps.getSekretessMarkerad());
-        setFeatures(user);
         setOrigin(user, fakeProps.getOrigin());
+        setFeatures(user);
     }
 
     private void setName(WebCertUser user, String forNamn, String efternamn) {
