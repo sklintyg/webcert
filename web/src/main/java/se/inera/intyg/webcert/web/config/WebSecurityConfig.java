@@ -223,6 +223,7 @@ public class WebSecurityConfig {
                 .csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler())
                 .ignoringRequestMatchers(
                     SITHS_REQUEST_MATCHER,
+                    antMatcher("/internalapi/**"),
                     antMatcher("/api/signature/**"),
                     antMatcher("/testability/**"),
                     antMatcher("/services/**"))
