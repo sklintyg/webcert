@@ -116,6 +116,9 @@ class GetCertificateTypesFacadeServiceImplTest {
             doReturn(user)
                 .when(webCertUserService)
                 .getUser();
+            doReturn("NORMAL")
+                .when(user)
+                .getOrigin();
 
             doReturn(Set.of(module.getId(), moduleDb.getId()))
                 .when(authoritiesHelper)
@@ -359,8 +362,10 @@ class GetCertificateTypesFacadeServiceImplTest {
     @Nested
     class DeprecatedIntygModules {
 
-        void setup(boolean showDeprecated, boolean hasTextVersion) throws Exception {
-            final var module = createIntygModule(true, showDeprecated);
+        WebCertUser user;
+
+        void setup(boolean isDeprecated, boolean showDeprecated, boolean hasTextVersion) throws Exception {
+            final var module = createIntygModule(isDeprecated, showDeprecated);
 
             if (hasTextVersion) {
                 doReturn("1.0")
@@ -376,7 +381,7 @@ class GetCertificateTypesFacadeServiceImplTest {
                 .when(resourceLinkHelper)
                 .decorateIntygModuleWithValidActionLinks(ArgumentMatchers.<List<IntygModuleDTO>>any(), any(Personnummer.class));
 
-            final var user = mock(WebCertUser.class);
+            user = mock(WebCertUser.class);
             doReturn(user)
                 .when(webCertUserService)
                 .getUser();
@@ -388,21 +393,26 @@ class GetCertificateTypesFacadeServiceImplTest {
 
         @Test
         void shouldFilterOutDeprectatedIntygModules() throws Exception {
-            setup(false, false);
+            setup(true, false, false);
             final var result = getCertificateTypesFacadeService.get(PATIENT_ID);
             assertEquals(0, result.size());
         }
 
         @Test
         void shouldNotFilterOutDeprectatedIntygModulesIfShowDeprecated() throws Exception {
-            setup(true, true);
+            setup(true, true, true);
+            doReturn("NORMAL")
+                .when(user)
+                .getOrigin();
+
             final var result = getCertificateTypesFacadeService.get(PATIENT_ID);
+
             assertEquals(1, result.size());
         }
 
         @Test
         void shouldNotFilterOutIntygModulesWithoutTextVersion() throws Exception {
-            setup(true, false);
+            setup(true, true, false);
             final var result = getCertificateTypesFacadeService.get(PATIENT_ID);
             assertEquals(0, result.size());
         }

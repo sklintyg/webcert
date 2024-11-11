@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.service.facade.modal.confirmation;
 
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 public class ConfirmationModalProviderResolver {
 
@@ -28,9 +29,10 @@ public class ConfirmationModalProviderResolver {
         throw new IllegalStateException("Utility class");
     }
 
-    public static ConfirmationModalProvider get(String type, CertificateStatus status, String origin, boolean isCreatedFromList) {
-        final var isIntegratedOrigin = origin.equals("DJUPINTEGRATION");
-        final var isValid = isIntegratedOrigin ? isValidForIntegratedOrigin() : isValidForNormalOrigin(isCreatedFromList);
+    public static ConfirmationModalProvider getConfirmation(String type, CertificateStatus status, WebCertUser user,
+        boolean isCreatedFromList, boolean isAllowedToEdit) {
+        final var isIntegratedOrigin = user.getOrigin().equals("DJUPINTEGRATION");
+        final var isValid = isIntegratedOrigin ? isValidForIntegratedOrigin(isAllowedToEdit) : isValidForNormalOrigin(isCreatedFromList);
 
         if (!isValid) {
             return null;
@@ -47,12 +49,19 @@ public class ConfirmationModalProviderResolver {
         return null;
     }
 
-    private static boolean isValidForIntegratedOrigin() {
-        return true;
+    public static ConfirmationModalProvider getSignConfirmation(String type) {
+        if (type.equals(DbModuleEntryPoint.MODULE_ID)) {
+            return new DbSignConfirmationModalProvider();
+        }
+
+        return null;
+    }
+
+    private static boolean isValidForIntegratedOrigin(boolean isAllowedToEdit) {
+        return isAllowedToEdit;
     }
 
     private static boolean isValidForNormalOrigin(boolean isCreatedFromList) {
         return isCreatedFromList;
     }
-
 }

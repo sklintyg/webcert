@@ -26,41 +26,28 @@ import se.inera.intyg.common.support.facade.model.metadata.CertificateConfirmati
 import se.inera.intyg.common.support.facade.model.metadata.CertificateModalActionType;
 
 @Component
-public class DbConfirmationModalProvider implements ConfirmationModalProvider {
+public class DbSignConfirmationModalProvider implements ConfirmationModalProvider {
 
     @Override
     public CertificateConfirmationModal create(String patientName, String patientId, String origin) {
-        final var isIntegratedOrigin = origin.equals("DJUPINTEGRATION");
-
         return CertificateConfirmationModal.builder()
             .title("Kontrollera namn och personnummer på den avlidne")
             .alert(
                 Alert.builder()
                     .type(MessageLevel.ERROR)
-                    .text(getAlertText(patientName, patientId))
+                    .text("När dödsbevis signeras, skickas det samtidigt till Skatteverket "
+                        + "och dödsfallet registreras. <strong>Detta går inte att ångra.</strong>")
                     .build()
             )
-            .checkboxText("Jag har kontrollerat att personuppgifterna stämmer")
-            .primaryAction(CertificateModalActionType.READ)
-            .secondaryAction(
-                !isIntegratedOrigin ? CertificateModalActionType.CANCEL : CertificateModalActionType.DELETE)
-            .text(getText(!isIntegratedOrigin))
+            .checkboxText(getConfirmationText(patientName, patientId))
+            .primaryAction(CertificateModalActionType.SIGN)
+            .secondaryAction(CertificateModalActionType.CANCEL)
+            .text("För att kunna signera behöver du kontrollera att personuppgifterna stämmer.")
             .build();
     }
 
-    private String getText(boolean isNormalOrigin) {
-        var text = "<p>Ett dödsbevis utfärdat på fel person får stora konsekvenser för den enskilde personen.</p>"
-            + "<p>Kontrollera därför en extra gång att personuppgifterna stämmer.</p>";
-
-        if (!isNormalOrigin) {
-            text += "<p>Om fel personuppgifter visas ovan, välj Radera.</p>";
-        }
-
-        return text;
-    }
-
-    private String getAlertText(String patientName, String patientId) {
-        return "Du är på väg att utfärda ett dödsbevis för<br/><strong>"
+    private String getConfirmationText(String patientName, String patientId) {
+        return "Jag intygar att dödsbevis ska utfärdas för<strong> "
             + patientName
             + " - "
             + patientId

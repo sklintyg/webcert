@@ -76,7 +76,6 @@ import se.inera.intyg.infra.integration.hsatk.services.HsatkOrganizationService;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
 @ExtendWith(MockitoExtension.class)
@@ -141,15 +140,6 @@ public class IntygToCertificateConverterImplTest {
     private final IntygContentHolder intygContentHolder = createIntygContentHolder();
     private final CertificateRelations certificateRelations = CertificateRelations.builder().build();
     private final Patient patient = getPatient();
-
-    @BeforeEach
-    void setup() {
-        final var user = mock(WebCertUser.class);
-        when(webCertUserService.getUser())
-            .thenReturn(user);
-        when(user.getOrigin())
-            .thenReturn("DJUPINTEGRATION");
-    }
 
     @Nested
     class TestConvert {

@@ -27,12 +27,12 @@ import se.inera.intyg.common.support.facade.model.metadata.Alert;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateConfirmationModal;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateModalActionType;
 
-class DbConfirmationModalProviderTest {
+class DbSignConfirmationModalProviderTest {
 
     private static final String NAME = "NAME MIDDLE LAST";
     private static final String PATIENT_ID = "ID";
 
-    private final DbConfirmationModalProvider provider = new DbConfirmationModalProvider();
+    private final DbSignConfirmationModalProvider provider = new DbSignConfirmationModalProvider();
 
     @Test
     void shouldReturnExpectedModalForNormalOrigin() {
@@ -41,15 +41,16 @@ class DbConfirmationModalProviderTest {
             .alert(
                 Alert.builder()
                     .type(MessageLevel.ERROR)
-                    .text("Du är på väg att utfärda ett dödsbevis för<br/><strong>NAME MIDDLE LAST - ID</strong>")
+                    .text(
+                        "När dödsbevis signeras, skickas det samtidigt till Skatteverket och dödsfallet registreras. "
+                            + "<strong>Detta går inte att ångra.</strong>"
+                    )
                     .build()
             )
-            .checkboxText("Jag har kontrollerat att personuppgifterna stämmer")
-            .primaryAction(CertificateModalActionType.READ)
+            .checkboxText("Jag intygar att dödsbevis ska utfärdas för<strong> NAME MIDDLE LAST - ID</strong>")
+            .primaryAction(CertificateModalActionType.SIGN)
             .secondaryAction(CertificateModalActionType.CANCEL)
-            .text(
-                "<p>Ett dödsbevis utfärdat på fel person får stora konsekvenser för den enskilde personen.</p>"
-                    + "<p>Kontrollera därför en extra gång att personuppgifterna stämmer.</p>")
+            .text("För att kunna signera behöver du kontrollera att personuppgifterna stämmer.")
             .build();
 
         assertEquals(expected, provider.create(NAME, PATIENT_ID, "NORMAL"));
@@ -62,16 +63,15 @@ class DbConfirmationModalProviderTest {
             .alert(
                 Alert.builder()
                     .type(MessageLevel.ERROR)
-                    .text("Du är på väg att utfärda ett dödsbevis för<br/><strong>NAME MIDDLE LAST - ID</strong>")
-                    .build()
+                    .text(
+                        "När dödsbevis signeras, skickas det samtidigt till Skatteverket och dödsfallet registreras. "
+                            + "<strong>Detta går inte att ångra.</strong>"
+                    ).build()
             )
-            .checkboxText("Jag har kontrollerat att personuppgifterna stämmer")
-            .primaryAction(CertificateModalActionType.READ)
-            .secondaryAction(CertificateModalActionType.DELETE)
-            .text(
-                "<p>Ett dödsbevis utfärdat på fel person får stora konsekvenser för den enskilde personen.</p>"
-                    + "<p>Kontrollera därför en extra gång att personuppgifterna stämmer.</p>"
-                    + "<p>Om fel personuppgifter visas ovan, välj Radera.</p>")
+            .checkboxText("Jag intygar att dödsbevis ska utfärdas för<strong> NAME MIDDLE LAST - ID</strong>")
+            .primaryAction(CertificateModalActionType.SIGN)
+            .secondaryAction(CertificateModalActionType.CANCEL)
+            .text("För att kunna signera behöver du kontrollera att personuppgifterna stämmer.")
             .build();
 
         assertEquals(expected, provider.create(NAME, PATIENT_ID, "DJUPINTEGRATION"));
