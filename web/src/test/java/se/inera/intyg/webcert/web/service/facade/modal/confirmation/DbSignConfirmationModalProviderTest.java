@@ -47,7 +47,7 @@ class DbSignConfirmationModalProviderTest {
                     )
                     .build()
             )
-            .checkboxText("Jag intygar att dödsbevis ska utfärdas för<strong> NAME MIDDLE LAST - ID</strong>")
+            .checkboxText("<div>Jag intygar att dödsbevis ska utfärdas för<strong> NAME MIDDLE LAST - ID</strong></div>")
             .primaryAction(CertificateModalActionType.SIGN)
             .secondaryAction(CertificateModalActionType.CANCEL)
             .text("För att kunna signera behöver du kontrollera att personuppgifterna stämmer.")
@@ -68,7 +68,7 @@ class DbSignConfirmationModalProviderTest {
                             + "<strong>Detta går inte att ångra.</strong>"
                     ).build()
             )
-            .checkboxText("Jag intygar att dödsbevis ska utfärdas för<strong> NAME MIDDLE LAST - ID</strong>")
+            .checkboxText("<div>Jag intygar att dödsbevis ska utfärdas för<strong> NAME MIDDLE LAST - ID</strong></div>")
             .primaryAction(CertificateModalActionType.SIGN)
             .secondaryAction(CertificateModalActionType.CANCEL)
             .text("För att kunna signera behöver du kontrollera att personuppgifterna stämmer.")

@@ -47,10 +47,10 @@ public class DbSignConfirmationModalProvider implements ConfirmationModalProvide
     }
 
     private String getConfirmationText(String patientName, String patientId) {
-        return "Jag intygar att dödsbevis ska utfärdas för<strong> "
+        return "<div>Jag intygar att dödsbevis ska utfärdas för<strong> "
             + patientName
             + " - "
             + patientId
-            + "</strong>";
+            + "</strong></div>";
     }
 }
