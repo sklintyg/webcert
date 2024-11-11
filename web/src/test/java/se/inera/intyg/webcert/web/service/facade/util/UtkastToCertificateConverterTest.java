@@ -68,6 +68,7 @@ import se.inera.intyg.infra.integration.hsatk.services.HsatkOrganizationService;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
@@ -98,6 +99,9 @@ class UtkastToCertificateConverterTest {
 
     @Mock
     private CertificateRecipientConverter certificateRecipientConverter;
+
+    @Mock
+    DraftAccessServiceHelper draftAccessServiceHelper;
 
     @InjectMocks
     private UtkastToCertificateConverterImpl utkastToCertificateConverter;
@@ -186,6 +190,8 @@ class UtkastToCertificateConverterTest {
 
             @Test
             void shallIncludeConfirmationModalIfProviderIsAvailable() {
+                doReturn(true).when(draftAccessServiceHelper)
+                    .isAllowToEditUtkast(any(Utkast.class));
                 draft.setIntygsTyp("db");
                 final var actualCertificate = utkastToCertificateConverter.convert(draft);
 

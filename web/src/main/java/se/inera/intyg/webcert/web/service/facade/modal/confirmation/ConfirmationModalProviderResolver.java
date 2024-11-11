@@ -30,9 +30,9 @@ public class ConfirmationModalProviderResolver {
     }
 
     public static ConfirmationModalProvider getConfirmation(String type, CertificateStatus status, WebCertUser user,
-        boolean isCreatedFromList) {
+        boolean isCreatedFromList, boolean isAllowedToEdit) {
         final var isIntegratedOrigin = user.getOrigin().equals("DJUPINTEGRATION");
-        final var isValid = isIntegratedOrigin ? isValidForIntegratedOrigin(user.isSjfActive()) : isValidForNormalOrigin(isCreatedFromList);
+        final var isValid = isIntegratedOrigin ? isValidForIntegratedOrigin(isAllowedToEdit) : isValidForNormalOrigin(isCreatedFromList);
 
         if (!isValid) {
             return null;
@@ -57,8 +57,8 @@ public class ConfirmationModalProviderResolver {
         return null;
     }
 
-    private static boolean isValidForIntegratedOrigin(boolean isSvodActivated) {
-        return !isSvodActivated;
+    private static boolean isValidForIntegratedOrigin(boolean isAllowedToEdit) {
+        return isAllowedToEdit;
     }
 
     private static boolean isValidForNormalOrigin(boolean isCreatedFromList) {

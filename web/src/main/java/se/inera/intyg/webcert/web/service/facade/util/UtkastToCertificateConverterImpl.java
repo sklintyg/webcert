@@ -34,6 +34,8 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.facade.TypeAheadProvider;
 import se.inera.intyg.infra.integration.hsatk.services.HsatkOrganizationService;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
+import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.facade.modal.confirmation.ConfirmationModalProviderResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
@@ -58,6 +60,8 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
 
     private final CertificateRecipientConverter certificateRecipientConverter;
 
+    private final DraftAccessServiceHelper draftAccessServiceHelper;
+
     @Autowired
     public UtkastToCertificateConverterImpl(IntygModuleRegistry moduleRegistry,
         IntygTextsService intygTextsService,
@@ -66,7 +70,8 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
         WebCertUserService webCertUserService,
         HsatkOrganizationService hsatkOrganizationService,
         TypeAheadProvider typeAheadProvider,
-        CertificateRecipientConverter certificateRecipientConverter) {
+        CertificateRecipientConverter certificateRecipientConverter, CertificateAccessServiceHelper certificateAccessServiceHelper,
+        DraftAccessServiceHelper draftAccessServiceHelper) {
         this.moduleRegistry = moduleRegistry;
         this.intygTextsService = intygTextsService;
         this.patientConverter = patientConverter;
@@ -75,6 +80,7 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
         this.hsatkOrganizationService = hsatkOrganizationService;
         this.typeAheadProvider = typeAheadProvider;
         this.certificateRecipientConverter = certificateRecipientConverter;
+        this.draftAccessServiceHelper = draftAccessServiceHelper;
     }
 
     @Override
@@ -149,8 +155,9 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
         );
 
         final var origin = webCertUserService.getUser().getOrigin();
+        final var isAllowedToEdit = draftAccessServiceHelper.isAllowToEditUtkast(certificate);
         final var confirmationModalProvider = ConfirmationModalProviderResolver.getConfirmation(certificate.getIntygsTyp(),
-            certificateToReturn.getMetadata().getStatus(), webCertUserService.getUser(), false);
+            certificateToReturn.getMetadata().getStatus(), webCertUserService.getUser(), false, isAllowedToEdit);
         certificateToReturn.getMetadata().setConfirmationModal(
             confirmationModalProvider != null ? confirmationModalProvider.create(
                 certificateToReturn.getMetadata().getPatient().getFullName(),

@@ -39,7 +39,7 @@ class ConfirmationModalProviderResolverTest {
         when(user.getOrigin())
             .thenReturn("NORMAL");
         assertEquals(DbConfirmationModalProvider.class,
-            ConfirmationModalProviderResolver.getConfirmation("db", CertificateStatus.UNSIGNED, user, true).getClass());
+            ConfirmationModalProviderResolver.getConfirmation("db", CertificateStatus.UNSIGNED, user, true, true).getClass());
     }
 
     @Test
@@ -47,7 +47,7 @@ class ConfirmationModalProviderResolverTest {
         final var user = mock(WebCertUser.class);
         when(user.getOrigin())
             .thenReturn("NORMAL");
-        assertNull(ConfirmationModalProviderResolver.getConfirmation("doi", CertificateStatus.UNSIGNED, user, true));
+        assertNull(ConfirmationModalProviderResolver.getConfirmation("doi", CertificateStatus.UNSIGNED, user, true, true));
     }
 
     @ParameterizedTest
@@ -56,7 +56,7 @@ class ConfirmationModalProviderResolverTest {
         final var user = mock(WebCertUser.class);
         when(user.getOrigin())
             .thenReturn("NORMAL");
-        final var response = ConfirmationModalProviderResolver.getConfirmation("db", status, user, true);
+        final var response = ConfirmationModalProviderResolver.getConfirmation("db", status, user, true, true);
         if (status == CertificateStatus.UNSIGNED) {
             assertNotNull(response);
         } else {
@@ -69,7 +69,7 @@ class ConfirmationModalProviderResolverTest {
         final var user = mock(WebCertUser.class);
         when(user.getOrigin())
             .thenReturn("NORMAL");
-        final var response = ConfirmationModalProviderResolver.getConfirmation("db", CertificateStatus.UNSIGNED, user, false);
+        final var response = ConfirmationModalProviderResolver.getConfirmation("db", CertificateStatus.UNSIGNED, user, false, true);
         assertNull(response);
     }
 
@@ -78,18 +78,18 @@ class ConfirmationModalProviderResolverTest {
         final var user = mock(WebCertUser.class);
         when(user.getOrigin())
             .thenReturn("DJUPINTEGRATION");
-        final var response = ConfirmationModalProviderResolver.getConfirmation("db", CertificateStatus.UNSIGNED, user, false);
+        final var response = ConfirmationModalProviderResolver.getConfirmation("db", CertificateStatus.UNSIGNED, user, false, true);
         assertEquals(DbConfirmationModalProvider.class, response.getClass());
     }
 
     @Test
-    void shouldNotReturnProviderIfIntegratedAndSvodIsActivated() {
+    void shouldNotReturnProviderIfIntegratedAndNotAllowedToEdit() {
         final var user = mock(WebCertUser.class);
         when(user.getOrigin())
             .thenReturn("DJUPINTEGRATION");
         when(user.isSjfActive())
             .thenReturn(true);
-        final var response = ConfirmationModalProviderResolver.getConfirmation("db", CertificateStatus.UNSIGNED, user, false);
+        final var response = ConfirmationModalProviderResolver.getConfirmation("db", CertificateStatus.UNSIGNED, user, false, false);
         assertNull(response);
     }
 }
