@@ -58,7 +58,6 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
     private final IntygTextsService intygTextsService;
     private final CertificateTypeMessageService certificateTypeMessageService;
     private final PatientDetailsResolver patientDetailsResolver;
-
     private final MissingRelatedCertificateConfirmation missingRelatedCertificateConfirmation;
 
     @Autowired
@@ -97,13 +96,16 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
     }
 
     private CertificateTypeInfoDTO addConfirmationModal(CertificateTypeInfoDTO intygModule, Personnummer patientId) {
-        final var provider = ConfirmationModalProviderResolver.get(intygModule.getId(), CertificateStatus.UNSIGNED, "NORMAL",
-            true);
+        final var isAllowedToEdit = intygModule.getLinks().stream()
+            .anyMatch(link -> link.getType() == ResourceLinkTypeDTO.EDIT_CERTIFICATE);
+        final var provider = ConfirmationModalProviderResolver.getConfirmation(intygModule.getId(), CertificateStatus.UNSIGNED,
+            webCertUserService.getUser(), true, isAllowedToEdit);
         if (provider != null) {
             final var latestCertificateVersion = intygTextsService.getLatestVersion(intygModule.getId());
             final var patient = patientDetailsResolver.resolvePatient(patientId, intygModule.getId(), latestCertificateVersion);
             intygModule.setConfirmationModal(
-                provider.create(patient.getFullstandigtNamn(), patientId.getPersonnummerWithDash(), "NORMAL")
+                provider.create(patient.getFullstandigtNamn(), patientId.getPersonnummerWithDash(),
+                    webCertUserService.getUser().getOrigin())
             );
         }
 
