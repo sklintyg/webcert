@@ -1,4 +1,5 @@
-<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://wc.localtest.me/saml2/service-provider-metadata/eleg" ID="https___wc_localtest_me_eleg">
+<?xml version="1.0" encoding="UTF-8"?>
+<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="https://wc.localtest.me/saml2/service-provider-metadata/eleg">
   <md:SPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
     <md:KeyDescriptor use="signing">
       <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
@@ -8,9 +9,6 @@
       </ds:KeyInfo>
     </md:KeyDescriptor>
     <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://wc.localtest.me/logout/saml2/slo" ResponseLocation="https://wc.localtest.me/logout/saml2/slo"/>
-    <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://wc.localtest.me/logout/saml2/slo" ResponseLocation="https://wc.localtest.me/logout/saml2/slo"/>
-    <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</md:NameIDFormat>
-    <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://wc.localtest.me/login/saml2/sso/eleg" index="0" isDefault="true"/>
-    <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact" Location="https://wc.localtest.me/saml/SSO/alias/eleg" index="1"/>
+    <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://wc.localtest.me/login/saml2/sso/eleg" index="1"/>
   </md:SPSSODescriptor>
 </md:EntityDescriptor>
