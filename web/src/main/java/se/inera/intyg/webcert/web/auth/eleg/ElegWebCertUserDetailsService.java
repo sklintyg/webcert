@@ -48,6 +48,7 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.integration.pp.services.PPRestService;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
+import se.inera.intyg.webcert.web.auth.common.AuthConstants;
 import se.inera.intyg.webcert.web.auth.common.BaseWebCertUserDetailsService;
 import se.inera.intyg.webcert.web.auth.exceptions.MissingSubscriptionException;
 import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerAuthorizationException;
@@ -73,8 +74,9 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
     private final Optional<UserOrigin> userOrigin;
     private final SubscriptionService subscriptionService;
 
-    public WebCertUser buildUserPrincipal(String personId, String authenticationScheme) {
-        return buildUserPrincipal(personId, authenticationScheme, AuthenticationMethod.FAKE);
+
+    public WebCertUser buildFakeUserPrincipal(String personId) {
+        return buildUserPrincipal(personId, AuthConstants.FAKE_AUTHENTICATION_ELEG_CONTEXT_REF, AuthenticationMethod.FAKE);
     }
 
     @Override

@@ -19,9 +19,6 @@
 
 package se.inera.intyg.webcert.web.service.testability;
 
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.FAKE_AUTHENTICATION_ELEG_CONTEXT_REF;
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.FAKE_AUTHENTICATION_SITHS_CONTEXT_REF;
-
 import com.google.common.base.Strings;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -67,9 +64,9 @@ public class FakeLoginService {
 
         if (personId.isPresent()) {
             final var userId = personId.get().getPersonnummerWithDash();
-            webCertUser = elegWebCertUserDetailsService.buildUserPrincipal(userId, FAKE_AUTHENTICATION_ELEG_CONTEXT_REF);
+            webCertUser = elegWebCertUserDetailsService.buildFakeUserPrincipal(userId);
         } else {
-            webCertUser = webcertUserDetailsService.buildUserPrincipal(fakeProps.getHsaId(), FAKE_AUTHENTICATION_SITHS_CONTEXT_REF, "");
+            webCertUser = webcertUserDetailsService.buildFakeUserPrincipal(fakeProps.getHsaId());
         }
 
         updateUserWithFakeloginProperties(webCertUser, fakeProps);

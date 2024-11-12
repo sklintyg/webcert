@@ -18,8 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.user.dto;
 
-import static se.inera.intyg.webcert.web.auth.common.AuthConstants.REGISTRATION_ID_SITHS;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serial;
 import java.io.Serializable;
@@ -33,12 +31,10 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.webcert.web.auth.common.AuthConstants;
 import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionInfo;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
-/**
- * @author andreaskaltenbach
- */
 @Setter
 @Getter
 public class WebCertUser extends IntygUser implements Serializable, Saml2AuthenticatedPrincipal {
@@ -57,9 +53,6 @@ public class WebCertUser extends IntygUser implements Serializable, Saml2Authent
         super("only-for-test-use");
     }
 
-    /**
-     * The copy-constructor.
-     */
     public WebCertUser(IntygUser intygUser) {
         super(intygUser.getHsaId());
         this.userTermsApprovedOrSubscriptionInUse = intygUser.isUserTermsApprovedOrSubscriptionInUse();
@@ -139,6 +132,10 @@ public class WebCertUser extends IntygUser implements Serializable, Saml2Authent
 
     @Override
     public String getRelyingPartyRegistrationId() {
-        return REGISTRATION_ID_SITHS;
+        return switch (authenticationMethod) {
+            case FAKE -> throw new IllegalStateException("Fake user should be logged out using fake logout");
+            case BANK_ID, MOBILT_BANK_ID -> AuthConstants.REGISTRATION_ID_ELEG;
+            default -> AuthConstants.REGISTRATION_ID_SITHS_NORMAL;
+        };
     }
 }

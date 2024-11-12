@@ -28,6 +28,7 @@ import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.infra.security.siths.BaseUserDetailsService;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
+import se.inera.intyg.webcert.web.auth.common.AuthConstants;
 import se.inera.intyg.webcert.web.service.subscription.SubscriptionService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
@@ -37,6 +38,10 @@ public class WebcertUserDetailsService extends BaseUserDetailsService {
 
     private final AnvandarPreferenceRepository anvandarMetadataRepository;
     private final SubscriptionService subscriptionService;
+
+    public WebCertUser buildFakeUserPrincipal(String hsaId) {
+        return buildUserPrincipal(hsaId, AuthConstants.FAKE_AUTHENTICATION_SITHS_CONTEXT_REF, "fake_signature_provider");
+    }
 
     public WebCertUser buildUserPrincipal(String employeeHsaId, String authenticationScheme, String identityProviderForSign) {
         final var webCertUser = buildUserPrincipal(employeeHsaId, authenticationScheme);

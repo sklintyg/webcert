@@ -46,6 +46,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import se.inera.intyg.infra.integration.pu.model.Person;
 import se.inera.intyg.infra.integration.pu.model.PersonSvar;
 import se.inera.intyg.infra.integration.pu.services.PUService;
+import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.infra.security.exception.HsaServiceException;
 import se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerResponse;
 import se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerResultCode;
@@ -54,6 +55,7 @@ import se.inera.intyg.webcert.integration.pp.services.PPRestService;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
+import se.inera.intyg.webcert.web.auth.common.AuthConstants;
 import se.inera.intyg.webcert.web.auth.exceptions.MissingSubscriptionException;
 import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerAuthorizationException;
 import se.inera.intyg.webcert.web.security.WebCertUserOrigin;
@@ -72,6 +74,7 @@ public class ElegWebCertUserDetailsServiceTest extends AuthoritiesConfigurationT
     private static final String HSA_ID = "191212121212";
     private static final String PERSON_ID = "197705232382";
     private static final String ELEG_AUTH_SCHEME = "http://id.elegnamnden.se/loa/1.0/loa3";
+    private static final AuthenticationMethod AUTH_METHOD = AuthenticationMethod.MOBILT_BANK_ID;
 
     @Mock
     private PPService ppService;
@@ -113,8 +116,18 @@ public class ElegWebCertUserDetailsServiceTest extends AuthoritiesConfigurationT
     }
 
     @Test
+    public void shouldSetFakePropertiesWhenFakeLogin() {
+        setCheckSubscriptionElegMockToReturn(false);
+        setPPRestServiceMockToReturn(ValidatePrivatePractitionerResultCode.OK);
+
+        final var webcertUser = elegWebCertUserDetailsService.buildFakeUserPrincipal(PERSON_ID);
+        assertEquals(AuthConstants.FAKE_AUTHENTICATION_ELEG_CONTEXT_REF, webcertUser.getAuthenticationScheme());
+        assertEquals(AuthenticationMethod.FAKE, webcertUser.getAuthenticationMethod());
+    }
+
+    @Test
     public void testSuccessfulLogin() {
-        final var user = elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME);
+        final var user = elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME, AUTH_METHOD);
         assertNotNull(user);
         assertFalse(user.isSekretessMarkerad());
         assertEquals(expectedPreferences, user.getAnvandarPreference());
@@ -122,7 +135,7 @@ public class ElegWebCertUserDetailsServiceTest extends AuthoritiesConfigurationT
 
     @Test
     public void shallSetFirstnameAndLastnameFromFullstandigtName() {
-        final var user = elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME);
+        final var user = elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME, AUTH_METHOD);
         assertEquals("Test", user.getFornamn());
         assertEquals("Testsson", user.getEfternamn());
     }
@@ -132,7 +145,7 @@ public class ElegWebCertUserDetailsServiceTest extends AuthoritiesConfigurationT
         reset(puService);
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar(true));
 
-        final var user = elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME);
+        final var user = elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME, AUTH_METHOD);
         assertNotNull(user);
         assertTrue(user.isSekretessMarkerad());
     }
@@ -142,7 +155,7 @@ public class ElegWebCertUserDetailsServiceTest extends AuthoritiesConfigurationT
         reset(puService);
         when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.error());
 
-        elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME);
+        elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME, AUTH_METHOD);
     }
 
     @Test(expected = HsaServiceException.class)
@@ -150,7 +163,7 @@ public class ElegWebCertUserDetailsServiceTest extends AuthoritiesConfigurationT
         reset(puService);
         when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.notFound());
 
-        elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME);
+        elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME, AUTH_METHOD);
     }
 
     @Test(expected = HsaServiceException.class)
@@ -158,7 +171,7 @@ public class ElegWebCertUserDetailsServiceTest extends AuthoritiesConfigurationT
         reset(ppService);
         when(ppService.getPrivatePractitioner(any(), any(), any())).thenReturn(null);
 
-        elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME);
+        elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME, AUTH_METHOD);
     }
 
     @Test
@@ -166,7 +179,7 @@ public class ElegWebCertUserDetailsServiceTest extends AuthoritiesConfigurationT
         setCheckSubscriptionElegMockToReturn(true);
         setPPRestServiceMockToReturn(ValidatePrivatePractitionerResultCode.OK);
 
-        final var webcertUser = elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME);
+        final var webcertUser = elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME, AUTH_METHOD);
         assertNotNull(webcertUser);
         verify(subscriptionService, times(1)).checkSubscriptions(any(WebCertUser.class));
     }
@@ -176,7 +189,7 @@ public class ElegWebCertUserDetailsServiceTest extends AuthoritiesConfigurationT
         setCheckSubscriptionElegMockToReturn(false);
         setPPRestServiceMockToReturn(ValidatePrivatePractitionerResultCode.OK);
 
-        final var webcertUser = elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME);
+        final var webcertUser = elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME, AUTH_METHOD);
         assertNotNull(webcertUser);
         verify(subscriptionService, times(1)).checkSubscriptions(any(WebCertUser.class));
     }
@@ -186,7 +199,7 @@ public class ElegWebCertUserDetailsServiceTest extends AuthoritiesConfigurationT
         setUnauthorizedElegMissingSubscriptionMockToReturn(false); // -> User has subscription
         setPPRestServiceMockToReturn(ValidatePrivatePractitionerResultCode.NO_ACCOUNT);
 
-        elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME);
+        elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME, AUTH_METHOD);
     }
 
     @Test(expected = MissingSubscriptionException.class)
@@ -194,7 +207,7 @@ public class ElegWebCertUserDetailsServiceTest extends AuthoritiesConfigurationT
         setUnauthorizedElegMissingSubscriptionMockToReturn(true); // -> User does not have subscription
         setPPRestServiceMockToReturn(ValidatePrivatePractitionerResultCode.NO_ACCOUNT);
 
-        elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME);
+        elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME, AUTH_METHOD);
     }
 
     @Test(expected = MissingSubscriptionException.class)
@@ -202,7 +215,7 @@ public class ElegWebCertUserDetailsServiceTest extends AuthoritiesConfigurationT
         setCheckSubscriptionElegMockToReturn(false);
         setPPRestServiceMockToReturn(ValidatePrivatePractitionerResultCode.NOT_AUTHORIZED_IN_HOSP);
 
-        elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME);
+        elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME, AUTH_METHOD);
     }
 
     @Test(expected = PrivatePractitionerAuthorizationException.class)
@@ -210,7 +223,7 @@ public class ElegWebCertUserDetailsServiceTest extends AuthoritiesConfigurationT
         setCheckSubscriptionElegMockToReturn(true);
         setPPRestServiceMockToReturn(ValidatePrivatePractitionerResultCode.NOT_AUTHORIZED_IN_HOSP);
 
-        elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME);
+        elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME, AUTH_METHOD);
     }
 
     private HoSPersonType buildHosPerson() {
