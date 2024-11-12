@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.integration.fmb.consumer;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import org.springframework.web.client.RestTemplate;
 import se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.FmdxInformation;
 import se.inera.intyg.webcert.integration.fmb.model.typfall.Typfall;

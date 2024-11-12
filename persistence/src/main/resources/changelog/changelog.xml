@@ -24,10 +24,9 @@
     logicalFilePath="classpath:changelog/changelog.xml">
 
   <changeSet id="1" author="me">
-    <!-- initial creation of tables -->
-
+    <validCheckSum>8:d1acc338ee58fe8bb295ea314c06a027</validCheckSum>
     <createTable tableName="FRAGASVAR">
-      <column name="internReferens" type="bigint">
+      <column name="internReferens" type="bigint" autoIncrement="true">
         <constraints unique="true" nullable="false"/>
       </column>
       <column name="AMNE" type="varchar(255)">
@@ -142,11 +141,6 @@
       </column>
 
     </createTable>
-
-    <!-- Add auto incremented id column to table -->
-    <addAutoIncrement columnDataType="bigint"
-        columnName="internReferens" incrementBy="1" startWith="1"
-        tableName="FRAGASVAR"/>
 
     <createTable tableName="KOMPLETTERING">
       <column name="FRAGASVAR_ID" type="bigint">
@@ -331,8 +325,9 @@
   </changeSet>
 
   <changeSet id="7" author="rl">
+    <validCheckSum>8:e76d02495f91c646c2f5deb7891ffd69</validCheckSum>
     <createTable tableName="OMSANDNING">
-      <column name="OMSANDNING_ID" type="bigint">
+      <column name="OMSANDNING_ID" type="bigint" autoIncrement="true">
         <constraints unique="true" nullable="false"/>
       </column>
       <column name="INTYG_ID" type="varchar(64)">
@@ -354,10 +349,6 @@
         <constraints nullable="true"/>
       </column>
     </createTable>
-    <!-- Add auto incremented id column to table -->
-    <addAutoIncrement columnDataType="bigint"
-        columnName="OMSANDNING_ID" incrementBy="1" startWith="1"
-        tableName="OMSANDNING"/>
   </changeSet>
 
   <changeSet id="8" author="np">
@@ -464,9 +455,9 @@
   </changeSet>
 
   <changeSet id="18" author="el">
-
+    <validCheckSum>8:2342f23beb363e33fe9733b7ea47669f</validCheckSum>
     <createTable tableName="AVTAL_PRIVATLAKARE">
-      <column name="AVTAL_VERSION" type="bigint" defaultValue="0">
+      <column name="AVTAL_VERSION" type="bigint" autoIncrement="true">
         <constraints primaryKey="true" nullable="false"/>
       </column>
       <column name="AVTAL_TEXT" type="text">
@@ -489,16 +480,10 @@
       </column>
     </createTable>
 
-    <!-- Add auto incremented id column to table -->
-    <addAutoIncrement columnDataType="bigint"
-        columnName="INTERNREFERENS" incrementBy="1" startWith="1"
-        tableName="GODKANT_AVTAL_PRIVATLAKARE"/>
-
     <addUniqueConstraint
         columnNames="AVTAL_VERSION, HSA_ID"
         constraintName="GODKANT_AVTAL_UNIQUE_CONST"
         tableName="GODKANT_AVTAL_PRIVATLAKARE"/>
-
   </changeSet>
 
   <changeSet id="19" author="el">
@@ -545,8 +530,9 @@
   </changeSet>
 
   <changeSet id="21" author="fe">
+    <validCheckSum>8:7efcb60ddab035ebd02b1a1d996267bb</validCheckSum>
     <createTable tableName="FMB">
-      <column name="ID" type="bigint">
+      <column name="ID" type="bigint" autoIncrement="true">
         <constraints primaryKey="true" nullable="false"/>
       </column>
       <column name="ICD10" type="varchar(6)">
@@ -565,10 +551,6 @@
         <constraints nullable="false"/>
       </column>
     </createTable>
-
-    <addAutoIncrement columnDataType="bigint"
-        columnName="ID" incrementBy="1" startWith="1"
-        tableName="FMB"/>
   </changeSet>
 
   <changeSet id="22" author="me">
@@ -616,9 +598,9 @@
   </changeSet>
 
   <changeSet id="24" author="ka">
-
+    <validCheckSum>8:50144fa5562070c8ba67d9efbe2296dd</validCheckSum>
     <createTable tableName="ARENDE">
-      <column name="ID" type="bigint">
+      <column name="ID" type="bigint" autoIncrement="true">
         <constraints unique="true" nullable="false"/>
       </column>
       <column name="TIMESTAMP" type="datetime">
@@ -653,10 +635,6 @@
       <column name="SISTA_DATUM_FOR_SVAR" type="date">
       </column>
     </createTable>
-
-    <addAutoIncrement columnDataType="bigint"
-        columnName="ID" incrementBy="1" startWith="1"
-        tableName="ARENDE"/>
 
     <createTable tableName="MEDICINSKT_ARENDE">
       <column name="ARENDE_ID" type="bigint">
@@ -823,9 +801,9 @@
   </changeSet>
 
   <changeSet id="39" author="el">
-
+    <validCheckSum>8:e5aca87c599fa4c71ad7ad4346e89895</validCheckSum>
     <createTable tableName="ANVANDARE_PREFERENCE">
-      <column name="INTERNREFERENS" type="bigint" defaultValue="0">
+      <column name="INTERNREFERENS" type="bigint" autoIncrement="true">
         <constraints primaryKey="true" nullable="false"/>
       </column>
       <column name="HSA_ID" type="varchar(255)">
@@ -839,16 +817,10 @@
       </column>
     </createTable>
 
-    <!-- Add auto incremented id column to table -->
-    <addAutoIncrement columnDataType="bigint"
-        columnName="INTERNREFERENS" incrementBy="1" startWith="1"
-        tableName="ANVANDARE_PREFERENCE"/>
-
     <addUniqueConstraint
         columnNames="HSA_ID, PREF_KEY"
         constraintName="ANVANDARE_PREFERENCE_UNIQUE_CONST"
         tableName="ANVANDARE_PREFERENCE"/>
-
   </changeSet>
 
   <changeSet id="40" author="el">
@@ -866,8 +838,9 @@
   </changeSet>
 
   <changeSet id="42" author="kja">
+    <validCheckSum>8:3b3accb9e618931dc0a4223b52a2361e</validCheckSum>
     <createTable tableName="HANDELSE">
-      <column name="ID" type="bigint">
+      <column name="ID" type="bigint" autoIncrement="true">
         <constraints unique="true" nullable="false"/>
       </column>
       <column name="TIMESTAMP" type="datetime">
@@ -889,11 +862,6 @@
       <column name="REFERENCE" type="varchar(255)">
       </column>
     </createTable>
-
-    <addAutoIncrement columnDataType="bigint"
-        columnName="ID" incrementBy="1" startWith="1"
-        tableName="HANDELSE"/>
-
   </changeSet>
 
   <changeSet id="43" author="el">
@@ -939,8 +907,9 @@
   </changeSet>
 
   <changeSet id="48" author="kja">
+    <validCheckSum>8:885b8794a485837e1aa810a5d458d9e3</validCheckSum>
     <createTable tableName="ARENDE_UTKAST">
-      <column name="ID" type="bigint">
+      <column name="ID" type="bigint" autoIncrement="true">
         <constraints unique="true" nullable="false"/>
       </column>
       <column name="QUESTION_ID" type="varchar(255)">
@@ -950,8 +919,6 @@
       <column name="TEXT" type="text"/>
       <column name="AMNE" type="varchar(255)"/>
     </createTable>
-
-    <addAutoIncrement tableName="ARENDE_UTKAST" columnName="ID" columnDataType="bigint" incrementBy="1" startWith="1"/>
 
     <createIndex tableName="ARENDE_UTKAST" indexName="ARENDE_UTKAST_INTYGS_ID_IDX">
       <column name="INTYGS_ID"/>
@@ -987,8 +954,9 @@
   </changeSet>
 
   <changeSet id="51" author="el">
+    <validCheckSum>8:60b4a292719195f5ef752319a115ac3c</validCheckSum>
     <createTable tableName="PAGAENDE_SIGNERING">
-      <column name="INTERN_REFERENS" type="bigint">
+      <column name="INTERN_REFERENS" type="bigint" autoIncrement="true">
         <constraints primaryKey="true" unique="true" nullable="false"/>
       </column>
       <column name="INTYG_ID" type="varchar(64)">
@@ -1007,13 +975,12 @@
         <constraints nullable="false"/>
       </column>
     </createTable>
-
-    <addAutoIncrement tableName="PAGAENDE_SIGNERING" columnName="INTERN_REFERENS" columnDataType="bigint" incrementBy="1" startWith="1"/>
   </changeSet>
 
   <changeSet id="52" author="ef">
+    <validCheckSum>8:08b546bff288f48ae2b610b12d3f9cb0</validCheckSum>
     <createTable tableName="REFERENS">
-      <column name="ID" type="bigint">
+      <column name="ID" type="bigint" autoIncrement="true">
         <constraints primaryKey="true" unique="true" nullable="false"/>
       </column>
       <column name="INTYG_ID" type="varchar(64)">
@@ -1023,8 +990,6 @@
         <constraints nullable="false"/>
       </column>
     </createTable>
-
-    <addAutoIncrement tableName="REFERENS" columnName="ID" columnDataType="bigint" incrementBy="1" startWith="1"/>
 
     <createIndex tableName="REFERENS" indexName="INTYG_ID_REFERENS_IDX">
       <column name="INTYG_ID"/>
@@ -1060,9 +1025,9 @@
   </changeSet>
 
   <changeSet id="56" author="ja">
-
+    <validCheckSum>8:31526e8cb427edc3a5fed8c9b8bf2dbf</validCheckSum>
     <createTable tableName="FMB_DIAGNOS_INFORMATION">
-      <column name="ID" type="bigint">
+      <column name="ID" type="bigint" autoIncrement="true">
         <constraints primaryKey="true" unique="true" nullable="false"/>
       </column>
       <column name="FORSAKRINGSMEDICINSK_INFORMATION" type="varchar(4085)">
@@ -1076,12 +1041,8 @@
       </column>
     </createTable>
 
-    <addAutoIncrement columnDataType="bigint"
-                      columnName="ID" incrementBy="1" startWith="1"
-                      tableName="FMB_DIAGNOS_INFORMATION"/>
-
     <createTable tableName="FMB_BESKRIVNING">
-      <column name="ID" type="bigint">
+      <column name="ID" type="bigint" autoIncrement="true">
         <constraints primaryKey="true" unique="true" nullable="false"/>
       </column>
       <column name="TYP" type="varchar(255)">
@@ -1095,16 +1056,12 @@
       </column>
     </createTable>
 
-    <addAutoIncrement columnDataType="bigint"
-                      columnName="ID" incrementBy="1" startWith="1"
-                      tableName="FMB_BESKRIVNING"/>
-
     <addForeignKeyConstraint baseColumnNames="DIAGNOS_INFORMATION_ID"
                              baseTableName="FMB_BESKRIVNING" constraintName="FMB_BESKRIVNING_FMB_DIAGNOS_INFORMATION"
                              referencedColumnNames="ID" referencedTableName="FMB_DIAGNOS_INFORMATION"/>
 
     <createTable tableName="FMB_ICF_KOD">
-      <column name="ID" type="bigint">
+      <column name="ID" type="bigint" autoIncrement="true">
         <constraints primaryKey="true" unique="true" nullable="false"/>
       </column>
       <column name="KOD" type="varchar(255)">
@@ -1118,16 +1075,12 @@
       </column>
     </createTable>
 
-    <addAutoIncrement columnDataType="bigint"
-                      columnName="ID" incrementBy="1" startWith="1"
-                      tableName="FMB_ICF_KOD"/>
-
     <addForeignKeyConstraint baseColumnNames="BESKRIVNING_ID"
                              baseTableName="FMB_ICF_KOD" constraintName="FMB_ICF_KOD_FMB_BESKRIVNING"
                              referencedColumnNames="ID" referencedTableName="FMB_BESKRIVNING"/>
 
     <createTable tableName="FMB_ICD10_KOD">
-      <column name="ID" type="bigint">
+      <column name="ID" type="bigint" autoIncrement="true">
         <constraints primaryKey="true" unique="true" nullable="false"/>
       </column>
       <column name="KOD" type="varchar(255)">
@@ -1141,17 +1094,13 @@
       </column>
     </createTable>
 
-    <addAutoIncrement columnDataType="bigint"
-                      columnName="ID" incrementBy="1" startWith="1"
-                      tableName="FMB_ICD10_KOD"/>
-
     <addForeignKeyConstraint baseColumnNames="DIAGNOS_INFORMATION_ID"
                              baseTableName="FMB_ICD10_KOD" constraintName="FMB_ICD10_KOD_FMB_DIAGNOS_INFORMATION"
                              referencedColumnNames="ID" referencedTableName="FMB_DIAGNOS_INFORMATION"/>
 
 
     <createTable tableName="FMB_TYPFALL">
-      <column name="ID" type="bigint">
+      <column name="ID" type="bigint" autoIncrement="true">
         <constraints primaryKey="true" unique="true" nullable="false"/>
       </column>
       <column name="TYPFALLSMENING" type="varchar(1024)">
@@ -1165,16 +1114,12 @@
       </column>
     </createTable>
 
-    <addAutoIncrement columnDataType="bigint"
-                      columnName="ID" incrementBy="1" startWith="1"
-                      tableName="FMB_TYPFALL"/>
-
     <addForeignKeyConstraint baseColumnNames="ICD10_ID"
                              baseTableName="FMB_TYPFALL" constraintName="FMB_TYPFALL_FMB_ICD10_ID"
                              referencedColumnNames="ID" referencedTableName="FMB_ICD10_KOD"/>
 
     <createTable tableName="FMB_REFERENS">
-      <column name="ID" type="bigint">
+      <column name="ID" type="bigint" autoIncrement="true">
         <constraints primaryKey="true" unique="true" nullable="false"/>
       </column>
       <column name="TEXT" type="varchar(1024)">
@@ -1188,14 +1133,9 @@
       </column>
     </createTable>
 
-    <addAutoIncrement columnDataType="bigint"
-                      columnName="ID" incrementBy="1" startWith="1"
-                      tableName="FMB_REFERENS"/>
-
     <addForeignKeyConstraint baseColumnNames="DIAGNOS_INFORMATION_ID"
                              baseTableName="FMB_REFERENS" constraintName="FMB_REFERENS_FMB_DIAGNOS_INFORMATION"
                              referencedColumnNames="ID" referencedTableName="FMB_DIAGNOS_INFORMATION"/>
-
   </changeSet>
 
   <changeSet id="57" author="ja">
@@ -1288,8 +1228,9 @@
   </changeSet>
 
   <changeSet id="65" author="ar">
+    <validCheckSum>8:6912c0e4b696d16d86e5f02eac230e61</validCheckSum>
     <createTable tableName="CERTIFICATE_EVENT">
-      <column name="ID" type="bigint">
+      <column name="ID" type="bigint" autoIncrement="true">
         <constraints primaryKey="true" unique="true" nullable="false"/>
       </column>
       <column name="CERTIFICATE_ID" type="varchar(64)">
@@ -1309,10 +1250,6 @@
       </column>
     </createTable>
 
-    <addAutoIncrement columnDataType="bigint"
-        columnName="ID" incrementBy="1" startWith="1"
-        tableName="CERTIFICATE_EVENT"/>
-
     <createIndex indexName="IDX_CERTIFICATE_EVENT_CERTIFICATE_ID"
         tableName="CERTIFICATE_EVENT" unique="false">
       <column name="CERTIFICATE_ID"/>
@@ -1321,8 +1258,9 @@
 
 
   <changeSet id="66" author="mj">
+    <validCheckSum>8:a449087589ef5152cb058f8291a22e89</validCheckSum>
     <createTable tableName="CERTIFICATE_EVENT_FAILED_LOAD">
-      <column name="ID" type="bigint">
+      <column name="ID" type="bigint" autoIncrement="true">
         <constraints primaryKey="true" unique="true" nullable="false"/>
       </column>
       <column name="CERTIFICATE_ID" type="varchar(64)">
@@ -1335,10 +1273,6 @@
         <constraints nullable="true"/>
       </column>
     </createTable>
-
-    <addAutoIncrement columnDataType="bigint"
-        columnName="ID" incrementBy="1" startWith="1"
-        tableName="CERTIFICATE_EVENT_FAILED_LOAD"/>
 
     <createIndex indexName="IDX_CERTIFICATE_EVENT_FAILED_LOAD_CERTIFICATE_ID"
         tableName="CERTIFICATE_EVENT_FAILED_LOAD" unique="false">

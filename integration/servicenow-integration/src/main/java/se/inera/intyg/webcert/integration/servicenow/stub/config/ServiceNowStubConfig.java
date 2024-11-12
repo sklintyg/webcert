@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.integration.servicenow.stub.config;
 
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

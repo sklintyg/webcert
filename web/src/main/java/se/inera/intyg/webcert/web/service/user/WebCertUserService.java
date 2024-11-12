@@ -18,8 +18,8 @@
  */
 package se.inera.intyg.webcert.web.service.user;
 
+import jakarta.servlet.http.HttpSession;
 import java.util.List;
-import javax.servlet.http.HttpSession;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 public interface WebCertUserService {

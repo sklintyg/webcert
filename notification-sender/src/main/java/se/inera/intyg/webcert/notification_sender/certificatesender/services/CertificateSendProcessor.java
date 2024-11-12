@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.notification_sender.certificatesender.services;
 
-import javax.xml.ws.WebServiceException;
+import jakarta.xml.ws.WebServiceException;
 import org.apache.camel.Body;
 import org.apache.camel.Header;
 import org.slf4j.Logger;

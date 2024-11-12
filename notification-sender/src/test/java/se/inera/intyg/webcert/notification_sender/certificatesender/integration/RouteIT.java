@@ -20,21 +20,18 @@ package se.inera.intyg.webcert.notification_sender.certificatesender.integration
 
 import static org.awaitility.Awaitility.await;
 
+import jakarta.jms.Queue;
+import jakarta.jms.TextMessage;
 import java.util.Enumeration;
 import java.util.concurrent.TimeUnit;
-
-import javax.jms.Queue;
-import javax.jms.TextMessage;
-
-import org.apache.camel.test.junit5.params.Test;
 import org.apache.camel.test.spring.junit5.CamelSpringTest;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
-
 import se.inera.intyg.webcert.common.Constants;
 import se.inera.intyg.webcert.notification_sender.certificatesender.services.mock.MockSendCertificateServiceClientImpl;
 import se.inera.intyg.webcert.notification_sender.certificatesender.testconfig.CertificateCamelIntegrationTestConfig;

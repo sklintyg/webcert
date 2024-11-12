@@ -40,12 +40,12 @@ import static se.inera.intyg.webcert.web.service.underskrift.testutil.Underskrif
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import jakarta.persistence.OptimisticLockException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Optional;
-import javax.persistence.OptimisticLockException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

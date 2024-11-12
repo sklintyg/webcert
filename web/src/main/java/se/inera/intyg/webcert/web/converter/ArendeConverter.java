@@ -19,6 +19,14 @@
 package se.inera.intyg.webcert.web.converter;
 
 import com.google.common.base.Strings;
+import jakarta.xml.ws.WebServiceException;
+import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
@@ -34,11 +42,6 @@ import se.inera.intyg.webcert.web.converter.util.FragestallareConverterUtil;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareType;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareType.Komplettering;
-
-import javax.xml.ws.WebServiceException;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
 
 public final class ArendeConverter {
 

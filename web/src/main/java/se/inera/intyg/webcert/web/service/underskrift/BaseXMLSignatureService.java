@@ -18,10 +18,10 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift;
 
+import jakarta.xml.bind.JAXBElement;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Base64;
-import javax.xml.bind.JAXBElement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.w3._2000._09.xmldsig_.KeyInfoType;
 import org.w3._2000._09.xmldsig_.ObjectFactory;

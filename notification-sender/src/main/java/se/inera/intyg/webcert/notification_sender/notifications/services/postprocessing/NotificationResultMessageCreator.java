@@ -24,9 +24,9 @@ import static se.inera.intyg.webcert.notification_sender.notifications.enumerati
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -38,6 +38,7 @@ import static se.inera.intyg.webcert.web.service.facade.impl.certificatefunction
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -165,7 +166,7 @@ class GetCertificatesAvailableFunctionsImplTest {
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.PRINT_CERTIFICATE);
             assertTrue(actualAvailableFunctions.stream().anyMatch(link -> link.getType()
-                == ResourceLinkTypeDTO.PRINT_CERTIFICATE && link.getBody().length() > 0));
+                == ResourceLinkTypeDTO.PRINT_CERTIFICATE && !link.getBody().isEmpty()));
         }
 
         @Test
@@ -399,7 +400,7 @@ class GetCertificatesAvailableFunctionsImplTest {
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.PRINT_CERTIFICATE);
             assertTrue(actualAvailableFunctions.stream().anyMatch(link -> link.getType()
-                == ResourceLinkTypeDTO.PRINT_CERTIFICATE && link.getBody().length() > 0));
+                == ResourceLinkTypeDTO.PRINT_CERTIFICATE && !link.getBody().isEmpty()));
         }
 
         @Test
@@ -498,7 +499,7 @@ class GetCertificatesAvailableFunctionsImplTest {
             final var actualAvailableFunctions = getCertificatesAvailableFunctions.get(certificate);
             assertInclude(actualAvailableFunctions, ResourceLinkTypeDTO.PRINT_CERTIFICATE);
             assertTrue(actualAvailableFunctions.stream().anyMatch(link -> link.getType()
-                == ResourceLinkTypeDTO.PRINT_CERTIFICATE && link.getBody().length() > 0));
+                == ResourceLinkTypeDTO.PRINT_CERTIFICATE && !link.getBody().isEmpty()));
         }
 
 
@@ -1100,13 +1101,11 @@ class GetCertificatesAvailableFunctionsImplTest {
     }
 
     private Certificate getUnsignedLuaenaForPatientOfAgeWithCoordinationNumber(int years, int months) {
-        final var patientBirthDate = LocalDate.now(ZoneId.systemDefault()).minusYears(years).minusMonths(months);
-        final var personId = PersonId.builder().id(
-                patientBirthDate.toString()
-                    .replace(getDayOfMonth(patientBirthDate), Integer.toString(patientBirthDate.getDayOfMonth() + 60))
-                    .replace("-", "") + "-4321"
-            )
-            .build();
+        final var patientBirthDate = LocalDate.now(ZoneId.systemDefault()).minusYears(years).minusMonths(months)
+            .format(DateTimeFormatter.BASIC_ISO_DATE);
+        final var dayOfBirth = Integer.parseInt(patientBirthDate.substring(6, 8));
+        final var coordinationNumber = patientBirthDate.substring(0, 6) + (dayOfBirth + 60) + "1234";
+        final var personId = PersonId.builder().id(coordinationNumber).build();
         final var patient = Patient.builder().personId(personId).build();
         return CertificateBuilder.create().metadata(CertificateMetadata.builder()
             .id("certificateId")
@@ -1117,11 +1116,4 @@ class GetCertificatesAvailableFunctionsImplTest {
         ).build();
     }
 
-    private static String getDayOfMonth(LocalDate patientBirthDate) {
-        final var dayOfMonth = Integer.toString(patientBirthDate.getDayOfMonth());
-        if (dayOfMonth.length() == 1) {
-            return "0" + dayOfMonth;
-        }
-        return dayOfMonth;
-    }
 }

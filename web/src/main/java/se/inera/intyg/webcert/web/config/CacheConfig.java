@@ -18,11 +18,18 @@
  */
 package se.inera.intyg.webcert.web.config;
 
+import static se.inera.intyg.webcert.web.auth.CustomAuthenticationEntrypoint.ELEG_REQUEST_MATCHER;
+import static se.inera.intyg.webcert.web.auth.CustomAuthenticationEntrypoint.SITHS_NORMAL_REQUEST_MATCHER;
+import static se.inera.intyg.webcert.web.auth.CustomAuthenticationEntrypoint.SITHS_REQUEST_MATCHER;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.savedrequest.RequestCache;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
 
 @Configuration
 @ImportResource({"classpath:basic-cache-config.xml"})
@@ -32,4 +39,13 @@ public class CacheConfig {
     StringRedisTemplate stringRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
         return new StringRedisTemplate(redisConnectionFactory);
     }
+
+    @Bean
+    public RequestCache requestCache() {
+        final var requestCache = new HttpSessionRequestCache();
+        requestCache.setRequestMatcher(new OrRequestMatcher(ELEG_REQUEST_MATCHER, SITHS_REQUEST_MATCHER, SITHS_NORMAL_REQUEST_MATCHER));
+        requestCache.setMatchingRequestParameterName(null);
+        return requestCache;
+    }
+
 }

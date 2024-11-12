@@ -25,11 +25,11 @@ import static org.mockito.Mockito.doReturn;
 import static se.inera.intyg.common.support.Constants.KV_HANDELSE_CODE_SYSTEM;
 import static se.inera.intyg.webcert.notification_sender.notifications.services.NotificationTypeConverter.toArenden;
 
+import jakarta.xml.bind.JAXBContext;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.List;
-import javax.xml.bind.JAXBContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

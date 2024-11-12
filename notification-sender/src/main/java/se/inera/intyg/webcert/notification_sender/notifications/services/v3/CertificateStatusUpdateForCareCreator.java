@@ -21,11 +21,11 @@ package se.inera.intyg.webcert.notification_sender.notifications.services.v3;
 import static se.inera.intyg.common.support.Constants.HSA_ID_OID;
 
 import com.helger.xml.transform.StringStreamResult;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
 import java.io.IOException;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

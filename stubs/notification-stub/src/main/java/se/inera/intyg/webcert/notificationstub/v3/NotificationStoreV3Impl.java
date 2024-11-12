@@ -18,10 +18,10 @@
  */
 package se.inera.intyg.webcert.notificationstub.v3;
 
+import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.RedisConnectionFactory;

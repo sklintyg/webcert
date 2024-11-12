@@ -78,7 +78,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.Handelse;
 
 @CamelSpringTest
 @ContextConfiguration(classes = NotificationCamelTestConfig.class)
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
+@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 @MockEndpoints("bean:notificationAggregator|direct:signatWireTap")
 @MockEndpointsAndSkip("bean:notificationTransformer|bean:notificationWSSender|bean:notificationPostProcessor|direct:permanentErrorHandlerEndpoint|direct:temporaryErrorHandlerEndpoint")
 public class NotificationRouteTest {
@@ -284,7 +284,7 @@ public class NotificationRouteTest {
         verifyMessageCount();
 
         final var changedEventCorrelationIdFromTransformer = (String) notificationTransformer.getExchanges()
-            .get(notificationTransformer.getExchanges().size() - 1).getMessage().getHeader(NotificationRouteHeaders.CORRELATION_ID);
+            .getLast().getMessage().getHeader(NotificationRouteHeaders.CORRELATION_ID);
 
         assertEquals(lastChangedEventCorrelationId, changedEventCorrelationIdFromTransformer);
     }

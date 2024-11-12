@@ -32,9 +32,9 @@ import static se.inera.intyg.webcert.web.integration.internalnotification.Intern
 import static se.inera.intyg.webcert.web.integration.internalnotification.InternalNotificationMessageListener.CERTIFICATE_TYPE;
 import static se.inera.intyg.webcert.web.integration.internalnotification.InternalNotificationMessageListener.CERTIFICATE_TYPE_VERSION;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.TextMessage;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.TextMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

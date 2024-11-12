@@ -18,10 +18,10 @@
  */
 package se.inera.intyg.webcert.persistence.event.repository;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 public class CertificateEventProcessedRepositoryCustomImpl implements CertificateEventProcessedRepositoryCustom {
 

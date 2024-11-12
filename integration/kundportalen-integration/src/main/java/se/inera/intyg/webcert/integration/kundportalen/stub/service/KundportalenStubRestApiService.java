@@ -18,13 +18,13 @@
  */
 package se.inera.intyg.webcert.integration.kundportalen.stub.service;
 
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.integration.kundportalen.stub.state.KundportalenStubState;
 

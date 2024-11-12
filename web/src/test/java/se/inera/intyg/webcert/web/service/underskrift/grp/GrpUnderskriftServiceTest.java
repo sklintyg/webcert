@@ -27,12 +27,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.test.util.ReflectionTestUtils;
 import se.funktionstjanster.grp.v2.AuthenticateRequestTypeV23;
 import se.funktionstjanster.grp.v2.GrpException;
 import se.funktionstjanster.grp.v2.GrpServicePortType;
@@ -51,8 +53,8 @@ import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker
 /**
  * Created by eriklupander on 2015-08-25.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class GrpUnderskriftServiceTest extends AuthoritiesConfigurationTestSetup {
+@ExtendWith(MockitoExtension.class)
+class GrpUnderskriftServiceTest extends AuthoritiesConfigurationTestSetup {
 
     private static final String INTYG_ID = "intyg-1";
     private static final long VERSION = 1L;
@@ -75,8 +77,13 @@ public class GrpUnderskriftServiceTest extends AuthoritiesConfigurationTestSetup
     @InjectMocks
     GrpUnderskriftServiceImpl grpSignaturService;
 
+    @BeforeEach
+    void init() {
+        ReflectionTestUtils.setField(grpSignaturService, "redisTicketTracker", redisTicketTracker);
+    }
+
     @Test
-    public void testSuccessfulAuthenticationRequest() throws GrpException {
+    void testSuccessfulAuthenticationRequest() throws GrpException {
         when(grpCollectPollerFactory.getInstance()).thenReturn(mock(GrpCollectPoller.class));
         when(grpService.authenticate(any(AuthenticateRequestTypeV23.class))).thenReturn(buildOrderResponse());
 
@@ -85,7 +92,7 @@ public class GrpUnderskriftServiceTest extends AuthoritiesConfigurationTestSetup
     }
 
     @Test
-    public void shallFinalizeSignatureForCS() {
+    void shallFinalizeSignatureForCS() {
         final var certificate = new Certificate();
         final var signaturBiljett = new SignaturBiljett();
         signaturBiljett.setIntygsId(CERTIFICATE_ID);

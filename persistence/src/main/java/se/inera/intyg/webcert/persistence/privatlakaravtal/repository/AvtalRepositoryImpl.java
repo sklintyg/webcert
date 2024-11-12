@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.persistence.privatlakaravtal.repository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.PersistenceContext;
 
 /**
  * Created by eriklupander on 2015-08-05.

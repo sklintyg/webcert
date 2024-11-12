@@ -20,22 +20,15 @@ package se.inera.intyg.webcert.web.auth.eleg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.saml.SAMLCredential;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
-import se.inera.intyg.webcert.web.auth.common.BaseSAMLCredentialTest;
 
 @ExtendWith(MockitoExtension.class)
-public class ElegAuthenticationMethodResolverTest extends BaseSAMLCredentialTest {
+class ElegAuthenticationMethodResolverTest  {
 
     private static final String MOBILT_BANK_ID_LOGIN_METHOD = "ccp11";
     private static final String MOBILT_BANK_ID_STATIC_QR_CODE = "ccp19";
@@ -45,74 +38,55 @@ public class ElegAuthenticationMethodResolverTest extends BaseSAMLCredentialTest
     private static final String INDETERMINATE_LOGIN_METHOD = "";
     private static final String UNKNOWN_LOGIN_METHOD = "ccp7";
 
-    @Mock
-    private ElegAuthenticationAttributeHelper elegAuthenticationAttributeHelper;
-
     @InjectMocks
-    private ElegAuthenticationMethodResolverImpl elegAuthenticationMethodResolver;
+    private ElegAuthenticationMethodResolver elegAuthenticationMethodResolver;
 
-    @BeforeAll
-    public static void setup() throws Exception {
-        bootstrapSamlAssertions();
 
-    }
-
-    @Test
-    public void testBankID() {
-        when(elegAuthenticationAttributeHelper.getAttribute(any(SAMLCredential.class), anyString())).thenReturn(BANK_ID_LOGIN_METHOD);
-        AuthenticationMethod authMetod = elegAuthenticationMethodResolver.resolveAuthenticationMethod(buildPrivatlakareSamlCredential());
+   @Test
+    void testBankID() {
+        AuthenticationMethod authMetod = elegAuthenticationMethodResolver.resolveAuthenticationMethod(BANK_ID_LOGIN_METHOD);
         assertEquals(AuthenticationMethod.BANK_ID, authMetod);
     }
 
     @Test
-    public void testMobiltBankIDCCP11() {
-        when(elegAuthenticationAttributeHelper.getAttribute(any(SAMLCredential.class), anyString()))
-            .thenReturn(MOBILT_BANK_ID_LOGIN_METHOD);
-        AuthenticationMethod authMetod = elegAuthenticationMethodResolver.resolveAuthenticationMethod(buildPrivatlakareSamlCredential());
+    void testMobiltBankIDCCP11() {
+        AuthenticationMethod authMetod = elegAuthenticationMethodResolver.resolveAuthenticationMethod(MOBILT_BANK_ID_LOGIN_METHOD);
         assertEquals(AuthenticationMethod.MOBILT_BANK_ID, authMetod);
     }
 
     @Test
-    public void testMobiltBankIDCCP19() {
-        when(elegAuthenticationAttributeHelper.getAttribute(any(SAMLCredential.class), anyString()))
-            .thenReturn(MOBILT_BANK_ID_STATIC_QR_CODE);
-        AuthenticationMethod authMetod = elegAuthenticationMethodResolver.resolveAuthenticationMethod(buildPrivatlakareSamlCredential());
+    void testMobiltBankIDCCP19() {
+        AuthenticationMethod authMetod = elegAuthenticationMethodResolver.resolveAuthenticationMethod(MOBILT_BANK_ID_STATIC_QR_CODE);
         assertEquals(AuthenticationMethod.MOBILT_BANK_ID, authMetod);
     }
 
     @Test
-    public void testMobiltBankIDCCP28() {
-        when(elegAuthenticationAttributeHelper.getAttribute(any(SAMLCredential.class), anyString()))
-            .thenReturn(MOBILT_BANK_ID_NON_STATIC_QR_CODE);
-        AuthenticationMethod authMetod = elegAuthenticationMethodResolver.resolveAuthenticationMethod(buildPrivatlakareSamlCredential());
+    void testMobiltBankIDCCP28() {
+        AuthenticationMethod authMetod = elegAuthenticationMethodResolver.resolveAuthenticationMethod(MOBILT_BANK_ID_NON_STATIC_QR_CODE);
         assertEquals(AuthenticationMethod.MOBILT_BANK_ID, authMetod);
     }
 
     @Test
-    public void testNetID() {
-        when(elegAuthenticationAttributeHelper.getAttribute(any(SAMLCredential.class), anyString())).thenReturn(NET_ID_LOGIN_METHOD);
-        AuthenticationMethod authMetod = elegAuthenticationMethodResolver.resolveAuthenticationMethod(buildPrivatlakareSamlCredential());
+    void testNetID() {
+        AuthenticationMethod authMetod = elegAuthenticationMethodResolver.resolveAuthenticationMethod(NET_ID_LOGIN_METHOD);
         assertEquals(AuthenticationMethod.NET_ID, authMetod);
     }
 
     @Test
-    public void testNoIssuerThrowsException() {
-        when(elegAuthenticationAttributeHelper.getAttribute(any(SAMLCredential.class), anyString())).thenReturn(null);
+    void testNoIssuerThrowsException() {
         assertThrows(IllegalArgumentException.class, () ->
-            elegAuthenticationMethodResolver.resolveAuthenticationMethod(buildPrivatlakareSamlCredential()));
+            elegAuthenticationMethodResolver.resolveAuthenticationMethod(null));
     }
 
     @Test
-    public void testIndeterminateIssuerThrowsException() {
-        when(elegAuthenticationAttributeHelper.getAttribute(any(SAMLCredential.class), anyString())).thenReturn(INDETERMINATE_LOGIN_METHOD);
+    void testIndeterminateIssuerThrowsException() {
         assertThrows(IllegalArgumentException.class, () ->
-            elegAuthenticationMethodResolver.resolveAuthenticationMethod(buildPrivatlakareSamlCredential()));
+            elegAuthenticationMethodResolver.resolveAuthenticationMethod(INDETERMINATE_LOGIN_METHOD));
     }
 
     @Test
-    public void testUnknwonIssuerThrowsException() {
-        when(elegAuthenticationAttributeHelper.getAttribute(any(SAMLCredential.class), anyString())).thenReturn(UNKNOWN_LOGIN_METHOD);
+    void testUnknwonIssuerThrowsException() {
         assertThrows(IllegalArgumentException.class, () ->
-            elegAuthenticationMethodResolver.resolveAuthenticationMethod(buildPrivatlakareSamlCredential()));
+            elegAuthenticationMethodResolver.resolveAuthenticationMethod(UNKNOWN_LOGIN_METHOD));
     }
 }

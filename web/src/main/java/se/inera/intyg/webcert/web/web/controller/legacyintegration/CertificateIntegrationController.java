@@ -19,8 +19,8 @@
 package se.inera.intyg.webcert.web.web.controller.legacyintegration;
 
 import io.swagger.annotations.Api;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.MediaType;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 
 /**

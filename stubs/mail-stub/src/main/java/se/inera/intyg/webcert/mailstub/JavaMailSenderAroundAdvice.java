@@ -19,8 +19,8 @@
 package se.inera.intyg.webcert.mailstub;
 
 import com.google.common.base.Strings;
+import jakarta.mail.internet.MimeMessage;
 import java.util.stream.Collectors;
-import javax.mail.internet.MimeMessage;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;

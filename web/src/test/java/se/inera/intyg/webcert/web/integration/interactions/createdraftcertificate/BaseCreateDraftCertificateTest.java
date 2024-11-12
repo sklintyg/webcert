@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -55,6 +56,7 @@ public abstract class BaseCreateDraftCertificateTest {
     protected static final String TSBAS = "ts-bas";
     protected static final String LOGICAL_ADDR = "1234567890";
     protected static final String USER_HSAID = "SE1234567890";
+    protected static final String AUTH_METHOD = "http://id.sambi.se/loa/loa3";
     protected static final String UNIT_HSAID = "SE0987654321";
     protected static final String CAREGIVER_HSAID = "SE0000112233";
     protected static final String UTKAST_ID = "abc123";
@@ -65,7 +67,7 @@ public abstract class BaseCreateDraftCertificateTest {
     protected WebcertUserDetailsService webcertUserDetailsService;
 
     public void setup() throws ModuleNotFoundException {
-        when(webcertUserDetailsService.loadUserByHsaId(USER_HSAID)).thenReturn(buildWebCertUser());
+        when(webcertUserDetailsService.buildUserPrincipal(anyString(), anyString())).thenReturn(buildWebCertUser());
     }
 
     protected WebCertUser buildWebCertUser() {
@@ -86,10 +88,10 @@ public abstract class BaseCreateDraftCertificateTest {
                 return feature;
             })));
         user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
-        user.setBefattningar(Arrays.asList(TITLE_CODE));
+        user.setBefattningar(List.of(TITLE_CODE));
         user.setSpecialiseringar(Arrays.asList(ALLMAN_MEDICIN, INVARTES_MEDICIN));
         user.setTitel(TITLE_NAME);
-        user.setVardgivare(Arrays.asList(createVardgivare()));
+        user.setVardgivare(List.of(createVardgivare()));
         user.setMiuNamnPerEnhetsId(createMiuNamnPerEnhetsId());
         return user;
     }
@@ -131,7 +133,7 @@ public abstract class BaseCreateDraftCertificateTest {
         RequestOrigin requestOrigin = new RequestOrigin();
         requestOrigin.setName(UserOriginType.DJUPINTEGRATION.name());
         requestOrigin.setIntygstyper(Arrays.asList(FK7263, TSBAS));
-        priv.setRequestOrigins(Arrays.asList(requestOrigin));
+        priv.setRequestOrigins(List.of(requestOrigin));
         priv.setIntygstyper(Arrays.asList(FK7263, TSBAS));
         return priv;
     }
@@ -153,7 +155,7 @@ public abstract class BaseCreateDraftCertificateTest {
         Vardgivare vardgivare = new Vardgivare();
         vardgivare.setId(CAREGIVER_HSAID);
         vardgivare.setNamn("Vardgivaren");
-        vardgivare.setVardenheter(Arrays.asList(createVardenhet(vardgivare)));
+        vardgivare.setVardenheter(List.of(createVardenhet(vardgivare)));
         return vardgivare;
     }
 }

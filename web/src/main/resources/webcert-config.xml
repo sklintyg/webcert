@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (C) 2016 Inera AB (http://www.inera.se)
+  ~ Copyright (C) 2024 Inera AB (http://www.inera.se)
   ~
   ~ This file is part of sklintyg (https://github.com/sklintyg).
   ~
@@ -29,11 +29,8 @@
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
   <context:annotation-config />
-
   <import resource="classpath:webcert-common-config.xml" />
   <import resource="classpath:repository-context.xml" />
-  <import resource="security/securityContext.xml" />
-  <import resource="classpath:hsatk-services-config.xml" />
   <import resource="classpath:fmb-services-config.xml" />
   <import resource="classpath:tak-services-config.xml" />
   <import resource="classpath:kundportalen-services-config.xml" />
@@ -51,10 +48,11 @@
   <import resource="classpath*:module-config.xml" />
   <import resource="classpath*:wc-module-cxf-servlet.xml" />
   <import resource="classpath:notification-sender-config.xml" />
+  <import resource="classpath:/hsa-integration-intyg-proxy-service-config.xml"/>
 
   <context:component-scan base-package="se.inera.intyg.webcert.web">
-    <context:exclude-filter type="regex" expression="se\.inera\.intyg\.webcert\.web\.auth.*"/>
   </context:component-scan>
+
 
   <!-- Load dynamic link classes -->
   <context:component-scan base-package="se.inera.intyg.infra.dynamiclink" />
@@ -67,6 +65,9 @@
 
   <beans>
     <bean id="userAgentParser" class="se.inera.intyg.infra.monitoring.logging.UserAgentParser" />
+
+    <bean id="parserPool" class="net.shibboleth.utilities.java.support.xml.BasicParserPool" scope="singleton"
+        init-method="initialize"/>
 
     <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
       <property name="ignoreUnresolvablePlaceholders" value="true"/>
@@ -165,18 +166,7 @@
     <bean id="createUtkastCopyBuilder" class="se.inera.intyg.webcert.web.service.utkast.CreateUtkastCopyBuilder"/>
 
     <bean id="patientDetailsResolver" class="se.inera.intyg.webcert.web.service.patient.PatientDetailsResolverImpl"/>
-
-    <bean id="savedRequestFactory" class="se.inera.intyg.webcert.web.auth.SavedRequestFactoryImpl"/>
-
-    <bean id="idpSelectionFilter" class="se.inera.intyg.webcert.web.auth.IdpSelectionFilter">
-        <property name="savedRequestFactory" ref="savedRequestFactory"/>
-    </bean>
-
     <bean id="defaultCharacterEncodingFilter" class="se.inera.intyg.webcert.web.web.filter.DefaultCharacterEncodingFilter" />
-
-    <!-- Eleg login redirect filter for easier URL handling in PP -->
-    <bean id="elegRedirectFilter" class="se.inera.intyg.webcert.web.auth.eleg.ElegRedirectFilter" />
-
     <bean id="internalApiFilter" class="se.inera.intyg.infra.security.filter.InternalApiFilter" />
 
     <!-- JSON mappers and providers -->
@@ -184,7 +174,7 @@
       class="se.inera.intyg.common.util.integration.json.CustomObjectMapper" />
 
     <bean id="jacksonJsonProvider"
-        class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider">
+        class="com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider">
       <property name="mapper">
         <bean class="se.inera.intyg.common.util.integration.json.CustomObjectMapper" />
       </property>

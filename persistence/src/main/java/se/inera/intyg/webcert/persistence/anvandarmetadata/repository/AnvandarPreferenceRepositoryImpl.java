@@ -18,13 +18,13 @@
  */
 package se.inera.intyg.webcert.persistence.anvandarmetadata.repository;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.NonUniqueResultException;
+import jakarta.persistence.PersistenceContext;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
-import javax.persistence.PersistenceContext;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.model.AnvandarPreference;
 

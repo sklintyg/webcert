@@ -45,6 +45,7 @@ import static org.mockito.Mockito.when;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import jakarta.xml.ws.WebServiceException;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -61,7 +62,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.xml.ws.WebServiceException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -78,6 +78,7 @@ import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.infra.integration.hsatk.model.PersonInformation;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.integration.hsatk.services.HsatkEmployeeService;
@@ -138,7 +139,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations.FrontendRelations;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
-import se.riv.infrastructure.directory.employee.v2.PersonInformationType;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
@@ -236,12 +236,9 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         // Return hsaId as name
         when(hsaEmployeeService.getEmployee(anyString(), any())).thenAnswer(invocation -> {
-            PersonInformationType personInformation = new PersonInformationType();
+            final var personInformation = new PersonInformation();
             personInformation.setMiddleAndSurName((String) invocation.getArguments()[0]);
-
-            List<PersonInformationType> personInformationTypeList = new ArrayList<>();
-            personInformationTypeList.add(personInformation);
-            return personInformationTypeList;
+            return List.of(personInformation);
         });
 
         PatientDetailsResolverResponse response = new PatientDetailsResolverResponse();

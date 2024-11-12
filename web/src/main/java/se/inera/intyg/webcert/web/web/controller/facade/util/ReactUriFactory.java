@@ -18,11 +18,11 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade.util;
 
+import jakarta.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.util.Collections;
 import java.util.Map;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;

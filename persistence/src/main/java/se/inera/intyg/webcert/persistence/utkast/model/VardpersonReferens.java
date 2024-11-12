@@ -18,8 +18,8 @@
  */
 package se.inera.intyg.webcert.persistence.utkast.model;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class VardpersonReferens {

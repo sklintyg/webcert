@@ -1,9 +1,9 @@
 dependencies {
   implementation project(":webcert-common")
 
+  implementation "codes.rafael.jaxb2_commons:jaxb2-basics:${jaxb2Version}"
   implementation "com.google.guava:guava:${guavaVersion}"
   implementation "jakarta.ws.rs:jakarta.ws.rs-api"
-  implementation "org.jvnet.jaxb2_commons:jaxb2-basics:${jaxb2Version}"
   implementation "org.springframework:spring-context"
   implementation "se.inera.intyg.common:common-schemas:${commonVersion}"
   implementation "se.inera.intyg.common:common-support:${commonVersion}"

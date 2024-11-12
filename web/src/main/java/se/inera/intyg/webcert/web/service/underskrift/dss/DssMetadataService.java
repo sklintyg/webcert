@@ -18,56 +18,70 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift.dss;
 
+import static org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport.getMarshallerFactory;
+import static org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport.getParserPool;
+import static se.inera.intyg.webcert.web.web.controller.api.SignatureApiController.SIGNATUR_API_CONTEXT_PATH;
+import static se.inera.intyg.webcert.web.web.controller.api.SignatureApiController.SIGN_SERVICE_METADATA_PATH;
+import static se.inera.intyg.webcert.web.web.controller.api.SignatureApiController.SIGN_SERVICE_RESPONSE_PATH;
+
+import jakarta.annotation.PostConstruct;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
+import java.util.Base64;
+import java.util.Objects;
 import java.util.Timer;
-import javax.annotation.PostConstruct;
 import javax.xml.crypto.KeySelector;
-import org.opensaml.common.xml.SAMLConstants;
-import org.opensaml.saml2.metadata.AssertionConsumerService;
-import org.opensaml.saml2.metadata.Company;
-import org.opensaml.saml2.metadata.ContactPerson;
-import org.opensaml.saml2.metadata.ContactPersonTypeEnumeration;
-import org.opensaml.saml2.metadata.EmailAddress;
-import org.opensaml.saml2.metadata.EntityDescriptor;
-import org.opensaml.saml2.metadata.LocalizedString;
-import org.opensaml.saml2.metadata.Organization;
-import org.opensaml.saml2.metadata.OrganizationDisplayName;
-import org.opensaml.saml2.metadata.OrganizationName;
-import org.opensaml.saml2.metadata.OrganizationURL;
-import org.opensaml.saml2.metadata.SPSSODescriptor;
-import org.opensaml.saml2.metadata.impl.AssertionConsumerServiceBuilder;
-import org.opensaml.saml2.metadata.impl.CompanyBuilder;
-import org.opensaml.saml2.metadata.impl.ContactPersonBuilder;
-import org.opensaml.saml2.metadata.impl.EmailAddressBuilder;
-import org.opensaml.saml2.metadata.impl.OrganizationBuilder;
-import org.opensaml.saml2.metadata.impl.OrganizationDisplayNameBuilder;
-import org.opensaml.saml2.metadata.impl.OrganizationNameBuilder;
-import org.opensaml.saml2.metadata.impl.OrganizationURLBuilder;
-import org.opensaml.saml2.metadata.provider.AbstractReloadingMetadataProvider;
-import org.opensaml.saml2.metadata.provider.MetadataProviderException;
-import org.opensaml.xml.io.MarshallingException;
-import org.opensaml.xml.parse.ParserPool;
-import org.opensaml.xml.security.SecurityHelper;
-import org.opensaml.xml.security.credential.UsageType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
+import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
+import org.opensaml.core.criterion.EntityIdCriterion;
+import org.opensaml.saml.common.xml.SAMLConstants;
+import org.opensaml.saml.metadata.resolver.impl.AbstractReloadingMetadataResolver;
+import org.opensaml.saml.saml2.metadata.AssertionConsumerService;
+import org.opensaml.saml.saml2.metadata.ContactPerson;
+import org.opensaml.saml.saml2.metadata.ContactPersonTypeEnumeration;
+import org.opensaml.saml.saml2.metadata.EntityDescriptor;
+import org.opensaml.saml.saml2.metadata.KeyDescriptor;
+import org.opensaml.saml.saml2.metadata.Organization;
+import org.opensaml.saml.saml2.metadata.SPSSODescriptor;
+import org.opensaml.saml.saml2.metadata.impl.AssertionConsumerServiceBuilder;
+import org.opensaml.saml.saml2.metadata.impl.CompanyBuilder;
+import org.opensaml.saml.saml2.metadata.impl.ContactPersonBuilder;
+import org.opensaml.saml.saml2.metadata.impl.EmailAddressBuilder;
+import org.opensaml.saml.saml2.metadata.impl.EntityDescriptorBuilder;
+import org.opensaml.saml.saml2.metadata.impl.KeyDescriptorBuilder;
+import org.opensaml.saml.saml2.metadata.impl.OrganizationBuilder;
+import org.opensaml.saml.saml2.metadata.impl.OrganizationDisplayNameBuilder;
+import org.opensaml.saml.saml2.metadata.impl.OrganizationNameBuilder;
+import org.opensaml.saml.saml2.metadata.impl.OrganizationURLBuilder;
+import org.opensaml.saml.saml2.metadata.impl.SPSSODescriptorBuilder;
+import org.opensaml.security.credential.UsageType;
+import org.opensaml.security.x509.BasicX509Credential;
+import org.opensaml.xmlsec.signature.KeyInfo;
+import org.opensaml.xmlsec.signature.impl.KeyInfoBuilder;
+import org.opensaml.xmlsec.signature.impl.SignatureBuilder;
+import org.opensaml.xmlsec.signature.impl.X509CertificateBuilder;
+import org.opensaml.xmlsec.signature.impl.X509DataBuilder;
+import org.opensaml.xmlsec.signature.support.SignatureConstants;
+import org.opensaml.xmlsec.signature.support.Signer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
-import org.springframework.security.saml.key.JKSKeyManager;
-import org.springframework.security.saml.metadata.ExtendedMetadata;
-import org.springframework.security.saml.metadata.MetadataGenerator;
-import org.springframework.security.saml.util.SAMLUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import se.inera.intyg.webcert.web.web.controller.api.SignatureApiController;
 
 /**
  * This service initializes metadata needed in the DSS (Digital Signing Service) integration
@@ -75,193 +89,154 @@ import se.inera.intyg.webcert.web.web.controller.api.SignatureApiController;
  * which in Webcert is done in the SAML configuration.
  */
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class DssMetadataService {
-
-    private static final Logger LOG = LoggerFactory.getLogger(DssMetadataService.class);
-    private static final String LANG = "sv";
 
     @Value("${dss.client.metadata.host.url}")
     private String dssClientEntityHostUrl;
-
     @Value("${dss.client.response.host.url}")
     private String dssClientResponseHostUrl;
-
     @Value("${dss.service.metadata.resource}")
     private Resource dssServiceMetadataResource;
-
     @Value("${dss.service.metadata.entityid}")
     private String dssServiceMetadataEntityId;
-
     @Value("${dss.client.keystore.alias}")
     private String keystoreAlias;
-
     @Value("${dss.service.action.url}")
     private String actionUrlProperty;
-
     @Value("${dss.client.keystore.password}")
     private String keystorePassword;
-
     @Value("${dss.client.keystore.file}")
     private Resource keystoreFile;
-
     @Value("${dss.client.metadata.org.name}")
     private String organizationName;
-
     @Value("${dss.client.metadata.org.displayname}")
     private String organizationDisplayName;
-
     @Value("${dss.client.metadata.org.url}")
     private String organizationUrl;
-
     @Value("${dss.client.metadata.org.email}")
     private String organizationEmail;
 
-    private ParserPool parserPool;
-    private AbstractReloadingMetadataProvider dssServiceMetadataProvider;
-    private EntityDescriptor clientEntityDescriptor;
-    private ExtendedMetadata clientExtendedMetadata;
-    private JKSKeyManager clientKeyManager;
+    @Getter
     private KeyStore dssKeyStore;
+    @Getter
     private KeySelector dssKeySelector;
 
-    @Autowired
-    public DssMetadataService(ParserPool parserPool) {
-        this.parserPool = parserPool;
-    }
+    private AbstractReloadingMetadataResolver dssServiceMetadataProvider;
+    private EntityDescriptor clientEntityDescriptor;
+
+    private static final String LANG = "sv";
 
     @PostConstruct
     void initialize() {
         initDssMetadata();
         initClientMetadata();
-
     }
 
-
-    /**
-     * Extracts the URL to use in SignRequest form. This URL should be used in
-     * the POST action of the form.
-     *
-     * The source of this URL could either come from property or metadata
-     *
-     * @return URL for posting SignRequst form
-     */
-    public String getDssActionUrl() {
-
-        if (StringUtils.hasText(actionUrlProperty)) {
-            LOG.debug("Using property for actionURL");
-            return actionUrlProperty;
-        } else {
-            LOG.debug("Using AssertionConsumerService from metadata for actionURL");
-            SPSSODescriptor dssSpSsoDescriptor = getDssSpSsoDescriptor();
-            AssertionConsumerService assertionConsumerService = dssSpSsoDescriptor.getDefaultAssertionConsumerService();
-            return assertionConsumerService.getLocation();
-        }
-    }
-
-    /**
-     * Creates metadata for this dss client from the configured values.
-     *
-     * @return Client metadata as a String
-     */
     public String getClientMetadataAsString() {
         try {
-            return SAMLUtil.getMetadataAsString(null, clientKeyManager, clientEntityDescriptor, clientExtendedMetadata);
-        } catch (MarshallingException exception) {
-            LOG.error("Unable to get DSS Client metadata");
-            throw new RuntimeException(exception);
+            final var metadata = new StreamResult(new StringWriter());
+            final var marshaller = Objects.requireNonNull(getMarshallerFactory().getMarshaller(clientEntityDescriptor));
+            final var metadataXml = marshaller.marshall(clientEntityDescriptor);
+            Signer.signObject(Objects.requireNonNull(clientEntityDescriptor.getSignature()));
+            TransformerFactory.newInstance().newTransformer().transform(new DOMSource(metadataXml), metadata);
+            return metadata.getWriter().toString();
+
+        } catch (Exception e) {
+            log.error("Unable to get DSS Client metadata");
+            throw new IllegalStateException("Failure parsing DSS Client metadata.", e);
         }
-    }
-
-    /**
-     * Get a KeyStore created from the x509Certificates from the
-     * DSS metadata.
-     *
-     * @return A KeyStore with valid certificates for the DSS
-     */
-    public KeyStore getDssKeyStore() {
-        return dssKeyStore;
-    }
-
-    /**
-     * Get the KeySelector that maps the DSS KeyStore.
-     *
-     * @return A KeySelector with valid certificates for the DSS
-     */
-    public KeySelector getDssKeySelector() {
-        return dssKeySelector;
     }
 
     protected void initDssMetadata() {
         try {
-
             dssServiceMetadataProvider = new SpringResourceBackedMetadataProvider(new Timer(true), dssServiceMetadataResource);
-            dssServiceMetadataProvider.setParserPool(parserPool);
+            dssServiceMetadataProvider.setParserPool(Objects.requireNonNull(getParserPool()));
             dssServiceMetadataProvider.setRequireValidMetadata(true);
+            dssServiceMetadataProvider.setId("dssMetadata");
             dssServiceMetadataProvider.initialize();
 
             initDssKeyStore(getDssSpSsoDescriptor());
 
-        } catch (MetadataProviderException exception) {
-            LOG.error("Unable to load DSS metadata from resource: " + dssServiceMetadataResource.toString());
-            throw new RuntimeException(exception);
+        } catch (ComponentInitializationException e) {
+            log.error("Unable to load DSS metadata from resource: {}", dssServiceMetadataResource);
+            throw new IllegalStateException(e);
         }
     }
 
     protected void initClientMetadata() {
-        Map<String, String> map = new HashMap<>();
-        map.put(keystoreAlias, keystorePassword);
-        this.clientKeyManager = new JKSKeyManager(keystoreFile, keystorePassword, map, keystoreAlias);
+        try {
+            final var keyStoreSiths = KeyStore.getInstance(KeyStore.getDefaultType());
+            keyStoreSiths.load(keystoreFile.getInputStream(), keystorePassword.toCharArray());
 
-        clientExtendedMetadata = new ExtendedMetadata();
-        clientExtendedMetadata.setSigningKey(keystoreAlias);
-        clientExtendedMetadata.setSignMetadata(true);
-        clientExtendedMetadata.setKeyInfoGeneratorName(""); // This will use the default one
-        clientExtendedMetadata.setLocal(true);
+            final var privateKey = (PrivateKey) keyStoreSiths.getKey(keystoreAlias, keystorePassword.toCharArray());
+            final var certificate = (X509Certificate) keyStoreSiths.getCertificate(keystoreAlias);
 
-        MetadataGenerator mdg = new MetadataGenerator();
-        mdg.setEntityId(
-            dssClientEntityHostUrl + SignatureApiController.SIGNATUR_API_CONTEXT_PATH + SignatureApiController.SIGN_SERVICE_METADATA_PATH);
-        mdg.setEntityBaseURL(dssClientResponseHostUrl);
-        mdg.setRequestSigned(false);
-        mdg.setWantAssertionSigned(false);
-        mdg.setBindingsHoKSSO(null);
-        mdg.setBindingsSLO(null);
-        mdg.setBindingsSSO(null); // Will add our own AssertionConsumingService later
-        mdg.setKeyManager(clientKeyManager);
-        mdg.setNameID(Collections.emptyList());
-        mdg.setExtendedMetadata(clientExtendedMetadata);
+            final var assertionCOnsumerService = dssClientResponseHostUrl + SIGNATUR_API_CONTEXT_PATH + SIGN_SERVICE_RESPONSE_PATH;
+            final var spssoDescriptor = new SPSSODescriptorBuilder().buildObject();
+            spssoDescriptor.addSupportedProtocol(SAMLConstants.SAML20P_NS);
+            spssoDescriptor.setAuthnRequestsSigned(false);
+            spssoDescriptor.setWantAssertionsSigned(false);
+            spssoDescriptor.getAssertionConsumerServices().add(createAssertionConsumerService(assertionCOnsumerService));
+            spssoDescriptor.getKeyDescriptors().add(getKeyDescriptor(UsageType.SIGNING, certificate));
+            spssoDescriptor.getKeyDescriptors().add(getKeyDescriptor(UsageType.ENCRYPTION, certificate));
 
-        clientEntityDescriptor = mdg.generateMetadata();
+            final var credential = new BasicX509Credential(certificate);
+            credential.setPrivateKey(privateKey);
 
-        SPSSODescriptor spssoDescriptor = clientEntityDescriptor.getSPSSODescriptor(SAMLConstants.SAML20P_NS);
-        spssoDescriptor.getAssertionConsumerServices()
-            .add(createAssertionConsumerService(
-                dssClientResponseHostUrl + SignatureApiController.SIGNATUR_API_CONTEXT_PATH
-                    + SignatureApiController.SIGN_SERVICE_RESPONSE_PATH));
+            final var signature = new SignatureBuilder().buildObject();
+            signature.setSigningCredential(credential);
+            signature.setCanonicalizationAlgorithm(SignatureConstants.ALGO_ID_C14N_EXCL_OMIT_COMMENTS);
+            signature.setSignatureAlgorithm(SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA1);
+            signature.setKeyInfo(getKeyInfo(certificate));
 
-        clientEntityDescriptor.getContactPersons()
-            .add(createContactPerson(ContactPersonTypeEnumeration.SUPPORT));
-        clientEntityDescriptor.getContactPersons()
-            .add(createContactPerson(ContactPersonTypeEnumeration.TECHNICAL));
+            final var entityId = dssClientEntityHostUrl + SIGNATUR_API_CONTEXT_PATH + SIGN_SERVICE_METADATA_PATH;
+            clientEntityDescriptor = new EntityDescriptorBuilder().buildObject();
+            clientEntityDescriptor.setEntityID(entityId);
+            clientEntityDescriptor.setID(entityId.replaceAll("[:/]", "_"));
+            clientEntityDescriptor.setOrganization(createOrganization());
+            clientEntityDescriptor.getContactPersons().add(createContactPerson(ContactPersonTypeEnumeration.SUPPORT));
+            clientEntityDescriptor.getContactPersons().add(createContactPerson(ContactPersonTypeEnumeration.TECHNICAL));
+            clientEntityDescriptor.getRoleDescriptors().add(spssoDescriptor);
+            clientEntityDescriptor.setSignature(signature);
 
-        clientEntityDescriptor.setOrganization(createOrganization());
+        } catch (Exception e) {
+            throw new IllegalStateException("Failure initializing DSS Client metadata.", e);
+        }
+    }
 
+    private KeyDescriptor getKeyDescriptor(UsageType usageType, X509Certificate certificate) throws CertificateEncodingException {
+        final var keyDescriptor = new KeyDescriptorBuilder().buildObject();
+        keyDescriptor.setUse(usageType);
+        keyDescriptor.setKeyInfo(getKeyInfo(certificate));
+        return keyDescriptor;
+    }
+
+    private KeyInfo getKeyInfo(X509Certificate certificate) throws CertificateEncodingException {
+        final var keyInfo = new KeyInfoBuilder().buildObject();
+        final var x509Data = new X509DataBuilder().buildObject();
+        final var x509Certificate = new X509CertificateBuilder().buildObject();
+        keyInfo.getX509Datas().add(x509Data);
+        x509Data.getX509Certificates().add(x509Certificate);
+        x509Certificate.setValue(Base64.getEncoder().encodeToString(certificate.getEncoded()));
+        return keyInfo;
     }
 
     private SPSSODescriptor getDssSpSsoDescriptor() {
         try {
-            return dssServiceMetadataProvider
-                .getEntityDescriptor(dssServiceMetadataEntityId)
-                .getSPSSODescriptor(SAMLConstants.SAML20P_NS);
-        } catch (Exception exception) {
-            LOG.error("Unable to get DSS SpSsoDescriptor with entityId: " + dssServiceMetadataEntityId);
-            throw new RuntimeException(exception);
+            final var entityIdCriteriaSet = new CriteriaSet();
+            entityIdCriteriaSet.add(new EntityIdCriterion(dssServiceMetadataEntityId));
+            final var entityDescriptor = dssServiceMetadataProvider.resolveSingle(entityIdCriteriaSet);
+            return Objects.requireNonNull(entityDescriptor).getSPSSODescriptor(SAMLConstants.SAML20P_NS);
+        } catch (Exception e) {
+            log.error("Unable to get DSS SpSsoDescriptor with entityId: {}", dssServiceMetadataEntityId);
+            throw new IllegalStateException(e);
         }
     }
 
-
     private AssertionConsumerService createAssertionConsumerService(String location) {
-        AssertionConsumerService assertionConsumerService = new AssertionConsumerServiceBuilder().buildObject();
+        final var assertionConsumerService = new AssertionConsumerServiceBuilder().buildObject();
         assertionConsumerService.setBinding(SAMLConstants.SAML2_POST_BINDING_URI);
         assertionConsumerService.setLocation(location);
         assertionConsumerService.setIsDefault(true);
@@ -271,28 +246,58 @@ public class DssMetadataService {
     }
 
     private Organization createOrganization() {
-        OrganizationURL xmlOrganizationURL = new OrganizationURLBuilder().buildObject();
-        xmlOrganizationURL.setURL(new LocalizedString(organizationUrl, LANG));
-        Organization organization = new OrganizationBuilder().buildObject();
+        final var xmlOrganizationURL = new OrganizationURLBuilder().buildObject();
+        xmlOrganizationURL.setXMLLang(LANG);
+        xmlOrganizationURL.setURI(organizationUrl);
+
+        final var organization = new OrganizationBuilder().buildObject();
         organization.getURLs().add(xmlOrganizationURL);
-        OrganizationDisplayName xmlOrganizationDisplayName = new OrganizationDisplayNameBuilder().buildObject();
-        xmlOrganizationDisplayName.setName(new LocalizedString(organizationDisplayName, LANG));
+
+        final var xmlOrganizationDisplayName = new OrganizationDisplayNameBuilder().buildObject();
+        xmlOrganizationDisplayName.setXMLLang(LANG);
+        xmlOrganizationDisplayName.setValue(organizationDisplayName);
         organization.getDisplayNames().add(xmlOrganizationDisplayName);
-        OrganizationName xmlOrganizationName = new OrganizationNameBuilder().buildObject();
-        xmlOrganizationName.setName(new LocalizedString(organizationName, LANG));
+
+        final var xmlOrganizationName = new OrganizationNameBuilder().buildObject();
+        xmlOrganizationName.setXMLLang(LANG);
+        xmlOrganizationName.setValue(organizationName);
         organization.getOrganizationNames().add(xmlOrganizationName);
         return organization;
     }
 
     private ContactPerson createContactPerson(ContactPersonTypeEnumeration type) {
-        EmailAddress emailAddress = new EmailAddressBuilder().buildObject();
-        emailAddress.setAddress(organizationEmail);
-        Company company = new CompanyBuilder().buildObject();
-        company.setName(organizationName);
-        ContactPerson contactPerson = new ContactPersonBuilder().buildObject();
+        final var emailAddress = new EmailAddressBuilder().buildObject();
+        emailAddress.setURI(organizationEmail);
+
+        final var company = new CompanyBuilder().buildObject();
+        company.setValue(organizationName);
+
+        final var contactPerson = new ContactPersonBuilder().buildObject();
         contactPerson.setType(type);
         contactPerson.setCompany(company);
+        contactPerson.getEmailAddresses().add(emailAddress);
         return contactPerson;
+    }
+
+    /**
+     * Extracts the URL to use in SignRequest form. This URL should be used in
+     * the POST action of the form.
+     * <p>
+     * The source of this URL could either come from property or metadata
+     *
+     * @return URL for posting SignRequst form
+     */
+    public String getDssActionUrl() {
+
+        if (StringUtils.hasText(actionUrlProperty)) {
+            log.debug("Using property for actionURL");
+            return actionUrlProperty;
+        } else {
+            log.debug("Using AssertionConsumerService from metadata for actionURL");
+            SPSSODescriptor dssSpSsoDescriptor = getDssSpSsoDescriptor();
+            AssertionConsumerService assertionConsumerService = dssSpSsoDescriptor.getDefaultAssertionConsumerService();
+            return assertionConsumerService.getLocation();
+        }
     }
 
     private void initDssKeyStore(SPSSODescriptor spSSODescriptor) {
@@ -304,42 +309,36 @@ public class DssMetadataService {
             char[] pwdArray = keystorePassword.toCharArray();
             dssKeyStore.load(null, pwdArray);
 
-            if (spSSODescriptor != null) {
-                var keyDescriptors = spSSODescriptor.getKeyDescriptors();
-                if (keyDescriptors != null) {
-                    for (var keyDescriptor : keyDescriptors) {
-                        if (UsageType.SIGNING.equals(keyDescriptor.getUse()) || UsageType.UNSPECIFIED.equals(keyDescriptor.getUse())) {
-                            var keyInfo = keyDescriptor.getKeyInfo();
-                            if (keyInfo != null) {
-                                var x509Datas = keyInfo.getX509Datas();
-                                if (x509Datas != null) {
-                                    for (var x509Data : x509Datas) {
-                                        var x509Certificates = x509Data.getX509Certificates();
-                                        if (x509Certificates != null) {
-                                            for (var x509Certificate : x509Certificates) {
-                                                var base64Certificate = SecurityHelper.buildJavaX509Cert(x509Certificate.getValue());
-                                                dssKeyStore.setCertificateEntry("dss" + aliasNumber, base64Certificate);
-                                                aliasNumber++;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
+            final var keyDescriptors = Objects.requireNonNull(spSSODescriptor).getKeyDescriptors();
+            for (final var keyDescriptor : Objects.requireNonNull(keyDescriptors)) {
+                if (!UsageType.SIGNING.equals(keyDescriptor.getUse()) && !UsageType.UNSPECIFIED.equals(keyDescriptor.getUse())) {
+                    continue;
+                }
+                final var keyInfo = keyDescriptor.getKeyInfo();
+                final var x509Datas = Objects.requireNonNull(keyInfo).getX509Datas();
+                for (final var x509Data : x509Datas) {
+                    final var x509Certificates = Objects.requireNonNull(x509Data).getX509Certificates();
+                    for (final var x509Certificate : x509Certificates) {
+                        final var cf = CertificateFactory.getInstance("X.509");
+                        final var decodedX509Cert = Base64.getMimeDecoder().decode(Objects.requireNonNull(x509Certificate).getValue());
+                        final var inputStream = new ByteArrayInputStream(decodedX509Cert);
+                        final var base64Certificate = (X509Certificate) cf.generateCertificate(inputStream);
+                        dssKeyStore.setCertificateEntry("dss" + aliasNumber, base64Certificate);
+                        aliasNumber++;
                     }
                 }
             }
 
             if (dssKeyStore.size() == 0) {
-                LOG.error("No valid certificates found in dss metadata: " + dssServiceMetadataResource.toString());
-                throw new RuntimeException();
+                log.error("No valid certificates found in dss metadata: {}", dssServiceMetadataResource);
+                throw new IllegalStateException("Failure setting upp DSS Key store.");
             }
 
             dssKeySelector = new KeyStoreKeySelector(dssKeyStore);
 
-        } catch (KeyStoreException | IOException | NoSuchAlgorithmException | CertificateException exception) {
-            LOG.error("Unable to load DSS kyeStore from metadata resource: " + dssServiceMetadataResource.toString());
-            throw new RuntimeException(exception);
+        } catch (KeyStoreException | IOException | NoSuchAlgorithmException | CertificateException | NullPointerException e) {
+            log.error("Unable to load DSS kyeStore from metadata resource: {}", dssServiceMetadataResource);
+            throw new IllegalStateException("Failure setting up DSSKey store", e);
         }
     }
 

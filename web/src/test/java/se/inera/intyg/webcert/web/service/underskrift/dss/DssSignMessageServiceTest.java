@@ -18,14 +18,15 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift.dss;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Unmarshaller;
 import java.io.IOException;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.stream.StreamSource;
@@ -33,14 +34,19 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
+import net.shibboleth.utilities.java.support.xml.BasicParserPool;
+import net.shibboleth.utilities.java.support.xml.ParserPool;
 import org.apache.commons.io.IOUtils;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.opensaml.Configuration;
-import org.opensaml.DefaultBootstrap;
-import org.opensaml.xml.ConfigurationException;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.opensaml.core.config.ConfigurationService;
+import org.opensaml.core.config.InitializationException;
+import org.opensaml.core.config.InitializationService;
+import org.opensaml.core.xml.config.XMLObjectProviderRegistry;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.w3c.dom.Document;
@@ -52,22 +58,32 @@ import se.inera.intyg.infra.xmldsig.model.ValidationResult;
 import se.inera.intyg.webcert.dss.xsd.dsscore.SignRequest;
 import se.inera.intyg.webcert.dss.xsd.dssext.SignRequestExtensionType;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DssSignMessageServiceTest {
 
-    public DssSignMessageServiceTest() {
+    private DssMetadataService dssMetadataService;
+
+    @BeforeAll
+    public static void init() throws InitializationException, ComponentInitializationException {
+        final var registry = new XMLObjectProviderRegistry();
+        ConfigurationService.register(XMLObjectProviderRegistry.class, registry);
+        registry.setParserPool(getParserPool());
+        InitializationService.initialize();
     }
 
-    @BeforeClass
-    public static void init() throws ConfigurationException {
-        org.apache.xml.security.Init.init();
-        DefaultBootstrap.bootstrap();
+    private static ParserPool getParserPool() throws ComponentInitializationException {
+        final var parserPool = new BasicParserPool();
+        parserPool.initialize();
+        return parserPool;
+    }
+
+    @BeforeEach
+    void setup() {
+        dssMetadataService = new DssMetadataService();
     }
 
     @Test
-    public void signSignRequest() throws IOException, XPathExpressionException {
-
-        DssMetadataService dssMetadataService = new DssMetadataService(Configuration.getParserPool());
+    void signSignRequest() throws IOException, XPathExpressionException {
         ReflectionTestUtils.setField(dssMetadataService, "dssServiceMetadataEntityId",
             "http://localhost:8020/api/signature/signservice/v1/metadata");
         ReflectionTestUtils.setField(dssMetadataService, "dssServiceMetadataResource", new ClassPathResource("dss/dss_valid_metadata.xml"));
@@ -95,22 +111,21 @@ public class DssSignMessageServiceTest {
         assertNotNull(node);
 
         ValidationResponse validationResponse = service.validateDssMessageSignature(signedSignRequest);
-        assertEquals("Signature", ValidationResult.OK, validationResponse.getSignatureValid());
-        assertEquals("Reference", ValidationResult.OK, validationResponse.getReferencesValid());
+        assertEquals(ValidationResult.OK, validationResponse.getSignatureValid(), "Signature");
+        assertEquals(ValidationResult.OK, validationResponse.getReferencesValid(), "Reference");
 
         // Use this block if you need a new valid signed signRequest.
         // Copy paste from System.out doesn't always work due to formatting issues
 
-/*        try (OutputStreamWriter writer =
-            new OutputStreamWriter(new FileOutputStream(new File("/temp/signed_valid_signRequest.xml")), StandardCharsets.UTF_8)) {
+        /*try (final var writer =
+            new OutputStreamWriter(new FileOutputStream("/temp/signed_valid_signRequest.xml"), StandardCharsets.UTF_8)) {
             writer.write(signedSignRequest);
         }*/
 
     }
 
     @Test
-    public void validateSignResponseSignature_valid() {
-        DssMetadataService dssMetadataService = new DssMetadataService(Configuration.getParserPool());
+    void validateSignResponseSignature_valid() {
         ReflectionTestUtils.setField(dssMetadataService, "dssServiceMetadataEntityId",
             "http://localhost:8020/api/signature/signservice/v1/metadata");
         ReflectionTestUtils.setField(dssMetadataService, "dssServiceMetadataResource", new ClassPathResource("dss/dss_valid_metadata.xml"));
@@ -121,14 +136,13 @@ public class DssSignMessageServiceTest {
 
         ValidationResponse validationResponse = service
             .validateDssMessageSignature(getSignRequestString("dss/signed_valid_signRequest.xml"));
-        assertEquals("Signature", ValidationResult.OK, validationResponse.getSignatureValid());
-        assertEquals("Reference", ValidationResult.OK, validationResponse.getReferencesValid());
+        assertEquals(ValidationResult.OK, validationResponse.getSignatureValid(), "Signature");
+        assertEquals(ValidationResult.OK, validationResponse.getReferencesValid(), "Reference");
 
     }
 
     @Test
-    public void validateSignResponseSignature_invalid() {
-        DssMetadataService dssMetadataService = new DssMetadataService(Configuration.getParserPool());
+    void validateSignResponseSignature_invalid() {
         ReflectionTestUtils.setField(dssMetadataService, "dssServiceMetadataEntityId",
             "http://localhost:8020/api/signature/signservice/v1/metadata");
         ReflectionTestUtils.setField(dssMetadataService, "dssServiceMetadataResource", new ClassPathResource("dss/dss_valid_metadata.xml"));
@@ -139,14 +153,13 @@ public class DssSignMessageServiceTest {
 
         ValidationResponse validationResponse = service
             .validateDssMessageSignature(getSignRequestString("dss/signed_invalid_signRequest.xml"));
-        assertEquals("Signature", ValidationResult.INVALID, validationResponse.getSignatureValid());
-        assertEquals("Reference", ValidationResult.INVALID, validationResponse.getReferencesValid());
+        assertEquals(ValidationResult.INVALID, validationResponse.getSignatureValid(), "Signature");
+        assertEquals(ValidationResult.INVALID, validationResponse.getReferencesValid(), "Reference");
 
     }
 
     @Test
-    public void validateSignResponseSignature_certMissingInKeyStore() {
-        DssMetadataService dssMetadataService = new DssMetadataService(Configuration.getParserPool());
+    void validateSignResponseSignature_certMissingInKeyStore() {
         ReflectionTestUtils.setField(dssMetadataService, "dssServiceMetadataEntityId",
             "http://localhost:8020/api/signature/signservice/v1/metadata");
         ReflectionTestUtils.setField(dssMetadataService, "dssServiceMetadataResource", new ClassPathResource("dss/dss_valid_metadata.xml"));
@@ -157,8 +170,8 @@ public class DssSignMessageServiceTest {
 
         ValidationResponse validationResponse = service
             .validateDssMessageSignature(getSignRequestString("dss/signed_invalidcert_signRequest.xml"));
-        assertEquals("Signature", ValidationResult.INVALID, validationResponse.getSignatureValid());
-        assertEquals("Reference", ValidationResult.INVALID, validationResponse.getReferencesValid());
+        assertEquals(ValidationResult.INVALID, validationResponse.getSignatureValid(), "Signature");
+        assertEquals(ValidationResult.INVALID, validationResponse.getReferencesValid(), "Reference");
 
     }
 

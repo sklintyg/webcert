@@ -61,7 +61,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
         final var invokingUnitHsaId = utkastsParams.getSkapadAv().getEnhet().getEnhetsId().getExtension();
         IntygUser user;
         try {
-            user = webcertUserDetailsService.loadUserByHsaId(invokingUserHsaId);
+            user = webcertUserDetailsService.buildUserPrincipal(invokingUserHsaId, "");
         } catch (Exception e) {
             return createMIUErrorResponse(utkastsParams);
         }

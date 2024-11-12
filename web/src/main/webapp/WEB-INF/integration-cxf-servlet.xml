@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (C) 2016 Inera AB (http://www.inera.se)
+  ~ Copyright (C) 2024 Inera AB (http://www.inera.se)
   ~
   ~ This file is part of sklintyg (https://github.com/sklintyg).
   ~
@@ -33,8 +33,7 @@
 
   <context:annotation-config />
 
-  <context:property-placeholder location="classpath:application.properties"
-    order="2" ignore-resource-not-found="false" />
+  <context:property-placeholder location="classpath:application.properties" order="2"/>
 
   <jaxrs:server address="/">
     <jaxrs:serviceBeans>

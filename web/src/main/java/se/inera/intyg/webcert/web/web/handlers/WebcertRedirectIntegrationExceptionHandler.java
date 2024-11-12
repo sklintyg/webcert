@@ -18,10 +18,10 @@
  */
 package se.inera.intyg.webcert.web.web.handlers;
 
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
+import jakarta.ws.rs.ext.ExceptionMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,20 +79,14 @@ public class WebcertRedirectIntegrationExceptionHandler implements ExceptionMapp
     private Response handleRuntimeException(RuntimeException e) {
         if (e instanceof WebCertServiceException) {
             LOG.warn("WebCertServiceException caught: {}", e.getMessage(), e);
-            switch (((WebCertServiceException) e).getErrorCode()) {
-                case MISSING_PARAMETER:
-                    return getRedirectResponse(ERROR_REASON_MISSING_PARAMETER);
-                case AUTHORIZATION_PROBLEM:
-                    return getRedirectResponse(ERROR_REASON_AUTH_EXCEPTION);
-                case AUTHORIZATION_PROBLEM_SEKRETESSMARKERING:
-                    return getRedirectResponse(ERROR_REASON_AUTH_EXCEPTION_SEKRETESSMARKERING);
-                case AUTHORIZATION_USER_SESSION_ALREADY_ACTIVE:
-                    return getRedirectResponse(ERROR_REASON_AUTH_EXCEPTION_USER_ALREADY_ACTIVE);
-                case PU_PROBLEM:
-                    return getRedirectResponse(ERROR_REASON_PU_PROBLEM);
-                default:
-                    return getRedirectResponse(ERROR_REASON_UNKNOWN);
-            }
+            return switch (((WebCertServiceException) e).getErrorCode()) {
+                case MISSING_PARAMETER -> getRedirectResponse(ERROR_REASON_MISSING_PARAMETER);
+                case AUTHORIZATION_PROBLEM -> getRedirectResponse(ERROR_REASON_AUTH_EXCEPTION);
+                case AUTHORIZATION_PROBLEM_SEKRETESSMARKERING -> getRedirectResponse(ERROR_REASON_AUTH_EXCEPTION_SEKRETESSMARKERING);
+                case AUTHORIZATION_USER_SESSION_ALREADY_ACTIVE -> getRedirectResponse(ERROR_REASON_AUTH_EXCEPTION_USER_ALREADY_ACTIVE);
+                case PU_PROBLEM -> getRedirectResponse(ERROR_REASON_PU_PROBLEM);
+                default -> getRedirectResponse(ERROR_REASON_UNKNOWN);
+            };
         }
 
         LOG.error("Unhandled RuntimeException occured!", e);

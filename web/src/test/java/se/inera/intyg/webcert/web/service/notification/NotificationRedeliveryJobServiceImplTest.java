@@ -18,29 +18,32 @@
  */
 package se.inera.intyg.webcert.web.service.notification;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static se.inera.intyg.webcert.web.util.ReflectionUtils.setStaticFinalAttribute;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.Appender;
+import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.xml.bind.JAXBException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.internal.verification.VerificationModeFactory;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.slf4j.Logger;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.LoggerFactory;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
@@ -51,8 +54,8 @@ import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 
-@RunWith(MockitoJUnitRunner.class)
-public class NotificationRedeliveryJobServiceImplTest {
+@ExtendWith(MockitoExtension.class)
+class NotificationRedeliveryJobServiceImplTest {
 
     @Mock
     private NotificationRedeliveryStatusUpdateCreatorService notificationRedeliveryStatusUpdateCreatorService;
@@ -66,11 +69,14 @@ public class NotificationRedeliveryJobServiceImplTest {
     @Mock
     private HandelseRepository eventRepository;
 
+    @Mock
+    private Appender<ILoggingEvent> appender;
+
     @InjectMocks
     private NotificationRedeliveryJobServiceImpl notificationRedeliveryJobService;
 
     @Test
-    public void shallResendANotificationThatIsUpForRedelivery() throws Exception {
+    void shallResendANotificationThatIsUpForRedelivery() throws Exception {
         final var expectedNotificationRedelivery = createNotificationRedelivery();
         final var expectedStatusUpdateXml = "CERTIFICATE_STATUS_XML";
         final var notificationRedeliveryList = Collections.singletonList(expectedNotificationRedelivery);
@@ -95,7 +101,7 @@ public class NotificationRedeliveryJobServiceImplTest {
     }
 
     @Test
-    public void shallResendManyNotificationsThatAreUpForRedelivery() throws Exception {
+    void shallResendManyNotificationsThatAreUpForRedelivery() throws Exception {
         final var numberOfMessages = 100;
         final var notificationRedeliveryList = new ArrayList<NotificationRedelivery>();
         for (int i = 0; i < numberOfMessages; i++) {
@@ -114,7 +120,7 @@ public class NotificationRedeliveryJobServiceImplTest {
     }
 
     @Test
-    public void shallResendNoneIfNoNotificationsAreUpForRedelivery() {
+    void shallResendNoneIfNoNotificationsAreUpForRedelivery() {
         doReturn(Collections.emptyList()).when(notificationRedeliveryService).getNotificationsForRedelivery(any(int.class));
 
         notificationRedeliveryJobService.resendScheduledNotifications(100);
@@ -123,7 +129,7 @@ public class NotificationRedeliveryJobServiceImplTest {
     }
 
     @Test
-    public void shallResendNotificationsThatAreUpForRedeliveryEvenWhenSomeFail() throws Exception {
+    void shallResendNotificationsThatAreUpForRedeliveryEvenWhenSomeFail() throws Exception {
         final var numberOfMessages = 10;
         final var notificationRedeliveryList = new ArrayList<NotificationRedelivery>();
         for (int i = 0; i < numberOfMessages; i++) {
@@ -148,10 +154,7 @@ public class NotificationRedeliveryJobServiceImplTest {
     }
 
     @Test
-    public void shallLogSuccessAndFailures() throws Exception {
-        final var LOG = mock(Logger.class);
-        setStaticFinalAttribute(NotificationRedeliveryJobServiceImpl.class, "LOG", LOG);
-
+    void shallLogSuccessAndFailures() throws Exception {
         final var numberOfSuccess = 10;
         final var notificationRedeliveryList = new ArrayList<NotificationRedelivery>();
         for (int i = 0; i < numberOfSuccess; i++) {
@@ -163,6 +166,11 @@ public class NotificationRedeliveryJobServiceImplTest {
         notificationRedeliveryList.add(3, failingNotificationRedelivery);
         notificationRedeliveryList.add(7, failingNotificationRedelivery);
 
+        final var root = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+        root.addAppender(appender);
+
+        final var captureLogMessage = ArgumentCaptor.forClass(ILoggingEvent.class);
+
         doReturn(notificationRedeliveryList).when(notificationRedeliveryService).getNotificationsForRedelivery(any(int.class));
         doReturn(createEventsToReturn(1)).when(eventRepository).findAllById(any(Iterable.class));
         doReturn("CERTIFICATE_STATUS_XML").when(notificationRedeliveryStatusUpdateCreatorService)
@@ -172,11 +180,14 @@ public class NotificationRedeliveryJobServiceImplTest {
 
         notificationRedeliveryJobService.resendScheduledNotifications(100);
 
-        verify(LOG).debug(any(String.class), eq(numberOfSuccess + numberOfFailures), any(long.class), eq(numberOfFailures));
+        verify(appender, times(3)).doAppend(captureLogMessage.capture());
+        assertTrue(captureLogMessage.getValue().getFormattedMessage().contains(String.valueOf(numberOfSuccess + numberOfFailures)));
+        assertTrue(captureLogMessage.getValue().getFormattedMessage().contains(String.valueOf(numberOfFailures)));
+        assertEquals("DEBUG", captureLogMessage.getValue().getLevel().levelStr);
     }
 
     @Test
-    public void shallLimitMessagesToBatchSize() {
+    void shallLimitMessagesToBatchSize() {
         final var expectedBatch = 345;
 
         final var captureInt = ArgumentCaptor.forClass(int.class);
@@ -189,7 +200,7 @@ public class NotificationRedeliveryJobServiceImplTest {
     }
 
     @Test
-    public void shouldHandleErrorsWhenExceptionIsReceived()
+    void shouldHandleErrorsWhenExceptionIsReceived()
         throws ModuleNotFoundException, TemporaryException, ModuleException, IOException, JAXBException {
         final var redelivery = createNotificationRedelivery();
         final var notificationRedeliveryList = new ArrayList<NotificationRedelivery>();

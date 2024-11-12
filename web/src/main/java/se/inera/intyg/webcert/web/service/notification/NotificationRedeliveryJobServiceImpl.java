@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.notification;
 
+import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -25,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,11 +55,8 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
     @Override
     public void resendScheduledNotifications(int batchSize) {
         final var startTimeInMilliseconds = System.currentTimeMillis();
-
         final var notificationsToResend = notificationRedeliveryService.getNotificationsForRedelivery(batchSize);
-
         final var successfullySent = resend(notificationsToResend);
-
         final var endTimeInMilliseconds = System.currentTimeMillis();
 
         LOG.debug("Processed {} notification for redelivery in {} seconds. Number of failures: {}.",

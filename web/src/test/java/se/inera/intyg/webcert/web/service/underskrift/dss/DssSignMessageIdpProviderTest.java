@@ -70,7 +70,6 @@ class DssSignMessageIdpProviderTest {
         }
 
         @Test
-        @SuppressWarnings("JUnitMalformedDeclaration")
         void shallLogWarningIfIdentityProviderForSignIsNull(CapturedOutput uatLog) {
             dssSignMessageIdpProvider.get(null);
             assertTrue(
@@ -82,7 +81,6 @@ class DssSignMessageIdpProviderTest {
         }
 
         @Test
-        @SuppressWarnings("JUnitMalformedDeclaration")
         void shallLogWarningIfIdentityProviderForSignIsEmpty(CapturedOutput uatLog) {
             dssSignMessageIdpProvider.get("");
             assertTrue(

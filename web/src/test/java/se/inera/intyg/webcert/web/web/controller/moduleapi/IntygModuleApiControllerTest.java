@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
-import static javax.ws.rs.core.Response.Status.OK;
+import static jakarta.ws.rs.core.Response.Status.OK;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -28,6 +28,8 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.core.Response;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,7 +38,6 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.ws.rs.core.Response;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -46,7 +47,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.mock.web.MockHttpServletRequest;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.CertificateState;
@@ -159,9 +159,8 @@ public class IntygModuleApiControllerTest {
         setupUser(AuthoritiesConstants.PRIVILEGE_VISA_INTYG, intygType, false, true, AuthoritiesConstants.FEATURE_UTSKRIFT);
         IntygPdf pdfResponse = new IntygPdf(PDF_DATA, PDF_NAME);
 
-        final var request = new MockHttpServletRequest();
-        request.addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; Touch; rv:11.0) like Gecko");
-
+        final var request = mock(HttpServletRequest.class);
+        when(request.getHeader("User-Agent")).thenReturn("Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; Touch; rv:11.0) like Gecko");
         when(printCertificateAggregator.get(CERTIFICATE_ID, intygType, false)).thenReturn(pdfResponse);
 
         Response response = moduleApiController.getIntygAsPdf(intygType, CERTIFICATE_ID, request);
@@ -177,11 +176,10 @@ public class IntygModuleApiControllerTest {
         setupUser(AuthoritiesConstants.PRIVILEGE_VISA_INTYG, intygType, false, true, AuthoritiesConstants.FEATURE_UTSKRIFT);
         IntygPdf pdfResponse = new IntygPdf(PDF_DATA, PDF_NAME);
 
-        final var request = new MockHttpServletRequest();
-        request.addHeader("User-Agent",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36");
-
+        final var request = mock(HttpServletRequest.class);
         when(printCertificateAggregator.get(CERTIFICATE_ID, intygType, false)).thenReturn(pdfResponse);
+        when(request.getHeader("User-Agent"))
+            .thenReturn("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36");
 
         Response response = moduleApiController.getIntygAsPdf(intygType, CERTIFICATE_ID, request);
 
@@ -196,10 +194,9 @@ public class IntygModuleApiControllerTest {
         setupUser(AuthoritiesConstants.PRIVILEGE_VISA_INTYG, intygType, false, true, AuthoritiesConstants.FEATURE_ARBETSGIVARUTSKRIFT);
         IntygPdf pdfResponse = new IntygPdf(PDF_DATA, PDF_NAME);
 
-        final var request = new MockHttpServletRequest();
-        request.addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; Touch; rv:11.0) like Gecko");
-
+        final var request = mock(HttpServletRequest.class);
         when(printCertificateAggregator.get(CERTIFICATE_ID, intygType, true)).thenReturn(pdfResponse);
+        when(request.getHeader("User-Agent")).thenReturn("Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; Touch; rv:11.0) like Gecko");
 
         Response response = moduleApiController.getIntygAsPdfForEmployer(intygType, CERTIFICATE_ID, request);
 
@@ -214,11 +211,10 @@ public class IntygModuleApiControllerTest {
         setupUser(AuthoritiesConstants.PRIVILEGE_VISA_INTYG, intygType, false, true, AuthoritiesConstants.FEATURE_ARBETSGIVARUTSKRIFT);
         IntygPdf pdfResponse = new IntygPdf(PDF_DATA, PDF_NAME);
 
-        final var request = new MockHttpServletRequest();
-        request.addHeader("User-Agent",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36");
-
+        final var request = mock(HttpServletRequest.class);
         when(printCertificateAggregator.get(CERTIFICATE_ID, intygType, true)).thenReturn(pdfResponse);
+        when(request.getHeader("User-Agent"))
+            .thenReturn("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36");
 
         Response response = moduleApiController.getIntygAsPdfForEmployer(intygType, CERTIFICATE_ID, request);
 

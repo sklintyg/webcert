@@ -16,94 +16,51 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package se.inera.intyg.webcert.web.auth;
 
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
-import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@RunWith(MockitoJUnitRunner.class)
-public class CustomXFrameOptionsHeaderWriterTest {
+@ExtendWith(MockitoExtension.class)
+class CustomXFrameOptionsHeaderWriterTest {
 
     @Mock
-    private WebCertUserService webcertUserService;
-
+    private HttpServletRequest request;
     @Mock
-    private WebCertUser webcertUser;
+    private HttpServletResponse response;
 
     @InjectMocks
     private CustomXFrameOptionsHeaderWriter customXFrameOptionsHeaderWriter;
 
+    private static final int ONE = 1;
+    private static final String DENY = "DENY";
     private static final String XFRAME_OPTIONS_HEADER = "X-Frame-Options";
-
-    private final static String REQUEST_URI = "https://test.test/test";
-    private final static String REQUEST_URI_PDF_ENDPOINT = "https://test.test/pdf";
-
-    private static final boolean HAS_AUTHENTICATION_CONTEXT = true;
-    private static final boolean NO_AUTHENTICATION_CONTEXT = false;
+    private static final String REQUEST_URI = "https://test.test/test";
+    private static final String REQUEST_URI_PDF_ENDPOINT = "https://test.test/pdf";
 
     @Test
-    public void shouldSkipHeaderWhenNoAuthenticationContext() {
-        final var httpServerRequest = createHttpServerRequest(REQUEST_URI);
-        final var httpServerResponse = createHttpServerResponse();
-
-        setMockReturnValueForAuthenticationContext(NO_AUTHENTICATION_CONTEXT);
-
-        customXFrameOptionsHeaderWriter.writeHeaders(httpServerRequest, httpServerResponse);
-
-        assertFalse(httpServerResponse.containsHeader(XFRAME_OPTIONS_HEADER));
+    void shouldAddHeaderForNonPdfEndpoint() {
+        when(request.getRequestURI()).thenReturn(REQUEST_URI);
+        customXFrameOptionsHeaderWriter.writeHeaders(request, response);
+        verify(response, times(ONE)).addHeader(XFRAME_OPTIONS_HEADER, DENY);
     }
 
     @Test
-    public void shouldSkipHeaderWhenRequestForPdfEndpoint() {
-        final var httpServerRequest = createHttpServerRequest(REQUEST_URI_PDF_ENDPOINT);
-        final var httpServerResponse = createHttpServerResponse();
-
-        setMockReturnValueForAuthenticationContext(HAS_AUTHENTICATION_CONTEXT);
-
-        customXFrameOptionsHeaderWriter.writeHeaders(httpServerRequest, httpServerResponse);
-
-        assertFalse(httpServerResponse.containsHeader(XFRAME_OPTIONS_HEADER));
+    void shouldSkipHeaderWhenRequestForPdfEndpoint() {
+        when(request.getRequestURI()).thenReturn(REQUEST_URI_PDF_ENDPOINT);
+        customXFrameOptionsHeaderWriter.writeHeaders(request, response);
+        verifyNoInteractions(response);
     }
 
-    @Test
-    public void shouldNotSkipHeaderWhenHasAuthenticationContexIsReadonlyAndNotPdfEndpoint() {
-        final var httpServerRequest = createHttpServerRequest(REQUEST_URI);
-        final var httpServerResponse = createHttpServerResponse();
-
-        setMockReturnValueForAuthenticationContext(HAS_AUTHENTICATION_CONTEXT);
-
-        customXFrameOptionsHeaderWriter.writeHeaders(httpServerRequest, httpServerResponse);
-
-        assertTrue(httpServerResponse.containsHeader(XFRAME_OPTIONS_HEADER));
-        assertEquals("DENY", httpServerResponse.getHeader(XFRAME_OPTIONS_HEADER));
-    }
-
-    private HttpServletRequest createHttpServerRequest(String requestUri) {
-        final var request = new MockHttpServletRequest();
-        request.setRequestURI(requestUri);
-        return request;
-    }
-
-    private HttpServletResponse createHttpServerResponse() {
-        return new MockHttpServletResponse();
-    }
-
-    private void setMockReturnValueForAuthenticationContext(boolean hasContext) {
-        when(webcertUserService.hasAuthenticationContext()).thenReturn(hasContext);
-    }
 }

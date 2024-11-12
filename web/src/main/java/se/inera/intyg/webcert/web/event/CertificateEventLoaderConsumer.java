@@ -18,12 +18,12 @@
  */
 package se.inera.intyg.webcert.web.event;
 
+import jakarta.jms.Message;
+import jakarta.jms.MessageListener;
+import jakarta.jms.ObjectMessage;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import javax.jms.Message;
-import javax.jms.MessageListener;
-import javax.jms.ObjectMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

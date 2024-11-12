@@ -18,7 +18,31 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
+import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
+import static jakarta.ws.rs.core.Response.Status.OK;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.google.common.base.Strings;
+import jakarta.ws.rs.core.Response;
+import jakarta.xml.ws.WebServiceException;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,6 +59,7 @@ import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.registry.IntygModule;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.infra.integration.hsatk.model.PersonInformation;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
@@ -62,21 +87,6 @@ import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CreateUtkastRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygResponse;
-import se.riv.infrastructure.directory.employee.v2.PersonInformationType;
-
-import javax.ws.rs.core.Response;
-import javax.xml.ws.WebServiceException;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.OK;
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class UtkastApiControllerTest {
@@ -140,12 +150,9 @@ public class UtkastApiControllerTest {
 
         // Return hsaId as name
         when(hsaEmployeeService.getEmployee(anyString(), any())).thenAnswer(invocation -> {
-            PersonInformationType personInformation = new PersonInformationType();
+            final var personInformation = new PersonInformation();
             personInformation.setMiddleAndSurName((String) invocation.getArguments()[0]);
-
-            List<PersonInformationType> personInformationTypeList = new ArrayList<>();
-            personInformationTypeList.add(personInformation);
-            return personInformationTypeList;
+            return List.of(personInformation);
         });
 
         Map<Personnummer, PatientDetailsResolverResponse> statusMap = mock(Map.class);
@@ -283,7 +290,7 @@ public class UtkastApiControllerTest {
     }
 
     @Test
-    public void testFilterDraftsForUnitSortingBySparadAvIsCorrectWhenNamesAreUpdatedFromHsaINTYGFV12187() {
+    public void testFilterDraftsForUnitSortingBySparadAvIsCorrectWhenNamesAreUpdatedFromHsaIntygFv12187() {
         //Given
         setupUser(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, LuseEntryPoint.MODULE_ID,
             AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
@@ -317,7 +324,7 @@ public class UtkastApiControllerTest {
     }
 
     @Test
-    public void testFilterDraftsForUnitSortingByPersonnummerIsCorrectINTYGFV12187() {
+    public void testFilterDraftsForUnitSortingByPersonnummerIsCorrectIntygFvFV12187() {
         //Given
         setupUser(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, LuseEntryPoint.MODULE_ID,
             AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);

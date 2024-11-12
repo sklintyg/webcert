@@ -20,15 +20,14 @@ package se.inera.intyg.webcert.web.service.user;
 
 import static se.inera.intyg.infra.security.filter.SessionTimeoutFilter.TIME_TO_INVALIDATE_ATTRIBUTE_NAME;
 
+import jakarta.servlet.http.HttpSession;
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.stereotype.Service;
@@ -45,21 +44,13 @@ import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPr
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class WebCertUserServiceImpl implements WebCertUserService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(WebCertUserService.class);
-
-    @Autowired
-    private CommonAuthoritiesResolver authoritiesResolver;
-
-    @Autowired
-    private AnvandarPreferenceRepository anvandarPreferenceRepository;
-
-    @Autowired
-    private ThreadPoolTaskScheduler scheduler;
-
-    @Autowired
-    private FindByIndexNameSessionRepository sessionRepository;
+    private final CommonAuthoritiesResolver authoritiesResolver;
+    private final AnvandarPreferenceRepository anvandarPreferenceRepository;
+    private final FindByIndexNameSessionRepository<?> sessionRepository;
 
     @Value("${logout.timeout.seconds}")
     private int logoutTimeout;
@@ -67,12 +58,15 @@ public class WebCertUserServiceImpl implements WebCertUserService {
     @Override
     public boolean hasAuthenticationContext() {
         return SecurityContextHolder.getContext() != null && SecurityContextHolder.getContext().getAuthentication() != null
-            && SecurityContextHolder.getContext().getAuthentication().getPrincipal() != null;
+            && SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof WebCertUser;
     }
 
     @Override
     public WebCertUser getUser() {
-        return (WebCertUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof WebCertUser webCertUser) {
+            return webCertUser;
+        }
+        return null;
     }
 
     @Override
@@ -118,7 +112,7 @@ public class WebCertUserServiceImpl implements WebCertUserService {
         }
         if (deleteCount > 0) {
             user.getAnvandarPreference().clear();
-            LOG.info("Successfully deleted " + deleteCount + " user preferences for user " + hsaId);
+            log.info("Successfully deleted " + deleteCount + " user preferences for user " + hsaId);
         }
     }
 
@@ -136,7 +130,7 @@ public class WebCertUserServiceImpl implements WebCertUserService {
     @Override
     public boolean isAuthorizedForUnits(List<String> enhetsHsaIds) {
         WebCertUser user = getUser();
-        return user != null && user.getIdsOfSelectedVardenhet().containsAll(enhetsHsaIds);
+        return user != null && new HashSet<>(user.getIdsOfSelectedVardenhet()).containsAll(enhetsHsaIds);
     }
 
     @Override
@@ -164,20 +158,20 @@ public class WebCertUserServiceImpl implements WebCertUserService {
     @Override
     public void cancelScheduledLogout(HttpSession session) {
         session.setAttribute(TIME_TO_INVALIDATE_ATTRIBUTE_NAME, null);
-        LOG.debug("Canceling removal of session {}", session.getId());
+        log.debug("Canceling removal of session {}", session.getId());
     }
 
     @Override
     public void scheduleSessionRemoval(HttpSession session) {
         final var timeToInvalidate = Instant.now().plusSeconds(logoutTimeout).toEpochMilli();
         session.setAttribute(TIME_TO_INVALIDATE_ATTRIBUTE_NAME, timeToInvalidate);
-        LOG.debug("Scheduled removal of session {} at {} milliseconds", session.getId(), timeToInvalidate);
+        log.debug("Scheduled removal of session {} at {} milliseconds", session.getId(), timeToInvalidate);
     }
 
     @Override
     public void removeSessionNow(HttpSession session) {
         String sessionId = session.getId();
-        LOG.debug("Performing immediate removal of session {}", sessionId);
+        log.debug("Performing immediate removal of session {}", sessionId);
         sessionRepository.deleteById(sessionId);
         session.invalidate();
         session.setMaxInactiveInterval(0);

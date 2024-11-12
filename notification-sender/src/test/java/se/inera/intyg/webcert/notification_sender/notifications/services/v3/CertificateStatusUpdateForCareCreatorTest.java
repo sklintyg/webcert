@@ -33,10 +33,10 @@ import static se.inera.intyg.common.support.Constants.PERSON_ID_OID;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.TextNode;
+import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import javax.xml.bind.JAXBException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;

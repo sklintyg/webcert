@@ -40,11 +40,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -74,7 +72,6 @@ import se.inera.intyg.webcert.persistence.fmb.repository.DiagnosInformationRepos
 
 @Service
 @Transactional
-@Configuration
 @EnableScheduling
 public class FmbServiceImpl implements FmbService {
 
@@ -155,7 +152,7 @@ public class FmbServiceImpl implements FmbService {
                     .referensList(convertToReferensList(attributes))
                     .senastUppdaterad(senasteAndring.orElse(null))
                     .build();
-            }).collect(Collectors.toList());
+            }).toList();
     }
 
     private void validateResponse(final FmdxInformation diagnosinformation, final Typfall typfall) {
@@ -181,10 +178,10 @@ public class FmbServiceImpl implements FmbService {
             .map(kod -> anIcfKod()
                 .icfKodTyp(kodTyp)
                 .kod(kod.getOptionalKod().isPresent()
-                    ? kod.getOptionalKod().get().replaceAll("\\.", "").toUpperCase(Locale.ENGLISH)
+                    ? kod.getOptionalKod().get().replace(".", "").toUpperCase(Locale.ENGLISH)
                     : null)
                 .build())
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private List<TypFall> convertToTypFallList(final Typfall typfall, final Kod kod) {
@@ -197,7 +194,7 @@ public class FmbServiceImpl implements FmbService {
                 .maximalSjukrivningstidSourceValue(attributes.getRekommenderadsjukskrivning().getMaximalsjukskrivningstid())
                 .maximalSjukrivningstidSourceUnit(attributes.getRekommenderadsjukskrivning().getMaximalsjukskrivningsenhet())
                 .build())
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private Integer convertToAntalDagar(final Rekommenderadsjukskrivning rekommenderadsjukskrivning) {
@@ -205,8 +202,8 @@ public class FmbServiceImpl implements FmbService {
             return null;
         }
 
-        final int antal = Integer.valueOf(rekommenderadsjukskrivning.getMaximalsjukskrivningstid());
-        final TidEnhet enhet = TidEnhet.of(rekommenderadsjukskrivning.getMaximalsjukskrivningsenhet()).get();
+        final int antal = Integer.parseInt(rekommenderadsjukskrivning.getMaximalsjukskrivningstid());
+        final TidEnhet enhet = TidEnhet.of(rekommenderadsjukskrivning.getMaximalsjukskrivningsenhet()).orElseThrow();
         return antal * enhet.getInDays();
     }
 
@@ -227,12 +224,12 @@ public class FmbServiceImpl implements FmbService {
         return attributes.getDiagnoskod().stream()
             .map(kod -> anIcd10Kod()
                 .kod(kod.getOptionalKod().isPresent()
-                    ? kod.getOptionalKod().get().replaceAll("\\.", "").toUpperCase(Locale.ENGLISH)
+                    ? kod.getOptionalKod().get().replace(".", "").toUpperCase(Locale.ENGLISH)
                     : null)
                 .beskrivning(kod.getBeskrivning())
                 .typFallList(convertToTypFallList(typfallList, kod))
                 .build())
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private List<Referens> convertToReferensList(final Attributes attributes) {
@@ -241,6 +238,6 @@ public class FmbServiceImpl implements FmbService {
                 .text(referens.getText())
                 .uri(referens.getUri())
                 .build())
-            .collect(Collectors.toList());
+            .toList();
     }
 }
