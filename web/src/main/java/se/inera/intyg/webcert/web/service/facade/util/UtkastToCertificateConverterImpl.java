@@ -34,7 +34,6 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.facade.TypeAheadProvider;
 import se.inera.intyg.infra.integration.hsatk.services.HsatkOrganizationService;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.facade.modal.confirmation.ConfirmationModalProviderResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -70,7 +69,7 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
         WebCertUserService webCertUserService,
         HsatkOrganizationService hsatkOrganizationService,
         TypeAheadProvider typeAheadProvider,
-        CertificateRecipientConverter certificateRecipientConverter, CertificateAccessServiceHelper certificateAccessServiceHelper,
+        CertificateRecipientConverter certificateRecipientConverter,
         DraftAccessServiceHelper draftAccessServiceHelper) {
         this.moduleRegistry = moduleRegistry;
         this.intygTextsService = intygTextsService;
