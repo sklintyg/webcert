@@ -20,6 +20,7 @@ compileJava.dependsOn copyResources
 
 dependencies {
     implementation project(':webcert-common')
+    implementation project(':webcert-logging')
     implementation project(':webcert-persistence')
 
     implementation "com.fasterxml.jackson.core:jackson-databind"
@@ -51,6 +52,9 @@ dependencies {
     runtimeOnly "org.apache.camel:camel-cxf-spring-transport:${camelVersion}"
     runtimeOnly "org.apache.camel:camel-jackson:${camelVersion}"
     runtimeOnly "org.apache.camel:camel-spring:${camelVersion}"
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
 
     compileOnly "org.apache.geronimo.specs:geronimo-jms_1.1_spec:${geronimoJmsVersion}"
     testCompileOnly "org.apache.geronimo.specs:geronimo-jms_1.1_spec:${geronimoJmsVersion}"

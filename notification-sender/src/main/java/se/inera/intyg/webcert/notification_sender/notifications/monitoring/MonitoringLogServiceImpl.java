@@ -20,45 +20,85 @@ package se.inera.intyg.webcert.notification_sender.notifications.monitoring;
 
 
 import java.time.LocalDateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.monitoring.logging.LogMarkers;
+import se.inera.intyg.webcert.logging.MdcCloseableMap;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
 
-/**
- * Interface used when logging to monitoring file. Used to ensure that the log entries are uniform and easy to parse.
- */
 @Service("notificationMonitoringLogService")
+@Slf4j
 public class MonitoringLogServiceImpl implements MonitoringLogService {
-
-    private static final Object SPACE = " ";
-    private static final Logger LOG = LoggerFactory.getLogger(MonitoringLogService.class);
 
     @Override
     public void logStatusUpdateForCareStatusSuccess(long eventId, String eventType, String certificateId, String correlationId,
         String unitId, int sendAttempt) {
-        logEvent(MonitoringEvent.STATUS_UPDATE_RESULT_SUCCESS, sendAttempt, certificateId, correlationId, unitId, eventId,
-            eventType);
+        try (MdcCloseableMap ignored = MdcCloseableMap.builder()
+            .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.STATUS_UPDATE_RESULT_SUCCESS))
+            .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_INFO)
+            .put(MdcLogConstants.EVENT_STATUS_UPDATE_EVENT_ID, Long.toString(eventId))
+            .put(MdcLogConstants.EVENT_STATUS_UPDATE_TYPE, eventType)
+            .put(MdcLogConstants.EVENT_CERTIFICATE_ID, certificateId)
+            .put(MdcLogConstants.EVENT_STATUS_UPDATE_CORRELATION_ID, correlationId)
+            .put(MdcLogConstants.EVENT_CERTIFICATE_UNIT_ID, unitId)
+            .put(MdcLogConstants.EVENT_STATUS_UPDATE_SEND_ATTEMPT, Integer.toString(sendAttempt))
+            .build()
+        ) {
+            logEvent(MonitoringEvent.STATUS_UPDATE_RESULT_SUCCESS, sendAttempt, certificateId, correlationId, unitId, eventId,
+                eventType);
+        }
     }
 
     @Override //CHECKSTYLE:OFF ParameterNumber
     public void logStatusUpdateForCareStatusResend(long eventId, String eventType, String unitId, String certificateId,
         String correlationId, String errorCode, String message, int sendAttempt, LocalDateTime nextAttempt) {
-        logEvent(MonitoringEvent.STATUS_UPDATE_RESULT_RESEND, sendAttempt, certificateId, correlationId, unitId, eventId, eventType,
-            errorCode, message, nextAttempt);
+        try (MdcCloseableMap ignored = MdcCloseableMap.builder()
+            .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.STATUS_UPDATE_RESULT_RESEND))
+            .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_INFO)
+            .put(MdcLogConstants.EVENT_STATUS_UPDATE_EVENT_ID, Long.toString(eventId))
+            .put(MdcLogConstants.EVENT_STATUS_UPDATE_TYPE, eventType)
+            .put(MdcLogConstants.EVENT_CERTIFICATE_UNIT_ID, unitId)
+            .put(MdcLogConstants.EVENT_CERTIFICATE_ID, certificateId)
+            .put(MdcLogConstants.EVENT_STATUS_UPDATE_CORRELATION_ID, correlationId)
+            .put(MdcLogConstants.ERROR_CODE, errorCode)
+            .put(MdcLogConstants.ERROR_MESSAGE, message)
+            .put(MdcLogConstants.EVENT_STATUS_UPDATE_SEND_ATTEMPT, Integer.toString(sendAttempt))
+            .put(MdcLogConstants.EVENT_STATUS_UPDATE_TIME, nextAttempt.toString())
+            .build()
+        ) {
+            logEvent(MonitoringEvent.STATUS_UPDATE_RESULT_RESEND, sendAttempt, certificateId, correlationId, unitId, eventId, eventType,
+                errorCode, message, nextAttempt);
+        }
     } //CHECKSTYLE:ON ParameterNumber
 
     @Override //CHECKSTYLE:OFF ParameterNumber
     public void logStatusUpdateForCareStatusFailure(long eventId, String eventType, String unitId, String certificateId,
-        String correlationId,
-        String errorCode, String message, int sendAttempt) {
-        logEvent(MonitoringEvent.STATUS_UPDATE_RESULT_FAILURE, sendAttempt, certificateId, correlationId, unitId, eventId, eventType,
-            errorCode, message);
+        String correlationId, String errorCode, String message, int sendAttempt) {
+        try (MdcCloseableMap ignored = MdcCloseableMap.builder()
+            .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.STATUS_UPDATE_RESULT_RESEND))
+            .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_INFO)
+            .put(MdcLogConstants.EVENT_STATUS_UPDATE_EVENT_ID, Long.toString(eventId))
+            .put(MdcLogConstants.EVENT_STATUS_UPDATE_TYPE, eventType)
+            .put(MdcLogConstants.EVENT_CERTIFICATE_UNIT_ID, unitId)
+            .put(MdcLogConstants.EVENT_CERTIFICATE_ID, certificateId)
+            .put(MdcLogConstants.EVENT_STATUS_UPDATE_CORRELATION_ID, correlationId)
+            .put(MdcLogConstants.ERROR_CODE, errorCode)
+            .put(MdcLogConstants.ERROR_MESSAGE, message)
+            .put(MdcLogConstants.EVENT_STATUS_UPDATE_SEND_ATTEMPT, Integer.toString(sendAttempt))
+            .build()
+        ) {
+            logEvent(MonitoringEvent.STATUS_UPDATE_RESULT_FAILURE, sendAttempt, certificateId, correlationId, unitId, eventId, eventType,
+                errorCode, message);
+        }
     } //CHECKSTYLE:ON ParameterNumber
 
     private void logEvent(MonitoringEvent logEvent, Object... logMsgArgs) {
+        final var logMessage = "%s %s".formatted(logEvent.name(), logEvent.getMessage());
+        log.info(LogMarkers.MONITORING, logMessage, logMsgArgs);
+    }
 
-        LOG.info(LogMarkers.MONITORING, logEvent.name() + SPACE + logEvent.getMessage(), logMsgArgs);
+    private String toEventType(MonitoringEvent monitoringEvent) {
+        return monitoringEvent.name().toLowerCase().replace("_", "-");
     }
 
 
