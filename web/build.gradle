@@ -28,7 +28,7 @@ gretty {
 
     jvmArgs = ["-Dcatalina.base=${buildDirectory}/catalina.base",
                "-Dspring.profiles.active=dev,caching-enabled,wc-security-test,ia-stub,certificate-service-active,hsa-integration-intyg-proxy-service,servicenow-integration",
-               "-Dlogback.file=${applicationDir}/config/logback-dev.xml",
+               "-Dlogback.file=${applicationDir}/config/logback-spring.xml",
                "-Djava.awt.headless=true",
                "-Dfile.encoding=UTF-8",
                "-Dapplication.dir=${applicationDir}",
@@ -92,6 +92,7 @@ dependencies {
     implementation project(':tak-integration')
     implementation project(':webcert-common')
     implementation project(':webcert-persistence')
+    implementation project(':webcert-logging')
 
     implementation "com.fasterxml.jackson.core:jackson-core"
     implementation "com.fasterxml.jackson.core:jackson-annotations"
@@ -156,6 +157,7 @@ dependencies {
     implementation "se.riv.itintegration.monitoring:itintegration-monitoring-schemas:${rivtaItintegrationMonitoringSchemasVersion}"
     implementation "se.riv.strategicresourcemanagement.persons.person:strategicresourcemanagement-persons-person-schemas:${rivtaGetPersonsPersonSchemasVersion}"
 
+    implementation "co.elastic.logging:logback-ecs-encoder:${logbackEcsEncoderVersion}"
     implementation "codes.rafael.jaxb2_commons:jaxb2-basics:${jaxb2Version}"
     implementation "com.google.guava:guava:${guavaVersion}"
     implementation "commons-io:commons-io:${commonsIoVersion}"

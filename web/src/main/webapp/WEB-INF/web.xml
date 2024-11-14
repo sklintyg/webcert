@@ -227,11 +227,11 @@
     </filter-mapping>
 
     <filter>
-        <filter-name>LogMDCFilter</filter-name>
-        <filter-class>se.inera.intyg.infra.monitoring.logging.LogMDCServletFilter</filter-class>
+        <filter-name>MdcServletFilter</filter-name>
+        <filter-class>se.inera.intyg.webcert.logging.MdcServletFilter</filter-class>
     </filter>
     <filter-mapping>
-        <filter-name>LogMDCFilter</filter-name>
+        <filter-name>MdcServletFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 

@@ -50,17 +50,11 @@
   <import resource="classpath:notification-sender-config.xml" />
   <import resource="classpath:/hsa-integration-intyg-proxy-service-config.xml"/>
 
-  <context:component-scan base-package="se.inera.intyg.webcert.web">
-  </context:component-scan>
+  <context:component-scan base-package="se.inera.intyg.webcert.web" />
+  <context:component-scan base-package="se.inera.intyg.webcert.logging" />
 
-
-  <!-- Load dynamic link classes -->
   <context:component-scan base-package="se.inera.intyg.infra.dynamiclink" />
-
-  <!-- Load postnummerservice classe-->
   <context:component-scan base-package="se.inera.intyg.infra.integration.postnummer" />
-
-  <!-- Load sjukfallEngine-->
   <context:component-scan base-package="se.inera.intyg.infra.sjukfall.services" />
 
   <beans>
