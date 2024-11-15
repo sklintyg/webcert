@@ -39,6 +39,8 @@ import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -53,7 +55,7 @@ import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.VardgivareStats;
  * @author marced
  */
 @Path("/stat")
-@Api(value = "stat", description = "REST API - moduleapi - stat", produces = MediaType.APPLICATION_JSON)
+@Api(value = "stat", produces = MediaType.APPLICATION_JSON)
 public class StatModuleApiController extends AbstractApiController {
 
     private static final String SEPARATOR = " - ";
@@ -76,6 +78,7 @@ public class StatModuleApiController extends AbstractApiController {
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "stat-module-get-statistics", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getStatistics() {
 
         StatsResponse statsResponse = new StatsResponse();

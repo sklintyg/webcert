@@ -29,6 +29,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.diagnos.DiagnosService;
 import se.inera.intyg.webcert.web.service.diagnos.dto.DiagnosResponse;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
@@ -40,7 +42,7 @@ import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.DiagnosParameter;
  * @author npet
  */
 @Path("/diagnos")
-@Api(value = "diagnos", description = "REST API - moduleapi - diagnos", produces = MediaType.APPLICATION_JSON)
+@Api(value = "diagnos", produces = MediaType.APPLICATION_JSON)
 public class DiagnosModuleApiController extends AbstractApiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(DiagnosModuleApiController.class);
@@ -58,6 +60,7 @@ public class DiagnosModuleApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "diagnos-module-get-diagnosis-by-code", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getDiagnosisByCode(DiagnosParameter parameter) {
 
         LOG.debug("Getting diagnosises using code: {}", parameter.getCodeFragment());
@@ -79,6 +82,7 @@ public class DiagnosModuleApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "diagnos-module-search-diagnosis-by-code", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response searchDiagnosisByCode(DiagnosParameter parameter) {
 
         LOG.debug("Searching for diagnosises using code fragment: {}", parameter.getCodeFragment());
@@ -98,6 +102,7 @@ public class DiagnosModuleApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "diagnos-module-search-diagnosis-by-description", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response searchDiagnosisByDescription(DiagnosParameter parameter) {
 
         LOG.debug("Searching for diagnosises using description fragment: {}", parameter.getDescriptionSearchString());
