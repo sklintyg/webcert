@@ -104,7 +104,7 @@ public class SubscriptionServiceTest {
     @Test
     public void shouldNotCallRestServiceWhenNoOrganizationsForSithsUser() {
         final var sithsUser = createWebCertSithsUser(1, 1, 1);
-        sithsUser.getVardgivare().get(0).getVardenheter().get(0).setVardgivareOrgnr(null);
+        sithsUser.getVardgivare().getFirst().getVardenheter().getFirst().setVardgivareOrgnr(null);
 
         subscriptionService.checkSubscriptions(sithsUser);
 
@@ -153,7 +153,7 @@ public class SubscriptionServiceTest {
 
         assertAll(
             () -> assertTrue(restServiceParamCaptor.getValue().containsKey(expectedOrganizationNumber)),
-            () -> assertEquals("CARE_PROVIDER_HSA_ID_1", restServiceParamCaptor.getValue().get(expectedOrganizationNumber).get(0))
+            () -> assertEquals("CARE_PROVIDER_HSA_ID_1", restServiceParamCaptor.getValue().get(expectedOrganizationNumber).getFirst())
         );
     }
 
@@ -229,8 +229,8 @@ public class SubscriptionServiceTest {
     @Test
     public void shouldHandleMultipleCareProvidersWithSameOrgNumberForSithsUser() {
         final var sithsUser = createWebCertSithsUser(4, 2, 0);
-        sithsUser.getVardgivare().get(1).getVardenheter().get(0).setVardgivareOrgnr("CARE_PROVIDER_ORGANIZATION_NO_1");
-        sithsUser.getVardgivare().get(2).getVardenheter().get(0).setVardgivareOrgnr("CARE_PROVIDER_ORGANIZATION_NO_1");
+        sithsUser.getVardgivare().get(1).getVardenheter().getFirst().setVardgivareOrgnr("CARE_PROVIDER_ORGANIZATION_NO_1");
+        sithsUser.getVardgivare().get(2).getVardenheter().getFirst().setVardgivareOrgnr("CARE_PROVIDER_ORGANIZATION_NO_1");
         setRestServiceMockToReturn(3);
 
         subscriptionService.checkSubscriptions(sithsUser);
@@ -266,7 +266,7 @@ public class SubscriptionServiceTest {
             any(AuthenticationMethodEnum.class));
         assertAll(
             () -> assertTrue(restServiceParamCaptor.getValue().containsKey(expectedOrganizationNumber)),
-            () -> assertEquals("CARE_PROVIDER_HSA_ID_1", restServiceParamCaptor.getValue().get(expectedOrganizationNumber).get(0))
+            () -> assertEquals("CARE_PROVIDER_HSA_ID_1", restServiceParamCaptor.getValue().get(expectedOrganizationNumber).getFirst())
         );
     }
 
@@ -484,7 +484,7 @@ public class SubscriptionServiceTest {
         webCertUser.setRoles(Map.of(AuthoritiesConstants.ROLE_PRIVATLAKARE, new Role()));
 
         final var careProvider = webCertUser.getVardgivare().get(0);
-        careProvider.getVardenheter().get(0).setId(careProvider.getId());
+        careProvider.getVardenheter().getFirst().setId(careProvider.getId());
         return webCertUser;
     }
 

@@ -30,6 +30,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -84,7 +85,7 @@ import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
  * @author npet
  */
 @Path("/utkast")
-@Api(value = "utkast", description = "REST API för utkasthantering", produces = MediaType.APPLICATION_JSON)
+@Api(value = "utkast", produces = MediaType.APPLICATION_JSON)
 public class UtkastApiController extends AbstractApiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(UtkastApiController.class);
@@ -142,7 +143,7 @@ public class UtkastApiController extends AbstractApiController {
         }
 
         if (!request.isValid()) {
-            LOG.error("Request is invalid: " + request.toString());
+            LOG.error("Request is invalid: {}", request);
             return Response.status(Status.BAD_REQUEST).build();
         }
         LOG.debug("Attempting to create draft of type '{}'", intygsTyp);
@@ -266,7 +267,7 @@ public class UtkastApiController extends AbstractApiController {
             if (filterParameters.getStatus() == null) {
                 utkastFilter.setStatusList(ALL_DRAFTS);
             } else {
-                utkastFilter.setStatusList(Arrays.asList(filterParameters.getStatus()));
+                utkastFilter.setStatusList(Collections.singletonList(filterParameters.getStatus()));
             }
 
             utkastFilter.setSavedFrom(filterParameters.getSavedFrom());
@@ -277,7 +278,7 @@ public class UtkastApiController extends AbstractApiController {
             utkastFilter.setPageSize(filterParameters.getPageSize() == null ? DEFAULT_PAGE_SIZE : filterParameters.getPageSize());
             utkastFilter.setStartFrom(filterParameters.getStartFrom() == null ? 0 : filterParameters.getStartFrom());
             utkastFilter.setOrderBy(filterParameters.getOrderBy() == null ? "" : filterParameters.getOrderBy());
-            utkastFilter.setOrderAscending(filterParameters.getOrderAscending() == null ? false : filterParameters.getOrderAscending());
+            utkastFilter.setOrderAscending(filterParameters.getOrderAscending() != null && filterParameters.getOrderAscending());
         }
 
         return utkastFilter;
@@ -298,7 +299,7 @@ public class UtkastApiController extends AbstractApiController {
         // authorized
         Map<Personnummer, PatientDetailsResolverResponse> statusMap =
             patientDetailsResolver.getPersonStatusesForList(listIntygEntries.stream()
-                .map(lie -> lie.getPatientId())
+                .map(ListIntygEntry::getPatientId)
                 .collect(Collectors.toList()));
 
         final WebCertUser user = getWebCertUserService().getUser();
@@ -345,9 +346,8 @@ public class UtkastApiController extends AbstractApiController {
         listIntygEntries.sort(intygComparator);
 
         // PDL Logging
-        listIntygEntries.stream().map(ListIntygEntry::getPatientId).distinct().forEach(patient -> {
-            logService.logListIntyg(user, patient.getPersonnummerWithDash());
-        });
+        listIntygEntries.stream().map(ListIntygEntry::getPatientId).distinct()
+            .forEach(patient -> logService.logListIntyg(user, patient.getPersonnummerWithDash()));
 
         QueryIntygResponse response = new QueryIntygResponse(listIntygEntries);
         response.setTotalCount(totalCountOfFilteredIntyg);
@@ -359,28 +359,14 @@ public class UtkastApiController extends AbstractApiController {
     }
 
     private Comparator<ListIntygEntry> getIntygComparator(String orderBy, Boolean ascending) {
-        Comparator<ListIntygEntry> comparator;
-        switch (orderBy) {
-            case "intygsTyp":
-                comparator = Comparator.comparing(ListIntygEntry::getIntygTypeName);
-                break;
-            case "status":
-                comparator = Comparator.comparing(ListIntygEntry::getStatusName);
-                break;
-            case "patientPersonnummer":
-                comparator = Comparator.comparing(ie -> ie.getPatientId().getPersonnummer());
-                break;
-            case "senastSparadAv":
-                comparator = Comparator.comparing(ListIntygEntry::getUpdatedSignedBy);
-                break;
-            case "vidarebefordrad":
-                comparator = (ie1, ie2) -> Boolean.compare(ie2.isVidarebefordrad(), ie1.isVidarebefordrad());
-                break;
-            case "senasteSparadDatum":
-            default:
-                comparator = Comparator.comparing(ListIntygEntry::getLastUpdatedSigned);
-                break;
-        }
+        Comparator<ListIntygEntry> comparator = switch (orderBy) {
+            case "intygsTyp" -> Comparator.comparing(ListIntygEntry::getIntygTypeName);
+            case "status" -> Comparator.comparing(ListIntygEntry::getStatusName);
+            case "patientPersonnummer" -> Comparator.comparing(ie -> ie.getPatientId().getPersonnummer());
+            case "senastSparadAv" -> Comparator.comparing(ListIntygEntry::getUpdatedSignedBy);
+            case "vidarebefordrad" -> (ie1, ie2) -> Boolean.compare(ie2.isVidarebefordrad(), ie1.isVidarebefordrad());
+            default -> Comparator.comparing(ListIntygEntry::getLastUpdatedSigned);
+        };
 
         if (!ascending) {
             comparator = comparator.reversed();

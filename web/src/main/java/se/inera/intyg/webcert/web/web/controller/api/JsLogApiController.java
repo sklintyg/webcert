@@ -59,7 +59,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest;
  * Controller that logs messages from JavaScript to the normal log.
  */
 @Path("/jslog")
-@Api(value = "jslog", description = "REST API för loggning från frontend till backend-log", produces = MediaType.APPLICATION_JSON)
+@Api(value = "jslog", produces = MediaType.APPLICATION_JSON)
 public class JsLogApiController extends AbstractApiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(JsLogApiController.class);

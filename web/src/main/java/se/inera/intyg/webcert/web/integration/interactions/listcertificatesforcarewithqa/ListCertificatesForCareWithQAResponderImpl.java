@@ -109,7 +109,7 @@ public class ListCertificatesForCareWithQAResponderImpl implements ListCertifica
             HandelseList handelseList = new HandelseList();
             handelseList.getHandelse().addAll(intygHolder.getNotifications().stream()
                 .map(HandelseFactory::toHandelse)
-                .collect(Collectors.toList()));
+                .toList());
             item.setHandelser(handelseList);
             item.setSkickadeFragor(toArenden(intygHolder.getSentQuestions()));
             item.setMottagnaFragor(toArenden(intygHolder.getReceivedQuestions()));

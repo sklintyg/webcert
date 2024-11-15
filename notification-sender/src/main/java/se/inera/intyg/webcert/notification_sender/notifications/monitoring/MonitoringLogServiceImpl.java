@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.notification_sender.notifications.monitoring;
 
 
 import java.time.LocalDateTime;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.logging.LogMarkers;
@@ -102,6 +103,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
 
+    @Getter
     private enum MonitoringEvent {
         STATUS_UPDATE_RESULT_SUCCESS(
             "Status update for care success on delivery attempt '{}' for event [certificateId: '{}', correlationId: '{}', "
@@ -121,8 +123,5 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
             this.message = msg;
         }
 
-        public String getMessage() {
-            return message;
-        }
     }
 }

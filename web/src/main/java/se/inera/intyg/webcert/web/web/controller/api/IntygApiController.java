@@ -81,7 +81,7 @@ import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelper;
  * @author nikpet
  */
 @Path("/intyg")
-@Api(value = "intyg", description = "REST API för intygshantering", produces = MediaType.APPLICATION_JSON)
+@Api(value = "intyg", produces = MediaType.APPLICATION_JSON)
 public class IntygApiController extends AbstractApiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygApiController.class);
@@ -305,7 +305,7 @@ public class IntygApiController extends AbstractApiController {
             return Response.status(Status.BAD_REQUEST).build();
         }
 
-        if (eventList.size() > 0) {
+        if (!eventList.isEmpty()) {
             LOG.debug("Got {} events for certificate with id {}", eventList.size(), certificateId);
         } else if (eventList.isEmpty()) {
             LOG.debug("No events for certificate with id {}", certificateId);

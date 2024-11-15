@@ -207,14 +207,14 @@ public class IntygIntegrationController extends BaseIntegrationController {
     /**
      * Fetches an certificate from IT or Webcert and then performs a redirect to the view that displays
      * the certificate.
-     *
+     * <p>
      * This entry point is only used when redirecting a POST after authentication from the
      * {@link CustomAuthenticationSuccessHandler}
      * where the custom handler has applied the deep-integration parameters on the session.
-     *
+     * <p>
      * This is a work-around for the issue where Springs default SavedRequestAuthenticationSuccessHandler only performs
      * URL-based redirect, e.g. our POST becomes a GET and all form-params are discarded.
-     *
+     * <p>
      * Note that this method requires the IntegrationParameters to be present or an exception will be thrown.
      *
      * @param intygId The id of the certificate to view.
@@ -271,7 +271,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
         try {
             if (userHasNotSelectedVardenhet(enhetId)) {
                 if (userHasExactlyOneSelectableVardenhet(user)) {
-                    changeValdVardenhet(user.getVardgivare().get(0).getVardenheter().get(0).getId(), user);
+                    changeValdVardenhet(user.getVardgivare().getFirst().getVardenheter().getFirst().getId(), user);
                     final var prepareRedirectInfo = prepareRedirectToIntyg(intygId, user);
                     LOG.debug("Redirecting to view intyg {} of type {}", intygId, prepareRedirectInfo.getIntygTyp());
                     return buildViewCertificateResponse(uriInfo, prepareRedirectInfo);
