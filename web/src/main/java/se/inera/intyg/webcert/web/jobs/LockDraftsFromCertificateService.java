@@ -21,6 +21,8 @@ package se.inera.intyg.webcert.web.jobs;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
@@ -35,6 +37,8 @@ public class LockDraftsFromCertificateService {
     private final CertificateServiceProfile certificateServiceProfile;
     private final MonitoringLogService monitoringService;
 
+    @PerformanceLogging(eventAction = "job-lock-drafts-from-certificate-service", eventType = MdcLogConstants.EVENT_TYPE_CHANGE,
+        eventCategory = MdcLogConstants.EVENT_CATEGORY_PROCESS)
     public int lock(int lockedAfterDay) {
         if (!certificateServiceProfile.active()) {
             return 0;

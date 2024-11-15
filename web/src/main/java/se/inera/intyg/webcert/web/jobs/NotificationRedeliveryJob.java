@@ -25,6 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.notification.NotificationRedeliveryJobService;
 
 @Component
@@ -44,6 +46,8 @@ public class NotificationRedeliveryJob {
 
     @Scheduled(cron = "${job.notification.redelivery.cron:-}")
     @SchedulerLock(name = JOB_NAME, lockAtLeastFor = LOCK_AT_LEAST, lockAtMostFor = LOCK_AT_MOST)
+    @PerformanceLogging(eventAction = "job-lock-drafts-from-certificate-service", eventType = MdcLogConstants.EVENT_TYPE_CHANGE,
+        eventCategory = MdcLogConstants.EVENT_CATEGORY_PROCESS)
     public void run() {
         LOG.debug("Running notification redelivery job...");
 
