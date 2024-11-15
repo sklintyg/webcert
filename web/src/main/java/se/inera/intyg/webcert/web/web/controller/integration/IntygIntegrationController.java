@@ -51,6 +51,8 @@ import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.auth.CustomAuthenticationSuccessHandler;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
@@ -128,6 +130,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
     @Path("{certId}")
     @PrometheusTimeMethod
     @Deprecated(since = "2019")
+    @PerformanceLogging(eventAction = "intyg-integration-get-redirect-to-certificate", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getRedirectToIntyg(@Context UriInfo uriInfo,
         @Context HttpServletRequest request,
         @PathParam(PARAM_CERT_ID) String intygId,
@@ -164,6 +167,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
     @Path("/{certId}")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "intyg-integration-post-redirect-to-certificate", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response postRedirectToIntyg(@Context UriInfo uriInfo,
         @Context HttpServletRequest request,
         @PathParam(PARAM_CERT_ID) String intygId,
@@ -218,6 +222,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
     @GET
     @Path("{certId}/saved")
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "intyg-integration-get-redirect-to-certificate-saved", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getRedirectToIntyg(@Context HttpServletRequest request,
         @Context UriInfo uriInfo,
         @PathParam(PARAM_CERT_ID) String intygId,
@@ -243,6 +248,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
     @GET
     @Path("/{certId}/resume")
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "intyg-integration-resume-redirect-to-certificate", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response resumeRedirectToIntyg(
         @Context UriInfo uriInfo,
         @Context HttpServletRequest request,

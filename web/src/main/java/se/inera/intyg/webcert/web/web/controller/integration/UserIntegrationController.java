@@ -29,6 +29,8 @@ import jakarta.ws.rs.core.Response;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 
 @Path("/anvandare")
 @Api(value = "intyg (Djupintegration)", description = "REST API för Djupintegration", produces = MediaType.APPLICATION_JSON)
@@ -47,6 +49,7 @@ public class UserIntegrationController extends BaseIntegrationController {
     @GET
     @Path("/logout/now")
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "user-integration-logout-user-now", eventType = MdcLogConstants.EVENT_TYPE_USER)
     public Response logoutUserNow(@Context HttpServletRequest request) {
         super.validateAuthorities();
         HttpSession session = request.getSession();
