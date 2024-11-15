@@ -33,6 +33,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.maillink.MailLinkService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -61,12 +63,13 @@ public class PageController {
 
     @RequestMapping(value = "/maillink/intyg/{typ}/{intygId}", method = RequestMethod.GET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "page-redirect-to-certificate", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public ResponseEntity<Object> redirectToIntyg(@PathVariable("intygId") String intygId, @PathVariable("typ") String typ) {
         // WC 5.0 new: change vårdenhet
         String enhetHsaId = intygService.getIssuingVardenhetHsaId(intygId, typ);
         if (enhetHsaId == null) {
-            LOG.error("Could not redirect user to utkast using /maillink for intygsId '" + intygId
-                + "'. No enhetsId found for utkast. Does the utkast exist?");
+            LOG.error("Could not redirect user to utkast using /maillink for intygsId '{}. No enhetsId found for utkast. "
+                + "Does the utkast exist?", intygId);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
