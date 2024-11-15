@@ -19,26 +19,15 @@
 
 package se.inera.intyg.webcert.logging;
 
-import com.google.common.base.Strings;
-import com.google.common.hash.HashFunction;
-import com.google.common.hash.Hashing;
-import com.google.common.io.BaseEncoding;
-import java.nio.charset.StandardCharsets;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
-public class HashUtility {
+public class LogMarkers {
 
-    public static final String EMPTY = "EMPTY";
-    private static final HashFunction hf = Hashing.sha256();
+    public static final Marker MONITORING = MarkerFactory.getMarker("Monitoring");
+    public static final Marker PERFORMANCE = MarkerFactory.getMarker("Performance");
+    public static final Marker VALIDATION = MarkerFactory.getMarker("Validation");
 
-    private HashUtility() {
-    }
-
-    public static String hash(final String payload) {
-        if (Strings.isNullOrEmpty(payload)) {
-            return EMPTY;
-        }
-
-        final byte[] digest = hf.hashString(payload, StandardCharsets.UTF_8).asBytes();
-        return BaseEncoding.base16().lowerCase().encode(digest);
+    private LogMarkers() {
     }
 }

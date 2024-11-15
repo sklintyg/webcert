@@ -29,8 +29,11 @@ import java.lang.annotation.Target;
 public @interface PerformanceLogging {
 
     String eventType();
+
     String eventAction();
+
     String eventCategory() default MdcLogConstants.EVENT_CATEGORY_API;
+
     boolean isActive() default true;
 
 }

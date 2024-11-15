@@ -31,6 +31,11 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Slf4j
 public class PerformanceLoggingAdvice {
+
+    public PerformanceLoggingAdvice() {
+        log.info("CREATED THE LOGGING ADVICE CLASS");
+    }
+
     @Around("@annotation(performanceLogging)")
     public Object logPerformance(ProceedingJoinPoint joinPoint, PerformanceLogging performanceLogging) throws Throwable {
 
@@ -49,23 +54,20 @@ public class PerformanceLoggingAdvice {
                 final var duration = Duration.between(start, end).toMillis();
                 final var className = joinPoint.getSignature().getDeclaringTypeName();
                 final var methodName = joinPoint.getSignature().getName();
-                try (final var mdcLogConstants =
-                    MdcCloseableMap.builder()
-                        .put(MdcLogConstants.EVENT_START, start.toString())
-                        .put(MdcLogConstants.EVENT_END, end.toString())
-                        .put(MdcLogConstants.EVENT_DURATION, Long.toString(duration))
-                        .put(MdcLogConstants.EVENT_ACTION, performanceLogging.eventAction())
-                        .put(MdcLogConstants.EVENT_TYPE, performanceLogging.eventType())
-                        .put(MdcLogConstants.EVENT_CATEGORY, performanceLogging.eventCategory())
-                        .put(MdcLogConstants.EVENT_CLASS, className)
-                        .put(MdcLogConstants.EVENT_METHOD, methodName)
-                        .put(
-                            MdcLogConstants.EVENT_OUTCOME, success ? MdcLogConstants.EVENT_OUTCOME_SUCCESS
-                                : MdcLogConstants.EVENT_OUTCOME_FAILURE
-                        )
-                        .build()
+                try (final var ignored = MdcCloseableMap.builder()
+                    .put(MdcLogConstants.EVENT_START, start.toString())
+                    .put(MdcLogConstants.EVENT_END, end.toString())
+                    .put(MdcLogConstants.EVENT_DURATION, Long.toString(duration))
+                    .put(MdcLogConstants.EVENT_ACTION, performanceLogging.eventAction())
+                    .put(MdcLogConstants.EVENT_TYPE, performanceLogging.eventType())
+                    .put(MdcLogConstants.EVENT_CATEGORY, performanceLogging.eventCategory())
+                    .put(MdcLogConstants.EVENT_CLASS, className)
+                    .put(MdcLogConstants.EVENT_METHOD, methodName)
+                    .put(MdcLogConstants.EVENT_OUTCOME, success ? MdcLogConstants.EVENT_OUTCOME_SUCCESS
+                        : MdcLogConstants.EVENT_OUTCOME_FAILURE)
+                    .build()
                 ) {
-                    log.info("Class: {} Method: {} Duration: {} ms",
+                    log.info(LogMarkers.PERFORMANCE, "Class: {} Method: {} Duration: {} ms",
                         className,
                         methodName,
                         duration

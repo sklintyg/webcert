@@ -36,29 +36,27 @@ public class MdcHelper {
     private static final String SESSION_COOKIE_NAME = "SESSION";
     private static final int LENGTH_LIMIT = 8;
     private static final char[] BASE62CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".toCharArray();
+
     public String sessionId(HttpServletRequest http) {
-        return Optional.ofNullable(
-                http.getHeader(LOG_SESSION_ID_HEADER)
-            )
-            .orElse(
-                Optional.ofNullable(
-                        getSessionIdFromCookie(http)
-                    )
-                    .orElse("-")
-            );
+        return Optional.ofNullable(http.getHeader(LOG_SESSION_ID_HEADER))
+            .orElse(Optional.ofNullable(getSessionIdFromCookie(http)).orElse("-"));
     }
+
     public String traceId(HttpServletRequest http) {
         return Optional.ofNullable(
                 http.getHeader(LOG_TRACE_ID_HEADER)
             )
             .orElse(generateId());
     }
+
     public String traceId() {
         return generateId();
     }
+
     public String spanId() {
         return generateId();
     }
+
     private String generateId() {
         final CharBuffer charBuffer = CharBuffer.allocate(LENGTH_LIMIT);
         IntStream.generate(() -> ThreadLocalRandom.current().nextInt(BASE62CHARS.length))
@@ -66,6 +64,7 @@ public class MdcHelper {
             .forEach(value -> charBuffer.append(BASE62CHARS[value]));
         return charBuffer.rewind().toString();
     }
+
     private String getSessionIdFromCookie(HttpServletRequest http) {
         final var cookies = http.getCookies();
         if (cookies == null) {

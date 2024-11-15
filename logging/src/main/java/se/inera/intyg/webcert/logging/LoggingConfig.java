@@ -19,19 +19,24 @@
 
 package se.inera.intyg.webcert.logging;
 
+import io.prometheus.client.hotspot.DefaultExports;
 import io.prometheus.client.servlet.jakarta.exporter.MetricsServlet;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import se.inera.intyg.infra.monitoring.annotation.EnablePrometheusTiming;
 import se.inera.intyg.infra.monitoring.logging.LogMDCHelper;
 
 @Configuration
-@EnableWebMvc
 @EnablePrometheusTiming
 @EnableAspectJAutoProxy
-public class MonitoringConfig {
+@ComponentScan("se.inera.intyg.webcert.logging")
+public class LoggingConfig {
+
+    public LoggingConfig() {
+        DefaultExports.initialize();
+    }
 
     @Bean
     public MetricsServlet metricsServlet() {

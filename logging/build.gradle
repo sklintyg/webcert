@@ -1,12 +1,13 @@
 dependencies {
     implementation "se.inera.intyg.infra:monitoring:${infraVersion}"
 
+    implementation "io.prometheus:simpleclient_hotspot"
     implementation "io.prometheus:simpleclient_servlet_jakarta"
     implementation "jakarta.servlet:jakarta.servlet-api"
     implementation "org.aspectj:aspectjweaver"
     implementation "org.springframework:spring-webmvc"
     implementation "com.google.guava:guava:${guavaVersion}"
 
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
+    compileOnly "org.projectlombok:lombok"
+    annotationProcessor "org.projectlombok:lombok"
 }

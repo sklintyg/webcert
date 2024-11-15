@@ -56,9 +56,9 @@ public class MdcServletFilter implements Filter {
             MDC.clear();
         }
     }
+
     @Override
     public void init(FilterConfig filterConfig) {
-        SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this,
-            filterConfig.getServletContext());
+        SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this, filterConfig.getServletContext());
     }
 }
