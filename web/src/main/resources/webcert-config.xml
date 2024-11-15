@@ -51,7 +51,6 @@
   <import resource="classpath:/hsa-integration-intyg-proxy-service-config.xml"/>
 
   <context:component-scan base-package="se.inera.intyg.webcert.web" />
-  <context:component-scan base-package="se.inera.intyg.webcert.logging" />
 
   <context:component-scan base-package="se.inera.intyg.infra.dynamiclink" />
   <context:component-scan base-package="se.inera.intyg.infra.integration.postnummer" />
