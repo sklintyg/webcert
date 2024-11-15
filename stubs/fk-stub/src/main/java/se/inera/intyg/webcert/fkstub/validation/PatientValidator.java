@@ -25,14 +25,12 @@ import static se.inera.intyg.common.support.Constants.SAMORDNING_ID_OID;
 import com.google.common.base.Joiner;
 import java.util.List;
 import java.util.regex.Pattern;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import se.inera.ifv.insuranceprocess.healthreporting.v2.PatientType;
-import se.inera.intyg.infra.monitoring.logging.LogMarkers;
+import se.inera.intyg.webcert.logging.LogMarkers;
 
+@Slf4j
 public final class PatientValidator {
-
-    private static final Logger LOG = LoggerFactory.getLogger(PatientValidator.class);
 
     private static final List<String> PATIENT_ID_OIDS = asList(PERSON_ID_OID, SAMORDNING_ID_OID);
 
@@ -64,8 +62,8 @@ public final class PatientValidator {
         String personNumber = patient.getPersonId().getExtension();
         if (Pattern.matches(PERSON_NUMBER_WITHOUT_DASH_REGEX, personNumber)) {
             patient.getPersonId().setExtension(formatWithDash(personNumber));
-            LOG.warn(LogMarkers.VALIDATION, "Validation warning for intyg " + certificateId + ": Person-id " + personNumber
-                + " is lacking a separating dash - corrected.");
+            log.warn(LogMarkers.VALIDATION, "Validation warning for intyg {}: Person-id {} is lacking a separating dash - corrected.",
+                certificateId, personNumber);
         }
         // Check patient o.i.d.
         if (patient.getPersonId().getRoot() == null || !PATIENT_ID_OIDS.contains(patient.getPersonId().getRoot())) {

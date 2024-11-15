@@ -22,7 +22,7 @@ package se.inera.intyg.webcert.notification_sender.notifications.monitoring;
 import java.time.LocalDateTime;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.infra.monitoring.logging.LogMarkers;
+import se.inera.intyg.webcert.logging.LogMarkers;
 import se.inera.intyg.webcert.logging.MdcCloseableMap;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 
