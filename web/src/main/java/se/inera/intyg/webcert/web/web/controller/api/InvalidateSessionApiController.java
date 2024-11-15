@@ -27,6 +27,8 @@ import jakarta.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.launchid.InvalidateSessionService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.InvalidateRequest;
 
@@ -45,6 +47,7 @@ public class InvalidateSessionApiController {
     @POST
     @Path(INVALIDATE_ENDPOINT)
     @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PerformanceLogging(eventAction = "invalidate-session-invalidate", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public Response invalidateSession(InvalidateRequest invalidateRequest) {
         if (invalidateRequest.formatIsWrong()) {
             LOG.info(String.format("launchId: %s OR userHsaId: %s - is wrong format. request will not be handled any further",

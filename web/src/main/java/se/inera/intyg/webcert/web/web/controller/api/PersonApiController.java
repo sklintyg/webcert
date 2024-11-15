@@ -33,6 +33,8 @@ import se.inera.intyg.infra.integration.pu.services.PUService;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.PersonuppgifterResponse;
@@ -53,6 +55,7 @@ public class PersonApiController extends AbstractApiController {
     @Path("/{personnummer}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "person-get-person-data", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getPersonuppgifter(@PathParam("personnummer") String personnummerIn) {
 
         try {

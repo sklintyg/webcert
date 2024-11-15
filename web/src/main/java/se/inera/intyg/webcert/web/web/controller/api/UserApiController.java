@@ -44,6 +44,8 @@ import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Feature;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.persistence.privatlakaravtal.model.Avtal;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 import se.inera.intyg.webcert.web.service.underskrift.dss.DssSignatureService;
@@ -79,6 +81,7 @@ public class UserApiController extends AbstractApiController {
     @GET
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "user-get-user", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getUser() {
         WebCertUser user = getWebCertUserService().getUser();
 
@@ -94,6 +97,7 @@ public class UserApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "user-set-user-features", eventType = MdcLogConstants.EVENT_TYPE_USER)
     public Response userFeatures(WebUserFeaturesRequest webUserFeaturesRequest) {
         WebCertUser user = getWebCertUserService().getUser();
         Map<String, Feature> mutFeatures = new HashMap<>(user.getFeatures());
@@ -110,6 +114,7 @@ public class UserApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "user-change-selected-unit", eventType = MdcLogConstants.EVENT_TYPE_USER)
     public Response changeSelectedUnitOnUser(ChangeSelectedUnitRequest request) {
 
         WebCertUser user = getWebCertUserService().getUser();
@@ -144,6 +149,7 @@ public class UserApiController extends AbstractApiController {
     @Path("/godkannavtal")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "user-approve-agreement", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public Response godkannAvtal() {
         WebCertUser user = getWebCertUserService().getUser();
         if (user != null) {
@@ -160,6 +166,7 @@ public class UserApiController extends AbstractApiController {
     @Path("/privatlakaravtal")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "user-remove-agreement-approval", eventType = MdcLogConstants.EVENT_TYPE_DELETION)
     public Response taBortAvtalsGodkannande() {
         WebCertUser user = getWebCertUserService().getUser();
         if (user != null) {
@@ -173,6 +180,7 @@ public class UserApiController extends AbstractApiController {
     @Path("/latestavtal")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "user-get-agreement", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getAvtal() {
         Optional<Avtal> avtal = avtalService.getLatestAvtal();
         return Response.ok(avtal.orElse(null)).build();
@@ -181,6 +189,7 @@ public class UserApiController extends AbstractApiController {
     @GET
     @Path("/ping")
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "user-client-ping", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response clientPing() {
         // Any active user session will be extended just by accessing an endpoint.
         LOG.debug("wc-client pinged server");
@@ -192,6 +201,7 @@ public class UserApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "user-store-metadata-entry", eventType = MdcLogConstants.EVENT_TYPE_USER)
     public Response storeUserMetdataEntry(WebUserPreferenceStorageRequest request) {
         LOG.debug("User stored user preference entry for key: " + request.getKey());
         getWebCertUserService().storeUserPreference(request.getKey(), request.getValue());
@@ -201,6 +211,7 @@ public class UserApiController extends AbstractApiController {
     @DELETE
     @Path("/preferences/{key}")
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "user-delete-user-preference-entry", eventType = MdcLogConstants.EVENT_TYPE_USER)
     public Response deleteUserPreferenceEntry(@PathParam("key") String prefKey) {
         LOG.debug("User deleted user preference entry for key: " + prefKey);
         getWebCertUserService().deleteUserPreference(prefKey);
@@ -210,6 +221,7 @@ public class UserApiController extends AbstractApiController {
     @GET
     @Path("/logout")
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "user-logout", eventType = MdcLogConstants.EVENT_TYPE_USER)
     public Response logoutUserAfterTimeout(@Context HttpServletRequest request) {
         HttpSession session = request.getSession();
 
@@ -221,6 +233,7 @@ public class UserApiController extends AbstractApiController {
     @GET
     @Path("/logout/cancel")
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "user-cancel-logout", eventType = MdcLogConstants.EVENT_TYPE_USER)
     public Response cancelLogout(@Context HttpServletRequest request) {
         HttpSession session = request.getSession();
 

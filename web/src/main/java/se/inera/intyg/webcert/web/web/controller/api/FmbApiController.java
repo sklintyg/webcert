@@ -39,6 +39,8 @@ import org.apache.hc.core5.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.fmb.FmbDiagnosInformationService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FmbResponse;
@@ -66,6 +68,7 @@ public class FmbApiController extends AbstractApiController {
         @ApiResponse(code = BAD_REQUEST, message = "Bad request due to missing icd10 code")
     })
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "fmb-get-fmb-data-for-icd10", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getFmbForIcd10(@ApiParam(value = "ICD10 code", required = true) @PathParam("icd10") String icd10) {
         if (icd10 == null || icd10.isEmpty()) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Missing icd10 code").build();
@@ -87,6 +90,7 @@ public class FmbApiController extends AbstractApiController {
         @ApiResponse(code = HttpStatus.SC_OK, message = "Response Object containing info regardning sjukskrivning for patient", response = FmbResponse.class),
         @ApiResponse(code = HttpStatus.SC_BAD_REQUEST, message = "Bad request due to missing icd10 codes, or missing foreslagenSjukskrivningstid")})
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "fmb-validate-sickleave-period", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response valideraSjukskrivningstid(
         @ApiParam(value = "ICD10 code", required = true) @QueryParam("icd10Kod1") final String icd10Kod1,
         @QueryParam("icd10Kod2") final String icd10Kod2,
@@ -105,7 +109,7 @@ public class FmbApiController extends AbstractApiController {
         }
 
         final Optional<Personnummer> optionalPersonnummer = Personnummer.createPersonnummer(personnummer);
-        if (!optionalPersonnummer.isPresent()) {
+        if (optionalPersonnummer.isEmpty()) {
             validationErrors.add("Incorrect personnummer format");
         }
 

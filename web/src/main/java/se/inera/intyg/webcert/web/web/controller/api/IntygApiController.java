@@ -51,6 +51,8 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.persistence.event.model.CertificateEvent;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
@@ -134,6 +136,7 @@ public class IntygApiController extends AbstractApiController {
     @GET
     @Path("/doctor/")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PerformanceLogging(eventAction = "intyg-get-signed-certificates-for-doctor", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getSignedCertificatesForDoctor(@QueryParam("") QueryIntygParameter queryParam) {
         WebCertUser user = getWebCertUserService().getUser();
         LOG.debug("Fetching all signed intyg for doctor '{}' on unit '{}' from IT", user.getHsaId(), user.getValdVardenhet().getId());
@@ -158,6 +161,7 @@ public class IntygApiController extends AbstractApiController {
     @Path("/person/{personNummer}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "intyg-list-drafts-and-certificates-for-person", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response listDraftsAndIntygForPerson(@PathParam("personNummer") String personNummerIn) {
         Personnummer personNummer = createPnr(personNummerIn);
         LOG.debug("Retrieving intyg for person {}", personNummer.getPersonnummerHash());
@@ -238,6 +242,7 @@ public class IntygApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Consumes(MediaType.APPLICATION_JSON)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "intyg-set-notified-on-certificate", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public Response setNotifiedOnIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
         @PathParam("version") long version, NotifiedState notifiedState) {
 
@@ -262,6 +267,7 @@ public class IntygApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Consumes(MediaType.APPLICATION_JSON)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "intyg-set-ready-for-sign-and-send-status-message", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public Response setKlarForSigneraAndSendStatusMessage(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
         @PathParam("version") long version) {
 
@@ -289,6 +295,7 @@ public class IntygApiController extends AbstractApiController {
     @Path("/{certificateId}/events")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "intyg-get-events-for-certificate", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getEventsForCertificate(@PathParam("certificateId") String certificateId) {
 
         List<CertificateEvent> eventList = certificateEventService.getCertificateEvents(certificateId);
@@ -316,6 +323,7 @@ public class IntygApiController extends AbstractApiController {
     @Path("/intygTypeVersion/{intygsId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Consumes(MediaType.APPLICATION_JSON)
+    @PerformanceLogging(eventAction = "intyg-get-certificate-type-version", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getIntygTypeVersion(@PathParam("intygsId") String intygsId) {
 
         return Response.ok(intygService.getIntygTypeInfo(intygsId)).build();
@@ -326,6 +334,7 @@ public class IntygApiController extends AbstractApiController {
     @Path("/allowToApprovedReceivers/{intygsId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Consumes(MediaType.APPLICATION_JSON)
+    @PerformanceLogging(eventAction = "intyg-get-allow-to-approve-receivers", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getAllowToApprovedReceivers(@PathParam("intygsId") String intygsId) {
 
         final var utkast = utkastRepository.findById(intygsId).orElse(null);

@@ -32,6 +32,8 @@ import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
@@ -59,6 +61,7 @@ public class FragaSvarApiController extends AbstractApiController {
     @Path("/sok")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "fragasvar-search-arende", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response query(@QueryParam("") QueryFragaSvarParameter queryParam) {
         QueryFragaSvarResponse result = arendeService.filterArende(queryParam);
         resourceLinkHelper.decorateArendeWithValidActionLinks(result.getResults(), getVardenhet());
@@ -70,6 +73,7 @@ public class FragaSvarApiController extends AbstractApiController {
     @Path("/lakare")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "fragasvar-get-doctor-by-unit", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getFragaSvarLakareByEnhet(@QueryParam("enhetsId") String enhetsId) {
         return Response.ok(arendeService.listSignedByForUnits(enhetsId)).build();
     }

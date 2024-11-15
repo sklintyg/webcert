@@ -34,6 +34,8 @@ import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -67,6 +69,7 @@ public class FakeSignatureApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{intygsId}/{version}/fejksignera/{ticketId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "fake-signature-sign", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public SignaturStateDTO fejkSigneraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
         @PathParam("version") long version, @PathParam("ticketId") String ticketId, @Context HttpServletRequest request) {
 

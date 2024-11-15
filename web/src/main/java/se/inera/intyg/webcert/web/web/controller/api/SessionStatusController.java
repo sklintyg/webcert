@@ -30,6 +30,8 @@ import jakarta.ws.rs.core.Response;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import se.inera.intyg.infra.security.filter.SessionTimeoutFilter;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.web.controller.api.dto.GetSessionStatusResponse;
 
 /**
@@ -57,6 +59,7 @@ public class SessionStatusController {
     @GET
     @Path(SESSION_STATUS_PING)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PerformanceLogging(eventAction = "session-get-session-status", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getSessionStatus(@Context HttpServletRequest request) {
         return Response.ok().entity(createStatusResponse(request)).build();
     }
@@ -64,6 +67,7 @@ public class SessionStatusController {
     @GET
     @Path(SESSION_STATUS_EXTEND)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PerformanceLogging(eventAction = "session-get-extend-session", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public Response getExtendSession(@Context HttpServletRequest request) {
         return Response.ok().entity(createStatusResponse(request)).build();
     }

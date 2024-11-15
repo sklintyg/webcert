@@ -25,6 +25,8 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.subscription.SubscriptionService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 
@@ -38,6 +40,7 @@ public class SubscriptionController extends AbstractApiController {
     @GET
     @Path("/acknowledgeSubscriptionModal")
     @Produces(MediaType.APPLICATION_JSON)
+    @PerformanceLogging(eventAction = "subscription-acknowledge-subscription-modal", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public ResponseEntity<String> acknowledgeSubscriptionModal() {
         final var webCertUser = getWebCertUserService().getUser();
         subscriptionService.acknowledgeSubscriptionModal(webCertUser);

@@ -48,6 +48,8 @@ import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.web.converter.ArendeConverter;
@@ -127,6 +129,7 @@ public class UtkastApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "utkast-create-draft", eventType = MdcLogConstants.EVENT_TYPE_CREATION)
     public Response createUtkast(@PathParam("intygsTyp") String intygsTyp, CreateUtkastRequest request) {
         try {
             if (moduleRegistry.getIntygModule(intygsTyp).isDeprecated()) {
@@ -168,6 +171,7 @@ public class UtkastApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "utkast-get-questions", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getQuestions(@PathParam("intygsTyp") String intygsTyp, @PathParam("version") String version) {
 
         LOG.debug("Requesting questions for '{}' with version '{}'.", intygsTyp, version);
@@ -185,6 +189,7 @@ public class UtkastApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "utkast-filter-drafts-for-unit", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response filterDraftsForUnit(@QueryParam("") QueryIntygParameter filterParameters) {
 
         authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST).orThrow();
@@ -204,6 +209,7 @@ public class UtkastApiController extends AbstractApiController {
     @Path("/lakare")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "utkast-get-doctors-with-drafts-by-units", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getLakareWithDraftsByEnheter() {
 
         authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST).orThrow();
@@ -220,6 +226,7 @@ public class UtkastApiController extends AbstractApiController {
     @Path("/previousIntyg/{personnummer}/{currentDraftId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "utkast-get-previous-certificate-warnings", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getPreviousCertificateWarnings(@PathParam("personnummer") String personnummer,
         @PathParam("currentDraftId") String currentDraftId) {
         Map<String, Map<String, PreviousIntyg>> res = utkastService
