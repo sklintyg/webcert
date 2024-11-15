@@ -27,6 +27,8 @@ import jakarta.ws.rs.core.Response;
 import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.facade.patient.GetPatientFacadeService;
 import se.inera.intyg.webcert.web.service.facade.patient.InvalidPatientIdException;
 import se.inera.intyg.webcert.web.service.facade.patient.PatientNoNameException;
@@ -45,6 +47,7 @@ public class PatientController {
     @Path("/{patientId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "patient-get-patient", eventType = MdcLogConstants.EVENT_TYPE_ERROR)
     public Response getPatient(@PathParam("patientId") @NotNull String patientId) {
         try {
             final var patient = getPatientFacadeService.getPatient(patientId);

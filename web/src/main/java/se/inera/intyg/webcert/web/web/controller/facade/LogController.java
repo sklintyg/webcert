@@ -29,6 +29,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.facade.ErrorLogFacadeService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ErrorLogRequestDTO;
 
@@ -46,6 +48,7 @@ public class LogController {
     @Path("/error")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "log-log-error", eventType = MdcLogConstants.EVENT_TYPE_ERROR)
     public Response logError(@RequestBody @NotNull ErrorLogRequestDTO errorLogRequest) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Logging error with id: '{}'", errorLogRequest.getErrorId());
