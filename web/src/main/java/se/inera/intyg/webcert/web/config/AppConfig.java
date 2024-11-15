@@ -30,7 +30,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.TransactionManagementConfigurer;
 import se.inera.intyg.infra.security.common.cookie.IneraCookieSerializer;
-import se.inera.intyg.webcert.logging.LoggingConfig;
 
 @Configuration
 @DependsOn("dbUpdate")

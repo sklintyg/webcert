@@ -1,8 +1,4 @@
 dependencies {
-    implementation "se.inera.intyg.infra:monitoring:${infraVersion}"
-
-    implementation "io.prometheus:simpleclient_hotspot"
-    implementation "io.prometheus:simpleclient_servlet_jakarta"
     implementation "jakarta.servlet:jakarta.servlet-api"
     implementation "org.aspectj:aspectjweaver"
     implementation "org.springframework:spring-webmvc"
