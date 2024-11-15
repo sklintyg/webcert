@@ -29,6 +29,8 @@ import jakarta.ws.rs.core.Response.Status;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.integreradeenheter.IntegratedUnitDTO;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.integreradeenheter.IntegreradeEnheterService;
 
 @Path("/integratedUnits")
@@ -43,6 +45,7 @@ public class IntegratedUnitsApiController {
     @GET
     @Path("/{hsaId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PerformanceLogging(eventAction = "integrated-units-get-integrated-unit", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getIntegratedUnit(@PathParam("hsaId") String hsaId) {
 
         Optional<IntegratedUnitDTO> unit = integreradeEnheterService.getIntegratedUnit(hsaId);
@@ -57,6 +60,7 @@ public class IntegratedUnitsApiController {
     @GET
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PerformanceLogging(eventAction = "integrated-units-get-all-integrated-unit", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getAllIntegratedUnits() {
         return Response.ok(integreradeEnheterService.getAllIntegratedUnits()).build();
     }

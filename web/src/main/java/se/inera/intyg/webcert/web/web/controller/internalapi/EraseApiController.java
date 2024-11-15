@@ -25,6 +25,8 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.erase.EraseService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 
@@ -40,6 +42,7 @@ public class EraseApiController extends AbstractApiController {
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
+    @PerformanceLogging(eventAction = "erase-erase-data-for-care-provider", eventType = MdcLogConstants.EVENT_TYPE_DELETION)
     public void eraseDataForCareProvider(@PathParam("id") String careProviderId) {
         eraseService.eraseCertificates(careProviderId, eraseCertificatesPageSize);
     }
