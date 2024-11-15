@@ -39,6 +39,8 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.csintegration.aggregate.GetIssuingUnitIdAggregator;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
@@ -80,6 +82,7 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
     @GET
     @Path("/{type}/{intygId}/questions")
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "fragasvar-redirect-to-certificate-with-type", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response redirectToIntyg(@Context UriInfo uriInfo,
         @PathParam("type") String type,
         @PathParam("intygId") String intygId,
@@ -97,6 +100,7 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
     @GET
     @Path("/{intygId}/questions")
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "fragasvar-redirect-to-certificate-without-type", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response redirectToIntyg(@Context UriInfo uriInfo,
         @PathParam("intygId") String intygId,
         @QueryParam("enhet") String enhetHsaId) {
