@@ -18,24 +18,25 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<beans profile="!prod" xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context" xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+<beans profile="!prod" xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context" xmlns:jaxrs="http://cxf.apache.org/jaxrs"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
     http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
 
-  <context:annotation-config />
+  <context:annotation-config/>
 
   <jaxrs:server address="/user">
     <jaxrs:serviceBeans>
-      <bean class="se.inera.intyg.webcert.web.web.controller.authtestability.UserResource" />
+      <bean class="se.inera.intyg.webcert.web.web.controller.authtestability.UserResource"/>
     </jaxrs:serviceBeans>
     <jaxrs:providers>
-      <ref bean="jacksonJsonProvider" />
+      <ref bean="jacksonJsonProvider"/>
       <ref bean="webcertRestExceptionHandler"/>
       <ref bean="localDateTimeHandler"/>
     </jaxrs:providers>
     <jaxrs:extensionMappings>
-      <entry key="json" value="application/json" />
+      <entry key="json" value="application/json"/>
     </jaxrs:extensionMappings>
   </jaxrs:server>
 </beans>

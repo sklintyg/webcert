@@ -104,6 +104,7 @@ dependencies {
     implementation "se.inera.intyg.infra:dynamiclink:${infraVersion}"
     implementation "se.inera.intyg.infra:grp-stub:${infraVersion}"
     implementation "se.inera.intyg.infra:hsa-integration-api:${infraVersion}"
+    implementation "se.inera.intyg.infra:hsa-integration-intyg-proxy-service:${infraVersion}"
     implementation "se.inera.intyg.infra:ia-integration:${infraVersion}"
     implementation "se.inera.intyg.infra:integreradeenheter:${infraVersion}"
     implementation "se.inera.intyg.infra:intyginfo:${infraVersion}"
@@ -190,7 +191,6 @@ dependencies {
 
     runtimeOnly "org.springframework:spring-webmvc"
     runtimeOnly "xerces:xercesImpl:${xercesVersion}"
-    implementation "se.inera.intyg.infra:hsa-integration-intyg-proxy-service:${infraVersion}"
 
     testAnnotationProcessor 'org.projectlombok:lombok'
     testCompileOnly 'org.projectlombok:lombok'
@@ -205,5 +205,5 @@ dependencies {
     testImplementation "se.inera.intyg.common:ag-parent:${commonVersion}"
 
     xsdgen "org.glassfish.jaxb:jaxb-xjc"
-    xsdgen  "com.sun.xml.bind:jaxb-impl"
+    xsdgen "com.sun.xml.bind:jaxb-impl"
 }
