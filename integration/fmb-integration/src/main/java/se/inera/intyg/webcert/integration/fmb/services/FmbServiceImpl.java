@@ -20,6 +20,8 @@ package se.inera.intyg.webcert.integration.fmb.services;
 
 import static java.util.Objects.nonNull;
 import static org.springframework.util.CollectionUtils.isEmpty;
+import static se.inera.intyg.webcert.logging.MdcLogConstants.SPAN_ID_KEY;
+import static se.inera.intyg.webcert.logging.MdcLogConstants.TRACE_ID_KEY;
 import static se.inera.intyg.webcert.persistence.fmb.model.fmb.Beskrivning.BeskrivningBuilder.aBeskrivning;
 import static se.inera.intyg.webcert.persistence.fmb.model.fmb.DiagnosInformation.DiagnosInformationBuilder.aDiagnosInformation;
 import static se.inera.intyg.webcert.persistence.fmb.model.fmb.Icd10Kod.Icd10KodBuilder.anIcd10Kod;
@@ -31,7 +33,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Ints;
 import io.vavr.control.Try;
-import java.lang.invoke.MethodHandles;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -40,9 +41,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Predicate;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -60,6 +62,7 @@ import se.inera.intyg.webcert.integration.fmb.model.typfall.Fmbtillstand;
 import se.inera.intyg.webcert.integration.fmb.model.typfall.Rekommenderadsjukskrivning;
 import se.inera.intyg.webcert.integration.fmb.model.typfall.Typfall;
 import se.inera.intyg.webcert.integration.fmb.model.typfall.TypfallData;
+import se.inera.intyg.webcert.logging.MdcHelper;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.Beskrivning;
@@ -72,21 +75,18 @@ import se.inera.intyg.webcert.persistence.fmb.model.fmb.Referens;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.TypFall;
 import se.inera.intyg.webcert.persistence.fmb.repository.DiagnosInformationRepository;
 
+@Slf4j
 @Service
 @Transactional
 @EnableScheduling
+@RequiredArgsConstructor
 public class FmbServiceImpl implements FmbService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final String JOB_NAME = "FmbServiceUpdate.run";
 
+    private final MdcHelper mdcHelper;
     private final FmbConsumer fmbConsumer;
     private final DiagnosInformationRepository repository;
-
-    public FmbServiceImpl(final FmbConsumer fmbConsumer, final DiagnosInformationRepository repository) {
-        this.fmbConsumer = fmbConsumer;
-        this.repository = repository;
-    }
 
     @Override
     @Scheduled(cron = "${fmb.dataupdate.cron}")
@@ -94,11 +94,16 @@ public class FmbServiceImpl implements FmbService {
     @PerformanceLogging(eventAction = "job-update-fmb-data", eventType = MdcLogConstants.EVENT_TYPE_INFO)
     public void updateData() {
         try {
-            LOG.info("FMB data update started");
+            MDC.put(TRACE_ID_KEY, mdcHelper.traceId());
+            MDC.put(SPAN_ID_KEY, mdcHelper.spanId());
+
+            log.info("FMB data update started");
             performUpdate();
-            LOG.info("FMB data update done");
+            log.info("FMB data update done");
         } catch (Exception e) {
-            LOG.error("Failed to update FMB", e);
+            log.error("Failed to update FMB", e);
+        } finally {
+            MDC.clear();
         }
     }
 
@@ -115,7 +120,7 @@ public class FmbServiceImpl implements FmbService {
         });
 
         if (result.isFailure()) {
-            LOG.warn("Failed to fetch FMB information");
+            log.warn("Failed to fetch FMB information");
             result.getCause().printStackTrace();
         }
     }
