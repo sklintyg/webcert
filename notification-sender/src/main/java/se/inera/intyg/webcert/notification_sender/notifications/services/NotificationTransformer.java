@@ -27,6 +27,7 @@ import java.nio.charset.StandardCharsets;
 import org.apache.camel.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
@@ -35,6 +36,8 @@ import se.inera.intyg.common.support.modules.support.api.notification.Notificati
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.common.support.xml.XmlMarshallerHelper;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
+import se.inera.intyg.webcert.logging.MdcHelper;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing.NotificationResultMessageCreator;
 import se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing.NotificationResultMessageSender;
@@ -47,15 +50,14 @@ public class NotificationTransformer {
 
     @Autowired
     private IntygModuleRegistry moduleRegistry;
-
     @Autowired
     private CertificateStatusUpdateForCareCreator certificateStatusUpdateForCareCreator;
-
     @Autowired
     private NotificationResultMessageCreator notificationResultMessageCreator;
-
     @Autowired
     private NotificationResultMessageSender notificationResultMessageSender;
+    @Autowired
+    private MdcHelper mdcHelper;
 
     /**
      * Process message by adding headers and creating a CertificateStatusUpdateForCareType based on the {@link NotificationMessage} and
@@ -70,16 +72,28 @@ public class NotificationTransformer {
         final var notificationMessage = message.getBody(NotificationMessage.class);
 
         try {
+            final var certificateId = notificationMessage.getIntygsId();
+            final var logicaAddress = notificationMessage.getLogiskAdress();
+            final var eventId = notificationMessage.getHandelse().value();
+
+            MDC.put(MdcLogConstants.TRACE_ID_KEY, mdcHelper.traceId());
+            MDC.put(MdcLogConstants.SPAN_ID_KEY, mdcHelper.spanId());
+            MDC.put(MdcLogConstants.EVENT_CERTIFICATE_ID, certificateId);
+            MDC.put(MdcLogConstants.EVENT_STATUS_UPDATE_LOGICAL_ADDRESS, logicaAddress);
+            MDC.put(MdcLogConstants.EVENT_STATUS_UPDATE_EVENT_ID, eventId);
+
             message.setHeader(NotificationRouteHeaders.VERSION, getSchemaVersion(notificationMessage));
-            message.setHeader(NotificationRouteHeaders.LOGISK_ADRESS, notificationMessage.getLogiskAdress());
-            message.setHeader(NotificationRouteHeaders.INTYGS_ID, notificationMessage.getIntygsId());
-            message.setHeader(NotificationRouteHeaders.HANDELSE, notificationMessage.getHandelse().value());
+            message.setHeader(NotificationRouteHeaders.LOGISK_ADRESS, logicaAddress);
+            message.setHeader(NotificationRouteHeaders.INTYGS_ID, certificateId);
+            message.setHeader(NotificationRouteHeaders.HANDELSE, eventId);
 
             final var statusUpdateForCare = getStatusUpdateForCare(notificationMessage, message);
             message.setBody(statusUpdateForCare);
         } catch (Exception e) {
             handleExceptions(message, notificationMessage, e);
             throw e;
+        } finally {
+            MDC.clear();
         }
     }
 
