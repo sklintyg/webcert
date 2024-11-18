@@ -97,7 +97,7 @@ class RevokeCertificateFromCertificateServiceTest {
             CERTIFICATE_AFTER_REVOKE.setMetadata(CertificateMetadata.builder()
                 .id(ID)
                 .type(TYPE)
-                .status(CertificateStatus.LOCKED)
+                .status(CertificateStatus.REVOKED)
                 .build());
 
             when(csIntegrationService.certificateExists(ID))
