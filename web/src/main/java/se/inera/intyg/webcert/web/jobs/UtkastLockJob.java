@@ -19,18 +19,25 @@
 package se.inera.intyg.webcert.web.jobs;
 
 import java.time.LocalDate;
+import lombok.RequiredArgsConstructor;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import se.inera.intyg.webcert.logging.MdcHelper;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
 @Component
+@RequiredArgsConstructor
 public class UtkastLockJob {
+
+    @Value("${job.utkastlock.locked.after.day}")
+    private int lockedAfterDay;
 
     private static final Logger LOG = LoggerFactory.getLogger(UtkastLockJob.class);
     private static final String JOB_NAME = "UtkastLockJob.run";
@@ -39,14 +46,7 @@ public class UtkastLockJob {
     
     private final UtkastService utkastService;
     private final LockDraftsFromCertificateService lockDraftsFromCertificateService;
-
-    @Value("${job.utkastlock.locked.after.day}")
-    private int lockedAfterDay;
-
-    public UtkastLockJob(UtkastService utkastService, LockDraftsFromCertificateService lockDraftsFromCertificateService) {
-        this.utkastService = utkastService;
-        this.lockDraftsFromCertificateService = lockDraftsFromCertificateService;
-    }
+    private final MdcHelper mdcHelper;
 
     @Scheduled(cron = "${job.utkastlock.cron}")
     @SchedulerLock(name = JOB_NAME, lockAtLeastFor = LOCK_AT_LEAST, lockAtMostFor = LOCK_AT_MOST)
@@ -55,10 +55,17 @@ public class UtkastLockJob {
     public void run() {
         LOG.info("Staring job to set utkast to locked");
 
-        final var today = LocalDate.now();
-        final var lockedInWC = utkastService.lockOldDrafts(lockedAfterDay, today);
-        final var lockedInCS = lockDraftsFromCertificateService.lock(lockedAfterDay);
+        try {
+            MDC.put(MdcLogConstants.TRACE_ID_KEY, mdcHelper.traceId());
+            MDC.put(MdcLogConstants.SPAN_ID_KEY, mdcHelper.spanId());
 
-        LOG.info("{} utkast set to locked - {} in Webcert - {} in CertificateService", lockedInWC + lockedInCS, lockedInWC, lockedInCS);
+            final var today = LocalDate.now();
+            final var lockedInWC = utkastService.lockOldDrafts(lockedAfterDay, today);
+            final var lockedInCS = lockDraftsFromCertificateService.lock(lockedAfterDay);
+
+            LOG.info("{} utkast set to locked - {} in Webcert - {} in CertificateService", lockedInWC + lockedInCS, lockedInWC, lockedInCS);
+        } finally {
+            MDC.clear();
+        }
     }
 }
