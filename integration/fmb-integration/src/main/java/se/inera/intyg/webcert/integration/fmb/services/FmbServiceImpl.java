@@ -60,6 +60,8 @@ import se.inera.intyg.webcert.integration.fmb.model.typfall.Fmbtillstand;
 import se.inera.intyg.webcert.integration.fmb.model.typfall.Rekommenderadsjukskrivning;
 import se.inera.intyg.webcert.integration.fmb.model.typfall.Typfall;
 import se.inera.intyg.webcert.integration.fmb.model.typfall.TypfallData;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.Beskrivning;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.BeskrivningTyp;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.DiagnosInformation;
@@ -89,6 +91,7 @@ public class FmbServiceImpl implements FmbService {
     @Override
     @Scheduled(cron = "${fmb.dataupdate.cron}")
     @SchedulerLock(name = JOB_NAME)
+    @PerformanceLogging(eventAction = "job-update-fmb-data", eventType = MdcLogConstants.EVENT_TYPE_INFO)
     public void updateData() {
         try {
             LOG.info("FMB data update started");

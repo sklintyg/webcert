@@ -27,14 +27,10 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 
-@Component
-@Aspect
 @Slf4j
+@Aspect
+@Component
 public class PerformanceLoggingAdvice {
-
-    public PerformanceLoggingAdvice() {
-        log.info("CREATED THE LOGGING ADVICE CLASS");
-    }
 
     @Around("@annotation(performanceLogging)")
     public Object logPerformance(ProceedingJoinPoint joinPoint, PerformanceLogging performanceLogging) throws Throwable {

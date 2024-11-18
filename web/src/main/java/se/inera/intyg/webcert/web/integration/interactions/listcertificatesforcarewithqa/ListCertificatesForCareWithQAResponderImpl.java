@@ -28,6 +28,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.cxf.annotations.SchemaValidation;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.logging.HashUtility;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.web.csintegration.patient.GetCertificatesWithQAFromCertificateService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
@@ -59,6 +61,7 @@ public class ListCertificatesForCareWithQAResponderImpl implements ListCertifica
     }
 
     @Override
+    @PerformanceLogging(eventAction = "list-certificates-for-care-with-qa", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public ListCertificatesForCareWithQAResponseType listCertificatesForCareWithQA(String s, ListCertificatesForCareWithQAType request) {
         Objects.requireNonNull(request.getEnhetsId());
         if (invalidRequest(request)) {

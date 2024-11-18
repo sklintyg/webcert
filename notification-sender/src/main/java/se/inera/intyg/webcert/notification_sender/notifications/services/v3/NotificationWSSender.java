@@ -25,6 +25,8 @@ import org.apache.camel.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders;
 import se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing.NotificationResultMessageCreator;
 import se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing.NotificationResultMessageSender;
@@ -53,6 +55,8 @@ public class NotificationWSSender {
         this.notificationResultMessageSender = notificationResultMessageSender;
     }
 
+
+    @PerformanceLogging(eventAction = "send-status-update-for-care", eventType = MdcLogConstants.EVENT_TYPE_INFO)
     public void sendStatusUpdate(CertificateStatusUpdateForCareType statusUpdate,
         @Header(NotificationRouteHeaders.INTYGS_ID) String certificateId,
         @Header(NotificationRouteHeaders.LOGISK_ADRESS) String logicalAddress,

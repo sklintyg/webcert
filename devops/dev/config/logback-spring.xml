@@ -6,6 +6,7 @@
 
   <logger name="org.apache.cxf.interceptor" level="warn" />
   <logger name="org.apache.cxf.services" level="warn" />
+  <logger name="org.apache.cxf.ws.addressing" level="warn" />
 
   <root level="INFO">
     <appender-ref ref="CONSOLE"/>

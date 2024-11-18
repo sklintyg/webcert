@@ -26,6 +26,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
 import se.inera.intyg.webcert.web.integration.util.HoSPersonHelper;
 import se.inera.intyg.webcert.web.integration.validators.ResultValidator;
@@ -55,6 +57,7 @@ public class CreateDraftCertificateResponderImpl implements CreateDraftCertifica
     private CreateDraftCertificate createDraftCertificateAggregator;
 
     @Override
+    @PerformanceLogging(eventAction = "create-draft-certificate", eventType = MdcLogConstants.EVENT_TYPE_CREATION)
     public CreateDraftCertificateResponseType createDraftCertificate(String logicalAddress, CreateDraftCertificateType parameters) {
         final var utkastsParams = parameters.getIntyg();
         final var invokingUserHsaId = utkastsParams.getSkapadAv().getPersonalId().getExtension();
