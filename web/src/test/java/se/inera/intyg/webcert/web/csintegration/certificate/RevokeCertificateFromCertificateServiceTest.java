@@ -42,6 +42,7 @@ import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.RevokeCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
@@ -49,32 +50,30 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 @ExtendWith(MockitoExtension.class)
 class RevokeCertificateFromCertificateServiceTest {
 
-    private static final RevokeCertificateRequestDTO REQUEST = RevokeCertificateRequestDTO.builder().build();
-    private static final String ID = "ID";
-    private static final String REASON = "REASON";
-    private static final String MESSAGE = "MESSAGE";
-    private static final Certificate CERTIFICATE = new Certificate();
-    private static final String TYPE = "TYPE";
-
     @Mock
     PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
     @Mock
     CSIntegrationService csIntegrationService;
-
     @Mock
     CSIntegrationRequestFactory csIntegrationRequestFactory;
-
     @Mock
     PDLLogService pdlLogService;
-
     @Mock
     MonitoringLogService monitoringLogService;
-
     @Mock
     DecorateCertificateFromCSWithInformationFromWC decorateCertificateFromCSWithInformationFromWC;
 
     @InjectMocks
     RevokeCertificateFromCertificateService revokeCertificateFromCertificateService;
+
+    private static final String ID = "ID";
+    private static final String TYPE = "TYPE";
+    private static final String REASON = "REASON";
+    private static final String MESSAGE = "MESSAGE";
+    private static final Certificate CERTIFICATE_AFTER_REVOKE = new Certificate();
+    private static final Certificate CERTIFICATE_BEFORE_REVOKE = new Certificate();
+    private static final GetCertificateRequestDTO GET_REQUEST = GetCertificateRequestDTO.builder().build();
+    private static final RevokeCertificateRequestDTO REVOKE_REQUEST = RevokeCertificateRequestDTO.builder().build();
 
     @Test
     void shouldReturnNullIfCertificateDoesNotExistInCS() {
@@ -89,17 +88,22 @@ class RevokeCertificateFromCertificateServiceTest {
         @BeforeEach
         void setup() {
 
-            CERTIFICATE.setMetadata(CertificateMetadata.builder()
+            CERTIFICATE_BEFORE_REVOKE.setMetadata(CertificateMetadata.builder()
                 .id(ID)
                 .type(TYPE)
                 .status(CertificateStatus.SIGNED)
                 .build());
 
+            CERTIFICATE_AFTER_REVOKE.setMetadata(CertificateMetadata.builder()
+                .id(ID)
+                .type(TYPE)
+                .status(CertificateStatus.LOCKED)
+                .build());
+
             when(csIntegrationService.certificateExists(ID))
                 .thenReturn(true);
 
-            when(csIntegrationRequestFactory.revokeCertificateRequest(REASON, MESSAGE))
-                .thenReturn(REQUEST);
+            when(csIntegrationRequestFactory.getCertificateRequest()).thenReturn(GET_REQUEST);
         }
 
         @Nested
@@ -107,8 +111,9 @@ class RevokeCertificateFromCertificateServiceTest {
 
             @BeforeEach
             void setup() {
-                when(csIntegrationService.revokeCertificate(ID, REQUEST))
-                    .thenReturn(CERTIFICATE);
+                when(csIntegrationService.getCertificate(ID, GET_REQUEST)).thenReturn(CERTIFICATE_BEFORE_REVOKE);
+                when(csIntegrationService.revokeCertificate(ID, REVOKE_REQUEST)).thenReturn(CERTIFICATE_AFTER_REVOKE);
+                when(csIntegrationRequestFactory.revokeCertificateRequest(REASON, MESSAGE)).thenReturn(REVOKE_REQUEST);
             }
 
             @Test
@@ -126,19 +131,19 @@ class RevokeCertificateFromCertificateServiceTest {
                 revokeCertificateFromCertificateService.revokeCertificate(ID, REASON, MESSAGE);
 
                 verify(csIntegrationService).revokeCertificate(anyString(), captor.capture());
-                assertEquals(REQUEST, captor.getValue());
+                assertEquals(REVOKE_REQUEST, captor.getValue());
             }
 
             @Test
             void shouldPdlLogRevoke() {
                 revokeCertificateFromCertificateService.revokeCertificate(ID, REASON, MESSAGE);
-                verify(pdlLogService).logRevoke(CERTIFICATE);
+                verify(pdlLogService).logRevoke(CERTIFICATE_AFTER_REVOKE);
 
             }
 
             @Test
             void shouldMonitorLogRevokeLockedDraft() {
-                CERTIFICATE.getMetadata().setStatus(CertificateStatus.LOCKED);
+                CERTIFICATE_BEFORE_REVOKE.getMetadata().setStatus(CertificateStatus.LOCKED);
                 revokeCertificateFromCertificateService.revokeCertificate(ID, REASON, MESSAGE);
                 verify(monitoringLogService).logUtkastRevoked(ID, TYPE, REASON, MESSAGE);
             }
@@ -152,13 +157,13 @@ class RevokeCertificateFromCertificateServiceTest {
             @Test
             void shouldPublishCertificateStatusUpdate() {
                 revokeCertificateFromCertificateService.revokeCertificate(ID, REASON, MESSAGE);
-                verify(publishCertificateStatusUpdateService).publish(CERTIFICATE, HandelsekodEnum.MAKULE);
+                verify(publishCertificateStatusUpdateService).publish(CERTIFICATE_AFTER_REVOKE, HandelsekodEnum.MAKULE);
             }
 
             @Test
             void shouldDecorateCertificateFromCSWithInformationFromWC() {
                 revokeCertificateFromCertificateService.revokeCertificate(ID, REASON, MESSAGE);
-                verify(decorateCertificateFromCSWithInformationFromWC, times(1)).decorate(CERTIFICATE);
+                verify(decorateCertificateFromCSWithInformationFromWC, times(1)).decorate(CERTIFICATE_AFTER_REVOKE);
             }
         }
 
