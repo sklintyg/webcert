@@ -23,23 +23,25 @@ import org.apache.camel.Body;
 import org.apache.camel.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.webcert.common.Constants;
 import se.inera.intyg.webcert.common.client.SendCertificateServiceClient;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
+import se.inera.intyg.webcert.logging.MdcHelper;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v2.SendCertificateToRecipientResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
-/**
- * Created by eriklupander on 2015-05-21.
- */
 public class CertificateSendProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(CertificateSendProcessor.class);
 
     @Autowired
     private SendCertificateServiceClient sendServiceClient;
+    @Autowired
+    private  MdcHelper mdcHelper;
 
     public void process(@Body String skickatAv,
         @Header(Constants.INTYGS_ID) String intygsId,
@@ -49,6 +51,12 @@ public class CertificateSendProcessor {
 
         SendCertificateToRecipientResponseType response;
         try {
+            MDC.put(MdcLogConstants.TRACE_ID_KEY, mdcHelper.traceId());
+            MDC.put(MdcLogConstants.SPAN_ID_KEY, mdcHelper.spanId());
+            MDC.put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId);
+            MDC.put(MdcLogConstants.EVENT_CERTIFICATE_RECIPIENT, recipient);
+            MDC.put(MdcLogConstants.EVENT_STATUS_UPDATE_LOGICAL_ADDRESS, logicalAddress);
+
             response = sendServiceClient.sendCertificate(intygsId, personId, skickatAv, recipient, logicalAddress);
 
             final ResultType result = response.getResult();
@@ -65,6 +73,8 @@ public class CertificateSendProcessor {
         } catch (WebServiceException e) {
             LOG.warn("Call to send intyg {} caused an error: {}. Will retry", intygsId, e.getMessage());
             throw new TemporaryException(e.getMessage());
+        } finally {
+            MDC.clear();
         }
     }
 }

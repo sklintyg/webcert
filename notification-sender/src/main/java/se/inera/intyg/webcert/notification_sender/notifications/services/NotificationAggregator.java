@@ -20,11 +20,11 @@ package se.inera.intyg.webcert.notification_sender.notifications.services;
 
 import java.util.Collections;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.webcert.logging.MdcHelper;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.notification_sender.notifications.filter.NotificationMessageDiscardFilter;
@@ -44,10 +44,10 @@ import se.inera.intyg.webcert.notification_sender.notifications.filter.Notificat
  */
 
 @Slf4j
-@RequiredArgsConstructor
 public class NotificationAggregator {
 
-    private final MdcHelper mdcHelper;
+    @Autowired
+    private MdcHelper mdcHelper;
 
     public List<Message> process(Exchange exchange) {
 

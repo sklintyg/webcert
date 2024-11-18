@@ -27,6 +27,7 @@ import org.springframework.jms.connection.JmsTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedreceivers.v1.RegisterApprovedReceiversResponderInterface;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.webcert.logging.MdcHelper;
 import se.inera.intyg.webcert.notification_sender.certificatesender.services.mock.MockSendCertificateServiceClientImpl;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientResponderInterface;
 
@@ -40,6 +41,11 @@ public class CertificateCamelTestConfig {
     @Bean
     public IntygModuleRegistry intygModuleRegistry() {
         return null;
+    }
+
+    @Bean
+    public MdcHelper mdcHelper() {
+        return new MdcHelper();
     }
 
     @Bean

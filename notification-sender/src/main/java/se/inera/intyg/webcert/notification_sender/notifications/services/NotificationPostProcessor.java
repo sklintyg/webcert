@@ -25,10 +25,10 @@ import static se.inera.intyg.webcert.notification_sender.notifications.routes.No
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.Message;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.webcert.logging.MdcHelper;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
@@ -37,12 +37,14 @@ import se.inera.intyg.webcert.notification_sender.notifications.services.postpro
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class NotificationPostProcessor {
 
-    private final MdcHelper mdcHelper;
-    private final ObjectMapper objectMapper;
-    private final NotificationPostProcessingService notificationPostProcessingService;
+    @Autowired
+    private MdcHelper mdcHelper;
+    @Autowired
+    private ObjectMapper objectMapper;
+    @Autowired
+    private NotificationPostProcessingService notificationPostProcessingService;
 
     public void process(Message message) {
         try {

@@ -27,8 +27,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+import se.inera.intyg.webcert.logging.MdcHelper;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,6 +41,8 @@ class UtkastLockJobTest {
     private UtkastService utkastService;
     @Mock
     private LockDraftsFromCertificateService lockDraftsFromCertificateService;
+    @Spy
+    private MdcHelper mdcHelper;
     @InjectMocks
     private UtkastLockJob utkastLockJob;
 

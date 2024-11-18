@@ -25,6 +25,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.jms.connection.JmsTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
+import se.inera.intyg.webcert.logging.MdcHelper;
 import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationPostProcessor;
 import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationTransformer;
 import se.inera.intyg.webcert.notification_sender.notifications.services.v3.NotificationWSSender;
@@ -39,6 +40,11 @@ public class NotificationCamelTestConfig {
     @Bean
     public NotificationTransformer notificationTransformer() {
         return null;
+    }
+
+    @Bean
+    public MdcHelper mdcHelper() {
+        return new MdcHelper();
     }
 
     @Bean

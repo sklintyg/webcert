@@ -45,6 +45,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -52,6 +53,7 @@ import se.inera.intyg.common.support.modules.support.api.notification.Notificati
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.common.support.xml.XmlMarshallerHelper;
 import se.inera.intyg.infra.security.authorities.FeaturesHelper;
+import se.inera.intyg.webcert.logging.MdcHelper;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing.NotificationResultMessageCreator;
 import se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing.NotificationResultMessageSender;
@@ -64,18 +66,16 @@ class NotificationTransformerTest {
 
     @Mock
     private IntygModuleRegistry moduleRegistry;
-
     @Mock
     private FeaturesHelper featuresHelper;
-
     @Mock
     private CertificateStatusUpdateForCareCreator certificateStatusUpdateForCareCreator;
-
     @Mock
     private NotificationResultMessageCreator notificationResultMessageCreator;
-
     @Mock
     private NotificationResultMessageSender notificationResultMessageSender;
+    @Spy
+    private MdcHelper mdcHelper;
 
     @InjectMocks
     private NotificationTransformer notificationTransformer;
