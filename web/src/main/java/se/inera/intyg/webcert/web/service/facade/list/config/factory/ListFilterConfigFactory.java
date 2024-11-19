@@ -43,7 +43,7 @@ public class ListFilterConfigFactory {
     }
 
     public static ListFilterDateConfig fromDate() {
-        return new ListFilterDateConfig("FROM", "Från");
+        return new ListFilterDateConfig("FROM", "Från", LocalDateTime.now().minusMonths(3));
     }
 
     public static ListFilterDateConfig fromDateWithLimits(
