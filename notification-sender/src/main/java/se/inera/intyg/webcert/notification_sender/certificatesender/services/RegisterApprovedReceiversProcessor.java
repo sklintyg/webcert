@@ -65,7 +65,7 @@ public class RegisterApprovedReceiversProcessor {
             MDC.put(MdcLogConstants.SPAN_ID_KEY, mdcHelper.spanId());
             MDC.put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId);
             MDC.put(MdcLogConstants.EVENT_CERTIFICATE_TYPE, intygsTyp);
-            MDC.put(MdcLogConstants.EVENT_STATUS_UPDATE_LOGICAL_ADDRESS, logicalAddress);
+            MDC.put(MdcLogConstants.EVENT_LOGICAL_ADDRESS, logicalAddress);
 
             checkArgument(StringUtils.isNotEmpty(intygsId), "Message of type %s does not have a %s header.",
                 Constants.REGISTER_APPROVED_RECEIVERS_MESSAGE,

@@ -48,7 +48,7 @@ public class CertificateStoreProcessor {
             MDC.put(MdcLogConstants.TRACE_ID_KEY, mdcHelper.traceId());
             MDC.put(MdcLogConstants.SPAN_ID_KEY, mdcHelper.spanId());
             MDC.put(MdcLogConstants.EVENT_CERTIFICATE_TYPE, intygsTyp);
-            MDC.put(MdcLogConstants.EVENT_STATUS_UPDATE_LOGICAL_ADDRESS, logicalAddress);
+            MDC.put(MdcLogConstants.EVENT_LOGICAL_ADDRESS, logicalAddress);
 
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygsTyp,
                 moduleRegistry.resolveVersionFromUtlatandeJson(intygsTyp, utkastAsJson));

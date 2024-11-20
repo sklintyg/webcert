@@ -33,6 +33,8 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.notification_sender.notifications.services.redelivery.NotificationRedeliveryService;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
@@ -53,6 +55,8 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
     private HandelseRepository eventRepository;
 
     @Override
+    @PerformanceLogging(eventAction = "job-resend-scheduled-notifications", eventType = MdcLogConstants.EVENT_TYPE_CHANGE,
+        eventCategory = MdcLogConstants.EVENT_CATEGORY_PROCESS)
     public void resendScheduledNotifications(int batchSize) {
         final var startTimeInMilliseconds = System.currentTimeMillis();
         final var notificationsToResend = notificationRedeliveryService.getNotificationsForRedelivery(batchSize);

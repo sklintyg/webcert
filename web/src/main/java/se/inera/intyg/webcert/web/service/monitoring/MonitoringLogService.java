@@ -26,6 +26,7 @@ import se.inera.intyg.infra.security.common.service.AuthenticationLogger;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
+import se.inera.intyg.webcert.web.service.mail.MailNotification;
 
 /**
  * Service that writes messages to the monitoring log.
@@ -34,9 +35,9 @@ import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
  */
 public interface MonitoringLogService extends AuthenticationLogger {
 
-    void logMailSent(String unitHsaId, String reason);
+    void logMailSent(String unitHsaId, String reason, MailNotification mailNotification);
 
-    void logMailMissingAddress(String unitHsaId, String reason);
+    void logMailMissingAddress(String unitHsaId, String reason, MailNotification mailNotification);
 
     void logQuestionReceived(String fragestallare, String intygsId, String externReferens, Long internReferens, String enhet, Amne amne,
         List<String> frageIds);

@@ -66,7 +66,7 @@ public class NotificationWSSender {
             MDC.put(MdcLogConstants.TRACE_ID_KEY, mdcHelper.traceId());
             MDC.put(MdcLogConstants.SPAN_ID_KEY, mdcHelper.spanId());
             MDC.put(MdcLogConstants.EVENT_CERTIFICATE_ID, certificateId);
-            MDC.put(MdcLogConstants.EVENT_STATUS_UPDATE_LOGICAL_ADDRESS, logicalAddress);
+            MDC.put(MdcLogConstants.EVENT_LOGICAL_ADDRESS, logicalAddress);
             MDC.put(MdcLogConstants.EVENT_STATUS_UPDATE_CORRELATION_ID, correlationId);
 
             log.debug("Sending status update to care: {} with request: {}", resultMessage, statusUpdate);

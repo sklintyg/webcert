@@ -52,7 +52,7 @@ public class NotificationPostProcessor {
             MDC.put(MdcLogConstants.SPAN_ID_KEY, mdcHelper.spanId());
             MDC.put(MdcLogConstants.EVENT_CERTIFICATE_ID, message.getHeader(INTYGS_ID).toString());
             MDC.put(MdcLogConstants.EVENT_STATUS_UPDATE_EVENT_ID, message.getHeader(HANDELSE).toString());
-            MDC.put(MdcLogConstants.EVENT_STATUS_UPDATE_LOGICAL_ADDRESS, message.getHeader(LOGISK_ADRESS).toString());
+            MDC.put(MdcLogConstants.EVENT_LOGICAL_ADDRESS, message.getHeader(LOGISK_ADRESS).toString());
             MDC.put(MdcLogConstants.EVENT_STATUS_UPDATE_CORRELATION_ID, message.getHeader(CORRELATION_ID).toString());
 
             final var resultMessage = getNotificationResultMessage(message);

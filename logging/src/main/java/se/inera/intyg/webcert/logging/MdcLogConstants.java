@@ -24,14 +24,12 @@ public class MdcLogConstants {
     private MdcLogConstants() {
     }
 
-    public static final String HTTP_REQUEST_ID = "http.request.id";
     public static final String OS_FAMILY = "os.family";
     public static final String OS_VERSION = "os.version";
-    public static final String SERVICE_ADDRESS = "service.address";
-    public static final String SERVICE_STATE = "service.state";
     public static final String SESSION_ID_KEY = "session.id";
     public static final String SPAN_ID_KEY = "span.id";
     public static final String TRACE_ID_KEY = "trace.id";
+    public static final String TRANSACTION_ID = "transaction.id";
     public static final String USER_AGENT_NAME = "user_agent.name";
     public static final String USER_AGENT_VERSION = "user_agent.version";
 
@@ -65,43 +63,33 @@ public class MdcLogConstants {
     public static final String EVENT_AUTHENTICATION_SCHEME = "event.authentication.scheme";
     public static final String EVENT_AUTHENTICATION_METHOD = "event.authentication.method";
     public static final String EVENT_CERTIFICATE_CARE_PROVIDER_ID = "event.certificate.care_provider.id";
-    public static final String EVENT_CERTIFICATE_DIAGNOSIS_CODE = "event.certificate.diagnosis.code";
     public static final String EVENT_CERTIFICATE_ID = "event.certificate.id";
-    public static final String EVENT_CERTIFICATE_ORIGINAL_ID = "event.certificate.original.id";
-    public static final String EVENT_CERTIFICATE_ORIGINAL_TYPE = "event.certificate.original.type";
-    public static final String EVENT_CERTIFICATE_PDF_PRINT_TYPE = "event.certificate.pdf.print.type";
-    public static final String EVENT_CERTIFICATE_PREFILL_ELEMENT_COUNT = "event.certificate.prefill.element.count";
-    public static final String EVENT_CERTIFICATE_RECIPIENT = "event.certificate.recipient";
-    public static final String EVENT_CERTIFICATE_RELATION_CODE = "event.certificate.relation.code";
-    public static final String EVENT_CERTIFICATE_REVOKE_MESSAGE = "event.certificate.revoke.message";
-    public static final String EVENT_CERTIFICATE_REVOKE_REASON = "event.certificate.revoke.reason";
+    public static final String EVENT_CERTIFICATE_PARENT_CODE = "event.certificate.parent.code";
+    public static final String EVENT_CERTIFICATE_PARENT_ID = "event.certificate.parent.id";
+    public static final String EVENT_CERTIFICATE_PARENT_TYPE = "event.certificate.parent.type";
     public static final String EVENT_CERTIFICATE_TYPE = "event.certificate.type";
     public static final String EVENT_CERTIFICATE_UNIT_ID = "event.certificate.unit.id";
     public static final String EVENT_CERTIFICATE_VERSION = "event.certificate.version";
+    public static final String EVENT_LOGICAL_ADDRESS = "event.logical_address";
     public static final String EVENT_MESSAGE_ID = "event.message.id";
-    public static final String EVENT_MESSAGE_EMAIL_REASON = "event.message.email.reason";
-    public static final String EVENT_MESSAGE_QUESTION_ID_LIST = "event.message.question.id.list";
-    public static final String EVENT_MESSAGE_QUESTION_ORIGIN = "event.message.question.origin";
-    public static final String EVENT_MESSAGE_REFERENCE_EXTERNAL = "event.message.reference.external";
-    public static final String EVENT_MESSAGE_REFERENCE_INTERNAL = "event.message.reference.internal";
-    public static final String EVENT_MESSAGE_TOPIC = "event.message.topic";
-    public static final String EVENT_MESSAGE_TYPE = "event.message.type";
-    public static final String EVENT_PERSON_ID = "event.person.id";
-    public static final String EVENT_PERSON_ID_LOOKUP_RESULT = "event.person.id.lookup.result";
-    public static final String EVENT_SRS_CLIENT_CONTEXT = "event.srs.client.context";
-    public static final String EVENT_STATUS_UPDATE_EVENT_ID = "event.status.update.event.id";
-    public static final String EVENT_STATUS_UPDATE_CORRELATION_ID = "event.status.update.correlation.id";
-    public static final String EVENT_STATUS_UPDATE_LOGICAL_ADDRESS = "event.status.update.logical.address";
-    public static final String EVENT_STATUS_UPDATE_SEND_ATTEMPT = "event.status.update.send_attempt";
-    public static final String EVENT_STATUS_UPDATE_TIME = "event.status.update.time";
-    public static final String EVENT_STATUS_UPDATE_TYPE = "event.status.update.type";
+    public static final String EVENT_MESSAGE_SUBJECT = "event.message.subject";
+    public static final String EVENT_PREFILL_COUNT = "event.prefill_count";
+    public static final String EVENT_PRINT_TYPE = "event.print_type";
+    public static final String EVENT_PU_LOOKUP_ID = "event.pu_lookup.id";
+    public static final String EVENT_PU_LOOKUP_RESULT = "event.pu_lookup.result";
+    public static final String EVENT_RECIPIENT = "event.recipient";
+    public static final String EVENT_REVOKE_REASON = "event.revoke_reason";
+    public static final String EVENT_SRS_CLIENT_CONTEXT = "event.srs.client_context";
+    public static final String EVENT_SRS_DIAGNOSIS_CODE = "event.srs.diagnosis_code";
+    public static final String EVENT_STATUS_UPDATE_CORRELATION_ID = "event.status_update.correlation_id";
+    public static final String EVENT_STATUS_UPDATE_EVENT_ID = "event.status_update.event_id";
+    public static final String EVENT_STATUS_UPDATE_SEND_ATTEMPT = "event.status_update.send_attempt";
+    public static final String EVENT_STATUS_UPDATE_TYPE = "event.status_update.type";
 
     public static final String ORGANIZATION_CARE_PROVIDER_ID = "organization.care_provider.id";
     public static final String ORGANIZATION_ID = "organization.id";
-    public static final String ORGANIZATION_ID_LIST = "organization.id.list";
 
     public static final String USER_ID = "user.id";
     public static final String USER_ORIGIN = "user.origin";
     public static final String USER_ROLE = "user.role";
-    public static final String USER_ROLE_TYPE_NAME = "user.role_type.name";
 }

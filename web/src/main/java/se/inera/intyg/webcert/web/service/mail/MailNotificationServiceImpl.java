@@ -160,10 +160,10 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
         if (recipientAddress != null) {
             sendNotificationToUnit(recipientAddress, subject, body);
-            monitoringService.logMailSent(receivingEnhet.getHsaId(), reason);
+            monitoringService.logMailSent(receivingEnhet.getHsaId(), reason, mailNotification);
         } else {
             sendAdminMailAboutMissingEmailAddress(receivingEnhet, mailNotification);
-            monitoringService.logMailMissingAddress(receivingEnhet.getHsaId(), reason);
+            monitoringService.logMailMissingAddress(receivingEnhet.getHsaId(), reason, mailNotification);
         }
     }
 

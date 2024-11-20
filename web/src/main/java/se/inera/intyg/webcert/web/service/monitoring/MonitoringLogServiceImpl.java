@@ -36,6 +36,7 @@ import se.inera.intyg.webcert.logging.MdcCloseableMap;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
+import se.inera.intyg.webcert.web.service.mail.MailNotification;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 @Service
@@ -48,12 +49,14 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     private WebCertUserService webCertUserService;
 
     @Override
-    public void logMailSent(String unitHsaId, String reason) {
+    public void logMailSent(String unitHsaId, String reason, MailNotification mailNotification) {
         try (MdcCloseableMap ignored = MdcCloseableMap.builder()
             .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.MAIL_SENT))
             .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_INFO)
-            .put(MdcLogConstants.ORGANIZATION_ID, unitHsaId)
-            .put(MdcLogConstants.EVENT_MESSAGE_EMAIL_REASON, reason)
+            .put(MdcLogConstants.EVENT_CERTIFICATE_UNIT_ID, unitHsaId)
+            .put(MdcLogConstants.EVENT_CERTIFICATE_ID, mailNotification.getCertificateId())
+            .put(MdcLogConstants.EVENT_CERTIFICATE_TYPE, mailNotification.getCertificateType())
+            .put(MdcLogConstants.EVENT_MESSAGE_ID, mailNotification.getQaId())
             .build()
         ) {
             logEvent(MonitoringEvent.MAIL_SENT, unitHsaId, reason);
@@ -61,12 +64,14 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
-    public void logMailMissingAddress(String unitHsaId, String reason) {
+    public void logMailMissingAddress(String unitHsaId, String reason, MailNotification mailNotification) {
         try (MdcCloseableMap ignored = MdcCloseableMap.builder()
             .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.MAIL_MISSING_ADDRESS))
             .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_INFO)
-            .put(MdcLogConstants.ORGANIZATION_ID, unitHsaId)
-            .put(MdcLogConstants.EVENT_MESSAGE_EMAIL_REASON, reason)
+            .put(MdcLogConstants.EVENT_CERTIFICATE_UNIT_ID, unitHsaId)
+            .put(MdcLogConstants.EVENT_CERTIFICATE_ID, mailNotification.getCertificateId())
+            .put(MdcLogConstants.EVENT_CERTIFICATE_TYPE, mailNotification.getCertificateType())
+            .put(MdcLogConstants.EVENT_MESSAGE_ID, mailNotification.getQaId())
             .build()
         ) {
             logEvent(MonitoringEvent.MAIL_MISSING_ADDRESS, unitHsaId, reason);
@@ -81,7 +86,6 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
             .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_USER)
             .put(MdcLogConstants.USER_ID, userHsaId)
             .put(MdcLogConstants.USER_ROLE, role)
-            .put(MdcLogConstants.USER_ROLE_TYPE_NAME, roleName)
             .put(MdcLogConstants.EVENT_AUTHENTICATION_SCHEME, authScheme)
             .put(MdcLogConstants.USER_ORIGIN, origin)
             .build()
@@ -146,87 +150,30 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         Amne amne, List<String> frageIds) {
         if (KOMPLETTERING_AV_LAKARINTYG == amne) {
             final var questionIds = Joiner.on(",").join(frageIds);
-            try (MdcCloseableMap ignored = MdcCloseableMap.builder()
-                .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.QUESTION_RECEIVED_COMPLETION))
-                .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_CREATION)
-                .put(MdcLogConstants.EVENT_MESSAGE_QUESTION_ORIGIN, fragestallare)
-                .put(MdcLogConstants.EVENT_MESSAGE_REFERENCE_EXTERNAL, externReferens)
-                .put(MdcLogConstants.EVENT_MESSAGE_REFERENCE_INTERNAL, internReferens != null ? Long.toString(internReferens) : null)
-                .put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId)
-                .put(MdcLogConstants.EVENT_CERTIFICATE_UNIT_ID, enhet)
-                .put(MdcLogConstants.EVENT_MESSAGE_QUESTION_ID_LIST, questionIds)
-                .build()
-            ) {
-                logEvent(MonitoringEvent.QUESTION_RECEIVED_COMPLETION, fragestallare, externReferens, internReferens, intygsId, enhet,
-                    questionIds);
-            }
+            logEvent(MonitoringEvent.QUESTION_RECEIVED_COMPLETION, fragestallare, externReferens, internReferens, intygsId, enhet,
+                questionIds);
         } else {
             final var subject = amne != null ? amne.name() : NO_AMNE;
-            try (MdcCloseableMap ignored = MdcCloseableMap.builder()
-                .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.QUESTION_RECEIVED))
-                .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_CREATION)
-                .put(MdcLogConstants.EVENT_MESSAGE_QUESTION_ORIGIN, fragestallare)
-                .put(MdcLogConstants.EVENT_MESSAGE_REFERENCE_EXTERNAL, externReferens)
-                .put(MdcLogConstants.EVENT_MESSAGE_REFERENCE_INTERNAL, internReferens != null ? Long.toString(internReferens) : null)
-                .put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId)
-                .put(MdcLogConstants.EVENT_CERTIFICATE_UNIT_ID, enhet)
-                .put(MdcLogConstants.EVENT_MESSAGE_TOPIC, subject)
-                .build()
-            ) {
-                logEvent(MonitoringEvent.QUESTION_RECEIVED, fragestallare, externReferens, internReferens, intygsId, enhet, subject);
-            }
+            logEvent(MonitoringEvent.QUESTION_RECEIVED, fragestallare, externReferens, internReferens, intygsId, enhet, subject);
         }
     }
 
     @Override
     public void logAnswerReceived(String externReferens, Long internReferens, String intygsId, String enhet, Amne amne) {
         final var subject = amne != null ? amne.name() : NO_AMNE;
-        try (MdcCloseableMap ignored = MdcCloseableMap.builder()
-            .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.ANSWER_RECEIVED))
-            .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_CREATION)
-            .put(MdcLogConstants.EVENT_MESSAGE_REFERENCE_EXTERNAL, externReferens)
-            .put(MdcLogConstants.EVENT_MESSAGE_REFERENCE_INTERNAL, internReferens != null ? Long.toString(internReferens) : null)
-            .put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId)
-            .put(MdcLogConstants.EVENT_CERTIFICATE_UNIT_ID, enhet)
-            .put(MdcLogConstants.EVENT_MESSAGE_TOPIC, subject)
-            .build()
-        ) {
-            logEvent(MonitoringEvent.ANSWER_RECEIVED, externReferens, internReferens, intygsId, enhet, subject);
-        }
+        logEvent(MonitoringEvent.ANSWER_RECEIVED, externReferens, internReferens, intygsId, enhet, subject);
     }
 
     @Override
     public void logQuestionSent(String externReferens, Long internReferens, String intygsId, String enhet, Amne amne) {
         final var subject = amne != null ? amne.name() : NO_AMNE;
-        try (MdcCloseableMap ignored = MdcCloseableMap.builder()
-            .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.QUESTION_SENT))
-            .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_CREATION)
-            .put(MdcLogConstants.EVENT_MESSAGE_REFERENCE_EXTERNAL, externReferens)
-            .put(MdcLogConstants.EVENT_MESSAGE_REFERENCE_INTERNAL, internReferens != null ? Long.toString(internReferens) : null)
-            .put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId)
-            .put(MdcLogConstants.EVENT_CERTIFICATE_UNIT_ID, enhet)
-            .put(MdcLogConstants.EVENT_MESSAGE_TOPIC, subject)
-            .build()
-        ) {
-            logEvent(MonitoringEvent.QUESTION_SENT, externReferens, internReferens, intygsId, enhet, subject);
-        }
+        logEvent(MonitoringEvent.QUESTION_SENT, externReferens, internReferens, intygsId, enhet, subject);
     }
 
     @Override
     public void logAnswerSent(String externReferens, Long internReferens, String intygsId, String enhet, Amne amne) {
         final var subject = amne != null ? amne.name() : NO_AMNE;
-        try (MdcCloseableMap ignored = MdcCloseableMap.builder()
-            .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.ANSWER_SENT))
-            .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_CREATION)
-            .put(MdcLogConstants.EVENT_MESSAGE_REFERENCE_EXTERNAL, externReferens)
-            .put(MdcLogConstants.EVENT_MESSAGE_REFERENCE_INTERNAL, internReferens != null ? Long.toString(internReferens) : null)
-            .put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId)
-            .put(MdcLogConstants.EVENT_CERTIFICATE_UNIT_ID, enhet)
-            .put(MdcLogConstants.EVENT_MESSAGE_TOPIC, subject)
-            .build()
-        ) {
-            logEvent(MonitoringEvent.ANSWER_SENT, externReferens, internReferens, intygsId, enhet, subject);
-        }
+        logEvent(MonitoringEvent.ANSWER_SENT, externReferens, internReferens, intygsId, enhet, subject);
     }
 
     @Override
@@ -263,7 +210,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
             .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_ACCESS)
             .put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId)
             .put(MdcLogConstants.EVENT_CERTIFICATE_TYPE, intygsTyp)
-            .put(MdcLogConstants.EVENT_CERTIFICATE_PDF_PRINT_TYPE, printType)
+            .put(MdcLogConstants.EVENT_PRINT_TYPE, printType)
             .build()
         ) {
             logEvent(MonitoringEvent.INTYG_PRINT_PDF, intygsId, intygsTyp, printType);
@@ -280,7 +227,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
             .put(MdcLogConstants.EVENT_CERTIFICATE_TYPE, intygsTyp)
             .put(MdcLogConstants.USER_ID, userHsaId)
             .put(MdcLogConstants.EVENT_AUTHENTICATION_SCHEME, authScheme)
-            .put(MdcLogConstants.EVENT_CERTIFICATE_RELATION_CODE, relationCodeName)
+            .put(MdcLogConstants.EVENT_CERTIFICATE_PARENT_CODE, relationCodeName)
             .build()
         ) {
             logEvent(MonitoringEvent.INTYG_SIGNED, intygsId, intygsTyp, userHsaId, authScheme, relationCodeName);
@@ -306,7 +253,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
             .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.INTYG_SENT))
             .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_CHANGE)
             .put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId)
-            .put(MdcLogConstants.EVENT_CERTIFICATE_RECIPIENT, recipient)
+            .put(MdcLogConstants.EVENT_RECIPIENT, recipient)
             .build()
         ) {
             logEvent(MonitoringEvent.INTYG_SENT, intygsId, intygsTyp, recipient);
@@ -332,7 +279,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
             .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.INTYG_COPIED))
             .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_CREATION)
             .put(MdcLogConstants.EVENT_CERTIFICATE_ID, copyIntygsId)
-            .put(MdcLogConstants.EVENT_CERTIFICATE_ORIGINAL_ID, originalIntygId)
+            .put(MdcLogConstants.EVENT_CERTIFICATE_PARENT_ID, originalIntygId)
             .build()
         ) {
             logEvent(MonitoringEvent.INTYG_COPIED, copyIntygsId, originalIntygId);
@@ -345,7 +292,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
             .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.INTYG_COPIED_RENEWAL))
             .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_CREATION)
             .put(MdcLogConstants.EVENT_CERTIFICATE_ID, copyIntygsId)
-            .put(MdcLogConstants.EVENT_CERTIFICATE_ORIGINAL_ID, originalIntygId)
+            .put(MdcLogConstants.EVENT_CERTIFICATE_PARENT_ID, originalIntygId)
             .build()
         ) {
             logEvent(MonitoringEvent.INTYG_COPIED_RENEWAL, copyIntygsId, originalIntygId);
@@ -358,7 +305,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
             .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.INTYG_COPIED_REPLACEMENT))
             .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_CREATION)
             .put(MdcLogConstants.EVENT_CERTIFICATE_ID, copyIntygsId)
-            .put(MdcLogConstants.EVENT_CERTIFICATE_ORIGINAL_ID, originalIntygId)
+            .put(MdcLogConstants.EVENT_CERTIFICATE_PARENT_ID, originalIntygId)
             .build()
         ) {
             logEvent(MonitoringEvent.INTYG_COPIED_REPLACEMENT, copyIntygsId, originalIntygId);
@@ -371,7 +318,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
             .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.INTYG_COPIED_COMPLETION))
             .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_CREATION)
             .put(MdcLogConstants.EVENT_CERTIFICATE_ID, copyIntygsId)
-            .put(MdcLogConstants.EVENT_CERTIFICATE_ORIGINAL_ID, originalIntygId)
+            .put(MdcLogConstants.EVENT_CERTIFICATE_PARENT_ID, originalIntygId)
             .build()
         ) {
             logEvent(MonitoringEvent.INTYG_COPIED_COMPLETION, copyIntygsId, originalIntygId);
@@ -386,7 +333,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
                 .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_CREATION)
                 .put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId)
                 .put(MdcLogConstants.EVENT_CERTIFICATE_TYPE, intygsTyp)
-                .put(MdcLogConstants.EVENT_CERTIFICATE_PREFILL_ELEMENT_COUNT, Integer.toString(nrPrefillElements))
+                .put(MdcLogConstants.EVENT_PREFILL_COUNT, Integer.toString(nrPrefillElements))
                 .put(MdcLogConstants.USER_ID, userHsaId)
                 .put(MdcLogConstants.EVENT_CERTIFICATE_UNIT_ID, unitHsaId)
                 .build()
@@ -418,8 +365,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
             .put(MdcLogConstants.EVENT_CERTIFICATE_TYPE, intygsTyp)
             .put(MdcLogConstants.USER_ID, userHsaId)
             .put(MdcLogConstants.EVENT_CERTIFICATE_UNIT_ID, unitHsaId)
-            .put(MdcLogConstants.EVENT_CERTIFICATE_ORIGINAL_ID, originalIntygsId)
-            .put(MdcLogConstants.EVENT_CERTIFICATE_ORIGINAL_TYPE, originalIntygsTyp)
+            .put(MdcLogConstants.EVENT_CERTIFICATE_PARENT_ID, originalIntygsId)
+            .put(MdcLogConstants.EVENT_CERTIFICATE_PARENT_TYPE, originalIntygsTyp)
             .build()
         ) {
             logEvent(MonitoringEvent.UTKAST_CREATED_TEMPLATE_MANUAL, intygsId, intygsTyp, userHsaId, unitHsaId, originalIntygsId,
@@ -437,8 +384,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
             .put(MdcLogConstants.EVENT_CERTIFICATE_TYPE, intygsTyp)
             .put(MdcLogConstants.USER_ID, userHsaId)
             .put(MdcLogConstants.EVENT_CERTIFICATE_UNIT_ID, unitHsaId)
-            .put(MdcLogConstants.EVENT_CERTIFICATE_ORIGINAL_ID, originalIntygsId)
-            .put(MdcLogConstants.EVENT_CERTIFICATE_ORIGINAL_TYPE, originalIntygsTyp)
+            .put(MdcLogConstants.EVENT_CERTIFICATE_PARENT_ID, originalIntygsId)
+            .put(MdcLogConstants.EVENT_CERTIFICATE_PARENT_TYPE, originalIntygsTyp)
             .build()
         ) {
             logEvent(MonitoringEvent.UTKAST_CREATED_TEMPLATE_AUTO, intygsId, intygsTyp, userHsaId, unitHsaId, originalIntygsId,
@@ -492,11 +439,10 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
             .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_CHANGE)
             .put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId)
             .put(MdcLogConstants.USER_ID, hsaId)
-            .put(MdcLogConstants.EVENT_CERTIFICATE_REVOKE_REASON, reason)
-            .put(MdcLogConstants.EVENT_CERTIFICATE_REVOKE_MESSAGE, revokeMessage)
+            .put(MdcLogConstants.EVENT_REVOKE_REASON, reason)
             .build()
         ) {
-            logEvent(MonitoringEvent.UTKAST_REVOKED, intygsId, hsaId, reason, revokeMessage);
+            logEvent(MonitoringEvent.UTKAST_REVOKED, intygsId, hsaId, reason);
         }
     }
 
@@ -558,8 +504,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         try (MdcCloseableMap ignored = MdcCloseableMap.builder()
             .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.PU_LOOKUP))
             .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_INFO)
-            .put(MdcLogConstants.EVENT_PERSON_ID, hashedPersonId)
-            .put(MdcLogConstants.EVENT_PERSON_ID_LOOKUP_RESULT, result)
+            .put(MdcLogConstants.EVENT_PU_LOOKUP_ID, hashedPersonId)
+            .put(MdcLogConstants.EVENT_PU_LOOKUP_RESULT, result)
             .build()
         ) {
             logEvent(MonitoringEvent.PU_LOOKUP, hashedPersonId, result);
@@ -594,11 +540,10 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
             .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_CREATION)
             .put(MdcLogConstants.EVENT_CERTIFICATE_ID, certificateId)
             .put(MdcLogConstants.EVENT_STATUS_UPDATE_CORRELATION_ID, correlationId)
-            .put(MdcLogConstants.EVENT_STATUS_UPDATE_LOGICAL_ADDRESS, logicalAddress)
+            .put(MdcLogConstants.EVENT_LOGICAL_ADDRESS, logicalAddress)
             .put(MdcLogConstants.EVENT_CERTIFICATE_TYPE, certificateType)
             .put(MdcLogConstants.EVENT_CERTIFICATE_VERSION, certificateVersion)
             .put(MdcLogConstants.EVENT_STATUS_UPDATE_TYPE, eventName)
-            .put(MdcLogConstants.EVENT_STATUS_UPDATE_TIME, eventTime.toString())
             .put(MdcLogConstants.USER_ID, currentUser)
             .build()
         ) {
@@ -618,7 +563,6 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
                 .put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId)
                 .put(MdcLogConstants.EVENT_CERTIFICATE_TYPE, intygsTyp)
                 .put(MdcLogConstants.EVENT_CERTIFICATE_UNIT_ID, unitHsaId)
-                .put(MdcLogConstants.EVENT_MESSAGE_QUESTION_ID_LIST, frageIds.toString())
                 .build()
             ) {
                 logEvent(MonitoringEvent.MEDICINSKT_ARENDE_RECEIVED, intygsId, intygsTyp, unitHsaId, frageIds);
@@ -627,7 +571,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
             try (MdcCloseableMap ignored = MdcCloseableMap.builder()
                 .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.ARENDE_RECEIVED_ANSWER))
                 .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_CREATION)
-                .put(MdcLogConstants.EVENT_MESSAGE_TOPIC, subject)
+                .put(MdcLogConstants.EVENT_MESSAGE_SUBJECT, subject)
                 .put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId)
                 .put(MdcLogConstants.EVENT_CERTIFICATE_TYPE, intygsTyp)
                 .put(MdcLogConstants.EVENT_CERTIFICATE_UNIT_ID, unitHsaId)
@@ -639,7 +583,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
             try (MdcCloseableMap ignored = MdcCloseableMap.builder()
                 .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.ARENDE_RECEIVED_QUESTION))
                 .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_CREATION)
-                .put(MdcLogConstants.EVENT_MESSAGE_TOPIC, subject)
+                .put(MdcLogConstants.EVENT_MESSAGE_SUBJECT, subject)
                 .put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId)
                 .put(MdcLogConstants.EVENT_CERTIFICATE_TYPE, intygsTyp)
                 .put(MdcLogConstants.EVENT_CERTIFICATE_UNIT_ID, unitHsaId)
@@ -657,7 +601,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
             try (MdcCloseableMap ignored = MdcCloseableMap.builder()
                 .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.ARENDE_CREATED_ANSWER))
                 .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_CREATION)
-                .put(MdcLogConstants.EVENT_MESSAGE_TOPIC, subject)
+                .put(MdcLogConstants.EVENT_MESSAGE_SUBJECT, subject)
                 .put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId)
                 .put(MdcLogConstants.EVENT_CERTIFICATE_TYPE, intygsTyp)
                 .put(MdcLogConstants.EVENT_CERTIFICATE_UNIT_ID, unitHsaId)
@@ -669,7 +613,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
             try (MdcCloseableMap ignored = MdcCloseableMap.builder()
                 .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.ARENDE_CREATED_QUESTION))
                 .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_CREATION)
-                .put(MdcLogConstants.EVENT_MESSAGE_TOPIC, subject)
+                .put(MdcLogConstants.EVENT_MESSAGE_SUBJECT, subject)
                 .put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId)
                 .put(MdcLogConstants.EVENT_CERTIFICATE_TYPE, intygsTyp)
                 .put(MdcLogConstants.EVENT_CERTIFICATE_UNIT_ID, unitHsaId)
@@ -756,17 +700,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         final var user = webCertUserService.getUser();
         final var careProvider = user.getValdVardgivare() != null ? user.getValdVardgivare().getId() : "null";
         final var careUnit = user.getValdVardenhet() != null ? user.getValdVardenhet().getId() : "null";
-        try (MdcCloseableMap ignored = MdcCloseableMap.builder()
-            .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.IDP_CONNECTIVITY_CHECK))
-            .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_INFO)
-            .put(MdcLogConstants.SERVICE_ADDRESS, ip)
-            .put(MdcLogConstants.ORGANIZATION_CARE_PROVIDER_ID, careProvider)
-            .put(MdcLogConstants.ORGANIZATION_ID, careUnit)
-            .put(MdcLogConstants.SERVICE_STATE, connectivityResult.toString())
-            .build()
-        ) {
-            logEvent(MonitoringEvent.IDP_CONNECTIVITY_CHECK, ip, careProvider, careUnit, connectivityResult.toString());
-        }
+        logEvent(MonitoringEvent.IDP_CONNECTIVITY_CHECK, ip, careProvider, careUnit, connectivityResult.toString());
     }
 
     @Override
@@ -813,7 +747,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         try (MdcCloseableMap ignored = MdcCloseableMap.builder()
             .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.SRS_GET_SRS_FOR_DIAGNOSIS_CODE))
             .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_INFO)
-            .put(MdcLogConstants.EVENT_CERTIFICATE_DIAGNOSIS_CODE, diagnosisCode)
+            .put(MdcLogConstants.EVENT_SRS_DIAGNOSIS_CODE, diagnosisCode)
             .build()
         ) {
             logEvent(MonitoringEvent.SRS_GET_SRS_FOR_DIAGNOSIS_CODE, diagnosisCode);
@@ -830,7 +764,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
             .put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId)
             .put(MdcLogConstants.EVENT_CERTIFICATE_CARE_PROVIDER_ID, caregiverId)
             .put(MdcLogConstants.EVENT_CERTIFICATE_UNIT_ID, careUnitId)
-            .put(MdcLogConstants.EVENT_CERTIFICATE_DIAGNOSIS_CODE, diagnosisCode)
+            .put(MdcLogConstants.EVENT_SRS_DIAGNOSIS_CODE, diagnosisCode)
             .build()
         ) {
             logEvent(MonitoringEvent.SRS_LOADED, userClientContext, intygsId, diagnosisCode, caregiverId, careUnitId);
@@ -1022,7 +956,6 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         try (MdcCloseableMap ignored = MdcCloseableMap.builder()
             .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.SUBSCRIPTION_SERVICE_CALL_FAILURE))
             .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_INFO)
-            .put(MdcLogConstants.ORGANIZATION_ID_LIST, queryIds.toString())
             .put(MdcLogConstants.ERROR_MESSAGE, exceptionMessage)
             .build()
         ) {
@@ -1037,7 +970,6 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
             .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_INFO)
             .put(MdcLogConstants.USER_ID, userId)
             .put(MdcLogConstants.EVENT_AUTHENTICATION_METHOD, authMethod)
-            .put(MdcLogConstants.ORGANIZATION_ID_LIST, organizations)
             .build()
         ) {
         logEvent(MonitoringEvent.MISSING_SUBSCRIPTION_WARNING, userId, authMethod, organizations);
@@ -1051,7 +983,6 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
             .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_INFO)
             .put(MdcLogConstants.USER_ID, userId)
             .put(MdcLogConstants.EVENT_AUTHENTICATION_METHOD, authMethod)
-            .put(MdcLogConstants.ORGANIZATION_ID_LIST, organizations)
             .build()
         ) {
             logEvent(MonitoringEvent.LOGIN_ATTEMPT_MISSING_SUBSCRIPTION, userId, authMethod, organizations);
@@ -1060,15 +991,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
 
     @Override
     public void logSamlStatusForFailedLogin(String issuer, String samlStatus) {
-        try (MdcCloseableMap ignored = MdcCloseableMap.builder()
-            .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.SAML_STATUS_LOGIN_FAIL))
-            .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_ERROR)
-            .put(MdcLogConstants.SERVICE_ADDRESS, issuer)
-            .put(MdcLogConstants.ERROR_MESSAGE, samlStatus)
-            .build()
-        ) {
-            logEvent(MonitoringEvent.SAML_STATUS_LOGIN_FAIL, issuer, samlStatus);
-        }
+        logEvent(MonitoringEvent.SAML_STATUS_LOGIN_FAIL, issuer, samlStatus);
     }
 
     @Override
@@ -1093,7 +1016,6 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
             .put(MdcLogConstants.EVENT_MESSAGE_ID, messageId)
             .put(MdcLogConstants.EVENT_CERTIFICATE_CARE_PROVIDER_ID, caregiverId)
             .put(MdcLogConstants.EVENT_CERTIFICATE_UNIT_ID, careUnitId)
-            .put(MdcLogConstants.EVENT_MESSAGE_TYPE, messageType)
             .build()
         ) {
             logEvent(MonitoringEvent.MESSAGE_IMPORTED, messageId, messageType, certificateId, caregiverId, careUnitId);
@@ -1105,7 +1027,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     try (MdcCloseableMap ignored = MdcCloseableMap.builder()
         .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.DSS_SIGNATURE_RESPONSE_SUCCESS))
         .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_INFO)
-        .put(MdcLogConstants.HTTP_REQUEST_ID, transactionId)
+        .put(MdcLogConstants.TRANSACTION_ID, transactionId)
         .put(MdcLogConstants.EVENT_CERTIFICATE_ID, certificateId)
         .build()
         ) {
@@ -1118,7 +1040,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         try (MdcCloseableMap ignored = MdcCloseableMap.builder()
             .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.DSS_SIGNATURE_RESPONSE_RECEIVED))
             .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_INFO)
-            .put(MdcLogConstants.HTTP_REQUEST_ID, transactionId)
+            .put(MdcLogConstants.TRANSACTION_ID, transactionId)
             .build()
         ) {
             logEvent(MonitoringEvent.DSS_SIGNATURE_RESPONSE_RECEIVED, transactionId);
@@ -1130,7 +1052,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         try (MdcCloseableMap ignored = MdcCloseableMap.builder()
             .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.DSS_SIGNATURE_RESPONSE_INVALID))
             .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_ERROR)
-            .put(MdcLogConstants.HTTP_REQUEST_ID, transactionId)
+            .put(MdcLogConstants.TRANSACTION_ID, transactionId)
             .put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId)
             .put(MdcLogConstants.ERROR_MESSAGE, s)
             .build()
@@ -1144,7 +1066,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         try (MdcCloseableMap ignored = MdcCloseableMap.builder()
             .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.DSS_SIGNATURE_REQUEST_CREATED))
             .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_CREATION)
-            .put(MdcLogConstants.HTTP_REQUEST_ID, transactionId)
+            .put(MdcLogConstants.TRANSACTION_ID, transactionId)
             .put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId)
             .build()
         ) {
@@ -1158,7 +1080,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         try (MdcCloseableMap ignored = MdcCloseableMap.builder()
             .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.DSS_SIGNATURE_RESPONSE_ERROR_RECEIVED))
             .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_ERROR)
-            .put(MdcLogConstants.HTTP_REQUEST_ID, transactionId)
+            .put(MdcLogConstants.TRANSACTION_ID, transactionId)
             .put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId)
             .put(MdcLogConstants.ERROR_MESSAGE, Joiner.on(" - ").join(resultMajor, resultMinor, resultMessage))
             .build()
@@ -1235,7 +1157,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         UTKAST_PATIENT_UPDATED("Patient details for utkast '{}' of type '{}' updated"),
         UTKAST_CONCURRENTLY_EDITED("Utkast '{}' of type '{}' was concurrently edited by multiple users"),
         UTKAST_DELETED("Utkast '{}' of type '{}' was deleted"),
-        UTKAST_REVOKED("Utkast '{}' revoked by '{}' reason '{}' message '{}'"),
+        UTKAST_REVOKED("Utkast '{}' revoked by '{}' reason '{}'"),
         UTKAST_PRINT("Intyg '{}' of type '{}' was printed"),
         UTKAST_READY_NOTIFICATION_SENT("Utkast '{}' of type '{}' was marked as ready and notification was sent"),
         UTKAST_SIGN_FAILED("Utkast '{}' failed signing process with message '{}'"),

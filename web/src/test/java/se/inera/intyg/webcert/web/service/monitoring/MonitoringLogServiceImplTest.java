@@ -42,6 +42,7 @@ import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
+import se.inera.intyg.webcert.web.service.mail.MailNotification;
 
 @ExtendWith(MockitoExtension.class)
 class MonitoringLogServiceImplTest {
@@ -73,6 +74,8 @@ class MonitoringLogServiceImplTest {
 
     @Mock
     private Appender<ILoggingEvent> mockAppender;
+    @Mock
+    private MailNotification mailNotification;
 
     @Captor
     private ArgumentCaptor<LoggingEvent> captorLoggingEvent;
@@ -205,13 +208,13 @@ class MonitoringLogServiceImplTest {
 
     @Test
     void shouldLogMailMissingAddress() {
-        logService.logMailMissingAddress(HSA_ID, REASON);
+        logService.logMailMissingAddress(HSA_ID, REASON, mailNotification);
         verifyLog(Level.INFO, "MAIL_MISSING_ADDRESS Mail sent to admin on behalf of unit 'HSA_ID' for REASON");
     }
 
     @Test
     void shouldLogMailSent() {
-        logService.logMailSent(HSA_ID, REASON);
+        logService.logMailSent(HSA_ID, REASON, mailNotification);
         verifyLog(Level.INFO, "MAIL_SENT Mail sent to unit 'HSA_ID' for REASON");
     }
 
@@ -400,7 +403,7 @@ class MonitoringLogServiceImplTest {
     @Test
     void shouldLogUtkastRevoked() {
         logService.logUtkastRevoked(INTYGS_ID, HSA_ID, REASON, REVOKE_MESSAGE);
-        verifyLog(Level.INFO, "UTKAST_REVOKED Utkast 'INTYGS_ID' revoked by 'HSA_ID' reason 'REASON' message 'REVOKE_MESSAGE'");
+        verifyLog(Level.INFO, "UTKAST_REVOKED Utkast 'INTYGS_ID' revoked by 'HSA_ID' reason 'REASON'");
     }
 
     @Test
