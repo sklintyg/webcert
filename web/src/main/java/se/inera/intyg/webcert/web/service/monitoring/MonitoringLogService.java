@@ -116,9 +116,11 @@ public interface MonitoringLogService extends AuthenticationLogger {
 
     void logArendeCreated(String intygsId, String intygsTyp, String unitHsaId, ArendeAmne amne, boolean isAnswer, String messageId);
 
-    void logIntegratedOtherUnit(String intygsId, String intygsTyp, String caregiverId, String unitId);
+    void logIntegratedOtherUnit(String intygsId, String intygsTyp, String certificateCareProvider, String certificateUnitId,
+        String userCareProviderId, String userUnitId);
 
-    void logIntegratedOtherCaregiver(String intygsId, String intygsTyp, String caregiverId, String unitId);
+    void logIntegratedOtherCaregiver(String intygsId, String intygsTyp, String certificateCareProvider, String certificateUnitId,
+        String userCareProviderId, String userUnitId);
 
     void logDiagnoskodverkChanged(String intygsId, String intygsTyp);
 

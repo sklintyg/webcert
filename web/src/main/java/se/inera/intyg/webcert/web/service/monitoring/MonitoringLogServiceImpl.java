@@ -639,32 +639,38 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
-    public void logIntegratedOtherUnit(String intygsId, String intygsTyp, String caregiverId, String unitId) {
+    public void logIntegratedOtherUnit(String intygsId, String intygsTyp, String certificateCareProvider, String certificateUnitId,
+        String userCareProviderId, String userUnitId) {
         try (MdcCloseableMap ignored = MdcCloseableMap.builder()
             .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.LOGIN_OTHER_UNIT))
             .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_USER)
             .put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId)
             .put(MdcLogConstants.EVENT_CERTIFICATE_TYPE, intygsTyp)
-            .put(MdcLogConstants.EVENT_CERTIFICATE_CARE_PROVIDER_ID, caregiverId)
-            .put(MdcLogConstants.EVENT_CERTIFICATE_UNIT_ID, unitId)
+            .put(MdcLogConstants.EVENT_CERTIFICATE_CARE_PROVIDER_ID, certificateCareProvider)
+            .put(MdcLogConstants.EVENT_CERTIFICATE_UNIT_ID, certificateUnitId)
+            .put(MdcLogConstants.ORGANIZATION_CARE_PROVIDER_ID, userCareProviderId)
+            .put(MdcLogConstants.ORGANIZATION_ID, userUnitId)
             .build()
         ) {
-            logEvent(MonitoringEvent.LOGIN_OTHER_UNIT, intygsId, intygsTyp, unitId);
+            logEvent(MonitoringEvent.LOGIN_OTHER_UNIT, intygsId, intygsTyp, certificateUnitId);
         }
     }
 
     @Override
-    public void logIntegratedOtherCaregiver(String intygsId, String intygsTyp, String caregiverId, String unitId) {
+    public void logIntegratedOtherCaregiver(String intygsId, String intygsTyp, String certificateCareProvider, String certificateUnitId,
+        String userCareProviderId, String userUnitId) {
         try (MdcCloseableMap ignored = MdcCloseableMap.builder()
             .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.LOGIN_OTHER_CAREGIVER))
             .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_USER)
             .put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId)
             .put(MdcLogConstants.EVENT_CERTIFICATE_TYPE, intygsTyp)
-            .put(MdcLogConstants.EVENT_CERTIFICATE_CARE_PROVIDER_ID, caregiverId)
-            .put(MdcLogConstants.EVENT_CERTIFICATE_UNIT_ID, unitId)
+            .put(MdcLogConstants.EVENT_CERTIFICATE_CARE_PROVIDER_ID, certificateCareProvider)
+            .put(MdcLogConstants.EVENT_CERTIFICATE_UNIT_ID, certificateUnitId)
+            .put(MdcLogConstants.ORGANIZATION_CARE_PROVIDER_ID, userCareProviderId)
+            .put(MdcLogConstants.ORGANIZATION_ID, userUnitId)
             .build()
         ) {
-            logEvent(MonitoringEvent.LOGIN_OTHER_CAREGIVER, intygsId, intygsTyp, caregiverId, unitId);
+            logEvent(MonitoringEvent.LOGIN_OTHER_CAREGIVER, intygsId, intygsTyp, certificateCareProvider, certificateUnitId);
         }
     }
 

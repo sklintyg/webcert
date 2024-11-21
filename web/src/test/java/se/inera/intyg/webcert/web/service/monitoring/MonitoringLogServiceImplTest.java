@@ -44,6 +44,7 @@ import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.web.service.mail.MailNotification;
 
+// CHECKSTYLE:OFF LineLength
 @ExtendWith(MockitoExtension.class)
 class MonitoringLogServiceImplTest {
 
@@ -68,6 +69,8 @@ class MonitoringLogServiceImplTest {
     private static final String PERSON_ID = "19121212-1212";
     private static final String USER_ROLE = "USER_ROLE";
     private static final String USER_ROLE_TYPE_NAME = "USER_ROLE_TYPE_NAME";
+    private static final String CARE_PROVIDER = "careProvider";
+    private static final String UNIT = "unit";
 
 
     private static final Personnummer PERSON_NUMMER = Personnummer.createPersonnummer(PERSON_ID).orElseThrow();
@@ -85,7 +88,6 @@ class MonitoringLogServiceImplTest {
 
     @BeforeEach
     void setup() {
-
         final Logger logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         logger.addAppender(mockAppender);
     }
@@ -427,13 +429,13 @@ class MonitoringLogServiceImplTest {
 
     @Test
     void shouldLogIntegratedOtherUnit() {
-        logService.logIntegratedOtherUnit(INTYGS_ID, INTYGS_TYP, VARDGIVARE, ENHET);
+        logService.logIntegratedOtherUnit(INTYGS_ID, INTYGS_TYP, VARDGIVARE, ENHET, CARE_PROVIDER, UNIT);
         verifyLog(Level.INFO, "LOGIN_OTHER_UNIT Viewed intyg 'INTYGS_ID' of type 'INTYGS_TYP' on other unit 'ENHET'");
     }
 
     @Test
     void shouldLogIntegratedOtherCaregiver() {
-        logService.logIntegratedOtherCaregiver(INTYGS_ID, INTYGS_TYP, VARDGIVARE, ENHET);
+        logService.logIntegratedOtherCaregiver(INTYGS_ID, INTYGS_TYP, VARDGIVARE, ENHET, CARE_PROVIDER, UNIT);
         verifyLog(Level.INFO,
             "LOGIN_OTHER_CAREGIVER Viewed intyg 'INTYGS_ID' of type 'INTYGS_TYP' on other caregiver 'VARDGIVARE' unit 'ENHET'");
     }
@@ -578,4 +580,5 @@ class MonitoringLogServiceImplTest {
             "MISSING_SUBSCRIPTION_WARNING User id 'userId' logging in with 'SITHS' received subscription warning for "
                 + "organizations '[HSA_ID_1, HSA_ID_2]'");
     }
+// CHECKSTYLE:ON LineLength
 }

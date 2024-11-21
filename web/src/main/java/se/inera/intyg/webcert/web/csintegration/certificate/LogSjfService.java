@@ -34,21 +34,27 @@ public class LogSjfService {
     public void log(Certificate certificate, WebCertUser user) {
         final var certificateId = certificate.getMetadata().getId();
         final var certificateType = certificate.getMetadata().getType();
-        final var careProviderId = certificate.getMetadata().getCareProvider().getUnitId();
-        final var careUnitId = certificate.getMetadata().getUnit().getUnitId();
-        if (!careProviderId.equals(user.getValdVardgivare().getId())) {
+        final var certificateCareProviderId = certificate.getMetadata().getCareProvider().getUnitId();
+        final var certificateCareUnitId = certificate.getMetadata().getUnit().getUnitId();
+        final var userCareProviderId = user.getValdVardgivare().getId();
+        final var userCareUnitId = user.getValdVardenhet().getId();
+        if (!certificateCareProviderId.equals(userCareProviderId)) {
             monitoringLogService.logIntegratedOtherCaregiver(
                 certificateId,
                 certificateType,
-                careProviderId,
-                careUnitId
+                certificateCareProviderId,
+                certificateCareUnitId,
+                userCareProviderId,
+                userCareUnitId
             );
-        } else if (!user.getValdVardenhet().getHsaIds().contains(careUnitId)) {
+        } else if (!user.getValdVardenhet().getHsaIds().contains(certificateCareUnitId)) {
             monitoringLogService.logIntegratedOtherUnit(
                 certificateId,
                 certificateType,
-                careProviderId,
-                careUnitId
+                certificateCareProviderId,
+                certificateCareUnitId,
+                userCareProviderId,
+                userCareUnitId
             );
         }
     }
