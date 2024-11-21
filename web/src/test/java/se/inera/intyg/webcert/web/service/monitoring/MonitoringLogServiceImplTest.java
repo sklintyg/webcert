@@ -71,6 +71,7 @@ class MonitoringLogServiceImplTest {
 
 
     private static final Personnummer PERSON_NUMMER = Personnummer.createPersonnummer(PERSON_ID).orElseThrow();
+    private static final String MESSAGE_ID = "messageId";
 
     @Mock
     private Appender<ILoggingEvent> mockAppender;
@@ -238,61 +239,61 @@ class MonitoringLogServiceImplTest {
 
     @Test
     void shouldLogArendeReceived() {
-        logService.logArendeReceived(INTYGS_ID, INTYGS_TYP, ENHET, ArendeAmne.KONTKT, null, false);
+        logService.logArendeReceived(INTYGS_ID, INTYGS_TYP, ENHET, ArendeAmne.KONTKT, null, false, MESSAGE_ID);
         verifyLog(Level.INFO,
             "ARENDE_RECEIVED_QUESTION Received arende with amne 'KONTKT' for 'INTYGS_ID' of type 'INTYGS_TYP' for unit 'ENHET'");
     }
 
     @Test
     void shouldLogArendeReceivedWithAllParametersNull() {
-        logService.logArendeReceived(null, null, null, null, null, false);
+        logService.logArendeReceived(null, null, null, null, null, false, null);
         verifyLog(Level.INFO, "ARENDE_RECEIVED_QUESTION Received arende with amne 'NO AMNE' for 'null' of type 'null' for unit 'null'");
     }
 
     @Test
     void shouldLogArendeReceivedCompletion() {
-        logService.logArendeReceived(INTYGS_ID, INTYGS_TYP, ENHET, ArendeAmne.KOMPLT, Arrays.asList("1", "2"), false);
+        logService.logArendeReceived(INTYGS_ID, INTYGS_TYP, ENHET, ArendeAmne.KOMPLT, Arrays.asList("1", "2"), false, MESSAGE_ID);
         verifyLog(Level.INFO,
             "MEDICINSKT_ARENDE_RECEIVED Received medicinskt arende for 'INTYGS_ID' of type 'INTYGS_TYP' for unit 'ENHET' on questions '[1, 2]'");
     }
 
     @Test
     void shouldLogArendeReceivedAnswer() {
-        logService.logArendeReceived(INTYGS_ID, INTYGS_TYP, ENHET, ArendeAmne.KONTKT, null, true);
+        logService.logArendeReceived(INTYGS_ID, INTYGS_TYP, ENHET, ArendeAmne.KONTKT, null, true, MESSAGE_ID);
         verifyLog(Level.INFO,
             "ARENDE_RECEIVED_ANSWER Received arende with amne 'KONTKT' for 'INTYGS_ID' of type 'INTYGS_TYP' for unit 'ENHET'");
     }
 
     @Test
     void shouldLogArendeReceivedAnswerAmneMissing() {
-        logService.logArendeReceived(INTYGS_ID, INTYGS_TYP, ENHET, null, null, true);
+        logService.logArendeReceived(INTYGS_ID, INTYGS_TYP, ENHET, null, null, true, MESSAGE_ID);
         verifyLog(Level.INFO,
             "ARENDE_RECEIVED_ANSWER Received arende with amne 'NO AMNE' for 'INTYGS_ID' of type 'INTYGS_TYP' for unit 'ENHET'");
     }
 
     @Test
     void shouldLogArendeCreated() {
-        logService.logArendeCreated(INTYGS_ID, INTYGS_TYP, ENHET, ArendeAmne.AVSTMN, false);
+        logService.logArendeCreated(INTYGS_ID, INTYGS_TYP, ENHET, ArendeAmne.AVSTMN, false, MESSAGE_ID);
         verifyLog(Level.INFO,
             "ARENDE_CREATED_QUESTION Created arende with amne 'AVSTMN' for 'INTYGS_ID' of type 'INTYGS_TYP' for unit 'ENHET'");
     }
 
     @Test
     void shouldLogArendeCreatedWithAllParametersNull() {
-        logService.logArendeCreated(null, null, null, null, false);
+        logService.logArendeCreated(null, null, null, null, false, null);
         verifyLog(Level.INFO, "ARENDE_CREATED_QUESTION Created arende with amne 'NO AMNE' for 'null' of type 'null' for unit 'null'");
     }
 
     @Test
     void shouldLogArendeCreatedAnswer() {
-        logService.logArendeCreated(INTYGS_ID, INTYGS_TYP, ENHET, ArendeAmne.AVSTMN, true);
+        logService.logArendeCreated(INTYGS_ID, INTYGS_TYP, ENHET, ArendeAmne.AVSTMN, true, MESSAGE_ID);
         verifyLog(Level.INFO,
             "ARENDE_CREATED_ANSWER Created arende with amne 'AVSTMN' for 'INTYGS_ID' of type 'INTYGS_TYP' for unit 'ENHET'");
     }
 
     @Test
     void shouldLogArendeCreatedAnswerWithAllParametersNull() {
-        logService.logArendeCreated(null, null, null, null, true);
+        logService.logArendeCreated(null, null, null, null, true, null);
         verifyLog(Level.INFO, "ARENDE_CREATED_ANSWER Created arende with amne 'NO AMNE' for 'null' of type 'null' for unit 'null'");
     }
 
@@ -426,7 +427,7 @@ class MonitoringLogServiceImplTest {
 
     @Test
     void shouldLogIntegratedOtherUnit() {
-        logService.logIntegratedOtherUnit(INTYGS_ID, INTYGS_TYP, ENHET);
+        logService.logIntegratedOtherUnit(INTYGS_ID, INTYGS_TYP, VARDGIVARE, ENHET);
         verifyLog(Level.INFO, "LOGIN_OTHER_UNIT Viewed intyg 'INTYGS_ID' of type 'INTYGS_TYP' on other unit 'ENHET'");
     }
 

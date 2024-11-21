@@ -47,6 +47,7 @@ public class LogSjfService {
             monitoringLogService.logIntegratedOtherUnit(
                 certificateId,
                 certificateType,
+                careProviderId,
                 careUnitId
             );
         }

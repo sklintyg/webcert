@@ -110,6 +110,6 @@ class LogSjfServiceTest {
         when(valdVardenhet.getHsaIds()).thenReturn(List.of("differentUnit"));
 
         logSjfService.log(certificate, user);
-        verify(monitoringLogService).logIntegratedOtherUnit(CERTIFICATE_ID, CERTIFICATE_TYPE, CARE_UNIT_ID);
+        verify(monitoringLogService).logIntegratedOtherUnit(CERTIFICATE_ID, CERTIFICATE_TYPE, CARE_PROVIDER_ID, CARE_UNIT_ID);
     }
 }

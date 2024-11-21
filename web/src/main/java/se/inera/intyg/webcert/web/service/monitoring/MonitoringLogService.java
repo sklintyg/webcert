@@ -111,11 +111,12 @@ public interface MonitoringLogService extends AuthenticationLogger {
 
     void logSubscriptionServiceCallFailure(Collection<String> queryIds, String exceptionMessage);
 
-    void logArendeReceived(String intygsId, String intygsTyp, String unitHsaId, ArendeAmne amne, List<String> frageIds, boolean isAnswer);
+    void logArendeReceived(String intygsId, String intygsTyp, String unitHsaId, ArendeAmne amne, List<String> frageIds, boolean isAnswer,
+        String messageId);
 
-    void logArendeCreated(String intygsId, String intygsTyp, String unitHsaId, ArendeAmne amne, boolean isAnswer);
+    void logArendeCreated(String intygsId, String intygsTyp, String unitHsaId, ArendeAmne amne, boolean isAnswer, String messageId);
 
-    void logIntegratedOtherUnit(String intygsId, String intygsTyp, String unitId);
+    void logIntegratedOtherUnit(String intygsId, String intygsTyp, String caregiverId, String unitId);
 
     void logIntegratedOtherCaregiver(String intygsId, String intygsTyp, String caregiverId, String unitId);
 

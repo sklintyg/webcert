@@ -219,7 +219,7 @@ public class ArendeServiceImpl implements ArendeService {
 
             monitoringLog.logArendeReceived(certificateId, utkast.getIntygsTyp(), utkast.getEnhetsId(), arende.getAmne(),
                 arende.getKomplettering().stream().map(MedicinsktArende::getFrageId).collect(Collectors.toList()),
-                arende.getSvarPaId() != null);
+                arende.getSvarPaId() != null, arende.getMeddelandeId());
             Arende saved = arendeRepository.save(arende);
             sendNotificationAndCreateEventForIncomingMessage(saved, utkast.getVardgivarId(), utkast.getSignatur().getSigneringsDatum());
             return saved;
@@ -235,7 +235,7 @@ public class ArendeServiceImpl implements ArendeService {
         monitoringLog.logArendeReceived(certificateId, certificate.getUtlatande().getTyp(),
             certificate.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getEnhetsid(), arende.getAmne(),
             arende.getKomplettering().stream().map(MedicinsktArende::getFrageId).collect(Collectors.toList()),
-            arende.getSvarPaId() != null);
+            arende.getSvarPaId() != null, arende.getMeddelandeId());
         Arende saved = arendeRepository.save(arende);
         sendNotificationAndCreateEventForIncomingMessage(
             saved,
@@ -949,7 +949,7 @@ public class ArendeServiceImpl implements ArendeService {
     private Arende processOutgoingMessage(Arende arende, NotificationEvent notificationEvent, boolean sendToRecipient) {
         Arende saved = arendeRepository.save(arende);
         monitoringLog.logArendeCreated(arende.getIntygsId(), arende.getIntygTyp(), arende.getEnhetId(), arende.getAmne(),
-            arende.getSvarPaId() != null);
+            arende.getSvarPaId() != null, arende.getMeddelandeId());
 
         updateSenasteHandelseAndStatusForRelatedArende(arende);
 

@@ -19,11 +19,15 @@
 
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.question.Answer;
+import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
@@ -97,13 +101,22 @@ public class ComplementCertificateFromCertificateService implements ComplementCe
         );
         decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
 
-        monitoringLogService.logArendeCreated(
-            certificate.getMetadata().getId(),
-            certificate.getMetadata().getType(),
-            certificate.getMetadata().getUnit().getUnitId(),
-            ArendeAmne.KOMPLT,
-            true
-        );
+        final var messageId = csIntegrationService.getQuestions(certificateId).stream()
+            .filter(question -> question.getType() == QuestionType.COMPLEMENT)
+            .map(Question::getAnswer)
+            .filter(Objects::nonNull)
+            .reduce((first, second) -> second)
+            .map(Answer::getId)
+            .orElse(null);
+
+            monitoringLogService.logArendeCreated(
+                certificate.getMetadata().getId(),
+                certificate.getMetadata().getType(),
+                certificate.getMetadata().getUnit().getUnitId(),
+                ArendeAmne.KOMPLT,
+                true,
+                messageId
+            );
 
         publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.HANFRFM);
 

@@ -67,6 +67,7 @@ class SendAnswerFromCertificateServiceTest {
         .build();
     private static final String QUESTION_ID = "questionId";
     private static final String MESSAGE = "message";
+
     @Mock
     PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
     @Mock
@@ -162,7 +163,8 @@ class SendAnswerFromCertificateServiceTest {
                 CERTIFICATE_TYPE,
                 UNIT_ID,
                 ArendeAmne.KONTKT,
-                false
+                false,
+                QUESTION_ID
             );
         }
     }

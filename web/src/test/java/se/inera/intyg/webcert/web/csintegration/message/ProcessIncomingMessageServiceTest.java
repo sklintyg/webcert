@@ -66,6 +66,7 @@ class ProcessIncomingMessageServiceTest {
     private static final String UNIT_ID = "unitId";
     private static final String CARE_PROVIDER_ID = "careProviderId";
     private static final LocalDateTime ISSUING_DATE = LocalDateTime.now();
+    private static final String MESSAGE_ID = "messageId";
 
     private SendMessageToCareType sendMessageToCareType;
     private Certificate certificate;
@@ -117,6 +118,7 @@ class ProcessIncomingMessageServiceTest {
         final var intygId = new IntygId();
         intygId.setExtension(CERTIFICATE_ID);
         sendMessageToCareType.setIntygsId(intygId);
+        sendMessageToCareType.setMeddelandeId(MESSAGE_ID);
     }
 
     @Test
@@ -134,7 +136,8 @@ class ProcessIncomingMessageServiceTest {
             UNIT_ID,
             ArendeAmne.KOMPLT,
             Collections.emptyList(),
-            false
+            false,
+            MESSAGE_ID
         );
     }
 
@@ -148,7 +151,8 @@ class ProcessIncomingMessageServiceTest {
             UNIT_ID,
             ArendeAmne.KOMPLT,
             Collections.emptyList(),
-            true
+            true,
+            MESSAGE_ID
         );
     }
 

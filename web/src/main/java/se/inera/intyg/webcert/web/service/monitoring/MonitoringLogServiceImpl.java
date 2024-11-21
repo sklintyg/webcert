@@ -29,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.logging.HashUtility;
 import se.inera.intyg.webcert.logging.LogMarkers;
@@ -514,7 +515,15 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
 
     @Override
     public void logPrivatePractitionerTermsApproved(String userId, Personnummer personId, Integer avtalVersion) {
-        logEvent(MonitoringEvent.PP_TERMS_ACCEPTED, userId, Personnummer.getPersonnummerHashSafe(personId), avtalVersion);
+        try (MdcCloseableMap ignored = MdcCloseableMap.builder()
+            .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.NOTIFICATION_SENT))
+            .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_CHANGE)
+            .put(MdcLogConstants.USER_ID, userId)
+            .put(MdcLogConstants.USER_ROLE, AuthoritiesConstants.ROLE_PRIVATLAKARE)
+            .build()
+        ) {
+            logEvent(MonitoringEvent.PP_TERMS_ACCEPTED, userId, Personnummer.getPersonnummerHashSafe(personId), avtalVersion);
+        }
     }
 
     @Override
@@ -554,7 +563,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
 
     @Override
     public void logArendeReceived(String intygsId, String intygsTyp, String unitHsaId, ArendeAmne amne, List<String> frageIds,
-        boolean isAnswer) {
+        boolean isAnswer, String messageId) {
         final var subject = amne != null ? amne.name() : NO_AMNE;
         if (ArendeAmne.KOMPLT == amne) {
             try (MdcCloseableMap ignored = MdcCloseableMap.builder()
@@ -563,6 +572,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
                 .put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId)
                 .put(MdcLogConstants.EVENT_CERTIFICATE_TYPE, intygsTyp)
                 .put(MdcLogConstants.EVENT_CERTIFICATE_UNIT_ID, unitHsaId)
+                .put(MdcLogConstants.EVENT_MESSAGE_ID, messageId)
                 .build()
             ) {
                 logEvent(MonitoringEvent.MEDICINSKT_ARENDE_RECEIVED, intygsId, intygsTyp, unitHsaId, frageIds);
@@ -575,6 +585,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
                 .put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId)
                 .put(MdcLogConstants.EVENT_CERTIFICATE_TYPE, intygsTyp)
                 .put(MdcLogConstants.EVENT_CERTIFICATE_UNIT_ID, unitHsaId)
+                .put(MdcLogConstants.EVENT_MESSAGE_ID, messageId)
                 .build()
             ) {
                 logEvent(MonitoringEvent.ARENDE_RECEIVED_ANSWER, subject, intygsId, intygsTyp, unitHsaId);
@@ -587,6 +598,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
                 .put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId)
                 .put(MdcLogConstants.EVENT_CERTIFICATE_TYPE, intygsTyp)
                 .put(MdcLogConstants.EVENT_CERTIFICATE_UNIT_ID, unitHsaId)
+                .put(MdcLogConstants.EVENT_MESSAGE_ID, messageId)
                 .build()
             ) {
                 logEvent(MonitoringEvent.ARENDE_RECEIVED_QUESTION, subject, intygsId, intygsTyp, unitHsaId);
@@ -595,7 +607,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
-    public void logArendeCreated(String intygsId, String intygsTyp, String unitHsaId, ArendeAmne amne, boolean isAnswer) {
+    public void logArendeCreated(String intygsId, String intygsTyp, String unitHsaId, ArendeAmne amne, boolean isAnswer, String messageId) {
         final var subject = amne != null ? amne.name() : NO_AMNE;
         if (isAnswer) {
             try (MdcCloseableMap ignored = MdcCloseableMap.builder()
@@ -605,6 +617,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
                 .put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId)
                 .put(MdcLogConstants.EVENT_CERTIFICATE_TYPE, intygsTyp)
                 .put(MdcLogConstants.EVENT_CERTIFICATE_UNIT_ID, unitHsaId)
+                .put(MdcLogConstants.EVENT_MESSAGE_ID, messageId)
                 .build()
             ) {
                 logEvent(MonitoringEvent.ARENDE_CREATED_ANSWER, subject, intygsId, intygsTyp, unitHsaId);
@@ -617,6 +630,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
                 .put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId)
                 .put(MdcLogConstants.EVENT_CERTIFICATE_TYPE, intygsTyp)
                 .put(MdcLogConstants.EVENT_CERTIFICATE_UNIT_ID, unitHsaId)
+                .put(MdcLogConstants.EVENT_MESSAGE_ID, messageId)
                 .build()
             ) {
                 logEvent(MonitoringEvent.ARENDE_CREATED_QUESTION, subject, intygsId, intygsTyp, unitHsaId);
@@ -625,13 +639,14 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
-    public void logIntegratedOtherUnit(String intygsId, String intygsTyp, String unitId) {
+    public void logIntegratedOtherUnit(String intygsId, String intygsTyp, String caregiverId, String unitId) {
         try (MdcCloseableMap ignored = MdcCloseableMap.builder()
             .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.LOGIN_OTHER_UNIT))
             .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_USER)
             .put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId)
             .put(MdcLogConstants.EVENT_CERTIFICATE_TYPE, intygsTyp)
-            .put(MdcLogConstants.ORGANIZATION_ID, unitId)
+            .put(MdcLogConstants.EVENT_CERTIFICATE_CARE_PROVIDER_ID, caregiverId)
+            .put(MdcLogConstants.EVENT_CERTIFICATE_UNIT_ID, unitId)
             .build()
         ) {
             logEvent(MonitoringEvent.LOGIN_OTHER_UNIT, intygsId, intygsTyp, unitId);
@@ -645,8 +660,8 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
             .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_USER)
             .put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId)
             .put(MdcLogConstants.EVENT_CERTIFICATE_TYPE, intygsTyp)
-            .put(MdcLogConstants.ORGANIZATION_CARE_PROVIDER_ID, caregiverId)
-            .put(MdcLogConstants.ORGANIZATION_ID, unitId)
+            .put(MdcLogConstants.EVENT_CERTIFICATE_CARE_PROVIDER_ID, caregiverId)
+            .put(MdcLogConstants.EVENT_CERTIFICATE_UNIT_ID, unitId)
             .build()
         ) {
             logEvent(MonitoringEvent.LOGIN_OTHER_CAREGIVER, intygsId, intygsTyp, caregiverId, unitId);
@@ -1000,7 +1015,6 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
             .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.TEST_CERTIFICATE_ERASED))
             .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_DELETION)
             .put(MdcLogConstants.EVENT_CERTIFICATE_UNIT_ID, careUnit)
-            .put(MdcLogConstants.USER_ID, createdUser)
             .build()
         ) {
             logEvent(MonitoringEvent.TEST_CERTIFICATE_ERASED, certificateId, careUnit, createdUser);

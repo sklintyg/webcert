@@ -65,6 +65,7 @@ class SendMessageFromCertificateServiceTest {
     private static final Question SENT_QUESTION = Question.builder()
         .type(QuestionType.CONTACT)
         .build();
+
     @Mock
     PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
     @Mock
@@ -156,7 +157,8 @@ class SendMessageFromCertificateServiceTest {
                 CERTIFICATE_TYPE,
                 UNIT_ID,
                 ArendeAmne.KONTKT,
-                false
+                false,
+                MESSAGE_ID
             );
         }
     }

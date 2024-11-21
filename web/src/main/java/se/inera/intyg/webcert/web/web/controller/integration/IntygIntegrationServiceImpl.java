@@ -96,7 +96,7 @@ public class IntygIntegrationServiceImpl extends IntegrationServiceImpl {
             if (!utkast.getVardgivarId().equals(user.getValdVardgivare().getId())) {
                 monitoringLog.logIntegratedOtherCaregiver(intygsId, intygsTyp, utkast.getVardgivarId(), utkast.getEnhetsId());
             } else if (!user.getValdVardenhet().getHsaIds().contains(utkast.getEnhetsId())) {
-                monitoringLog.logIntegratedOtherUnit(intygsId, intygsTyp, utkast.getEnhetsId());
+                monitoringLog.logIntegratedOtherUnit(intygsId, intygsTyp, utkast.getVardgivarId(), utkast.getEnhetsId());
             }
         }
     }

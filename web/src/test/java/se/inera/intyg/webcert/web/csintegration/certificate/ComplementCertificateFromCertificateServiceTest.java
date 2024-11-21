@@ -28,6 +28,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -42,6 +43,9 @@ import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
+import se.inera.intyg.common.support.facade.model.question.Answer;
+import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
@@ -73,6 +77,7 @@ class ComplementCertificateFromCertificateServiceTest {
     private static final String TYPE = "TYPE";
     private static final String MESSAGE = "message";
     private static final String UNIT_ID = "unitId";
+    private static final String MESSAGE_ID = "messageId";
 
     @Mock
     CSIntegrationService csIntegrationService;
@@ -234,6 +239,11 @@ class ComplementCertificateFromCertificateServiceTest {
         @Nested
         class AnswerComplementTests {
 
+            final List<Question> question = List.of(Question.builder()
+                .type(QuestionType.COMPLEMENT)
+                .answer(Answer.builder().id(MESSAGE_ID).build())
+                .build());
+
             @BeforeEach
             void setup() {
                 when(csIntegrationRequestFactory.answerComplementOnCertificateRequest(MESSAGE))
@@ -241,6 +251,8 @@ class ComplementCertificateFromCertificateServiceTest {
 
                 when(csIntegrationService.answerComplementOnCertificate(ID, ANSWER_COMPLEMENT_REQUEST_DTO))
                     .thenReturn(CERTIFICATE);
+
+                when(csIntegrationService.getQuestions(ID)).thenReturn(question);
             }
 
             @Test
@@ -273,7 +285,8 @@ class ComplementCertificateFromCertificateServiceTest {
                     CERTIFICATE.getMetadata().getType(),
                     CERTIFICATE.getMetadata().getUnit().getUnitId(),
                     ArendeAmne.KOMPLT,
-                    true
+                    true,
+                    MESSAGE_ID
                 );
             }
 
