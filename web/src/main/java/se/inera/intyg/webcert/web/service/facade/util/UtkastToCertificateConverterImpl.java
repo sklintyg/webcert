@@ -153,7 +153,7 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
             getResponsibleHospName()
         );
 
-        if (!webCertUserService.hasAuthenticationContext()) {
+        if (webCertUserService.hasAuthenticationContext()) {
             final var origin = webCertUserService.getUser().getOrigin();
             final var isAllowedToEdit = draftAccessServiceHelper.isAllowToEditUtkast(certificate);
             final var confirmationModalProvider = ConfirmationModalProviderResolver.getConfirmation(certificate.getIntygsTyp(),

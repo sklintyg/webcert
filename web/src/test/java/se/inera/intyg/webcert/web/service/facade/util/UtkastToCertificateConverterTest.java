@@ -135,14 +135,6 @@ class UtkastToCertificateConverterTest {
                 .when(patientConverter).convert(
                     any(), any(), any(), any()
                 );
-
-            final var user = mock(WebCertUser.class);
-            when(webCertUserService.getUser())
-                .thenReturn(user);
-            when(user.getOrigin())
-                .thenReturn("DJUPINTEGRATION");
-            when(webCertUserService.hasAuthenticationContext())
-                .thenReturn(true);
         }
 
         @Test
@@ -179,6 +171,14 @@ class UtkastToCertificateConverterTest {
 
                 doReturn(getUnit())
                     .when(hsatkOrganizationService).getUnit(any(String.class), nullable(String.class));
+
+                doReturn(true).when(webCertUserService).hasAuthenticationContext();
+
+                final var user = mock(WebCertUser.class);
+                when(webCertUserService.getUser())
+                    .thenReturn(user);
+                when(user.getOrigin())
+                    .thenReturn("DJUPINTEGRATION");
             }
 
             @Test
@@ -536,7 +536,10 @@ class UtkastToCertificateConverterTest {
             @Test
             void shallNotSetResponsibleHospNameWhenIntegrationParametersIsNull() {
                 doReturn(true).when(webCertUserService).hasAuthenticationContext();
-                when(webCertUserService.getUser().getParameters()).thenReturn(null);
+                final var user = mock(WebCertUser.class);
+                when(webCertUserService.getUser()).thenReturn(user);
+                when(user.getOrigin()).thenReturn("DJUPINTEGRATION");
+                when(user.getParameters()).thenReturn(null);
 
                 final var actualCertificate = utkastToCertificateConverter.convert(draft);
 
@@ -547,8 +550,12 @@ class UtkastToCertificateConverterTest {
             void shallSetResponsibleHospNameWhenIntegrationParametersArePresent() {
                 final var expectedResponsibleHospName = "responsibleHospName";
                 doReturn(true).when(webCertUserService).hasAuthenticationContext();
-                when(webCertUserService.getUser().getParameters()).thenReturn(mock(IntegrationParameters.class));
-                when(webCertUserService.getUser().getParameters().getResponsibleHospName()).thenReturn(expectedResponsibleHospName);
+                final var user = mock(WebCertUser.class);
+                final var integrationParameters = mock(IntegrationParameters.class);
+                when(webCertUserService.getUser()).thenReturn(user);
+                when(user.getOrigin()).thenReturn("DJUPINTEGRATION");
+                when(user.getParameters()).thenReturn(integrationParameters);
+                when(integrationParameters.getResponsibleHospName()).thenReturn(expectedResponsibleHospName);
 
                 final var actualCertificate = utkastToCertificateConverter.convert(draft);
 
@@ -576,15 +583,6 @@ class UtkastToCertificateConverterTest {
             final var moduleApi = mock(ModuleApi.class);
             doReturn(moduleApi).when(moduleRegistry).getModuleApi(anyString(), eq(draft.getIntygTypeVersion()));
             doReturn(createCertificate()).when(moduleApi).getCertificateFromJson(draft.getModel(), typeAheadProvider);
-            final var user = mock(WebCertUser.class);
-            when(webCertUserService.getUser())
-                .thenReturn(user);
-            when(user.getOrigin())
-                .thenReturn("NORMAL");
-            doReturn(patient)
-                .when(patientConverter).convert(
-                    any(), any(), any(), any()
-                );
         }
 
         @Test
