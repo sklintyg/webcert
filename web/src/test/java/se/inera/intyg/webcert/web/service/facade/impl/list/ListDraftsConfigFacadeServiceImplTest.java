@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl.list;
 
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -194,6 +195,11 @@ class ListDraftsConfigFacadeServiceImplTest {
         @Test
         public void shouldSetType() {
             assertEquals(ListFilterType.DATE_RANGE, filter.getType());
+        }
+
+        @Test
+         void shouldSetDefaultValueFrom() {
+            assertEquals(LocalDateTime.now().minusMonths(3).toLocalDate(), filter.getFrom().getDefaultValue().toLocalDate());
         }
     }
 

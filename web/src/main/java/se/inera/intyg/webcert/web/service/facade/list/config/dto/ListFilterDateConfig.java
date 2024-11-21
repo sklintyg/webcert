@@ -30,6 +30,11 @@ public class ListFilterDateConfig extends ListFilterConfig {
         super(ListFilterType.DATE, id, title);
     }
 
+    public ListFilterDateConfig(String id, String title, LocalDateTime defaultValue) {
+        super(ListFilterType.DATE, id, title);
+        this.defaultValue = defaultValue;
+    }
+
     public ListFilterDateConfig(String id, String title, LocalDateTime max, LocalDateTime min, LocalDateTime defaultValue) {
         super(ListFilterType.DATE, id, title);
         this.max = max;
