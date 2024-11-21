@@ -24,31 +24,39 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
+import se.inera.intyg.webcert.logging.MdcHelper;
 
-public class NotificationAggregatorTest {
+@ExtendWith(MockitoExtension.class)
+class NotificationAggregatorTest {
+
+    @Spy
+    private MdcHelper mdcHelper;
+
+    @InjectMocks
+    private final NotificationAggregator aggregator = new NotificationAggregator();
+
+    final ObjectMapper objectMapper = new CustomObjectMapper();
 
     private static final String INTYGS_ID = "intyg1";
 
-    private final ObjectMapper objectMapper = new CustomObjectMapper();
-    private final NotificationAggregator aggregator = new NotificationAggregator();
-
     @Test
-    public void testProcessNoGroupedExchange() {
+    void testProcessNoGroupedExchange() {
         Exchange exchange = mock(Exchange.class);
         when(exchange.getIn()).thenReturn(mock(Message.class));
         List<Message> res = aggregator.process(exchange);
@@ -58,7 +66,7 @@ public class NotificationAggregatorTest {
     }
 
     @Test
-    public void testProcessGroupedExchangeEmpty() {
+    void testProcessGroupedExchangeEmpty() {
         final var messages = Collections.<Message>emptyList();
         final var groupedExchange = buildGroupedExchange(messages);
         List<Message> res = aggregator.process(groupedExchange);
@@ -68,7 +76,7 @@ public class NotificationAggregatorTest {
     }
 
     @Test
-    public void testProcess() throws Exception {
+    void testProcess() throws Exception {
         final var messages = List.of(
             buildMessage(INTYGS_ID, HandelsekodEnum.ANDRAT, LocalDateTime.now()),
             buildMessage(INTYGS_ID, HandelsekodEnum.SIGNAT, LocalDateTime.now()),

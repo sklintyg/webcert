@@ -525,7 +525,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
             Objects.requireNonNull(result.getSenasteHandelse()).toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
 
         verify(arendeRepository).save(any(Arende.class));
-        verify(monitoringLog).logArendeCreated(anyString(), isNull(), isNull(), any(ArendeAmne.class), anyBoolean());
+        verify(monitoringLog).logArendeCreated(anyString(), isNull(), isNull(), any(ArendeAmne.class), anyBoolean(), anyString());
         verify(certificateSenderService).sendMessageToRecipient(anyString(), anyString());
         verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.NEW_QUESTION_FROM_CARE);
         verify(arendeDraftService).delete(INTYG_ID, null);
@@ -689,7 +689,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
             Objects.requireNonNull(result.getSenasteHandelse()).toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
 
         verify(arendeRepository, times(2)).save(any(Arende.class));
-        verify(monitoringLog).logArendeCreated(anyString(), anyString(), isNull(), any(ArendeAmne.class), anyBoolean());
+        verify(monitoringLog).logArendeCreated(anyString(), anyString(), isNull(), any(ArendeAmne.class), anyBoolean(), anyString());
         verify(certificateSenderService).sendMessageToRecipient(anyString(), anyString());
         verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.NEW_ANSWER_FROM_CARE);
         verify(arendeDraftService).delete(INTYG_ID, svarPaMeddelandeId);
@@ -862,7 +862,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         assertNotNull(result.getSvar());
         assertEquals(FIXED_TIME_INSTANT,
             Objects.requireNonNull(result.getSenasteHandelse()).toInstant(ZoneId.systemDefault().getRules().getOffset(FIXED_TIME_INSTANT)));
-        verify(monitoringLog).logArendeCreated(anyString(), anyString(), isNull(), any(ArendeAmne.class), anyBoolean());
+        verify(monitoringLog).logArendeCreated(anyString(), anyString(), isNull(), any(ArendeAmne.class), anyBoolean(), anyString());
         verify(certificateSenderService).sendMessageToRecipient(anyString(), anyString());
         verify(notificationService).sendNotificationForQAs(INTYG_ID, NotificationEvent.NEW_ANSWER_FROM_CARE);
         ArgumentCaptor<Arende> arendeCaptor = ArgumentCaptor.forClass(Arende.class);

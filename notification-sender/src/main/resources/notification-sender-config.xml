@@ -19,22 +19,24 @@
   -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
-  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd  ">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
-  <context:annotation-config />
-  <context:component-scan base-package="se.inera.intyg.webcert.notification_sender.notifications" />
+  <context:annotation-config/>
+  <context:component-scan base-package="se.inera.intyg.webcert.notification_sender.notifications"/>
 
-  <import resource="jms-context.xml" />
+  <import resource="jms-context.xml"/>
   <import resource="notifications/ws-context.xml"/>
   <import resource="notifications/beans-context.xml"/>
   <import resource="notifications/camel-context.xml"/>
-  <import resource="certificates/beans-context.xml" />
-  <import resource="certificates/camel-context.xml" />
+  <import resource="certificates/beans-context.xml"/>
+  <import resource="certificates/camel-context.xml"/>
 
   <!-- Declaring this bean outside the beans-context.xml so unit/integration-tests doesn't have to configure the full PU-
   service including Ignite -->
-  <bean id="notificationPatientEnricher" class="se.inera.intyg.webcert.notification_sender.notifications.services.NotificationPatientEnricher" />
+  <bean id="notificationPatientEnricher" class="se.inera.intyg.webcert.notification_sender.notifications.services.NotificationPatientEnricher"/>
 
 </beans>

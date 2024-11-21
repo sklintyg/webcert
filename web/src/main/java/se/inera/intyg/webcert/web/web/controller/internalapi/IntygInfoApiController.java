@@ -30,6 +30,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.intyginfo.dto.WcIntygInfo;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.intyginfo.IntygInfoService;
 
 @Path("/intygInfo")
@@ -45,6 +47,7 @@ public class IntygInfoApiController {
     @Path("/{intygId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "intyg-info-get-certificate-info", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getIntygInfo(@PathParam("intygId") String intygId) {
 
         Optional<WcIntygInfo> wcIntygInfo = intygInfoService.getIntygInfo(intygId);

@@ -28,6 +28,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.facade.IcfFacadeService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.IcfRequestDTO;
 
@@ -43,6 +45,7 @@ public class IcfController {
     @POST
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "icf-get-icf", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getIcf(IcfRequestDTO request) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Getting icf data from icd codes: '{}'", Arrays.toString(request.getIcdCodes()));

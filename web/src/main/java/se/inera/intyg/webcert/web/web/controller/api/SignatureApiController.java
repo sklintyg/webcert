@@ -48,6 +48,8 @@ import org.springframework.http.HttpHeaders;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.dss.DssMetadataService;
@@ -99,6 +101,7 @@ public class SignatureApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{intygsId}/{version}/signeringshash/{signMethod}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "signature-sign-draft", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public SignaturStateDTO signeraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
         @PathParam("version") long version, @PathParam("signMethod") String signMethodStr, @Context HttpServletRequest request) {
 
@@ -145,6 +148,7 @@ public class SignatureApiController extends AbstractApiController {
     @POST
     @Path(SIGN_SERVICE_RESPONSE_PATH)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "signature-sign-service-response", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response signServiceResponse(@Context UriInfo uriInfo, @FormParam("RelayState") String relayState,
         @FormParam("EidSignResponse") String eidSignResponse) {
         SignaturBiljett signaturBiljett;
@@ -208,6 +212,7 @@ public class SignatureApiController extends AbstractApiController {
 
     @GET
     @Path(SIGN_SERVICE_METADATA_PATH)
+    @PerformanceLogging(eventAction = "signature-sign-service-client-metadata", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response signServiceClientMetadata() {
 
         String clientMetadataAsString = dssMetadataService.getClientMetadataAsString();
@@ -222,6 +227,7 @@ public class SignatureApiController extends AbstractApiController {
     @GET
     @Path("/{intygsTyp}/{ticketId}/signeringsstatus")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PerformanceLogging(eventAction = "signature-sign-status", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public SignaturStateDTO signeringsStatus(@PathParam("intygsTyp") String intygsTyp, @PathParam("ticketId") String ticketId) {
         final var sb = underskriftService.signeringsStatus(ticketId);
         return convertToSignatureStateDTO(sb);
@@ -231,6 +237,7 @@ public class SignatureApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{biljettId}/signeranetidplugin")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM})
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PerformanceLogging(eventAction = "signature-client-sign-draft", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public SignaturStateDTO klientSigneraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("biljettId") String biljettId,
         @Context HttpServletRequest request, KlientSignaturRequest signaturRequest) {
 

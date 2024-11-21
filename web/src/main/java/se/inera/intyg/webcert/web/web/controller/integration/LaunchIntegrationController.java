@@ -37,6 +37,8 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.csintegration.aggregate.GetIssuingUnitIdAggregator;
 import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
 
@@ -56,6 +58,7 @@ public class LaunchIntegrationController extends BaseIntegrationController {
     @GET
     @Path("/certificate/{certificateId}")
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "launch-integration-get-redirect-to-certificate", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response redirectToCertificate(@Context UriInfo uriInfo, @PathParam("certificateId") String certificateId,
         @QueryParam("origin") String origin) {
         webCertUserService.getUser().setLaunchFromOrigin(origin);
@@ -66,6 +69,7 @@ public class LaunchIntegrationController extends BaseIntegrationController {
     @GET
     @Path("/certificate/{certificateId}/questions")
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "launch-integration-direct-to-certificate-questions", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response directToCertificateQuestions(@Context UriInfo uriInfo, @PathParam("certificateId") String certificateId) {
         LOG.debug("Directing to to view questions on intyg {}", certificateId);
         return buildRedirectResponse(uriInfo, certificateId, true);

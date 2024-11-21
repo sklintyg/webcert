@@ -27,6 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.facade.list.ListDraftsFacadeServiceImpl;
 import se.inera.intyg.webcert.web.service.facade.list.ListPreviousCertificatesFacadeServiceImpl;
 import se.inera.intyg.webcert.web.service.facade.list.ListQuestionsFacadeServiceImpl;
@@ -61,6 +63,7 @@ public class ListController {
     @Path("/draft")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "list-get-list-of-drafts", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getListOfDrafts(ListRequestDTO request) {
         LOG.debug("Getting list of drafts");
         final var listInfo = listDraftsFacadeService.get(request.getFilter());
@@ -71,6 +74,7 @@ public class ListController {
     @Path("/certificate")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "list-get-list-of-signed-certificates", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getListOfSignedCertificates(ListRequestDTO request) {
         final var listInfo = listSignedCertificatesFacadeService.get(request.getFilter());
         return Response.ok().entity(ListResponseDTO.create(listInfo.getList(), listInfo.getTotalCount())).build();
@@ -80,6 +84,7 @@ public class ListController {
     @Path("/previous")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "list-get-list-of-previous-certificates", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getListOfPreviousCertificates(ListRequestDTO request) {
         final var listInfo = listPreviousCertificatesFacadeService.get(request.getFilter());
         return Response.ok().entity(ListResponseDTO.create(listInfo.getList(), listInfo.getTotalCount())).build();
@@ -89,6 +94,7 @@ public class ListController {
     @Path("/question")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "list-get-list-of-certificates-with-questions", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getListOfCertificatesWithQuestions(ListRequestDTO request) {
         final var listInfo = listQuestionsFacadeService.get(request.getFilter());
         return Response.ok().entity(ListResponseDTO.create(listInfo.getList(), listInfo.getTotalCount())).build();

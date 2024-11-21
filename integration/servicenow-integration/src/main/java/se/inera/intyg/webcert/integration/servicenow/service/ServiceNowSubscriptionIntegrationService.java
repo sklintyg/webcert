@@ -29,6 +29,8 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.integration.api.subscription.AuthenticationMethodEnum;
 import se.inera.intyg.webcert.integration.api.subscription.SubscriptionIntegrationService;
 import se.inera.intyg.webcert.integration.servicenow.client.SubscriptionRestClient;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +42,7 @@ public class ServiceNowSubscriptionIntegrationService implements SubscriptionInt
     private final CheckSubscriptionService checkSubscriptionService;
 
     @Override
+    @PerformanceLogging(eventAction = "get-missing-subscriptions", eventType = MdcLogConstants.EVENT_TYPE_INFO)
     public List<String> getMissingSubscriptions(Map<String, List<String>> organizationNumberHsaIdMap, AuthenticationMethodEnum authMethod) {
         final var organizationResponse = subscriptionRestClient.getSubscriptionServiceResponse(
             organizationNumberHsaIdMap.keySet()
@@ -48,6 +51,7 @@ public class ServiceNowSubscriptionIntegrationService implements SubscriptionInt
     }
 
     @Override
+    @PerformanceLogging(eventAction = "is-missing-subscriptions-eleg-user", eventType = MdcLogConstants.EVENT_TYPE_INFO)
     public boolean isMissingSubscriptionUnregisteredElegUser(String organizationNumber) {
         final var organizationResponse = subscriptionRestClient.getSubscriptionServiceResponse(
             Set.of(organizationNumber)

@@ -30,6 +30,7 @@ import org.apache.camel.Header;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.clinicalprocess.healthcond.certificate.types.v3.IntygId;
 import se.inera.clinicalprocess.healthcond.certificate.types.v3.TypAvIntyg;
@@ -40,6 +41,8 @@ import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedrec
 import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedreceivers.v1.RegisterApprovedReceiversType;
 import se.inera.intyg.webcert.common.Constants;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
+import se.inera.intyg.webcert.logging.MdcHelper;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
 
 public class RegisterApprovedReceiversProcessor {
 
@@ -47,6 +50,8 @@ public class RegisterApprovedReceiversProcessor {
 
     @Autowired
     private RegisterApprovedReceiversResponderInterface registerApprovedReceiversClient;
+    @Autowired
+    private MdcHelper mdcHelper;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -56,6 +61,12 @@ public class RegisterApprovedReceiversProcessor {
         List<ReceiverApprovalStatus> receiverIds = transformMessageBodyToReceiverList(jsonBody);
 
         try {
+            MDC.put(MdcLogConstants.TRACE_ID_KEY, mdcHelper.traceId());
+            MDC.put(MdcLogConstants.SPAN_ID_KEY, mdcHelper.spanId());
+            MDC.put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId);
+            MDC.put(MdcLogConstants.EVENT_CERTIFICATE_TYPE, intygsTyp);
+            MDC.put(MdcLogConstants.EVENT_LOGICAL_ADDRESS, logicalAddress);
+
             checkArgument(StringUtils.isNotEmpty(intygsId), "Message of type %s does not have a %s header.",
                 Constants.REGISTER_APPROVED_RECEIVERS_MESSAGE,
                 Constants.INTYGS_ID);
@@ -89,6 +100,8 @@ public class RegisterApprovedReceiversProcessor {
             LOG.error("Call to RegisterApprovedReceivers for intyg {} caused an error: {}. Will retry.",
                 intygsId, e.getMessage());
             throw new TemporaryException(e.getMessage());
+        } finally {
+            MDC.clear();
         }
     }
 

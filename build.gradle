@@ -34,6 +34,7 @@ ext {
     jaxb2Version = "3.0.0"
     jexcelVersion = "1.0.9"
     jodaTimeVersion = "2.13.0"
+    logbackEcsEncoderVersion = "1.6.0"
     luceneAnalyzersCommonVersion = "9.12.0"
     phSchematronVersion = "7.1.3"
     picocliVersion = "4.7.6"

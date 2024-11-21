@@ -19,11 +19,15 @@
 
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.question.Answer;
+import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
@@ -91,19 +95,28 @@ public class ComplementCertificateFromCertificateService implements ComplementCe
             return null;
         }
 
+        final var answeredComplementIds = csIntegrationService.getQuestions(certificateId).stream()
+            .filter(question -> question.getType() == QuestionType.COMPLEMENT)
+            .filter(question -> question.getAnswer() != null)
+            .map(Question::getId)
+            .toList();
+
         final var certificate = csIntegrationService.answerComplementOnCertificate(
             certificateId,
             csIntegrationRequestFactory.answerComplementOnCertificateRequest(message)
         );
         decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
 
-        monitoringLogService.logArendeCreated(
-            certificate.getMetadata().getId(),
-            certificate.getMetadata().getType(),
-            certificate.getMetadata().getUnit().getUnitId(),
-            ArendeAmne.KOMPLT,
-            true
-        );
+        final var messageId = csIntegrationService.getQuestions(certificateId).stream()
+            .filter(question -> question.getType() == QuestionType.COMPLEMENT)
+            .filter(question -> !answeredComplementIds.contains(question.getId()))
+            .map(Question::getAnswer)
+            .filter(Objects::nonNull)
+            .map(Answer::getId)
+            .toList();
+
+        messageId.forEach(id -> monitoringLogService.logArendeCreated(certificate.getMetadata().getId(),
+            certificate.getMetadata().getType(), certificate.getMetadata().getUnit().getUnitId(), ArendeAmne.KOMPLT, true, id));
 
         publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.HANFRFM);
 

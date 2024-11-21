@@ -51,28 +51,33 @@ public class RevokeCertificateFromCertificateService implements RevokeCertificat
             return null;
         }
 
+        final var certificate = csIntegrationService.getCertificate(certificateId,
+            csIntegrationRequestFactory.getCertificateRequest());
+
+        if (certificate == null) {
+            throw new IllegalStateException("Certificate for revocation does not exist in certificate-service");
+        }
+
+        final var certificateStatusBeforeRevoke = certificate.getMetadata().getStatus();
+
         log.debug("Revoking certificate with id '{}' using certificate service", certificateId);
-        final var certificate = csIntegrationService.revokeCertificate(
+        final var revokedCertificate = csIntegrationService.revokeCertificate(
             certificateId,
             csIntegrationRequestFactory.revokeCertificateRequest(reason, message)
         );
 
-        if (certificate == null) {
-            throw new IllegalStateException("Received null when trying to revoke certificate from Certificate Service");
-        }
-
-        decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
-
+        decorateCertificateFromCSWithInformationFromWC.decorate(revokedCertificate);
         log.debug("Certificate with id '{}' was revoked using certificate service", certificateId);
-        pdlLogService.logRevoke(certificate);
-        monitorLog(certificate, reason, message);
-        publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.MAKULE);
+        pdlLogService.logRevoke(revokedCertificate);
 
-        return certificate;
+        monitorLog(certificate, reason, message, certificateStatusBeforeRevoke);
+        publishCertificateStatusUpdateService.publish(revokedCertificate, HandelsekodEnum.MAKULE);
+
+        return revokedCertificate;
     }
 
-    private void monitorLog(Certificate certificate, String reason, String message) {
-        if (certificate.getMetadata().getStatus() == CertificateStatus.LOCKED) {
+    private void monitorLog(Certificate certificate, String reason, String message, CertificateStatus certificateStatusBeforeRevoke) {
+        if (certificateStatusBeforeRevoke == CertificateStatus.LOCKED) {
             monitoringLogService.logUtkastRevoked(
                 certificate.getMetadata().getId(),
                 certificate.getMetadata().getType(),
@@ -81,7 +86,7 @@ public class RevokeCertificateFromCertificateService implements RevokeCertificat
             );
         }
 
-        if (certificate.getMetadata().getStatus() == CertificateStatus.SIGNED) {
+        if (certificateStatusBeforeRevoke == CertificateStatus.SIGNED) {
             monitoringLogService.logIntygRevoked(
                 certificate.getMetadata().getId(),
                 certificate.getMetadata().getType(),

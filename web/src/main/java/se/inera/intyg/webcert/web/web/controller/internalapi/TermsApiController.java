@@ -25,6 +25,8 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
 
 @Path("/terms")
@@ -37,6 +39,7 @@ public class TermsApiController {
     @GET
     @Path("/approved/{hsaId}")
     @Produces(MediaType.APPLICATION_JSON)
+    @PerformanceLogging(eventAction = "terms-get-webcert-approved-terms", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public boolean getWebcertTermsApproved(@PathParam("hsaId") String hsaId) {
         return avtalService.userHasApprovedLatestAvtal(hsaId);
     }

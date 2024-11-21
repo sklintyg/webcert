@@ -18,6 +18,14 @@
  */
 package se.inera.intyg.webcert.integration.tak.service;
 
+import static se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion.VERSION_3;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,15 +45,6 @@ import se.inera.intyg.webcert.integration.tak.consumer.TakConsumer;
 import se.inera.intyg.webcert.integration.tak.consumer.TakServiceException;
 import se.inera.intyg.webcert.integration.tak.model.TakLogicalAddress;
 import se.inera.intyg.webcert.integration.tak.model.TakResult;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
-import static se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion.VERSION_3;
 
 @Service
 @EnableScheduling

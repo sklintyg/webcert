@@ -35,6 +35,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
@@ -43,7 +45,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.QARequest;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.CreateQuestionParameter;
 
 @Path("/fragasvar")
-@Api(value = "fragasvar", description = "REST API - moduleapi - fragasvar", produces = MediaType.APPLICATION_JSON)
+@Api(value = "fragasvar", produces = MediaType.APPLICATION_JSON)
 public class FragaSvarModuleApiController extends AbstractApiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(FragaSvarModuleApiController.class);
@@ -55,10 +57,10 @@ public class FragaSvarModuleApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{intygsId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "fragasvar-module-fragasvar-for-certificate", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public List<FragaSvarView> fragaSvarForIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId) {
         abortIfFragaSvarNotActive(intygsTyp);
-        List<FragaSvarView> fragaSvarList = fragaSvarService.getFragaSvar(intygsId);
-        return fragaSvarList;
+        return fragaSvarService.getFragaSvar(intygsId);
     }
 
     @PUT
@@ -66,6 +68,7 @@ public class FragaSvarModuleApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "fragasvar-module-answer-with-type", eventType = MdcLogConstants.EVENT_TYPE_CREATION)
     public Response answer(@PathParam("intygsTyp") String intygsTyp, @PathParam("fragasvarId") final Long frageSvarId, String svarsText) {
         abortIfFragaSvarNotActive(intygsTyp);
         LOG.debug("Set answer for question {}", frageSvarId);
@@ -78,6 +81,7 @@ public class FragaSvarModuleApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "fragasvar-module-answer-without-typ", eventType = MdcLogConstants.EVENT_TYPE_CREATION)
     public Response answer(@PathParam("intygsId") final String intygsId, final String svarsText) {
         LOG.debug("Answer arenden for intyg {}", intygsId);
         final List<FragaSvarView> response = fragaSvarService.answerKomplettering(intygsId, svarsText);
@@ -89,6 +93,7 @@ public class FragaSvarModuleApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "fragasvar-module-set-dispatch-state", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public Response setDispatchState(@PathParam("intygsId") final String intygsId) {
         LOG.debug("Set vidarebefordra for all frågasvar related to IntygsId {}", intygsId);
         return Response.ok(fragaSvarService.setVidareBefordrad(intygsId)).build();
@@ -99,6 +104,7 @@ public class FragaSvarModuleApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "fragasvar-module-create-question", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public Response createQuestion(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") final String intygsId,
         CreateQuestionParameter parameter) {
 
@@ -115,6 +121,7 @@ public class FragaSvarModuleApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{fragasvarId}/stang")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "fragasvar-module-close-as-handled", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public FragaSvar closeAsHandled(@PathParam("intygsTyp") String intygsTyp, @PathParam("fragasvarId") Long fragasvarId) {
         abortIfFragaSvarNotActive(intygsTyp);
         return fragaSvarService.closeQuestionAsHandled(fragasvarId);
@@ -124,6 +131,7 @@ public class FragaSvarModuleApiController extends AbstractApiController {
     @Path("/stang")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "fragasvar-module-close-qas-as-handled", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public List<FragaSvar> closeQAsAsHandled(List<QARequest> qas) {
         List<FragaSvar> fragaSvars = new ArrayList<>();
         for (QARequest qa : qas) {
@@ -137,6 +145,7 @@ public class FragaSvarModuleApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{fragasvarId}/oppna")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "fragasvar-module-open-as-unhandled", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public FragaSvar openAsUnhandled(@PathParam("intygsTyp") String intygsTyp, @PathParam("fragasvarId") Long fragasvarId) {
         abortIfFragaSvarNotActive(intygsTyp);
         return fragaSvarService.openQuestionAsUnhandled(fragasvarId);

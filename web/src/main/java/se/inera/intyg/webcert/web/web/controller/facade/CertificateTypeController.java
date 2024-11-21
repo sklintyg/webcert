@@ -32,6 +32,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateTypesFacadeService;
 
 @Path("/certificate/type")
@@ -52,6 +54,7 @@ public class CertificateTypeController {
     @Path("/{patientId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "certificate-type-get-certificate-types", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getCertificateTypes(@PathParam("patientId") @NotNull String patientId) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Retrieving certificate types for patient");

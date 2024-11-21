@@ -67,7 +67,8 @@ public class ProcessIncomingMessageService {
             certificate.getMetadata().getUnit().getUnitId(),
             questionType,
             sendMessageToCare.getKomplettering().stream().map(Komplettering::getFrageId).collect(Collectors.toList()),
-            isAnswer
+            isAnswer,
+            sendMessageToCare.getMeddelandeId()
         );
 
         final var shouldReciveMailNotifications = shouldReciveMailNotifications(certificate);

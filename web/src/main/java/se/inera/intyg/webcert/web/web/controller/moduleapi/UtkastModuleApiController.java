@@ -36,7 +36,7 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,6 +54,8 @@ import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.access.LockedDraftAccessServiceHelper;
@@ -84,7 +86,7 @@ import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelper;
  * @author npet
  */
 @Path("/utkast")
-@Api(value = "utkast", description = "REST API - moduleapi - utkast", produces = MediaType.APPLICATION_JSON)
+@Api(value = "utkast", produces = MediaType.APPLICATION_JSON)
 public class UtkastModuleApiController extends AbstractApiController {
 
     public static final String LAST_SAVED_DRAFT = "lastSavedDraft";
@@ -138,6 +140,7 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{intygsId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "utkast-module-get-draft", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
         @Context HttpServletRequest request) {
 
@@ -168,7 +171,6 @@ public class UtkastModuleApiController extends AbstractApiController {
             // Update the internal model with the resolved patient. This means that
             // the draft may be updated with new patient info on the next auto-save!
             String updatedModel = moduleApi.updateBeforeSave(utkast.getModel(), resolvedPatientData);
-            //utkast.setModel(updatedModel);
             newDraft.setContent(updatedModel);
 
             // If utkast actually is a newly created draft (without relations, e.g FORNYA,ERSATT), we shall provide
@@ -208,6 +210,7 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "utkast-module-save-draft", eventType = MdcLogConstants.EVENT_TYPE_CREATION)
     public Response saveDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
         @PathParam("version") long version,
         @DefaultValue("false") @QueryParam("autoSave") boolean autoSave, byte[] payload, @Context HttpServletRequest request) {
@@ -221,7 +224,7 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         String draftAsJson = fromBytesToString(payload);
 
-        LOG.debug("---- intyg : " + draftAsJson);
+        LOG.debug("---- intyg : {}", draftAsJson);
 
         boolean firstSave = false;
         HttpSession session = request.getSession(true);
@@ -252,6 +255,7 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "utkast-module-validate-draft", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public Response validateDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
         byte[] payload) {
 
@@ -264,7 +268,7 @@ public class UtkastModuleApiController extends AbstractApiController {
 
         String draftAsJson = fromBytesToString(payload);
 
-        LOG.debug("---- intyg : " + draftAsJson);
+        LOG.debug("---- intyg : {}", draftAsJson);
 
         DraftValidation validateResponse = utkastService.validateDraft(intygsId, intygsTyp, draftAsJson);
 
@@ -280,6 +284,7 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "utkast-module-copy-from-candidate", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public Response copyFromCandidate(
         @PathParam("intygsTyp") String intygsTyp,
         @PathParam("intygsId") String intygsId,
@@ -328,6 +333,7 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "utkast-module-copy-draft", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public Response copyUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String orgIntygsId) {
 
         LOG.debug("Attempting to create a new certificate from certificate with type {} and id '{}'",
@@ -354,11 +360,7 @@ public class UtkastModuleApiController extends AbstractApiController {
     }
 
     private String fromBytesToString(byte[] bytes) {
-        try {
-            return new String(bytes, UTF_8);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("Could not convert the payload from draftCertificate to String!", e);
-        }
+        return new String(bytes, StandardCharsets.UTF_8);
     }
 
     /**
@@ -370,6 +372,7 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{intygsId}/{version}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "utkast-module-discard-draft", eventType = MdcLogConstants.EVENT_TYPE_DELETION)
     public Response discardDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
         @PathParam("version") long version,
         @Context HttpServletRequest request) {
@@ -404,6 +407,7 @@ public class UtkastModuleApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "utkast-module-revoke-locked--draft", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public Response revokeLockedDraft(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
         RevokeSignedIntygParameter param) {
 

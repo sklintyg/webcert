@@ -37,6 +37,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import se.inera.intyg.webcert.integration.fmb.consumer.FmbConsumer;
 import se.inera.intyg.webcert.integration.fmb.model.Kod;
 import se.inera.intyg.webcert.integration.fmb.model.fmdxinfo.FmdxData;
@@ -46,6 +47,7 @@ import se.inera.intyg.webcert.integration.fmb.model.typfall.Attributes;
 import se.inera.intyg.webcert.integration.fmb.model.typfall.Fmbtillstand;
 import se.inera.intyg.webcert.integration.fmb.model.typfall.Typfall;
 import se.inera.intyg.webcert.integration.fmb.model.typfall.TypfallData;
+import se.inera.intyg.webcert.logging.MdcHelper;
 import se.inera.intyg.webcert.persistence.fmb.model.Fmb;
 import se.inera.intyg.webcert.persistence.fmb.model.FmbCallType;
 import se.inera.intyg.webcert.persistence.fmb.model.FmbType;
@@ -56,25 +58,24 @@ import se.inera.intyg.webcert.persistence.fmb.repository.FmbRepository;
 
 public class FmbServiceImplTest {
 
-    @InjectMocks
-    private FmbServiceImpl fmbServiceImpl;
-
     @Mock
     private FmbRepository fmbRepository;
-
     @Mock
     private DiagnosInformationRepository diagnosInformationRepository;
-
     @Mock
     private FmbConsumer fmbConsumer;
+    @Spy
+    private MdcHelper mdcHelper;
 
     @Captor
     private ArgumentCaptor<List<DiagnosInformation>> fmbCaptor;
 
+    @InjectMocks
+    private FmbServiceImpl fmbServiceImpl;
+
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test

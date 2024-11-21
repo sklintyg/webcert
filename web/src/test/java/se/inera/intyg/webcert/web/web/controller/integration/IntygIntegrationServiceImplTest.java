@@ -80,19 +80,19 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirect
 public class IntygIntegrationServiceImplTest {
 
     private static final String REFERENS = "referens";
-    private final String ALTERNATE_SSN = "19010101-0101";
+    private static final String ALTERNATE_SSN = "19010101-0101";
 
-    private final String INTYGSTYP = "lisjp";
-    private final String INTYGSTYP_VERSION = "1.9";
-    private final String INTYGSID = "A1234-B5678-C90123-D4567";
-    private final String ENHETSID = "11111";
+    private static final String INTYGSTYP = "lisjp";
+    private static final String INTYGSTYP_VERSION = "1.9";
+    private static final String INTYGSID = "A1234-B5678-C90123-D4567";
+    private static final String ENHETSID = "11111";
 
-    private final String VARDENHETID_USER = "222222";
-    private final String VARDENHETNAMN_USER = "Vardenhet2";
-    private final String VARDGIVAREID_USER = "vg1";
-    private final String VARDGIVARENAMN_USER = "Vardgivare1";
-    private final String VARDGIVAREID_UTKAST = "vg2";
-    private final String VARDGIVARENAMN_UTKAST = "Vardgivare2";
+    private static final String VARDENHETID_USER = "222222";
+    private static final String VARDENHETNAMN_USER = "Vardenhet2";
+    private static final String VARDGIVAREID_USER = "vg1";
+    private static final String VARDGIVARENAMN_USER = "Vardgivare1";
+    private static final String VARDGIVAREID_UTKAST = "vg2";
+    private static final String VARDGIVARENAMN_UTKAST = "Vardgivare2";
 
     @Mock
     private ReferensService referensService;
@@ -120,7 +120,8 @@ public class IntygIntegrationServiceImplTest {
 
     @Before
     public void setupMock() {
-        doNothing().when(monitoringLog).logIntegratedOtherCaregiver(anyString(), anyString(), anyString(), anyString());
+        doNothing().when(monitoringLog).logIntegratedOtherCaregiver(anyString(), anyString(), anyString(), anyString(), anyString(),
+            anyString());
         IntygTypeInfo intygTypeInfo = new IntygTypeInfo(INTYGSID, INTYGSTYP, INTYGSTYP_VERSION);
         when(intygService.getIntygTypeInfo(any(String.class), any(Utkast.class))).thenReturn(intygTypeInfo);
     }
@@ -287,12 +288,13 @@ public class IntygIntegrationServiceImplTest {
         WebCertUser user = createDefaultUser();
         user.setParameters(parameters);
         user.setValdVardgivare(createVardgivare());
+        user.setValdVardenhet(createVardenhet());
 
         // when
         testee.prepareRedirectToIntyg(INTYGSID, user);
 
         // then
-        verify(monitoringLog).logIntegratedOtherCaregiver(anyString(), anyString(), anyString(), anyString());
+        verify(monitoringLog).logIntegratedOtherCaregiver(anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
     }
 
     @Test
@@ -308,13 +310,14 @@ public class IntygIntegrationServiceImplTest {
 
         WebCertUser user = createDefaultUser();
         user.setParameters(parameters);
-        user.setValdVardgivare(createVardenhet());
+        user.setValdVardgivare(createVardgivare());
+        user.setValdVardenhet(createVardenhet());
 
         // when
         testee.prepareRedirectToIntyg(INTYGSID, user);
 
         // then
-        verify(monitoringLog).logIntegratedOtherCaregiver(anyString(), anyString(), anyString(), anyString());
+        verify(monitoringLog).logIntegratedOtherCaregiver(anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
 
     }
 

@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.integration.servicenow.service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.integration.api.subscription.AuthenticationMethodEnum;
@@ -38,6 +37,6 @@ public class GetCareProvidersMissingSubscriptionService {
         return organizations.stream()
             .filter(organization -> checkSubscriptionService.isMissing(organization.getServiceCodes(), authMethod))
             .flatMap(organization -> organizationNumberHsaIdMap.get(organization.getOrganizationNumber()).stream())
-            .collect(Collectors.toList());
+            .toList();
     }
 }

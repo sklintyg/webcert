@@ -35,6 +35,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.clinicalprocess.healthcond.certificate.receiver.types.v1.ApprovalStatusType;
 import se.inera.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
@@ -44,6 +45,7 @@ import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedrec
 import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedreceivers.v1.RegisterApprovedReceiversResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedreceivers.v1.RegisterApprovedReceiversType;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
+import se.inera.intyg.webcert.logging.MdcHelper;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RegisterApprovedReceiversProcessorTest {
@@ -57,6 +59,8 @@ public class RegisterApprovedReceiversProcessorTest {
 
     @Mock
     private RegisterApprovedReceiversResponderInterface registerApprovedReceiversClient;
+    @Spy
+    private MdcHelper mdcHelper;
 
     @InjectMocks
     private RegisterApprovedReceiversProcessor testee;

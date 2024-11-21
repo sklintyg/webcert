@@ -30,20 +30,20 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
 import java.util.Map;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeConversationView;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.CreateMessageParameter;
 
 @Path("/arende")
-@Api(value = "arende", description = "REST API - moduleapi - arende", produces = MediaType.APPLICATION_JSON)
+@Slf4j
+@Api(value = "arende", produces = MediaType.APPLICATION_JSON)
 public class ArendeModuleApiController extends AbstractApiController {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ArendeModuleApiController.class);
 
     @Autowired
     private ArendeService arendeService;
@@ -52,8 +52,9 @@ public class ArendeModuleApiController extends AbstractApiController {
     @Path("/{intygsId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "arende-module-arende-for-certificate", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public List<ArendeConversationView> arendeForIntyg(@PathParam("intygsId") String intygsId) {
-        LOGGER.debug("Get arende for intyg {}", intygsId);
+        log.debug("Get arende for intyg {}", intygsId);
         return arendeService.getArenden(intygsId);
     }
 
@@ -62,9 +63,10 @@ public class ArendeModuleApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "arende-module-create-message", eventType = MdcLogConstants.EVENT_TYPE_CREATION)
     public Response createMessage(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") final String intygsId,
         CreateMessageParameter parameter) {
-        LOGGER.debug("Create arende for {} ({})", intygsId, intygsTyp);
+        log.debug("Create arende for {} ({})", intygsId, intygsTyp);
         ArendeConversationView response = arendeService.createMessage(intygsId, parameter.getAmne(), parameter.getRubrik(),
             parameter.getMeddelande());
         return Response.ok(response).build();
@@ -75,9 +77,10 @@ public class ArendeModuleApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "arende-module-answer", eventType = MdcLogConstants.EVENT_TYPE_CREATION)
     public Response answer(@PathParam("intygsTyp") String intygsTyp, @PathParam("meddelandeId") final String meddelandeId,
         String svarsText) {
-        LOGGER.debug("Answer arende {}", meddelandeId);
+        log.debug("Answer arende {}", meddelandeId);
         ArendeConversationView response = arendeService.answer(meddelandeId, svarsText);
         return Response.ok(response).build();
     }
@@ -87,8 +90,9 @@ public class ArendeModuleApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "arende-module-answer-complement", eventType = MdcLogConstants.EVENT_TYPE_CREATION)
     public Response answer(@PathParam("intygsId") final String intygsId, final String svarsText) {
-        LOGGER.debug("Answer arenden for intyg {}", intygsId);
+        log.debug("Answer arenden for intyg {}", intygsId);
         final List<ArendeConversationView> response = arendeService.answerKomplettering(intygsId, svarsText);
         return Response.ok(response).build();
     }
@@ -97,8 +101,9 @@ public class ArendeModuleApiController extends AbstractApiController {
     @Path("/{intygsId}/vidarebefordrad")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "arende-module-set-forwarded", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public Response setForwarded(@PathParam("intygsId") final String intygsId) {
-        LOGGER.debug("Set arende {} as forwarded true", intygsId);
+        log.debug("Set arende {} as forwarded true", intygsId);
 
         List<ArendeConversationView> response = arendeService.setForwarded(intygsId);
         return Response.ok(response).build();
@@ -109,8 +114,9 @@ public class ArendeModuleApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "arende-module-close-as-handled", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public Response closeAsHandled(@PathParam("intygsTyp") String intygsTyp, @PathParam("meddelandeId") String meddelandeId) {
-        LOGGER.debug("Close arende {} as handled", meddelandeId);
+        log.debug("Close arende {} as handled", meddelandeId);
         ArendeConversationView response = arendeService.closeArendeAsHandled(meddelandeId, intygsTyp);
         return Response.ok(response).build();
     }
@@ -120,8 +126,9 @@ public class ArendeModuleApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "arende-module-open-as-unhandled", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public Response openAsUnhandled(@PathParam("intygsTyp") String intygsTyp, @PathParam("meddelandeId") String meddelandeId) {
-        LOGGER.debug("Open arende {} as unhandled", meddelandeId);
+        log.debug("Open arende {} as unhandled", meddelandeId);
         ArendeConversationView response = arendeService.openArendeAsUnhandled(meddelandeId);
         return Response.ok(response).build();
     }
@@ -130,20 +137,21 @@ public class ArendeModuleApiController extends AbstractApiController {
     @Path("/ping")
     @Produces(MediaType.APPLICATION_XML)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "arende-module-get-ping", eventType = MdcLogConstants.EVENT_TYPE_INFO)
     public Response getPing() {
         String xmlResponse = buildXMLResponse(true, 0, null);
-        LOGGER.debug("Pinged Intygstjänsten, got: " + xmlResponse);
+        log.debug("Pinged Intygstjänsten, got: {}", xmlResponse);
         return Response.ok(xmlResponse).build();
     }
 
     private String buildXMLResponse(boolean ok, long time, Map<String, String> additionalValues) {
         StringBuilder sb = new StringBuilder();
         sb.append("<pingdom_http_custom_check>");
-        sb.append("<status>" + (ok ? "OK" : "FAIL") + "</status>");
-        sb.append("<response_time>" + time + "</response_time>");
+        sb.append("<status>").append(ok ? "OK" : "FAIL").append("</status>");
+        sb.append("<response_time>").append(time).append("</response_time>");
         if (additionalValues != null) {
             sb.append("<additional_data>");
-            additionalValues.forEach((k, v) -> sb.append("<" + k + ">" + v + "</" + k + ">"));
+            additionalValues.forEach((k, v) -> sb.append("<").append(k).append(">").append(v).append("</").append(k).append(">"));
             sb.append("</additional_data>");
         }
         sb.append("</pingdom_http_custom_check>");

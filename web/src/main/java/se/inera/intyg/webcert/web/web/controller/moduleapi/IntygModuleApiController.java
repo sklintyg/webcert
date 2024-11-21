@@ -36,6 +36,8 @@ import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.csintegration.aggregate.PrintCertificateAggregator;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
@@ -64,7 +66,7 @@ import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelper;
  * @author nikpet
  */
 @Path("/intyg")
-@Api(value = "/moduleapi/intyg", description = "REST API - moduleapi - intyg", produces = MediaType.APPLICATION_JSON)
+@Api(value = "/moduleapi/intyg", produces = MediaType.APPLICATION_JSON)
 public class IntygModuleApiController extends AbstractApiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygModuleApiController.class);
@@ -102,6 +104,7 @@ public class IntygModuleApiController extends AbstractApiController {
     @GET
     @Path("/{intygsTyp}/{intygsId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PerformanceLogging(eventAction = "intyg-module-get-certificate", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId) {
         LOG.debug("Fetching signed intyg with id '{}' from IT", intygsId);
 
@@ -122,6 +125,7 @@ public class IntygModuleApiController extends AbstractApiController {
     @GET
     @Path("/{intygsTyp}/{intygsId}/pdf")
     @Produces("application/pdf")
+    @PerformanceLogging(eventAction = "intyg-module-get-certificate-as-pdf", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public final Response getIntygAsPdf(@PathParam("intygsTyp") String intygsTyp, @PathParam(value = "intygsId") final String intygsId,
         @Context HttpServletRequest request) {
         return getPdf(intygsTyp, intygsId, false, request);
@@ -137,6 +141,7 @@ public class IntygModuleApiController extends AbstractApiController {
     @GET
     @Path("/{intygsTyp}/{intygsId}/pdf/arbetsgivarutskrift")
     @Produces("application/pdf")
+    @PerformanceLogging(eventAction = "intyg-module-get-certificate-as-pdf-for-employer", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public final Response getIntygAsPdfForEmployer(@PathParam("intygsTyp") String intygsTyp,
         @PathParam(value = "intygsId") final String intygsId, @Context HttpServletRequest request) {
         return getPdf(intygsTyp, intygsId, true, request);
@@ -169,6 +174,7 @@ public class IntygModuleApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{intygsId}/skicka")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PerformanceLogging(eventAction = "intyg-module-send-signed-certificate", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public Response sendSignedIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
         SendSignedIntygParameter param) {
 
@@ -186,6 +192,7 @@ public class IntygModuleApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{intygsId}/aterkalla")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PerformanceLogging(eventAction = "intyg-module-revoke-signed-certificate", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public Response revokeSignedIntyg(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
         RevokeSignedIntygParameter param) {
 
@@ -206,6 +213,7 @@ public class IntygModuleApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{intygsId}/komplettera")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PerformanceLogging(eventAction = "intyg-module-create-complement", eventType = MdcLogConstants.EVENT_TYPE_CREATION)
     public Response createCompletion(CopyIntygRequest request, @PathParam("intygsTyp") String intygsTyp,
         @PathParam("intygsId") String orgIntygsId) {
 
@@ -239,6 +247,7 @@ public class IntygModuleApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{intygsId}/fornya")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PerformanceLogging(eventAction = "intyg-module-create-renewal", eventType = MdcLogConstants.EVENT_TYPE_CREATION)
     public Response createRenewal(CopyIntygRequest request, @PathParam("intygsTyp") String intygsTyp,
         @PathParam("intygsId") String orgIntygsId) {
 
@@ -270,6 +279,7 @@ public class IntygModuleApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{intygsId}/{newIntygsTyp}/create")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PerformanceLogging(eventAction = "intyg-module-create-draft-from-signed-template", eventType = MdcLogConstants.EVENT_TYPE_CREATION)
     public Response createUtkastFromSignedTemplate(CopyIntygRequest request, @PathParam("intygsTyp") String orgIntygsTyp,
         @PathParam("intygsId") String orgIntygsId, @PathParam("newIntygsTyp") String newIntygsTyp) {
 
@@ -303,6 +313,7 @@ public class IntygModuleApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{intygsId}/ersatt")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PerformanceLogging(eventAction = "intyg-module-create-replacement", eventType = MdcLogConstants.EVENT_TYPE_CREATION)
     public Response createReplacement(CopyIntygRequest request, @PathParam("intygsTyp") String intygsTyp,
         @PathParam("intygsId") String orgIntygsId) {
 

@@ -76,7 +76,8 @@ public class SendMessageFromCertificateService implements SendQuestionFacadeServ
             certificate.getMetadata().getType(),
             certificate.getMetadata().getUnit().getUnitId(),
             ArendeAmne.valueOf(getSubject(sentMessage.getType()).toString()),
-            false
+            false,
+            question.getId()
         );
 
         return sentMessage;

@@ -37,6 +37,8 @@ import se.inera.intyg.infra.dynamiclink.service.DynamicLinkService;
 import se.inera.intyg.infra.integration.ia.services.IABannerService;
 import se.inera.intyg.infra.integration.postnummer.service.PostnummerService;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ConfigResponse;
 
@@ -91,6 +93,7 @@ public class ConfigApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @ApiOperation(value = "Get module configuration for Webcert", httpMethod = "GET", produces = MediaType.APPLICATION_JSON)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "config-get-config", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getConfig() {
         Boolean useMinifiedJavaScript = Boolean.parseBoolean(environment.getProperty("useMinifiedJavaScript", "true"));
         ConfigResponse configResponse = new ConfigResponse(version, build, ppHost, dashboardUrl, useMinifiedJavaScript,
@@ -105,6 +108,7 @@ public class ConfigApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @ApiOperation(value = "Get dynamic links for Webcert", httpMethod = "GET", produces = MediaType.APPLICATION_JSON)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "config-get-dynamic-links", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Map<String, DynamicLink> getDynamicLinks() {
         return dynamicLinkService.getAllAsMap();
     }
@@ -114,6 +118,7 @@ public class ConfigApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @ApiOperation(value = "Get list of kommuner from postnummerservice", httpMethod = "GET", produces = MediaType.APPLICATION_JSON)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "config-get-kommun-list", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public List<String> getKommunList() {
         return postnummerService.getKommunList();
     }

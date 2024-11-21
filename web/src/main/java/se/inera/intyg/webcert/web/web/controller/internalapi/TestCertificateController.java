@@ -29,6 +29,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.testcertificate.dto.TestCertificateEraseRequest;
 import se.inera.intyg.infra.testcertificate.dto.TestCertificateEraseResult;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.testcertificate.TestCertificateService;
 
 /**
@@ -47,6 +49,7 @@ public class TestCertificateController {
     @POST
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Path("/erase")
+    @PerformanceLogging(eventAction = "test-certificate-erase", eventType = MdcLogConstants.EVENT_TYPE_DELETION)
     public Response eraseTestCertificates(@RequestBody TestCertificateEraseRequest eraseRequest) {
 
         if (eraseRequest.getTo() == null) {

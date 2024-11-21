@@ -34,6 +34,8 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.apache.hc.core5.http.HttpStatus;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.fmb.icf.IcfService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FmbResponse;
@@ -58,6 +60,7 @@ public class IcfApiController extends AbstractApiController {
         @ApiResponse(code = HttpStatus.SC_OK, message = "Given ICF data for ICD10 codes found", response = FmbResponse.class),
         @ApiResponse(code = HttpStatus.SC_BAD_REQUEST, message = "Bad request due to missing icd10 codes")})
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "icf-get-icf-for-icd10-codes", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getIcfForIcd10(
         @ApiParam(value = "ICD10 codes", required = true)
         @QueryParam("icd10Kod1") final String icd10Kod1,

@@ -38,6 +38,8 @@ import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygModuleDTO;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelper;
@@ -71,6 +73,7 @@ public class ModuleApiController extends AbstractApiController {
     @Path("/map")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "module-get-modules-map", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getModulesMap() {
         return Response.ok(moduleRegistry.listAllModules()).build();
     }
@@ -84,6 +87,7 @@ public class ModuleApiController extends AbstractApiController {
     @Path("/map/{patientId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "module-get-modules-map-by-patient-id", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getModulesMap(@PathParam("patientId") String patientId) {
 
         try {
@@ -109,6 +113,7 @@ public class ModuleApiController extends AbstractApiController {
     @Path("/active")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "module-get-active-modules", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getActiveModules() {
         // Cannot use user as this is used before login
         return Response.ok(moduleRegistry.listAllModules().stream()

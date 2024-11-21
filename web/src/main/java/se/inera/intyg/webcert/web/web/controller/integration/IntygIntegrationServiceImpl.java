@@ -92,12 +92,21 @@ public class IntygIntegrationServiceImpl extends IntegrationServiceImpl {
     }
 
     private void logSammanhallenSjukforing(String intygsTyp, String intygsId, Utkast utkast, WebCertUser user) {
-        if (user.getParameters().isSjf()) {
-            if (!utkast.getVardgivarId().equals(user.getValdVardgivare().getId())) {
-                monitoringLog.logIntegratedOtherCaregiver(intygsId, intygsTyp, utkast.getVardgivarId(), utkast.getEnhetsId());
-            } else if (!user.getValdVardenhet().getHsaIds().contains(utkast.getEnhetsId())) {
-                monitoringLog.logIntegratedOtherUnit(intygsId, intygsTyp, utkast.getEnhetsId());
-            }
+        if (!user.getParameters().isSjf()) {
+            return;
+        }
+
+        final var draftCareProviderId = utkast.getVardgivarId();
+        final var draftCareUnitId = utkast.getEnhetsId();
+        final var userCareProviderId = user.getValdVardgivare().getId();
+        final var userCareUnitId = user.getValdVardenhet().getId();
+
+        if (!draftCareProviderId.equals(userCareProviderId)) {
+            monitoringLog.logIntegratedOtherCaregiver(intygsId, intygsTyp, draftCareProviderId, draftCareUnitId, userCareProviderId,
+                userCareUnitId);
+        } else if (!user.getValdVardenhet().getHsaIds().contains(draftCareUnitId)) {
+            monitoringLog.logIntegratedOtherUnit(intygsId, intygsTyp, draftCareProviderId, draftCareUnitId, userCareProviderId,
+                userCareUnitId);
         }
     }
 

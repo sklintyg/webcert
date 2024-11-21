@@ -29,6 +29,8 @@ import jakarta.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.RequestBody;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetCertificateIntegrationRequestDTO;
@@ -54,6 +56,7 @@ public class CertificateInternalApiController {
     @PrometheusTimeMethod
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PerformanceLogging(eventAction = "certificate-internal-get-certificate", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public GetCertificateResponse getCertificate(@RequestBody GetCertificateIntegrationRequestDTO request,
         @PathParam("certificateId") String certificateId) {
         return getCertificateInternalAggregator.get(certificateId, request.getPersonId());
@@ -64,6 +67,7 @@ public class CertificateInternalApiController {
     @PrometheusTimeMethod
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PerformanceLogging(eventAction = "certificate-internal-get-pdf-data", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public CertificatePdfResponseDTO getPdfData(@RequestBody CertificatePdfRequestDTO request,
         @PathParam("certificateId") String certificateId) {
         return getCertificateInternalPdfAggregator.get(

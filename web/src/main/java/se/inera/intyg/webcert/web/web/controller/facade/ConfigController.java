@@ -25,9 +25,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.Map;
-import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
@@ -36,12 +34,13 @@ import se.inera.intyg.infra.dynamiclink.model.DynamicLink;
 import se.inera.intyg.infra.dynamiclink.service.DynamicLinkService;
 import se.inera.intyg.infra.integration.ia.services.IABannerService;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ConfigurationDTO;
 
 @Path("/configuration")
+@Slf4j
 public class ConfigController {
-
-    private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
 
     private static final String UTF_8_CHARSET = ";charset=utf-8";
 
@@ -75,14 +74,15 @@ public class ConfigController {
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "config-get-configuration", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getConfiguration() {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Getting configuration");
+        if (log.isDebugEnabled()) {
+            log.debug("Getting configuration");
         }
         final var banners = iaBannerService.getCurrentBanners()
             .stream()
             .filter((banner -> banner.getApplication() == Application.WEBCERT))
-            .collect(Collectors.toList());
+            .toList();
 
         return Response.ok(new ConfigurationDTO(version, banners, ppHost, sakerhetstjanstIdpUrl, cgiFunktionstjansterIdpUrl,
             forwardDraftOrQuestionUrl)).build();
@@ -92,6 +92,7 @@ public class ConfigController {
     @Path("/links")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "config-get-dynamic-links", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Map<String, DynamicLink> getDynamicLinks() {
         return dynamicLinkService.getAllAsMap();
     }

@@ -1,5 +1,6 @@
 dependencies {
     implementation project(":integration-api")
+    implementation project(':webcert-logging')
 
     implementation "com.fasterxml.jackson.core:jackson-annotations"
     implementation "com.fasterxml.jackson.jakarta.rs:jackson-jakarta-rs-json-provider"

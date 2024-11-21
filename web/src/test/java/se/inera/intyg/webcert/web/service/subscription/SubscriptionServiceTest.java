@@ -52,9 +52,9 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
-import se.inera.intyg.schemas.contract.util.HashUtility;
 import se.inera.intyg.webcert.integration.api.subscription.AuthenticationMethodEnum;
 import se.inera.intyg.webcert.integration.kundportalen.service.SubscriptionIntegrationServiceImpl;
+import se.inera.intyg.webcert.logging.HashUtility;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionAction;
 import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionInfo;
@@ -104,7 +104,7 @@ public class SubscriptionServiceTest {
     @Test
     public void shouldNotCallRestServiceWhenNoOrganizationsForSithsUser() {
         final var sithsUser = createWebCertSithsUser(1, 1, 1);
-        sithsUser.getVardgivare().get(0).getVardenheter().get(0).setVardgivareOrgnr(null);
+        sithsUser.getVardgivare().getFirst().getVardenheter().getFirst().setVardgivareOrgnr(null);
 
         subscriptionService.checkSubscriptions(sithsUser);
 
@@ -153,7 +153,7 @@ public class SubscriptionServiceTest {
 
         assertAll(
             () -> assertTrue(restServiceParamCaptor.getValue().containsKey(expectedOrganizationNumber)),
-            () -> assertEquals("CARE_PROVIDER_HSA_ID_1", restServiceParamCaptor.getValue().get(expectedOrganizationNumber).get(0))
+            () -> assertEquals("CARE_PROVIDER_HSA_ID_1", restServiceParamCaptor.getValue().get(expectedOrganizationNumber).getFirst())
         );
     }
 
@@ -229,8 +229,8 @@ public class SubscriptionServiceTest {
     @Test
     public void shouldHandleMultipleCareProvidersWithSameOrgNumberForSithsUser() {
         final var sithsUser = createWebCertSithsUser(4, 2, 0);
-        sithsUser.getVardgivare().get(1).getVardenheter().get(0).setVardgivareOrgnr("CARE_PROVIDER_ORGANIZATION_NO_1");
-        sithsUser.getVardgivare().get(2).getVardenheter().get(0).setVardgivareOrgnr("CARE_PROVIDER_ORGANIZATION_NO_1");
+        sithsUser.getVardgivare().get(1).getVardenheter().getFirst().setVardgivareOrgnr("CARE_PROVIDER_ORGANIZATION_NO_1");
+        sithsUser.getVardgivare().get(2).getVardenheter().getFirst().setVardgivareOrgnr("CARE_PROVIDER_ORGANIZATION_NO_1");
         setRestServiceMockToReturn(3);
 
         subscriptionService.checkSubscriptions(sithsUser);
@@ -266,7 +266,7 @@ public class SubscriptionServiceTest {
             any(AuthenticationMethodEnum.class));
         assertAll(
             () -> assertTrue(restServiceParamCaptor.getValue().containsKey(expectedOrganizationNumber)),
-            () -> assertEquals("CARE_PROVIDER_HSA_ID_1", restServiceParamCaptor.getValue().get(expectedOrganizationNumber).get(0))
+            () -> assertEquals("CARE_PROVIDER_HSA_ID_1", restServiceParamCaptor.getValue().get(expectedOrganizationNumber).getFirst())
         );
     }
 
@@ -484,7 +484,7 @@ public class SubscriptionServiceTest {
         webCertUser.setRoles(Map.of(AuthoritiesConstants.ROLE_PRIVATLAKARE, new Role()));
 
         final var careProvider = webCertUser.getVardgivare().get(0);
-        careProvider.getVardenheter().get(0).setId(careProvider.getId());
+        careProvider.getVardenheter().getFirst().setId(careProvider.getId());
         return webCertUser;
     }
 

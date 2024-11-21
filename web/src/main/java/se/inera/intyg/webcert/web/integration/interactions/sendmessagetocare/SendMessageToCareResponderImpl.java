@@ -25,6 +25,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.csintegration.aggregate.ProcessIncomingMessageAggregator;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareResponseType;
@@ -42,6 +44,7 @@ public class SendMessageToCareResponderImpl implements SendMessageToCareResponde
     private final ProcessIncomingMessageAggregator processIncomingMessage;
 
     @Override
+    @PerformanceLogging(eventAction = "send-message-to-care", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public SendMessageToCareResponseType sendMessageToCare(String logicalAddress, SendMessageToCareType request) {
         LOG.debug("Received new message to care");
 

@@ -30,6 +30,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.facade.ChangeUnitService;
 import se.inera.intyg.webcert.web.service.facade.GetUserResourceLinks;
 import se.inera.intyg.webcert.web.service.facade.impl.ChangeUnitException;
@@ -67,6 +69,7 @@ public class UserController {
     @GET
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "user-get-user", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getUser() {
         LOG.debug("Getting logged in user");
         final var loggedInUser = userService.getLoggedInUser();
@@ -78,6 +81,7 @@ public class UserController {
     @GET
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "user-get-user-tabs", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getUserTabs() {
         LOG.debug("Getting user statistics");
         final var result = userStatisticsService.getUserStatistics();
@@ -88,6 +92,7 @@ public class UserController {
     @Path("/unit/{unitHsaId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "user-change-unit", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public Response changeUnit(@PathParam("unitHsaId") @NotNull String unitHsaId) {
         LOG.debug("Changing care unit to {}", unitHsaId);
         try {

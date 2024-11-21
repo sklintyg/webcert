@@ -49,6 +49,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.monitoring.logging.UserAgentInfo;
 import se.inera.intyg.infra.monitoring.logging.UserAgentParser;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest;
@@ -57,7 +59,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest;
  * Controller that logs messages from JavaScript to the normal log.
  */
 @Path("/jslog")
-@Api(value = "jslog", description = "REST API för loggning från frontend till backend-log", produces = MediaType.APPLICATION_JSON)
+@Api(value = "jslog", produces = MediaType.APPLICATION_JSON)
 public class JsLogApiController extends AbstractApiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(JsLogApiController.class);
@@ -71,6 +73,7 @@ public class JsLogApiController extends AbstractApiController {
     @POST
     @Path("/debug")
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "js-log-debug", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response debug(String message) {
         LOG.debug(message);
         return ok().build();
@@ -80,6 +83,7 @@ public class JsLogApiController extends AbstractApiController {
     @Path("/monitoring")
     @Consumes(APPLICATION_JSON)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "js-log-monitoring", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response monitoring(MonitoringRequest request, @HeaderParam(HttpHeaders.USER_AGENT) String userAgent) {
         if (request == null || !request.isValid()) {
             return status(BAD_REQUEST).build();
@@ -116,6 +120,7 @@ public class JsLogApiController extends AbstractApiController {
     @Path("/srs")
     @Consumes(APPLICATION_JSON)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "js-log-srs-monitoring", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response srsMonitoring(MonitoringRequest request) {
         if (request == null || !request.isValid()) {
             return status(BAD_REQUEST).build();
