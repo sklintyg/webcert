@@ -153,26 +153,28 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
             getResponsibleHospName()
         );
 
-        final var origin = webCertUserService.getUser().getOrigin();
-        final var isAllowedToEdit = draftAccessServiceHelper.isAllowToEditUtkast(certificate);
-        final var confirmationModalProvider = ConfirmationModalProviderResolver.getConfirmation(certificate.getIntygsTyp(),
-            certificateToReturn.getMetadata().getStatus(), webCertUserService.getUser(), false, isAllowedToEdit);
-        certificateToReturn.getMetadata().setConfirmationModal(
-            confirmationModalProvider != null ? confirmationModalProvider.create(
-                certificateToReturn.getMetadata().getPatient().getFullName(),
-                certificateToReturn.getMetadata().getPatient().getPersonId().getId(),
-                origin
-            ) : null
-        );
+        if (!webCertUserService.hasAuthenticationContext()) {
+            final var origin = webCertUserService.getUser().getOrigin();
+            final var isAllowedToEdit = draftAccessServiceHelper.isAllowToEditUtkast(certificate);
+            final var confirmationModalProvider = ConfirmationModalProviderResolver.getConfirmation(certificate.getIntygsTyp(),
+                certificateToReturn.getMetadata().getStatus(), webCertUserService.getUser(), false, isAllowedToEdit);
+            certificateToReturn.getMetadata().setConfirmationModal(
+                confirmationModalProvider != null ? confirmationModalProvider.create(
+                    certificateToReturn.getMetadata().getPatient().getFullName(),
+                    certificateToReturn.getMetadata().getPatient().getPersonId().getId(),
+                    origin
+                ) : null
+            );
 
-        final var signConfirmationModelProvider = ConfirmationModalProviderResolver.getSignConfirmation(certificate.getIntygsTyp());
-        certificateToReturn.getMetadata().setSignConfirmationModal(
-            signConfirmationModelProvider != null ? signConfirmationModelProvider.create(
-                certificateToReturn.getMetadata().getPatient().getFullName(),
-                certificateToReturn.getMetadata().getPatient().getPersonId().getId(),
-                origin
-            ) : null
-        );
+            final var signConfirmationModelProvider = ConfirmationModalProviderResolver.getSignConfirmation(certificate.getIntygsTyp());
+            certificateToReturn.getMetadata().setSignConfirmationModal(
+                signConfirmationModelProvider != null ? signConfirmationModelProvider.create(
+                    certificateToReturn.getMetadata().getPatient().getFullName(),
+                    certificateToReturn.getMetadata().getPatient().getPersonId().getId(),
+                    origin
+                ) : null
+            );
+        }
 
         return certificateToReturn;
     }

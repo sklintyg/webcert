@@ -141,6 +141,8 @@ class UtkastToCertificateConverterTest {
                 .thenReturn(user);
             when(user.getOrigin())
                 .thenReturn("DJUPINTEGRATION");
+            when(webCertUserService.hasAuthenticationContext())
+                .thenReturn(true);
         }
 
         @Test
