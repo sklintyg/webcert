@@ -95,6 +95,12 @@ public class ComplementCertificateFromCertificateService implements ComplementCe
             return null;
         }
 
+        final var answeredComplementIds = csIntegrationService.getQuestions(certificateId).stream()
+            .filter(question -> question.getType() == QuestionType.COMPLEMENT)
+            .filter(question -> question.getAnswer() != null)
+            .map(Question::getId)
+            .toList();
+
         final var certificate = csIntegrationService.answerComplementOnCertificate(
             certificateId,
             csIntegrationRequestFactory.answerComplementOnCertificateRequest(message)
@@ -103,20 +109,14 @@ public class ComplementCertificateFromCertificateService implements ComplementCe
 
         final var messageId = csIntegrationService.getQuestions(certificateId).stream()
             .filter(question -> question.getType() == QuestionType.COMPLEMENT)
+            .filter(question -> !answeredComplementIds.contains(question.getId()))
             .map(Question::getAnswer)
             .filter(Objects::nonNull)
-            .reduce((first, second) -> second)
             .map(Answer::getId)
-            .orElse(null);
+            .toList();
 
-            monitoringLogService.logArendeCreated(
-                certificate.getMetadata().getId(),
-                certificate.getMetadata().getType(),
-                certificate.getMetadata().getUnit().getUnitId(),
-                ArendeAmne.KOMPLT,
-                true,
-                messageId
-            );
+        messageId.forEach(id -> monitoringLogService.logArendeCreated(certificate.getMetadata().getId(),
+            certificate.getMetadata().getType(), certificate.getMetadata().getUnit().getUnitId(), ArendeAmne.KOMPLT, true, id));
 
         publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.HANFRFM);
 
