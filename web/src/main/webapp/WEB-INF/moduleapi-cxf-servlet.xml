@@ -31,7 +31,6 @@
     </cxf:features>
   </cxf:bus>
 
-  <aop:aspectj-autoproxy/>
   <context:annotation-config/>
 
   <context:component-scan base-package="se.inera.intyg.webcert.web.web.controller.moduleapi"/>

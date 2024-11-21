@@ -32,7 +32,6 @@
     </cxf:features>
   </cxf:bus>
 
-  <aop:aspectj-autoproxy/>
   <context:annotation-config/>
   <context:property-placeholder location="classpath:application.properties" order="2"/>
 

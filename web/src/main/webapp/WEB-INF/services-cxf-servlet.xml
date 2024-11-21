@@ -28,7 +28,6 @@
     http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
-  <aop:aspectj-autoproxy/>
   <context:annotation-config/>
 
   <import resource="classpath:fk-stub-context.xml"/>

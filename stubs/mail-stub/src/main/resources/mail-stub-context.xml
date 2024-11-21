@@ -26,7 +26,6 @@
 
   <context:component-scan base-package="se.inera.intyg.webcert.mailstub" />
 
-  <aop:aspectj-autoproxy/>
   <bean id="mailAdvice" class="se.inera.intyg.webcert.mailstub.JavaMailSenderAroundAdvice">
       <property name="mailHost" value="${mail.host}"/>
   </bean>
