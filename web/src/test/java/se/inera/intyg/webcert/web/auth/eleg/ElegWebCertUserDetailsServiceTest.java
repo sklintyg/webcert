@@ -43,9 +43,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import se.inera.intyg.infra.integration.pu.model.Person;
-import se.inera.intyg.infra.integration.pu.model.PersonSvar;
-import se.inera.intyg.infra.integration.pu.services.PUService;
+import se.inera.intyg.infra.pu.integration.api.model.Person;
+import se.inera.intyg.infra.pu.integration.api.model.PersonSvar;
+import se.inera.intyg.infra.pu.integration.api.services.PUService;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.infra.security.exception.HsaServiceException;
 import se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerResponse;
@@ -75,7 +75,7 @@ public class ElegWebCertUserDetailsServiceTest extends AuthoritiesConfigurationT
     private static final String PERSON_ID = "197705232382";
     private static final String ELEG_AUTH_SCHEME = "http://id.elegnamnden.se/loa/1.0/loa3";
     private static final AuthenticationMethod AUTH_METHOD = AuthenticationMethod.MOBILT_BANK_ID;
-
+    private final Map<String, String> expectedPreferences = new HashMap<>();
     @Mock
     private PPService ppService;
     @Mock
@@ -90,11 +90,23 @@ public class ElegWebCertUserDetailsServiceTest extends AuthoritiesConfigurationT
     private ElegAuthenticationMethodResolver elegAuthenticationMethodResolver;
     @Mock
     private SubscriptionService subscriptionService;
-
     @InjectMocks
     private ElegWebCertUserDetailsService elegWebCertUserDetailsService;
 
-    private final Map<String, String> expectedPreferences = new HashMap<>();
+    private static EnhetType getEnhetType() {
+        final var vardEnhet = new EnhetType();
+        vardEnhet.setEnhetsnamn("enhetsNamn");
+        final var enhetsId = new HsaId();
+        enhetsId.setExtension("enhetsId");
+        vardEnhet.setEnhetsId(enhetsId);
+        final var vardgivare = new VardgivareType();
+        final var vardgivareId = new HsaId();
+        enhetsId.setExtension("vardgivareId");
+        vardgivare.setVardgivareId(vardgivareId);
+        vardgivare.setVardgivarenamn("vardgivareName");
+        vardEnhet.setVardgivare(vardgivare);
+        return vardEnhet;
+    }
 
     @Before
     public void setupForSuccess() {
@@ -242,25 +254,10 @@ public class ElegWebCertUserDetailsServiceTest extends AuthoritiesConfigurationT
         return hoSPersonType;
     }
 
-    private static EnhetType getEnhetType() {
-        final var vardEnhet = new EnhetType();
-        vardEnhet.setEnhetsnamn("enhetsNamn");
-        final var enhetsId = new HsaId();
-        enhetsId.setExtension("enhetsId");
-        vardEnhet.setEnhetsId(enhetsId);
-        final var vardgivare = new VardgivareType();
-        final var vardgivareId = new HsaId();
-        enhetsId.setExtension("vardgivareId");
-        vardgivare.setVardgivareId(vardgivareId);
-        vardgivare.setVardgivarenamn("vardgivareName");
-        vardEnhet.setVardgivare(vardgivare);
-        return vardEnhet;
-    }
-
     private PersonSvar buildPersonSvar(boolean sekretessMarkerad) {
         final var personnummer = Personnummer.createPersonnummer(PERSON_ID).orElseThrow();
         final var person = new Person(personnummer, sekretessMarkerad, false, "fornamn", "",
-            "Efternamn", "gatan", "12345", "postort");
+            "Efternamn", "gatan", "12345", "postort", false);
         return PersonSvar.found(person);
     }
 

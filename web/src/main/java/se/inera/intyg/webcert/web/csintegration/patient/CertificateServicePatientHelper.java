@@ -38,15 +38,15 @@ public class CertificateServicePatientHelper {
         final var personSvar = patientDetailsResolver.getPersonFromPUService(patientId);
         return CertificateServicePatientDTO.builder()
             .id(getPersonId(patientId))
-            .protectedPerson(personSvar.getPerson().isSekretessmarkering())
-            .deceased(personSvar.getPerson().isAvliden())
-            .firstName(personSvar.getPerson().getFornamn())
-            .lastName(personSvar.getPerson().getEfternamn())
-            .middleName(personSvar.getPerson().getMellannamn())
-            .street(personSvar.getPerson().getPostadress())
-            .zipCode(personSvar.getPerson().getPostnummer())
-            .city(personSvar.getPerson().getPostort())
-            .testIndicated(personSvar.getPerson().isTestIndicator())
+            .protectedPerson(personSvar.getPerson().sekretessmarkering())
+            .deceased(personSvar.getPerson().avliden())
+            .firstName(personSvar.getPerson().fornamn())
+            .lastName(personSvar.getPerson().efternamn())
+            .middleName(personSvar.getPerson().mellannamn())
+            .street(personSvar.getPerson().postadress())
+            .zipCode(personSvar.getPerson().postnummer())
+            .city(personSvar.getPerson().postort())
+            .testIndicated(personSvar.getPerson().testIndicator())
             .build();
     }
 

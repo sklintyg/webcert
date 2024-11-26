@@ -24,8 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
-import se.inera.intyg.infra.integration.pu.model.PersonSvar;
-import se.inera.intyg.infra.integration.pu.services.PUService;
+import se.inera.intyg.infra.pu.integration.api.model.PersonSvar;
+import se.inera.intyg.infra.pu.integration.api.services.PUService;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
@@ -58,8 +58,8 @@ public class GetPatientFacadeServiceImpl implements GetPatientFacadeService {
             throw new PatientSearchErrorException();
         }
 
-        if (personSvar.getPerson() != null && (personSvar.getPerson().getFornamn() == null
-            || personSvar.getPerson().getEfternamn() == null)) {
+        if (personSvar.getPerson() != null && (personSvar.getPerson().fornamn() == null
+            || personSvar.getPerson().efternamn() == null)) {
             throw new PatientNoNameException();
         }
 
@@ -78,22 +78,22 @@ public class GetPatientFacadeServiceImpl implements GetPatientFacadeService {
                     .type("")
                     .build()
             )
-            .firstName(personSvar.getPerson().getFornamn())
-            .lastName(personSvar.getPerson().getEfternamn())
-            .middleName(personSvar.getPerson().getMellannamn())
+            .firstName(personSvar.getPerson().fornamn())
+            .lastName(personSvar.getPerson().efternamn())
+            .middleName(personSvar.getPerson().mellannamn())
             .fullName(getFullName(personSvar))
-            .deceased(personSvar.getPerson().isAvliden())
-            .protectedPerson(personSvar.getPerson().isSekretessmarkering())
-            .testIndicated(personSvar.getPerson().isTestIndicator())
+            .deceased(personSvar.getPerson().avliden())
+            .protectedPerson(personSvar.getPerson().sekretessmarkering())
+            .testIndicated(personSvar.getPerson().testIndicator())
             .build();
     }
 
     private String getFullName(PersonSvar personSvar) {
         final var patient = personSvar.getPerson();
-        if (patient.getMellannamn() == null || patient.getMellannamn().length() == 0) {
-            return patient.getFornamn() + " " + patient.getEfternamn();
+        if (patient.mellannamn() == null || patient.mellannamn().isEmpty()) {
+            return patient.fornamn() + " " + patient.efternamn();
         }
-        return patient.getFornamn() + " " + patient.getMellannamn() + " " + patient.getEfternamn();
+        return patient.fornamn() + " " + patient.mellannamn() + " " + patient.efternamn();
     }
 
     private Personnummer formatPatientId(String personId) throws InvalidPatientIdException {

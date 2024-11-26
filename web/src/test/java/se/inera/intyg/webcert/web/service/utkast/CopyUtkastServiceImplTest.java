@@ -54,9 +54,9 @@ import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
-import se.inera.intyg.infra.integration.pu.model.Person;
-import se.inera.intyg.infra.integration.pu.model.PersonSvar;
-import se.inera.intyg.infra.integration.pu.services.PUService;
+import se.inera.intyg.infra.pu.integration.api.model.Person;
+import se.inera.intyg.infra.pu.integration.api.model.PersonSvar;
+import se.inera.intyg.infra.pu.integration.api.services.PUService;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
@@ -202,6 +202,10 @@ public class CopyUtkastServiceImplTest {
     @InjectMocks
     private CopyUtkastService copyService = new CopyUtkastServiceImpl();
 
+    private static Personnummer createPnr(String personId) {
+        return Personnummer.createPersonnummer(personId)
+            .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
+    }
 
     @Before
     public void setup() {
@@ -229,7 +233,7 @@ public class CopyUtkastServiceImplTest {
     @Before
     public void expectCallToPUService() {
         PersonSvar personSvar = PersonSvar.found(
-            new Person(PATIENT_SSN, false, false, "Adam", "Bertilsson", "Cedergren", "Testgatan 12", "12345", "Testberga"));
+            new Person(PATIENT_SSN, false, false, "Adam", "Bertilsson", "Cedergren", "Testgatan 12", "12345", "Testberga", false));
         when(mockPUService.getPerson(PATIENT_SSN)).thenReturn(personSvar);
     }
 
@@ -842,11 +846,6 @@ public class CopyUtkastServiceImplTest {
 
     private CreateUtkastFromTemplateRequest buildUtkastCopyRequest() {
         return new CreateUtkastFromTemplateRequest(INTYG_ID, INTYG_TYPE, patient, hoSPerson, INTYG_TYPE);
-    }
-
-    private static Personnummer createPnr(String personId) {
-        return Personnummer.createPersonnummer(personId)
-            .orElseThrow(() -> new IllegalArgumentException("Could not parse passed personnummer: " + personId));
     }
 
     private void setupMockForGettingUtlatande() {

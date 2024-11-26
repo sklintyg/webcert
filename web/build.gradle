@@ -27,7 +27,7 @@ gretty {
     serverConfigFile = "tomcat-gretty.xml"
 
     jvmArgs = ["-Dcatalina.base=${buildDirectory}/catalina.base",
-               "-Dspring.profiles.active=dev,caching-enabled,wc-security-test,ia-stub,certificate-service-active,hsa-integration-intyg-proxy-service,servicenow-integration",
+               "-Dspring.profiles.active=dev,caching-enabled,wc-security-test,ia-stub,certificate-service-active,servicenow-integration,pu-integration-intyg-proxy-service",
                "-Dlogback.file=${applicationDir}/config/logback-spring.xml",
                "-Djava.awt.headless=true",
                "-Dfile.encoding=UTF-8",
@@ -114,6 +114,7 @@ dependencies {
     implementation "se.inera.intyg.infra:monitoring:${infraVersion}"
     implementation "se.inera.intyg.infra:postnummerservice-integration:${infraVersion}"
     implementation "se.inera.intyg.infra:privatepractitioner:${infraVersion}"
+    implementation "se.inera.intyg.infra:pu-integration-api:${infraVersion}"
     implementation "se.inera.intyg.infra:pu-integration:${infraVersion}"
     implementation "se.inera.intyg.infra:security-authorities:${infraVersion}"
     implementation "se.inera.intyg.infra:security-common:${infraVersion}"
@@ -190,6 +191,7 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
+    runtimeOnly "se.inera.intyg.infra:pu-integration-intyg-proxy-service:${infraVersion}"
     runtimeOnly "org.springframework:spring-webmvc"
     runtimeOnly "xerces:xercesImpl:${xercesVersion}"
 

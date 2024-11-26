@@ -163,8 +163,8 @@
     <!-- Use the same PU validator for both prod and test. Set as primary so it is used instead of the default validator in infra -->
     <bean id="puResponseValidator" class="se.inera.intyg.webcert.web.integration.validators.WebcertPUResponseValidator" primary="true"/>
 
-    <beans profile="hsa-integration-intyg-proxy-service">
-      <import resource="classpath:/hsa-integration-intyg-proxy-service-config.xml"/>
+    <beans profile="pu-integration-intyg-proxy-service">
+      <import resource="classpath:/pu-integration-intyg-proxy-service-config.xml"/>
     </beans>
   </beans>
 

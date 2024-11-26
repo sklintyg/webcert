@@ -43,7 +43,7 @@ dependencies {
     implementation "se.inera.intyg.common:integration-util:${commonVersion}"
     implementation "se.inera.intyg.infra:hsa-integration-api:${infraVersion}"
     implementation "se.inera.intyg.infra:monitoring:${infraVersion}"
-    implementation "se.inera.intyg.infra:pu-integration:${infraVersion}"
+    implementation "se.inera.intyg.infra:pu-integration-api:${infraVersion}"
     implementation "se.inera.intyg.schemas:schemas-contract:${schemasContractVersion}"
     implementation "se.inera.intyg.infra:security-authorities:${infraVersion}"
     implementation "se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:${rivtaClinicalprocessSchemasVersion}"
@@ -52,6 +52,7 @@ dependencies {
     runtimeOnly "org.apache.camel:camel-cxf-spring-transport:${camelVersion}"
     runtimeOnly "org.apache.camel:camel-jackson:${camelVersion}"
     runtimeOnly "org.apache.camel:camel-spring:${camelVersion}"
+    runtimeOnly "se.inera.intyg.infra:pu-integration-intyg-proxy-service:${infraVersion}"
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'

@@ -48,7 +48,7 @@ import se.inera.intyg.common.support.modules.support.api.dto.CreateDraftCopyHold
 import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftResponse;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
-import se.inera.intyg.infra.integration.pu.model.Person;
+import se.inera.intyg.infra.pu.integration.api.model.Person;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
@@ -93,7 +93,7 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
 
         CreateRenewalCopyRequest renewalRequest = buildRenewalRequest();
         Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
-            "postort");
+            "postort", false);
 
         when(mockModuleApi.createRenewalFromTemplate(any(CreateDraftCopyHolder.class), any())).thenReturn(INTYG_JSON);
         Utlatande utlatande = new Fk7263Utlatande();
@@ -131,7 +131,7 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
 
         CreateRenewalCopyRequest renewalRequest = buildRenewalRequest();
         Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
-            "postort");
+            "postort", false);
 
         when(mockModuleApi.createRenewalFromTemplate(any(CreateDraftCopyHolder.class), any())).thenReturn(INTYG_JSON);
 
@@ -166,7 +166,8 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
-        UtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromOrignalUtkast(renewalRequest, null, false);
+        UtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromOrignalUtkast(renewalRequest, null,
+            false);
 
         assertNotNull(builderResponse.getUtkast());
         assertNotNull(builderResponse.getUtkast().getModel());

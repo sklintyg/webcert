@@ -20,9 +20,8 @@ package se.inera.intyg.webcert.notification_sender.notifications.helper;
 
 import java.time.LocalDate;
 import java.time.Year;
-
 import se.inera.intyg.common.support.modules.converter.InternalConverterUtil;
-import se.inera.intyg.infra.integration.pu.model.Person;
+import se.inera.intyg.infra.pu.integration.api.model.Person;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.ArbetsplatsKod;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.IntygId;
@@ -79,7 +78,7 @@ public class NotificationTestHelper {
 
     public static Person buildPerson(boolean sekretessmarkering) {
         return new Person(Personnummer.createPersonnummer(PERSNR).get(),
-            sekretessmarkering, false, "Tolvan", "Mellis", "Tolvansson", "Tolvgatan 12", "12121", "Tolvhult");
+            sekretessmarkering, false, "Tolvan", "Mellis", "Tolvansson", "Tolvgatan 12", "12121", "Tolvhult", false);
     }
 
     public static Patient buildPatient() {

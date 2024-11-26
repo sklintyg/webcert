@@ -53,7 +53,7 @@ import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.support.api.GetCopyFromCriteria;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
-import se.inera.intyg.infra.integration.pu.services.PUService;
+import se.inera.intyg.infra.pu.integration.api.services.PUService;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -75,11 +75,9 @@ import se.inera.intyg.webcert.web.service.utkast.dto.UtkastCandidateMetaData;
 @RunWith(MockitoJUnitRunner.class)
 public class UtkastCandidateServiceImplTest {
 
-    private WebCertUser webCertUser;
-
     @Mock
     DraftAccessServiceHelper draftAccessServiceHelper;
-
+    private WebCertUser webCertUser;
     @Mock
     private WebCertUserService webCertUserService;
 

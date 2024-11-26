@@ -32,8 +32,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
-import se.inera.intyg.infra.integration.pu.model.PersonSvar;
-import se.inera.intyg.infra.integration.pu.services.PUService;
+import se.inera.intyg.infra.pu.integration.api.model.PersonSvar;
+import se.inera.intyg.infra.pu.integration.api.services.PUService;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -64,16 +64,14 @@ import se.riv.infrastructure.directory.privatepractitioner.v1.SpecialitetType;
 @RequiredArgsConstructor
 public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService {
 
-    @Value("${privatepractitioner.logicaladdress}")
-    private String logicalAddress;
-
     private final PPService ppService;
     private final PPRestService ppRestService;
     private final PUService puService;
     private final AnvandarPreferenceRepository anvandarPreferenceRepository;
     private final Optional<UserOrigin> userOrigin;
     private final SubscriptionService subscriptionService;
-
+    @Value("${privatepractitioner.logicaladdress}")
+    private String logicalAddress;
 
     public WebCertUser buildFakeUserPrincipal(String personId) {
         return buildUserPrincipal(personId, AuthConstants.FAKE_AUTHENTICATION_ELEG_CONTEXT_REF, AuthenticationMethod.FAKE);
@@ -190,7 +188,6 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
     }
 
 
-
     private String getFullName(HoSPersonType hosPerson, WebCertUser user) {
         final var fullName = hosPerson.getFullstandigtNamn();
         if (fullName != null && fullName.contains(SPACE)) {
@@ -218,7 +215,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
 
         PersonSvar person = puService.getPerson(personNummer);
         if (person.getStatus() == PersonSvar.Status.FOUND) {
-            webCertUser.setSekretessMarkerad(person.getPerson().isSekretessmarkering());
+            webCertUser.setSekretessMarkerad(person.getPerson().sekretessmarkering());
         } else {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
                 String.format("PU replied with %s - Sekretesstatus cannot be determined for person %s", person.getStatus(),
