@@ -73,16 +73,16 @@ public class CreateNewDraftRequestBuilderImpl implements CreateNewDraftRequestBu
     private Patient getPatientFromPU(Personnummer personnummer) {
         final var personFromPUService = patientDetailsResolver.getPersonFromPUService(personnummer).getPerson();
         final var patient = new Patient();
-        patient.setPersonId(personFromPUService.getPersonnummer());
-        patient.setEfternamn(personFromPUService.getEfternamn());
-        patient.setFornamn(personFromPUService.getFornamn());
-        patient.setMellannamn(personFromPUService.getMellannamn());
-        patient.setPostort(personFromPUService.getPostort());
-        patient.setPostnummer(personFromPUService.getPostnummer());
-        patient.setPostadress(personFromPUService.getPostadress());
-        patient.setFullstandigtNamn(IntygConverterUtil.concatPatientName(personFromPUService.getFornamn(),
-            personFromPUService.getMellannamn(), personFromPUService.getEfternamn()));
-        patient.setTestIndicator(personFromPUService.isTestIndicator());
+        patient.setPersonId(personFromPUService.personnummer());
+        patient.setEfternamn(personFromPUService.efternamn());
+        patient.setFornamn(personFromPUService.fornamn());
+        patient.setMellannamn(personFromPUService.mellannamn());
+        patient.setPostort(personFromPUService.postort());
+        patient.setPostnummer(personFromPUService.postnummer());
+        patient.setPostadress(personFromPUService.postadress());
+        patient.setFullstandigtNamn(IntygConverterUtil.concatPatientName(personFromPUService.fornamn(),
+            personFromPUService.mellannamn(), personFromPUService.efternamn()));
+        patient.setTestIndicator(personFromPUService.testIndicator());
         return patient;
     }
 

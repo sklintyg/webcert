@@ -32,31 +32,49 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.infra.integration.pu.model.Person;
-import se.inera.intyg.infra.integration.pu.model.PersonSvar;
+import se.inera.intyg.infra.pu.integration.api.model.Person;
+import se.inera.intyg.infra.pu.integration.api.model.PersonSvar;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 
 @ExtendWith(MockitoExtension.class)
 class CertificateServicePatientHelperTest {
 
+    public static final String MIDDLE_NAME = "middleName";
+    public static final String STREET = "postalAdress";
+    public static final String ZIP_CODE = "postalNumber";
+    public static final String CITY = "city";
     private static final String ORIGINAL_PATIENT_ID = "191212121212";
     private static final String COORDINATION_NUMBER_PATIENT_ID = "191212721212";
     private static final Personnummer PATIENT_ID = Personnummer.createPersonnummer(ORIGINAL_PATIENT_ID).orElseThrow();
     private static final Personnummer COORDINATION_NUMBER = Personnummer.createPersonnummer(COORDINATION_NUMBER_PATIENT_ID).orElseThrow();
     private static final String FIRST_NAME = "firstName";
     private static final String LAST_NAME = "lastName";
-    public static final String MIDDLE_NAME = "middleName";
-    public static final String STREET = "postalAdress";
-    public static final String ZIP_CODE = "postalNumber";
-    public static final String CITY = "city";
-
     @Mock
     PatientDetailsResolver patientDetailsResolver;
 
     @InjectMocks
     CertificateServicePatientHelper certificateServicePatientHelper;
 
+    private Person createPerson(Personnummer id) {
+        return new Person(
+            id,
+            false,
+            false,
+            FIRST_NAME,
+            MIDDLE_NAME,
+            LAST_NAME,
+            STREET,
+            ZIP_CODE,
+            CITY,
+            false
+
+        );
+    }
+
+    private Person createPerson() {
+        return createPerson(PATIENT_ID);
+    }
 
     @Nested
     class CoordinationNumber {
@@ -157,7 +175,7 @@ class CertificateServicePatientHelperTest {
         void shouldSetPatientProtectedPersonTrue() {
             final var patient = mock(Person.class);
 
-            when(patient.isSekretessmarkering())
+            when(patient.sekretessmarkering())
                 .thenReturn(true);
 
             when(patientDetailsResolver.getPersonFromPUService(PATIENT_ID))
@@ -172,7 +190,7 @@ class CertificateServicePatientHelperTest {
         void shouldSetPatientProtectedPersonFalse() {
             final var patient = mock(Person.class);
 
-            when(patient.isSekretessmarkering())
+            when(patient.sekretessmarkering())
                 .thenReturn(false);
 
             when(patientDetailsResolver.getPersonFromPUService(PATIENT_ID))
@@ -188,7 +206,7 @@ class CertificateServicePatientHelperTest {
         void shouldSetPatientIsDeceasedTrue() {
             final var patient = mock(Person.class);
 
-            when(patient.isAvliden())
+            when(patient.avliden())
                 .thenReturn(true);
 
             when(patientDetailsResolver.getPersonFromPUService(PATIENT_ID))
@@ -203,7 +221,7 @@ class CertificateServicePatientHelperTest {
         void shouldSetPatientIsDeceasedFalse() {
             final var patient = mock(Person.class);
 
-            when(patient.isAvliden())
+            when(patient.avliden())
                 .thenReturn(false);
 
             when(patientDetailsResolver.getPersonFromPUService(PATIENT_ID))
@@ -218,7 +236,7 @@ class CertificateServicePatientHelperTest {
         void shouldSetPatientTestIndicatorTrue() {
             final var patient = mock(Person.class);
 
-            when(patient.isTestIndicator())
+            when(patient.testIndicator())
                 .thenReturn(true);
 
             when(patientDetailsResolver.getPersonFromPUService(PATIENT_ID))
@@ -233,7 +251,7 @@ class CertificateServicePatientHelperTest {
         void shouldSetPatientTestIndicatorFalse() {
             final var patient = mock(Person.class);
 
-            when(patient.isTestIndicator())
+            when(patient.testIndicator())
                 .thenReturn(false);
 
             when(patientDetailsResolver.getPersonFromPUService(PATIENT_ID))
@@ -243,25 +261,5 @@ class CertificateServicePatientHelperTest {
 
             assertFalse(response.getTestIndicated());
         }
-    }
-
-    private Person createPerson(Personnummer id) {
-        return new Person(
-            id,
-            false,
-            false,
-            FIRST_NAME,
-            MIDDLE_NAME,
-            LAST_NAME,
-            STREET,
-            ZIP_CODE,
-            CITY,
-            false
-
-        );
-    }
-
-    private Person createPerson() {
-        return createPerson(PATIENT_ID);
     }
 }

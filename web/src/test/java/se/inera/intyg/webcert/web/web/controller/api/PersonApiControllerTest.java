@@ -31,9 +31,9 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import se.inera.intyg.infra.integration.pu.model.Person;
-import se.inera.intyg.infra.integration.pu.model.PersonSvar;
-import se.inera.intyg.infra.integration.pu.services.PUService;
+import se.inera.intyg.infra.pu.integration.api.model.Person;
+import se.inera.intyg.infra.pu.integration.api.model.PersonSvar;
+import se.inera.intyg.infra.pu.integration.api.services.PUService;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.PersonuppgifterResponse;
@@ -64,13 +64,13 @@ public class PersonApiControllerTest {
 
         PersonuppgifterResponse res = (PersonuppgifterResponse) response.getEntity();
         assertEquals(PersonSvar.Status.FOUND, res.getStatus());
-        assertEquals(false, res.getPerson().isSekretessmarkering());
-        assertEquals("fnamn", res.getPerson().getFornamn());
-        assertEquals("mnamn", res.getPerson().getMellannamn());
-        assertEquals("enamn", res.getPerson().getEfternamn());
-        assertEquals("paddr", res.getPerson().getPostadress());
-        assertEquals("pnr", res.getPerson().getPostnummer());
-        assertEquals("port", res.getPerson().getPostort());
+        assertEquals(false, res.getPerson().sekretessmarkering());
+        assertEquals("fnamn", res.getPerson().fornamn());
+        assertEquals("mnamn", res.getPerson().mellannamn());
+        assertEquals("enamn", res.getPerson().efternamn());
+        assertEquals("paddr", res.getPerson().postadress());
+        assertEquals("pnr", res.getPerson().postnummer());
+        assertEquals("port", res.getPerson().postort());
 
         verify(mockMonitoringService).logPULookup(personnummer, "FOUND");
     }
@@ -89,13 +89,13 @@ public class PersonApiControllerTest {
 
         PersonuppgifterResponse res = (PersonuppgifterResponse) response.getEntity();
         assertEquals(PersonSvar.Status.FOUND, res.getStatus());
-        assertEquals(true, res.getPerson().isSekretessmarkering());
-        assertEquals("fnamn", res.getPerson().getFornamn());
-        assertEquals("mnamn", res.getPerson().getMellannamn());
-        assertEquals("enamn", res.getPerson().getEfternamn());
-        assertEquals("paddr", res.getPerson().getPostadress());
-        assertEquals("pnr", res.getPerson().getPostnummer());
-        assertEquals("port", res.getPerson().getPostort());
+        assertEquals(true, res.getPerson().sekretessmarkering());
+        assertEquals("fnamn", res.getPerson().fornamn());
+        assertEquals("mnamn", res.getPerson().mellannamn());
+        assertEquals("enamn", res.getPerson().efternamn());
+        assertEquals("paddr", res.getPerson().postadress());
+        assertEquals("pnr", res.getPerson().postnummer());
+        assertEquals("port", res.getPerson().postort());
 
         verify(mockMonitoringService).logPULookup(personnummer, "FOUND");
     }

@@ -92,6 +92,25 @@ public class CreateCertificateTestabilityUtil {
         this.updateIntygstjanstTestabilityUtil = updateIntygstjanstTestabilityUtil;
     }
 
+    private static String getSkickadTillMottagare(String certificateType) {
+        switch (certificateType) {
+            case "lisjp":
+            case "luse":
+            case "luae_na":
+            case "luae_fs":
+                return "FKASSA";
+            case "ts-bas":
+            case "ts-diabetes":
+                return "TRANSP";
+            case "db":
+                return "SKV";
+            case "doi":
+                return "SOS";
+            default:
+                throw new IllegalArgumentException(String.format("The certificatetype '%s' cannot be sent!", certificateType));
+        }
+    }
+
     public String createNewCertificate(@NotNull CreateCertificateRequestDTO createCertificateRequest) {
         final var hosPersonal = getHoSPerson(
             createCertificateRequest.getPersonId(),
@@ -205,25 +224,6 @@ public class CreateCertificateTestabilityUtil {
         }
     }
 
-    private static String getSkickadTillMottagare(String certificateType) {
-        switch (certificateType) {
-            case "lisjp":
-            case "luse":
-            case "luae_na":
-            case "luae_fs":
-                return "FKASSA";
-            case "ts-bas":
-            case "ts-diabetes":
-                return "TRANSP";
-            case "db":
-                return "SKV";
-            case "doi":
-                return "SOS";
-            default:
-                throw new IllegalArgumentException(String.format("The certificatetype '%s' cannot be sent!", certificateType));
-        }
-    }
-
     private void updateJsonBeforeSigning(HoSPersonal hosPersonal, Utkast utkast, Signatur signature) {
         try {
             final var updatedJson = getModuleApi(utkast.getIntygsTyp(), utkast.getIntygTypeVersion())
@@ -290,15 +290,15 @@ public class CreateCertificateTestabilityUtil {
             personnummer
         );
         patient.setPersonId(personnummer);
-        patient.setFornamn(personFromPUService.getPerson().getFornamn());
-        patient.setMellannamn(personFromPUService.getPerson().getMellannamn());
-        patient.setEfternamn(personFromPUService.getPerson().getEfternamn());
-        patient.setTestIndicator(personFromPUService.getPerson().isTestIndicator());
-        patient.setAvliden(personFromPUService.getPerson().isAvliden());
-        patient.setSekretessmarkering(personFromPUService.getPerson().isSekretessmarkering());
-        patient.setPostadress(personFromPUService.getPerson().getPostadress());
-        patient.setPostnummer(personFromPUService.getPerson().getPostnummer());
-        patient.setPostort(personFromPUService.getPerson().getPostort());
+        patient.setFornamn(personFromPUService.getPerson().fornamn());
+        patient.setMellannamn(personFromPUService.getPerson().mellannamn());
+        patient.setEfternamn(personFromPUService.getPerson().efternamn());
+        patient.setTestIndicator(personFromPUService.getPerson().testIndicator());
+        patient.setAvliden(personFromPUService.getPerson().avliden());
+        patient.setSekretessmarkering(personFromPUService.getPerson().sekretessmarkering());
+        patient.setPostadress(personFromPUService.getPerson().postadress());
+        patient.setPostnummer(personFromPUService.getPerson().postnummer());
+        patient.setPostort(personFromPUService.getPerson().postort());
         return patient;
     }
 }

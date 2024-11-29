@@ -97,8 +97,8 @@ import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
-import se.inera.intyg.infra.integration.pu.model.Person;
-import se.inera.intyg.infra.integration.pu.model.PersonSvar;
+import se.inera.intyg.infra.pu.integration.api.model.Person;
+import se.inera.intyg.infra.pu.integration.api.model.PersonSvar;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
@@ -160,93 +160,63 @@ public class IntygServiceTest {
     private static final String PERSON_ID = "19121212-1212";
 
     private static final Personnummer PERSNR = Personnummer.createPersonnummer(PERSON_ID).orElse(null);
-
-    private ListCertificatesForCareResponseType listResponse;
-    private VardpersonReferens vardpersonReferens;
-
-    private String json;
-
-    @Mock
-    private IntygModuleRegistry moduleRegistry;
-
-    @Mock
-    private ModuleApi moduleApi;
-
-    @Mock
-    private AuthoritiesHelper authoritiesHelper;
-
-    @Mock
-    private ListCertificatesForCareResponderInterface listCertificatesForCareResponder;
-
-    @Mock
-    private IntygRelationHelper intygRelationHelper;
-
-    @Mock
-    private IntygModuleFacade moduleFacade;
-
-    @Mock
-    private UtkastRepository utkastRepository;
-
-    @Mock
-    private CertificateEventService certificateEventService;
-
-    @Mock
-    private LogService logservice;
-
-    @Mock
-    private LogRequestFactory logRequestFactory;
-
-    @Mock
-    private WebCertUser webcertUser;
-
-    @Mock
-    private WebCertUserService webCertUserService;
-
-    @Mock
-    private MonitoringLogService mockMonitoringService;
-
-    @Mock
-    private CertificateRelationService certificateRelationService;
-
-    @Mock
-    private NotificationService notificationService;
-
-    @Mock
-    private CertificateSenderService certificateSenderService;
-
-    @Mock
-    private ArendeService arendeService;
-
-    @Mock
-    private FragorOchSvarCreator fragorOchSvarCreator;
-
-    @Mock
-    private PatientDetailsResolver patientDetailsResolver;
-
-    @Mock
-    private UtkastIntygDecorator utkastIntygDecorator;
-
-    @Mock
-    private ReferensService referensService;
-
-    @Spy
-    private ObjectMapper objectMapper = new CustomObjectMapper();
-
-    @Mock
-    private GetCertificateTypeInfoResponderInterface getCertificateTypeInfoService;
-
-    @Mock
-    private CertificateAccessServiceHelper certificateAccessServiceHelper;
-
     @Mock
     SelectableVardenhet vardgivare;
-
     @Mock
     WebCertUser user;
-
     @Mock
     IntegrationParameters intParam;
-
+    private ListCertificatesForCareResponseType listResponse;
+    private VardpersonReferens vardpersonReferens;
+    private String json;
+    @Mock
+    private IntygModuleRegistry moduleRegistry;
+    @Mock
+    private ModuleApi moduleApi;
+    @Mock
+    private AuthoritiesHelper authoritiesHelper;
+    @Mock
+    private ListCertificatesForCareResponderInterface listCertificatesForCareResponder;
+    @Mock
+    private IntygRelationHelper intygRelationHelper;
+    @Mock
+    private IntygModuleFacade moduleFacade;
+    @Mock
+    private UtkastRepository utkastRepository;
+    @Mock
+    private CertificateEventService certificateEventService;
+    @Mock
+    private LogService logservice;
+    @Mock
+    private LogRequestFactory logRequestFactory;
+    @Mock
+    private WebCertUser webcertUser;
+    @Mock
+    private WebCertUserService webCertUserService;
+    @Mock
+    private MonitoringLogService mockMonitoringService;
+    @Mock
+    private CertificateRelationService certificateRelationService;
+    @Mock
+    private NotificationService notificationService;
+    @Mock
+    private CertificateSenderService certificateSenderService;
+    @Mock
+    private ArendeService arendeService;
+    @Mock
+    private FragorOchSvarCreator fragorOchSvarCreator;
+    @Mock
+    private PatientDetailsResolver patientDetailsResolver;
+    @Mock
+    private UtkastIntygDecorator utkastIntygDecorator;
+    @Mock
+    private ReferensService referensService;
+    @Spy
+    private ObjectMapper objectMapper = new CustomObjectMapper();
+    @Mock
+    private GetCertificateTypeInfoResponderInterface getCertificateTypeInfoService;
+    @Mock
+    private CertificateAccessServiceHelper certificateAccessServiceHelper;
     @Mock
     private IntygTextsService intygTextsService;
 
