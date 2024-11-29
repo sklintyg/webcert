@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.service.user.dto;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -102,7 +101,6 @@ class WebCertUserTest {
 
         @Test
         void shouldReturnRegistrationIdElegForAuthMethodBankId() {
-            final var integrationParameters = mock(IntegrationParameters.class);
             final var webCertUser = new WebCertUser();
             webCertUser.setAuthenticationMethod(AuthenticationMethod.BANK_ID);
             assertEquals(AuthConstants.REGISTRATION_ID_ELEG, webCertUser.getRelyingPartyRegistrationId());
@@ -110,7 +108,6 @@ class WebCertUserTest {
 
         @Test
         void shouldReturnRegistrationIdElegForAuthMethodMobiltBankId() {
-            final var integrationParameters = mock(IntegrationParameters.class);
             final var webCertUser = new WebCertUser();
             webCertUser.setAuthenticationMethod(AuthenticationMethod.MOBILT_BANK_ID);
             assertEquals(AuthConstants.REGISTRATION_ID_ELEG, webCertUser.getRelyingPartyRegistrationId());
@@ -118,7 +115,6 @@ class WebCertUserTest {
 
         @Test
         void shouldReturnRegistrationIdSithsNormalForAuthMethodSiths() {
-            final var integrationParameters = mock(IntegrationParameters.class);
             final var webCertUser = new WebCertUser();
             webCertUser.setAuthenticationMethod(AuthenticationMethod.SITHS);
             assertEquals(AuthConstants.REGISTRATION_ID_SITHS_NORMAL, webCertUser.getRelyingPartyRegistrationId());
@@ -126,18 +122,9 @@ class WebCertUserTest {
 
         @Test
         void shouldReturnRegistrationIdSithsNormalForAuthMethodNetId() {
-            final var integrationParameters = mock(IntegrationParameters.class);
             final var webCertUser = new WebCertUser();
             webCertUser.setAuthenticationMethod(AuthenticationMethod.NET_ID);
             assertEquals(AuthConstants.REGISTRATION_ID_SITHS_NORMAL, webCertUser.getRelyingPartyRegistrationId());
-        }
-
-        @Test
-        void shouldThrowIllegalStateExceptionForAuthMethodFake() {
-            final var integrationParameters = mock(IntegrationParameters.class);
-            final var webCertUser = new WebCertUser();
-            webCertUser.setAuthenticationMethod(AuthenticationMethod.FAKE);
-            assertThrows(IllegalStateException.class, webCertUser::getRelyingPartyRegistrationId);
         }
     }
 }

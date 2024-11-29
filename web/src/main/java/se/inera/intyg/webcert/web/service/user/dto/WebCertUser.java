@@ -133,7 +133,6 @@ public class WebCertUser extends IntygUser implements Serializable, Saml2Authent
     @Override
     public String getRelyingPartyRegistrationId() {
         return switch (authenticationMethod) {
-            case FAKE -> throw new IllegalStateException("Fake user should be logged out using fake logout");
             case BANK_ID, MOBILT_BANK_ID -> AuthConstants.REGISTRATION_ID_ELEG;
             default -> AuthConstants.REGISTRATION_ID_SITHS_NORMAL;
         };
