@@ -142,7 +142,7 @@ public class CSIntegrationService {
     private static final String PATIENT_ENDPOINT_URL = "/api/patient";
     private static final String CERTIFICATE_TYPE_INFO_ENDPOINT_URL = "/api/certificatetypeinfo";
     private static final String UNIT_ENDPOINT_URL = "/api/unit";
-    private static final String NULL_RESPONSE_EXCEPTION = "Certificate service returned null response!";
+    private static final String NULL_RESPONSE_EXCEPTION = "Certificate service returned null response";
     private static final String EXISTS = "/exists";
 
     private final CertificateTypeInfoConverter certificateTypeInfoConverter;
@@ -756,7 +756,7 @@ public class CSIntegrationService {
         return response.getCertificate();
     }
 
-    @PerformanceLogging(eventAction = "get-certificates-with-qa", eventType = EVENT_TYPE_CHANGE)
+    @PerformanceLogging(eventAction = "get-certificates-with-qa", eventType = EVENT_TYPE_ACCESS)
     public String getCertificatesWithQA(CertificatesWithQARequestDTO request) {
         final var url = baseUrl + INTERNAL_CERTIFICATE_ENDPOINT_URL + "/qa";
 
