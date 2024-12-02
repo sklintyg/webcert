@@ -18,11 +18,16 @@
  */
 package se.inera.intyg.webcert.web.csintegration.integration;
 
+import static se.inera.intyg.webcert.logging.MdcLogConstants.EVENT_TYPE_ACCESS;
+import static se.inera.intyg.webcert.logging.MdcLogConstants.EVENT_TYPE_CHANGE;
+import static se.inera.intyg.webcert.logging.MdcLogConstants.EVENT_TYPE_CREATION;
+import static se.inera.intyg.webcert.logging.MdcLogConstants.EVENT_TYPE_DELETION;
+import static se.inera.intyg.webcert.logging.MdcLogConstants.EVENT_TYPE_INFO;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -36,6 +41,7 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.modules.support.facade.dto.CertificateEventDTO;
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.AnswerComplementRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.AnswerComplementResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateComplementRequestDTO;
@@ -136,7 +142,8 @@ public class CSIntegrationService {
     private static final String PATIENT_ENDPOINT_URL = "/api/patient";
     private static final String CERTIFICATE_TYPE_INFO_ENDPOINT_URL = "/api/certificatetypeinfo";
     private static final String UNIT_ENDPOINT_URL = "/api/unit";
-    public static final String NULL_RESPONSE_EXCEPTION = "Certificate service returned null response!";
+    private static final String NULL_RESPONSE_EXCEPTION = "Certificate service returned null response!";
+    private static final String EXISTS = "/exists";
 
     private final CertificateTypeInfoConverter certificateTypeInfoConverter;
     private final ListIntygEntryConverter listIntygEntryConverter;
@@ -154,6 +161,7 @@ public class CSIntegrationService {
         this.listQuestionConverter = listQuestionConverter;
     }
 
+    @PerformanceLogging(eventAction = "list-certificates-unit", eventType = EVENT_TYPE_ACCESS)
     public List<ListIntygEntry> listCertificatesForUnit(GetUnitCertificatesRequestDTO request) {
         final var url = baseUrl + UNIT_ENDPOINT_URL + "/certificates";
         final var response = restTemplate.postForObject(url, request, GetListCertificatesResponseDTO.class);
@@ -165,9 +173,10 @@ public class CSIntegrationService {
         return response.getCertificates()
             .stream()
             .map(listIntygEntryConverter::convert)
-            .collect(Collectors.toList());
+            .toList();
     }
 
+    @PerformanceLogging(eventAction = "list-questions-unit", eventType = EVENT_TYPE_ACCESS)
     public List<ArendeListItem> listQuestionsForUnit(GetUnitQuestionsRequestDTO request) {
         final var url = baseUrl + UNIT_ENDPOINT_URL + "/messages";
         final var response = restTemplate.postForObject(url, request, GetUnitQuestionsResponseDTO.class);
@@ -183,9 +192,10 @@ public class CSIntegrationService {
                     .filter(certificate -> certificate.getMetadata().getId().equals(question.getCertificateId()))
                     .findFirst(), question)
             )
-            .collect(Collectors.toList());
+            .toList();
     }
 
+    @PerformanceLogging(eventAction = "list-certificates-info-unit", eventType = EVENT_TYPE_ACCESS)
     public List<StaffListInfo> listCertificatesInfoForUnit(GetUnitCertificatesInfoRequestDTO request) {
         final var url = baseUrl + UNIT_ENDPOINT_URL + "/certificates/info";
         final var response = restTemplate.postForObject(url, request, GetUnitCertificatesInfoResponseDTO.class);
@@ -202,9 +212,10 @@ public class CSIntegrationService {
                     .name(staff.getFullName())
                     .build()
             )
-            .collect(Collectors.toList());
+            .toList();
     }
 
+    @PerformanceLogging(eventAction = "list-certificates-patient", eventType = EVENT_TYPE_ACCESS)
     public List<ListIntygEntry> listCertificatesForPatient(GetPatientCertificatesRequestDTO request) {
         final var url = baseUrl + PATIENT_ENDPOINT_URL + "/certificates";
         final var response = restTemplate.postForObject(url, request, GetListCertificatesResponseDTO.class);
@@ -216,9 +227,10 @@ public class CSIntegrationService {
         return response.getCertificates()
             .stream()
             .map(listIntygEntryConverter::convert)
-            .collect(Collectors.toList());
+            .toList();
     }
 
+    @PerformanceLogging(eventAction = "delete-certificate", eventType = EVENT_TYPE_DELETION)
     public Certificate deleteCertificate(String certificateId, long version, DeleteCertificateRequestDTO request) {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/" + version;
         final var headers = new HttpHeaders();
@@ -241,6 +253,7 @@ public class CSIntegrationService {
         return response.getBody().getCertificate();
     }
 
+    @PerformanceLogging(eventAction = "get-certificate-type-info", eventType = EVENT_TYPE_ACCESS)
     public List<CertificateTypeInfoDTO> getTypeInfo(CertificateServiceTypeInfoRequestDTO request) {
         final var url = baseUrl + CERTIFICATE_TYPE_INFO_ENDPOINT_URL;
         final var response = restTemplate.postForObject(url, request, CertificateServiceTypeInfoResponseDTO.class);
@@ -252,9 +265,10 @@ public class CSIntegrationService {
         return response.getList()
             .stream()
             .map(certificateTypeInfoConverter::convert)
-            .collect(Collectors.toList());
+            .toList();
     }
 
+    @PerformanceLogging(eventAction = "create-certificate", eventType = EVENT_TYPE_CREATION)
     public Certificate createCertificate(CreateCertificateRequestDTO request) {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL;
 
@@ -267,6 +281,7 @@ public class CSIntegrationService {
         return response.getCertificate();
     }
 
+    @PerformanceLogging(eventAction = "get-certificate", eventType = EVENT_TYPE_ACCESS)
     public Certificate getCertificate(String certificateId, GetCertificateRequestDTO request) {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId;
 
@@ -279,6 +294,7 @@ public class CSIntegrationService {
         return response.getCertificate();
     }
 
+    @PerformanceLogging(eventAction = "replace-certificate", eventType = EVENT_TYPE_CREATION)
     public Certificate replaceCertificate(String certificateId, ReplaceCertificateRequestDTO request) {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/replace";
 
@@ -291,6 +307,7 @@ public class CSIntegrationService {
         return response.getCertificate();
     }
 
+    @PerformanceLogging(eventAction = "renew-certificate", eventType = EVENT_TYPE_CREATION)
     public Certificate renewCertificate(String certificateId, RenewCertificateRequestDTO request) {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/renew";
 
@@ -303,6 +320,7 @@ public class CSIntegrationService {
         return response.getCertificate();
     }
 
+    @PerformanceLogging(eventAction = "complement-certificate", eventType = EVENT_TYPE_CREATION)
     public Certificate complementCertificate(String certificateId, CertificateComplementRequestDTO request) {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/complement";
 
@@ -315,6 +333,7 @@ public class CSIntegrationService {
         return response.getCertificate();
     }
 
+    @PerformanceLogging(eventAction = "validate-certificate", eventType = EVENT_TYPE_INFO)
     public ValidationErrorDTO[] validateCertificate(ValidateCertificateRequestDTO request) {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + request.getCertificate().getMetadata().getId() + "/validate";
 
@@ -327,8 +346,9 @@ public class CSIntegrationService {
         return response.getValidationErrors();
     }
 
+    @PerformanceLogging(eventAction = "certificate-type-exists", eventType = EVENT_TYPE_INFO)
     public Optional<CertificateModelIdDTO> certificateTypeExists(String certificateType) {
-        final var url = baseUrl + CERTIFICATE_TYPE_INFO_ENDPOINT_URL + "/" + certificateType + "/exists";
+        final var url = baseUrl + CERTIFICATE_TYPE_INFO_ENDPOINT_URL + "/" + certificateType + EXISTS;
         final var response = restTemplate.getForObject(url, CertificateTypeExistsResponseDTO.class);
 
         if (response == null
@@ -341,8 +361,9 @@ public class CSIntegrationService {
         return Optional.of(response.getCertificateModelId());
     }
 
+    @PerformanceLogging(eventAction = "certificate-external-type-exists", eventType = EVENT_TYPE_INFO)
     public Optional<CertificateModelIdDTO> certificateExternalTypeExists(String codeSystem, String code) {
-        final var url = baseUrl + CERTIFICATE_TYPE_INFO_ENDPOINT_URL + "/" + codeSystem + "/" + code + "/exists";
+        final var url = baseUrl + CERTIFICATE_TYPE_INFO_ENDPOINT_URL + "/" + codeSystem + "/" + code + EXISTS;
         final var response = restTemplate.getForObject(url, CertificateExternalTypeExistsResponseDTO.class);
 
         if (response == null
@@ -355,8 +376,9 @@ public class CSIntegrationService {
         return Optional.of(response.getCertificateModelId());
     }
 
+    @PerformanceLogging(eventAction = "certificate-exists", eventType = EVENT_TYPE_INFO)
     public Boolean certificateExists(String certificateId) {
-        final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/exists";
+        final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + EXISTS;
 
         final var response = restTemplate.getForObject(url, CertificateExistsResponseDTO.class);
 
@@ -367,9 +389,9 @@ public class CSIntegrationService {
         return Boolean.TRUE.equals(response.getExists());
     }
 
-
+    @PerformanceLogging(eventAction = "message-exists", eventType = EVENT_TYPE_INFO)
     public Boolean messageExists(String messageId) {
-        final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + "/exists";
+        final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + EXISTS;
 
         final var response = restTemplate.getForObject(url, MessageExistsResponseDTO.class);
 
@@ -380,8 +402,9 @@ public class CSIntegrationService {
         return Boolean.TRUE.equals(response.getExists());
     }
 
+    @PerformanceLogging(eventAction = "citizen-certificate-exists", eventType = EVENT_TYPE_INFO)
     public Boolean citizenCertificateExists(String certificateId) {
-        final var url = baseUrl + CITIZEN_ENDPOINT_URL + "/" + certificateId + "/exists";
+        final var url = baseUrl + CITIZEN_ENDPOINT_URL + "/" + certificateId + EXISTS;
 
         final var response = restTemplate.getForObject(url, CitizenCertificateExistsResponseDTO.class);
 
@@ -392,6 +415,7 @@ public class CSIntegrationService {
         return Boolean.TRUE.equals(response.getExists());
     }
 
+    @PerformanceLogging(eventAction = "save-certificate", eventType = EVENT_TYPE_CHANGE)
     public Certificate saveCertificate(SaveCertificateRequestDTO request) {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + request.getCertificate().getMetadata().getId();
         final var headers = new HttpHeaders();
@@ -406,7 +430,7 @@ public class CSIntegrationService {
         );
         if (response.getBody() == null) {
             throw new IllegalStateException(
-                String.format("Saving certificate '%s' returned empty response!",
+                String.format("Saving certificate '%s' returned empty response",
                     request.getCertificate().getMetadata().getId()
                 )
             );
@@ -414,12 +438,14 @@ public class CSIntegrationService {
         return response.getBody().getCertificate();
     }
 
+    @PerformanceLogging(eventAction = "get-certificate-xml", eventType = EVENT_TYPE_ACCESS)
     public GetCertificateXmlResponseDTO getCertificateXml(GetCertificateXmlRequestDTO request, String certificateId) {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/xml";
 
         return restTemplate.postForObject(url, request, GetCertificateXmlResponseDTO.class);
     }
 
+    @PerformanceLogging(eventAction = "sign-certificate", eventType = EVENT_TYPE_CHANGE)
     public Certificate signCertificate(SignCertificateRequestDTO request, String certificateId, long version) {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/sign/" + version;
 
@@ -427,13 +453,14 @@ public class CSIntegrationService {
 
         if (response == null) {
             throw new IllegalStateException(
-                String.format("Sign certificate request for '%s' returned empty response!", certificateId)
+                String.format("Sign certificate request for '%s' returned empty response", certificateId)
             );
         }
 
         return response.getCertificate();
     }
 
+    @PerformanceLogging(eventAction = "sign-certificate-without-signature", eventType = EVENT_TYPE_CHANGE)
     public Certificate signCertificateWithoutSignature(SignCertificateWithoutSignatureRequestDTO request, String certificateId,
         long version) {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/signwithoutsignature/" + version;
@@ -442,13 +469,14 @@ public class CSIntegrationService {
 
         if (response == null) {
             throw new IllegalStateException(
-                String.format("Sign certificate without signature request for '%s' returned empty response!", certificateId)
+                String.format("Sign certificate without signature request for '%s' returned empty response", certificateId)
             );
         }
 
         return response.getCertificate();
     }
 
+    @PerformanceLogging(eventAction = "print-certificate", eventType = EVENT_TYPE_ACCESS)
     public IntygPdf printCertificate(String certificateId, PrintCertificateRequestDTO request) {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/pdf";
 
@@ -461,6 +489,7 @@ public class CSIntegrationService {
         return new IntygPdf(response.getPdfData(), response.getFileName());
     }
 
+    @PerformanceLogging(eventAction = "send-certificate", eventType = EVENT_TYPE_CHANGE)
     public Certificate sendCertificate(String certificateId, SendCertificateRequestDTO request) {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/send";
 
@@ -473,6 +502,7 @@ public class CSIntegrationService {
         return response.getCertificate();
     }
 
+    @PerformanceLogging(eventAction = "revoke-certificate", eventType = EVENT_TYPE_CHANGE)
     public Certificate revokeCertificate(String certificateId, RevokeCertificateRequestDTO request) {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/revoke";
 
@@ -485,6 +515,7 @@ public class CSIntegrationService {
         return response.getCertificate();
     }
 
+    @PerformanceLogging(eventAction = "get-citizen-certificate", eventType = EVENT_TYPE_ACCESS)
     public GetCitizenCertificateResponseDTO getCitizenCertificate(GetCitizenCertificateRequestDTO request, String certificateId) {
         final var url = baseUrl + CITIZEN_ENDPOINT_URL + "/" + certificateId;
 
@@ -497,6 +528,7 @@ public class CSIntegrationService {
         return response;
     }
 
+    @PerformanceLogging(eventAction = "get-citizen-certificate-pdf", eventType = EVENT_TYPE_ACCESS)
     public GetCitizenCertificatePdfResponseDTO getCitizenCertificatePdf(GetCitizenCertificatePdfRequestDTO request,
         String certificateId) {
         final var url = baseUrl + CITIZEN_ENDPOINT_URL + "/" + certificateId + "/print";
@@ -510,6 +542,7 @@ public class CSIntegrationService {
         return response;
     }
 
+    @PerformanceLogging(eventAction = "answer-complement-on-certificate", eventType = EVENT_TYPE_CHANGE)
     public Certificate answerComplementOnCertificate(String certificateId,
         AnswerComplementRequestDTO request) {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/answerComplement";
@@ -523,11 +556,13 @@ public class CSIntegrationService {
         return response.getCertificate();
     }
 
+    @PerformanceLogging(eventAction = "post-message", eventType = EVENT_TYPE_CREATION)
     public void postMessage(IncomingMessageRequestDTO request) {
         final var url = baseUrl + MESSAGE_ENDPOINT_URL;
         restTemplate.postForObject(url, request, Void.class);
     }
 
+    @PerformanceLogging(eventAction = "get-questions", eventType = EVENT_TYPE_ACCESS)
     public List<Question> getQuestions(GetCertificateMessageRequestDTO request, String certificateId) {
         final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + certificateId;
 
@@ -540,6 +575,7 @@ public class CSIntegrationService {
         return response.getQuestions();
     }
 
+    @PerformanceLogging(eventAction = "handle-message", eventType = EVENT_TYPE_CHANGE)
     public Question handleMessage(HandleMessageRequestDTO request, String messageId) {
         final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + "/handle";
 
@@ -552,6 +588,7 @@ public class CSIntegrationService {
         return response.getQuestion();
     }
 
+    @PerformanceLogging(eventAction = "get-certificate", eventType = EVENT_TYPE_ACCESS)
     public Certificate getCertificate(GetCertificateFromMessageRequestDTO request, String messageId) {
         final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + "/certificate";
 
@@ -564,6 +601,7 @@ public class CSIntegrationService {
         return response.getCertificate();
     }
 
+    @PerformanceLogging(eventAction = "get-questions", eventType = EVENT_TYPE_ACCESS)
     public List<Question> getQuestions(String certificateId) {
         final var url = baseUrl + INTERNAL_MESSAGE_ENDPOINT_URL + "/" + certificateId;
 
@@ -576,6 +614,7 @@ public class CSIntegrationService {
         return response.getQuestions();
     }
 
+    @PerformanceLogging(eventAction = "get-internal-certificate", eventType = EVENT_TYPE_ACCESS)
     public Certificate getInternalCertificate(String certificateId) {
         final var url = baseUrl + INTERNAL_CERTIFICATE_ENDPOINT_URL + "/" + certificateId;
 
@@ -588,6 +627,7 @@ public class CSIntegrationService {
         return response.getCertificate();
     }
 
+    @PerformanceLogging(eventAction = "get-internal-certificate-xml", eventType = EVENT_TYPE_ACCESS)
     public String getInternalCertificateXml(String certificateId) {
         final var url = baseUrl + INTERNAL_CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/xml";
 
@@ -600,6 +640,7 @@ public class CSIntegrationService {
         return response.getXml();
     }
 
+    @PerformanceLogging(eventAction = "delete-message", eventType = EVENT_TYPE_DELETION)
     public void deleteMessage(String messageId, DeleteMessageRequestDTO request) {
         final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + "/delete";
 
@@ -615,6 +656,7 @@ public class CSIntegrationService {
         );
     }
 
+    @PerformanceLogging(eventAction = "delete-answer", eventType = EVENT_TYPE_DELETION)
     public Question deleteAnswer(String messageId, DeleteAnswerRequestDTO request) {
         final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + "/deleteanswer";
 
@@ -636,6 +678,7 @@ public class CSIntegrationService {
         return response.getBody().getQuestion();
     }
 
+    @PerformanceLogging(eventAction = "create-message", eventType = EVENT_TYPE_CREATION)
     public Question createMessage(CreateMessageRequestDTO request, String certificateId) {
         final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + certificateId + "/create";
 
@@ -648,6 +691,7 @@ public class CSIntegrationService {
         return response.getQuestion();
     }
 
+    @PerformanceLogging(eventAction = "save-message", eventType = EVENT_TYPE_CHANGE)
     public Question saveMessage(SaveMessageRequestDTO request, String messageId) {
         final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + "/save";
 
@@ -660,6 +704,7 @@ public class CSIntegrationService {
         return response.getQuestion();
     }
 
+    @PerformanceLogging(eventAction = "save-answer", eventType = EVENT_TYPE_CHANGE)
     public Question saveAnswer(SaveAnswerRequestDTO request, String messageId) {
         final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + "/saveanswer";
 
@@ -672,6 +717,7 @@ public class CSIntegrationService {
         return response.getQuestion();
     }
 
+    @PerformanceLogging(eventAction = "send-message", eventType = EVENT_TYPE_CHANGE)
     public Question sendMessage(SendMessageRequestDTO request, String messageId) {
         final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + "/send";
 
@@ -684,6 +730,7 @@ public class CSIntegrationService {
         return response.getQuestion();
     }
 
+    @PerformanceLogging(eventAction = "send-answer", eventType = EVENT_TYPE_CHANGE)
     public Question sendAnswer(SendAnswerRequestDTO request, String messageId) {
         final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + "/sendanswer";
 
@@ -696,6 +743,7 @@ public class CSIntegrationService {
         return response.getQuestion();
     }
 
+    @PerformanceLogging(eventAction = "forward-certificate", eventType = EVENT_TYPE_CHANGE)
     public Certificate forwardCertificate(String certificateId, ForwardCertificateRequestDTO request) {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/forward";
 
@@ -708,6 +756,7 @@ public class CSIntegrationService {
         return response.getCertificate();
     }
 
+    @PerformanceLogging(eventAction = "get-certificates-with-qa", eventType = EVENT_TYPE_CHANGE)
     public String getCertificatesWithQA(CertificatesWithQARequestDTO request) {
         final var url = baseUrl + INTERNAL_CERTIFICATE_ENDPOINT_URL + "/qa";
 
@@ -720,6 +769,7 @@ public class CSIntegrationService {
         return response.getList();
     }
 
+    @PerformanceLogging(eventAction = "lock-drafts", eventType = EVENT_TYPE_CHANGE)
     public List<Certificate> lockDrafts(LockDraftsRequestDTO request) {
         final var url = baseUrl + INTERNAL_CERTIFICATE_ENDPOINT_URL + "/lock";
 
@@ -732,6 +782,7 @@ public class CSIntegrationService {
         return response.getCertificates();
     }
 
+    @PerformanceLogging(eventAction = "get-certificate-events", eventType = EVENT_TYPE_ACCESS)
     public CertificateEventDTO[] getCertificateEvents(String certificateId, GetCertificateEventsRequestDTO request) {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/events";
 
@@ -744,6 +795,7 @@ public class CSIntegrationService {
         return response.getEvents().toArray(CertificateEventDTO[]::new);
     }
 
+    @PerformanceLogging(eventAction = "get-statistics", eventType = EVENT_TYPE_ACCESS)
     public Map<String, StatisticsForUnitDTO> getStatistics(UnitStatisticsRequestDTO request) {
         final var url = baseUrl + UNIT_ENDPOINT_URL + "/certificates/statistics";
 
@@ -756,6 +808,7 @@ public class CSIntegrationService {
         return response.getUnitStatistics();
     }
 
+    @PerformanceLogging(eventAction = "mark-certificate-ready-for-sign", eventType = EVENT_TYPE_CHANGE)
     public Certificate markCertificateReadyForSign(String certificateId, ReadyForSignRequestDTO request) {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/readyForSign";
 
