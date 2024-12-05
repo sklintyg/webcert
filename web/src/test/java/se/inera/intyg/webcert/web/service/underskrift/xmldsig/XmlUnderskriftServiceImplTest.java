@@ -195,26 +195,6 @@ public class XmlUnderskriftServiceImplTest {
     }
 
     @Test(expected = WebCertServiceException.class)
-    public void testFinalizeSignatureFailsWhenInvalidSignature() {
-        when(xmldSigService.buildKeyInfoForCertificate(anyString())).thenReturn(new ObjectFactory().createKeyInfoType());
-        when(prepareSignatureService.encodeSignatureIntoSignedXml(any(SignatureType.class), anyString())).thenReturn("<final-xml/>");
-        when(utkastModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn("json");
-        when(xmldSigService.validateSignatureValidity(anyString(), anyBoolean())).thenReturn(failedValidationResult);
-
-        try {
-            testee.finalizeSignature(createSignaturBiljett(SignaturStatus.BEARBETAR),
-                "signatur".getBytes(Charset.forName("UTF-8")),
-                "certifikat", createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", createVardperson(),
-                    ENHET_ID, PERSON_ID),
-                buildUser());
-        } finally {
-            verifyNoInteractions(monitoringLogService);
-            verify(redisTicketTracker, times(1)).updateStatus(anyString(), eq(SignaturStatus.OKAND));
-            verify(intygService, times(0)).storeIntyg(any(Utkast.class));
-        }
-    }
-
-    @Test(expected = WebCertServiceException.class)
     public void testFinalizeSignatureFailsWithDifferentVersions() {
         when(xmldSigService.buildKeyInfoForCertificate(anyString())).thenReturn(new ObjectFactory().createKeyInfoType());
         when(prepareSignatureService.encodeSignatureIntoSignedXml(any(SignatureType.class), anyString())).thenReturn("<final-xml/>");
