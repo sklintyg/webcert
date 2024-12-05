@@ -68,8 +68,6 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
             IntygXMLDSignature intygXmldSignature = (IntygXMLDSignature) biljett.getIntygSignature();
             applySignature(rawSignature, intygXmldSignature, biljett.getSignMethod());
             storeX509InSignatureType(x509certificate, intygXmldSignature);
-            // This isn't strictly necessary...
-            performBasicSignatureValidation(x509certificate, utkast, intygXmldSignature);
             String signatureXml = marshallSignatureToString(intygXmldSignature.getSignatureType());
             createAndPersistSignatureForXMLDSig(utkast, biljett, signatureXml, user);
 
