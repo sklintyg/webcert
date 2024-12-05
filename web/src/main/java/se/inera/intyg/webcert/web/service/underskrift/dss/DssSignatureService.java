@@ -436,7 +436,7 @@ public class DssSignatureService {
                 .logSignResponseInvalid(relayState, signaturBiljett.getIntygsId(), "Could not unmarshal sign response: " + e.getMessage());
             return signaturBiljett;
         } catch (Exception e) {
-            LOG.warn("Unexpected error occurred when handling sign response with transaction id '%s'".formatted(relayState), e);
+            LOG.error("Unexpected error occurred when handling sign response with transaction id '%s'".formatted(relayState), e);
             SignaturBiljett signaturBiljett = redisTicketTracker.updateStatus(relayState, SignaturStatus.ERROR);
             monitoringLogService
                 .logSignResponseInvalid(relayState, signaturBiljett.getIntygsId(),
