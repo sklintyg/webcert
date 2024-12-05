@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.service.underskrift.xmldsig;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -46,7 +45,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.w3._2000._09.xmldsig_.ObjectFactory;
-import org.w3._2000._09.xmldsig_.SignatureType;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -140,10 +138,7 @@ public class XmlUnderskriftServiceImplTest {
     @Test
     public void testFinalizeSignatureWithValidSignature() {
         when(xmldSigService.buildKeyInfoForCertificate(anyString())).thenReturn(new ObjectFactory().createKeyInfoType());
-        when(prepareSignatureService.encodeSignatureIntoSignedXml(any(SignatureType.class), anyString())).thenReturn("<final-xml/>");
         when(utkastModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn("json");
-
-        when(xmldSigService.validateSignatureValidity(anyString(), anyBoolean())).thenReturn(okValidationResult);
         when(utkastModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn("<xml/>");
         when(prepareSignatureService.transformAndGenerateDigest(anyString(), anyString()))
             .thenReturn(new TransformAndDigestResponse(null,
@@ -197,9 +192,7 @@ public class XmlUnderskriftServiceImplTest {
     @Test(expected = WebCertServiceException.class)
     public void testFinalizeSignatureFailsWithDifferentVersions() {
         when(xmldSigService.buildKeyInfoForCertificate(anyString())).thenReturn(new ObjectFactory().createKeyInfoType());
-        when(prepareSignatureService.encodeSignatureIntoSignedXml(any(SignatureType.class), anyString())).thenReturn("<final-xml/>");
         when(utkastModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn("json");
-        when(xmldSigService.validateSignatureValidity(anyString(), anyBoolean())).thenReturn(okValidationResult);
         when(utkastModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn("<xml/>");
         when(prepareSignatureService.transformAndGenerateDigest(anyString(), anyString()))
             .thenReturn(new TransformAndDigestResponse(null,
@@ -227,11 +220,6 @@ public class XmlUnderskriftServiceImplTest {
     @Test(expected = WebCertServiceException.class)
     public void testFinalizeSignatureFailsWithDifferentIntygsId() {
         when(xmldSigService.buildKeyInfoForCertificate(anyString())).thenReturn(new ObjectFactory().createKeyInfoType());
-        when(prepareSignatureService.encodeSignatureIntoSignedXml(any(SignatureType.class), anyString())).thenReturn("<final-xml/>");
-        when(utkastModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn("json");
-        when(xmldSigService.validateSignatureValidity(anyString(), anyBoolean())).thenReturn(okValidationResult);
-        when(utkastModelToXMLConverter.utkastToXml(anyString(), anyString())).thenReturn("<xml/>");
-
         try {
             testee.finalizeSignature(createSignaturBiljett(SignaturStatus.BEARBETAR),
                 "signatur".getBytes(Charset.forName("UTF-8")),
@@ -245,5 +233,4 @@ public class XmlUnderskriftServiceImplTest {
             verify(intygService, times(0)).storeIntyg(any(Utkast.class));
         }
     }
-
 }
