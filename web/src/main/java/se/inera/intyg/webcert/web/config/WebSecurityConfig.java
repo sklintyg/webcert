@@ -229,7 +229,9 @@ public class WebSecurityConfig {
                     antMatcher("/api/signature/**"),
                     antMatcher("/testability/**"),
                     antMatcher("/authtestability/**"),
-                    antMatcher("/services/**"))
+                    antMatcher("/services/**"),
+                    antMatcher("/api/v1/session/invalidate")
+                )
             )
             .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class);
 
