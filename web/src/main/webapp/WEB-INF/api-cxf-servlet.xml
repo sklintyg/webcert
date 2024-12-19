@@ -47,8 +47,6 @@
         <bean class="se.inera.intyg.webcert.web.web.controller.api.JsLogApiController"/>
         <bean class="se.inera.intyg.webcert.web.web.controller.api.PersonApiController"/>
         <bean class="se.inera.intyg.webcert.web.web.controller.api.UserApiController"/>
-        <bean class="se.inera.intyg.webcert.web.web.controller.api.ModuleApiController"/>
-        <bean class="se.inera.intyg.webcert.web.web.controller.api.UtkastApiController"/>
         <bean class="se.inera.intyg.webcert.web.web.controller.api.FmbApiController"/>
         <bean class="se.inera.intyg.webcert.web.web.controller.api.IcfApiController"/>
         <bean class="se.inera.intyg.webcert.web.web.controller.api.SrsApiController"/>
