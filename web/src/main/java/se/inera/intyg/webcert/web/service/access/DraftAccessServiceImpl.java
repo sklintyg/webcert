@@ -82,6 +82,7 @@ public class DraftAccessServiceImpl implements DraftAccessService {
             .checkPatientSecrecy()
             .checkUnique()
             .checkSubscription()
+            .checkInactiveCertificateType()
             .evaluate();
     }
 
@@ -111,6 +112,7 @@ public class DraftAccessServiceImpl implements DraftAccessService {
             .checkPatientSecrecy()
             .checkUnit(false, false)
             .checkSubscription()
+            .checkInactiveCertificateType()
             .evaluate();
     }
 
@@ -150,6 +152,7 @@ public class DraftAccessServiceImpl implements DraftAccessService {
             .checkUnique(true)
             .checkUnit(false, false)
             .checkSubscription()
+            .checkInactiveCertificateType()
             .evaluate();
     }
 
@@ -167,6 +170,7 @@ public class DraftAccessServiceImpl implements DraftAccessService {
             .checkPatientSecrecy()
             .checkUnit(false, false)
             .checkSubscription()
+            .checkInactiveCertificateType()
             .evaluate();
     }
 
@@ -213,6 +217,7 @@ public class DraftAccessServiceImpl implements DraftAccessService {
             .checkPatientSecrecy()
             .checkUnit(false, false)
             .checkSubscription()
+            .checkInactiveCertificateType()
             .evaluate();
     }
 
@@ -230,6 +235,7 @@ public class DraftAccessServiceImpl implements DraftAccessService {
             .checkPatientSecrecy()
             .checkUnit(false, false)
             .checkSubscription()
+            .checkInactiveCertificateType()
             .evaluate();
     }
 
@@ -249,6 +255,7 @@ public class DraftAccessServiceImpl implements DraftAccessService {
             .checkPatientSecrecy()
             .checkUnit(false, false)
             .checkSubscription()
+            .checkInactiveCertificateType()
             .evaluate();
     }
 

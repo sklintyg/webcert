@@ -90,6 +90,7 @@ public class LockedDraftAccessServiceImpl implements LockedDraftAccessService {
             .checkPatientSecrecy()
             .checkUnit(true, true)
             .checkSubscription()
+            .checkInactiveCertificateType()
             .evaluate();
     }
 
