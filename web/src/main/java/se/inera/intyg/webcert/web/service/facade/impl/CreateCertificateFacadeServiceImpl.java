@@ -69,16 +69,6 @@ public class CreateCertificateFacadeServiceImpl implements CreateCertificateFaca
     public String create(String certificateType, String patientId) throws CreateCertificateException {
         final var request = convertRequest(certificateType, patientId);
 
-        try {
-            if (intygModuleRegistry.getIntygModule(certificateType).isDeprecated()) {
-                LOG.error("Request for deprecated module {}", certificateType);
-                throw new CreateCertificateException("Request for deprecated module");
-            }
-        } catch (ModuleNotFoundException e) {
-            LOG.error("Request for unknown module {}", certificateType);
-            throw new CreateCertificateException("Request for unknown module");
-        }
-
         LOG.debug("Attempting to create certificate of type '{}'", certificateType);
 
         final var actionResult = draftAccessServiceHelper.evaluateAllowToCreateUtkast(certificateType, getSSN(patientId));

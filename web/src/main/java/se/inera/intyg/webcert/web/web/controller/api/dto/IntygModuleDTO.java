@@ -43,10 +43,6 @@ public class IntygModuleDTO implements Comparable<IntygModuleDTO> {
 
     private String defaultRecipient;
 
-    private boolean deprecated;
-
-    private boolean displayDeprecated;
-
     private List<ActionLink> links = new ArrayList<>();
 
     public IntygModuleDTO(IntygModule intygModule) {
@@ -59,8 +55,6 @@ public class IntygModuleDTO implements Comparable<IntygModuleDTO> {
         this.scriptPath = intygModule.getScriptPath();
         this.dependencyDefinitionPath = intygModule.getDependencyDefinitionPath();
         this.defaultRecipient = intygModule.getDefaultRecipient();
-        this.deprecated = intygModule.isDeprecated();
-        this.displayDeprecated = intygModule.getDisplayDeprecated();
     }
 
     public String getId() {
@@ -97,14 +91,6 @@ public class IntygModuleDTO implements Comparable<IntygModuleDTO> {
 
     public String getDefaultRecipient() {
         return defaultRecipient;
-    }
-
-    public boolean isDeprecated() {
-        return deprecated;
-    }
-
-    public boolean isDisplayDeprecated() {
-        return displayDeprecated;
     }
 
     public List<ActionLink> getLinks() {

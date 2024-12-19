@@ -75,7 +75,6 @@ public class CreateDraftCertificateFromWC implements CreateDraftCertificate {
     @Autowired
     private CreateDraftCertificateValidator validator;
 
-
     @Override
     public CreateDraftCertificateResponseType create(Intyg certificate, IntygUser user) {
         final var resultValidator = validator.validateCertificateErrors(certificate, user);

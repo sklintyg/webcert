@@ -31,6 +31,7 @@ import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.util.PatientToolkit;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
+import se.inera.intyg.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.CertificateTypeMessageService;
@@ -59,13 +60,14 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
     private final CertificateTypeMessageService certificateTypeMessageService;
     private final PatientDetailsResolver patientDetailsResolver;
     private final MissingRelatedCertificateConfirmation missingRelatedCertificateConfirmation;
+    private final FeaturesHelper featuresHelper;
 
     @Autowired
     public GetCertificateTypesFacadeServiceImpl(IntygModuleRegistry intygModuleRegistry, ResourceLinkHelper resourceLinkHelper,
         AuthoritiesHelper authoritiesHelper, WebCertUserService webCertUserService,
         IntygTextsService intygTextsService, CertificateTypeMessageService certificateTypeMessageService,
         PatientDetailsResolver patientDetailsResolver,
-        MissingRelatedCertificateConfirmation missingRelatedCertificateConfirmation) {
+        MissingRelatedCertificateConfirmation missingRelatedCertificateConfirmation, FeaturesHelper featuresHelper) {
         this.intygModuleRegistry = intygModuleRegistry;
         this.resourceLinkHelper = resourceLinkHelper;
         this.authoritiesHelper = authoritiesHelper;
@@ -74,6 +76,7 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
         this.certificateTypeMessageService = certificateTypeMessageService;
         this.patientDetailsResolver = patientDetailsResolver;
         this.missingRelatedCertificateConfirmation = missingRelatedCertificateConfirmation;
+        this.featuresHelper = featuresHelper;
     }
 
     @Override
@@ -149,13 +152,14 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
         final var intygModules = intygModuleRegistry.listAllModules();
         final var allowedCertificateTypes = authoritiesHelper.getIntygstyperForPrivilege(webCertUserService.getUser(),
             AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG);
+        final var inactiveCertificateTypes = featuresHelper.getCertificateTypesForFeature(AuthoritiesConstants.FEATURE_INACTIVE_CERTIFICATE_TYPE);
 
         final var intygModuleDTOs = intygModules.stream()
             .map(IntygModuleDTO::new)
+            .filter(intygModuleDTO -> !inactiveCertificateTypes.contains(intygModuleDTO.getId()))
             .filter(intygModule -> allowedCertificateTypes.contains(intygModule.getId()))
-            .filter(intygModule -> intygModule.isDisplayDeprecated() || !intygModule.isDeprecated())
             .filter(intygModule -> intygTextsService.getLatestVersion(intygModule.getId()) != null)
-            .collect(Collectors.toList());
+            .toList();
 
         resourceLinkHelper.decorateIntygModuleWithValidActionLinks(intygModuleDTOs, personnummer);
 
