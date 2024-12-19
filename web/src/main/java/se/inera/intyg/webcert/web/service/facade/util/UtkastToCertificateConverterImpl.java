@@ -33,6 +33,8 @@ import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.facade.TypeAheadProvider;
 import se.inera.intyg.infra.integration.hsatk.services.HsatkOrganizationService;
+import se.inera.intyg.infra.security.authorities.FeaturesHelper;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.facade.modal.confirmation.ConfirmationModalProviderResolver;
@@ -61,6 +63,8 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
 
     private final DraftAccessServiceHelper draftAccessServiceHelper;
 
+    private final FeaturesHelper featuresHelper;
+
     @Autowired
     public UtkastToCertificateConverterImpl(IntygModuleRegistry moduleRegistry,
         IntygTextsService intygTextsService,
@@ -70,7 +74,8 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
         HsatkOrganizationService hsatkOrganizationService,
         TypeAheadProvider typeAheadProvider,
         CertificateRecipientConverter certificateRecipientConverter,
-        DraftAccessServiceHelper draftAccessServiceHelper) {
+        DraftAccessServiceHelper draftAccessServiceHelper,
+        FeaturesHelper featuresHelper) {
         this.moduleRegistry = moduleRegistry;
         this.intygTextsService = intygTextsService;
         this.patientConverter = patientConverter;
@@ -80,6 +85,7 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
         this.typeAheadProvider = typeAheadProvider;
         this.certificateRecipientConverter = certificateRecipientConverter;
         this.draftAccessServiceHelper = draftAccessServiceHelper;
+        this.featuresHelper = featuresHelper;
     }
 
     @Override
@@ -142,6 +148,10 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
         certificateToReturn.getMetadata().setLatestMajorVersion(
             intygTextsService.isLatestMajorVersion(certificateToReturn.getMetadata().getType(),
                 certificateToReturn.getMetadata().getTypeVersion())
+        );
+
+        certificateToReturn.getMetadata().setInactiveCertificateType(
+            featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_INACTIVE_CERTIFICATE_TYPE, certificate.getIntygsTyp())
         );
 
         certificateToReturn.getMetadata().setAvailableForCitizen(

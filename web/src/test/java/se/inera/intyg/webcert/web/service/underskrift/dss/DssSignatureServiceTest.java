@@ -163,7 +163,7 @@ public class DssSignatureServiceTest {
         when(dssSignMessageService.signSignRequest(any()))
             .thenReturn("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>");
         when(moduleRegistry.getIntygModule(anyString()))
-            .thenReturn(new IntygModule("intygsTyp", "intygsTyp", null, null, "intygsTyp", null, null, null, null, false, false));
+            .thenReturn(new IntygModule("intygsTyp", "intygsTyp", null, null, "intygsTyp", null, null, null, null));
 
         ReflectionTestUtils.setField(dssSignatureService, "dssClientEntityHostUrl", "https://wc.localtest.me:8020");
         ReflectionTestUtils.setField(dssSignatureService, "dssClientResponseHostUrl", "https://wc.localtest.me:8020");

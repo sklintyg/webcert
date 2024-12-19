@@ -112,7 +112,7 @@ public class ResourceLinkHelperImplTest {
     }
 
     private IntygModuleDTO createIntygModuleDTO(String intygsTyp) {
-        return new IntygModuleDTO(new IntygModule(intygsTyp, "", "", "", "", "", "", "", "", false, false));
+        return new IntygModuleDTO(new IntygModule(intygsTyp, "", "", "", "", "", "", "", ""));
     }
 
     @Test

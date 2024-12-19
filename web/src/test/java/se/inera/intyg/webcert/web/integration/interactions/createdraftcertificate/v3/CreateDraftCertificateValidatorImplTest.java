@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -68,16 +69,14 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
         when(moduleRegistry.moduleExists(Fk7263EntryPoint.MODULE_ID)).thenReturn(true);
         when(moduleRegistry.moduleExists(LuseEntryPoint.MODULE_ID)).thenReturn(true);
 
-        when(moduleRegistry.getIntygModule(eq(Fk7263EntryPoint.MODULE_ID))).thenReturn(buildIntygModule(FK7263, true));
-        when(moduleRegistry.getIntygModule(eq(LuseEntryPoint.MODULE_ID))).thenReturn(buildIntygModule(LUSE, false));
-
         when(authoritiesHelper.getIntygstyperAllowedForSekretessmarkering()).thenReturn(new HashSet<>(ALL_INTYG_TYPES));
 
         user = buildUser();
     }
 
     @Test
-    public void testDeprecatedDoesNotValidate() {
+    public void testInactiveCertificateTypeDoesNotValidate() {
+        doReturn(true).when(featuresHelper).isFeatureActive(AuthoritiesConstants.FEATURE_INACTIVE_CERTIFICATE_TYPE, FK7263);
         ResultValidator result = validator.validateCertificateErrors(buildIntyg(FK7263, "efternamn", "förnamn",
             "fullständigt namn", "enhetsId", "enhetsnamn", true), user);
         assertTrue(result.hasErrors());
@@ -195,7 +194,6 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
     @Test
     public void testPuServiceLooksUpPatientForTsBas() throws ModuleNotFoundException {
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
-        when(moduleRegistry.getIntygModule(eq(TsBasEntryPoint.MODULE_ID))).thenReturn(buildIntygModule(TSBAS, false));
         when(moduleRegistry.moduleExists(eq(TsBasEntryPoint.MODULE_ID))).thenReturn(true);
 
         ResultValidator result = validator
@@ -227,7 +225,6 @@ public class CreateDraftCertificateValidatorImplTest extends BaseCreateDraftCert
         when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.TRUE);
         when(moduleRegistry.getModuleEntryPoint(TSBAS)).thenReturn(mockEntryPoint);
         when(mockEntryPoint.getModuleName()).thenReturn(TsBasEntryPoint.MODULE_NAME);
-        when(moduleRegistry.getIntygModule(eq(TsBasEntryPoint.MODULE_ID))).thenReturn(buildIntygModule(TSBAS, false));
         when(moduleRegistry.moduleExists(eq(TsBasEntryPoint.MODULE_ID))).thenReturn(true);
 
         ResultValidator result = validator.validateCertificateErrors(certificate, user);

@@ -1164,7 +1164,7 @@ public class IntygServiceTest {
         ArendeCount received = new ArendeCount(5, 6, 7, 8);
 
         when(moduleRegistry.listAllModules()).thenReturn(
-            Collections.singletonList(new IntygModule(intygType, "", "", "", "", "", "", "", "", false)));
+            Collections.singletonList(new IntygModule(intygType, "", "", "", "", "", "", "", "")));
         when(utkastRepository.findAllById(any())).thenReturn(Collections.singletonList(getDraft(intygId)));
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(fragorOchSvarCreator.createArenden(eq(intygId), anyString())).thenReturn(Pair.of(sent, received));
@@ -1203,7 +1203,7 @@ public class IntygServiceTest {
         handelse.setIntygsId(intygId);
 
         when(moduleRegistry.listAllModules()).thenReturn(
-            Collections.singletonList(new IntygModule(intygType, "", "", "", "", "", "", "", "", false)));
+            Collections.singletonList(new IntygModule(intygType, "", "", "", "", "", "", "", "")));
         when(utkastRepository.findAllById(any())).thenReturn(Collections.emptyList());
 
         List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(
@@ -1241,7 +1241,7 @@ public class IntygServiceTest {
         draftList.add(getDraft(intygId));
 
         when(moduleRegistry.listAllModules()).thenReturn(
-            Collections.singletonList(new IntygModule(intygType, "", "", "", "", "", "", "", "", false)));
+            Collections.singletonList(new IntygModule(intygType, "", "", "", "", "", "", "", "")));
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(fragorOchSvarCreator.createArenden(eq(intygId), anyString())).thenReturn(Pair.of(sent, received));
         doReturn(draftList).when(utkastRepository).findAllById(any());
@@ -1289,7 +1289,7 @@ public class IntygServiceTest {
             .build();
 
         when(moduleRegistry.listAllModules()).thenReturn(
-            Collections.singletonList(new IntygModule(intygType, "", "", "", "", "", "", "", "", false)));
+            Collections.singletonList(new IntygModule(intygType, "", "", "", "", "", "", "", "")));
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(fragorOchSvarCreator.createArenden(eq(CERTIFICATE_ID), anyString())).thenReturn(Pair.of(sent, received));
         doReturn(Collections.emptyList()).when(utkastRepository).findAllById(any());
@@ -1348,7 +1348,7 @@ public class IntygServiceTest {
         ArendeCount received = new ArendeCount(5, 6, 7, 8);
 
         when(moduleRegistry.listAllModules()).thenReturn(
-            Collections.singletonList(new IntygModule(intygType, "", "", "", "", "", "", "", "", false)));
+            Collections.singletonList(new IntygModule(intygType, "", "", "", "", "", "", "", "")));
         when(utkastRepository.findAllById(any())).thenReturn(Collections.singletonList(getDraft(intygId)));
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(fragorOchSvarCreator.createArenden(eq(intygId), anyString())).thenReturn(Pair.of(sent, received));
@@ -1381,7 +1381,7 @@ public class IntygServiceTest {
         final String intygId = "intygId";
 
         when(moduleRegistry.listAllModules())
-            .thenReturn(Collections.singletonList(new IntygModule(intygType, "", "", "", "", "", "", "", "", false)));
+            .thenReturn(Collections.singletonList(new IntygModule(intygType, "", "", "", "", "", "", "", "")));
         when(utkastRepository.findDraftsByPatientAndVardgivareAndStatus(eq(PERSON_ID), eq(vardgivarId),
             eq(Arrays.asList(UtkastStatus.values())), eq(Collections.singleton(intygType))))
             .thenReturn(Collections.singletonList(getDraft(intygId)));

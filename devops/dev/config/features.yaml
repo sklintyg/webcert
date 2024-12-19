@@ -81,6 +81,7 @@ knownFeatures:
   - &kf320 ANVAND_ANGULAR_WEBKLIENT
   - &kf350 SKRIV_UT_I_IFRAME
   - &kf360 ANVAND_REACT_WEBKLIENT_FRISTAENDE
+  - &kf370 INAKTIVERAD_INTYGSTYP
 
 # Aktiverade features i Webcert
 features:
@@ -353,6 +354,13 @@ features:
     name: *kf360
     desc: Använd nya reactklienten fristående
     global: false
+  - &f370
+    name: *kf370
+    desc: Inactivate certificate type
+    global: true
+    intygstyper:
+      - *ki010 # FK7263
+      - *ki020 # TS-BAS
 
 pilots:
   - name: SRS_PILOT

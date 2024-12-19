@@ -103,6 +103,10 @@ public enum AccessResultCode {
     /**
      * No access. Not allowed to perform action because selected care provider has no subscription.
      */
-    MISSING_SUBSCRIPTION
+    MISSING_SUBSCRIPTION,
+    /**
+     * No access. Not allowed to perform action because the certificate type is considered inactive
+     */
+    INACTIVE_CERTIFICATE_TYPE,
 
 }

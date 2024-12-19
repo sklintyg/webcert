@@ -67,6 +67,38 @@ public class AccessServiceEvaluationTest {
     }
 
     @Test
+    public void shallNotAllowIfFeatureInactiveCertificateTypeIsTrue() {
+        final var feature = new Feature();
+        feature.setGlobal(true);
+        feature.setIntygstyper(Collections.singletonList("ts-bas"));
+
+        final var features = Map.of(AuthoritiesConstants.FEATURE_INACTIVE_CERTIFICATE_TYPE, feature);
+        when(user.getFeatures()).thenReturn(features);
+
+        final var actualAccessResult = accessServiceEvaluation.given(user, "ts-bas")
+            .checkInactiveCertificateType()
+            .evaluate();
+
+        assertEquals(AccessResultCode.INACTIVE_CERTIFICATE_TYPE, actualAccessResult.getCode());
+    }
+
+    @Test
+    public void shallAllowIfFeatureInactiveCertificateTypeIsFalse() {
+        final var feature = new Feature();
+        feature.setGlobal(true);
+        feature.setIntygstyper(Collections.singletonList("ts-bas"));
+
+        final var features = Map.of(AuthoritiesConstants.FEATURE_INACTIVE_CERTIFICATE_TYPE, feature);
+        when(user.getFeatures()).thenReturn(features);
+
+        final var actualAccessResult = accessServiceEvaluation.given(user, "ts-diabetes")
+            .checkInactiveCertificateType()
+            .evaluate();
+
+        assertEquals(AccessResultCode.NO_PROBLEM, actualAccessResult.getCode());
+    }
+
+    @Test
     public void shallBlockIfNotOfLatestMajorVersion() {
         final var feature = new Feature();
         feature.setGlobal(true);

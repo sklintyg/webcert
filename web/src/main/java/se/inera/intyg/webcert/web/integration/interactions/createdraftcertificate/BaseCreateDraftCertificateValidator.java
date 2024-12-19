@@ -29,6 +29,7 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.infra.pu.integration.api.model.PersonSvar;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
+import se.inera.intyg.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
@@ -53,6 +54,9 @@ public abstract class BaseCreateDraftCertificateValidator {
 
     @Autowired
     private AuthoritiesHelper authoritiesHelper;
+
+    @Autowired
+    private FeaturesHelper featuresHelper;
 
     protected Optional<Personnummer> createPersonnummer(ResultValidator errors, String personId) {
         Optional<Personnummer> personnummer = Personnummer.createPersonnummer(personId);
@@ -130,13 +134,8 @@ public abstract class BaseCreateDraftCertificateValidator {
             errors.addError("Intyg {0} is not supported", moduleId);
         }
 
-        try {
-            if (moduleRegistry.getIntygModule(moduleId).isDeprecated()) {
-                errors.addError("Intyg of type {0} has been deprecated and is no longer possible to issue.", moduleId);
-            }
-        } catch (ModuleNotFoundException n) {
-            LOG.error("Module {} not found while validating module support", moduleId);
-            errors.addError("Intyg {0} is not supported", moduleId);
+        if (featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_INACTIVE_CERTIFICATE_TYPE, moduleId)) {
+            errors.addError("Intyg of type {0} has been deprecated and is no longer possible to issue.", moduleId);
         }
     }
 

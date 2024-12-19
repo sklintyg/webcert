@@ -51,6 +51,8 @@ import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.registry.IntygModule;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
+import se.inera.intyg.infra.security.authorities.FeaturesHelper;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.CertificateTypeMessageService;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.MissingRelatedCertificateConfirmation;
@@ -74,6 +76,8 @@ class GetCertificateTypesFacadeServiceImplTest {
     private ResourceLinkHelper resourceLinkHelper;
     @Mock
     private AuthoritiesHelper authoritiesHelper;
+    @Mock
+    private FeaturesHelper featuresHelper;
     @Mock
     private WebCertUserService webCertUserService;
     @Mock
@@ -103,8 +107,7 @@ class GetCertificateTypesFacadeServiceImplTest {
         private final IntygModule notAllowedModule = createIntygModule("notAllowed");
         private final IntygModule moduleDb = new IntygModule(CERTIFICATE_TYPE_DB, "label", "description", "detailedDescription",
             "issuerTypeId",
-            "cssPath", "scriptPath", "dependencyDefinitionPath", "defaultRecipient",
-            false, false);
+            "cssPath", "scriptPath", "dependencyDefinitionPath", "defaultRecipient");
 
         @BeforeEach
         void setup() throws Exception {
@@ -416,12 +419,19 @@ class GetCertificateTypesFacadeServiceImplTest {
             final var result = getCertificateTypesFacadeService.get(PATIENT_ID);
             assertEquals(0, result.size());
         }
+
+        @Test
+        void shouldFilterOutInactiveIntygModule() throws Exception {
+            setup(true, true, false);
+            doReturn(List.of(CERTIFICATE_TYPE)).when(featuresHelper).getCertificateTypesForFeature(AuthoritiesConstants.FEATURE_INACTIVE_CERTIFICATE_TYPE);
+            final var result = getCertificateTypesFacadeService.get(PATIENT_ID);
+            assertEquals(0, result.size());
+        }
     }
 
     private IntygModule createIntygModule(String id) {
         return new IntygModule(id, "label", "description", "detailedDescription", "issuerTypeId",
-            "cssPath", "scriptPath", "dependencyDefinitionPath", "defaultRecipient",
-            false, false);
+            "cssPath", "scriptPath", "dependencyDefinitionPath", "defaultRecipient");
     }
 
     private IntygModule createIntygModule() {
@@ -430,8 +440,7 @@ class GetCertificateTypesFacadeServiceImplTest {
 
     private IntygModule createIntygModule(boolean isDeprecated, boolean showDeprecated) {
         return new IntygModule(CERTIFICATE_TYPE, "label", "description", "detailedDescription", "issuerTypeId",
-            "cssPath", "scriptPath", "dependencyDefinitionPath", "defaultRecipient",
-            isDeprecated, showDeprecated);
+            "cssPath", "scriptPath", "dependencyDefinitionPath", "defaultRecipient");
     }
 
     private Personnummer getPatientId(int minusMonths) {
