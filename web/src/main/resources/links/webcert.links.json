@@ -108,6 +108,12 @@
     "target": "_blank"
   },
   {
+    "key": "transportstyrelsenLink",
+    "url": "https://www.transportstyrelsen.se",
+    "text": "Transportstyrelsen",
+    "target": "_blank"
+  },
+  {
     "key": "transportstyrelsenVagtrafik",
     "url": "https://www.transportstyrelsen.se",
     "text": "Vägtrafik - Transportstyrelsen.se",
