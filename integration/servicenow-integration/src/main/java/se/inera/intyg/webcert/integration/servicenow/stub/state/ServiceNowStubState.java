@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.integration.servicenow.stub.state;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.Setter;
@@ -44,7 +43,7 @@ public class ServiceNowStubState {
     private List<String> sithsServiceCodes;
 
     public List<String> getServiceCodeList() {
-        return Stream.concat(elegServiceCodes.stream(), sithsServiceCodes.stream()).collect(Collectors.toList());
+        return Stream.concat(elegServiceCodes.stream(), sithsServiceCodes.stream()).toList();
     }
 
     public boolean getSubscriptionReturnValue() {

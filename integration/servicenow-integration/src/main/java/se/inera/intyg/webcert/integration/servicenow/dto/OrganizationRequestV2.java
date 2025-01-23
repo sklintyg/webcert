@@ -17,14 +17,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.integration.api.subscription;
+package se.inera.intyg.webcert.integration.servicenow.dto;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import java.util.List;
+import lombok.Builder;
+import lombok.Value;
+import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationRequestV2.OrganizationRequestV2Builder;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ServiceNowIntegrationConstants {
+@JsonDeserialize(builder = OrganizationRequestV2Builder.class)
+@Value
+@Builder
+public class OrganizationRequestV2 {
 
-    public static final String SERVICENOW_INTEGRATION_PROFILE = "servicenow-integration";
-    public static final String SERVICENOW_INTEGRATION_PROFILE_V2 = "servicenow-integration-v2";
+    List<String> services;
+    List<String> customers;
+
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class OrganizationRequestV2Builder {
+
+    }
 }
