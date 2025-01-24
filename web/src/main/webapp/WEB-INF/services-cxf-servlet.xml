@@ -46,7 +46,6 @@
   <import resource="classpath:/intygstjanst-stub-context.xml"/>
   <import resource="classpath:/loggtjanst-stub-context.xml"/>
   <import resource="classpath:/notification-stub-context.xml"/>
-  <import resource="classpath:/kundportalen-stub-context.xml"/>
   <import resource="classpath:/servicenow-stub-context.xml"/>
   <import resource="classpath:/swagger-api-context.xml"/>
   <import resource="classpath:/hsa-integration-intyg-proxy-service-config.xml"/>
