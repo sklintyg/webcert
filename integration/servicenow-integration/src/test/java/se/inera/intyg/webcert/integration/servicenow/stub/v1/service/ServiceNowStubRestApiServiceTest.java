@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.integration.servicenow.stub.service;
+package se.inera.intyg.webcert.integration.servicenow.stub.v1.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -35,7 +35,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationRequest;
 import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationResponse;
-import se.inera.intyg.webcert.integration.servicenow.stub.state.ServiceNowStubState;
+import se.inera.intyg.webcert.integration.servicenow.stub.settings.state.ServiceNowStubState;
 
 @ExtendWith(MockitoExtension.class)
 class ServiceNowStubRestApiServiceTest {
@@ -78,9 +78,9 @@ class ServiceNowStubRestApiServiceTest {
             organizationRequest)) {
             final var organizations = response.readEntity(OrganizationResponse.class).getResult();
 
-            final var serviceCodeList = organizations.get(0).getServiceCodes();
+            final var serviceCodeList = organizations.getFirst().getServiceCodes();
             assertEquals(1, organizations.size());
-            assertEquals(ORGANIZATION_NUMBER_1, organizations.get(0).getOrganizationNumber());
+            assertEquals(ORGANIZATION_NUMBER_1, organizations.getFirst().getOrganizationNumber());
             assertTrue(serviceCodeList.contains(SERVICE_CODE_1));
         }
     }
@@ -99,9 +99,9 @@ class ServiceNowStubRestApiServiceTest {
             organizationRequest)) {
             final var organizations = response.readEntity(OrganizationResponse.class).getResult();
 
-            final var serviceCodeList = organizations.get(0).getServiceCodes();
+            final var serviceCodeList = organizations.getFirst().getServiceCodes();
             assertEquals(1, organizations.size());
-            assertEquals(ORGANIZATION_NUMBER_2, organizations.get(0).getOrganizationNumber());
+            assertEquals(ORGANIZATION_NUMBER_2, organizations.getFirst().getOrganizationNumber());
             assertTrue(serviceCodeList.contains(SERVICE_CODE_1));
             assertTrue(serviceCodeList.contains(SERVICE_CODE_2));
         }
@@ -122,8 +122,8 @@ class ServiceNowStubRestApiServiceTest {
             final var organizations = response.readEntity(OrganizationResponse.class).getResult();
 
             assertEquals(1, organizations.size());
-            assertEquals("ORGANIZATION_NUMBER_3", organizations.get(0).getOrganizationNumber());
-            assertTrue(organizations.get(0).getServiceCodes().isEmpty());
+            assertEquals("ORGANIZATION_NUMBER_3", organizations.getFirst().getOrganizationNumber());
+            assertTrue(organizations.getFirst().getServiceCodes().isEmpty());
         }
     }
 
@@ -191,7 +191,7 @@ class ServiceNowStubRestApiServiceTest {
             final var organizations = response.readEntity(OrganizationResponse.class).getResult();
 
             assertEquals(1, organizations.size());
-            assertEquals(3, organizations.get(0).getServiceCodes().size());
+            assertEquals(3, organizations.getFirst().getServiceCodes().size());
         }
     }
 
@@ -212,7 +212,7 @@ class ServiceNowStubRestApiServiceTest {
             final var organizations = response.readEntity(OrganizationResponse.class).getResult();
 
             assertEquals(1, organizations.size());
-            assertEquals(0, organizations.get(0).getServiceCodes().size());
+            assertEquals(0, organizations.getFirst().getServiceCodes().size());
         }
     }
 

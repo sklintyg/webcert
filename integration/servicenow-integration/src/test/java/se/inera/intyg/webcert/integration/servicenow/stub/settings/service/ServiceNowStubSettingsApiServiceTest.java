@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.integration.servicenow.stub.service;
+package se.inera.intyg.webcert.integration.servicenow.stub.settings.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -26,14 +26,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.webcert.integration.servicenow.stub.state.ServiceNowStubState;
+import se.inera.intyg.webcert.integration.servicenow.stub.settings.state.ServiceNowStubState;
 
 @ExtendWith(MockitoExtension.class)
 class ServiceNowStubSettingsApiServiceTest {
@@ -70,7 +69,7 @@ class ServiceNowStubSettingsApiServiceTest {
         serviceNowStubSettingsApiService.setActiveSubscription("ORGANIZATION_NUMBER_3", "SERVICE_CODE_1");
 
         assertTrue(stubState.getActiveSubscriptions().containsKey("ORGANIZATION_NUMBER_3"));
-        assertEquals("SERVICE_CODE_1", stubState.getActiveSubscriptions().get("ORGANIZATION_NUMBER_3").get(0));
+        assertEquals("SERVICE_CODE_1", stubState.getActiveSubscriptions().get("ORGANIZATION_NUMBER_3").getFirst());
     }
 
     @Test

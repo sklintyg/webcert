@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.integration.servicenow.service;
+package se.inera.intyg.webcert.integration.servicenow.v2.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -36,9 +36,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.webcert.integration.servicenow.client.SubscriptionRestClientV2;
 import se.inera.intyg.webcert.integration.servicenow.dto.Organization;
 import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationResponse;
+import se.inera.intyg.webcert.integration.servicenow.service.CheckSubscriptionService;
+import se.inera.intyg.webcert.integration.servicenow.service.GetCareProvidersMissingSubscriptionService;
+import se.inera.intyg.webcert.integration.servicenow.v2.client.SubscriptionRestClientV2;
 
 @ExtendWith(MockitoExtension.class)
 class ServiceNowSubscriptionIntegrationServiceV2Test {

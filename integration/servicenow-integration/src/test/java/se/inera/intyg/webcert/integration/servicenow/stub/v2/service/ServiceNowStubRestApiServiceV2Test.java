@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.integration.servicenow.stub.service;
+package se.inera.intyg.webcert.integration.servicenow.stub.v2.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -36,7 +36,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationRequestV2;
 import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationResponse;
-import se.inera.intyg.webcert.integration.servicenow.stub.state.ServiceNowStubState;
+import se.inera.intyg.webcert.integration.servicenow.stub.settings.state.ServiceNowStubState;
 
 @ExtendWith(MockitoExtension.class)
 class ServiceNowStubRestApiServiceV2Test {
