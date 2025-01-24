@@ -16,33 +16,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.integration.kundportalen.config;
-
-import static se.inera.intyg.webcert.integration.api.subscription.ServiceNowIntegrationConstants.SERVICENOW_INTEGRATION_PROFILE;
+package se.inera.intyg.webcert.integration.servicenow.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 @Configuration
-@Profile("!" + SERVICENOW_INTEGRATION_PROFILE)
-@ComponentScan(basePackages = "se.inera.intyg.webcert.integration.kundportalen.service")
-public class RestConfig {
+public class ServiceNowIntegrationRestConfig {
 
-    @Value("${kundportalen.connection.request.timeout}")
+    @Value("${servicenow.connection.request.timeout}")
     private int connectionRequestTimeout;
 
-    @Value("${kundportalen.connection.timeout}")
+    @Value("${servicenow.connection.timeout}")
     private int connectionTimeout;
 
-    @Value("${kundportalen.read.timeout}")
+    @Value("${servicenow.read.timeout}")
     private int readTimeout;
 
-    @Bean(name = "subscriptionServiceRestTemplate")
+    private static final String SUBSCRIPTION_SERVICE_REST_TEMPLATE = "serviceNowRestTemplate";
+
+    @Bean(SUBSCRIPTION_SERVICE_REST_TEMPLATE)
     RestTemplate restTemplate() {
         final var httpRequestFactory = new HttpComponentsClientHttpRequestFactory();
         httpRequestFactory.setConnectionRequestTimeout(connectionRequestTimeout);

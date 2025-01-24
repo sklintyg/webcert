@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.integration.servicenow.stub.service;
+package se.inera.intyg.webcert.integration.servicenow.stub.v2.service;
 
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
@@ -29,7 +29,7 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.integration.servicenow.dto.Organization;
 import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationRequestV2;
 import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationResponse;
-import se.inera.intyg.webcert.integration.servicenow.stub.state.ServiceNowStubState;
+import se.inera.intyg.webcert.integration.servicenow.stub.settings.state.ServiceNowStubState;
 
 @Service
 @RequiredArgsConstructor

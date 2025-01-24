@@ -16,14 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.integration.servicenow.stub.service;
+package se.inera.intyg.webcert.integration.servicenow.stub.settings.service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.webcert.integration.servicenow.stub.state.ServiceNowStubState;
+import se.inera.intyg.webcert.integration.servicenow.stub.settings.state.ServiceNowStubState;
 
 @Service
 @RequiredArgsConstructor

@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.integration.servicenow.stub.api;
+package se.inera.intyg.webcert.integration.servicenow.stub.v2.api;
 
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.HeaderParam;
@@ -27,21 +27,21 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationRequest;
-import se.inera.intyg.webcert.integration.servicenow.stub.service.ServiceNowStubRestApiService;
+import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationRequestV2;
+import se.inera.intyg.webcert.integration.servicenow.stub.v2.service.ServiceNowStubRestApiServiceV2;
 
 @Controller
 @RequiredArgsConstructor
-@Path("/api/nabia/v1/inera_services/services")
-public class ServiceNowStubRestApi {
+@Path("/api/nabia/v2/inera_services/services")
+public class ServiceNowStubRestApiV2 {
 
-    private final ServiceNowStubRestApiService serviceNowStubRestApiService;
+    private final ServiceNowStubRestApiServiceV2 serviceNowStubRestApiServiceV2;
 
     @POST
     @Path("/stub")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getSubscriptionPost(@HeaderParam("Authorization") String basicAuth, OrganizationRequest request) {
-        return serviceNowStubRestApiService.createSubscriptionResponse(basicAuth, request);
+    public Response getSubscriptionPost(@HeaderParam("Authorization") String basicAuth, OrganizationRequestV2 request) {
+        return serviceNowStubRestApiServiceV2.createSubscriptionResponse(basicAuth, request);
     }
 }

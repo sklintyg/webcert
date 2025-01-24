@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.integration.servicenow.stub.api;
+package se.inera.intyg.webcert.integration.servicenow.stub.settings.api;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import se.inera.intyg.webcert.integration.servicenow.stub.service.ServiceNowStubSettingsApiService;
+import se.inera.intyg.webcert.integration.servicenow.stub.settings.service.ServiceNowStubSettingsApiService;
 
 @Controller
 @RequiredArgsConstructor

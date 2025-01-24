@@ -19,11 +19,9 @@
 package se.inera.intyg.webcert.integration.servicenow.stub.config;
 
 import com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.apache.cxf.Bus;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.cxf.bus.spring.SpringBus;
 import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
@@ -31,48 +29,31 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.core.io.ClassPathResource;
-import se.inera.intyg.webcert.integration.servicenow.stub.api.ServiceNowStubRestApiV2;
-import se.inera.intyg.webcert.integration.servicenow.stub.api.ServiceNowStubSettingsApi;
+import se.inera.intyg.webcert.integration.servicenow.stub.settings.api.ServiceNowStubSettingsApi;
+import se.inera.intyg.webcert.integration.servicenow.stub.v2.api.ServiceNowStubRestApiV2;
 
 @Configuration
+@Slf4j
 @RequiredArgsConstructor
-@Profile("(dev | wc-all-stubs | servicenow-integration-stub-v2) & !wc-kundportalen-stub")
-@ComponentScan(basePackages = "se.inera.intyg.webcert.integration.servicenow.stub")
+@Profile("(dev | wc-all-stubs | servicenow-integration-stub-v2) & !servicenow-integration-stub")
+@ComponentScan(basePackages = {
+    "se.inera.intyg.webcert.integration.servicenow.stub.v2",
+    "se.inera.intyg.webcert.integration.servicenow.stub.settings"})
 public class ServiceNowStubConfigV2 {
 
     private final ServiceNowStubRestApiV2 servicenowStubRestApiV2;
     private final ServiceNowStubSettingsApi servicenowStubSettingsApi;
 
     @Bean
-    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-        final var propertySourcesPlaceholderConfigurer = new PropertySourcesPlaceholderConfigurer();
-        propertySourcesPlaceholderConfigurer.setLocation(new ClassPathResource("application.properties"));
-        return propertySourcesPlaceholderConfigurer;
-    }
-
-    @Bean
-    public Server server() {
-        List<JacksonJsonProvider> providers = new ArrayList<>();
-        providers.add(getJsonProvider());
-
-        JAXRSServerFactoryBean endpoint = new JAXRSServerFactoryBean();
+    public Server server(JacksonJsonProvider jacksonJsonProvider, SpringBus springBus) {
+        final var providers = List.of(jacksonJsonProvider);
+        final var endpoint = new JAXRSServerFactoryBean();
         endpoint.setProviders(providers);
-        endpoint.setBus(springBus());
+        endpoint.setBus(springBus);
         endpoint.setAddress("/stubs/servicenowstub");
-        endpoint.setServiceBeans(Arrays.asList(servicenowStubRestApiV2, servicenowStubSettingsApi));
-
+        endpoint.setServiceBeans(List.of(servicenowStubRestApiV2, servicenowStubSettingsApi));
+        log.info("Activating servicenow-integration-v2-stub for subscription queries");
         return endpoint.create();
     }
 
-    @Bean
-    public JacksonJsonProvider getJsonProvider() {
-        return new JacksonJsonProvider();
-    }
-
-    @Bean(name = Bus.DEFAULT_BUS_ID)
-    public SpringBus springBus() {
-        return new SpringBus();
-    }
 }
