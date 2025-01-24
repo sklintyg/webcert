@@ -45,7 +45,7 @@ public class SubscriptionRestClientV2 {
     @Value("${servicenow.subscription.url.v2}")
     private String serviceNowSubscriptionServiceUrl;
 
-    @Value("${servicenow.subscription.service.names}")
+    @Value("#{${servicenow.subscription.service.names}}")
     private List<String> serviceNowSubscriptionServiceNames;
 
     private final RestTemplate serviceNowRestTemplate;
