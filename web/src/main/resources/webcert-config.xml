@@ -31,7 +31,6 @@
   <import resource="classpath:repository-context.xml"/>
   <import resource="classpath:fmb-services-config.xml"/>
   <import resource="classpath:tak-services-config.xml"/>
-  <import resource="classpath:kundportalen-services-config.xml"/>
   <import resource="classpath:servicenow-services-config.xml"/>
   <import resource="classpath:basic-cache-config.xml"/>
   <import resource="classpath:pu-services-config.xml"/>

@@ -19,7 +19,7 @@
 
 package se.inera.intyg.webcert.integration.servicenow.config;
 
-import static se.inera.intyg.webcert.integration.api.subscription.ServiceNowIntegrationConstants.SERVICENOW_INTEGRATION_PROFILE;
+import static se.inera.intyg.webcert.integration.api.subscription.ServiceNowIntegrationConstants.SERVICENOW_INTEGRATION_PROFILE_V2;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.ComponentScan;
@@ -28,14 +28,13 @@ import org.springframework.context.annotation.Profile;
 
 @Configuration
 @Slf4j
-@Profile(SERVICENOW_INTEGRATION_PROFILE)
+@Profile(SERVICENOW_INTEGRATION_PROFILE_V2)
 @ComponentScan(basePackages = {
-    "se.inera.intyg.webcert.integration.servicenow.v1",
+    "se.inera.intyg.webcert.integration.servicenow.v2",
     "se.inera.intyg.webcert.integration.servicenow.service"})
-public class ServiceNowIntegrationConfig {
+public class ServiceNowIntegrationConfigV2 {
 
-    public ServiceNowIntegrationConfig() {
-        log.info("Setting 'servicenow-integration-v1' to be used for subscription queries to kundportal.inera.se.");
+    public ServiceNowIntegrationConfigV2() {
+        log.info("Setting 'servicenow-integration-v2' to be used for subscription queries to kundportal.inera.se.");
     }
-
 }

@@ -30,7 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -106,7 +105,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private void setSubscriptionActions(WebCertUser webCertUser, List<String> missingSubscriptions) {
         webCertUser.getSubscriptionInfo().setSubscriptionAction(SubscriptionAction.BLOCK);
         webCertUser.getSubscriptionInfo().setCareProvidersMissingSubscription(List.copyOf(missingSubscriptions));
-        webCertUser.getSubscriptionInfo().setCareProvidersForSubscriptionModal(missingSubscriptions);
+        webCertUser.getSubscriptionInfo().getCareProvidersForSubscriptionModal().addAll(missingSubscriptions);
     }
 
     private Map<String, List<String>> getCareProviderOrgNumbers(WebCertUser webCertUser) {
@@ -222,6 +221,6 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     private List<String> flatMapCollection(Collection<List<String>> collection) {
-        return collection.stream().flatMap(Collection::stream).collect(Collectors.toList());
+        return collection.stream().flatMap(Collection::stream).toList();
     }
 }

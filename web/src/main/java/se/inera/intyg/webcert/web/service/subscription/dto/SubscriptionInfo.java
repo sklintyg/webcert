@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.service.subscription.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import lombok.Getter;
@@ -42,7 +43,7 @@ public class SubscriptionInfo implements Serializable {
 
     public SubscriptionInfo() {
         this.subscriptionAction = SubscriptionAction.NONE;
-        this.careProvidersForSubscriptionModal = Collections.emptyList();
+        this.careProvidersForSubscriptionModal = new ArrayList<>();
         this.careProvidersMissingSubscription = Collections.emptyList();
     }
 
