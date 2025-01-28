@@ -59,13 +59,13 @@ class GetCareProvidersMissingSubscriptionServiceTest {
 
         final var organizationHsaIdMap = Map.of(ORGANIZATION_NUMBER_1, List.of(HSA_ID_1));
 
-        doReturn(true).when(checkSubscriptionService).isMissing(organizations.get(0).getServiceCodes(),
+        doReturn(true).when(checkSubscriptionService).isMissing(organizations.getFirst().getServiceCodes(),
             SITHS);
 
         final var actualResponse = getCareProvidersMissingSubscriptionService.get(organizations, organizationHsaIdMap, SITHS);
 
         assertEquals(1, actualResponse.size());
-        assertEquals(HSA_ID_1, actualResponse.get(0));
+        assertEquals(HSA_ID_1, actualResponse.getFirst());
     }
 
     @Test
@@ -81,7 +81,7 @@ class GetCareProvidersMissingSubscriptionServiceTest {
             ORGANIZATION_NUMBER_1, List.of(HSA_ID_1, HSA_ID_2, HSA_ID_3)
         );
 
-        doReturn(true).when(checkSubscriptionService).isMissing(organizations.get(0).getServiceCodes(), SITHS);
+        doReturn(true).when(checkSubscriptionService).isMissing(organizations.getFirst().getServiceCodes(), SITHS);
 
         final var actualResponse = getCareProvidersMissingSubscriptionService.get(organizations, organizationHsaIdMap, SITHS);
 
@@ -104,7 +104,7 @@ class GetCareProvidersMissingSubscriptionServiceTest {
             ORGANIZATION_NUMBER_1, List.of(HSA_ID_1, HSA_ID_2, HSA_ID_3)
         );
 
-        doReturn(false).when(checkSubscriptionService).isMissing(organizations.get(0).getServiceCodes(), SITHS);
+        doReturn(false).when(checkSubscriptionService).isMissing(organizations.getFirst().getServiceCodes(), SITHS);
 
         final var actualResponse = getCareProvidersMissingSubscriptionService.get(organizations, organizationHsaIdMap, SITHS);
 

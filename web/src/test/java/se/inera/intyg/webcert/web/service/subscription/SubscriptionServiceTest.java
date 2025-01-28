@@ -53,7 +53,7 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.integration.api.subscription.AuthenticationMethodEnum;
-import se.inera.intyg.webcert.integration.kundportalen.service.SubscriptionIntegrationServiceImpl;
+import se.inera.intyg.webcert.integration.api.subscription.SubscriptionIntegrationService;
 import se.inera.intyg.webcert.logging.HashUtility;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionAction;
@@ -61,10 +61,10 @@ import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionInfo;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @ExtendWith(MockitoExtension.class)
-public class SubscriptionServiceTest {
+class SubscriptionServiceTest {
 
     @Mock
-    private SubscriptionIntegrationServiceImpl subscriptionIntegrationService;
+    private SubscriptionIntegrationService subscriptionIntegrationService;
 
     @Mock
     private MonitoringLogService monitoringLogService;
@@ -78,7 +78,7 @@ public class SubscriptionServiceTest {
     private static final String PERSON_ID = "191212121212";
 
     @Test
-    public void shouldNotCallRestServiceWhenNotFristaendeUser() {
+    void shouldNotCallRestServiceWhenNotFristaendeUser() {
         final var sithsUser = createWebCertSithsUser(1, 1, 1);
         sithsUser.setOrigin(UserOriginType.DJUPINTEGRATION.name());
 
@@ -88,7 +88,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldAlwaysHaveSubscriptionActionNoneAndEmptyMissingSubscriptionListWhenNotFristaendeUser() {
+    void shouldAlwaysHaveSubscriptionActionNoneAndEmptyMissingSubscriptionListWhenNotFristaendeUser() {
         final var sithsUser = createWebCertSithsUser(2, 1, 1);
         sithsUser.setOrigin(UserOriginType.DJUPINTEGRATION.name());
 
@@ -102,7 +102,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldNotCallRestServiceWhenNoOrganizationsForSithsUser() {
+    void shouldNotCallRestServiceWhenNoOrganizationsForSithsUser() {
         final var sithsUser = createWebCertSithsUser(1, 1, 1);
         sithsUser.getVardgivare().getFirst().getVardenheter().getFirst().setVardgivareOrgnr(null);
 
@@ -112,22 +112,22 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldHaveExactImmutableCopyOfMissingSubscriptions() {
+    void shouldHaveExactImmutableCopyOfMissingSubscriptions() {
         final var webCertUser = createWebCertSithsUser(3, 3, 3);
 
         setRestServiceMockToReturn(3);
         subscriptionService.checkSubscriptions(webCertUser);
 
+        final var missimgSubscriptions = webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscription();
         assertAll(
             () -> assertIterableEquals(webCertUser.getSubscriptionInfo().getCareProvidersForSubscriptionModal(),
                 webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscription()),
-            () -> assertThrows(UnsupportedOperationException.class, () -> webCertUser.getSubscriptionInfo()
-                .getCareProvidersMissingSubscription().remove(1))
+            () -> assertThrows(UnsupportedOperationException.class, () -> missimgSubscriptions.remove(1))
         );
     }
 
     @Test
-    public void shouldSetSubscriptionActionBlockWhenFeatureSubscriptionRequired() {
+    void shouldSetSubscriptionActionBlockWhenFeatureSubscriptionRequired() {
         final var webCertUser = createWebCertSithsUser(2, 1, 0);
         setRestServiceMockToReturn(1);
 
@@ -141,7 +141,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldUseCareProviderOrganizationNumberWhenSithsUser() {
+    void shouldUseCareProviderOrganizationNumberWhenSithsUser() {
         final var webCertUser = createWebCertSithsUser(1, 1, 1);
         final var expectedOrganizationNumber = "CARE_PROVIDER_ORGANIZATION_NO_1";
         setRestServiceMockToReturn(0);
@@ -158,7 +158,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldNotThrowExceptionIfSithsUserIsMissingSingleSubscriptionWhenSubscriptionRequired() {
+    void shouldNotThrowExceptionIfSithsUserIsMissingSingleSubscriptionWhenSubscriptionRequired() {
         final var webCertUser = createWebCertSithsUser(1, 1, 0);
         setRestServiceMockToReturn(1);
 
@@ -166,7 +166,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldNotThrowExceptionIfSithsUserIsMissingAllSubscriptionsWhenSubscriptionRequired() {
+    void shouldNotThrowExceptionIfSithsUserIsMissingAllSubscriptionsWhenSubscriptionRequired() {
         final var webCertUser = createWebCertSithsUser(3, 1, 1);
         setRestServiceMockToReturn(3);
 
@@ -176,7 +176,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldQueryOrgNumberForAllCareProviders() {
+    void shouldQueryOrgNumberForAllCareProviders() {
         final var webCertUser = createWebCertSithsUser(3, 1, 0);
         setRestServiceMockToReturn(1);
 
@@ -188,7 +188,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldMonitorLogLoginAttemptsMissingSubscriptionWhenSubscriptionRequired() {
+    void shouldMonitorLogLoginAttemptsMissingSubscriptionWhenSubscriptionRequired() {
         final var webcertUser = createWebCertSithsUser(3, 1, 2);
         setRestServiceMockToReturn(2);
 
@@ -199,7 +199,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldMonitorlogWhenRestClientExceptionForSithsUser() {
+    void shouldMonitorlogWhenRestClientExceptionForSithsUser() {
         final var sithsUser = createWebCertSithsUser(2, 2, 1);
         setMockToReturnRestClientException();
 
@@ -213,7 +213,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldMonitorlogWhenRestClientResponseExceptionSubtypeForSithsUser() {
+    void shouldMonitorlogWhenRestClientResponseExceptionSubtypeForSithsUser() {
         final var sithsUser = createWebCertSithsUser(1, 2, 2);
         setMockToReturnRestClientResponseException(403);
 
@@ -227,7 +227,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldHandleMultipleCareProvidersWithSameOrgNumberForSithsUser() {
+    void shouldHandleMultipleCareProvidersWithSameOrgNumberForSithsUser() {
         final var sithsUser = createWebCertSithsUser(4, 2, 0);
         sithsUser.getVardgivare().get(1).getVardenheter().getFirst().setVardgivareOrgnr("CARE_PROVIDER_ORGANIZATION_NO_1");
         sithsUser.getVardgivare().get(2).getVardenheter().getFirst().setVardgivareOrgnr("CARE_PROVIDER_ORGANIZATION_NO_1");
@@ -244,7 +244,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldNotCallRestServiceWhenNoOrganizationsForElegUser() {
+    void shouldNotCallRestServiceWhenNoOrganizationsForElegUser() {
         final var elegUser = createWebCertElegUser();
         elegUser.setPersonId(null);
 
@@ -254,7 +254,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldUsePersonalIdAsOrganizationNumberWhenElegUser() {
+    void shouldUsePersonalIdAsOrganizationNumberWhenElegUser() {
         final var webCertUser = createWebCertElegUser();
         final var personId = webCertUser.getPersonId();
         final var expectedOrganizationNumber = personId.substring(2, 8) + "-" + personId.substring(personId.length() - 4);
@@ -271,7 +271,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldReturnTrueIfElegUserHasSubscriptionWhenSubscriptionRequired() {
+    void shouldReturnTrueIfElegUserHasSubscriptionWhenSubscriptionRequired() {
         final var elegUser = createWebCertElegUser();
         setRestServiceMockToReturn(0);
 
@@ -281,7 +281,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldReturnFalseIfElegUserIsMissingSubscriptionWhenSubscriptionRequired() {
+    void shouldReturnFalseIfElegUserIsMissingSubscriptionWhenSubscriptionRequired() {
         final var elegUser = createWebCertElegUser();
         setRestServiceMockToReturn(1);
 
@@ -291,7 +291,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldMonitorlogWhenRestClientExceptionForElegUser() {
+    void shouldMonitorlogWhenRestClientExceptionForElegUser() {
         final var elegUser = createWebCertElegUser();
         setMockToReturnRestClientException();
 
@@ -305,7 +305,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldMonitorlogWhenRestClientResponseExceptionSubtypeForElegUser() {
+    void shouldMonitorlogWhenRestClientResponseExceptionSubtypeForElegUser() {
         final var elegUser = createWebCertElegUser();
         setMockToReturnRestClientResponseException(503);
 
@@ -319,7 +319,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldNotCallRestServiceWhenNoOrganizationsForUnregisteredElegUser() {
+    void shouldNotCallRestServiceWhenNoOrganizationsForUnregisteredElegUser() {
 
         final var response = subscriptionService.isUnregisteredElegUserMissingSubscription(null);
 
@@ -328,7 +328,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldUsePersonalIdWhenQueryForUnregisteredElegUser() {
+    void shouldUsePersonalIdWhenQueryForUnregisteredElegUser() {
         final var restServiceParamCaptor = ArgumentCaptor.forClass(String.class);
 
         subscriptionService.isUnregisteredElegUserMissingSubscription(PERSON_ID);
@@ -338,7 +338,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldReturnValueReceivedFromRestServiceForUnregisteredElegUser() {
+    void shouldReturnValueReceivedFromRestServiceForUnregisteredElegUser() {
 
         setRestServiceUnregisteredElegMockToReturn(true);
         final var boolean1 = subscriptionService.isUnregisteredElegUserMissingSubscription(PERSON_ID);
@@ -352,7 +352,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldReturnFalseWhenExceptionReceivedFromRestServiceForUnregistered() {
+    void shouldReturnFalseWhenExceptionReceivedFromRestServiceForUnregistered() {
         setMockToReturnRestClientExceptionForUnregistered();
 
         final var response = subscriptionService.isUnregisteredElegUserMissingSubscription(PERSON_ID);
@@ -361,7 +361,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldMonitorLogLoginAttemptsMissingSubscriptionWhenSubscriptionRequiredForUnregElegUser() {
+    void shouldMonitorLogLoginAttemptsMissingSubscriptionWhenSubscriptionRequiredForUnregElegUser() {
         final var expectedUserId = HashUtility.hash(PERSON_ID);
         final var expectedOrg = HashUtility.hash("121212-1212");
         setRestServiceUnregisteredElegMockToReturn(true);
@@ -372,7 +372,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldMonitorlogWhenRestClientExceptionForUnregisteredElegUser() {
+    void shouldMonitorlogWhenRestClientExceptionForUnregisteredElegUser() {
         final var hashedOrgNo = List.of(HashUtility.hash("121212-1212"));
         setMockToReturnRestClientExceptionForUnregistered();
 
@@ -382,7 +382,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldMonitorlogWhenRestClientResponseExceptionSubtypeForUnregisteredElegUser() {
+    void shouldMonitorlogWhenRestClientResponseExceptionSubtypeForUnregisteredElegUser() {
         final var hashedOrgNo = List.of(HashUtility.hash("121212-1212"));
 
         setMockToReturnRestClientResponseExceptionForUnregistered();
@@ -393,7 +393,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldRemoveCareProviderFromMissingSubscriptionListWhenAcknowledgedModalElegUser() {
+    void shouldRemoveCareProviderFromMissingSubscriptionListWhenAcknowledgedModalElegUser() {
         final var careProviderIndex = 0;
         final var webCertUser = createWebCertElegUser();
         setSelectedCareProviderForSubscriptionModalDisplay(webCertUser, careProviderIndex);
@@ -402,7 +402,7 @@ public class SubscriptionServiceTest {
             () -> assertEquals(SubscriptionAction.BLOCK, webCertUser.getSubscriptionInfo().getSubscriptionAction()),
             () -> assertEquals(1, webCertUser.getSubscriptionInfo().getCareProvidersForSubscriptionModal().size()),
             () -> assertTrue(webCertUser.getSubscriptionInfo().getCareProvidersForSubscriptionModal().contains(webCertUser.getVardgivare()
-                .get(careProviderIndex).getId()))
+                .getFirst().getId()))
         );
 
         subscriptionService.acknowledgeSubscriptionModal(webCertUser);
@@ -414,7 +414,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldRemoveCareProviderFromMissingSubscriptionListWhenAcknowledgedModalForSithsUserWithMultipleCareProviders() {
+    void shouldRemoveCareProviderFromMissingSubscriptionListWhenAcknowledgedModalForSithsUserWithMultipleCareProviders() {
         final var careProviderIndex = 1;
         final var webCertUser = createWebCertSithsUser(3, 2, 1);
         setSelectedCareProviderForSubscriptionModalDisplay(webCertUser, careProviderIndex);
@@ -483,7 +483,7 @@ public class SubscriptionServiceTest {
         webCertUser.setVardgivare(getCareProviders(1, 1, 0));
         webCertUser.setRoles(Map.of(AuthoritiesConstants.ROLE_PRIVATLAKARE, new Role()));
 
-        final var careProvider = webCertUser.getVardgivare().get(0);
+        final var careProvider = webCertUser.getVardgivare().getFirst();
         careProvider.getVardenheter().getFirst().setId(careProvider.getId());
         return webCertUser;
     }

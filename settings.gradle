@@ -14,7 +14,6 @@ include ':notification-sender'
 include ':pp-integration'
 include ':fmb-integration'
 include ':tak-integration'
-include ':kundportalen-integration'
 include ':fk-stub'
 include ':intygstjanst-stub'
 include ':mail-stub'
@@ -31,7 +30,6 @@ project(':notification-sender').projectDir = "$rootDir/notification-sender" as F
 project(':pp-integration').projectDir = "$rootDir/integration/pp-integration" as File
 project(':fmb-integration').projectDir = "$rootDir/integration/fmb-integration" as File
 project(':tak-integration').projectDir = "$rootDir/integration/tak-integration" as File
-project(':kundportalen-integration').projectDir = "$rootDir/integration/kundportalen-integration" as File
 project(':fk-stub').projectDir = "$rootDir/stubs/fk-stub" as File
 project(':intygstjanst-stub').projectDir = "$rootDir/stubs/intygstjanst-stub" as File
 project(':mail-stub').projectDir = "$rootDir/stubs/mail-stub" as File
