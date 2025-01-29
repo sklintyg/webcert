@@ -190,8 +190,6 @@ public class WebSecurityConfig {
                 .requestMatchers(antMatcher("/favicon.ico")).permitAll()
                 .requestMatchers(antMatcher("/api/signature/signservice/v1/metadata")).permitAll()
                 .requestMatchers(antMatcher("/api/v1/session/invalidate")).permitAll()
-                .requestMatchers(antMatcher("/api/modules/map")).permitAll()
-                .requestMatchers(antMatcher("/api/modules/active")).permitAll()
                 .anyRequest().fullyAuthenticated())
             .saml2Metadata(
                 withDefaults()

@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade;
 
-import static se.inera.intyg.webcert.web.web.controller.moduleapi.UtkastModuleApiController.LAST_SAVED_DRAFT;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.Consumes;
@@ -89,6 +88,8 @@ public class CertificateController {
     private static final Logger LOG = LoggerFactory.getLogger(CertificateController.class);
 
     private static final String UTF_8_CHARSET = ";charset=utf-8";
+
+    public static final String LAST_SAVED_DRAFT = "lastSavedDraft";
 
     @Autowired
     @Qualifier("getCertificateAggregator")
