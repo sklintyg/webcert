@@ -29,7 +29,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static se.inera.intyg.webcert.web.web.controller.moduleapi.UtkastModuleApiController.LAST_SAVED_DRAFT;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -91,6 +90,7 @@ public class CertificateControllerTest {
 
     private static final String CERTIFICATE_ID = "XXXXXX-YYYYYYY-ZZZZZZZ-UUUUUUU";
     private static final long CERTIFICATE_VERSION = 1L;
+    public static final String LAST_SAVED_DRAFT = "lastSavedDraft";
     @Mock
     private GetCertificateFacadeService getCertificateFacadeService;
     @Mock
