@@ -35,8 +35,8 @@ public class SendNotificationService {
         sendNotificationRequestValidator.validateId(notificationId);
 
         final var response = notificationRedeliveryRepository.sendNotification(notificationId);
-        return SendNotificationResponseDTO.create(
-            response
-        );
+        return SendNotificationResponseDTO.builder()
+            .count(response)
+            .build();
     }
 }

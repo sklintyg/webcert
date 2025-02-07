@@ -48,6 +48,8 @@ public class SendNotificationsForCertificatesService {
             request.getActivationTime()
         );
 
-        return SendNotificationResponseDTO.create(response);
+        return SendNotificationResponseDTO.builder()
+            .count(response)
+            .build();
     }
 }
