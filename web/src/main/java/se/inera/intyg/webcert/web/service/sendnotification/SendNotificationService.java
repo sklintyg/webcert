@@ -19,21 +19,17 @@
 
 package se.inera.intyg.webcert.web.service.sendnotification;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepositoryCustom;
+import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationResponseDTO;
 
 @Service
+@RequiredArgsConstructor
 public class SendNotificationService {
 
-    private final NotificationRedeliveryRepositoryCustom notificationRedeliveryRepository;
+    private final NotificationRedeliveryRepository notificationRedeliveryRepository;
     private final SendNotificationRequestValidator sendNotificationRequestValidator;
-
-    public SendNotificationService(NotificationRedeliveryRepositoryCustom notificationRedeliveryRepository,
-        SendNotificationRequestValidator sendNotificationRequestValidator) {
-        this.notificationRedeliveryRepository = notificationRedeliveryRepository;
-        this.sendNotificationRequestValidator = sendNotificationRequestValidator;
-    }
 
     public SendNotificationResponseDTO send(String notificationId) {
         sendNotificationRequestValidator.validateId(notificationId);

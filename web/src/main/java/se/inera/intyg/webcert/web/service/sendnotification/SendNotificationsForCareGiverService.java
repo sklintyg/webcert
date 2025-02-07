@@ -19,23 +19,19 @@
 
 package se.inera.intyg.webcert.web.service.sendnotification;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepositoryCustom;
+import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForCareGiverRequestDTO;
 
 @Service
+@RequiredArgsConstructor
 public class SendNotificationsForCareGiverService {
 
-    private final NotificationRedeliveryRepositoryCustom notificationRedeliveryRepository;
+    private final NotificationRedeliveryRepository notificationRedeliveryRepository;
     private final SendNotificationRequestValidator sendNotificationRequestValidator;
-
-    public SendNotificationsForCareGiverService(NotificationRedeliveryRepositoryCustom notificationRedeliveryRepository,
-        SendNotificationRequestValidator sendNotificationRequestValidator) {
-        this.notificationRedeliveryRepository = notificationRedeliveryRepository;
-        this.sendNotificationRequestValidator = sendNotificationRequestValidator;
-    }
 
     @Value("${timeinterval.maxdays.caregiver:1}")
     private int maxTimeInterval;

@@ -29,9 +29,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 
 public interface NotificationRedeliveryRepository extends JpaRepository<NotificationRedelivery, String> {
+
 
     Optional<NotificationRedelivery> findByCorrelationId(String correlationId);
 
@@ -69,4 +71,49 @@ public interface NotificationRedeliveryRepository extends JpaRepository<Notifica
         deleteAll(redeliveries);
         return redeliveries.size();
     }
+
+    @Modifying
+    @Query(value = """
+        INSERT INTO NotificationRedelivery (HANDELSE_ID, REDELIVERY_STRATEGY, REDELIVERY_TIME)
+        SELECT h.id, 'STANDARD', :activationTime FROM Handelese h
+        INNER JOIN HandeleseMetadata hm ON h.id = hm.handeleseId
+        WHERE h.intygsId IN :certificateIds AND hm.deliveryStatus IN :statuses
+        AND h.timestamp BETWEEN :start AND :end ORDER BY h.timestamp""", nativeQuery = true)
+    int sendNotificationsForCertificates(@Param("certificateIds") List<String> certificateIds,
+        @Param("statuses") List<NotificationDeliveryStatusEnum> statuses,
+        @Param("start") LocalDateTime start,
+        @Param("end") LocalDateTime end,
+        @Param("activationTime") LocalDateTime activationTime);
+
+    @Modifying
+    @Query(value = """
+        INSERT INTO NotificationRedelivery (HANDELSE_ID, REDELIVERY_STRATEGY, REDELIVERY_TIME)
+        SELECT h.id, 'STANDARD', :activationTime FROM Handelese h
+        INNER JOIN HandeleseMetadata hm ON h.id = hm.handeleseId
+        WHERE h.enhetsId IN :unitIds AND hm.deliveryStatus IN :statuses
+        AND h.timestamp BETWEEN :start AND :end ORDER BY h.timestamp""", nativeQuery = true)
+    int sendNotificationsForUnits(@Param("unitIds") List<String> unitIds,
+        @Param("statuses") List<NotificationDeliveryStatusEnum> statuses,
+        @Param("start") LocalDateTime start,
+        @Param("end") LocalDateTime end,
+        @Param("activationTime") LocalDateTime activationTime);
+
+    @Modifying
+    @Query(value = """
+        INSERT INTO NotificationRedelivery (HANDELSE_ID, REDELIVERY_STRATEGY, REDELIVERY_TIME)
+        SELECT h.id, 'STANDARD', :activationTime FROM Handelese h
+        INNER JOIN HandeleseMetadata hm ON h.id = hm.handeleseId
+        WHERE h.enhetsId LIKE :careGiverId AND hm.deliveryStatus IN :statuses
+        AND h.timestamp BETWEEN :start AND :end ORDER BY h.timestamp""", nativeQuery = true)
+    int sendNotificationsForCareGiver(@Param("careGiverId") String careGiverId,
+        @Param("statuses") List<NotificationDeliveryStatusEnum> statuses,
+        @Param("start") LocalDateTime start,
+        @Param("end") LocalDateTime end,
+        @Param("activationTime") LocalDateTime activationTime);
+
+    @Modifying
+    @Query(value = """
+        INSERT INTO NotificationRedelivery (HANDELSE_ID, REDELIVERY_STRATEGY, REDELIVERY_TIME) \
+        SELECT h.id, 'STANDARD', now() FROM Handelese h WHERE h.id = :notificationId""", nativeQuery = true)
+    int sendNotification(@Param("notificationId") String notificationId);
 }
