@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,24 +18,29 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.util.List;
+import lombok.Builder;
+import lombok.Value;
 import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionResponseDTO.QuestionResponseDTOBuilder;
 
+@JsonDeserialize(builder = QuestionResponseDTOBuilder.class)
+@Value
+@Builder
 public class QuestionResponseDTO {
 
-    private QuestionDTO question;
-
-    public QuestionDTO getQuestion() {
-        return question;
-    }
-
-    public void setQuestion(QuestionDTO question) {
-        this.question = question;
-    }
+    QuestionDTO question;
 
     public static QuestionResponseDTO create(Question questions, List<ResourceLinkDTO> links) {
-        final var questionsResponseDTO = new QuestionResponseDTO();
-        questionsResponseDTO.setQuestion(QuestionDTO.create(questions, links));
-        return questionsResponseDTO;
+        return QuestionResponseDTO.builder()
+            .question(QuestionDTO.create(questions, links))
+            .build();
+    }
+
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class QuestionResponseDTOBuilder {
+
     }
 }

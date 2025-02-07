@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
@@ -47,8 +48,10 @@ import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
  *
  * @author npet
  */
+@Slf4j
 public class DiagnosRepositoryImpl implements DiagnosRepository {
 
+    private static final String SEARCH_FAILURE_EXCEPTION_MESSAGE = "Failure in lucene index search";
     private final ByteBuffersDirectory index = new ByteBuffersDirectory();
     private IndexReader indexReader;
     private IndexSearcher indexSearcher;
@@ -64,7 +67,7 @@ public class DiagnosRepositoryImpl implements DiagnosRepository {
             TermQuery query = new TermQuery(new Term(CODE, codeSanitized));
             return searchDiagnosisByQuery(query, Math.max(1, freq));
         } catch (IOException e) {
-            throw new RuntimeException("IOException occurred in lucene index search", e);
+            throw new IllegalStateException(SEARCH_FAILURE_EXCEPTION_MESSAGE, e);
         }
     }
 
@@ -108,7 +111,7 @@ public class DiagnosRepositoryImpl implements DiagnosRepository {
                 query.add(new WildcardQuery(new Term(DESC, term)), BooleanClause.Occur.MUST);
             }
         } catch (IOException e) {
-            throw new RuntimeException("IOException occurred in lucene index search", e);
+            throw new IllegalStateException(SEARCH_FAILURE_EXCEPTION_MESSAGE, e);
         }
         return searchDiagnosisByQuery(query.build(), nbrOfResults);
     }
@@ -118,18 +121,18 @@ public class DiagnosRepositoryImpl implements DiagnosRepository {
 
         try {
             if (indexSearcher == null) {
-                throw new RuntimeException("Lucene index searcher is not opened");
+                throw new IllegalStateException("Lucene index searcher is not opened");
             }
 
             TopDocs results = indexSearcher.search(query, nbrOfResults);
             for (ScoreDoc hit : results.scoreDocs) {
                 Diagnos d = new Diagnos();
-                d.setKod(indexSearcher.doc(hit.doc).get(CODE).toUpperCase());
-                d.setBeskrivning(indexSearcher.doc(hit.doc).get(DESC));
+                d.setKod(indexSearcher.getIndexReader().storedFields().document(hit.doc).get(CODE).toUpperCase());
+                d.setBeskrivning(indexSearcher.storedFields().document(hit.doc).get(DESC));
                 matches.add(d);
             }
         } catch (IOException e) {
-            throw new RuntimeException("IOException occurred in lucene index search", e);
+            throw new IllegalStateException(SEARCH_FAILURE_EXCEPTION_MESSAGE, e);
         }
 
         return matches;

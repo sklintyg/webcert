@@ -619,7 +619,7 @@
   <xs:element name="partialDate" type="PartialDateType"/>
   <xs:element name="timestamp" type="TimeStampType"/>
   <xs:element name="date" type="DateType"/>
-</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>file:/Users/katarinaolsson/Projects/schemas/rivta/clinicalprocess-healthcond-certificate/schemas/core_components/itintegration_registry_1.0.xsd</con:url><con:content><![CDATA[<!--~ Copyright (C) 2016 Inera AB (http://www.inera.se)
+</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>file:/Users/katarinaolsson/Projects/schemas/rivta/clinicalprocess-healthcond-certificate/schemas/core_components/itintegration_registry_1.0.xsd</con:url><con:content><![CDATA[<!--~ Copyright (C) 2025 Inera AB (http://www.inera.se)
   ~
   ~ This file is part of sklintyg (https://github.com/sklintyg).
   ~

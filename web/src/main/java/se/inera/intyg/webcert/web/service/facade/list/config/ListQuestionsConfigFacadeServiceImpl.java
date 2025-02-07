@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,20 +18,30 @@
  */
 package se.inera.intyg.webcert.web.service.facade.list.config;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.AbstractVardenhet;
 import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
-import se.inera.intyg.webcert.web.service.facade.list.config.dto.*;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.CertificateListItemValueType;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColumnType;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListConfig;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterConfig;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterConfigValue;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterSelectConfig;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.TableHeading;
 import se.inera.intyg.webcert.web.service.facade.list.config.factory.ListFilterConfigFactory;
 import se.inera.intyg.webcert.web.service.facade.list.config.factory.TableHeadingFactory;
 import se.inera.intyg.webcert.web.service.facade.user.UnitStatisticsDTO;
 import se.inera.intyg.webcert.web.service.facade.user.UserStatisticsDTO;
 import se.inera.intyg.webcert.web.service.facade.user.UserStatisticsService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigFacadeService {
@@ -210,6 +220,9 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
 
     private String getShowAllText(String unitId, UserStatisticsDTO statistics) {
         final var unitStatistic = statistics.getUnitStatistics().get(unitId);
+        if (unitStatistic == null) {
+            return "Visa alla";
+        }
         final var totalQuestions = unitStatistic.getQuestionsOnUnit() + unitStatistic.getQuestionsOnSubUnits();
         return "Visa alla (" + totalQuestions + ")";
     }

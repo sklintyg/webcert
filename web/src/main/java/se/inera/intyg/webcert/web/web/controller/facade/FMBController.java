@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,17 +18,19 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade;
 
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.facade.ValidateSickLeavePeriodFacadeService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateSickLeavePeriodRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ValidateSickLeavePeriodResponseDTO;
@@ -47,6 +49,7 @@ public class FMBController {
     @Path("/validateSickLeavePeriod")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "fmb-validate-sickleave-period", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response validateSickLeavePeriod(@RequestBody @NotNull ValidateSickLeavePeriodRequestDTO validateSickLeavePeriod) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Validating sick leave period");

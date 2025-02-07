@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.persistence.liquibase;
 
+import jakarta.annotation.PostConstruct;
 import java.sql.SQLException;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 import liquibase.Liquibase;
 import liquibase.changelog.ChangeSet;

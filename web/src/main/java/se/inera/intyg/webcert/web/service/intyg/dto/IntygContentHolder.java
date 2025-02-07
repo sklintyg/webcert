@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,100 +18,40 @@
  */
 package se.inera.intyg.webcert.web.service.intyg.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonRawValue;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.annotation.Nullable;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonRawValue;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.google.auto.value.AutoValue;
-
+import lombok.Builder;
+import lombok.Value;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 
-@AutoValue
-@JsonDeserialize(builder = AutoValue_IntygContentHolder.Builder.class)
-public abstract class IntygContentHolder {
+@Value
+@Builder
+public class IntygContentHolder {
 
-    @Nullable
     @JsonRawValue
-    public abstract String getContents();
-
-    @Nullable
+    String contents;
     @JsonIgnore
-    public abstract Utlatande getUtlatande();
-
-    @Nullable
-    public abstract List<Status> getStatuses();
-
-    public abstract boolean isRevoked();
-
-    public abstract Relations getRelations();
-
-    @Nullable
-    public abstract LocalDateTime getCreated();
-
-    public abstract boolean isDeceased();
-
-    public abstract boolean isSekretessmarkering();
-
-    public abstract boolean isPatientNameChangedInPU();
-
-    public abstract boolean isPatientAddressChangedInPU();
-
-    public abstract boolean isTestIntyg();
-
-    public abstract boolean isLatestMajorTextVersion();
-
-    private List<ActionLink> links = new ArrayList<>();
-
-    public List<ActionLink> getLinks() {
-        return links;
-    }
+    Utlatande utlatande;
+    List<Status> statuses;
+    boolean revoked;
+    Relations relations;
+    LocalDateTime created;
+    boolean deceased;
+    boolean sekretessmarkering;
+    boolean patientNameChangedInPU;
+    boolean patientAddressChangedInPU;
+    boolean testIntyg;
+    boolean latestMajorTextVersion;
+    List<ActionLink> links = new ArrayList<>();
 
     public void addLink(ActionLink link) {
         links.add(link);
-    }
-
-    public static Builder builder() {
-        return new AutoValue_IntygContentHolder.Builder()
-            .setRelations(new Relations())
-            .setLatestMajorTextVersion(true);
-    }
-
-    @AutoValue.Builder
-    public abstract static class Builder {
-
-        public abstract IntygContentHolder build();
-
-        public abstract Builder setContents(String contents);
-
-        public abstract Builder setUtlatande(Utlatande utlatande);
-
-        public abstract Builder setStatuses(List<Status> statuses);
-
-        public abstract Builder setRevoked(boolean revoked);
-
-        public abstract Builder setRelations(Relations relations);
-
-        public abstract Builder setCreated(LocalDateTime relations);
-
-        public abstract Builder setDeceased(boolean deceased);
-
-        public abstract Builder setSekretessmarkering(boolean sekretessmarkering);
-
-        public abstract Builder setPatientNameChangedInPU(boolean patientNameChangedInPU);
-
-        public abstract Builder setPatientAddressChangedInPU(boolean patientAddressChangedInPU);
-
-        public abstract Builder setTestIntyg(boolean isTestIntyg);
-
-        public abstract Builder setLatestMajorTextVersion(boolean isLatestMajorTextVersion);
     }
 
 }

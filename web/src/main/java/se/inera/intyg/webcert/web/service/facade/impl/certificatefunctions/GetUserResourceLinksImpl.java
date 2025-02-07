@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,10 +19,10 @@
 package se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions;
 
 import java.util.ArrayList;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.service.facade.GetUserResourceLinks;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
@@ -30,10 +30,6 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
 @Service
 public class GetUserResourceLinksImpl implements GetUserResourceLinks {
-
-    @Autowired
-    public GetUserResourceLinksImpl() {
-    }
 
     @Override
     public ResourceLinkDTO[] get(WebCertUser user) {
@@ -219,7 +215,7 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
     }
 
     private boolean hasAccessToSignedCertificatesList(WebCertUser user) {
-        return (isOriginNormal(user.getOrigin()) || isOriginUthopp(user.getOrigin())) && isUserDoctor(user);
+        return (isOriginNormal(user.getOrigin()) || isOriginUthopp(user.getOrigin())) && !isUserCareAdmin(user);
     }
 
     private boolean isLogOutAvailable(WebCertUser user) {
@@ -234,8 +230,8 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
         return "UTHOPP".equals(origin);
     }
 
-    private boolean isUserDoctor(WebCertUser user) {
-        return user.isPrivatLakare() || user.isLakare();
+    private boolean isUserCareAdmin(WebCertUser user) {
+        return user.getRoles().containsKey(AuthoritiesConstants.ROLE_ADMIN);
     }
 
     private boolean shouldWarnForMissingSubscription(WebCertUser user) {

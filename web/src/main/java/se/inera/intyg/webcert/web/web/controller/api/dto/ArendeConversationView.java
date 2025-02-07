@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,51 +18,19 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
-import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import java.time.LocalDateTime;
-import javax.annotation.Nullable;
+import lombok.Builder;
+import lombok.Value;
 
-@AutoValue
-public abstract class ArendeConversationView {
+@Value
+@Builder
+public class ArendeConversationView {
 
-    public abstract ArendeView getFraga();
-
-    @Nullable
-    public abstract ArendeView getSvar();
-
-    @Nullable
-    public abstract AnsweredWithIntyg getAnsweredWithIntyg();
-
-    @Nullable
-    public abstract LocalDateTime getSenasteHandelse();
-
-    @Nullable
-    public abstract ImmutableList<ArendeView> getPaminnelser();
-
-    @Nullable
-    public abstract String getDraftText();
-
-    public static Builder builder() {
-        return new AutoValue_ArendeConversationView.Builder();
-    }
-
-    @AutoValue.Builder
-    public abstract static class Builder {
-
-        public abstract ArendeConversationView build();
-
-        public abstract Builder setFraga(ArendeView fraga);
-
-        public abstract Builder setSvar(ArendeView svar);
-
-        public abstract Builder setAnsweredWithIntyg(AnsweredWithIntyg answeredWithIntyg);
-
-        public abstract Builder setSenasteHandelse(LocalDateTime senasteHandelse);
-
-        public abstract Builder setPaminnelser(ImmutableList<ArendeView> paminnelser);
-
-        public abstract Builder setDraftText(String draftText);
-    }
-
+    ArendeView fraga;
+    ArendeView svar;
+    AnsweredWithIntyg answeredWithIntyg;
+    LocalDateTime senasteHandelse;
+    ImmutableList<ArendeView> paminnelser;
+    String draftText;
 }

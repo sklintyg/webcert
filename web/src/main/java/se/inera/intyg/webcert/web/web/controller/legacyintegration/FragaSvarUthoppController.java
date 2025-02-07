@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,20 +20,16 @@ package se.inera.intyg.webcert.web.web.controller.legacyintegration;
 
 import com.google.common.base.Strings;
 import io.swagger.annotations.Api;
-import java.net.URI;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.UriInfo;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,10 +39,10 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.web.service.intyg.IntygService;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
+import se.inera.intyg.webcert.web.csintegration.aggregate.GetIssuingUnitIdAggregator;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
-import se.inera.intyg.webcert.web.web.controller.facade.util.ReactPilotUtil;
 import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
 import se.inera.intyg.webcert.web.web.controller.integration.BaseIntegrationController;
 
@@ -64,26 +60,18 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
 
     private static final Logger LOG = LoggerFactory.getLogger(FragaSvarUthoppController.class);
 
-    private static final String PARAM_CERT_TYPE = "certType";
-    private static final String PARAM_CERT_TYPE_VERSION = "certTypeVersion";
-    private static final String PARAM_CERT_ID = "certId";
     private static final String[] GRANTED_ROLES = new String[]{AuthoritiesConstants.ROLE_ADMIN, AuthoritiesConstants.ROLE_LAKARE,
-        AuthoritiesConstants.ROLE_TANDLAKARE};
-    private static final UserOriginType GRANTED_ORIGIN = UserOriginType.UTHOPP;
-    private String urlFragmentTemplate;
+        AuthoritiesConstants.ROLE_TANDLAKARE, AuthoritiesConstants.ROLE_SJUKSKOTERSKA, AuthoritiesConstants.ROLE_BARNMORSKA};
+    private static final UserOriginType GRANTED_ORIGIN = UserOriginType.NORMAL;
+
     @Autowired
-    private IntygService intygService;
+    private GetIssuingUnitIdAggregator getIssuingUnitIdAggregator;
 
     @Autowired
     private ReactUriFactory reactUriFactory;
 
     @Autowired
-    private ReactPilotUtil reactPilotUtil;
-
-    @Autowired
     private CommonAuthoritiesResolver commonAuthoritiesResolver;
-
-    // api
 
     /**
      * Fetches a certificate from IT and then performs a redirect to the view that displays
@@ -94,6 +82,7 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
     @GET
     @Path("/{type}/{intygId}/questions")
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "fragasvar-redirect-to-certificate-with-type", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response redirectToIntyg(@Context UriInfo uriInfo,
         @PathParam("type") String type,
         @PathParam("intygId") String intygId,
@@ -102,37 +91,27 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
         super.validateParameter("type", type);
         super.validateParameter("intygId", intygId);
         super.validateAuthorities();
-        this.validateAndChangeEnhet(intygId, type, enhetHsaId);
+        this.validateAndChangeEnhet(intygId, enhetHsaId);
 
         LOG.debug("Redirecting to view intyg {} of type {}", intygId, type);
-        final IntygTypeInfo intygTypeInfo = intygService.getIntygTypeInfo(intygId);
-        return buildRedirectResponse(uriInfo, type, intygTypeInfo.getIntygTypeVersion(), intygId);
+        return buildRedirectResponse(uriInfo, intygId);
     }
 
     @GET
     @Path("/{intygId}/questions")
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "fragasvar-redirect-to-certificate-without-type", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response redirectToIntyg(@Context UriInfo uriInfo,
         @PathParam("intygId") String intygId,
         @QueryParam("enhet") String enhetHsaId) {
 
         super.validateParameter("intygId", intygId);
         super.validateAuthorities();
+        this.validateAndChangeEnhet(intygId, enhetHsaId);
 
-        final var intygTypeInfo = intygService.getIntygTypeInfo(intygId);
-        final var intygType = intygTypeInfo.getIntygType();
-        final var intygTypeVersion = intygTypeInfo.getIntygTypeVersion();
-        this.validateAndChangeEnhet(intygId, intygType, enhetHsaId);
-
-        LOG.debug("Redirecting to view intyg {} of type {}", intygId, intygType);
-        return buildRedirectResponse(uriInfo, intygType, intygTypeVersion, intygId);
+        LOG.debug("Redirecting to view intyg {}", intygId);
+        return buildRedirectResponse(uriInfo, intygId);
     }
-
-    public void setUrlFragmentTemplate(String urlFragmentTemplate) {
-        this.urlFragmentTemplate = urlFragmentTemplate;
-    }
-
-    // protected scope
 
     @Override
     protected String[] getGrantedRoles() {
@@ -144,13 +123,11 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
         return GRANTED_ORIGIN;
     }
 
-    // private stuff
-
     /**
      * Makes sure we change (if possible) the current vardEnhet to the one either specified in the URL or to the one
      * the intyg was issued on.
      */
-    private void validateAndChangeEnhet(String intygsId, String intygsTyp, String enhetHsaId) {
+    private void validateAndChangeEnhet(String intygsId, String enhetHsaId) {
         WebCertUser user = webCertUserService.getUser();
         if (user == null) {
             LOG.error("No user in session, cannot continue");
@@ -166,7 +143,7 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
             }
         } else {
             // No enhet on link (legacy fallback for pre WC 5.0 links)
-            String enhet = intygService.getIssuingVardenhetHsaId(intygsId, intygsTyp);
+            String enhet = getIssuingUnitIdAggregator.get(intygsId);
             if (!user.changeValdVardenhet(enhet)) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
                     "User does not have access to enhet " + enhetHsaId);
@@ -180,29 +157,8 @@ public class FragaSvarUthoppController extends BaseIntegrationController {
         );
     }
 
-    private Response buildRedirectResponse(UriInfo uriInfo, String certificateType, String intygTypeVersion, String certificateId) {
-        if (reactPilotUtil.useReactClientFristaende(webCertUserService.getUser(), certificateType)) {
-            return getReactRedirectResponse(uriInfo, certificateId);
-        }
-
-        return getAngularRedirectResponse(uriInfo, certificateType, intygTypeVersion, certificateId);
-    }
-
-    private Response getReactRedirectResponse(UriInfo uriInfo, String intygId) {
-        final var uri = reactUriFactory.uriForCertificate(uriInfo, intygId);
-        return Response.status(Status.TEMPORARY_REDIRECT).location(uri).build();
-    }
-
-    private Response getAngularRedirectResponse(UriInfo uriInfo, String certificateType, String intygTypeVersion, String certificateId) {
-        UriBuilder uriBuilder = uriInfo.getBaseUriBuilder();
-
-        Map<String, Object> urlParams = new HashMap<>();
-        urlParams.put(PARAM_CERT_TYPE, certificateType);
-        urlParams.put(PARAM_CERT_TYPE_VERSION, intygTypeVersion);
-        urlParams.put(PARAM_CERT_ID, certificateId);
-
-        URI location = uriBuilder.replacePath(getUrlBaseTemplate()).fragment(urlFragmentTemplate).buildFromMap(urlParams);
-
-        return Response.status(Status.TEMPORARY_REDIRECT).location(location).build();
+    private Response buildRedirectResponse(UriInfo uriInfo, String certificateId) {
+        final var uri = reactUriFactory.uriForCertificate(uriInfo, certificateId);
+        return Response.status(Status.SEE_OTHER).location(uri).build();
     }
 }

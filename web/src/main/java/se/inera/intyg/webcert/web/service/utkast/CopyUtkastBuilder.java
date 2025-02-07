@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,7 +20,7 @@ package se.inera.intyg.webcert.web.service.utkast;
 
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
-import se.inera.intyg.infra.integration.pu.model.Person;
+import se.inera.intyg.infra.pu.integration.api.model.Person;
 import se.inera.intyg.webcert.web.service.utkast.dto.AbstractCreateCopyRequest;
 import se.inera.intyg.webcert.web.service.utkast.dto.UtkastBuilderResponse;
 

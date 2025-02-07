@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,16 +20,16 @@ package se.inera.intyg.webcert.web.web.controller.authtestability;
 
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import io.swagger.annotations.Api;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.util.Map;
 import java.util.Set;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +44,7 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
  * Rest interface only used for testing and in dev environments. It seems like it must be in
  * the same Spring context as the rest of the webservices to get access to the security context.
  */
-@Api(value = "user service", description = "REST API för testbarhet av användare", produces = MediaType.APPLICATION_JSON)
+@Api(value = "user service", produces = MediaType.APPLICATION_JSON)
 @Path("/")
 public class UserResource {
 
@@ -115,6 +115,15 @@ public class UserResource {
     }
 
     @GET
+    @Path("/preferences")
+    @Produces(MediaType.APPLICATION_JSON)
+    @PrometheusTimeMethod
+    public Response getUserPreferences() {
+        final var prefs = webCertUserService.getUser().getAnvandarPreference();
+        return Response.ok(prefs).build();
+    }
+
+    @GET
     @Path("/parameters")
     @Produces(MediaType.APPLICATION_JSON)
     @PrometheusTimeMethod
@@ -177,5 +186,14 @@ public class UserResource {
         webCertUserService.getUser().setPersonId(personId);
         LOG.info("Changed user 'personId' to '{}', was '{}'.", personId, oldPersonId);
         return Response.ok().build();
+    }
+
+    @GET
+    @Path("/subscriptionInfo")
+    @Produces(MediaType.APPLICATION_JSON)
+    @PrometheusTimeMethod
+    public Response getSubscriptionInfo() {
+        final var info = webCertUserService.getUser().getSubscriptionInfo();
+        return Response.ok(info).build();
     }
 }

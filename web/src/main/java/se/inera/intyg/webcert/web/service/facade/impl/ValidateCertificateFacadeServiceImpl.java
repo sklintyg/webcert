@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.common.support.facade.model.config.CertificateDataConfigTypes;
+import se.inera.intyg.common.support.facade.model.config.CertificateDataConfigType;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationMessageType;
@@ -34,7 +34,7 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
 import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationMessage;
 
-@Service
+@Service("validateCertificateFromWC")
 public class ValidateCertificateFacadeServiceImpl implements ValidateCertificateFacadeService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ValidateCertificateFacadeServiceImpl.class);
@@ -125,7 +125,7 @@ public class ValidateCertificateFacadeServiceImpl implements ValidateCertificate
         return "common.validation." + oldComponentName + "." + validationMessageType.name().toLowerCase();
     }
 
-    private String convertToOldName(CertificateDataConfigTypes componentType, Certificate certificate, String questionId) {
+    private String convertToOldName(CertificateDataConfigType componentType, Certificate certificate, String questionId) {
         switch (componentType) {
             case UE_CHECKBOX_MULTIPLE_CODE:
                 if (isQuestion40InFK7804(certificate.getMetadata().getType(), questionId)) {
@@ -146,7 +146,7 @@ public class ValidateCertificateFacadeServiceImpl implements ValidateCertificate
             case UE_RADIO_MULTIPLE_CODE:
             case UE_DROPDOWN:
                 return "ue-prognos";
-            case UE_SICK_LEAVE_PERIOD:
+            case UE_CHECKBOX_DATE_RANGE_LIST:
                 return "ue-sjukskrivningar";
             case UE_ICF:
                 return "ue-icf";

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,26 +19,19 @@
 package se.inera.intyg.webcert.web.service.fragasvar.dto;
 
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class QueryFragaSvarResponse {
 
     private int totalCount;
     private List<ArendeListItem> results;
 
-    public int getTotalCount() {
-        return totalCount;
-    }
-
-    public void setTotalCount(int totalCount) {
-        this.totalCount = totalCount;
-    }
-
-    public List<ArendeListItem> getResults() {
-        return results;
-    }
-
-    public void setResults(List<ArendeListItem> results) {
-        this.results = results;
-    }
 }

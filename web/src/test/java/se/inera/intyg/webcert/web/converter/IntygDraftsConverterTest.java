@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -29,9 +29,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import org.junit.Test;
-
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.StatusKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
@@ -96,6 +94,8 @@ public class IntygDraftsConverterTest {
         assertEquals("DRAFT_COMPLETE", ref.getStatus());
         assertEquals(updatedSignedBy, ref.getUpdatedSignedBy());
         assertEquals(modfied, ref.getLastUpdatedSigned());
+        assertEquals(modfied, ref.getSigned());
+        assertEquals(modfied, ref.getLastUpdated());
     }
 
     @Test

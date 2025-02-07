@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -75,7 +75,7 @@ public class UserOriginResourceTest extends AuthoritiesConfigurationTestSetup {
         Mockito.when(webCertUserService.getUser()).thenReturn(user);
 
         //When
-        String newOrigin = UserOriginType.UTHOPP.name();
+        String newOrigin = UserOriginType.NORMAL.name();
         userResource.setOrigin(newOrigin);
 
         //Then

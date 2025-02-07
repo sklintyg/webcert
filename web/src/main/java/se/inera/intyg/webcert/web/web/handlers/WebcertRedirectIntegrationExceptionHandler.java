@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,17 +18,17 @@
  */
 package se.inera.intyg.webcert.web.web.handlers;
 
-import java.net.URI;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.ExceptionMapper;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.UriInfo;
+import jakarta.ws.rs.ext.ExceptionMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.security.authorities.AuthoritiesException;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.auth.exceptions.MissingSubscriptionException;
+import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
 
 
 /**
@@ -47,9 +47,13 @@ public class WebcertRedirectIntegrationExceptionHandler implements ExceptionMapp
     public static final String ERROR_REASON_AUTH_EXCEPTION_SEKRETESSMARKERING = "auth-exception-sekretessmarkering";
     public static final String ERROR_REASON_AUTH_EXCEPTION_USER_ALREADY_ACTIVE = "auth-exception-user-already-active";
     public static final String ERROR_REASON_PU_PROBLEM = "pu-problem";
+    public static final String ERROR_REASON_UNKNOWN = "unknown";
 
     @Context
     UriInfo uriInfo;
+
+    @Autowired
+    private ReactUriFactory reactUriFactory;
 
     @Override
     public Response toResponse(RuntimeException e) {
@@ -59,7 +63,6 @@ public class WebcertRedirectIntegrationExceptionHandler implements ExceptionMapp
         } else {
             return handleRuntimeException(e);
         }
-
     }
 
     /**
@@ -68,41 +71,30 @@ public class WebcertRedirectIntegrationExceptionHandler implements ExceptionMapp
     private Response handleAuthorityException(Exception e) {
         LOG.warn("AuthValidation exception occured: ", e);
         if (e instanceof MissingSubscriptionException) {
-            return buildErrorRedirectResponse(ERROR_REASON_AUTH_EXCEPTION_SUBSRIPTION, e.getMessage());
+            return getRedirectResponse(ERROR_REASON_AUTH_EXCEPTION_SUBSRIPTION);
         }
-        return buildErrorRedirectResponse(ERROR_REASON_AUTH_EXCEPTION, e.getMessage());
+        return getRedirectResponse(ERROR_REASON_AUTH_EXCEPTION);
     }
 
-    private Response handleRuntimeException(RuntimeException re) {
-        if (re instanceof WebCertServiceException) {
-            LOG.warn("WebCertServiceException caught", re.getMessage());
-            WebCertServiceException we = (WebCertServiceException) re;
-            if (we.getErrorCode() == WebCertServiceErrorCodeEnum.MISSING_PARAMETER) {
-                return buildErrorRedirectResponse(ERROR_REASON_MISSING_PARAMETER, we.getMessage());
-            } else if (we.getErrorCode() == WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM) {
-                return buildErrorRedirectResponse(ERROR_REASON_AUTH_EXCEPTION, we.getMessage());
-            } else if (we.getErrorCode() == WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING) {
-                return buildErrorRedirectResponse(ERROR_REASON_AUTH_EXCEPTION_SEKRETESSMARKERING, we.getMessage());
-            } else if (we.getErrorCode() == WebCertServiceErrorCodeEnum.AUTHORIZATION_USER_SESSION_ALREADY_ACTIVE) {
-                return buildErrorRedirectResponse(ERROR_REASON_AUTH_EXCEPTION_USER_ALREADY_ACTIVE, we.getMessage());
-            } else if (we.getErrorCode() == WebCertServiceErrorCodeEnum.PU_PROBLEM) {
-                return buildErrorRedirectResponse(ERROR_REASON_PU_PROBLEM, we.getMessage());
-            }
+    private Response handleRuntimeException(RuntimeException e) {
+        if (e instanceof WebCertServiceException) {
+            LOG.warn("WebCertServiceException caught: {}", e.getMessage(), e);
+            return switch (((WebCertServiceException) e).getErrorCode()) {
+                case MISSING_PARAMETER -> getRedirectResponse(ERROR_REASON_MISSING_PARAMETER);
+                case AUTHORIZATION_PROBLEM -> getRedirectResponse(ERROR_REASON_AUTH_EXCEPTION);
+                case AUTHORIZATION_PROBLEM_SEKRETESSMARKERING -> getRedirectResponse(ERROR_REASON_AUTH_EXCEPTION_SEKRETESSMARKERING);
+                case AUTHORIZATION_USER_SESSION_ALREADY_ACTIVE -> getRedirectResponse(ERROR_REASON_AUTH_EXCEPTION_USER_ALREADY_ACTIVE);
+                case PU_PROBLEM -> getRedirectResponse(ERROR_REASON_PU_PROBLEM);
+                default -> getRedirectResponse(ERROR_REASON_UNKNOWN);
+            };
         }
-        LOG.error("Unhandled RuntimeException occured!", re);
-        return buildErrorRedirectResponse("unknown", re.getMessage());
+
+        LOG.error("Unhandled RuntimeException occured!", e);
+        return getRedirectResponse(ERROR_REASON_UNKNOWN);
     }
 
-    private Response buildErrorRedirectResponse(String errorReason, String message) {
-        URI location = ERROR_REASON_MISSING_PARAMETER.equals(errorReason)
-            ? uriInfo.getBaseUriBuilder().replacePath("/error.jsp")
-            .queryParam("reason", errorReason)
-            .queryParam("message", message)
-            .build()
-            : uriInfo.getBaseUriBuilder().replacePath("/error.jsp")
-                .queryParam("reason", errorReason)
-                .build();
-
-        return Response.temporaryRedirect(location).build();
+    private Response getRedirectResponse(String errorCode) {
+        return Response.seeOther(reactUriFactory.uriForErrorResponse(uriInfo, errorCode)).build();
     }
+
 }

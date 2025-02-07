@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,46 +18,111 @@
  */
 package se.inera.intyg.webcert.web.integration.interactions.listcertificatesforcarewithqa;
 
-import static se.inera.intyg.common.support.Constants.KV_AMNE_CODE_SYSTEM;
-import static se.inera.intyg.common.support.Constants.KV_HANDELSE_CODE_SYSTEM;
 import static se.inera.intyg.webcert.notification_sender.notifications.services.NotificationTypeConverter.toArenden;
 
+import java.util.ArrayList;
 import java.util.Objects;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.cxf.annotations.SchemaValidation;
-import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.intyg.common.support.modules.converter.InternalConverterUtil;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
+import se.inera.intyg.webcert.logging.HashUtility;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
+import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
+import se.inera.intyg.webcert.web.csintegration.patient.GetCertificatesWithQAFromCertificateService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsRequest;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsResponse;
+import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.HandelseList;
 import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.List;
 import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.ListCertificatesForCareWithQAResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.ListCertificatesForCareWithQAResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.ListCertificatesForCareWithQAType;
 import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.ListItem;
-import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
-import se.riv.clinicalprocess.healthcond.certificate.types.v3.Handelsekod;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.HsaId;
-import se.riv.clinicalprocess.healthcond.certificate.v3.Handelse;
 
+@Slf4j
 @SchemaValidation
 public class ListCertificatesForCareWithQAResponderImpl implements ListCertificatesForCareWithQAResponderInterface {
 
-    @Autowired
-    private IntygService intygService;
+    private final IntygService intygService;
+    private final GetCertificatesWithQAFromCertificateService getCertificatesWithQAFromCertificateService;
+    private final NotificationService notificationService;
+
+    public ListCertificatesForCareWithQAResponderImpl(IntygService intygService,
+        GetCertificatesWithQAFromCertificateService getCertificatesWithQAFromCertificateService,
+        NotificationService notificationService) {
+        this.intygService = intygService;
+        this.getCertificatesWithQAFromCertificateService = getCertificatesWithQAFromCertificateService;
+        this.notificationService = notificationService;
+    }
 
     @Override
+    @PerformanceLogging(eventAction = "list-certificates-for-care-with-qa", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public ListCertificatesForCareWithQAResponseType listCertificatesForCareWithQA(String s, ListCertificatesForCareWithQAType request) {
         Objects.requireNonNull(request.getEnhetsId());
-        if (!validate(request)) {
+        if (invalidRequest(request)) {
             throw new IllegalArgumentException();
         }
 
-        ListCertificatesForCareWithQAResponseType response = new ListCertificatesForCareWithQAResponseType();
-        List list = new List();
+        final var intygWithNotificationsRequest = getIntygWithNotificationsRequest(request);
+        final var response = new ListCertificatesForCareWithQAResponseType();
+        final var start = System.currentTimeMillis();
+        log.info("Started processing request: PersonId: '{}' - CareProviderId '{}' - UnitIds '{}'",
+            HashUtility.hash(intygWithNotificationsRequest.getPersonnummer().getPersonnummer()),
+            intygWithNotificationsRequest.getVardgivarId(),
+            intygWithNotificationsRequest.getEnhetId()
+        );
+        try {
+            final var notifications = notificationService.findNotifications(intygWithNotificationsRequest);
+            final var listItemsFromCS = getCertificatesWithQAFromCertificateService.get(notifications);
+            final var intygWithNotifications = intygService.listCertificatesForCareWithQA(
+                notifications.stream()
+                    .filter(removeNotificationsRelatedToCertificatesFromCertificateService(listItemsFromCS))
+                    .collect(Collectors.toList())
+            );
+
+            List list = new List();
+            list.getItem().addAll(buildListItemsForWC(intygWithNotifications));
+            list.getItem().addAll(listItemsFromCS);
+            response.setList(list);
+
+            return response;
+        } finally {
+            log.info(
+                "Request processing completed. PersonId: '{}' CareProviderId '{}' UnitIds '{}'."
+                    + " Returning '{}' number of certificates. Elapsed time: '{}' milliseconds",
+                HashUtility.hash(intygWithNotificationsRequest.getPersonnummer().getPersonnummer()),
+                intygWithNotificationsRequest.getVardgivarId(),
+                intygWithNotificationsRequest.getEnhetId(),
+                response.getList() != null ? response.getList().getItem().size() : 0,
+                timeElapsed(start)
+            );
+        }
+    }
+
+    private java.util.List<ListItem> buildListItemsForWC(java.util.List<IntygWithNotificationsResponse> intygWithNotifications) {
+        final var listItems = new ArrayList<ListItem>();
+        for (IntygWithNotificationsResponse intygHolder : intygWithNotifications) {
+            ListItem item = new ListItem();
+            item.setIntyg(intygHolder.getIntyg());
+            HandelseList handelseList = new HandelseList();
+            handelseList.getHandelse().addAll(intygHolder.getNotifications().stream()
+                .map(HandelseFactory::toHandelse)
+                .toList());
+            item.setHandelser(handelseList);
+            item.setSkickadeFragor(toArenden(intygHolder.getSentQuestions()));
+            item.setMottagnaFragor(toArenden(intygHolder.getReceivedQuestions()));
+            item.setRef(intygHolder.getRef());
+            listItems.add(item);
+        }
+        return listItems;
+    }
+
+    private static IntygWithNotificationsRequest getIntygWithNotificationsRequest(ListCertificatesForCareWithQAType request) {
         IntygWithNotificationsRequest.Builder builder = new IntygWithNotificationsRequest.Builder()
             .setPersonnummer(Personnummer.createPersonnummer(request.getPersonId().getExtension()).get());
 
@@ -73,71 +138,27 @@ public class ListCertificatesForCareWithQAResponderImpl implements ListCertifica
         if (request.getTomTidpunkt() != null) {
             builder = builder.setEndDate(request.getTomTidpunkt());
         }
-
-        java.util.List<IntygWithNotificationsResponse> intygWithNotifications = intygService.listCertificatesForCareWithQA(builder.build());
-
-        for (IntygWithNotificationsResponse intygHolder : intygWithNotifications) {
-            ListItem item = new ListItem();
-            item.setIntyg(intygHolder.getIntyg());
-            HandelseList handelseList = new HandelseList();
-            handelseList.getHandelse().addAll(intygHolder.getNotifications().stream()
-                .map(ListCertificatesForCareWithQAResponderImpl::toHandelse)
-                .collect(Collectors.toList()));
-            item.setHandelser(handelseList);
-            item.setSkickadeFragor(toArenden(intygHolder.getSentQuestions()));
-            item.setMottagnaFragor(toArenden(intygHolder.getReceivedQuestions()));
-            item.setRef(intygHolder.getRef());
-
-            list.getItem().add(item);
-        }
-        response.setList(list);
-        return response;
+        return builder.build();
     }
 
-    private boolean validate(ListCertificatesForCareWithQAType request) {
+    private long timeElapsed(long startTime) {
+        return System.currentTimeMillis() - startTime;
+    }
+
+    private static Predicate<Handelse> removeNotificationsRelatedToCertificatesFromCertificateService(
+        java.util.List<ListItem> listItemsFromCS) {
+        return notification -> listItemsFromCS.stream()
+            .noneMatch(item -> item.getIntyg().getIntygsId().getExtension().equals(notification.getIntygsId()));
+    }
+
+    private boolean invalidRequest(ListCertificatesForCareWithQAType request) {
         if (request.getPersonId() == null) {
-            return false;
-        }
-        if (!validateEnhetIdAndVardgivarId(request)) {
-            return false;
-        }
-        return true;
-    }
-
-    private boolean validateEnhetIdAndVardgivarId(ListCertificatesForCareWithQAType request) {
-        // Giltigt fall: Noll till flera enhetsid:n anges, men inget vårdgivar-id
-        if (request.getVardgivarId() == null) {
             return true;
         }
-        // Giltigt fall: Ett vårdgivar-id, men inga enhetsid:n
-        return request.getEnhetsId().isEmpty();
+        return isMissingCareProviderIdAndUnitId(request);
     }
 
-    private static Handelse toHandelse(se.inera.intyg.webcert.persistence.handelse.model.Handelse e) {
-        Handelse res = new Handelse();
-
-        Handelsekod code = new Handelsekod();
-        code.setCodeSystem(KV_HANDELSE_CODE_SYSTEM);
-        code.setCode(e.getCode().value());
-        res.setHandelsekod(code);
-        if (e.getAmne() != null) {
-            res.setAmne(buildAmne(e.getAmne()));
-        }
-        res.setSistaDatumForSvar(e.getSistaDatumForSvar());
-        res.setTidpunkt(e.getTimestamp());
-        if (e.getHanteratAv() != null) {
-            res.setHanteratAv(InternalConverterUtil.getHsaId(e.getHanteratAv()));
-        }
-
-        return res;
+    private boolean isMissingCareProviderIdAndUnitId(ListCertificatesForCareWithQAType request) {
+        return request.getEnhetsId().isEmpty() && request.getVardgivarId() == null;
     }
-
-    private static Amneskod buildAmne(ArendeAmne arende) {
-        Amneskod amneskod = new Amneskod();
-        amneskod.setCode(arende.name());
-        amneskod.setCodeSystem(KV_AMNE_CODE_SYSTEM);
-        amneskod.setDisplayName(arende.getDescription());
-        return amneskod;
-    }
-
 }

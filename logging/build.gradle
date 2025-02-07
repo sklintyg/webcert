@@ -1,0 +1,9 @@
+dependencies {
+    implementation "jakarta.servlet:jakarta.servlet-api"
+    implementation "org.aspectj:aspectjweaver"
+    implementation "org.springframework:spring-webmvc"
+    implementation "com.google.guava:guava:${guavaVersion}"
+
+    compileOnly "org.projectlombok:lombok"
+    annotationProcessor "org.projectlombok:lombok"
+}

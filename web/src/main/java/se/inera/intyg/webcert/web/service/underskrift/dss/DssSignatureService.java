@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,8 +18,11 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift.dss;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBException;
 import java.io.ByteArrayInputStream;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.CertPath;
 import java.security.cert.Certificate;
@@ -29,10 +32,6 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
-import javax.annotation.PostConstruct;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -41,6 +40,7 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MimeTypeUtils;
@@ -75,10 +75,11 @@ import se.inera.intyg.webcert.web.web.controller.api.SignatureApiController;
 public class DssSignatureService {
 
     private static final Logger LOG = LoggerFactory.getLogger(DssSignatureService.class);
-    public static final String RESULTMAJOR_SUCCESS = "urn:oasis:names:tc:dss:1.0:resultmajor:Success"; //TODO
+    public static final String RESULTMAJOR_SUCCESS = "urn:oasis:names:tc:dss:1.0:resultmajor:Success";
     public static final String REQUESTED_SIGN_ALGORITHM = XMLSignature.ALGO_ID_SIGNATURE_ECDSA_SHA256;
     private static final String ACTIVATE_SUPPORT_FOR_SEVERAL_LOA_AND_AUTH_PROFILE = "1.4";
     private static final String AUTHN_PROFILE = "digg_ap_hsaid_01";
+    private static final String NAMEID_FORMAT_ENTITY = "urn:oasis:names:tc:SAML:2.0:nameid-format:entity";
 
     private static final String REQUESTED_CERT_ATTRIBUTE_GIVEN_NAME = "givenName";
     private static final String REQUESTED_CERT_ATTRIBUTE_GIVEN_NAME_REF = "2.5.4.42";
@@ -128,12 +129,12 @@ public class DssSignatureService {
     @Value("${dss.service.signmessage}")
     private String signMessage;
 
-    @Value("#{T(java.util.Arrays).asList('${dss.client.approved.loa:}')}")
+    @Value("#{${dss.client.approved.loa:}}")
     private List<String> approvedLoaList;
 
     @Value("${dss.client.ie.unit.whitelist:}")
     private String dssUnitWhitelistForIeProperty;
-    private List<String> dssUnitWhitelistForIe = new ArrayList<>();
+    private final List<String> dssUnitWhitelistForIe = new ArrayList<>();
 
     @Value("${dss.service.validity.request.time.in.minutes}")
     private int signRequestValidityInMinutes;
@@ -141,7 +142,7 @@ public class DssSignatureService {
     @Autowired
     public DssSignatureService(DssMetadataService dssMetadataService, DssSignMessageService dssSignMessageService,
         WebCertUserService userService, UtkastRepository utkastRepository, DssSignMessageIdpProvider dssSignMessageIdpProvider,
-        UnderskriftService underskriftService,
+        @Qualifier("signAggregator") UnderskriftService underskriftService,
         RedisTicketTracker redisTicketTracker, MonitoringLogService monitoringLogService, IntygModuleRegistry moduleRegistry) {
         this.dssSignMessageIdpProvider = dssSignMessageIdpProvider;
         objectFactoryDssCore = new se.inera.intyg.webcert.dss.xsd.dsscore.ObjectFactory();
@@ -166,33 +167,25 @@ public class DssSignatureService {
         }
     }
 
-    /**
-     * Checks whether the current Care unit HSA-id is in the whitelist
-     * for IE. If HSA id, or a wildcard version of it is in the list
-     * then this method will return true.
-     *
-     * @param currentCareUnitHsaId The users currently selected care unit
-     * @return true id care unit is in whitelist.
-     */
-    public boolean isUnitInIeWhitelist(String currentCareUnitHsaId) {
-        if (StringUtils.isEmpty(currentCareUnitHsaId)) {
-            return false;
+    public boolean shouldUseSigningService(String currentCareUnitHsaId) {
+        if (currentCareUnitHsaId == null || currentCareUnitHsaId.isBlank()) {
+            return true;
         }
 
-        boolean inWhitelist = false;
-        for (String hsaIdInWhitelist : dssUnitWhitelistForIe) {
-            if (hsaIdInWhitelist.endsWith("*")) {
-                var wildcardRemovedSubstring = hsaIdInWhitelist.substring(0, hsaIdInWhitelist.lastIndexOf("*"));
-                inWhitelist = currentCareUnitHsaId.toUpperCase().startsWith(wildcardRemovedSubstring.toUpperCase());
-            } else {
-                inWhitelist = currentCareUnitHsaId.equalsIgnoreCase(hsaIdInWhitelist);
-            }
-            if (inWhitelist) {
-                break;
-            }
-
-        }
-        return inWhitelist;
+        return dssUnitWhitelistForIe.stream()
+            .filter(value -> !value.isBlank())
+            .noneMatch(value -> {
+                    if (value.equals("*")) {
+                        return true;
+                    }
+                    if (value.endsWith("*")) {
+                        final var wildcardRemovedSubstring = value.substring(0, value.lastIndexOf("*"));
+                        return currentCareUnitHsaId.toUpperCase().startsWith(wildcardRemovedSubstring.toUpperCase());
+                    } else {
+                        return currentCareUnitHsaId.equalsIgnoreCase(value);
+                    }
+                }
+            );
     }
 
     public DssSignRequestDTO createSignatureRequestDTO(SignaturBiljett sb) {
@@ -204,7 +197,7 @@ public class DssSignatureService {
         dssSignRequestDTO.setActionUrl(dssMetadataService.getDssActionUrl());
 
         String signRequest = dssSignMessageService.signSignRequest(createSignRequest(dateTimeNow, sb, transactionID));
-        String base64EncodedSignRequest = Base64.getEncoder().encodeToString(signRequest.getBytes(Charset.forName("UTF-8")));
+        String base64EncodedSignRequest = Base64.getEncoder().encodeToString(signRequest.getBytes(StandardCharsets.UTF_8));
         dssSignRequestDTO.setSignRequest(base64EncodedSignRequest);
 
         return dssSignRequestDTO;
@@ -274,18 +267,18 @@ public class DssSignatureService {
         );
 
         var identityProvider = objectFactorySaml.createNameIDType();
-        identityProvider.setFormat("urn:oasis:names:tc:SAML:2.0:nameid-format:entity");
+        identityProvider.setFormat(NAMEID_FORMAT_ENTITY);
         identityProvider.setValue(idpUrl);
         signRequestExtensionType.setIdentityProvider(identityProvider);
 
         var signRequester = objectFactorySaml.createNameIDType();
-        signRequester.setFormat("urn:oasis:names:tc:SAML:2.0:nameid-format:entity");
+        signRequester.setFormat(NAMEID_FORMAT_ENTITY);
         signRequester.setValue(
             dssClientEntityHostUrl + SignatureApiController.SIGNATUR_API_CONTEXT_PATH + SignatureApiController.SIGN_SERVICE_METADATA_PATH);
         signRequestExtensionType.setSignRequester(signRequester);
 
         var signService = objectFactorySaml.createNameIDType();
-        signService.setFormat("urn:oasis:names:tc:SAML:2.0:nameid-format:entity");
+        signService.setFormat(NAMEID_FORMAT_ENTITY);
         signService.setValue(serviceUrl);
         signRequestExtensionType.setSignService(signService);
 
@@ -443,6 +436,7 @@ public class DssSignatureService {
                 .logSignResponseInvalid(relayState, signaturBiljett.getIntygsId(), "Could not unmarshal sign response: " + e.getMessage());
             return signaturBiljett;
         } catch (Exception e) {
+            LOG.error("Unexpected error occurred when handling sign response with transaction id '%s'".formatted(relayState), e);
             SignaturBiljett signaturBiljett = redisTicketTracker.updateStatus(relayState, SignaturStatus.ERROR);
             monitoringLogService
                 .logSignResponseInvalid(relayState, signaturBiljett.getIntygsId(),

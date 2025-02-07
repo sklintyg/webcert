@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,24 +18,26 @@
  */
 package se.inera.intyg.webcert.web.service.facade.list;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.model.UtkastStatus;
-
 import se.inera.intyg.infra.certificate.dto.CertificateListEntry;
 import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
-
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.web.service.arende.ArendeServiceImpl;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColumnType;
-import se.inera.intyg.webcert.web.service.facade.list.dto.*;
+import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItem;
+import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItemStatus;
+import se.inera.intyg.webcert.web.service.facade.list.dto.ForwardedListInfo;
+import se.inera.intyg.webcert.web.service.facade.list.dto.ListType;
+import se.inera.intyg.webcert.web.service.facade.list.dto.PatientListInfo;
+import se.inera.intyg.webcert.web.service.facade.list.dto.QuestionSenderType;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
-
-import java.util.List;
 
 @Service
 public class CertificateListItemConverterImpl implements CertificateListItemConverter {
@@ -75,13 +77,18 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
 
     private CertificateListItem convertListItem(ListIntygEntry listIntygEntry, ListType listType) {
         final var listItem = new CertificateListItem();
-        final var certificateListItemStatus = getCertificateListItemStatus(listIntygEntry.getStatus(), listIntygEntry.getRelations());
+        final var certificateListItemStatus = listType == ListType.CERTIFICATES
+            ? getCertificateListItemStatus(listIntygEntry.getStatus().equals(SENT))
+            : getCertificateListItemStatus(listIntygEntry.getStatus(), listIntygEntry.getRelations());
         final var patientListInfo = getPatientListInfo(listIntygEntry);
         final var convertedLinks = resourceLinkListHelper.get(listIntygEntry, certificateListItemStatus);
 
         listItem.addValue(ListColumnType.CERTIFICATE_TYPE_NAME, listIntygEntry.getIntygTypeName());
         listItem.addValue(ListColumnType.STATUS, convertStatus(certificateListItemStatus));
-        listItem.addValue(ListColumnType.SAVED, listIntygEntry.getLastUpdatedSigned());
+        listItem.addValue(
+            listType == ListType.CERTIFICATES ? ListColumnType.SIGNED : ListColumnType.SAVED,
+            listType == ListType.CERTIFICATES ? listIntygEntry.getSigned() : listIntygEntry.getLastUpdated()
+        );
         listItem.addValue(ListColumnType.PATIENT_ID, patientListInfo);
         listItem.addValue(listType == ListType.DRAFTS ? ListColumnType.SAVED_BY : ListColumnType.SAVED_SIGNED_BY,
             listIntygEntry.getUpdatedSignedBy()
@@ -245,7 +252,7 @@ public class CertificateListItemConverterImpl implements CertificateListItemConv
     }
 
     private boolean isAllowedToForward(List<ResourceLinkDTO> links) {
-        return links.stream().anyMatch((link) ->
+        return links.stream().anyMatch(link ->
             link.getType() == ResourceLinkTypeDTO.FORWARD_CERTIFICATE || link.getType() == ResourceLinkTypeDTO.FORWARD_QUESTION
         );
     }

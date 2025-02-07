@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -25,15 +25,15 @@ import se.inera.intyg.infra.security.authorities.bootstrap.SecurityConfiguration
 /**
  * Created by Magnus Ekstrand on 26/11/15.
  */
-public class AuthoritiesConfigurationTestSetup {
+public abstract class AuthoritiesConfigurationTestSetup {
 
-    protected static final String AUTHORITIES_CONFIGURATION_LOCATION = "classpath:AuthoritiesConfigurationLoaderTest/authorities-test.yaml";
-    protected static final String FEATURES_CONFIGURATION_LOCATION = "classpath:AuthoritiesConfigurationLoaderTest/features-test.yaml";
-    protected static final Integer DEFAULT_MAX_ALIASES_FOR_COLLECTIONS = 300;
+    public static final String AUTHORITIES_CONFIGURATION_LOCATION = "classpath:AuthoritiesConfigurationLoaderTest/authorities-test.yaml";
+    public static final String FEATURES_CONFIGURATION_LOCATION = "classpath:AuthoritiesConfigurationLoaderTest/features-test.yaml";
+    public static final Integer DEFAULT_MAX_ALIASES_FOR_COLLECTIONS = 300;
 
     protected static final SecurityConfigurationLoader CONFIGURATION_LOADER = new SecurityConfigurationLoader(
         AUTHORITIES_CONFIGURATION_LOCATION, FEATURES_CONFIGURATION_LOCATION, DEFAULT_MAX_ALIASES_FOR_COLLECTIONS);
-    protected static final CommonAuthoritiesResolver AUTHORITIES_RESOLVER = new CommonAuthoritiesResolver();
+    public static final CommonAuthoritiesResolver AUTHORITIES_RESOLVER = new CommonAuthoritiesResolver();
 
     @BeforeClass
     public static void setupAuthoritiesConfiguration() throws Exception {

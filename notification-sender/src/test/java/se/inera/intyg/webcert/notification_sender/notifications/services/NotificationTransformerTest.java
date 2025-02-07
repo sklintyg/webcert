@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.services;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
@@ -26,7 +25,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.internal.verification.VerificationModeFactory.noInteractions;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.HANDELSE;
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.INTYGS_ID;
@@ -35,47 +36,52 @@ import static se.inera.intyg.webcert.notification_sender.notifications.routes.No
 import static se.inera.intyg.webcert.notification_sender.notifications.routes.NotificationRouteHeaders.VERSION;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import java.nio.charset.StandardCharsets;
 import org.apache.camel.Message;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.MockedStatic;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
+import se.inera.intyg.common.support.xml.XmlMarshallerHelper;
 import se.inera.intyg.infra.security.authorities.FeaturesHelper;
+import se.inera.intyg.webcert.logging.MdcHelper;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing.NotificationResultMessageCreator;
 import se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing.NotificationResultMessageSender;
 import se.inera.intyg.webcert.notification_sender.notifications.services.v3.CertificateStatusUpdateForCareCreator;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
+import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.ObjectFactory;
 
-@RunWith(MockitoJUnitRunner.class)
-public class NotificationTransformerTest {
+@ExtendWith(MockitoExtension.class)
+class NotificationTransformerTest {
 
     @Mock
     private IntygModuleRegistry moduleRegistry;
-
     @Mock
     private FeaturesHelper featuresHelper;
-
     @Mock
     private CertificateStatusUpdateForCareCreator certificateStatusUpdateForCareCreator;
-
     @Mock
     private NotificationResultMessageCreator notificationResultMessageCreator;
-
     @Mock
     private NotificationResultMessageSender notificationResultMessageSender;
+    @Spy
+    private MdcHelper mdcHelper;
 
     @InjectMocks
     private NotificationTransformer notificationTransformer;
 
     @Test
-    public void shallTransformNotificationMessageToCertificateStatusUpdateForCare() throws Exception {
+    void shallTransformNotificationMessageToCertificateStatusUpdateForCare() throws Exception {
         final var notificationMessage = createNotificationMessage();
         final var mockCertificateStatusUpdateForCare = mock(CertificateStatusUpdateForCareType.class);
         final var mockMessage = mock(Message.class);
@@ -85,11 +91,38 @@ public class NotificationTransformerTest {
 
         notificationTransformer.process(mockMessage);
 
-        verify(mockMessage).setBody(eq(mockCertificateStatusUpdateForCare));
+        verify(mockMessage).setBody(mockCertificateStatusUpdateForCare);
     }
 
     @Test
-    public void shallSetVersionHeaderOnTransformedMessage() throws Exception {
+    void shallUseProvidedCertificateStatusUpdateForCareIfIncludedInNotificationMessage() throws Exception {
+        final var notificationMessage = new NotificationMessage();
+        notificationMessage.setHandelse(HandelsekodEnum.SKAPAT);
+        notificationMessage.setLogiskAdress("ENHETS_ID");
+        notificationMessage.setIntygsId("INTYGS_ID");
+        notificationMessage.setVersion(SchemaVersion.VERSION_3);
+        notificationMessage.setStatusUpdateXml("statusUpdateXml".getBytes(StandardCharsets.UTF_8));
+
+        final var mockMessage = mock(Message.class);
+        final var factory = new ObjectFactory();
+        final var certificateStatusUpdateForCareType = new CertificateStatusUpdateForCareType();
+        final var certificateStatusUpdateForCare = factory.createCertificateStatusUpdateForCare(certificateStatusUpdateForCareType);
+
+        try (MockedStatic<XmlMarshallerHelper> mockedStatic = mockStatic(XmlMarshallerHelper.class)) {
+            doReturn(notificationMessage).when(mockMessage).getBody(NotificationMessage.class);
+
+            mockedStatic.when(
+                    () -> XmlMarshallerHelper.unmarshal(new String(notificationMessage.getStatusUpdateXml(), StandardCharsets.UTF_8)))
+                .thenReturn(certificateStatusUpdateForCare);
+
+            notificationTransformer.process(mockMessage);
+            verifyNoInteractions(certificateStatusUpdateForCareCreator);
+            verify(mockMessage).setBody(certificateStatusUpdateForCareType);
+        }
+    }
+
+    @Test
+    void shallSetVersionHeaderOnTransformedMessage() throws Exception {
         final var notificationMessage = createNotificationMessage(SchemaVersion.VERSION_3);
         final var mockMessage = mock(Message.class);
 
@@ -101,7 +134,7 @@ public class NotificationTransformerTest {
     }
 
     @Test
-    public void shallSetVersionV3HeaderOnTransformedMessageWithoutVersion() throws Exception {
+    void shallSetVersionV3HeaderOnTransformedMessageWithoutVersion() throws Exception {
         final var notificationMessage = createNotificationMessage(null);
         final var mockMessage = mock(Message.class);
 
@@ -113,7 +146,7 @@ public class NotificationTransformerTest {
     }
 
     @Test
-    public void shallThrowExceptionOnTransformedMessageWithUnsupportedVersion() throws Exception {
+    void shallThrowExceptionOnTransformedMessageWithUnsupportedVersion() throws Exception {
         final var notificationMessage = createNotificationMessage(SchemaVersion.VERSION_1);
         final var mockMessage = mock(Message.class);
 
@@ -128,7 +161,7 @@ public class NotificationTransformerTest {
     }
 
     @Test
-    public void shallSetLogicalAddressHeaderOnTransformedMessage() throws Exception {
+    void shallSetLogicalAddressHeaderOnTransformedMessage() throws Exception {
         final var notificationMessage = createNotificationMessage();
         final var mockMessage = mock(Message.class);
 
@@ -140,7 +173,7 @@ public class NotificationTransformerTest {
     }
 
     @Test
-    public void shallSetCertificateIdHeaderOnTransformedMessage() throws Exception {
+    void shallSetCertificateIdHeaderOnTransformedMessage() throws Exception {
         final var notificationMessage = createNotificationMessage();
         final var mockMessage = mock(Message.class);
 
@@ -152,7 +185,7 @@ public class NotificationTransformerTest {
     }
 
     @Test
-    public void shallSetEventTypeHeaderOnTransformedMessage() throws Exception {
+    void shallSetEventTypeHeaderOnTransformedMessage() throws Exception {
         final var notificationMessage = createNotificationMessage();
         final var mockMessage = mock(Message.class);
 
@@ -164,7 +197,7 @@ public class NotificationTransformerTest {
     }
 
     @Test
-    public void shallSetCertificateTypeVersionHeaderOnTransformedMessage() throws Exception {
+    void shallSetCertificateTypeVersionHeaderOnTransformedMessage() throws Exception {
         final var notificationMessage = createNotificationMessage();
         final var expectedCertificateTypeVersion = "CERTIFICATE_TYPE";
         final var mockMessage = mock(Message.class);
@@ -179,7 +212,7 @@ public class NotificationTransformerTest {
     }
 
     @Test
-    public void shallUseCertificateTypeVersionHeaderIfAlreadyExistsOnTransformedMessage() throws Exception {
+    void shallUseCertificateTypeVersionHeaderIfAlreadyExistsOnTransformedMessage() throws Exception {
         final var notificationMessage = createNotificationMessage();
         final var expectedCertificateTypeVersion = "CERTIFICATE_TYPE";
         final var mockMessage = mock(Message.class);
@@ -193,7 +226,7 @@ public class NotificationTransformerTest {
     }
 
     @Test
-    public void shallSendResultMessageOnTransformationError() throws Exception {
+    void shallSendResultMessageOnTransformationError() throws Exception {
         final var notificationMessage = createNotificationMessage();
         final var mockNotificationResultMessage = mock(NotificationResultMessage.class);
         final var mockMessage = mock(Message.class);
@@ -207,11 +240,11 @@ public class NotificationTransformerTest {
 
         try {
             notificationTransformer.process(mockMessage);
-            fail("Should have thrown exception due to transformation error!");
+            Assertions.fail("Should have thrown exception due to transformation error!");
         } catch (Exception e) {
             verify(notificationResultMessageSender).sendResultMessage(captureNotificationResultMessage.capture());
 
-            assertEquals(mockNotificationResultMessage, captureNotificationResultMessage.getValue());
+            Assertions.assertEquals(mockNotificationResultMessage, captureNotificationResultMessage.getValue());
         }
     }
 

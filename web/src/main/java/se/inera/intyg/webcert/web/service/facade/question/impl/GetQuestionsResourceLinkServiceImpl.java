@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -26,15 +26,15 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.link.ResourceLink;
 import se.inera.intyg.common.support.facade.model.question.Question;
-import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
-import se.inera.intyg.webcert.web.service.arende.ArendeService;
+import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsAvailableFunctionsService;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsResourceLinkService;
-import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.util.UtkastUtil;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
@@ -44,28 +44,38 @@ public class GetQuestionsResourceLinkServiceImpl implements GetQuestionsResource
 
     private final GetQuestionsAvailableFunctionsService getQuestionsAvailableFunctionsService;
     private final CertificateAccessServiceHelper certificateAccessServiceHelper;
-    private final ArendeService arendeService;
-    private final HsaOrganizationsService hsaOrganizationsService;
-    private final FragaSvarService fragaSvarService;
+    private final GetCertificateFacadeService getCertificateFacadeService;
 
     @Autowired
     public GetQuestionsResourceLinkServiceImpl(GetQuestionsAvailableFunctionsService getQuestionsAvailableFunctionsService,
-        CertificateAccessServiceHelper certificateAccessServiceHelper,
-        ArendeService arendeService, HsaOrganizationsService hsaOrganizationsService, FragaSvarService fragaSvarService) {
+        CertificateAccessServiceHelper certificateAccessServiceHelper, GetCertificateFacadeService getCertificateFacadeService) {
         this.getQuestionsAvailableFunctionsService = getQuestionsAvailableFunctionsService;
         this.certificateAccessServiceHelper = certificateAccessServiceHelper;
-        this.arendeService = arendeService;
-        this.hsaOrganizationsService = hsaOrganizationsService;
-        this.fragaSvarService = fragaSvarService;
+        this.getCertificateFacadeService = getCertificateFacadeService;
     }
 
     @Override
     public List<ResourceLinkDTO> get(Question question) {
+        if (useLinksProvidedInQuestion(question)) {
+            return question.getLinks().stream()
+                .map(this::convertLinksProvidedInQuestion)
+                .collect(Collectors.toList());
+        }
+
+        final var certificate = getCertificateFacadeService.getCertificate(question.getCertificateId(), false, false);
+        return get(certificate, question);
+    }
+
+    private static boolean useLinksProvidedInQuestion(Question question) {
+        return question.getLinks() != null;
+    }
+
+    private List<ResourceLinkDTO> get(Certificate certificate, Question question) {
         if (question.getSent() == null) {
             return Collections.emptyList();
         }
 
-        final var accessEvaluationParameters = createAccessEvaluationParameters(question);
+        final var accessEvaluationParameters = createAccessEvaluationParameters(certificate);
         final var availableFunctions = getQuestionsAvailableFunctionsService.get(question);
         final var functions = getAccessFunctions();
         return availableFunctions.stream()
@@ -82,38 +92,54 @@ public class GetQuestionsResourceLinkServiceImpl implements GetQuestionsResource
     @Override
     public Map<Question, List<ResourceLinkDTO>> get(List<Question> questions) {
         final var questionResourceLinkDTOHashMap = new HashMap<Question, List<ResourceLinkDTO>>();
+
+        if (questions.isEmpty()) {
+            return questionResourceLinkDTOHashMap;
+        }
+
+        if (useLinksProvidedInQuestions(questions)) {
+            return questions.stream()
+                .collect(Collectors.toMap(
+                    question -> question,
+                    question -> question.getLinks().stream()
+                        .map(this::convertLinksProvidedInQuestion)
+                        .collect(Collectors.toList())
+                ));
+        }
+
+        final var certificate = getCertificateFacadeService.getCertificate(questions.get(0).getCertificateId(), false, false);
+
         for (Question question : questions) {
-            final var resourceLinkDTOS = get(question);
+            final var resourceLinkDTOS = get(certificate, question);
             questionResourceLinkDTOHashMap.put(question, resourceLinkDTOS);
         }
         return questionResourceLinkDTOHashMap;
     }
 
-    private AccessEvaluationParameters createAccessEvaluationParameters(Question question) {
-        final var arende = arendeService.getArende(question.getId());
-        if (arende == null) {
-            final var fragaSvar = fragaSvarService.getFragaSvarById(Long.parseLong(question.getId()));
-            return getAccessEvaluationParameters(
-                fragaSvar.getVardperson().getEnhetsId(),
-                fragaSvar.getIntygsReferens().getIntygsTyp(),
-                fragaSvar.getIntygsReferens().getPatientId()
-            );
-        }
-        return getAccessEvaluationParameters(
-            arende.getEnhetId(),
-            arende.getIntygTyp(),
-            Personnummer.createPersonnummer(arende.getPatientPersonId()).orElseThrow()
+    private static boolean useLinksProvidedInQuestions(List<Question> questions) {
+        return questions.stream().anyMatch(GetQuestionsResourceLinkServiceImpl::useLinksProvidedInQuestion);
+    }
+
+    private ResourceLinkDTO convertLinksProvidedInQuestion(ResourceLink link) {
+        return ResourceLinkDTO.create(
+            ResourceLinkTypeDTO.valueOf(link.getType().name()),
+            link.getTitle(),
+            link.getName(),
+            link.getDescription(),
+            link.getBody(),
+            link.isEnabled()
         );
     }
 
-    private AccessEvaluationParameters getAccessEvaluationParameters(String unitId, String certificateType, Personnummer patientId) {
-        final var careProviderId = hsaOrganizationsService.getVardgivareOfVardenhet(unitId);
+    private AccessEvaluationParameters createAccessEvaluationParameters(Certificate certificate) {
+        final var metadata = certificate.getMetadata();
         return AccessEvaluationParameters.create(
-            certificateType,
+            metadata.getType(),
             null,
-            UtkastUtil.getCareUnit(careProviderId, unitId),
-            patientId,
-            false);
+            UtkastUtil.getCareUnit(metadata.getCareProvider().getUnitId(), metadata.getUnit().getUnitId()),
+            Personnummer.createPersonnummer(metadata.getPatient().getPersonId().getId()).orElseThrow(),
+            false
+        );
     }
 
     private Map<ResourceLinkTypeDTO, GetQuestionsResourceLinkServiceImpl.AccessCheck> getAccessFunctions() {

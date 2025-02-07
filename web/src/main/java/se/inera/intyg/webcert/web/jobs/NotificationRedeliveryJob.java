@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -21,10 +21,13 @@ package se.inera.intyg.webcert.web.jobs;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import se.inera.intyg.webcert.logging.MdcHelper;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.web.service.notification.NotificationRedeliveryJobService;
 
 @Component
@@ -34,6 +37,9 @@ public class NotificationRedeliveryJob {
 
     @Autowired
     private NotificationRedeliveryJobService notificationRedeliveryJobService;
+
+    @Autowired
+    private MdcHelper mdcHelper;
 
     private static final String JOB_NAME = "NotificationRedeliveryJob.run";
     private static final String LOCK_AT_MOST = "PT29S";
@@ -48,9 +54,14 @@ public class NotificationRedeliveryJob {
         LOG.debug("Running notification redelivery job...");
 
         try {
+            MDC.put(MdcLogConstants.TRACE_ID_KEY, mdcHelper.traceId());
+            MDC.put(MdcLogConstants.SPAN_ID_KEY, mdcHelper.spanId());
+
             notificationRedeliveryJobService.resendScheduledNotifications(batchSize);
         } catch (Exception ex) {
             LOG.error("Redelivery job failed due to unexpected error: ", ex);
+        } finally {
+            MDC.clear();
         }
     }
 }

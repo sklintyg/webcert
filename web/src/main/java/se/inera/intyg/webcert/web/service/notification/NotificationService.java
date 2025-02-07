@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,9 +18,11 @@
  */
 package se.inera.intyg.webcert.web.service.notification;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
@@ -87,12 +89,12 @@ public interface NotificationService {
     /**
      * New question received from recipient (NYFRFM).
      */
-    void sendNotificationForQuestionReceived(Arende arende);
+    void sendNotificationForQuestionReceived(Arende arende, String careProviderId, LocalDateTime issuingDate);
 
     /**
      * New answer received from recipient (NYSVFM).
      */
-    void sendNotificationForAnswerRecieved(Arende arende);
+    void sendNotificationForAnswerRecieved(Arende arende, String careProviderId, LocalDateTime issuingDate);
 
     void sendNotificationForQAs(String intygsId, NotificationEvent event);
 
@@ -113,4 +115,6 @@ public interface NotificationService {
      * @return a list of all matching notifications.
      */
     List<Handelse> findNotifications(IntygWithNotificationsRequest request);
+
+    void send(NotificationMessage notificationMessage, String enhetsId, String intygTypeVersion);
 }

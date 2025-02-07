@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -37,9 +37,9 @@ import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
-import se.inera.intyg.infra.integration.pu.model.Person;
-import se.inera.intyg.infra.integration.pu.model.PersonSvar;
-import se.inera.intyg.infra.integration.pu.services.PUService;
+import se.inera.intyg.infra.pu.integration.api.model.Person;
+import se.inera.intyg.infra.pu.integration.api.model.PersonSvar;
+import se.inera.intyg.infra.pu.integration.api.services.PUService;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
@@ -78,11 +78,10 @@ import se.inera.intyg.webcert.web.service.utkast.util.UtkastServiceHelper;
 @Service
 public class CopyUtkastServiceImpl implements CopyUtkastService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CopyUtkastServiceImpl.class);
     public static final String CREATE_REPLACEMENT = "create replacement";
     public static final String ORIGINAL_CERTIFICATE_IS_REVOKED = "Original certificate is revoked";
     public static final String CREATE_RENEWAL = "create renewal";
-
+    private static final Logger LOG = LoggerFactory.getLogger(CopyUtkastServiceImpl.class);
     @Autowired
     private IntygService intygService;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,11 +18,11 @@
  */
 package se.inera.intyg.webcert.intygstjanststub;
 
+import jakarta.xml.bind.JAXB;
 import java.io.StringReader;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.xml.bind.JAXB;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.fkparent.model.converter.CertificateStateHolderConverter;
 import se.inera.intyg.common.support.modules.support.api.CertificateHolder;

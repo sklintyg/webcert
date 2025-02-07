@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (C) 2016 Inera AB (http://www.inera.se)
+  ~ Copyright (C) 2025 Inera AB (http://www.inera.se)
   ~
   ~ This file is part of sklintyg (https://github.com/sklintyg).
   ~
@@ -150,7 +150,7 @@
     <!-- Prometheus, metrics -->
     <servlet>
         <servlet-name>metrics</servlet-name>
-        <servlet-class>io.prometheus.client.exporter.MetricsServlet</servlet-class>
+        <servlet-class>io.prometheus.client.servlet.jakarta.exporter.MetricsServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -227,11 +227,11 @@
     </filter-mapping>
 
     <filter>
-        <filter-name>LogMDCFilter</filter-name>
-        <filter-class>se.inera.intyg.infra.monitoring.logging.LogMDCServletFilter</filter-class>
+        <filter-name>MdcServletFilter</filter-name>
+        <filter-class>se.inera.intyg.webcert.logging.MdcServletFilter</filter-class>
     </filter>
     <filter-mapping>
-        <filter-name>LogMDCFilter</filter-name>
+        <filter-name>MdcServletFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
@@ -242,25 +242,6 @@
     <filter-mapping>
         <filter-name>defaultCharacterEncodingFilter</filter-name>
         <url-pattern>/v2/visa/intyg/*</url-pattern>
-    </filter-mapping>
-
-    <filter>
-        <filter-name>idpSelectionFilter</filter-name>
-        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>idpSelectionFilter</filter-name>
-        <url-pattern>/webcert/web/user/*</url-pattern>
-        <url-pattern>/web/maillink/*</url-pattern>
-    </filter-mapping>
-
-    <filter>
-        <filter-name>elegRedirectFilter</filter-name>
-        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>elegRedirectFilter</filter-name>
-        <url-pattern>/web/eleglogin</url-pattern>
     </filter-mapping>
 
     <filter>
@@ -322,6 +303,16 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
+    <!-- Filter for logging user info -->
+    <filter>
+        <filter-name>MdcUserServletFilter</filter-name>
+        <filter-class>se.inera.intyg.webcert.web.logging.MdcUserServletFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>MdcUserServletFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
     <filter>
         <filter-name>internalApiFilter</filter-name>
         <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
@@ -350,22 +341,5 @@
         <filter-name>allowCorsFilter</filter-name>
         <url-pattern>/api/v1/session/invalidate</url-pattern>
     </filter-mapping>
-
-    <welcome-file-list>
-        <welcome-file>boot-app.jsp</welcome-file>
-
-    </welcome-file-list>
-    <error-page>
-        <error-code>403</error-code>
-        <location>/error.jsp?reason=denied</location>
-    </error-page>
-    <error-page>
-        <error-code>404</error-code>
-        <location>/error.jsp?reason=notfound</location>
-    </error-page>
-    <error-page>
-        <error-code>500</error-code>
-        <location>/error.jsp?reason=error</location>
-    </error-page>
 
 </web-app>

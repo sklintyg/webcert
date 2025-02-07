@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -39,16 +39,17 @@ import static se.inera.intyg.webcert.notification_sender.notifications.routes.No
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.PostConstruct;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.Session;
+import jakarta.jms.TextMessage;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import javax.annotation.PostConstruct;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Session;
-import javax.jms.TextMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,6 +77,7 @@ import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.csintegration.certificate.IntegratedUnitNotificationEvaluator;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
@@ -131,6 +133,9 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Autowired
     private IntygService intygService;
+
+    @Autowired
+    private IntegratedUnitNotificationEvaluator integratedUnitNotificationEvaluator;
 
     @PostConstruct
     public void checkJmsTemplate() {
@@ -254,7 +259,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void sendNotificationForQuestionReceived(FragaSvar fragaSvar) {
-        if (integreradeEnheterRegistry.isEnhetIntegrerad(fragaSvar.getVardperson().getEnhetsId(), Fk7263EntryPoint.MODULE_ID)) {
+        if (unitIsIntegrated(fragaSvar) && shouldNotRecieveNotificationByMail(fragaSvar)) {
             sendNotificationForQAs(fragaSvar.getIntygsReferens().getIntygsId(), NotificationEvent.NEW_QUESTION_FROM_RECIPIENT,
                 fragaSvar.getSistaDatumForSvar(), ArendeAmne.fromAmne(fragaSvar.getAmne()).orElse(null));
         } else {
@@ -265,9 +270,22 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
+    private boolean unitIsIntegrated(FragaSvar fragaSvar) {
+        return integreradeEnheterRegistry.isEnhetIntegrerad(fragaSvar.getVardperson().getEnhetsId(), Fk7263EntryPoint.MODULE_ID);
+    }
+
+    private boolean shouldNotRecieveNotificationByMail(FragaSvar fragaSvar) {
+        return !integratedUnitNotificationEvaluator.mailNotification(
+            fragaSvar.getVardperson().getVardgivarId(),
+            fragaSvar.getVardperson().getEnhetsId(),
+            fragaSvar.getIntygsReferens().getIntygsId(),
+            fragaSvar.getIntygsReferens().getSigneringsDatum()
+        );
+    }
+
     @Override
     public void sendNotificationForAnswerRecieved(FragaSvar fragaSvar) {
-        if (integreradeEnheterRegistry.isEnhetIntegrerad(fragaSvar.getVardperson().getEnhetsId(), Fk7263EntryPoint.MODULE_ID)) {
+        if (unitIsIntegrated(fragaSvar)) {
             sendNotificationForQAs(fragaSvar.getIntygsReferens().getIntygsId(), NotificationEvent.NEW_ANSWER_FROM_RECIPIENT);
         } else {
             sendNotificationForIncomingAnswerByMail(new MailNotification(fragaSvar.getInternReferens().toString(),
@@ -278,8 +296,8 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public void sendNotificationForQuestionReceived(Arende arende) {
-        if (integreradeEnheterRegistry.isEnhetIntegrerad(arende.getEnhetId(), arende.getIntygTyp())) {
+    public void sendNotificationForQuestionReceived(Arende arende, String careProviderId, LocalDateTime issuingDate) {
+        if (unitIsIntegrated(arende) && shouldNotRecieveNotificationByMail(arende, careProviderId, issuingDate)) {
             sendNotificationForQAs(arende.getIntygsId(), NotificationEvent.NEW_QUESTION_FROM_RECIPIENT, arende.getSistaDatumForSvar(),
                 arende.getAmne());
         } else {
@@ -288,14 +306,24 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
+    private boolean unitIsIntegrated(Arende arende) {
+        return integreradeEnheterRegistry.isEnhetIntegrerad(arende.getEnhetId(), arende.getIntygTyp());
+    }
+
     @Override
-    public void sendNotificationForAnswerRecieved(Arende arende) {
-        if (integreradeEnheterRegistry.isEnhetIntegrerad(arende.getEnhetId(), arende.getIntygTyp())) {
+    public void sendNotificationForAnswerRecieved(Arende arende, String careProviderId, LocalDateTime issuingDate) {
+        if (unitIsIntegrated(arende) && shouldNotRecieveNotificationByMail(arende, careProviderId, issuingDate)) {
             sendNotificationForQAs(arende.getIntygsId(), NotificationEvent.NEW_ANSWER_FROM_RECIPIENT);
         } else {
             sendNotificationForIncomingAnswerByMail(new MailNotification(arende.getMeddelandeId(), arende.getIntygsId(),
                 arende.getIntygTyp(), arende.getEnhetId(), arende.getEnhetName(), arende.getSigneratAv()));
         }
+    }
+
+    private boolean shouldNotRecieveNotificationByMail(Arende arende, String careProviderId, LocalDateTime issuingDate) {
+        return !integratedUnitNotificationEvaluator.mailNotification(
+            careProviderId, arende.getEnhetId(), arende.getIntygsId(), issuingDate
+        );
     }
 
     @Override
@@ -398,7 +426,7 @@ public class NotificationServiceImpl implements NotificationService {
         ArendeAmne amne, LocalDate sistaDatumForSvar) {
 
         Optional<SchemaVersion> version = sendNotificationStrategy.decideNotificationForIntyg(utkast);
-        if (!version.isPresent()) {
+        if (version.isEmpty()) {
             LOGGER.debug("Schema version is not present. Notification message not sent for event {}", handelse);
             return;
         }
@@ -431,7 +459,7 @@ public class NotificationServiceImpl implements NotificationService {
         LocalDate sistaDatumForSvar) {
 
         final var optionalSchemaVersion = sendNotificationStrategy.decideNotificationForIntyg(certificate.getUtlatande());
-        if (!optionalSchemaVersion.isPresent()) {
+        if (optionalSchemaVersion.isEmpty()) {
             LOGGER.debug("Schema version is not present. Notification message not sent for event {}", handelse);
             return;
         }
@@ -507,49 +535,29 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private HandelsekodEnum getHandelseV1(NotificationEvent event) {
-        switch (event) {
-            case QUESTION_FROM_CARE_WITH_ANSWER_HANDLED:
-                return HANFRFV;
-            case QUESTION_FROM_CARE_WITH_ANSWER_UNHANDLED:
-            case NEW_ANSWER_FROM_RECIPIENT:
-                return NYSVFM;
-            case NEW_ANSWER_FROM_CARE:
-            case QUESTION_FROM_RECIPIENT_HANDLED:
-                return HANFRFM;
-            case NEW_QUESTION_FROM_RECIPIENT:
-            case QUESTION_FROM_RECIPIENT_UNHANDLED:
-                return NYFRFM;
-            case NEW_QUESTION_FROM_CARE:
-                return NYFRFV;
-            case QUESTION_FROM_CARE_HANDLED:
-            case QUESTION_FROM_CARE_UNHANDLED:
-                return null;
-        }
-        return null;
+        return switch (event) {
+            case QUESTION_FROM_CARE_WITH_ANSWER_HANDLED -> HANFRFV;
+            case QUESTION_FROM_CARE_WITH_ANSWER_UNHANDLED, NEW_ANSWER_FROM_RECIPIENT -> NYSVFM;
+            case NEW_ANSWER_FROM_CARE, QUESTION_FROM_RECIPIENT_HANDLED -> HANFRFM;
+            case NEW_QUESTION_FROM_RECIPIENT, QUESTION_FROM_RECIPIENT_UNHANDLED -> NYFRFM;
+            case NEW_QUESTION_FROM_CARE -> NYFRFV;
+            case QUESTION_FROM_CARE_HANDLED, QUESTION_FROM_CARE_UNHANDLED -> null;
+        };
     }
 
     private HandelsekodEnum getHandelseV3(NotificationEvent event) {
-        switch (event) {
-            case QUESTION_FROM_CARE_WITH_ANSWER_HANDLED:
-            case QUESTION_FROM_CARE_WITH_ANSWER_UNHANDLED:
-            case QUESTION_FROM_CARE_HANDLED:
-            case QUESTION_FROM_CARE_UNHANDLED:
-                return HANFRFV;
-            case NEW_ANSWER_FROM_CARE:
-            case QUESTION_FROM_RECIPIENT_HANDLED:
-            case QUESTION_FROM_RECIPIENT_UNHANDLED:
-                return HANFRFM;
-            case NEW_QUESTION_FROM_CARE:
-                return NYFRFV;
-            case NEW_QUESTION_FROM_RECIPIENT:
-                return NYFRFM;
-            case NEW_ANSWER_FROM_RECIPIENT:
-                return NYSVFM;
-        }
-        return null;
+        return switch (event) {
+            case QUESTION_FROM_CARE_WITH_ANSWER_HANDLED, QUESTION_FROM_CARE_WITH_ANSWER_UNHANDLED, QUESTION_FROM_CARE_HANDLED, QUESTION_FROM_CARE_UNHANDLED ->
+                HANFRFV;
+            case NEW_ANSWER_FROM_CARE, QUESTION_FROM_RECIPIENT_HANDLED, QUESTION_FROM_RECIPIENT_UNHANDLED -> HANFRFM;
+            case NEW_QUESTION_FROM_CARE -> NYFRFV;
+            case NEW_QUESTION_FROM_RECIPIENT -> NYFRFM;
+            case NEW_ANSWER_FROM_RECIPIENT -> NYSVFM;
+        };
     }
 
-    private void send(NotificationMessage notificationMessage, String enhetsId, String intygTypeVersion) {
+    @Override
+    public void send(NotificationMessage notificationMessage, String enhetsId, String intygTypeVersion) {
         if (Objects.isNull(jmsTemplateForAggregation)) {
             LOGGER.warn("Can not notify listeners! The JMS transport is not initialized.");
             return;
@@ -580,7 +588,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     private String currentUserId() {
         final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return (Objects.isNull(auth)) ? null : ((WebCertUser) auth.getPrincipal()).getHsaId();
+        return auth == null || !(auth.getPrincipal() instanceof WebCertUser) ? null : ((WebCertUser) auth.getPrincipal()).getHsaId();
     }
 
     private Utkast getUtkast(String intygsId) {
@@ -597,26 +605,27 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private void sendNotificationForIncomingQuestionByMail(MailNotification mailNotification) {
-        // send mail to enhet to inform about new question
         try {
             mailNotificationService.sendMailForIncomingQuestion(mailNotification);
-        } catch (MailSendException e) {
-            LOGGER.error("Notification mail for question '" + mailNotification.getQaId()
-                + "' concerning certificate '" + mailNotification.getCertificateId()
-                + "' couldn't be sent to " + mailNotification.getCareUnitId()
-                + " (" + mailNotification.getCareUnitName() + "): " + e.getMessage());
+        } catch (MailSendException ex) {
+            LOGGER.error(
+                String.format("Notification mail for question '%s' concerning certificate '%s' couldn't be sent to '%s' (%s)",
+                    mailNotification.getQaId(), mailNotification.getCertificateId(), mailNotification.getCareUnitId(),
+                    mailNotification.getCareUnitName()), ex);
         }
     }
 
     private void sendNotificationForIncomingAnswerByMail(MailNotification mailNotification) {
-        // send mail to enhet to inform about new question
         try {
             mailNotificationService.sendMailForIncomingAnswer(mailNotification);
-        } catch (MailSendException e) {
-            LOGGER.error("Notification mail for answer '" + mailNotification.getQaId()
-                + "' concerning certificate '" + mailNotification.getCertificateId()
-                + "' couldn't be sent to " + mailNotification.getCareUnitId()
-                + " (" + mailNotification.getCareUnitName() + "): " + e.getMessage());
+        } catch (MailSendException ex) {
+            LOGGER.error(
+                String.format("Notification mail for answer '%s' concerning certificate '%s' couldn't be sent to '%s' (%s)",
+                    mailNotification.getQaId(), mailNotification.getCertificateId(), mailNotification.getCareUnitId(),
+                    mailNotification.getCareUnitName()
+                ),
+                ex
+            );
         }
     }
 

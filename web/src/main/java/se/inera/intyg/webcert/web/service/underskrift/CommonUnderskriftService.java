@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,16 +18,20 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift;
 
+import java.util.Optional;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.web.csintegration.certificate.FinalizedCertificateSignature;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 public interface CommonUnderskriftService {
 
-    SignaturBiljett skapaSigneringsBiljettMedDigest(String intygsId, String intygsTyp, long version, String intygJson,
-        SignMethod signMethod, String ticketId, boolean isWc2ClientRequest);
+    SignaturBiljett skapaSigneringsBiljettMedDigest(String intygsId, String intygsTyp, long version, Optional<String> intygJson,
+        SignMethod signMethod, String ticketId, String certificateXml);
 
     SignaturBiljett finalizeSignature(SignaturBiljett biljett, byte[] signatur, String certifikat, Utkast utkast,
         WebCertUser user);
+
+    FinalizedCertificateSignature finalizeSignatureForCS(SignaturBiljett ticket, byte[] signatur, String certifikat);
 }

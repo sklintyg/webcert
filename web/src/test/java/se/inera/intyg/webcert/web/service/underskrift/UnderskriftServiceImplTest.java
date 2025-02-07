@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,8 +18,34 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.AdditionalMatchers.or;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus.SIGNERAD;
+import static se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil.ENHET_ID;
+import static se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil.INTYG_ID;
+import static se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil.INTYG_TYP;
+import static se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil.PERSON_ID;
+import static se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil.TICKET_ID;
+import static se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil.createSignaturBiljett;
+import static se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil.createUtkast;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import jakarta.persistence.OptimisticLockException;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,7 +68,11 @@ import se.inera.intyg.common.support.modules.support.api.exception.ModuleExcepti
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
-import se.inera.intyg.infra.security.common.model.*;
+import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Feature;
+import se.inera.intyg.infra.security.common.model.Privilege;
+import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
@@ -63,27 +93,13 @@ import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 import se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil;
 import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
 import se.inera.intyg.webcert.web.service.underskrift.validator.DraftModelToXmlValidator;
+import se.inera.intyg.webcert.web.service.underskrift.xmldsig.UtkastModelToXMLConverter;
 import se.inera.intyg.webcert.web.service.underskrift.xmldsig.XmlUnderskriftServiceImpl;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
 import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
-
-import javax.persistence.OptimisticLockException;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.Optional;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.AdditionalMatchers.or;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-import static se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus.SIGNERAD;
-import static se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil.*;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetup {
@@ -136,6 +152,9 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
     @Mock
     private DraftModelToXmlValidator draftModelToXMLValidator;
 
+    @Mock
+    private UtkastModelToXMLConverter utkastModelToXMLConverter;
+
     @InjectMocks
     private UnderskriftServiceImpl testee;
 
@@ -171,7 +190,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
             "utkast", ImmutableMap.of(),
             "intyg", ImmutableMap.of()));
 
-        when(logRequestFactory.createLogRequestFromUtkast(any(Utkast.class))).thenReturn(new LogRequest());
+        when(logRequestFactory.createLogRequestFromUtkast(any(Utkast.class))).thenReturn(LogRequest.builder().build());
     }
 
     @Test
@@ -180,13 +199,14 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
             .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", vardperson,
                 ENHET_ID, PERSON_ID)));
 
-        when(xmlUnderskriftService.skapaSigneringsBiljettMedDigest(anyString(), anyString(), anyLong(), anyString(), any(SignMethod.class),
-            anyString(), any(Boolean.class)))
+        when(xmlUnderskriftService.skapaSigneringsBiljettMedDigest(anyString(), anyString(), anyLong(), any(),
+            any(SignMethod.class),
+            anyString(), any()))
             .thenReturn(createSignaturBiljett(SignaturStatus.BEARBETAR));
 
         when(draftModelToXMLValidator.validateDraftModelAsXml(any())).thenReturn(ValidateXmlResponse.createValidResponse());
 
-        SignaturBiljett sb = testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.NETID_PLUGIN, TICKET_ID, false);
+        SignaturBiljett sb = testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.NETID_PLUGIN, TICKET_ID);
         assertNotNull(sb.getIntygSignature());
         assertNotNull(sb.getHash());
     }
@@ -194,7 +214,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
     @Test(expected = WebCertServiceException.class)
     public void testStartSignNoUtkastFound() {
         when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.empty());
-        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, false);
+        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID);
     }
 
     @Test(expected = OptimisticLockException.class)
@@ -202,7 +222,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
         when(utkastRepository.findById(INTYG_ID))
             .thenReturn(Optional.of(createUtkast(INTYG_ID, 2L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", vardperson,
                 ENHET_ID, PERSON_ID)));
-        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, false);
+        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID);
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -210,7 +230,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
         when(utkastRepository.findById(INTYG_ID))
             .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_INCOMPLETE, "model", vardperson,
                 ENHET_ID, PERSON_ID)));
-        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, false);
+        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID);
     }
 
     @Test
@@ -223,8 +243,8 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
             .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, doiTyp, UtkastStatus.DRAFT_COMPLETE, "model", vardperson,
                 ENHET_ID, PERSON_ID, ersattandeIntygSkapad)));
 
-        when(xmlUnderskriftService.skapaSigneringsBiljettMedDigest(anyString(), anyString(), anyLong(), anyString(), any(SignMethod.class),
-            anyString(), any(Boolean.class)))
+        when(xmlUnderskriftService.skapaSigneringsBiljettMedDigest(anyString(), anyString(), anyLong(), any(), any(SignMethod.class),
+            anyString(), any()))
             .thenReturn(createSignaturBiljett(SignaturStatus.BEARBETAR));
 
         when(utkastService.checkIfPersonHasExistingIntyg(any(), any(), any())).thenReturn(ImmutableMap.of(
@@ -238,7 +258,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
 
         user.setFeatures(ImmutableMap.of(feature.getName(), feature));
 
-        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, false);
+        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID);
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -246,7 +266,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
         when(utkastRepository.findById(INTYG_ID))
             .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.SIGNED, "model", vardperson,
                 ENHET_ID, PERSON_ID)));
-        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, false);
+        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID);
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -255,10 +275,10 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
             .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.SIGNED, "model", vardperson,
                 ENHET_ID, PERSON_ID)));
 
-        when(draftModelToXMLValidator.validateDraftModelAsXml(any())).
-            thenReturn(new ValidateXmlResponse(ValidationStatus.INVALID, Collections.singletonList("Error")));
+        when(draftModelToXMLValidator.validateDraftModelAsXml(any()))
+            .thenReturn(new ValidateXmlResponse(ValidationStatus.INVALID, Collections.singletonList("Error")));
 
-        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, false);
+        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID);
     }
 
     @Test

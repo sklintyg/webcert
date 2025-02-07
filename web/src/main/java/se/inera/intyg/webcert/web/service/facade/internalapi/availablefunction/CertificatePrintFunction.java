@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.springframework.stereotype.Component;
+import se.inera.intyg.common.ag114.support.Ag114EntryPoint;
 import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueBoolean;
@@ -75,6 +76,11 @@ public class CertificatePrintFunction implements AvailableFunctions {
     }
 
     private static boolean isCustomizedPrintAvailable(Certificate certificate) {
+
+        if (isCertificateOfType(certificate, Ag114EntryPoint.MODULE_ID)) {
+            return true;
+        }
+
         return isCertificateOfType(certificate, Ag7804EntryPoint.MODULE_ID)
             && hasQuestion(certificate, AVSTANGNING_SMITTSKYDD_QUESTION_ID)
             && isBooleanValueNullOrFalse(getQuestionAvstagningSmittskyddValue(certificate));

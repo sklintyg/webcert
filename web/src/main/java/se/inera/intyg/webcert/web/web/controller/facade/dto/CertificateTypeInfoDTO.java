@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
 import java.util.List;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateConfirmationModal;
 
 public class CertificateTypeInfoDTO {
 
@@ -29,6 +30,7 @@ public class CertificateTypeInfoDTO {
     private String detailedDescription;
     private List<ResourceLinkDTO> links;
     private String message;
+    private CertificateConfirmationModal confirmationModal;
 
     public CertificateTypeInfoDTO() {
     }
@@ -87,5 +89,13 @@ public class CertificateTypeInfoDTO {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public CertificateConfirmationModal getConfirmationModal() {
+        return confirmationModal;
+    }
+
+    public void setConfirmationModal(CertificateConfirmationModal confirmationModal) {
+        this.confirmationModal = confirmationModal;
     }
 }

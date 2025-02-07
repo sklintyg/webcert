@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -86,7 +86,7 @@ class ChangeUnitImplTest {
 
         doReturn(true)
             .when(dssSignatureService)
-            .isUnitInIeWhitelist(NEW_UNIT_ID);
+            .shouldUseSigningService(NEW_UNIT_ID);
     }
 
     void setUpUserForFailedChange() {
@@ -116,7 +116,7 @@ class ChangeUnitImplTest {
 
             changeUnitService.change(NEW_UNIT_ID);
 
-            verify(dssSignatureService, times(1)).isUnitInIeWhitelist(NEW_UNIT_ID);
+            verify(dssSignatureService, times(1)).shouldUseSigningService(NEW_UNIT_ID);
             assertTrue(webcertUser.isUseSigningService());
         }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -84,6 +84,7 @@ public final class AccessServiceEvaluation {
     private boolean checkTestCertificate;
     private boolean isTestCertificate;
     private boolean checkLatestCertificateTypeVersion;
+    private boolean checkInactiveCertificateType;
 
     private final List<String> excludeRenewCertificateTypes = new ArrayList<>();
     private final List<String> excludeUnitCertificateTypes = new ArrayList<>();
@@ -419,6 +420,11 @@ public final class AccessServiceEvaluation {
         return this;
     }
 
+    public AccessServiceEvaluation checkInactiveCertificateType() {
+        this.checkInactiveCertificateType = true;
+        return this;
+    }
+
     /**
      * Evaluate criterias and returns an AccessResult.
      *
@@ -426,6 +432,10 @@ public final class AccessServiceEvaluation {
      */
     public AccessResult evaluate() {
         Optional<AccessResult> accessResult = isAuthorized(certificateType, user, features, privileges);
+
+        if (checkInactiveCertificateType && accessResult.isEmpty()) {
+            accessResult = isCertificateTypeInactive(user, certificateType);
+        }
 
         if (!blockFeatures.isEmpty() && accessResult.isEmpty()) {
             accessResult = isBlockedRuleValid(user, blockFeatures);
@@ -501,6 +511,18 @@ public final class AccessServiceEvaluation {
         return Optional.of(
             AccessResult.create(AccessResultCode.NOT_LATEST_MAJOR_VERSION,
                 createMessage(String.format("Feature %s is active and blocks the action", feature)))
+        );
+    }
+
+    private Optional<AccessResult> isCertificateTypeInactive(WebCertUser user, String certificateType) {
+        final var feature = getFeature(user, AuthoritiesConstants.FEATURE_INACTIVE_CERTIFICATE_TYPE);
+        if (!isFeatureActive(feature, certificateType)) {
+            return Optional.empty();
+        }
+
+        return Optional.of(
+            AccessResult.create(AccessResultCode.INACTIVE_CERTIFICATE_TYPE,
+                createMessage(String.format("Feature %s is active and blocks the action for certificate type %s", feature, certificateType)))
         );
     }
 
@@ -666,11 +688,6 @@ public final class AccessServiceEvaluation {
             }
         }
 
-        if (user.getOrigin().equals(UserOriginType.READONLY.name()) && isUserLoggedInOnDifferentUnit(vardenhet.getEnhetsid())) {
-            return Optional.of(AccessResult.create(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT,
-                createMessage(errorMessage)));
-        }
-
         if (!webCertUserService.isAuthorizedForUnit(vardenhet.getVardgivare().getVardgivarid(), vardenhet.getEnhetsid(),
             isReadOnlyOperation)) {
             return Optional.of(AccessResult.create(AccessResultCode.AUTHORIZATION_DIFFERENT_UNIT,
@@ -754,7 +771,7 @@ public final class AccessServiceEvaluation {
         }
 
         if (sj.length() > 0) {
-            return message + sj.toString();
+            return message + sj;
         }
         return message;
     }

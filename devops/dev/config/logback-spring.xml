@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<configuration scan="true" debug="true" scanPeriod="15 seconds">
+  <property name="APP_NAME" value="${APP_NAME:-webcert}"/>
+  <include resource="logback/logback-spring-base.xml"/>
+
+  <logger name="org.apache.cxf.interceptor" level="warn" />
+  <logger name="org.apache.cxf.services" level="warn" />
+  <logger name="org.apache.cxf.ws.addressing" level="warn" />
+
+  <root level="INFO">
+    <appender-ref ref="CONSOLE"/>
+  </root>
+
+  <!-- Enable this to test ecs logging in json.-->
+  <!--<root level="INFO">
+    <appender-ref ref="ECS_JSON_CONSOLE"/>
+  </root>-->
+
+</configuration>

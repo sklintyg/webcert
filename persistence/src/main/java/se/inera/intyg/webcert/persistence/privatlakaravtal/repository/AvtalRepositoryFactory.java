@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,9 +19,9 @@
 package se.inera.intyg.webcert.persistence.privatlakaravtal.repository;
 
 import com.google.common.base.Charsets;
+import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import javax.annotation.PostConstruct;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

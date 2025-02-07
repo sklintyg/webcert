@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -43,7 +43,7 @@ public class ListFilterConfigFactory {
     }
 
     public static ListFilterDateConfig fromDate() {
-        return new ListFilterDateConfig("FROM", "Från");
+        return new ListFilterDateConfig("FROM", "Från", LocalDateTime.now().minusMonths(3));
     }
 
     public static ListFilterDateConfig fromDateWithLimits(

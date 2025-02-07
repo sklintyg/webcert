@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -38,7 +38,7 @@ public interface ArendeRepositoryCustom extends ArendeFilteredRepositoryCustom {
      * @param intygsTyper Set of intygstyper that arendens related intyg must be of.
      */
     @Query("SELECT new se.inera.intyg.webcert.common.model.GroupableItem(a.id, a.enhetId, a.patientPersonId, a.intygTyp) "
-        + "FROM Arende a WHERE a.enhetId IN (:idList) AND a.status <> 'CLOSED' AND a.amne <> 'PAMINN' AND a.svarPaId = null "
+        + "FROM Arende a WHERE a.enhetId IN (:idList) AND a.status <> 'CLOSED' AND a.amne <> 'PAMINN' AND a.svarPaId IS NULL "
         + "AND a.intygTyp IN (:intygsTyper)")
     List<GroupableItem> getUnhandledByEnhetIdsAndIntygstyper(@Param("idList") List<String> enhetsIds,
         @Param("intygsTyper") Set<String> intygsTyper);

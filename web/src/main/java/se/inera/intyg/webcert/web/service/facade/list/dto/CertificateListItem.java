@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,12 +18,13 @@
  */
 package se.inera.intyg.webcert.web.service.facade.list.dto;
 
-import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColumnType;
-
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.TreeMap;
+import lombok.EqualsAndHashCode;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColumnType;
 
+@EqualsAndHashCode
 public class CertificateListItem {
 
     private final Map<String, Object> values;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -28,18 +28,20 @@ public class ConfigurationDTO {
     private List<Banner> banners;
     private String sakerhetstjanstIdpUrl;
     private String cgiFunktionstjansterIdpUrl;
+    private String forwardDraftOrQuestionUrl;
 
     public ConfigurationDTO(
         String version,
         List<Banner> banners,
         String ppHost,
         String sakerhetstjanstIdpUrl,
-        String cgiFunktionstjansterIdpUrl) {
+        String cgiFunktionstjansterIdpUrl, String forwardDraftOrQuestionUrl) {
         this.version = version;
         this.banners = banners;
         this.ppHost = ppHost;
         this.sakerhetstjanstIdpUrl = sakerhetstjanstIdpUrl;
         this.cgiFunktionstjansterIdpUrl = cgiFunktionstjansterIdpUrl;
+        this.forwardDraftOrQuestionUrl = forwardDraftOrQuestionUrl;
     }
 
     public ConfigurationDTO() {
@@ -63,6 +65,10 @@ public class ConfigurationDTO {
 
     public String getCgiFunktionstjansterIdpUrl() {
         return cgiFunktionstjansterIdpUrl;
+    }
+
+    public String getForwardDraftOrQuestionUrl() {
+        return forwardDraftOrQuestionUrl;
     }
 
     public String getPpHost() {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -26,7 +26,6 @@ import static se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkT
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -39,8 +38,10 @@ import se.inera.intyg.common.support.facade.model.CertificateRelationType;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
+import se.inera.intyg.common.support.facade.util.PatientToolkit;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.GetCertificatesAvailableFunctions;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
 import se.inera.intyg.webcert.web.service.facade.user.UserService;
@@ -77,12 +78,6 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     private static final String QUESTIONS_DESCRIPTION = "Hantera kompletteringsbegäran, frågor och svar";
     private static final String NEW_QUESTION_NAME = "Ny fråga";
     private static final String NEW_QUESTION_DESCRIPTION = "Här kan du ställa en ny fråga till Försäkringskassan.";
-    private static final String DB_WARNING = "Kontrollera namn och personnummer";
-    private static final String DB_WARNING_DESCRIPTION =
-        "När dödsbeviset signeras, skickas det samtidigt till Skatteverket och dödsfallet registreras.\n"
-            + "Ett dödsbevis utfärdat på fel person får stora konsekvenser för den enskilde personen.\n"
-            + "Kontrollera därför en extra gång att personuppgifterna stämmer.";
-    private static final String DB_TYPE = "db";
     private static final String LUAENA_TYPE = "luae_na";
     private static final String LUAENA_WARNING = "Kontrollera att du använder dig av rätt läkarutlåtande";
     private static final String LUAENA_WARNING_DESCRIPTION =
@@ -183,17 +178,6 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
                     ResourceLinkTypeDTO.WARNING_LUAENA_INTEGRATED,
                     LUAENA_WARNING,
                     LUAENA_WARNING_DESCRIPTION,
-                    true
-                )
-            );
-        }
-
-        if (certificate.getMetadata().getType().equals(DB_TYPE) && isDjupintegration()) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.WARNING_DODSBEVIS_INTEGRATED,
-                    DB_WARNING,
-                    DB_WARNING_DESCRIPTION,
                     true
                 )
             );
@@ -431,7 +415,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
 
     private boolean isDjupintegration() {
         final var user = webCertUserService.getUser();
-        return user != null && user.getOrigin().contains("DJUPINTEGRATION");
+        return user != null && user.getOrigin() != null && user.getOrigin().contains("DJUPINTEGRATION");
     }
 
     private boolean isReplaceCertificateAvailable(Certificate certificate) {
@@ -521,7 +505,7 @@ public class GetCertificatesAvailableFunctionsImpl implements GetCertificatesAva
     }
 
     private boolean patientOlderThanThirtyYearsAndTwoMonths(String patientId) {
-        final var birthDate = LocalDate.parse(patientId.substring(0, 8), DateTimeFormatter.ofPattern("yyyyMMdd"));
+        final var birthDate = PatientToolkit.birthDate(Personnummer.createPersonnummer(patientId).orElseThrow());
         return LocalDate.now(ZoneId.systemDefault()).isAfter(birthDate.plusYears(30).plusMonths(2));
     }
 }

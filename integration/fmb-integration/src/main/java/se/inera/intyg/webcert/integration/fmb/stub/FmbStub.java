@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,17 +19,18 @@
 package se.inera.intyg.webcert.integration.fmb.stub;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -46,7 +47,9 @@ public class FmbStub {
 
     private static final Logger LOG = LoggerFactory.getLogger(FmbStub.class);
 
-    private final ObjectMapper mapper = new ObjectMapper();
+    // The registered Jdk8Module is required for handling java.util.Optional members present in
+    // several models used in parsing fmb data.
+    private static final ObjectMapper mapper = new ObjectMapper().registerModule(new Jdk8Module());
 
     @GET
     @Path("typfall")
@@ -72,9 +75,8 @@ public class FmbStub {
     }
 
     private <T> T copy(T model, Class<T> tClass) throws IOException {
-        final ObjectMapper objectMapper = new ObjectMapper();
-        final byte[] bytes = objectMapper.writeValueAsBytes(model);
-        return objectMapper.readValue(bytes, tClass);
+        final byte[] bytes = mapper.writeValueAsBytes(model);
+        return mapper.readValue(bytes, tClass);
     }
 
     private void addHardcodedInfo(Typfall typfall) {
@@ -96,7 +98,7 @@ public class FmbStub {
 
     private void addHardcodedInfo(FmdxInformation fmdxInformation) {
         final List<FmdxData> data = fmdxInformation.getData();
-        final FmdxData fmdxData = data.get(0);
+        final FmdxData fmdxData = data.getFirst();
         try {
             final FmdxData copy = copy(fmdxData, FmdxData.class);
             final Attributes attributes = copy.getAttributes();

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -29,7 +29,7 @@ public class UserStatisticsDTO {
 
     private long totalDraftsAndUnhandledQuestionsOnOtherUnits;
 
-    private Map<String, UnitStatisticsDTO> unitStatistics;
+    private Map<String, UnitStatisticsDTO> unitStatistics = new HashMap<>();
 
     public UserStatisticsDTO() {
     }
@@ -63,10 +63,27 @@ public class UserStatisticsDTO {
     }
 
     public void addUnitStatistics(String unitId, UnitStatisticsDTO statistics) {
-        if (unitStatistics == null) {
-            unitStatistics = new HashMap<>();
-        }
-
         unitStatistics.put(unitId, statistics);
+    }
+
+    public void mergeUnitStatistics(Map<String, UnitStatisticsDTO> unitStatistics) {
+        unitStatistics.forEach((key, value) ->
+            this.unitStatistics.merge(key, value, (unitStatistics1, unitStatistics2) -> {
+                unitStatistics1.merge(unitStatistics2);
+                return unitStatistics1;
+            })
+        );
+    }
+
+    public void addNbrOfDraftsOnSelectedUnit(long nbrOfDraftsOnSelectedUnit) {
+        this.nbrOfDraftsOnSelectedUnit += nbrOfDraftsOnSelectedUnit;
+    }
+
+    public void addNbrOfUnhandledQuestionsOnSelectedUnit(long nbrOfUnhandledQuestionsOnSelectedUnit) {
+        this.nbrOfUnhandledQuestionsOnSelectedUnit += nbrOfUnhandledQuestionsOnSelectedUnit;
+    }
+
+    public void addTotalDraftsAndUnhandledQuestionsOnOtherUnits(long totalDraftsAndUnhandledQuestionsOnOtherUnits) {
+        this.totalDraftsAndUnhandledQuestionsOnOtherUnits += totalDraftsAndUnhandledQuestionsOnOtherUnits;
     }
 }

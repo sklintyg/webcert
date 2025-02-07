@@ -1,12 +1,16 @@
 dependencies {
   implementation project(":webcert-common")
+  implementation project(":webcert-logging")
 
+  implementation "codes.rafael.jaxb2_commons:jaxb2-basics:${jaxb2Version}"
   implementation "com.google.guava:guava:${guavaVersion}"
   implementation "jakarta.ws.rs:jakarta.ws.rs-api"
-  implementation "org.jvnet.jaxb2_commons:jaxb2-basics:${jaxb2Version}"
   implementation "org.springframework:spring-context"
   implementation "se.inera.intyg.common:common-schemas:${commonVersion}"
   implementation "se.inera.intyg.common:common-support:${commonVersion}"
   implementation "se.inera.intyg.infra:monitoring:${infraVersion}"
   implementation "se.riv.insuranceprocess.healthreporting:insuranceprocess-healthreporting-schemas:${rivtaInsuranceprocessSchemasVersion}"
+
+  compileOnly "org.projectlombok:lombok"
+  annotationProcessor "org.projectlombok:lombok"
 }

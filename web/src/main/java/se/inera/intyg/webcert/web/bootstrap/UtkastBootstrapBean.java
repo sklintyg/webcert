@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -21,6 +21,8 @@ package se.inera.intyg.webcert.web.bootstrap;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
+import jakarta.annotation.PostConstruct;
+import jakarta.xml.bind.JAXB;
 import java.io.IOException;
 import java.io.StringReader;
 import java.time.LocalDate;
@@ -31,8 +33,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
-import javax.annotation.PostConstruct;
-import javax.xml.bind.JAXB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

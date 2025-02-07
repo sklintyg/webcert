@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -38,7 +38,7 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 
-@Service
+@Service("createCertificateFromWC")
 public class CreateCertificateFacadeServiceImpl implements CreateCertificateFacadeService {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateCertificateFacadeServiceImpl.class);
@@ -68,16 +68,6 @@ public class CreateCertificateFacadeServiceImpl implements CreateCertificateFaca
     @Override
     public String create(String certificateType, String patientId) throws CreateCertificateException {
         final var request = convertRequest(certificateType, patientId);
-
-        try {
-            if (intygModuleRegistry.getIntygModule(certificateType).isDeprecated()) {
-                LOG.error("Request for deprecated module {}", certificateType);
-                throw new CreateCertificateException("Request for deprecated module");
-            }
-        } catch (ModuleNotFoundException e) {
-            LOG.error("Request for unknown module {}", certificateType);
-            throw new CreateCertificateException("Request for unknown module");
-        }
 
         LOG.debug("Attempting to create certificate of type '{}'", certificateType);
 

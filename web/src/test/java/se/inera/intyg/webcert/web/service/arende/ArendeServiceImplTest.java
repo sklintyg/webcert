@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -46,6 +46,7 @@ import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.arende.model.MedicinsktArende;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
 import se.inera.intyg.webcert.persistence.model.Status;
+import se.inera.intyg.webcert.web.service.facade.list.PaginationAndLoggingService;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
@@ -81,13 +82,16 @@ public class ArendeServiceImplTest {
     @Mock
     private LogService logService;
 
+    @Mock
+    private PaginationAndLoggingService paginationAndLoggingService;
+
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
     }
 
     @Test
-    public void filterArendeSortByNameWillUseTheVisibleNamesFromHsaINTYGFV12187() {
+    public void filterArende() {
         //Given
         final ArendeServiceImpl arendeService = Mockito.spy(arendeServiceReal);
 
@@ -121,9 +125,15 @@ public class ArendeServiceImplTest {
         Mockito.when(fragaSvarService.filterFragaSvar(any())).thenReturn(qfsr);
         final QueryFragaSvarParameter filterParameters = new QueryFragaSvarParameter();
 
-        //Sort by name
-        filterParameters.setOrderBy("signeratAvNamn");
-        filterParameters.setOrderAscending(true);
+        final var arendeListItem1 = new ArendeListItem();
+        arendeListItem1.setSigneratAv(arende1.getSigneratAv());
+        final var arendeListItem2 = new ArendeListItem();
+        arendeListItem2.setSigneratAv(arende2.getSigneratAv());
+        final var arendeListItem3 = new ArendeListItem();
+        arendeListItem3.setSigneratAv(arende3.getSigneratAv());
+
+        final var arendeListItems = List.of(arendeListItem1, arendeListItem2, arendeListItem3);
+        Mockito.when(paginationAndLoggingService.get(eq(filterParameters), any(), eq(user))).thenReturn(arendeListItems);
 
         //When
         final QueryFragaSvarResponse queryFragaSvarResponse = arendeService.filterArende(filterParameters);
@@ -132,8 +142,8 @@ public class ArendeServiceImplTest {
         final List<ArendeListItem> results = queryFragaSvarResponse.getResults();
         assertEquals(3, results.size());
         assertEquals(arende1.getSigneratAv(), results.get(0).getSigneratAv());
-        assertEquals(arende3.getSigneratAv(), results.get(1).getSigneratAv());
-        assertEquals(arende2.getSigneratAv(), results.get(2).getSigneratAv());
+        assertEquals(arende2.getSigneratAv(), results.get(1).getSigneratAv());
+        assertEquals(arende3.getSigneratAv(), results.get(2).getSigneratAv());
     }
 
     private Arende buildArende(String signeratAv, String signeratAvName, String enhet) {

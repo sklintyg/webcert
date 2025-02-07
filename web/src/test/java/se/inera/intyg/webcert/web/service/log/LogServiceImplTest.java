@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,7 +18,23 @@
  */
 package se.inera.intyg.webcert.web.service.log;
 
+import static java.time.LocalDateTime.now;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.jms.Session;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,16 +62,6 @@ import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSet
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import javax.jms.Session;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import static java.time.LocalDateTime.now;
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 /**
  * Created by pehr on 13/11/13.
@@ -90,11 +96,12 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         ArgumentCaptor<MessageCreator> messageCreatorCaptor = ArgumentCaptor.forClass(MessageCreator.class);
 
-        LogRequest logRequest = new LogRequest();
-        logRequest.setIntygId("abc123");
-        logRequest.setPatientId(createPnr("19121212-1212"));
-        logRequest.setPatientName("Hans Olof van der Test");
-        logRequest.setTestIntyg(false);
+        final var logRequest = LogRequest.builder()
+            .intygId("abc123")
+            .patientId(createPnr("19121212-1212"))
+            .patientName("Hans Olof van der Test")
+            .testIntyg(false)
+            .build();
 
         logService.logReadIntyg(logRequest);
 
@@ -142,11 +149,12 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(userService.getUser()).thenReturn(createUser());
         doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
 
-        LogRequest logRequest = new LogRequest();
-        logRequest.setIntygId("abc123");
-        logRequest.setPatientId(createPnr("19121212-1212"));
-        logRequest.setPatientName("Hans Olof van der Test");
-        logRequest.setTestIntyg(false);
+        final var logRequest = LogRequest.builder()
+            .intygId("abc123")
+            .patientId(createPnr("19121212-1212"))
+            .patientName("Hans Olof van der Test")
+            .testIntyg(false)
+            .build();
 
         try {
             logService.logReadIntyg(logRequest);
@@ -156,11 +164,13 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
     }
 
     public void testActivityArgsAreIdenticalToAdditionalInfo() {
-        LogRequest logRequest = new LogRequest();
-        logRequest.setIntygId("abc123");
-        logRequest.setPatientId(createPnr("19121212-1212"));
-        logRequest.setPatientName("Hans Olof van der Test");
-        logRequest.setAdditionalInfo("this is additional");
+        final var logRequest = LogRequest.builder()
+            .intygId("abc123")
+            .patientId(createPnr("19121212-1212"))
+            .patientName("Hans Olof van der Test")
+            .additionalInfo("this is additional")
+            .testIntyg(false)
+            .build();
 
         logService.logPrintIntygAsPDF(logRequest);
     }
@@ -169,11 +179,12 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
     public void logServiceTestIntygShouldNotBeLogged() throws Exception {
         when(userService.getUser()).thenReturn(createUser());
 
-        LogRequest logRequest = new LogRequest();
-        logRequest.setIntygId("abc123");
-        logRequest.setPatientId(createPnr("19121212-1212"));
-        logRequest.setPatientName("Hans Olof van der Test");
-        logRequest.setTestIntyg(true);
+        final var logRequest = LogRequest.builder()
+            .intygId("abc123")
+            .patientId(createPnr("19121212-1212"))
+            .patientName("Hans Olof van der Test")
+            .testIntyg(true)
+            .build();
 
         logService.logReadIntyg(logRequest);
 

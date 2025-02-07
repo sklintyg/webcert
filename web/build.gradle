@@ -1,11 +1,8 @@
-apply plugin: 'com.netflix.nebula.grunt'
 apply plugin: 'org.gretty'
 apply plugin: 'idea'
 apply plugin: 'war'
 
 def buildDirectory = project.layout.buildDirectory.get().asFile
-def webappOutputDir = 'build/apps/'
-def webappTestOutputDir = 'build/karma/'
 
 ext {
     generatedJavaDir = file("${buildDirectory}/generatedSource/java")
@@ -15,60 +12,35 @@ ext {
 
 gretty {
     def instance = System.properties['instance'] ?: '0'
-    def minified = System.properties['useMinifiedJavaScript'] ?: false
     def useHttpPort = 8020 + (instance as Integer)
     def useInternalHttpPort = 8120 + (instance as Integer)
     def applicationDir = "${rootProject.projectDir}/devops/dev"
 
-    servletContainer = 'tomcat9'
+    servletContainer = 'tomcat10'
     contextPath = '/'
     integrationTestTask = null
     scanInterval = 0
     debugPort = 8820 + (instance as Integer)
-    portPropertiesFileName = "gretty_ports_${instance}.properties"
     fastReload = true
     inplaceMode = 'hard'
     debugSuspend = false
     serverConfigFile = "tomcat-gretty.xml"
 
     jvmArgs = ["-Dcatalina.base=${buildDirectory}/catalina.base",
-               "-Dspring.profiles.active=dev,caching-enabled,wc-security-test,ia-stub",
-               "-Dlogback.file=${applicationDir}/config/logback-dev.xml",
+               "-Dspring.profiles.active=dev,caching-enabled,wc-security-test,ia-stub,certificate-service-active,servicenow-integration-v2,pu-integration-intyg-proxy-service",
+               "-Dlogback.file=${applicationDir}/config/logback-spring.xml",
                "-Djava.awt.headless=true",
                "-Dfile.encoding=UTF-8",
                "-Dapplication.dir=${applicationDir}",
                "-Ddev.config.file=${applicationDir}/config/application-dev.properties",
-               "-DuseMinifiedJavaScript=${minified}",
                "-Ddev.http.port=${useHttpPort}",
                "-Ddev.http.port.internal=${useInternalHttpPort}",
                "-Dxml.catalog.cacheEnabled=false"
     ]
-
-    extraResourceBase webappOutputDir
-
-    dependencies {
-        gretty "org.eclipse.jetty:apache-jstl"
-        gretty "se.inera.intyg.refdata:refdata:${refDataVersion}"
-    }
-}
-
-node {
-    version = "${nodeJsVersion}"
-    npmVersion = "${npmVersion}"
-    download = true
-    distBaseUrl = 'https://nodejs.org/dist/'
-    workDir = file("${rootProject.projectDir}/.gradle/nodejs")
-    npmWorkDir = file("${rootProject.projectDir}/.gradle/npm")
-}
-
-grunt {
-    colors = System.properties['gruntColors'] ? System.properties['gruntColors'].toBoolean() : true
 }
 
 idea {
     module {
-        excludeDirs += file('node_modules')
-        excludeDirs += file('src/main/webapp/bower_components')
         generatedSourceDirs.add(generatedJavaDir)
     }
 }
@@ -82,56 +54,7 @@ configurations {
     testImplemetationClasspath.extendsFrom implementation
 }
 
-war {
-    from("${buildDirectory}/apps")
-    exclude '**/*.scss'
-    exclude '**/*.spec.js'
-    exclude '**/*.test.js'
-}
-
 test { exclude '**/*IT*' }
-
-tasks.register('jsTests', NodeTask) {
-    dependsOn npmInstall
-    inputs.dir("$projectDir/src/main/resources")
-    inputs.dir("$projectDir/src/main/webapp")
-    inputs.files(fileTree(projectDir).include('*.js'))
-    inputs.files(fileTree(projectDir).include('*.json'))
-    inputs.files(configurations.testImplemetationClasspath)
-    outputs.dir(webappTestOutputDir)
-
-    script = file('node_modules/grunt-cli/bin/grunt')
-    args = ['test', "--outputDir=${webappTestOutputDir}", '--run-coverage=' + (project.findProperty('codeCoverage') != null ? 'true' : '')]
-}
-
-tasks.register('jsInclude', NodeTask) {
-    dependsOn npmInstall
-    inputs.dir("$projectDir/src/main/resources")
-    inputs.dir("$projectDir/src/main/webapp")
-    inputs.files(fileTree(projectDir).include('*.js'))
-    inputs.files(fileTree(projectDir).include('*.json'))
-    inputs.files(configurations.testImplemetationClasspath)
-    outputs.dir(webappOutputDir)
-
-    script = file('node_modules/grunt-cli/bin/grunt')
-    args = ['default', "--outputDir=${webappOutputDir}"]
-}
-
-tasks.register('unzipBuildTools', Copy) {
-    into "${buildDirectory}/build-tools/"
-    from {
-        def intygJar = project.rootProject.buildscript.configurations.classpath.find { it.name.contains("se.inera.intyg.plugin.common") }
-        zipTree(intygJar)
-    }
-}
-
-tasks.register('jsCodeQuality', NodeTask) {
-    dependsOn npmInstall, unzipBuildTools
-    outputs.upToDateWhen { false }
-
-    script = file('node_modules/grunt-cli/bin/grunt')
-    args = ['lint']
-}
 
 tasks.register('xsd2Java') {
     doLast {
@@ -152,40 +75,35 @@ tasks.register('xsd2Java') {
     }
 }
 
-checkstyleMain.dependsOn jsCodeQuality
 compileJava.dependsOn(xsd2Java)
-jsCodeQuality.onlyIf { project.hasProperty('codeQuality') }
 sourceSets.main.java { srcDir generatedJavaDir }
-test.dependsOn(jsTests)
-war.dependsOn(jsInclude)
-war.dependsOn createVersionPropertyFile
-
-if (project.hasProperty("codeQuality")) {
-    license {
-        exclude "**/dss/xsd/**/*.java"
-    }
-}
 
 dependencies {
     implementation project(':fk-stub')
     implementation project(':fmb-integration')
+    implementation project(':integration-api')
     implementation project(':intygstjanst-stub')
-    implementation project(':kundportalen-integration')
     implementation project(':mail-stub')
     implementation project(':notification-sender')
     implementation project(':notification-stub')
     implementation project(':pp-integration')
+    implementation project(':servicenow-integration')
     implementation project(':tak-integration')
     implementation project(':webcert-common')
     implementation project(':webcert-persistence')
+    implementation project(':webcert-logging')
 
+    implementation "com.fasterxml.jackson.core:jackson-core"
+    implementation "com.fasterxml.jackson.core:jackson-annotations"
+    implementation "com.fasterxml.jackson.core:jackson-databind"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
     implementation "se.inera.intyg.infra:certificate:${infraVersion}"
     implementation "se.inera.intyg.infra:common-redis-cache-core:${infraVersion}"
     implementation "se.inera.intyg.infra:driftbanner-dto:${infraVersion}"
     implementation "se.inera.intyg.infra:dynamiclink:${infraVersion}"
     implementation "se.inera.intyg.infra:grp-stub:${infraVersion}"
     implementation "se.inera.intyg.infra:hsa-integration-api:${infraVersion}"
-    implementation "se.inera.intyg.infra:hsatk-integration:${infraVersion}"
+    implementation "se.inera.intyg.infra:hsa-integration-intyg-proxy-service:${infraVersion}"
     implementation "se.inera.intyg.infra:ia-integration:${infraVersion}"
     implementation "se.inera.intyg.infra:integreradeenheter:${infraVersion}"
     implementation "se.inera.intyg.infra:intyginfo:${infraVersion}"
@@ -195,6 +113,7 @@ dependencies {
     implementation "se.inera.intyg.infra:monitoring:${infraVersion}"
     implementation "se.inera.intyg.infra:postnummerservice-integration:${infraVersion}"
     implementation "se.inera.intyg.infra:privatepractitioner:${infraVersion}"
+    implementation "se.inera.intyg.infra:pu-integration-api:${infraVersion}"
     implementation "se.inera.intyg.infra:pu-integration:${infraVersion}"
     implementation "se.inera.intyg.infra:security-authorities:${infraVersion}"
     implementation "se.inera.intyg.infra:security-common:${infraVersion}"
@@ -239,40 +158,46 @@ dependencies {
     implementation "se.riv.itintegration.monitoring:itintegration-monitoring-schemas:${rivtaItintegrationMonitoringSchemasVersion}"
     implementation "se.riv.strategicresourcemanagement.persons.person:strategicresourcemanagement-persons-person-schemas:${rivtaGetPersonsPersonSchemasVersion}"
 
-    implementation "com.auth0:jwks-rsa:${jwksVersion}"
+    implementation "co.elastic.logging:logback-ecs-encoder:${logbackEcsEncoderVersion}"
+    implementation "codes.rafael.jaxb2_commons:jaxb2-basics:${jaxb2Version}"
     implementation "com.google.guava:guava:${guavaVersion}"
-    implementation "com.sun.mail:jakarta.mail"
     implementation "commons-io:commons-io:${commonsIoVersion}"
-    implementation "io.jsonwebtoken:jjwt-impl:${jsonwebtokenVersion}"
-    implementation "io.jsonwebtoken:jjwt-jackson:${jsonwebtokenVersion}"
-    implementation "io.prometheus:simpleclient_servlet"
+    implementation "io.prometheus:simpleclient_hotspot"
+    implementation "io.prometheus:simpleclient_servlet_jakarta"
     implementation("io.swagger:swagger-jaxrs:${swaggerJaxrsVersion}") { exclude(module: "jsr311-api") }
     implementation "io.vavr:vavr:${vavrVersion}"
+    implementation "jakarta.mail:jakarta.mail-api"
     implementation "jakarta.persistence:jakarta.persistence-api"
+    implementation "joda-time:joda-time:${jodaTimeVersion}"
     implementation "net.javacrumbs.shedlock:shedlock-spring:${shedlockSpringVersion}"
     implementation "net.javacrumbs.shedlock:shedlock-provider-redis-spring:${shedlockSpringVersion}"
     implementation "org.apache.activemq:activemq-spring"
     implementation "org.apache.cxf:cxf-rt-frontend-jaxrs:${cxfVersion}"
-    implementation "org.apache.httpcomponents:httpclient"
+    implementation "org.apache.httpcomponents.client5:httpclient5"
     implementation "org.apache.lucene:lucene-analysis-common:${luceneAnalyzersCommonVersion}"
-    implementation "org.hibernate:hibernate-core"
-    implementation "org.jvnet.jaxb2_commons:jaxb2-basics-runtime:${jaxb2Version}"
+    implementation "org.hibernate.orm:hibernate-core"
     implementation "org.jxls:jxls-jexcel:${jexcelVersion}"
     implementation "org.springframework.data:spring-data-jpa"
-    implementation "org.springframework.security.extensions:spring-security-saml2-core:${springSecuritySaml2CoreVersion}"
+    implementation 'org.springframework.security:spring-security-config'
+    implementation 'org.springframework.security:spring-security-saml2-service-provider'
     implementation "org.springframework.session:spring-session-data-redis"
     implementation "org.springframework:spring-jms"
+    implementation "org.springframework:spring-webmvc"
     implementation "org.springframework.ws:spring-xml"
 
-    compileOnly "com.google.auto.value:auto-value:${autovalueVersion}"
-    compileOnly "com.google.auto.value:auto-value-annotations:${autovalueVersion}"
-    annotationProcessor "com.google.auto.value:auto-value:${autovalueVersion}"
+    implementation "se.inera.intyg.refdata:refdata-featureK1J-357:${refDataVersion}"
 
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    runtimeOnly "se.inera.intyg.infra:pu-integration-intyg-proxy-service:${infraVersion}"
     runtimeOnly "org.springframework:spring-webmvc"
     runtimeOnly "xerces:xercesImpl:${xercesVersion}"
-    runtimeOnly "se.inera.intyg.infra:hsa-integration-intyg-proxy-service:${infraVersion}"
 
-    testImplementation ("com.helger:ph-schematron:${phSchematronVersion}") { exclude group: "com.helger", module: "ph-jaxb-pom" }
+    testAnnotationProcessor 'org.projectlombok:lombok'
+    testCompileOnly 'org.projectlombok:lombok'
+
+    testImplementation "com.helger.schematron:ph-schematron-xslt:${phSchematronVersion}"
     testImplementation "org.assertj:assertj-core"
     testImplementation "org.springframework.boot:spring-boot-test"
     testImplementation "org.springframework:spring-test"
@@ -282,4 +207,5 @@ dependencies {
     testImplementation "se.inera.intyg.common:ag-parent:${commonVersion}"
 
     xsdgen "org.glassfish.jaxb:jaxb-xjc"
+    xsdgen "com.sun.xml.bind:jaxb-impl"
 }

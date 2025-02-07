@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,15 +20,19 @@ package se.inera.intyg.webcert.web.service.facade.util;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -39,6 +43,9 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.common.db.support.DbModuleEntryPoint;
+import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
+import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.facade.builder.CertificateBuilder;
 import se.inera.intyg.common.support.facade.model.Certificate;
@@ -52,19 +59,24 @@ import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
+import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.modules.support.facade.TypeAheadProvider;
 import se.inera.intyg.infra.integration.hsatk.model.HealthCareUnit;
 import se.inera.intyg.infra.integration.hsatk.services.HsatkOrganizationService;
+import se.inera.intyg.infra.security.authorities.FeaturesHelper;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 @ExtendWith(MockitoExtension.class)
-public class UtkastToCertificateConverterTest {
+class UtkastToCertificateConverterTest {
 
     @Mock
     private IntygModuleRegistry moduleRegistry;
@@ -90,6 +102,12 @@ public class UtkastToCertificateConverterTest {
     @Mock
     private CertificateRecipientConverter certificateRecipientConverter;
 
+    @Mock
+    DraftAccessServiceHelper draftAccessServiceHelper;
+
+    @Mock
+    FeaturesHelper featuresHelper;
+
     @InjectMocks
     private UtkastToCertificateConverterImpl utkastToCertificateConverter;
 
@@ -102,423 +120,507 @@ public class UtkastToCertificateConverterTest {
     private static final String PERSON_ID_FROM_JSON = "PersonId - json";
     private static final String PERSON_NAME_FROM_JSON = "Doctor Alpha - json";
 
-    @Test
-    void shouldSetUnitInfoFromDraftIfHsaExceptionForGetUnit() {
-        when(hsatkOrganizationService.getUnit(anyString(), anyString()))
-            .thenThrow(new IllegalStateException());
-        when(hsatkOrganizationService.getHealthCareUnit(anyString()))
-            .thenReturn(getHealthCareUnit());
-
-        final var response = utkastToCertificateConverter.convert(draft);
-
-        assertEquals(response.getMetadata().getUnit().getUnitId(), draft.getEnhetsId());
-        assertEquals(response.getMetadata().getUnit().getUnitName(), draft.getEnhetsNamn());
-    }
-
-    @Test
-    void shouldSetUnitInfoFromDraftIfHsaExceptionForGetHealthCareUnit() {
-        when(hsatkOrganizationService.getHealthCareUnit(anyString()))
-            .thenThrow(new IllegalStateException());
-
-        final var response = utkastToCertificateConverter.convert(draft);
-
-        assertEquals(response.getMetadata().getUnit().getUnitId(), draft.getEnhetsId());
-        assertEquals(response.getMetadata().getUnit().getUnitName(), draft.getEnhetsNamn());
-    }
-
-    @BeforeEach
-    void setupMocks() throws Exception {
-        final var moduleApi = mock(ModuleApi.class);
-        doReturn(moduleApi)
-            .when(moduleRegistry).getModuleApi(draft.getIntygsTyp(), draft.getIntygTypeVersion());
-
-        doReturn(createCertificate())
-            .when(moduleApi).getCertificateFromJson(draft.getModel(), typeAheadProvider);
-
-        doReturn(certificateRelations)
-            .when(certificateRelationsConverter).convert(draft.getIntygsId());
-
-        doReturn(patient)
-            .when(patientConverter).convert(
-                patient,
-                draft.getPatientPersonnummer(),
-                draft.getIntygsTyp(),
-                draft.getIntygTypeVersion()
-            );
-    }
-
     @Nested
-    class ValidateCommonMetadata {
+    class TestConvert {
 
         @BeforeEach
-        void setup() {
-            doReturn(getHealthCareUnit())
-                .when(hsatkOrganizationService).getHealthCareUnit(any(String.class));
+        void setupMocks() throws Exception {
+            final var moduleApi = mock(ModuleApi.class);
 
-            doReturn(getUnit())
-                .when(hsatkOrganizationService).getUnit(any(String.class), nullable(String.class));
+            doReturn(moduleApi)
+                .when(moduleRegistry).getModuleApi(anyString(), anyString());
+
+            doReturn(createCertificate())
+                .when(moduleApi).getCertificateFromJson(draft.getModel(), typeAheadProvider);
+
+            doReturn(certificateRelations)
+                .when(certificateRelationsConverter).convert(draft.getIntygsId());
+
+            doReturn(patient)
+                .when(patientConverter).convert(
+                    any(), any(), any(), any()
+                );
         }
 
         @Test
-        void shallIncludeCreatedDateTimeAsTheLatestsSavedDateTime() {
-            final var expectedCreated = draft.getSenastSparadDatum();
+        void shouldSetUnitInfoFromDraftIfHsaExceptionForGetUnit() {
+            when(hsatkOrganizationService.getUnit(anyString(), anyString()))
+                .thenThrow(new IllegalStateException());
+            when(hsatkOrganizationService.getHealthCareUnit(anyString()))
+                .thenReturn(getHealthCareUnit());
 
-            final var actualCertificate = utkastToCertificateConverter.convert(draft);
+            final var response = utkastToCertificateConverter.convert(draft);
 
-            assertEquals(expectedCreated, actualCertificate.getMetadata().getCreated());
-        }
-
-        @ParameterizedTest
-        @ValueSource(ints = {0, 1, 100})
-        void shallIncludeVersion(int expectedVersion) {
-            draft.setVersion(expectedVersion);
-
-            final var actualCertificate = utkastToCertificateConverter.convert(draft);
-
-            assertEquals(expectedVersion, actualCertificate.getMetadata().getVersion());
-        }
-
-        @ParameterizedTest
-        @ValueSource(booleans = {true, false})
-        void shallIncludeForwarded(boolean expectedForwarded) {
-            draft.setVidarebefordrad(expectedForwarded);
-
-            final var actualCertificate = utkastToCertificateConverter.convert(draft);
-
-            assertEquals(expectedForwarded, actualCertificate.getMetadata().isForwarded());
+            assertEquals(response.getMetadata().getUnit().getUnitId(), draft.getEnhetsId());
+            assertEquals(response.getMetadata().getUnit().getUnitName(), draft.getEnhetsNamn());
         }
 
         @Test
-        void shallIncludeReadyForSign() {
-            final var expectedReadyForSign = LocalDateTime.now();
-            draft.setKlartForSigneringDatum(expectedReadyForSign);
+        void shouldSetUnitInfoFromDraftIfHsaExceptionForGetHealthCareUnit() {
+            when(hsatkOrganizationService.getHealthCareUnit(anyString()))
+                .thenThrow(new IllegalStateException());
 
-            final var actualCertificate = utkastToCertificateConverter.convert(draft);
+            final var response = utkastToCertificateConverter.convert(draft);
 
-            assertEquals(expectedReadyForSign, actualCertificate.getMetadata().getReadyForSign());
+            assertEquals(response.getMetadata().getUnit().getUnitId(), draft.getEnhetsId());
+            assertEquals(response.getMetadata().getUnit().getUnitName(), draft.getEnhetsNamn());
         }
 
-        @ParameterizedTest
-        @ValueSource(booleans = {true, false})
-        void shallIncludeTestCertificate(boolean expectedTestCertificate) {
-            draft.setTestIntyg(expectedTestCertificate);
+        @Nested
+        class ValidateCommonMetadata {
 
-            final var actualCertificate = utkastToCertificateConverter.convert(draft);
+            @BeforeEach
+            void setup() {
+                doReturn(getHealthCareUnit())
+                    .when(hsatkOrganizationService).getHealthCareUnit(any(String.class));
 
-            assertEquals(expectedTestCertificate, actualCertificate.getMetadata().isTestCertificate());
+                doReturn(getUnit())
+                    .when(hsatkOrganizationService).getUnit(any(String.class), nullable(String.class));
+
+                doReturn(true).when(webCertUserService).hasAuthenticationContext();
+
+                final var user = mock(WebCertUser.class);
+                when(webCertUserService.getUser())
+                    .thenReturn(user);
+                when(user.getOrigin())
+                    .thenReturn("DJUPINTEGRATION");
+            }
+
+            @Test
+            void shallIncludeCreatedDateTimeAsTheLatestsSavedDateTime() {
+                final var expectedCreated = draft.getSenastSparadDatum();
+
+                final var actualCertificate = utkastToCertificateConverter.convert(draft);
+
+                assertEquals(expectedCreated, actualCertificate.getMetadata().getCreated());
+            }
+
+            @Test
+            void shallIncludeConfirmationModalIfProviderIsAvailable() {
+                doReturn(true).when(draftAccessServiceHelper)
+                    .isAllowToEditUtkast(any(Utkast.class));
+                draft.setIntygsTyp("db");
+                final var actualCertificate = utkastToCertificateConverter.convert(draft);
+
+                assertNotNull(actualCertificate.getMetadata().getConfirmationModal());
+            }
+
+            @Test
+            void shallIncludeSignModalIfProviderIsAvailable() {
+                draft.setIntygsTyp("db");
+                final var actualCertificate = utkastToCertificateConverter.convert(draft);
+
+                assertNotNull(actualCertificate.getMetadata().getSignConfirmationModal());
+            }
+
+            @Test
+            void shallNotIncludeConfirmationModalIfProviderIsNotAvailable() {
+                final var actualCertificate = utkastToCertificateConverter.convert(draft);
+
+                assertNull(actualCertificate.getMetadata().getConfirmationModal());
+            }
+
+            @ParameterizedTest
+            @ValueSource(ints = {0, 1, 100})
+            void shallIncludeVersion(int expectedVersion) {
+                draft.setVersion(expectedVersion);
+
+                final var actualCertificate = utkastToCertificateConverter.convert(draft);
+
+                assertEquals(expectedVersion, actualCertificate.getMetadata().getVersion());
+            }
+
+            @ParameterizedTest
+            @ValueSource(booleans = {true, false})
+            void shallIncludeForwarded(boolean expectedForwarded) {
+                draft.setVidarebefordrad(expectedForwarded);
+
+                final var actualCertificate = utkastToCertificateConverter.convert(draft);
+
+                assertEquals(expectedForwarded, actualCertificate.getMetadata().isForwarded());
+            }
+
+            @Test
+            void shallIncludeReadyForSign() {
+                final var expectedReadyForSign = LocalDateTime.now();
+                draft.setKlartForSigneringDatum(expectedReadyForSign);
+
+                final var actualCertificate = utkastToCertificateConverter.convert(draft);
+
+                assertEquals(expectedReadyForSign, actualCertificate.getMetadata().getReadyForSign());
+            }
+
+            @ParameterizedTest
+            @ValueSource(booleans = {true, false})
+            void shallIncludeTestCertificate(boolean expectedTestCertificate) {
+                draft.setTestIntyg(expectedTestCertificate);
+
+                final var actualCertificate = utkastToCertificateConverter.convert(draft);
+
+                assertEquals(expectedTestCertificate, actualCertificate.getMetadata().isTestCertificate());
+            }
+
+            @ParameterizedTest
+            @ValueSource(booleans = {true, false})
+            void shallIncludeLatestMajorVersion(boolean expectedLatestMajorVersion) {
+                doReturn(expectedLatestMajorVersion).when(intygTextsService).isLatestMajorVersion(any(), any());
+                final var actualCertificate = utkastToCertificateConverter.convert(draft);
+
+                assertEquals(expectedLatestMajorVersion, actualCertificate.getMetadata().isLatestMajorVersion());
+            }
+
+            @ParameterizedTest
+            @ValueSource(booleans = {true, false})
+            void shallIncludeInactiveCertificateType(boolean expectedInactiveCertificateType) {
+                doReturn(expectedInactiveCertificateType)
+                    .when(featuresHelper)
+                    .isFeatureActive(AuthoritiesConstants.FEATURE_INACTIVE_CERTIFICATE_TYPE, draft.getIntygsTyp());
+                final var actualCertificate = utkastToCertificateConverter.convert(draft);
+
+                assertEquals(expectedInactiveCertificateType, actualCertificate.getMetadata().isInactiveCertificateType());
+            }
         }
 
-        @ParameterizedTest
-        @ValueSource(booleans = {true, false})
-        void shallIncludeLatestMajorVersion(boolean expectedLatestMajorVersion) {
-            doReturn(expectedLatestMajorVersion).when(intygTextsService).isLatestMajorVersion(any(), any());
-            final var actualCertificate = utkastToCertificateConverter.convert(draft);
+        @Nested
+        class ValidateUnit {
 
-            assertEquals(expectedLatestMajorVersion, actualCertificate.getMetadata().isLatestMajorVersion());
-        }
-    }
+            @BeforeEach
+            void setup() {
+                doReturn(getHealthCareUnit())
+                    .when(hsatkOrganizationService).getHealthCareUnit(any(String.class));
 
-    @Nested
-    class ValidateUnit {
+                doReturn(getUnit())
+                    .when(hsatkOrganizationService).getUnit(any(String.class), nullable(String.class));
+            }
 
-        @BeforeEach
-        void setup() {
-            doReturn(getHealthCareUnit())
-                .when(hsatkOrganizationService).getHealthCareUnit(any(String.class));
+            @Test
+            void shallContainCompleteUnitData() {
+                final var actualCertificate = utkastToCertificateConverter.convert(draft);
 
-            doReturn(getUnit())
-                .when(hsatkOrganizationService).getUnit(any(String.class), nullable(String.class));
-        }
-
-        @Test
-        void shallContainCompleteUnitData() {
-            final var actualCertificate = utkastToCertificateConverter.convert(draft);
-
-            assertAll(
-                () -> assertNotNull(actualCertificate.getMetadata().getUnit().getUnitId(), "UnitId should not be null"),
-                () -> assertNotNull(actualCertificate.getMetadata().getUnit().getUnitName(), "UnitName should not be null"),
-                () -> assertNotNull(actualCertificate.getMetadata().getUnit().getAddress(), "Address should not be null"),
-                () -> assertNotNull(actualCertificate.getMetadata().getUnit().getZipCode(), "ZipCode should not be null"),
-                () -> assertNotNull(actualCertificate.getMetadata().getUnit().getCity(), "City should not be null"),
-                () -> assertNotNull(actualCertificate.getMetadata().getUnit().getEmail(), "Email should not be null"),
-                () -> assertNotNull(actualCertificate.getMetadata().getUnit().getPhoneNumber(), "Phonenumber should not be null")
-            );
-        }
-    }
-
-    @Nested
-    class ValidateCareProvider {
-
-        @BeforeEach
-        void setup() {
-            doReturn(getHealthCareUnit())
-                .when(hsatkOrganizationService).getHealthCareUnit(any(String.class));
-
-            doReturn(getUnit())
-                .when(hsatkOrganizationService).getUnit(any(String.class), nullable(String.class));
+                assertAll(
+                    () -> assertNotNull(actualCertificate.getMetadata().getUnit().getUnitId(), "UnitId should not be null"),
+                    () -> assertNotNull(actualCertificate.getMetadata().getUnit().getUnitName(), "UnitName should not be null"),
+                    () -> assertNotNull(actualCertificate.getMetadata().getUnit().getAddress(), "Address should not be null"),
+                    () -> assertNotNull(actualCertificate.getMetadata().getUnit().getZipCode(), "ZipCode should not be null"),
+                    () -> assertNotNull(actualCertificate.getMetadata().getUnit().getCity(), "City should not be null"),
+                    () -> assertNotNull(actualCertificate.getMetadata().getUnit().getEmail(), "Email should not be null"),
+                    () -> assertNotNull(actualCertificate.getMetadata().getUnit().getPhoneNumber(), "Phonenumber should not be null")
+                );
+            }
         }
 
-        @Test
-        void shallIncludeCareProviderId() {
-            final var expectedCareProviderId = "CareProviderId";
-            draft.setVardgivarId(expectedCareProviderId);
+        @Nested
+        class ValidateCareProvider {
 
-            final var actualCertificate = utkastToCertificateConverter.convert(draft);
+            @BeforeEach
+            void setup() {
+                doReturn(getHealthCareUnit())
+                    .when(hsatkOrganizationService).getHealthCareUnit(any(String.class));
 
-            assertEquals(expectedCareProviderId, actualCertificate.getMetadata().getCareProvider().getUnitId());
+                doReturn(getUnit())
+                    .when(hsatkOrganizationService).getUnit(any(String.class), nullable(String.class));
+            }
+
+            @Test
+            void shallIncludeCareProviderId() {
+                final var expectedCareProviderId = "CareProviderId";
+                draft.setVardgivarId(expectedCareProviderId);
+
+                final var actualCertificate = utkastToCertificateConverter.convert(draft);
+
+                assertEquals(expectedCareProviderId, actualCertificate.getMetadata().getCareProvider().getUnitId());
+            }
+
+            @Test
+            void shallIncludeCareProviderName() {
+                final var expectedCareProviderName = "CareProviderName";
+                draft.setVardgivarNamn(expectedCareProviderName);
+
+                final var actualCertificate = utkastToCertificateConverter.convert(draft);
+
+                assertEquals(expectedCareProviderName, actualCertificate.getMetadata().getCareProvider().getUnitName());
+            }
         }
 
-        @Test
-        void shallIncludeCareProviderName() {
-            final var expectedCareProviderName = "CareProviderName";
-            draft.setVardgivarNamn(expectedCareProviderName);
+        @Nested
+        class ValidateCareUnit {
 
-            final var actualCertificate = utkastToCertificateConverter.convert(draft);
+            @BeforeEach
+            void setup() {
+                doReturn(getHealthCareUnit())
+                    .when(hsatkOrganizationService).getHealthCareUnit(any(String.class));
 
-            assertEquals(expectedCareProviderName, actualCertificate.getMetadata().getCareProvider().getUnitName());
-        }
-    }
+                doReturn(getUnit())
+                    .when(hsatkOrganizationService).getUnit(any(String.class), nullable(String.class));
+            }
 
-    @Nested
-    class ValidateCareUnit {
+            @Test
+            void shallIncludeCareUnitId() {
+                final var actualCertificate = utkastToCertificateConverter.convert(draft);
+                assertEquals(CARE_UNIT_ID, actualCertificate.getMetadata().getCareUnit().getUnitId());
+            }
 
-        @BeforeEach
-        void setup() {
-            doReturn(getHealthCareUnit())
-                .when(hsatkOrganizationService).getHealthCareUnit(any(String.class));
-
-            doReturn(getUnit())
-                .when(hsatkOrganizationService).getUnit(any(String.class), nullable(String.class));
-        }
-
-        @Test
-        void shallIncludeCareUnitId() {
-            final var actualCertificate = utkastToCertificateConverter.convert(draft);
-            assertEquals(CARE_UNIT_ID, actualCertificate.getMetadata().getCareUnit().getUnitId());
+            @Test
+            void shallIncludeCareUnitName() {
+                final var actualCertificate = utkastToCertificateConverter.convert(draft);
+                assertEquals(CARE_UNIT_NAME, actualCertificate.getMetadata().getCareUnit().getUnitName());
+            }
         }
 
-        @Test
-        void shallIncludeCareUnitName() {
-            final var actualCertificate = utkastToCertificateConverter.convert(draft);
-            assertEquals(CARE_UNIT_NAME, actualCertificate.getMetadata().getCareUnit().getUnitName());
-        }
-    }
+        @Nested
+        class ValidateIssuedBy {
 
-    @Nested
-    class ValidateIssuedBy {
+            @BeforeEach
+            void setup() {
+                doReturn(getHealthCareUnit())
+                    .when(hsatkOrganizationService).getHealthCareUnit(any(String.class));
 
-        @BeforeEach
-        void setup() {
-            doReturn(getHealthCareUnit())
-                .when(hsatkOrganizationService).getHealthCareUnit(any(String.class));
+                doReturn(getUnit())
+                    .when(hsatkOrganizationService).getUnit(any(String.class), nullable(String.class));
+            }
 
-            doReturn(getUnit())
-                .when(hsatkOrganizationService).getUnit(any(String.class), nullable(String.class));
-        }
+            @Test
+            void shallIncludePersonId() {
+                final var expectedPersonId = PERSON_ID_FROM_JSON;
+                draft.getSkapadAv().setHsaId("PersonId from utkast");
 
-        @Test
-        void shallIncludePersonId() {
-            final var expectedPersonId = PERSON_ID_FROM_JSON;
-            draft.getSkapadAv().setHsaId("PersonId from utkast");
+                final var actualCertificate = utkastToCertificateConverter.convert(draft);
 
-            final var actualCertificate = utkastToCertificateConverter.convert(draft);
+                assertEquals(expectedPersonId, actualCertificate.getMetadata().getIssuedBy().getPersonId());
+            }
 
-            assertEquals(expectedPersonId, actualCertificate.getMetadata().getIssuedBy().getPersonId());
-        }
+            @Test
+            void shallIncludeName() {
+                final var expectedFullName = PERSON_NAME_FROM_JSON;
+                draft.getSkapadAv().setNamn("Person name from utkast");
 
-        @Test
-        void shallIncludeName() {
-            final var expectedFullName = PERSON_NAME_FROM_JSON;
-            draft.getSkapadAv().setNamn("Person name from utkast");
+                final var actualCertificate = utkastToCertificateConverter.convert(draft);
 
-            final var actualCertificate = utkastToCertificateConverter.convert(draft);
-
-            assertEquals(expectedFullName, actualCertificate.getMetadata().getIssuedBy().getFullName());
-        }
-    }
-
-    @Test
-    void shallIncludePatient() {
-        final var expectedPatient = getPatient();
-        final var actualCertificate = utkastToCertificateConverter.convert(draft);
-        assertEquals(expectedPatient, actualCertificate.getMetadata().getPatient());
-    }
-
-    @Test
-    void shallIncludeCertificateRelations() {
-        final var actualCertificate = utkastToCertificateConverter.convert(draft);
-        assertEquals(certificateRelations, actualCertificate.getMetadata().getRelations());
-    }
-
-    @Nested
-    class ValidateStatus {
-
-        @BeforeEach
-        void setup() {
-            doReturn(getHealthCareUnit())
-                .when(hsatkOrganizationService).getHealthCareUnit(any(String.class));
-
-            doReturn(getUnit())
-                .when(hsatkOrganizationService).getUnit(any(String.class), nullable(String.class));
-        }
-
-        @Test
-        void shallIncludeStatusUnsigned() {
-            final var expectedStatus = CertificateStatus.UNSIGNED;
-
-            final var actualCertificate = utkastToCertificateConverter.convert(draft);
-
-            assertEquals(expectedStatus, actualCertificate.getMetadata().getStatus());
-        }
-
-        @Test
-        void shallIncludeStatusSigned() {
-            final var expectedStatus = CertificateStatus.SIGNED;
-            draft.setStatus(UtkastStatus.SIGNED);
-
-            final var actualCertificate = utkastToCertificateConverter.convert(draft);
-
-            assertEquals(expectedStatus, actualCertificate.getMetadata().getStatus());
-        }
-
-        @Test
-        void shallIncludeStatusRevoked() {
-            final var expectedStatus = CertificateStatus.REVOKED;
-            draft.setStatus(UtkastStatus.SIGNED);
-            draft.setAterkalladDatum(LocalDateTime.now());
-
-            final var actualCertificate = utkastToCertificateConverter.convert(draft);
-
-            assertEquals(expectedStatus, actualCertificate.getMetadata().getStatus());
-        }
-
-        @Test
-        void shallIncludeStatusLocked() {
-            final var expectedStatus = CertificateStatus.LOCKED;
-            draft.setStatus(UtkastStatus.DRAFT_LOCKED);
-
-            final var actualCertificate = utkastToCertificateConverter.convert(draft);
-
-            assertEquals(expectedStatus, actualCertificate.getMetadata().getStatus());
-        }
-
-        @Test
-        void shallIncludeStatusLockedRevoked() {
-            final var expectedStatus = CertificateStatus.LOCKED_REVOKED;
-            draft.setStatus(UtkastStatus.DRAFT_LOCKED);
-            draft.setAterkalladDatum(LocalDateTime.now());
-
-            final var actualCertificate = utkastToCertificateConverter.convert(draft);
-
-            assertEquals(expectedStatus, actualCertificate.getMetadata().getStatus());
-        }
-    }
-
-    @Nested
-    class ValidateSent {
-
-        @BeforeEach
-        void setup() {
-            doReturn(getHealthCareUnit())
-                .when(hsatkOrganizationService).getHealthCareUnit(any(String.class));
-
-            doReturn(getUnit())
-                .when(hsatkOrganizationService).getUnit(any(String.class), nullable(String.class));
-        }
-
-        @BeforeEach
-        void setUp() {
-            draft.setStatus(UtkastStatus.SIGNED);
-        }
-
-        @Test
-        void shallIncludeIsSentTrueIfCertificateIsSent() {
-            final var expectedIsSent = true;
-            draft.setSkickadTillMottagareDatum(LocalDateTime.now());
-            draft.setSkickadTillMottagare("FKASSA");
-
-            final var actualCertificate = utkastToCertificateConverter.convert(draft);
-
-            assertEquals(expectedIsSent, actualCertificate.getMetadata().isSent());
+                assertEquals(expectedFullName, actualCertificate.getMetadata().getIssuedBy().getFullName());
+            }
         }
 
         @Test
-        void shallIncludeIsSentFalseIfCertificateIsSent() {
-            final var expectedIsSent = false;
-
+        void shallIncludePatient() {
+            final var expectedPatient = getPatient();
             final var actualCertificate = utkastToCertificateConverter.convert(draft);
-
-            assertEquals(expectedIsSent, actualCertificate.getMetadata().isSent());
+            assertEquals(expectedPatient, actualCertificate.getMetadata().getPatient());
         }
 
         @Test
-        void shallIncludeReceiverIfCertificateIsSent() {
-            final var recipient = CertificateRecipient
-                .builder()
-                .name("Name")
-                .id("Id")
-                .build();
+        void shallIncludeCertificateRelations() {
+            final var actualCertificate = utkastToCertificateConverter.convert(draft);
+            assertEquals(certificateRelations, actualCertificate.getMetadata().getRelations());
+        }
+
+        @Nested
+        class ValidateStatus {
+
+            @BeforeEach
+            void setup() {
+                doReturn(getHealthCareUnit())
+                    .when(hsatkOrganizationService).getHealthCareUnit(any(String.class));
+
+                doReturn(getUnit())
+                    .when(hsatkOrganizationService).getUnit(any(String.class), nullable(String.class));
+            }
+
+            @Test
+            void shallIncludeStatusUnsigned() {
+                final var expectedStatus = CertificateStatus.UNSIGNED;
+
+                final var actualCertificate = utkastToCertificateConverter.convert(draft);
+
+                assertEquals(expectedStatus, actualCertificate.getMetadata().getStatus());
+            }
+
+            @Test
+            void shallIncludeStatusSigned() {
+                final var expectedStatus = CertificateStatus.SIGNED;
+                draft.setStatus(UtkastStatus.SIGNED);
+
+                final var actualCertificate = utkastToCertificateConverter.convert(draft);
+
+                assertEquals(expectedStatus, actualCertificate.getMetadata().getStatus());
+            }
+
+            @Test
+            void shallIncludeStatusRevoked() {
+                final var expectedStatus = CertificateStatus.REVOKED;
+                draft.setStatus(UtkastStatus.SIGNED);
+                draft.setAterkalladDatum(LocalDateTime.now());
+
+                final var actualCertificate = utkastToCertificateConverter.convert(draft);
+
+                assertEquals(expectedStatus, actualCertificate.getMetadata().getStatus());
+            }
+
+            @Test
+            void shallIncludeStatusLocked() {
+                final var expectedStatus = CertificateStatus.LOCKED;
+                draft.setStatus(UtkastStatus.DRAFT_LOCKED);
+
+                final var actualCertificate = utkastToCertificateConverter.convert(draft);
+
+                assertEquals(expectedStatus, actualCertificate.getMetadata().getStatus());
+            }
+
+            @Test
+            void shallIncludeStatusLockedRevoked() {
+                final var expectedStatus = CertificateStatus.LOCKED_REVOKED;
+                draft.setStatus(UtkastStatus.DRAFT_LOCKED);
+                draft.setAterkalladDatum(LocalDateTime.now());
+
+                final var actualCertificate = utkastToCertificateConverter.convert(draft);
+
+                assertEquals(expectedStatus, actualCertificate.getMetadata().getStatus());
+            }
+        }
+
+        @Nested
+        class ValidateSent {
+
+            @BeforeEach
+            void setup() {
+                doReturn(getHealthCareUnit())
+                    .when(hsatkOrganizationService).getHealthCareUnit(any(String.class));
+
+                doReturn(getUnit())
+                    .when(hsatkOrganizationService).getUnit(any(String.class), nullable(String.class));
+            }
+
+            @BeforeEach
+            void setUp() {
+                draft.setStatus(UtkastStatus.SIGNED);
+            }
+
+            @Test
+            void shallIncludeIsSentTrueIfCertificateIsSent() {
+                final var expectedIsSent = true;
+                draft.setSkickadTillMottagareDatum(LocalDateTime.now());
+                draft.setSkickadTillMottagare("FKASSA");
+
+                final var actualCertificate = utkastToCertificateConverter.convert(draft);
+
+                assertEquals(expectedIsSent, actualCertificate.getMetadata().isSent());
+            }
+
+            @Test
+            void shallIncludeIsSentFalseIfCertificateIsSent() {
+                final var expectedIsSent = false;
+
+                final var actualCertificate = utkastToCertificateConverter.convert(draft);
+
+                assertEquals(expectedIsSent, actualCertificate.getMetadata().isSent());
+            }
+
+            @Test
+            void shallIncludeReceiverIfCertificateIsSent() {
+                final var recipient = CertificateRecipient
+                    .builder()
+                    .name("Name")
+                    .id("Id")
+                    .build();
+                when(certificateRecipientConverter.get(anyString(), anyString(), any()))
+                    .thenReturn(recipient);
+
+                final var actualCertificate = utkastToCertificateConverter.convert(draft);
+
+                assertEquals("Name", actualCertificate.getMetadata().getSentTo());
+            }
+        }
+
+        @Nested
+        class ValidateResponsibleHospName {
+
+            @BeforeEach
+            void setup() {
+                doReturn(getHealthCareUnit())
+                    .when(hsatkOrganizationService).getHealthCareUnit(any(String.class));
+
+                doReturn(getUnit())
+                    .when(hsatkOrganizationService).getUnit(any(String.class), nullable(String.class));
+            }
+
+            @Test
+            void shallNotSetResponsibleHospNameWhenNoAuthenticationContext() {
+                final var actualCertificate = utkastToCertificateConverter.convert(draft);
+
+                assertNull(actualCertificate.getMetadata().getResponsibleHospName());
+            }
+
+            @Test
+            void shallNotSetResponsibleHospNameWhenIntegrationParametersIsNull() {
+                doReturn(true).when(webCertUserService).hasAuthenticationContext();
+                final var user = mock(WebCertUser.class);
+                when(webCertUserService.getUser()).thenReturn(user);
+                when(user.getOrigin()).thenReturn("DJUPINTEGRATION");
+                when(user.getParameters()).thenReturn(null);
+
+                final var actualCertificate = utkastToCertificateConverter.convert(draft);
+
+                assertNull(actualCertificate.getMetadata().getResponsibleHospName());
+            }
+
+            @Test
+            void shallSetResponsibleHospNameWhenIntegrationParametersArePresent() {
+                final var expectedResponsibleHospName = "responsibleHospName";
+                doReturn(true).when(webCertUserService).hasAuthenticationContext();
+                final var user = mock(WebCertUser.class);
+                final var integrationParameters = mock(IntegrationParameters.class);
+                when(webCertUserService.getUser()).thenReturn(user);
+                when(user.getOrigin()).thenReturn("DJUPINTEGRATION");
+                when(user.getParameters()).thenReturn(integrationParameters);
+                when(integrationParameters.getResponsibleHospName()).thenReturn(expectedResponsibleHospName);
+
+                final var actualCertificate = utkastToCertificateConverter.convert(draft);
+
+                assertEquals(expectedResponsibleHospName, actualCertificate.getMetadata().getResponsibleHospName());
+            }
+        }
+
+        @Test
+        void shouldSetRecipient() {
+            final var recipient = CertificateRecipient.builder().build();
             when(certificateRecipientConverter.get(anyString(), anyString(), any()))
                 .thenReturn(recipient);
-
             final var actualCertificate = utkastToCertificateConverter.convert(draft);
 
-            assertEquals("Name", actualCertificate.getMetadata().getSentTo());
+            assertEquals(recipient, actualCertificate.getMetadata().getRecipient());
         }
     }
+
 
     @Nested
-    class ValidateResponsibleHospName {
+    class ValidateAvailableToCitizen {
 
         @BeforeEach
-        void setup() {
-            doReturn(getHealthCareUnit())
-                .when(hsatkOrganizationService).getHealthCareUnit(any(String.class));
-
-            doReturn(getUnit())
-                .when(hsatkOrganizationService).getUnit(any(String.class), nullable(String.class));
+        void setup() throws ModuleNotFoundException, IOException, ModuleException {
+            final var moduleApi = mock(ModuleApi.class);
+            doReturn(moduleApi).when(moduleRegistry).getModuleApi(anyString(), eq(draft.getIntygTypeVersion()));
+            doReturn(createCertificate()).when(moduleApi).getCertificateFromJson(draft.getModel(), typeAheadProvider);
         }
 
         @Test
-        public void shallNotSetResponsibleHospNameWhenNoAuthenticationContext() {
+        void shouldSetAvailableForCitizenToFalseForDb() {
+            draft.setIntygsTyp(DbModuleEntryPoint.MODULE_ID);
             final var actualCertificate = utkastToCertificateConverter.convert(draft);
-
-            assertNull(actualCertificate.getMetadata().getResponsibleHospName());
+            assertFalse(actualCertificate.getMetadata().isAvailableForCitizen());
         }
 
         @Test
-        public void shallNotSetResponsibleHospNameWhenIntegrationParametersIsNull() {
-            doReturn(true).when(webCertUserService).hasAuthenticationContext();
-            when(webCertUserService.getUser()).thenReturn(mock(WebCertUser.class));
-            when(webCertUserService.getUser().getParameters()).thenReturn(null);
-
+        void shouldSetAvailableForCitizenToFalseForDoi() {
+            draft.setIntygsTyp(DoiModuleEntryPoint.MODULE_ID);
             final var actualCertificate = utkastToCertificateConverter.convert(draft);
-
-            assertNull(actualCertificate.getMetadata().getResponsibleHospName());
+            assertFalse(actualCertificate.getMetadata().isAvailableForCitizen());
         }
 
         @Test
-        public void shallSetResponsibleHospNameWhenIntegrationParametersArePresent() {
-            final var expectedResponsibleHospName = "responsibleHospName";
-            doReturn(true).when(webCertUserService).hasAuthenticationContext();
-            when(webCertUserService.getUser()).thenReturn(mock(WebCertUser.class));
-            when(webCertUserService.getUser().getParameters()).thenReturn(mock(IntegrationParameters.class));
-            when(webCertUserService.getUser().getParameters().getResponsibleHospName()).thenReturn(expectedResponsibleHospName);
-
+        void shouldSetAvailableForCitizenToTrueForCertificatesOtherThanDbAndDoi() {
+            draft.setIntygsTyp(LisjpEntryPoint.MODULE_ID);
             final var actualCertificate = utkastToCertificateConverter.convert(draft);
-
-            assertEquals(expectedResponsibleHospName, actualCertificate.getMetadata().getResponsibleHospName());
+            assertTrue(actualCertificate.getMetadata().isAvailableForCitizen());
         }
-    }
-
-    @Test
-    void shouldSetRecipient() {
-        final var recipient = CertificateRecipient.builder().build();
-        when(certificateRecipientConverter.get(anyString(), anyString(), any()))
-            .thenReturn(recipient);
-        final var actualCertificate = utkastToCertificateConverter.convert(draft);
-
-        assertEquals(recipient, actualCertificate.getMetadata().getRecipient());
     }
 
     private Utkast createDraft() {

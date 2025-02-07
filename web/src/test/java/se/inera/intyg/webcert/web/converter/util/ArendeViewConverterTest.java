@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -29,6 +29,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
@@ -41,7 +42,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,13 +49,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.google.common.collect.ImmutableList;
-
 import se.inera.intyg.common.fkparent.model.converter.RespConstants;
-import se.inera.intyg.common.lisjp.v1.model.internal.LisjpUtlatandeV1;
 import se.inera.intyg.common.luse.v1.model.internal.LuseUtlatandeV1;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.InternalDate;
@@ -123,20 +117,21 @@ public class ArendeViewConverterTest {
         when(intygService.fetchIntygData(any(String.class), any(String.class)))
             .thenReturn(
                 IntygContentHolder.builder()
-                    .setContents("")
-                    .setUtlatande(buildLuseUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson",
+                    .contents("")
+                    .utlatande(buildLuseUtlatande(intygsId, ENHETS_ID, ENHETS_NAMN, PATIENT_PERSON_ID, "Test Testsson",
                         SKAPADAV_PERSON_ID, LocalDateTime.now().minusDays(2)))
-                    .setStatuses(
+                    .statuses(
                         Arrays.asList(new Status(CertificateState.RECEIVED, intygsId, LocalDateTime.now().minusDays(2))))
-                    .setRevoked(false)
-                    .setRelations(new Relations())
+                    .revoked(false)
+                    .relations(new Relations())
                     // .setReplacedByRelation(null)
                     // .setComplementedByRelation(null)
-                    .setDeceased(false)
-                    .setSekretessmarkering(false)
-                    .setPatientNameChangedInPU(false)
-                    .setPatientAddressChangedInPU(false)
-                    .setTestIntyg(false)
+                    .deceased(false)
+                    .sekretessmarkering(false)
+                    .patientNameChangedInPU(false)
+                    .patientAddressChangedInPU(false)
+                    .testIntyg(false)
+                    .latestMajorTextVersion(true)
                     .build());
     }
 
@@ -150,9 +145,9 @@ public class ArendeViewConverterTest {
             result.getKompletteringar().get(1).getJsonPropertyHandle());
         assertEquals(RespConstants.UNDERLAG_SVAR_JSON_ID_4,
             result.getKompletteringar().get(2).getJsonPropertyHandle());
-        assertEquals(new Integer(0), result.getKompletteringar().get(0).getPosition());
-        assertEquals(new Integer(0), result.getKompletteringar().get(1).getPosition());
-        assertEquals(new Integer(1), result.getKompletteringar().get(2).getPosition());
+        assertEquals(Integer.valueOf(0), result.getKompletteringar().get(0).getPosition());
+        assertEquals(Integer.valueOf(0), result.getKompletteringar().get(1).getPosition());
+        assertEquals(Integer.valueOf(1), result.getKompletteringar().get(2).getPosition());
         assertEquals(VARDAKTOR_NAMN, result.getVardaktorNamn());
         assertEquals(ENHETS_NAMN, result.getEnhetsnamn());
         assertEquals(VARDGIVARE_NAMN, result.getVardgivarnamn());
@@ -160,7 +155,7 @@ public class ArendeViewConverterTest {
     }
 
     @Test
-    public void convertToJson() throws JsonGenerationException, JsonMappingException, IOException {
+    public void convertToJson() throws IOException {
         Arende arende = buildArende("lisjp");
         StringWriter jsonWriter = new StringWriter();
         CustomObjectMapper objectMapper = new CustomObjectMapper();
@@ -178,9 +173,9 @@ public class ArendeViewConverterTest {
             result.getKompletteringar().get(1).getJsonPropertyHandle());
         assertEquals(RespConstants.UNDERLAG_SVAR_JSON_ID_4,
             result.getKompletteringar().get(2).getJsonPropertyHandle());
-        assertEquals(new Integer(0), result.getKompletteringar().get(0).getPosition());
-        assertEquals(new Integer(0), result.getKompletteringar().get(1).getPosition());
-        assertEquals(new Integer(1), result.getKompletteringar().get(2).getPosition());
+        assertEquals(Integer.valueOf(0), result.getKompletteringar().get(0).getPosition());
+        assertEquals(Integer.valueOf(0), result.getKompletteringar().get(1).getPosition());
+        assertEquals(Integer.valueOf(1), result.getKompletteringar().get(2).getPosition());
         assertEquals(VARDAKTOR_NAMN, result.getVardaktorNamn());
         assertEquals(ENHETS_NAMN, result.getEnhetsnamn());
         assertEquals(VARDGIVARE_NAMN, result.getVardgivarnamn());
@@ -189,14 +184,14 @@ public class ArendeViewConverterTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testConvertKompletteringWithoutInstans() throws ModuleNotFoundException, ModuleException {
+    public void testConvertKompletteringWithoutInstans() throws ModuleException {
         Arende arende = buildArende("lisjp");
         arende.setKomplettering(Arrays.asList(buildMedicinsktArende("1", null, "arende1")));
         ArendeView result = converter.convertToDto(arende);
 
         assertEquals(1, result.getKompletteringar().size());
         assertEquals(RespConstants.GRUNDFORMEDICINSKTUNDERLAG_SVAR_JSON_ID_1, result.getKompletteringar().get(0).getJsonPropertyHandle());
-        assertEquals(new Integer(0), result.getKompletteringar().get(0).getPosition());
+        assertEquals(Integer.valueOf(0), result.getKompletteringar().get(0).getPosition());
         assertEquals(VARDAKTOR_NAMN, result.getVardaktorNamn());
         assertEquals(ENHETS_NAMN, result.getEnhetsnamn());
         assertEquals(VARDGIVARE_NAMN, result.getVardgivarnamn());
@@ -205,14 +200,14 @@ public class ArendeViewConverterTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testConvertKompletteringInstansTooHigh() throws ModuleNotFoundException, ModuleException {
+    public void testConvertKompletteringInstansTooHigh() throws ModuleException {
         Arende arende = buildArende("lisjp");
         arende.setKomplettering(Arrays.asList(buildMedicinsktArende("1", 3, "arende1")));
         ArendeView result = converter.convertToDto(arende);
 
         assertEquals(1, result.getKompletteringar().size());
         assertEquals(RespConstants.GRUNDFORMEDICINSKTUNDERLAG_SVAR_JSON_ID_1, result.getKompletteringar().get(0).getJsonPropertyHandle());
-        assertEquals(new Integer(2), result.getKompletteringar().get(0).getPosition());
+        assertEquals(Integer.valueOf(2), result.getKompletteringar().get(0).getPosition());
         assertEquals(VARDAKTOR_NAMN, result.getVardaktorNamn());
         assertEquals(ENHETS_NAMN, result.getEnhetsnamn());
         assertEquals(VARDGIVARE_NAMN, result.getVardgivarnamn());
@@ -221,14 +216,14 @@ public class ArendeViewConverterTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testConvertKompletteringUnknownQuestionId() throws ModuleNotFoundException, ModuleException {
+    public void testConvertKompletteringUnknownQuestionId() throws ModuleException {
         Arende arende = buildArende("lisjp");
         arende.setKomplettering(Arrays.asList(buildMedicinsktArende("10", 1, "arende1")));
         ArendeView result = converter.convertToDto(arende);
 
         assertEquals(1, result.getKompletteringar().size());
         assertEquals("", result.getKompletteringar().get(0).getJsonPropertyHandle());
-        assertEquals(new Integer(0), result.getKompletteringar().get(0).getPosition());
+        assertEquals(Integer.valueOf(0), result.getKompletteringar().get(0).getPosition());
         assertEquals(VARDAKTOR_NAMN, result.getVardaktorNamn());
         assertEquals(ENHETS_NAMN, result.getEnhetsnamn());
         assertEquals(VARDGIVARE_NAMN, result.getVardgivarnamn());
@@ -237,7 +232,7 @@ public class ArendeViewConverterTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testConvertToArendeWithoutKomplettering() throws ModuleNotFoundException, ModuleException {
+    public void testConvertToArendeWithoutKomplettering() throws ModuleException {
         ArendeView result = converter.convertToDto(buildArende("meddelandeId", LocalDateTime.now(), LocalDateTime.now()));
 
         assertTrue(result.getKompletteringar().isEmpty());
@@ -396,13 +391,11 @@ public class ArendeViewConverterTest {
         Arende svar = createValidArendeForLuse("svar", fragaTimestamp.plusMinutes(10), "unique id of svar", fraga);
 
         // When
-        Throwable thrown = catchThrowable(() -> {
-            converter.buildArendeConversations(
-                fraga.getIntygsId(),
-                ImmutableList.of(fraga, svar),
-                null,
-                Collections.emptyList());
-        });
+        Throwable thrown = catchThrowable(() -> converter.buildArendeConversations(
+            fraga.getIntygsId(),
+            ImmutableList.of(fraga, svar),
+            null,
+            Collections.emptyList()));
 
         // Then
         Assertions.assertThat(thrown).isInstanceOf(NullPointerException.class);
@@ -431,10 +424,16 @@ public class ArendeViewConverterTest {
 
     private AnsweredWithIntyg createMatchingAnsweredWithIntyg(Arende fraga, LocalDateTime signDate) {
         LocalDateTime sendDate = signDate.plusMinutes(5);
-        if (fraga.getSenasteHandelse().compareTo(sendDate) < 0) {
+        if (fraga.getSenasteHandelse().isBefore(sendDate)) {
             fraga.setSenasteHandelse(sendDate);
         }
-        return AnsweredWithIntyg.create(fraga.getIntygsId(), "signeratAv", signDate, sendDate, "namnetpaskapareavintyg");
+        return AnsweredWithIntyg.builder()
+            .intygsId(fraga.getIntygsId())
+            .signeratAv("signeratAv")
+            .signeratDatum(signDate)
+            .skickatDatum(sendDate)
+            .namnetPaSkapareAvIntyg("namnetpaskapareavintyg")
+            .build();
     }
 
     private Arende createValidArendeForLuse(String typeOfArende, LocalDateTime timestamp, String meddelandeId, Arende relatedFraga) {
@@ -498,20 +497,6 @@ public class ArendeViewConverterTest {
         }
 
         return arende;
-    }
-
-    private LisjpUtlatandeV1 buildLisjpUtlatande(String intygsid2, String enhetsId, String enhetsNamn, String patientPersonId,
-        String skapadAvNamn, String skapadavPersonId, LocalDateTime timeStamp) {
-
-        LisjpUtlatandeV1.Builder template = LisjpUtlatandeV1.builder();
-
-        template.setId(intygsId);
-        GrundData grundData = buildGrundData(enhetsId, enhetsNamn, patientPersonId, skapadavPersonId, timeStamp);
-        template.setGrundData(grundData);
-        template.setTextVersion("");
-        template.setTelefonkontaktMedPatienten(new InternalDate(timeStamp.toLocalDate()));
-
-        return template.build();
     }
 
     private LuseUtlatandeV1 buildLuseUtlatande(String intygsId, String enhetsId, String enhetsnamn, String patientPersonId,

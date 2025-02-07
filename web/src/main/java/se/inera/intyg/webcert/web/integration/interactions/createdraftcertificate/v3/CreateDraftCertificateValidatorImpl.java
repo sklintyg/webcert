@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3;
 
-import java.util.Arrays;
+import java.util.Collections;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -38,33 +38,45 @@ public class CreateDraftCertificateValidatorImpl extends BaseCreateDraftCertific
     @Override
     public ResultValidator validate(Intyg intyg) {
         ResultValidator errors = ResultValidator.newInstance();
-
-        validateTypAvIntyg(errors, intyg.getTypAvIntyg());
         validatePatient(errors, intyg.getPatient());
         validateSkapadAv(errors, intyg.getSkapadAv());
-
         return errors;
     }
 
     @Override
     public ResultValidator validateApplicationErrors(Intyg intyg, IntygUser user) {
         ResultValidator errors = ResultValidator.newInstance();
-
-        String personId = intyg.getPatient().getPersonId().getExtension();
-        Personnummer personnummer = createPersonnummer(errors, personId).orElse(null);
+        final var personnummer = getPersonnummer(intyg, errors);
         if (errors.hasErrors()) {
             return errors;
         }
-
         // Check if PU-service is responding
         validatePUServiceResponse(errors, personnummer);
+        return errors;
+    }
+
+    private Personnummer getPersonnummer(Intyg intyg, ResultValidator errors) {
+        String personId = intyg.getPatient().getPersonId().getExtension();
+        return createPersonnummer(errors, personId).orElse(null);
+    }
+
+    @Override
+    public ResultValidator validateCertificateErrors(Intyg intyg, IntygUser user) {
+        ResultValidator errors = ResultValidator.newInstance();
+
+        final var personnummer = getPersonnummer(intyg, errors);
         if (errors.hasErrors()) {
             return errors;
         }
 
+        validateTypAvIntyg(errors, intyg.getTypAvIntyg());
+
+        if (errors.hasErrors()) {
+            return errors;
+        }
+        
         validateSekretessmarkeringOchIntygsTyp(errors, personnummer, intyg.getTypAvIntyg(), user);
         validateCreateForAvlidenPatientAllowed(errors, personnummer, intyg.getTypAvIntyg().getCode());
-
         return errors;
     }
 
@@ -76,7 +88,7 @@ public class CreateDraftCertificateValidatorImpl extends BaseCreateDraftCertific
 
     private void validatePatient(ResultValidator errors, Patient patient) {
         String personId = patient.getPersonId() == null ? "" : patient.getPersonId().getExtension();
-        validatePatient(errors, Arrays.asList(patient.getFornamn()), patient.getEfternamn(), personId);
+        validatePatient(errors, Collections.singletonList(patient.getFornamn()), patient.getEfternamn(), personId);
     }
 
     private void validateSkapadAv(ResultValidator errors, HosPersonal skapadAv) {

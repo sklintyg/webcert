@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.auth.eleg;
 
-import static se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerResultCode.NOT_AUTHORIZED_IN_HOSP;
 import static se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerResultCode.NO_ACCOUNT;
 import static se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerResultCode.OK;
 
@@ -26,18 +25,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.saml.SAMLCredential;
-import org.springframework.security.saml.userdetails.SAMLUserDetailsService;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
-import se.inera.intyg.infra.integration.pu.model.PersonSvar;
-import se.inera.intyg.infra.integration.pu.services.PUService;
+import se.inera.intyg.infra.pu.integration.api.model.PersonSvar;
+import se.inera.intyg.infra.pu.integration.api.services.PUService;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -52,10 +48,10 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.integration.pp.services.PPRestService;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
+import se.inera.intyg.webcert.web.auth.common.AuthConstants;
 import se.inera.intyg.webcert.web.auth.common.BaseWebCertUserDetailsService;
-import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerAuthorizationException;
 import se.inera.intyg.webcert.web.auth.exceptions.MissingSubscriptionException;
-import se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalService;
+import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerAuthorizationException;
 import se.inera.intyg.webcert.web.service.subscription.SubscriptionService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.riv.infrastructure.directory.privatepractitioner.v1.BefattningType;
@@ -63,100 +59,79 @@ import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.LegitimeradYrkesgruppType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.SpecialitetType;
 
-/**
- * Created by eriklupander on 2015-06-16.
- *
- * Note that privatlakare must accept webcert terms in order to use the software. However, that's
- * handled separately in the TermsFilter.
- */
 @Component
-public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService implements SAMLUserDetailsService {
+@Slf4j
+@RequiredArgsConstructor
+public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ElegWebCertUserDetailsService.class);
-
+    private final PPService ppService;
+    private final PPRestService ppRestService;
+    private final PUService puService;
+    private final AnvandarPreferenceRepository anvandarPreferenceRepository;
+    private final Optional<UserOrigin> userOrigin;
+    private final SubscriptionService subscriptionService;
     @Value("${privatepractitioner.logicaladdress}")
     private String logicalAddress;
 
-    @Autowired
-    private PPService ppService;
-
-    @Autowired
-    private PPRestService ppRestService;
-
-    @Autowired
-    private PUService puService;
-
-    @Autowired
-    private AvtalService avtalService;
-
-    @Autowired
-    private ElegAuthenticationAttributeHelper elegAuthenticationAttributeHelper;
-
-    @Autowired
-    private ElegAuthenticationMethodResolver elegAuthenticationMethodResolver;
-
-    @Autowired
-    private AnvandarPreferenceRepository anvandarPreferenceRepository;
-
-    @Autowired(required = false)
-    private Optional<UserOrigin> userOrigin;
-
-    @Autowired
-    private SubscriptionService subscriptionService;
+    public WebCertUser buildFakeUserPrincipal(String personId) {
+        return buildUserPrincipal(personId, AuthConstants.FAKE_AUTHENTICATION_ELEG_CONTEXT_REF, AuthenticationMethod.FAKE);
+    }
 
     @Override
-    public Object loadUserBySAML(SAMLCredential samlCredential) {
+    public WebCertUser buildUserPrincipal(String personId, String authenticationScheme, AuthenticationMethod authenticationMethodMethod) {
 
         try {
-            return createUser(samlCredential);
+            return createUser(personId, authenticationScheme, authenticationMethodMethod);
         } catch (Exception e) {
             if (e instanceof AuthenticationException) {
                 throw e;
             }
 
-            LOG.error("Error building user with error message {}", e.getMessage());
+            log.error("Error building user with error message {}", e.getMessage(), e);
             throw new HsaServiceException("privatlakare, ej hsa", e);
         }
     }
 
-    // - - - - - Default scope - - - - -
-
-    protected WebCertUser createUser(SAMLCredential samlCredential) {
-        final var personId = elegAuthenticationAttributeHelper.getAttribute(samlCredential, CgiElegAssertion.PERSON_ID_ATTRIBUTE);
+    protected WebCertUser createUser(String personId, String authenticationScheme, AuthenticationMethod authenticationMethodMethod) {
         final var ppAuthStatus = ppRestService.validatePrivatePractitioner(personId).getResultCode();
         redirectUnregisteredUsers(personId, ppAuthStatus);
 
         final var hosPerson = getAuthorizedHosPerson(personId);
         final var requestOrigin = resolveRequestOrigin();
         final var role = lookupUserRole();
-        final var webCertUser = createWebCertUser(hosPerson, requestOrigin, role, samlCredential);
+        final var webCertUser = createWebCertUser(hosPerson, requestOrigin, role);
+        webCertUser.setAuthenticationScheme(authenticationScheme);
+        webCertUser.setAuthenticationMethod(authenticationMethodMethod);
         assertWebCertUserIsAuthorized(webCertUser, ppAuthStatus);
 
         return webCertUser;
     }
 
+    private WebCertUser createWebCertUser(HoSPersonType hosPerson, String requestOrigin, Role role) {
+        WebCertUser user = new WebCertUser();
+        user.setRoles(AuthoritiesResolverUtil.toMap(lookupUserRole()));
+        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
+        user.setOrigin(requestOrigin);
+        user.setHsaId(hosPerson.getHsaId().getExtension());
+        user.setPersonId(hosPerson.getPersonId().getExtension());
+        user.setNamn(getFullName(hosPerson, user));
+
+        // Forskrivarkod should be always be seven zeros
+        user.setForskrivarkod("0000000");
+
+        decorateWebCertUserWithAvailableFeatures(user);
+        decorateWebCertUserWithLegitimeradeYrkesgrupper(hosPerson, user);
+        decorateWebCertUserWithSpecialiceringar(hosPerson, user);
+        decorateWebCertUserWithVardgivare(hosPerson, user);
+        decorateWebCertUserWithBefattningar(hosPerson, user);
+        decorateWebCertUserWithDefaultVardenhet(user);
+        decorateWebcertUserWithSekretessMarkering(user, hosPerson);
+        decorateWebcertUserWithAnvandarPreferenser(user);
+        decorateWebcertUserWithUserTermsApprovedOrSubscriptionInUse(user);
+        return user;
+    }
+
     private void redirectUnregisteredUsers(String personId, ValidatePrivatePractitionerResultCode ppAuthStatus) {
-
-        if (!subscriptionService.isAnySubscriptionFeatureActive()) {
-            redirectWhenNoActiveSubscriptionFeatures(personId, ppAuthStatus);
-            return;
-        }
-        if (subscriptionService.isSubscriptionAdaptation()) {
-            redirectWhenActiveSubscriptionFeatures(personId, ppAuthStatus);
-            return;
-        }
-        if (subscriptionService.isSubscriptionRequired()) {
-            redirectWhenActiveSubscriptionFeatures(personId, ppAuthStatus);
-        }
-    }
-
-    private void redirectWhenNoActiveSubscriptionFeatures(String personId, ValidatePrivatePractitionerResultCode ppAuthStatus) {
-        if (ppAuthStatus == NO_ACCOUNT) {
-            throw privatePractitionerAuthorizationException(hashed(personId));
-        }
-    }
-
-    private void redirectWhenActiveSubscriptionFeatures(String personId, ValidatePrivatePractitionerResultCode ppAuthStatus) {
         if (ppAuthStatus == NO_ACCOUNT) {
             final var hasSubscription = !subscriptionService.isUnregisteredElegUserMissingSubscription(personId);
             if (hasSubscription) {
@@ -167,41 +142,6 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
     }
 
     private void assertWebCertUserIsAuthorized(WebCertUser webCertUser, ValidatePrivatePractitionerResultCode ppAuthStatus) {
-
-        if (!subscriptionService.isAnySubscriptionFeatureActive()) {
-            authorizeWhenNoActiveSubscriptionFeatures(webCertUser, ppAuthStatus);
-            return;
-        }
-        if (subscriptionService.isSubscriptionAdaptation()) {
-            authorizeWhenSubscriptionAdaptation(webCertUser, ppAuthStatus);
-            return;
-        }
-        if (subscriptionService.isSubscriptionRequired()) {
-            authorizeWhenSubscriptionRequired(webCertUser, ppAuthStatus);
-        }
-    }
-
-    private void authorizeWhenNoActiveSubscriptionFeatures(WebCertUser webCertUser, ValidatePrivatePractitionerResultCode ppAuthStatus) {
-        if (ppAuthStatus == OK) {
-            return;
-        }
-        throw privatePractitionerAuthorizationException(webCertUser.getHsaId());
-    }
-
-    private void authorizeWhenSubscriptionAdaptation(WebCertUser webCertUser, ValidatePrivatePractitionerResultCode ppAuthStatus) {
-        final var hasSubscription = subscriptionService.checkSubscriptions(webCertUser);
-        final var acceptedTerms = avtalService.userHasApprovedLatestAvtal(webCertUser.getHsaId());
-
-        if (ppAuthStatus == OK && (acceptedTerms || hasSubscription)) {
-            return;
-        }
-        if (ppAuthStatus == NOT_AUTHORIZED_IN_HOSP && (acceptedTerms || hasSubscription)) {
-            throw privatePractitionerAuthorizationException(webCertUser.getHsaId());
-        }
-        throw missingSubscriptionException(webCertUser.getHsaId());
-    }
-
-    private void authorizeWhenSubscriptionRequired(WebCertUser webCertUser, ValidatePrivatePractitionerResultCode ppAuthStatus) {
         final var hasSubscription = subscriptionService.checkSubscriptions(webCertUser);
 
         if (ppAuthStatus == OK) {
@@ -235,10 +175,6 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         return hosPerson;
     }
 
-    /*
-     * This method only handles privatläkare for now.
-     * In a future there might be more logic here to decide user role.
-     */
     Role lookupUserRole() {
         return getAuthoritiesResolver().getRole(AuthoritiesConstants.ROLE_PRIVATLAKARE);
     }
@@ -251,40 +187,18 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         return getAuthoritiesResolver().getRequestOrigin(requestOrigin).getName();
     }
 
-    private WebCertUser createWebCertUser(HoSPersonType hosPerson, String requestOrigin, Role role, SAMLCredential samlCredential) {
-        WebCertUser user = new WebCertUser();
 
-        user.setRoles(AuthoritiesResolverUtil.toMap(lookupUserRole()));
-        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
-
-        // Set application mode / request origin
-        user.setOrigin(requestOrigin);
-
-        user.setHsaId(hosPerson.getHsaId().getExtension());
-        user.setPersonId(hosPerson.getPersonId().getExtension());
-        user.setNamn(hosPerson.getFullstandigtNamn());
-
-        // Forskrivarkod should be always be seven zeros
-        user.setForskrivarkod("0000000");
-
-        decorateWebCertUserWithAuthenticationScheme(samlCredential, user);
-        decorateWebCertUserWithAuthenticationMethod(samlCredential, user);
-        decorateWebCertUserWithAvailableFeatures(user);
-        decorateWebCertUserWithLegitimeradeYrkesgrupper(hosPerson, user);
-        decorateWebCertUserWithSpecialiceringar(hosPerson, user);
-        decorateWebCertUserWithVardgivare(hosPerson, user);
-        decorateWebCertUserWithBefattningar(hosPerson, user);
-        decorateWebCertUserWithDefaultVardenhet(user);
-        decorateWebcertUserWithSekretessMarkering(user, hosPerson);
-        decorateWebcertUserWithAnvandarPreferenser(user);
-        decorateWebcertUserWithUserTermsApprovedOrSubscriptionInUse(hosPerson, user);
-        return user;
+    private String getFullName(HoSPersonType hosPerson, WebCertUser user) {
+        final var fullName = hosPerson.getFullstandigtNamn();
+        if (fullName != null && fullName.contains(SPACE)) {
+            user.setFornamn(fullName.substring(0, fullName.indexOf(SPACE)));
+            user.setEfternamn(fullName.substring(fullName.indexOf(SPACE) + 1));
+        }
+        return fullName;
     }
 
-    private void decorateWebcertUserWithUserTermsApprovedOrSubscriptionInUse(HoSPersonType hosPerson, WebCertUser user) {
-        final var userTermsApprovedOrSubscriptionInUse = subscriptionService.isAnySubscriptionFeatureActive()
-            || avtalService.userHasApprovedLatestAvtal(hosPerson.getHsaId().getExtension());
-        user.setUserTermsApprovedOrSubscriptionInUse(userTermsApprovedOrSubscriptionInUse);
+    private void decorateWebcertUserWithUserTermsApprovedOrSubscriptionInUse(WebCertUser user) {
+        user.setUserTermsApprovedOrSubscriptionInUse(true);
     }
 
     private void decorateWebcertUserWithAnvandarPreferenser(WebCertUser user) {
@@ -301,27 +215,11 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
 
         PersonSvar person = puService.getPerson(personNummer);
         if (person.getStatus() == PersonSvar.Status.FOUND) {
-            webCertUser.setSekretessMarkerad(person.getPerson().isSekretessmarkering());
+            webCertUser.setSekretessMarkerad(person.getPerson().sekretessmarkering());
         } else {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
                 String.format("PU replied with %s - Sekretesstatus cannot be determined for person %s", person.getStatus(),
                     personNummer.getPersonnummerHash()));
-        }
-    }
-
-    private void decorateWebCertUserWithAuthenticationMethod(SAMLCredential samlCredential, WebCertUser webCertUser) {
-        if (!webCertUser.getAuthenticationScheme().endsWith(":fake")) {
-            webCertUser.setAuthenticationMethod(elegAuthenticationMethodResolver.resolveAuthenticationMethod(samlCredential));
-        } else {
-            webCertUser.setAuthenticationMethod(AuthenticationMethod.FAKE);
-        }
-    }
-
-    private void decorateWebCertUserWithAuthenticationScheme(SAMLCredential samlCredential, WebCertUser webCertUser) {
-        if (samlCredential.getAuthenticationAssertion() != null) {
-            String authnContextClassRef = samlCredential.getAuthenticationAssertion().getAuthnStatements().get(0).getAuthnContext()
-                .getAuthnContextClassRef().getAuthnContextClassRef();
-            webCertUser.setAuthenticationScheme(authnContextClassRef);
         }
     }
 
@@ -354,7 +252,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         webCertUser.setValdVardenhet(vardenhet);
         webCertUser.setValdVardgivare(vardgivare);
 
-        // Since privatläkare doesn't have "Medarbetaruppdrag" we cannot reliably populate "miuNamnPerVardenhetsId".
+        // Since privatläkare do not have "Medarbetaruppdrag" we cannot reliably populate "miuNamnPerVardenhetsId".
         // Populate with an empty map.
         webCertUser.setMiuNamnPerEnhetsId(new HashMap<>());
     }
@@ -376,7 +274,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
     }
 
     private void decorateWebCertUserWithBefattningar(HoSPersonType hosPerson, WebCertUser webCertUser) {
-        List<String> befattningar = new ArrayList<>();
+        final var befattningar = new ArrayList<String>();
         for (BefattningType bt : hosPerson.getBefattning()) {
             befattningar.add(bt.getNamn());
         }
@@ -393,22 +291,18 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
      */
     private void resolveArbetsplatsKod(HoSPersonType hosPerson, Vardenhet vardenhet) {
         if (hosPerson.getEnhet().getArbetsplatskod() == null || hosPerson.getEnhet().getArbetsplatskod().getExtension() == null
-            || hosPerson.getEnhet().getArbetsplatskod().getExtension().trim().length() == 0) {
+            || hosPerson.getEnhet().getArbetsplatskod().getExtension().trim().isEmpty()) {
             vardenhet.setArbetsplatskod(hosPerson.getHsaId().getExtension());
         } else {
             vardenhet.setArbetsplatskod(hosPerson.getEnhet().getArbetsplatskod().getExtension());
         }
     }
 
-    private boolean setFirstVardenhetOnFirstVardgivareAsDefault(WebCertUser user) {
-
-        Vardgivare firstVardgivare = user.getVardgivare().get(0);
+    private void setFirstVardenhetOnFirstVardgivareAsDefault(WebCertUser user) {
+        final var firstVardgivare = user.getVardgivare().getFirst();
+        final var firstVardenhet = firstVardgivare.getVardenheter().getFirst();
         user.setValdVardgivare(firstVardgivare);
-
-        Vardenhet firstVardenhet = firstVardgivare.getVardenheter().get(0);
         user.setValdVardenhet(firstVardenhet);
-
-        return true;
     }
 
 }

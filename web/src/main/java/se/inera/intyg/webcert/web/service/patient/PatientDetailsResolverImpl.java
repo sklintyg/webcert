@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -41,8 +41,8 @@ import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.PatientDetailResolveOrder;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
-import se.inera.intyg.infra.integration.pu.model.PersonSvar;
-import se.inera.intyg.infra.integration.pu.services.PUService;
+import se.inera.intyg.infra.pu.integration.api.model.PersonSvar;
+import se.inera.intyg.infra.pu.integration.api.services.PUService;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
@@ -93,7 +93,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
     public SekretessStatus getSekretessStatus(Personnummer personNummer) {
         PersonSvar person = getPersonSvar(personNummer);
         if (person.getStatus() == PersonSvar.Status.FOUND) {
-            if (person.getPerson().isSekretessmarkering()) {
+            if (person.getPerson().sekretessmarkering()) {
                 return SekretessStatus.TRUE;
             } else {
                 return SekretessStatus.FALSE;
@@ -117,7 +117,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
         persons.forEach((key, value) -> {
             if (value != null && value.getStatus() == PersonSvar.Status.FOUND) {
                 sekretessStatusMap.put(key,
-                    value.getPerson().isSekretessmarkering() ? SekretessStatus.TRUE : SekretessStatus.FALSE);
+                    value.getPerson().sekretessmarkering() ? SekretessStatus.TRUE : SekretessStatus.FALSE);
             } else {
                 // contains no person instance.
                 sekretessStatusMap.put(key, SekretessStatus.UNDEFINED);
@@ -140,9 +140,9 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
         persons.forEach((key, value) -> {
             PatientDetailsResolverResponse patientResponse = new PatientDetailsResolverResponse();
             if (value != null && value.getStatus() == PersonSvar.Status.FOUND) {
-                patientResponse.setDeceased(value.getPerson().isAvliden());
-                patientResponse.setTestIndicator(value.getPerson().isTestIndicator());
-                patientResponse.setProtectedPerson(value.getPerson().isSekretessmarkering() ? SekretessStatus.TRUE : SekretessStatus.FALSE);
+                patientResponse.setDeceased(value.getPerson().avliden());
+                patientResponse.setTestIndicator(value.getPerson().testIndicator());
+                patientResponse.setProtectedPerson(value.getPerson().sekretessmarkering() ? SekretessStatus.TRUE : SekretessStatus.FALSE);
             } else {
                 patientResponse.setDeceased(false);
                 patientResponse.setTestIndicator(true);
@@ -157,13 +157,13 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
     @Override
     public boolean isAvliden(Personnummer personnummer) {
         PersonSvar personSvar = getPersonSvar(personnummer);
-        return personSvar.getStatus() == PersonSvar.Status.FOUND && personSvar.getPerson().isAvliden();
+        return personSvar.getStatus() == PersonSvar.Status.FOUND && personSvar.getPerson().avliden();
     }
 
     @Override
     public boolean isTestIndicator(Personnummer personnummer) {
         PersonSvar personSvar = getPersonSvar(personnummer);
-        return personSvar.getPerson().isTestIndicator();
+        return personSvar.getPerson().testIndicator();
     }
 
     @Override
@@ -248,7 +248,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
             resolvePatientOtherDetails(patient, resolveOrder, personSvar, user, predecessor);
         }
 
-        patient.setTestIndicator(personSvar.getPerson().isTestIndicator());
+        patient.setTestIndicator(personSvar.getPerson().testIndicator());
 
         return patient;
     }
@@ -264,7 +264,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
         Patient patient = new Patient();
         patient.setPersonId(personnummer);
         resolvePatientAvlidenDetails(patient, personSvar);
-        patient.setTestIndicator(personSvar.getPerson().isTestIndicator());
+        patient.setTestIndicator(personSvar.getPerson().testIndicator());
 
         return patient;
     }
@@ -330,12 +330,12 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
 
     private boolean setOtherFromPu(Patient patient, PersonSvar personSvar) {
         if (personSvar.getStatus().equals(PersonSvar.Status.FOUND)) {
-            patient.setFornamn(personSvar.getPerson().getFornamn());
-            patient.setEfternamn(personSvar.getPerson().getEfternamn());
-            patient.setMellannamn(personSvar.getPerson().getMellannamn());
-            patient.setFullstandigtNamn(Joiner.on(' ').skipNulls().join(personSvar.getPerson().getFornamn(),
-                personSvar.getPerson().getMellannamn(), personSvar.getPerson().getEfternamn()));
-            patient.setSekretessmarkering(personSvar.getPerson().isSekretessmarkering());
+            patient.setFornamn(personSvar.getPerson().fornamn());
+            patient.setEfternamn(personSvar.getPerson().efternamn());
+            patient.setMellannamn(personSvar.getPerson().mellannamn());
+            patient.setFullstandigtNamn(Joiner.on(' ').skipNulls().join(personSvar.getPerson().fornamn(),
+                personSvar.getPerson().mellannamn(), personSvar.getPerson().efternamn()));
+            patient.setSekretessmarkering(personSvar.getPerson().sekretessmarkering());
             return true;
         }
         return false;
@@ -356,7 +356,7 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
 
     private boolean setAvlidenFromPu(Patient patient, PersonSvar personSvar) {
         if (personSvar.getStatus().equals(PersonSvar.Status.FOUND)) {
-            patient.setAvliden(personSvar.getPerson().isAvliden());
+            patient.setAvliden(personSvar.getPerson().avliden());
             return true;
         }
         return false;
@@ -374,9 +374,9 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
 
     private boolean setAdressFromPu(Patient patient, PersonSvar personSvar) {
         if (personSvar.getStatus().equals(PersonSvar.Status.FOUND)) {
-            patient.setPostadress(personSvar.getPerson().getPostadress());
-            patient.setPostnummer(personSvar.getPerson().getPostnummer());
-            patient.setPostort(personSvar.getPerson().getPostort());
+            patient.setPostadress(personSvar.getPerson().postadress());
+            patient.setPostnummer(personSvar.getPerson().postnummer());
+            patient.setPostort(personSvar.getPerson().postort());
             patient.setAddressDetailsSourcePU(patient.isCompleteAddressProvided());
             return true;
         }
@@ -419,11 +419,6 @@ public class PatientDetailsResolverImpl implements PatientDetailsResolver {
                 Sets.newHashSet(intygsTyp)));
         }
         return utkastList;
-    }
-
-    private boolean isPuOnlyStrategy(PatientDetailResolveOrder resolveOrder) {
-        return resolveOrder.getOtherStrategy().stream().allMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PU))
-            && resolveOrder.getAdressStrategy().stream().allMatch(it -> it.equals(PatientDetailResolveOrder.ResolveOrder.PU));
     }
 
     private boolean isPredecessorStrategy(PatientDetailResolveOrder resolveOrder) {

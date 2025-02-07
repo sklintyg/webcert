@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -84,6 +84,7 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
             .excludeCertificateTypesForUnit(DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID)
             .checkUnit(false, false)
             .checkSubscription()
+            .checkInactiveCertificateType()
             .evaluate();
     }
 
@@ -103,6 +104,7 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
             .checkPatientSecrecy()
             .checkUnit(true, true)
             .checkSubscription()
+            .checkInactiveCertificateType()
             .evaluate();
     }
 
@@ -228,6 +230,7 @@ public class CertificateAccessServiceImpl implements CertificateAccessService {
             .checkPatientSecrecy()
             .checkUnique()
             .checkSubscription()
+            .checkInactiveCertificateType()
             .evaluate();
     }
 

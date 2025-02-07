@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,17 +29,16 @@ import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.TransactionManagementConfigurer;
-import se.inera.intyg.infra.monitoring.MonitoringConfiguration;
 import se.inera.intyg.infra.security.common.cookie.IneraCookieSerializer;
 
 @Configuration
-@EnableTransactionManagement
-@Import({MonitoringConfiguration.class, JmsConfig.class, CacheConfig.class, JobConfig.class})
 @DependsOn("dbUpdate")
+@RequiredArgsConstructor
+@EnableTransactionManagement
+@Import({LoggingConfig.class, JmsConfig.class, CacheConfig.class, JobConfig.class})
 public class AppConfig implements TransactionManagementConfigurer {
 
-    @Autowired
-    JpaTransactionManager transactionManager;
+    private final JpaTransactionManager transactionManager;
 
     @Value("${webcert.cookie.domain.name:}")
     private String webcertCookieDomainName;

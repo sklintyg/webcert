@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.certificate;
 
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -82,6 +83,7 @@ public class CertificateServiceImpl implements CertificateService {
             LOGGER.error("Could not get list of signed certificates for unit from IT", ex);
             CertificateListResponse certificateListResponse = new CertificateListResponse();
             certificateListResponse.setErrorFromIT(true);
+            certificateListResponse.setCertificates(Collections.emptyList());
             return certificateListResponse;
         }
     }

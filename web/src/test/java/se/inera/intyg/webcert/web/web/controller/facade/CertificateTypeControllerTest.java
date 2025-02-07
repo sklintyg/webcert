@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -32,14 +32,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.web.service.facade.GetCertificateTypesFacadeService;
+import se.inera.intyg.webcert.web.csintegration.aggregate.CertificateTypeInfoAggregator;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
 @ExtendWith(MockitoExtension.class)
-public class CertificateTypeControllerTest {
+class CertificateTypeControllerTest {
 
     @Mock
-    private GetCertificateTypesFacadeService getCertificateTypesFacadeService;
+    private CertificateTypeInfoAggregator certificateTypeInfoAggregator;
 
     @InjectMocks
     private CertificateTypeController controller;
@@ -48,14 +48,14 @@ public class CertificateTypeControllerTest {
     class CertificateTypeControllerTests {
 
         @Test
-        void shallReturnCertificatTypes() throws InvalidPersonNummerException {
+        void shallReturnCertificateTypes() throws InvalidPersonNummerException {
             final var type = new CertificateTypeInfoDTO();
             final var types = List.of(
                 type
             );
 
             doReturn(types)
-                .when(getCertificateTypesFacadeService)
+                .when(certificateTypeInfoAggregator)
                 .get(any(Personnummer.class));
 
             final var response = (List<CertificateTypeInfoDTO>) controller.getCertificateTypes("19121212-1212").getEntity();

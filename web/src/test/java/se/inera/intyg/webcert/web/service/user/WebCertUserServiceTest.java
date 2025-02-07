@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,12 +18,29 @@
  */
 package se.inera.intyg.webcert.web.service.user;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static se.inera.intyg.infra.security.filter.SessionTimeoutFilter.TIME_TO_INVALIDATE_ATTRIBUTE_NAME;
+
+import jakarta.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -41,15 +58,6 @@ import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPr
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-import javax.servlet.http.HttpSession;
-import java.util.*;
-import java.util.concurrent.ScheduledFuture;
-
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-import static se.inera.intyg.infra.security.filter.SessionTimeoutFilter.TIME_TO_INVALIDATE_ATTRIBUTE_NAME;
-
 @RunWith(MockitoJUnitRunner.class)
 public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
 
@@ -66,17 +74,13 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
 
     private static final String MOTTAGNING_3 = "VG1VE2M1";
 
-    @InjectMocks
-    public WebCertUserServiceImpl webcertUserService = new WebCertUserServiceImpl();
-
     @Mock
     private AnvandarPreferenceRepository anvandarPreferenceRepository;
-
-    @Mock
-    private ThreadPoolTaskScheduler scheduler;
-
     @Mock
     private FindByIndexNameSessionRepository<?> sessionRepository;
+
+    @InjectMocks
+    public WebCertUserServiceImpl webcertUserService;
 
     @Test
     public void testCheckIfAuthorizedForUnit() {
@@ -270,15 +274,6 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
         user.getVardgivare().remove(0);
 
         assertFalse(webcertUserService.isAuthorizedForUnit(MOTTAGNING_3, false));
-    }
-
-    @Test
-    public void testUserHasReadOnlyAccessToParentVardEnhetWhenREADONLY() {
-        WebCertUser user = setupUserMottagningAccessTest();
-        user.changeValdVardenhet(MOTTAGNING_1);
-        user.setOrigin(UserOriginType.READONLY.name());
-
-        assertTrue(webcertUserService.isAuthorizedForUnit(VARDENHET_1, true));
     }
 
     @Test

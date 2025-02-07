@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,16 +19,18 @@
 package se.inera.intyg.webcert.web.web.controller.internalapi;
 
 import io.swagger.annotations.Api;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.testcertificate.dto.TestCertificateEraseRequest;
 import se.inera.intyg.infra.testcertificate.dto.TestCertificateEraseResult;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.testcertificate.TestCertificateService;
 
 /**
@@ -47,6 +49,7 @@ public class TestCertificateController {
     @POST
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Path("/erase")
+    @PerformanceLogging(eventAction = "test-certificate-erase", eventType = MdcLogConstants.EVENT_TYPE_DELETION)
     public Response eraseTestCertificates(@RequestBody TestCertificateEraseRequest eraseRequest) {
 
         if (eraseRequest.getTo() == null) {

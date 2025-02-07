@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,18 +18,15 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
+import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import java.io.IOException;
 import java.util.Arrays;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-
-import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
-
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
@@ -45,7 +42,7 @@ import se.inera.intyg.common.support.modules.support.api.dto.CreateDraftCopyHold
 import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftResponse;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
-import se.inera.intyg.infra.integration.pu.model.Person;
+import se.inera.intyg.infra.pu.integration.api.model.Person;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
@@ -280,16 +277,16 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
 
         if (person != null) {
             Patient patient = new Patient();
-            patient.setFornamn(person.getFornamn());
-            patient.setMellannamn(person.getMellannamn());
-            patient.setEfternamn(person.getEfternamn());
-            patient.setPersonId(person.getPersonnummer());
-            patient.setPostadress(person.getPostadress());
-            patient.setPostnummer(person.getPostnummer());
-            patient.setPostort(person.getPostort());
+            patient.setFornamn(person.fornamn());
+            patient.setMellannamn(person.mellannamn());
+            patient.setEfternamn(person.efternamn());
+            patient.setPersonId(person.personnummer());
+            patient.setPostadress(person.postadress());
+            patient.setPostnummer(person.postnummer());
+            patient.setPostort(person.postort());
             patient.setFullstandigtNamn(
                 IntygConverterUtil.concatPatientName(patient.getFornamn(), patient.getMellannamn(), patient.getEfternamn()));
-            patient.setTestIndicator(person.isTestIndicator());
+            patient.setTestIndicator(person.testIndicator());
             newDraftCopyHolder.setPatient(patient);
             LOG.debug("Added new patient data to CreateDraftCopyHolder");
         }
@@ -327,10 +324,10 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
     }
 
     private void populatePatientDetailsFromPerson(Utkast utkast, Person person) {
-        utkast.setPatientPersonnummer(person.getPersonnummer());
-        utkast.setPatientFornamn(person.getFornamn());
-        utkast.setPatientMellannamn(person.getMellannamn());
-        utkast.setPatientEfternamn(person.getEfternamn());
+        utkast.setPatientPersonnummer(person.personnummer());
+        utkast.setPatientFornamn(person.fornamn());
+        utkast.setPatientMellannamn(person.mellannamn());
+        utkast.setPatientEfternamn(person.efternamn());
     }
 
     private void populatePatientDetailsFromPatient(Utkast utkast, Patient patient) {

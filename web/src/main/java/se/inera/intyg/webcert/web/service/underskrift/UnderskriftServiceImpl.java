@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,9 +18,10 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift;
 
+import jakarta.persistence.OptimisticLockException;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import javax.persistence.OptimisticLockException;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,12 +53,13 @@ import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
 import se.inera.intyg.webcert.web.service.underskrift.validator.DraftModelToXmlValidator;
+import se.inera.intyg.webcert.web.service.underskrift.xmldsig.UtkastModelToXMLConverter;
 import se.inera.intyg.webcert.web.service.underskrift.xmldsig.XmlUnderskriftServiceImpl;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 
-@Service
+@Service("signServiceForWC")
 public class UnderskriftServiceImpl implements UnderskriftService {
 
     private static final Logger LOG = LoggerFactory.getLogger(UnderskriftServiceImpl.class);
@@ -107,9 +109,12 @@ public class UnderskriftServiceImpl implements UnderskriftService {
     @Autowired
     private DraftModelToXmlValidator draftModelToXMLValidator;
 
+    @Autowired
+    private UtkastModelToXMLConverter utkastModelToXMLConverter;
+
     @Override
     public SignaturBiljett startSigningProcess(String intygsId, String intygsTyp, long version, SignMethod signMethod,
-        String ticketId, boolean isWc2ClientRequest) {
+        String ticketId) {
         WebCertUser user = webCertUserService.getUser();
 
         // Check if Utkast is eligible for signing right now, if so get it.
@@ -126,13 +131,15 @@ public class UnderskriftServiceImpl implements UnderskriftService {
             case SITHS:
             case NET_ID:
             case FAKE:
+                final var registerCertificateXml = utkastModelToXMLConverter.utkastToXml(updatedJson, intygsTyp);
                 signaturBiljett = xmlUnderskriftService
-                    .skapaSigneringsBiljettMedDigest(intygsId, intygsTyp, version, updatedJson, signMethod, ticketId, isWc2ClientRequest);
+                    .skapaSigneringsBiljettMedDigest(intygsId, intygsTyp, version, Optional.of(updatedJson), signMethod, ticketId,
+                        registerCertificateXml);
                 break;
             case BANK_ID:
             case MOBILT_BANK_ID:
                 signaturBiljett = grpUnderskriftService
-                    .skapaSigneringsBiljettMedDigest(intygsId, intygsTyp, version, updatedJson, signMethod, ticketId, isWc2ClientRequest);
+                    .skapaSigneringsBiljettMedDigest(intygsId, intygsTyp, version, Optional.of(updatedJson), signMethod, ticketId, null);
                 break;
         }
 

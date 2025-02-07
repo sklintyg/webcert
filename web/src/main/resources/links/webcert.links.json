@@ -55,8 +55,14 @@
   },
   {
     "key": "minaintyg",
-    "url": "https://minaintyg.se/",
-    "text": "minaintyg.se",
+    "url": "https://intyg.1177.se/",
+    "text": "intyg.1177.se",
+    "target": "_blank"
+  },
+  {
+    "key": "intyg",
+    "url": "https://intyg.1177.se/",
+    "text": "intyg.1177.se",
     "target": "_blank"
   },
   {
@@ -99,6 +105,12 @@
     "key": "transportstyrelsen",
     "url": "https://www.transportstyrelsen.se",
     "text": "www.transportstyrelsen.se",
+    "target": "_blank"
+  },
+  {
+    "key": "transportstyrelsenLink",
+    "url": "https://www.transportstyrelsen.se",
+    "text": "Transportstyrelsen",
     "target": "_blank"
   },
   {
@@ -197,7 +209,7 @@
   },
   {
     "key": "intygstjansterInformationFAQ",
-    "url": "https://inera.atlassian.net/wiki/x/SwhmFQ",
+    "url": "https://inera.atlassian.net/wiki/spaces/EIT/overview",
     "text": "Webcerts informationsyta",
     "target": "_blank"
   },

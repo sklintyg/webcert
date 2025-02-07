@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -95,13 +95,15 @@ public class CertificateEventConverterTest {
         parent.setParent(complementedByIntyg);
 
         return IntygContentHolder.builder()
-            .setRelations(parent)
-            .setRevoked(false)
-            .setDeceased(false)
-            .setSekretessmarkering(false)
-            .setPatientNameChangedInPU(false)
-            .setPatientAddressChangedInPU(false)
-            .setTestIntyg(false)
+            .relations(parent)
+            .revoked(false)
+            .deceased(false)
+            .sekretessmarkering(false)
+            .patientNameChangedInPU(false)
+            .patientAddressChangedInPU(false)
+            .testIntyg(false)
+            .relations(parent)
+            .latestMajorTextVersion(true)
             .build();
     }
 }

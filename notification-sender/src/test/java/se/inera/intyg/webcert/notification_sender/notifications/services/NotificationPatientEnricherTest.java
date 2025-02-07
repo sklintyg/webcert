@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,9 +30,8 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
-import se.inera.intyg.infra.integration.pu.model.PersonSvar;
-import se.inera.intyg.infra.integration.pu.services.PUService;
+import se.inera.intyg.infra.pu.integration.api.model.PersonSvar;
+import se.inera.intyg.infra.pu.integration.api.services.PUService;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.notification_sender.notifications.helper.NotificationTestHelper;

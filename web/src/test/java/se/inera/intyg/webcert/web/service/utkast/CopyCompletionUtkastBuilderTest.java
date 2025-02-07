@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,7 +40,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
-
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.CertificateState;
@@ -52,7 +50,7 @@ import se.inera.intyg.common.support.modules.support.api.dto.CreateDraftCopyHold
 import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftResponse;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
-import se.inera.intyg.infra.integration.pu.model.Person;
+import se.inera.intyg.infra.pu.integration.api.model.Person;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
@@ -240,18 +238,19 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
         Fk7263Utlatande utlatande = new CustomObjectMapper().readValue(new ClassPathResource(
             "IntygDraftServiceImplTest/utlatande.json").getFile(), Fk7263Utlatande.class);
         return IntygContentHolder.builder()
-            .setContents("<external-json/>")
-            .setUtlatande(utlatande)
-            .setStatuses(status)
-            .setRevoked(false)
-            .setRelations(new Relations())
+            .contents("<external-json/>")
+            .utlatande(utlatande)
+            .statuses(status)
+            .revoked(false)
+            .relations(new Relations())
             // .setReplacedByRelation(null)
             // .setComplementedByRelation(null)
-            .setDeceased(false)
-            .setSekretessmarkering(false)
-            .setPatientNameChangedInPU(false)
-            .setPatientAddressChangedInPU(false)
-            .setTestIntyg(false)
+            .deceased(false)
+            .sekretessmarkering(false)
+            .patientNameChangedInPU(false)
+            .patientAddressChangedInPU(false)
+            .testIntyg(false)
+            .latestMajorTextVersion(true)
             .build();
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -27,6 +27,7 @@ import static se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColu
 
 import java.io.IOException;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -35,6 +36,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
+import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.model.SekretessStatus;
+import se.inera.intyg.webcert.web.csintegration.aggregate.ListCertificatesAggregator;
 import se.inera.intyg.webcert.web.service.facade.list.config.GetStaffInfoFacadeService;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterBooleanValue;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterPersonIdValue;
@@ -47,6 +51,7 @@ import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.test.TestIntygFactory;
+import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.ResourceLinkHelper;
 
 @ExtendWith(MockitoExtension.class)
@@ -87,48 +92,51 @@ class ListPreviousCertificatesFacadeServiceImplTest {
     @Mock
     private CertificateForPatientService certificateForPatientService;
 
+    @Mock
+    private ListCertificatesAggregator listCertificatesAggregator;
+
     @InjectMocks
     private ListPreviousCertificatesFacadeServiceImpl listPreviousCertificatesFacadeService;
 
+    public static final ListIntygEntry CERTIFICATE_FROM_CS = new ListIntygEntry();
+    private static final List<ListIntygEntry> LIST_FROM_CERTIFICATE_SERVICE = List.of(CERTIFICATE_FROM_CS);
+    private static final ListFilter LIST_FILTER = getTestListFilter();
+    private static final List<String> UNITS = List.of("unitId");
+    private static final List<CertificateListItem> EXPECTED_LIST = List.of(new CertificateListItem(), new CertificateListItem());
+
+    @BeforeEach
+    void setup() {
+        final var webCertUser = new WebCertUser();
+        when(webCertUserService.getUser()).thenReturn(webCertUser);
+
+        when(patientDetailsResolver.getSekretessStatus(Personnummer.createPersonnummer("19121212-1212").orElseThrow()))
+            .thenReturn(SekretessStatus.FALSE);
+
+        when(getStaffInfoFacadeService.getIdsOfSelectedUnit()).thenReturn(UNITS);
+        when(listPaginationHelper.paginate(anyList(), any())).thenReturn(EXPECTED_LIST);
+        when(certificateListItemConverter.convert(any(), any())).thenReturn(new CertificateListItem());
+        when(certificateForPatientService.get(any(), any(), anyList())).thenReturn(
+            TestIntygFactory.createListWithIntygItems());
+
+        when(listCertificatesAggregator.listCertificatesForPatient("19121212-1212"))
+            .thenReturn(LIST_FROM_CERTIFICATE_SERVICE);
+    }
+
     @Test
     void shouldReturnListInfoWithPaginatedList() throws IOException, ModuleNotFoundException {
-        final var listFilter = getTestListFilter();
-        final var listOfUnits = List.of("unitId");
-        final var expectedResult = List.of(new CertificateListItem());
-        final var webCertUser = new WebCertUser();
+        final var actualResult = listPreviousCertificatesFacadeService.get(LIST_FILTER);
 
-        when(webCertUserService.getUser()).thenReturn(webCertUser);
-        when(getStaffInfoFacadeService.getIdsOfSelectedUnit()).thenReturn(listOfUnits);
-        when(listPaginationHelper.paginate(anyList(), any())).thenReturn(expectedResult);
-        when(certificateListItemConverter.convert(any(), any())).thenReturn(new CertificateListItem());
-        when(certificateForPatientService.get(any(), any(), anyList())).thenReturn(
-            TestIntygFactory.createListWithIntygItems());
-
-        final var actualResult = listPreviousCertificatesFacadeService.get(listFilter);
-
-        assertEquals(expectedResult, actualResult.getList());
+        assertEquals(EXPECTED_LIST, actualResult.getList());
     }
 
     @Test
-    void shouldReturnListInfoWithTotalListCount() throws IOException, ModuleNotFoundException {
-        final var listFilter = getTestListFilter();
-        final var listOfUnits = List.of("unitId");
-        final var expectedResult = List.of(new CertificateListItem(), new CertificateListItem());
-        final var webCertUser = new WebCertUser();
+    void shouldReturnListInfoWithTotalListCountIncludingCertificatesFromCS() throws IOException, ModuleNotFoundException {
+        final var actualResult = listPreviousCertificatesFacadeService.get(LIST_FILTER);
 
-        when(webCertUserService.getUser()).thenReturn(webCertUser);
-        when(getStaffInfoFacadeService.getIdsOfSelectedUnit()).thenReturn(listOfUnits);
-        when(listPaginationHelper.paginate(anyList(), any())).thenReturn(expectedResult);
-        when(certificateListItemConverter.convert(any(), any())).thenReturn(new CertificateListItem());
-        when(certificateForPatientService.get(any(), any(), anyList())).thenReturn(
-            TestIntygFactory.createListWithIntygItems());
-
-        final var actualResult = listPreviousCertificatesFacadeService.get(listFilter);
-
-        assertEquals(expectedResult.size(), actualResult.getTotalCount());
+        assertEquals(EXPECTED_LIST.size() + LIST_FROM_CERTIFICATE_SERVICE.size(), actualResult.getTotalCount());
     }
 
-    private ListFilter getTestListFilter() {
+    private static ListFilter getTestListFilter() {
         final var listFilter = new ListFilter();
         listFilter.addValue(new ListFilterPersonIdValue("19121212-1212"), "PATIENT_ID");
         listFilter.addValue(new ListFilterTextValue(CERTIFICATE_TYPE_NAME.getName()), "ORDER_BY");

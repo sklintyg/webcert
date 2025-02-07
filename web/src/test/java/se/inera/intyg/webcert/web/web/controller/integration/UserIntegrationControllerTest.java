@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -25,11 +25,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.google.common.collect.ImmutableMap;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 import org.junit.Test;
+import org.junit.jupiter.api.Nested;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -86,5 +87,34 @@ public class UserIntegrationControllerTest {
             () -> userIntegrationController.logoutUserNow(request));
 
         assertEquals(AuthoritiesException.class, e.getClass());
+    }
+
+    @Nested
+    public class GrantedRoleTest {
+
+        @Test
+        public void shouldReturnLakare() {
+            assertEquals(AuthoritiesConstants.ROLE_LAKARE, userIntegrationController.getGrantedRoles()[0]);
+        }
+
+        @Test
+        public void shouldReturnAdmin() {
+            assertEquals(AuthoritiesConstants.ROLE_ADMIN, userIntegrationController.getGrantedRoles()[1]);
+        }
+
+        @Test
+        public void shouldReturnTandlakare() {
+            assertEquals(AuthoritiesConstants.ROLE_TANDLAKARE, userIntegrationController.getGrantedRoles()[2]);
+        }
+
+        @Test
+        public void shouldReturnBarnmorska() {
+            assertEquals(AuthoritiesConstants.ROLE_BARNMORSKA, userIntegrationController.getGrantedRoles()[3]);
+        }
+
+        @Test
+        public void shouldReturnSjukskoterska() {
+            assertEquals(AuthoritiesConstants.ROLE_SJUKSKOTERSKA, userIntegrationController.getGrantedRoles()[4]);
+        }
     }
 }

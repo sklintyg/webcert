@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -103,6 +103,10 @@ public enum AccessResultCode {
     /**
      * No access. Not allowed to perform action because selected care provider has no subscription.
      */
-    MISSING_SUBSCRIPTION
+    MISSING_SUBSCRIPTION,
+    /**
+     * No access. Not allowed to perform action because the certificate type is considered inactive
+     */
+    INACTIVE_CERTIFICATE_TYPE,
 
 }

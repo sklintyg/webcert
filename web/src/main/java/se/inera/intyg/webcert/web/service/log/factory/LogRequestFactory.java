@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.log.factory;
 
+import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
@@ -31,7 +32,13 @@ public interface LogRequestFactory {
 
     LogRequest createLogRequestFromUtlatande(Utlatande utlatande);
 
+    LogRequest createLogRequestFromUtlatande(Utlatande utlatande, String additionalInfo);
+
     LogRequest createLogRequestFromUtlatande(Utlatande utlatande, boolean coherentJournaling);
 
     LogRequest createLogRequestFromUser(WebCertUser user, String patientId);
+
+    LogRequest createLogRequestFromUser(WebCertUser user, String patientId, String intygsId);
+
+    LogRequest createLogRequestFromCertificate(Certificate certificate, String additionalInfo);
 }

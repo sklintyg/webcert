@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,22 +18,28 @@
  */
 package se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate;
 
-import org.mockito.Mock;
-import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
-import se.inera.intyg.infra.security.common.model.*;
-import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static org.mockito.Mockito.when;
+import org.mockito.Mock;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Feature;
+import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.infra.security.common.model.Privilege;
+import se.inera.intyg.infra.security.common.model.RequestOrigin;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
+import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 /**
  * Created by eriklupander on 2017-09-27.
@@ -50,6 +56,7 @@ public abstract class BaseCreateDraftCertificateTest {
     protected static final String TSBAS = "ts-bas";
     protected static final String LOGICAL_ADDR = "1234567890";
     protected static final String USER_HSAID = "SE1234567890";
+    protected static final String AUTH_METHOD = "http://id.sambi.se/loa/loa3";
     protected static final String UNIT_HSAID = "SE0987654321";
     protected static final String CAREGIVER_HSAID = "SE0000112233";
     protected static final String UTKAST_ID = "abc123";
@@ -60,7 +67,7 @@ public abstract class BaseCreateDraftCertificateTest {
     protected WebcertUserDetailsService webcertUserDetailsService;
 
     public void setup() throws ModuleNotFoundException {
-        when(webcertUserDetailsService.loadUserByHsaId(USER_HSAID)).thenReturn(buildWebCertUser());
+        when(webcertUserDetailsService.buildUserPrincipal(anyString(), anyString())).thenReturn(buildWebCertUser());
     }
 
     protected WebCertUser buildWebCertUser() {
@@ -81,10 +88,35 @@ public abstract class BaseCreateDraftCertificateTest {
                 return feature;
             })));
         user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
-        user.setBefattningar(Arrays.asList(TITLE_CODE));
+        user.setBefattningar(List.of(TITLE_CODE));
         user.setSpecialiseringar(Arrays.asList(ALLMAN_MEDICIN, INVARTES_MEDICIN));
         user.setTitel(TITLE_NAME);
-        user.setVardgivare(Arrays.asList(createVardgivare()));
+        user.setVardgivare(List.of(createVardgivare()));
+        user.setMiuNamnPerEnhetsId(createMiuNamnPerEnhetsId());
+        return user;
+    }
+
+    protected IntygUser getIntygUser(String userHsaId) {
+        IntygUser user = new IntygUser(userHsaId);
+        user.setAuthorities(new HashMap<>());
+
+        user.getAuthorities().put(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
+            createPrivilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT));
+        user.getAuthorities().put(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG,
+            createPrivilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG));
+        user.setFeatures(Stream.of(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, AuthoritiesConstants.FEATURE_TAK_KONTROLL)
+            .collect(Collectors.toMap(Function.identity(), s -> {
+                Feature feature = new Feature();
+                feature.setName(s);
+                feature.setGlobal(true);
+                feature.setIntygstyper(Arrays.asList(FK7263, TSBAS));
+                return feature;
+            })));
+        user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
+        user.setBefattningar(List.of(TITLE_CODE));
+        user.setSpecialiseringar(Arrays.asList(ALLMAN_MEDICIN, INVARTES_MEDICIN));
+        user.setTitel(TITLE_NAME);
+        user.setVardgivare(List.of(createVardgivare()));
         user.setMiuNamnPerEnhetsId(createMiuNamnPerEnhetsId());
         return user;
     }
@@ -101,7 +133,7 @@ public abstract class BaseCreateDraftCertificateTest {
         RequestOrigin requestOrigin = new RequestOrigin();
         requestOrigin.setName(UserOriginType.DJUPINTEGRATION.name());
         requestOrigin.setIntygstyper(Arrays.asList(FK7263, TSBAS));
-        priv.setRequestOrigins(Arrays.asList(requestOrigin));
+        priv.setRequestOrigins(List.of(requestOrigin));
         priv.setIntygstyper(Arrays.asList(FK7263, TSBAS));
         return priv;
     }
@@ -123,7 +155,7 @@ public abstract class BaseCreateDraftCertificateTest {
         Vardgivare vardgivare = new Vardgivare();
         vardgivare.setId(CAREGIVER_HSAID);
         vardgivare.setNamn("Vardgivaren");
-        vardgivare.setVardenheter(Arrays.asList(createVardenhet(vardgivare)));
+        vardgivare.setVardenheter(List.of(createVardenhet(vardgivare)));
         return vardgivare;
     }
 }

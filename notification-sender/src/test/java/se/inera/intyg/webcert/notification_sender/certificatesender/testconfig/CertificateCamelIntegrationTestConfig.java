@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,9 +18,54 @@
  */
 package se.inera.intyg.webcert.notification_sender.certificatesender.testconfig;
 
+import static org.mockito.Mockito.mock;
+
+import org.apache.camel.spring.spi.SpringTransactionPolicy;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.jms.connection.JmsTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
+import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedreceivers.v1.RegisterApprovedReceiversResponderInterface;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.webcert.logging.MdcHelper;
+import se.inera.intyg.webcert.notification_sender.certificatesender.services.mock.MockSendCertificateServiceClientImpl;
+import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientResponderInterface;
 
 @ImportResource(locations = "classpath:certificates/integration-test-certificate-sender-config.xml")
 public class CertificateCamelIntegrationTestConfig {
 
+    @Bean
+    public IntygModuleRegistry intygModuleRegistry() {
+        return null;
+    }
+
+    @Bean
+    public MdcHelper mdcHelper() {
+        return new MdcHelper();
+    }
+
+    @Bean
+    public SendMessageToRecipientResponderInterface sendMessageToRecipientResponderInterface() {
+        return null;
+    }
+
+    @Bean
+    public RegisterApprovedReceiversResponderInterface registerApprovedReceiversResponderInterface() {
+        return null;
+    }
+
+    @Bean
+    public PlatformTransactionManager transactionManager() {
+        return mock(JmsTransactionManager.class);
+    }
+
+    @Bean
+    public SpringTransactionPolicy txTemplate(PlatformTransactionManager transactionManager) {
+        return new SpringTransactionPolicy(transactionManager);
+    }
+
+    @Bean
+    public MockSendCertificateServiceClientImpl mockSendCertificateServiceClient() {
+        return new MockSendCertificateServiceClientImpl();
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,13 +19,15 @@
 package se.inera.intyg.webcert.web.auth.common;
 
 import com.google.common.base.Strings;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Collections;
-import javax.servlet.http.HttpServletRequest;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
+import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 /**
@@ -33,16 +35,15 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
  * <p>
  * Created by eriklupander on 2015-06-16.
  */
+@Getter
 public abstract class BaseWebCertUserDetailsService {
+
+    protected abstract WebCertUser buildUserPrincipal(String userId, String autheticationScheme, AuthenticationMethod authenticationMethod);
 
     protected static final String COMMA = ", ";
     protected static final String SPACE = " ";
 
     private CommonAuthoritiesResolver authoritiesResolver;
-
-    public CommonAuthoritiesResolver getAuthoritiesResolver() {
-        return authoritiesResolver;
-    }
 
     @Autowired
     public void setAuthoritiesResolver(CommonAuthoritiesResolver authoritiesResolver) {
@@ -50,16 +51,13 @@ public abstract class BaseWebCertUserDetailsService {
     }
 
     protected String compileName(String fornamn, String mellanOchEfterNamn) {
-
         StringBuilder sb = new StringBuilder();
-
         sb.append(Strings.nullToEmpty(fornamn).trim());
 
-        if (sb.length() > 0) {
+        if (!sb.isEmpty()) {
             sb.append(SPACE);
         }
         sb.append(Strings.nullToEmpty(mellanOchEfterNamn).trim());
-
         return sb.toString();
     }
 

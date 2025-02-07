@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -25,7 +25,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -39,7 +38,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -63,6 +61,7 @@ import se.inera.intyg.webcert.web.event.CertificateEventServiceImpl;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CertificateEventServiceImplTest {
@@ -391,37 +390,40 @@ public class CertificateEventServiceImplTest {
         status.add(new se.inera.intyg.common.support.model.Status(CertificateState.SENT, "FKASSA", LocalDateTime.now()));
 
         return IntygContentHolder.builder()
-            .setContents("<external-json/>")
-            .setUtlatande(getUtlatande())
-            .setStatuses(status)
-            .setRevoked(false)
-            .setDeceased(false)
-            .setSekretessmarkering(false)
-            .setPatientNameChangedInPU(false)
-            .setPatientAddressChangedInPU(false)
-            .setTestIntyg(false)
+            .contents("<external-json/>")
+            .utlatande(getUtlatande())
+            .statuses(status)
+            .revoked(false)
+            .relations(new Relations())
+            .deceased(false)
+            .sekretessmarkering(false)
+            .patientNameChangedInPU(false)
+            .patientAddressChangedInPU(false)
+            .testIntyg(false)
+            .latestMajorTextVersion(true)
             .build();
     }
 
     private IntygContentHolder getIntygContentHolderGeneratingNoEvents() {
 
         IntygContentHolder certificate = IntygContentHolder.builder()
-            .setContents("<external-json/>")
-            .setUtlatande(getUtlatande())
-            .setStatuses(null)
-            .setRevoked(false)
-            .setDeceased(false)
-            .setSekretessmarkering(false)
-            .setPatientNameChangedInPU(false)
-            .setPatientAddressChangedInPU(false)
-            .setTestIntyg(false)
+            .contents("<external-json/>")
+            .utlatande(getUtlatande())
+            .statuses(null)
+            .revoked(false)
+            .relations(new Relations())
+            .deceased(false)
+            .sekretessmarkering(false)
+            .patientNameChangedInPU(false)
+            .patientAddressChangedInPU(false)
+            .testIntyg(false)
+            .latestMajorTextVersion(true)
             .build();
 
         certificate.getUtlatande().getGrundData().setSigneringsdatum(null);
 
         return certificate;
     }
-
 
     private Fk7263Utlatande getUtlatande() {
         // create mocked Utlatande from intygstjansten

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,18 +18,20 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade;
 
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.facade.ChangeUnitService;
 import se.inera.intyg.webcert.web.service.facade.GetUserResourceLinks;
 import se.inera.intyg.webcert.web.service.facade.impl.ChangeUnitException;
@@ -67,6 +69,7 @@ public class UserController {
     @GET
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "user-get-user", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getUser() {
         LOG.debug("Getting logged in user");
         final var loggedInUser = userService.getLoggedInUser();
@@ -78,6 +81,7 @@ public class UserController {
     @GET
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "user-get-user-tabs", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getUserTabs() {
         LOG.debug("Getting user statistics");
         final var result = userStatisticsService.getUserStatistics();
@@ -88,6 +92,7 @@ public class UserController {
     @Path("/unit/{unitHsaId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "user-change-unit", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public Response changeUnit(@PathParam("unitHsaId") @NotNull String unitHsaId) {
         LOG.debug("Changing care unit to {}", unitHsaId);
         try {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -27,14 +27,15 @@ import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.xml.ws.WebServiceException;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.xml.ws.WebServiceException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.clinicalprocess.healthcond.certificate.receiver.types.v1.ApprovalStatusType;
 import se.inera.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
@@ -44,6 +45,7 @@ import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedrec
 import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedreceivers.v1.RegisterApprovedReceiversResponseType;
 import se.inera.intyg.clinicalprocess.healthcond.certificate.registerapprovedreceivers.v1.RegisterApprovedReceiversType;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
+import se.inera.intyg.webcert.logging.MdcHelper;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RegisterApprovedReceiversProcessorTest {
@@ -57,6 +59,8 @@ public class RegisterApprovedReceiversProcessorTest {
 
     @Mock
     private RegisterApprovedReceiversResponderInterface registerApprovedReceiversClient;
+    @Spy
+    private MdcHelper mdcHelper;
 
     @InjectMocks
     private RegisterApprovedReceiversProcessor testee;

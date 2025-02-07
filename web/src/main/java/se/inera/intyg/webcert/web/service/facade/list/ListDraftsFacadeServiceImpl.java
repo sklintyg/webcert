@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,22 +18,26 @@
  */
 package se.inera.intyg.webcert.web.service.facade.list;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
-import se.inera.intyg.webcert.web.service.facade.list.dto.*;
+import se.inera.intyg.webcert.web.csintegration.aggregate.ListCertificatesAggregator;
+import se.inera.intyg.webcert.web.service.facade.list.dto.CertificateListItem;
+import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
+import se.inera.intyg.webcert.web.service.facade.list.dto.ListInfo;
+import se.inera.intyg.webcert.web.service.facade.list.dto.ListType;
 import se.inera.intyg.webcert.web.service.facade.list.filter.DraftFilterConverter;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
@@ -49,12 +53,14 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
     private final ListDecorator listDecorator;
     private final CertificateListItemConverter certificateListItemConverter;
     private final AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
+    private final ListCertificatesAggregator listCertificatesAggregator;
 
     @Autowired
     public ListDraftsFacadeServiceImpl(WebCertUserService webCertUserService, UtkastService utkastService,
         LogService logService, DraftFilterConverter draftFilterConverter,
         ListPaginationHelper listPaginationHelper, ListSortHelper listSortHelper,
-        ListDecorator listDecorator, CertificateListItemConverter certificateListItemConverter) {
+        ListDecorator listDecorator, CertificateListItemConverter certificateListItemConverter,
+        ListCertificatesAggregator listCertificatesAggregator) {
         this.webCertUserService = webCertUserService;
         this.utkastService = utkastService;
         this.logService = logService;
@@ -63,6 +69,7 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
         this.listSortHelper = listSortHelper;
         this.listDecorator = listDecorator;
         this.certificateListItemConverter = certificateListItemConverter;
+        this.listCertificatesAggregator = listCertificatesAggregator;
     }
 
     @Override
@@ -74,9 +81,18 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
 
         final var intygEntryList = getIntygEntryList(convertedFilter);
         final var decoratedAndFilteredList = decorateList(intygEntryList);
-        final var totalListCount = decoratedAndFilteredList.size();
 
-        final var convertedList = convertList(decoratedAndFilteredList);
+        final var listFromCertificateService = listCertificatesAggregator.listCertificatesForUnit(filter);
+        final var mergedList = Stream
+            .concat(
+                decoratedAndFilteredList.stream(),
+                listFromCertificateService.stream()
+            )
+            .collect(Collectors.toList());
+
+        final var totalListCount = mergedList.size();
+
+        final var convertedList = convertList(mergedList);
         final var sortedList = listSortHelper.sort(convertedList, convertedFilter.getOrderBy(), convertedFilter.getOrderAscending());
         final var paginatedList = listPaginationHelper.paginate(sortedList, filter);
 
@@ -102,7 +118,7 @@ public class ListDraftsFacadeServiceImpl implements ListDraftsFacadeService {
     }
 
     private List<CertificateListItem> convertList(List<ListIntygEntry> intygEntryList) {
-        return intygEntryList.stream().map((item) -> certificateListItemConverter.convert(item, LIST_TYPE)).collect(Collectors.toList());
+        return intygEntryList.stream().map(item -> certificateListItemConverter.convert(item, LIST_TYPE)).collect(Collectors.toList());
     }
 
     private List<ListIntygEntry> getIntygEntryList(UtkastFilter filter) {

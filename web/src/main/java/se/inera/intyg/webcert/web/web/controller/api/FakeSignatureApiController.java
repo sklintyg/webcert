@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,14 +18,15 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
@@ -33,6 +34,8 @@ import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -51,6 +54,7 @@ public class FakeSignatureApiController extends AbstractApiController {
     private static final String LAST_SAVED_DRAFT = "lastSavedDraft";
 
     @Autowired
+    @Qualifier("signAggregator")
     private UnderskriftService underskriftService;
 
     /**
@@ -65,6 +69,7 @@ public class FakeSignatureApiController extends AbstractApiController {
     @Path("/{intygsTyp}/{intygsId}/{version}/fejksignera/{ticketId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "fake-signature-sign", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public SignaturStateDTO fejkSigneraUtkast(@PathParam("intygsTyp") String intygsTyp, @PathParam("intygsId") String intygsId,
         @PathParam("version") long version, @PathParam("ticketId") String ticketId, @Context HttpServletRequest request) {
 

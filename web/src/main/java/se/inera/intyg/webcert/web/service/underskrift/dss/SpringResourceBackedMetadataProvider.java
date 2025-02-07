@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,10 +19,13 @@
 package se.inera.intyg.webcert.web.service.underskrift.dss;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Timer;
-import org.joda.time.DateTime;
-import org.opensaml.saml2.metadata.provider.AbstractReloadingMetadataProvider;
-import org.opensaml.saml2.metadata.provider.MetadataProviderException;
+import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
+import net.shibboleth.utilities.java.support.resolver.ResolverException;
+import org.opensaml.saml.metadata.resolver.impl.AbstractReloadingMetadataResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -30,7 +33,7 @@ import org.springframework.core.io.Resource;
 /**
  * A metadata provider that reads metadata from a {#link {@link Resource}.
  */
-public class SpringResourceBackedMetadataProvider extends AbstractReloadingMetadataProvider {
+public class SpringResourceBackedMetadataProvider extends AbstractReloadingMetadataResolver {
 
     /**
      * Class logger.
@@ -47,44 +50,22 @@ public class SpringResourceBackedMetadataProvider extends AbstractReloadingMetad
      *
      * @param resource resource from which to read the metadata file.
      * @param timer task timer used to schedule metadata refresh tasks
-     * @throws MetadataProviderException thrown if there is a problem retrieving information about the resource
+     * @throws ComponentInitializationException thrown if there is a problem retrieving information about the resource
      */
-    public SpringResourceBackedMetadataProvider(Timer timer, Resource resource) throws MetadataProviderException {
+    public SpringResourceBackedMetadataProvider(Timer timer, Resource resource) throws ComponentInitializationException {
         super(timer);
-
         if (!resource.exists()) {
-            throw new MetadataProviderException("Resource " + resource.toString() + " does not exist.");
+            throw new ComponentInitializationException("Resource " + resource.toString() + " does not exist.");
         }
+
         metadataResource = resource;
-    }
-
-    /**
-     * Gets whether cached metadata should be discarded if it expires and can not be refreshed.
-     *
-     * @return whether cached metadata should be discarded if it expires and can not be refreshed.
-     * @deprecated use {@link #requireValidMetadata()} instead
-     */
-    @Deprecated
-    public boolean maintainExpiredMetadata() {
-        return !requireValidMetadata();
-    }
-
-    /**
-     * Sets whether cached metadata should be discarded if it expires and can not be refreshed.
-     *
-     * @param maintain whether cached metadata should be discarded if it expires and can not be refreshed.
-     * @deprecated use {@link #setRequireValidMetadata(boolean)} instead
-     */
-    @Deprecated
-    public void setMaintainExpiredMetadata(boolean maintain) {
-        setRequireValidMetadata(!maintain);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public synchronized void destroy() {
+    public synchronized void doDestroy() {
         metadataResource = null;
 
         super.destroy();
@@ -102,19 +83,20 @@ public class SpringResourceBackedMetadataProvider extends AbstractReloadingMetad
      * {@inheritDoc}
      */
     @Override
-    protected byte[] fetchMetadata() throws MetadataProviderException {
+    protected byte[] fetchMetadata() throws ResolverException {
         try {
-            DateTime metadataUpdateTime = new DateTime(metadataResource.lastModified());
+            final var metadataUpdateTime = ZonedDateTime
+                .ofInstant(Instant.ofEpochSecond(metadataResource.lastModified()), ZoneId.systemDefault());
             log.debug("resource {} was last modified {}", getMetadataIdentifier(), metadataUpdateTime);
-            if (getLastRefresh() == null || metadataUpdateTime.isAfter(getLastRefresh())) {
+
+            if (getLastRefresh() == null || metadataUpdateTime.isAfter(ZonedDateTime.ofInstant(getLastRefresh(), ZoneId.systemDefault()))) {
                 return inputstreamToByteArray(metadataResource.getInputStream());
             }
 
-            return null;
+            return new byte[0];
         } catch (IOException e) {
             String errorMsg = "Unable to read metadata file";
-            log.error(errorMsg, e);
-            throw new MetadataProviderException(errorMsg, e);
+            throw new ResolverException(errorMsg, e);
         }
     }
 }

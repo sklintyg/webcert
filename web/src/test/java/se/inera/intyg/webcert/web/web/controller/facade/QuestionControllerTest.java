@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,11 +20,11 @@ package se.inera.intyg.webcert.web.web.controller.facade;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 import java.util.Collections;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -33,12 +33,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
+import se.inera.intyg.webcert.web.csintegration.aggregate.GetQuestionsAggregator;
+import se.inera.intyg.webcert.web.csintegration.aggregate.HandleQuestionAggregator;
 import se.inera.intyg.webcert.web.service.facade.question.CreateQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionAnswerFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionFacadeService;
-import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsResourceLinkService;
-import se.inera.intyg.webcert.web.service.facade.question.HandleQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionAnswerFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionFacadeService;
 import se.inera.intyg.webcert.web.service.facade.question.SendQuestionAnswerFacadeService;
@@ -53,9 +53,6 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.SendQuestionRequestD
 
 @ExtendWith(MockitoExtension.class)
 class QuestionControllerTest {
-
-    @Mock
-    private GetQuestionsFacadeService getQuestionsFacadeService;
 
     @Mock
     private DeleteQuestionFacadeService deleteQuestionFacadeService;
@@ -82,7 +79,9 @@ class QuestionControllerTest {
     private GetQuestionsResourceLinkService getQuestionsResourceLinkService;
 
     @Mock
-    private HandleQuestionFacadeService handleQuestionFacadeService;
+    private HandleQuestionAggregator handleQuestionAggregator;
+    @Mock
+    private GetQuestionsAggregator getQuestionsAggregator;
 
     @InjectMocks
     private QuestionController questionController;
@@ -90,7 +89,7 @@ class QuestionControllerTest {
     @Test
     void shallReturnQuestionResponse() {
         doReturn(Collections.singletonList(Question.builder().build()))
-            .when(getQuestionsFacadeService)
+            .when(getQuestionsAggregator)
             .getQuestions("test");
         final var actualResponse = questionController.getQuestions("test");
 
@@ -100,12 +99,12 @@ class QuestionControllerTest {
     @Test
     void shallReturnQuestionResponseWithoutResourceLinks() {
         doReturn(Collections.singletonList(Question.builder().build()))
-            .when(getQuestionsFacadeService)
+            .when(getQuestionsAggregator)
             .getComplementQuestions("test");
         final var actualResponse = questionController.getComplementQuestions("test");
 
         assertNotNull(((QuestionsResponseDTO) actualResponse.getEntity()).getQuestions().get(0));
-        assertTrue(((QuestionsResponseDTO) actualResponse.getEntity()).getQuestions().get(0).getLinks().isEmpty());
+        Assertions.assertTrue(((QuestionsResponseDTO) actualResponse.getEntity()).getQuestions().get(0).getLinks().isEmpty());
     }
 
     @Test
@@ -222,7 +221,7 @@ class QuestionControllerTest {
         handleRequestDTO.setHandled(true);
 
         doReturn(Question.builder().build())
-            .when(handleQuestionFacadeService)
+            .when(handleQuestionAggregator)
             .handle(questionId, handleRequestDTO.isHandled());
 
         final var actualResponse = questionController.handleQuestion(questionId, handleRequestDTO);

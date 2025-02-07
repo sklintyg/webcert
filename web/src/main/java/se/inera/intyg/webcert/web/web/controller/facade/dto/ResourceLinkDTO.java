@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,11 +18,12 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
-import java.util.Objects;
+import lombok.Data;
 
 /**
  * Object that represent a link and description to a specific resource. Intended use is for buttons, modals, etc.
  */
+@Data
 public class ResourceLinkDTO {
 
     private ResourceLinkTypeDTO type;
@@ -61,87 +62,5 @@ public class ResourceLinkDTO {
         resourceLink.setBody(body);
         resourceLink.setEnabled(enabled);
         return resourceLink;
-    }
-
-    public ResourceLinkTypeDTO getType() {
-        return type;
-    }
-
-    public void setType(ResourceLinkTypeDTO type) {
-        this.type = type;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getBody() {
-        return body;
-    }
-
-    public void setBody(String body) {
-        this.body = body;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        ResourceLinkDTO that = (ResourceLinkDTO) o;
-        return enabled == that.enabled
-            && Objects.equals(type, that.type)
-            && Objects.equals(name, that.name)
-            && Objects.equals(description, that.description)
-            && Objects.equals(body, that.body)
-            && Objects.equals(title, that.title);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(type, name, description, body, enabled, title);
-    }
-
-    @Override
-    public String toString() {
-        return "ResourceLinkDTO{"
-            + "type=" + type
-            + ", name='" + name + '\''
-            + ", description='" + description + '\''
-            + ", body='" + body + '\''
-            + ", enabled=" + enabled + '\''
-            + ", title=" + title
-            + '}';
     }
 }

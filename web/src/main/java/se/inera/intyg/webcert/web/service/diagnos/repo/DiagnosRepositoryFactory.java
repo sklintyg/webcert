@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -24,7 +24,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -34,11 +37,11 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
+import se.inera.intyg.webcert.web.service.diagnos.IcdCodeConverter;
 import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
 
 /**
@@ -47,6 +50,8 @@ import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
  * @author npet
  */
 @Component
+@Slf4j
+@RequiredArgsConstructor
 public class DiagnosRepositoryFactory {
 
     private static final String BOM = "\uFEFF";
@@ -55,15 +60,15 @@ public class DiagnosRepositoryFactory {
 
     private static final Logger LOG = LoggerFactory.getLogger(DiagnosRepositoryFactory.class);
 
-    @Autowired
-    private ResourceLoader resourceLoader;
+    private final IcdCodeConverter icdCodeConverter;
+    private final ResourceLoader resourceLoader;
 
     public DiagnosRepository createAndInitDiagnosRepository(List<String> filesList, Charset fileEncoding) {
         try {
 
             DiagnosRepositoryImpl diagnosRepository = new DiagnosRepositoryImpl();
 
-            LOG.info("Creating DiagnosRepository from {} files using encoding '{}'", filesList.size(), fileEncoding);
+            log.info("Creating DiagnosRepository from {} files using encoding '{}'", filesList.size(), fileEncoding);
 
             for (String file : filesList) {
                 populateRepoFromDiagnosisCodeFile(file, diagnosRepository, fileEncoding);
@@ -71,13 +76,12 @@ public class DiagnosRepositoryFactory {
 
             diagnosRepository.openLuceneIndexReader();
 
-            LOG.info("Created DiagnosRepository containing {} diagnoses", diagnosRepository.nbrOfDiagosis());
+            log.info("Created DiagnosRepository containing {} diagnoses", diagnosRepository.nbrOfDiagosis());
 
             return diagnosRepository;
 
         } catch (IOException e) {
-            LOG.error("Exception occured when initiating DiagnosRepository");
-            throw new RuntimeException("Exception occured when initiating repo", e);
+            throw new IllegalStateException("Failure initiating DiagnosRepository", e);
         }
     }
 
@@ -88,7 +92,6 @@ public class DiagnosRepositoryFactory {
             return;
         }
 
-        // FIXME: Legacy support, can be removed when local config has been substituted by refdata (INTYG-7701)
         final String location = ResourceUtils.isUrl(fileUrl) ? fileUrl : "file:" + fileUrl;
 
         LOG.debug("Loading diagnosis from: '{}'", location);
@@ -109,7 +112,7 @@ public class DiagnosRepositoryFactory {
                 while (reader.ready()) {
                     String line = reader.readLine();
                     if (line != null) {
-                        Diagnos diagnos = createDiagnosFromString(line, count == 0);
+                        Diagnos diagnos = createDiagnosFromString(line, count == 0, fileEncoding);
                         if (diagnos != null) {
                             Document doc = new Document();
                             doc.add(new StringField(DiagnosRepository.CODE, diagnos.getKod(), Field.Store.YES));
@@ -123,16 +126,20 @@ public class DiagnosRepositoryFactory {
             }
             LOG.info("Loaded {} codes from file {}", count, fileUrl);
 
-        } catch (IOException ioe) {
+        } catch (IOException e) {
             LOG.error("IOException occured when loading diagnosis file '{}'", fileUrl);
-            throw new RuntimeException("Error occured when loading diagnosis file", ioe);
+            throw new IllegalStateException("Failure loading diagnosis file '%s".formatted(fileUrl), e);
         }
     }
 
-    public Diagnos createDiagnosFromString(String line, boolean firstLineInFile) {
+    public Diagnos createDiagnosFromString(String line, boolean firstLineInFile, Charset fileEncoding) {
 
         if (Strings.nullToEmpty(line).trim().isEmpty()) {
             return null;
+        }
+
+        if (fileEncoding.equals(StandardCharsets.UTF_8)) {
+            return icdCodeConverter.convert(line);
         }
 
         String cleanedLine = removeUnwantedCharacters(line, firstLineInFile);

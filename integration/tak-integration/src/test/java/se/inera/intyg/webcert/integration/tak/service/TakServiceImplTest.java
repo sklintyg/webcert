@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,6 +18,26 @@
  */
 package se.inera.intyg.webcert.integration.tak.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,21 +49,18 @@ import org.mockito.stubbing.Answer;
 import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.infra.integration.hsatk.exception.HsaServiceCallException;
-import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsServiceImpl;
-import se.inera.intyg.infra.security.common.model.*;
+import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Feature;
+import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.infra.security.common.model.Privilege;
+import se.inera.intyg.infra.security.common.model.RequestOrigin;
+import se.inera.intyg.infra.security.common.model.Role;
+import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.integration.tak.consumer.TakConsumerImpl;
 import se.inera.intyg.webcert.integration.tak.consumer.TakServiceException;
 import se.inera.intyg.webcert.integration.tak.model.TakLogicalAddress;
 import se.inera.intyg.webcert.integration.tak.model.TakResult;
-
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TakServiceImplTest {
@@ -56,18 +73,19 @@ public class TakServiceImplTest {
     private static final String RECEIVE_CERT_ANSWER_ID = "5";
     private static final String SEND_MESSAGE_TO_CARE_ID = "6";
 
-    private final String CERT_STATUS_FOR_CARE_V3_NS = "urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCareResponder:3";
-    private final String RECEIVE_MEDICAL_CERT_QUESTION_NS = "urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1";
-    private final String RECEIVE_MEDICAL_CERT_ANSWER_NS = "urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateAnswerResponder:1";
-    private final String SEND_MESSAGE_TO_CARE_NS = "urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:2";
+    // CHECKSTYLE:OFF LineLength
+    private static final String CERT_STATUS_FOR_CARE_V3_NS = "urn:riv:clinicalprocess:healthcond:certificate:CertificateStatusUpdateForCareResponder:3";
+    private static final String RECEIVE_MEDICAL_CERT_QUESTION_NS = "urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateQuestionResponder:1";
+    private static final String RECEIVE_MEDICAL_CERT_ANSWER_NS = "urn:riv:insuranceprocess:healthreporting:ReceiveMedicalCertificateAnswerResponder:1";
+    private static final String SEND_MESSAGE_TO_CARE_NS = "urn:riv:clinicalprocess:healthcond:certificate:SendMessageToCareResponder:2";
+    // CHECKSTYLE:ON LineLength
 
-    private final String ERROR_STRING_BASE = "Tjänsten %s är inte registrerad för enhet %s i tjänsteadresseringskatalogen.";
-
-    private final String ERROR_STRING_ARENDEHANTERING = "Den angivna enheten går ej att adressera för ärendekommunikation. "
+    private static final String ERROR_STRING_BASE = "Tjänsten %s är inte registrerad för enhet %s i tjänsteadresseringskatalogen.";
+    private static final String ERROR_STRING_ARENDEHANTERING = "Den angivna enheten går ej att adressera för ärendekommunikation. "
         + ERROR_STRING_BASE;
 
     @Mock
-    private HsaOrganizationsServiceImpl hsaService;
+    private HsaOrganizationsService hsaService;
 
     @Mock
     private TakConsumerImpl consumer;
@@ -81,7 +99,7 @@ public class TakServiceImplTest {
     public void setup() throws HsaServiceCallException {
         impl = new TakServiceImpl();
         ReflectionTestUtils.setField(impl, "timeout", 1);
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         user = createDefaultUser();
         when(hsaService.getParentUnit(HSAID_OK)).thenReturn(HSAID_OK);
     }
@@ -113,15 +131,15 @@ public class TakServiceImplTest {
     public void testSuccessForDifferentUnitsFk7263() throws HsaServiceCallException {
         setupIds();
 
-        final String HSAID_OK_VARDENHET = "HSAID_OK_VARDENHET";
-        final String HSAID_OK_VARDGIVARE = "HSAID_OK_VARDGIVARE";
+        final String hsaIdOkVardenhet = "HSAID_OK_VARDENHET";
+        final String hsaIdOkVardgivare = "HSAID_OK_VARDGIVARE";
 
-        when(hsaService.getParentUnit(HSAID_OK)).thenReturn(HSAID_OK_VARDENHET);
-        when(hsaService.getVardgivareOfVardenhet(HSAID_OK)).thenReturn(HSAID_OK_VARDGIVARE);
+        when(hsaService.getParentUnit(HSAID_OK)).thenReturn(hsaIdOkVardenhet);
+        when(hsaService.getVardgivareOfVardenhet(HSAID_OK)).thenReturn(hsaIdOkVardgivare);
 
         when(consumer.doLookup(any(), eq(HSAID_OK), eq(CERT_STATUS_V3_ID))).thenReturn(buildTakLogicalAddress("29"));
-        when(consumer.doLookup(any(), eq(HSAID_OK_VARDENHET), eq(RECEIVE_CERT_ANSWER_ID))).thenReturn(buildTakLogicalAddress("29"));
-        when(consumer.doLookup(any(), eq(HSAID_OK_VARDGIVARE), eq(RECEIVE_CERT_QUESTION_ID))).thenReturn(buildTakLogicalAddress("29"));
+        when(consumer.doLookup(any(), eq(hsaIdOkVardenhet), eq(RECEIVE_CERT_ANSWER_ID))).thenReturn(buildTakLogicalAddress("29"));
+        when(consumer.doLookup(any(), eq(hsaIdOkVardgivare), eq(RECEIVE_CERT_QUESTION_ID))).thenReturn(buildTakLogicalAddress("29"));
         assertTrue(impl.verifyTakningForCareUnit(HSAID_OK, "fk7263", SchemaVersion.VERSION_3, user).isValid());
     }
 
@@ -129,14 +147,14 @@ public class TakServiceImplTest {
     public void testSuccessForDifferentUnitsSMI() throws HsaServiceCallException {
         setupIds();
 
-        final String HSAID_OK_VARDENHET = "HSAID_OK_VARDENHET";
-        final String HSAID_OK_VARDGIVARE = "HSAID_OK_VARDGIVARE";
+        final String hsaIdOkVardenhet = "HSAID_OK_VARDENHET";
+        final String hsaIdOkVardgivare = "HSAID_OK_VARDGIVARE";
 
-        when(hsaService.getParentUnit(HSAID_OK)).thenReturn(HSAID_OK_VARDENHET);
-        when(hsaService.getVardgivareOfVardenhet(HSAID_OK)).thenReturn(HSAID_OK_VARDGIVARE);
+        when(hsaService.getParentUnit(HSAID_OK)).thenReturn(hsaIdOkVardenhet);
+        when(hsaService.getVardgivareOfVardenhet(HSAID_OK)).thenReturn(hsaIdOkVardgivare);
 
         when(consumer.doLookup(any(), eq(HSAID_OK), eq(CERT_STATUS_V3_ID))).thenReturn(buildTakLogicalAddress("29"));
-        when(consumer.doLookup(any(), eq(HSAID_OK_VARDGIVARE), eq(SEND_MESSAGE_TO_CARE_ID))).thenReturn(buildTakLogicalAddress("29"));
+        when(consumer.doLookup(any(), eq(hsaIdOkVardgivare), eq(SEND_MESSAGE_TO_CARE_ID))).thenReturn(buildTakLogicalAddress("29"));
         assertTrue(impl.verifyTakningForCareUnit(HSAID_OK, "luse", SchemaVersion.VERSION_3, user).isValid());
     }
 
@@ -182,9 +200,9 @@ public class TakServiceImplTest {
 
         TakResult result = impl.verifyTakningForCareUnit(HSAID_OK, "fk7263", SchemaVersion.VERSION_3, user);
 
-        assertTrue(!result.getErrorMessages().isEmpty());
+        assertFalse(result.getErrorMessages().isEmpty());
         assertEquals(String.format(ERROR_STRING_ARENDEHANTERING, RECEIVE_MEDICAL_CERT_ANSWER_NS, HSAID_OK),
-            result.getErrorMessages().get(0));
+            result.getErrorMessages().getFirst());
     }
 
     @Test
@@ -199,8 +217,9 @@ public class TakServiceImplTest {
         String hsa = HSAID_OK;
         TakResult result = impl.verifyTakningForCareUnit(hsa, "fk7263", SchemaVersion.VERSION_3, user);
 
-        assertTrue(!result.getErrorMessages().isEmpty());
-        assertEquals(String.format(ERROR_STRING_ARENDEHANTERING, RECEIVE_MEDICAL_CERT_QUESTION_NS, hsa), result.getErrorMessages().get(0));
+        assertFalse(result.getErrorMessages().isEmpty());
+        assertEquals(String.format(ERROR_STRING_ARENDEHANTERING, RECEIVE_MEDICAL_CERT_QUESTION_NS, hsa), result.getErrorMessages()
+            .getFirst());
     }
 
     @Test
@@ -214,8 +233,8 @@ public class TakServiceImplTest {
         String hsa = HSAID_OK;
         TakResult result = impl.verifyTakningForCareUnit(hsa, "luse", SchemaVersion.VERSION_3, user);
 
-        assertTrue(!result.getErrorMessages().isEmpty());
-        assertEquals(String.format(ERROR_STRING_ARENDEHANTERING, SEND_MESSAGE_TO_CARE_NS, hsa), result.getErrorMessages().get(0));
+        assertFalse(result.getErrorMessages().isEmpty());
+        assertEquals(String.format(ERROR_STRING_ARENDEHANTERING, SEND_MESSAGE_TO_CARE_NS, hsa), result.getErrorMessages().getFirst());
     }
 
     @Test
@@ -229,8 +248,8 @@ public class TakServiceImplTest {
 
         System.out.println(result.getErrorMessages().size());
 
-        assertTrue(!result.getErrorMessages().isEmpty());
-        assertEquals(String.format(ERROR_STRING_BASE, CERT_STATUS_FOR_CARE_V3_NS, hsa), result.getErrorMessages().get(0));
+        assertFalse(result.getErrorMessages().isEmpty());
+        assertEquals(String.format(ERROR_STRING_BASE, CERT_STATUS_FOR_CARE_V3_NS, hsa), result.getErrorMessages().getFirst());
     }
 
     private void setupIds() {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,8 +19,8 @@
 package se.inera.intyg.webcert.web.service.notification;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
-import javax.xml.bind.JAXBException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;

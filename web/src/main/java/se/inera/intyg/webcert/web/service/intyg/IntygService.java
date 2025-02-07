@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -21,11 +21,11 @@ package se.inera.intyg.webcert.web.service.intyg;
 import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsRequest;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
@@ -169,7 +169,7 @@ public interface IntygService {
      * Gathers the information required to return the list with notifications and creates a list of
      * IntygWithNotificationsResponse objects.
      */
-    List<IntygWithNotificationsResponse> listCertificatesForCareWithQA(IntygWithNotificationsRequest request);
+    List<IntygWithNotificationsResponse> listCertificatesForCareWithQA(List<Handelse> notificationsForWC);
 
     /**
      * Gets the certificate's type from utkast entity or Intygstjanst.

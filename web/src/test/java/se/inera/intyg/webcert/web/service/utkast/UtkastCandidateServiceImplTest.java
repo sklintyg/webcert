@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,6 +18,25 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,15 +53,13 @@ import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.support.api.GetCopyFromCriteria;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
-import se.inera.intyg.infra.integration.pu.services.PUService;
+import se.inera.intyg.infra.pu.integration.api.services.PUService;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
-import se.inera.intyg.webcert.web.service.access.AccessResult;
-import se.inera.intyg.webcert.web.service.access.AccessResultCode;
 import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
@@ -52,24 +69,15 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.dto.UtkastCandidateMetaData;
 
-import java.time.LocalDateTime;
-import java.util.*;
-
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
 /**
  * @author Magnus Ekstrand on 2019-08-28.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class UtkastCandidateServiceImplTest {
 
-    private WebCertUser webCertUser;
-
     @Mock
     DraftAccessServiceHelper draftAccessServiceHelper;
-
+    private WebCertUser webCertUser;
     @Mock
     private WebCertUserService webCertUserService;
 
@@ -128,7 +136,7 @@ public class UtkastCandidateServiceImplTest {
         Set<String> validIntygType = new HashSet<>();
         validIntygType.add(copyFromCriteria.get().getIntygType());
 
-        when(logRequestFactory.createLogRequestFromUtkast(any(Utkast.class), anyBoolean())).thenReturn(new LogRequest());
+        when(logRequestFactory.createLogRequestFromUtkast(any(Utkast.class), anyBoolean())).thenReturn(LogRequest.builder().build());
 
         // - - - - - - - - - - - - - - - - - - -
         // Run tests as Läkare
@@ -332,7 +340,7 @@ public class UtkastCandidateServiceImplTest {
         Optional<GetCopyFromCriteria> copyFromCriteria = Optional.of(new GetCopyFromCriteria(intygTypeCandidate, "1"));
         when(ag7804ModuleApiV1Mock.getCopyFromCriteria()).thenReturn(copyFromCriteria);
 
-        when(logRequestFactory.createLogRequestFromUtkast(any(Utkast.class), anyBoolean())).thenReturn(new LogRequest());
+        when(logRequestFactory.createLogRequestFromUtkast(any(Utkast.class), anyBoolean())).thenReturn(LogRequest.builder().build());
 
         Patient patient = createPatient("Lilltolvan", "Tolvansson", createPnr("20121212-1212"));
         Set<String> validIntygType = new HashSet<>();
@@ -414,7 +422,7 @@ public class UtkastCandidateServiceImplTest {
         Optional<GetCopyFromCriteria> copyFromCriteria = Optional.of(new GetCopyFromCriteria(intygTypeCandidate, "1"));
         when(ag7804ModuleApiV1Mock.getCopyFromCriteria()).thenReturn(copyFromCriteria);
 
-        when(logRequestFactory.createLogRequestFromUtkast(any(Utkast.class), anyBoolean())).thenReturn(new LogRequest());
+        when(logRequestFactory.createLogRequestFromUtkast(any(Utkast.class), anyBoolean())).thenReturn(LogRequest.builder().build());
 
         Patient patient = createPatient("Lilltolvan", "Tolvansson", createPnr("20121212-1212"), true);
         Set<String> validIntygType = new HashSet<>();
@@ -578,7 +586,7 @@ public class UtkastCandidateServiceImplTest {
         Optional<GetCopyFromCriteria> copyFromCriteria = Optional.of(new GetCopyFromCriteria(intygTypeCandidate, "1"));
         when(doiModuleApiV1Mock.getCopyFromCriteria()).thenReturn(copyFromCriteria);
 
-        when(logRequestFactory.createLogRequestFromUtkast(any(Utkast.class), anyBoolean())).thenReturn(new LogRequest());
+        when(logRequestFactory.createLogRequestFromUtkast(any(Utkast.class), anyBoolean())).thenReturn(LogRequest.builder().build());
 
         Patient patient = createPatient("Lilltolvan", "Tolvansson", createPnr("20121212-1212"));
         Set<String> validIntygType = new HashSet<>();
@@ -732,7 +740,7 @@ public class UtkastCandidateServiceImplTest {
         Set<String> validIntygType = new HashSet<>();
         validIntygType.add(copyFromCriteria.get().getIntygType());
 
-        when(logRequestFactory.createLogRequestFromUtkast(any(Utkast.class), anyBoolean())).thenReturn(new LogRequest());
+        when(logRequestFactory.createLogRequestFromUtkast(any(Utkast.class), anyBoolean())).thenReturn(LogRequest.builder().build());
 
         // Run tests as Läkare
         when(webCertUser.isLakare()).thenReturn(true);

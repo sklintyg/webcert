@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.web.service.facade.impl;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
@@ -37,10 +37,9 @@ public class SignCertificateFacadeServiceImpl implements SignCertificateFacadeSe
     private final UnderskriftService underskriftService;
     private final GetCertificateFacadeService getCertificateFacadeService;
 
-    @Autowired
-    public SignCertificateFacadeServiceImpl(UnderskriftService underskriftService,
-        GetCertificateFacadeService getCertificateFacadeService) {
-        this.underskriftService = underskriftService;
+    public SignCertificateFacadeServiceImpl(@Qualifier("signAggregator") UnderskriftService signatureAggregator,
+        @Qualifier("getCertificateAggregator") GetCertificateFacadeService getCertificateFacadeService) {
+        this.underskriftService = signatureAggregator;
         this.getCertificateFacadeService = getCertificateFacadeService;
     }
 
@@ -53,7 +52,7 @@ public class SignCertificateFacadeServiceImpl implements SignCertificateFacadeSe
         final var ticketId = UUID.randomUUID().toString();
 
         LOG.debug("Start fake signing process for certificate '{}'", certificateId);
-        underskriftService.startSigningProcess(certificateId, certificateType, version, signMethod, ticketId, true);
+        underskriftService.startSigningProcess(certificateId, certificateType, version, signMethod, ticketId);
 
         LOG.debug("Make fake signature for certificate '{}'", certificateId);
         underskriftService.fakeSignature(certificateId, certificateType, version, ticketId);

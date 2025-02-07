@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,15 +19,14 @@
 package se.inera.intyg.webcert.persistence.arende.repository;
 
 import com.google.common.base.Strings;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import java.util.List;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.model.Filter;
@@ -48,14 +47,7 @@ public class ArendeRepositoryImpl implements ArendeFilteredRepositoryCustom {
         cq.where(createPredicate(filter, builder, root));
         cq.orderBy(builder.desc(root.get("senasteHandelse")));
 
-        TypedQuery<Arende> query = entityManager.createQuery(cq);
-
-        if (filter.hasPageSizeAndStartFrom()) {
-            query.setMaxResults(filter.getPageSize());
-            query.setFirstResult(filter.getStartFrom());
-        }
-
-        return query.getResultList();
+        return entityManager.createQuery(cq).getResultList();
     }
 
     @Override

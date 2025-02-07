@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,8 +18,8 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
-import com.google.auto.value.AutoValue;
-import javax.annotation.Nullable;
+import lombok.Builder;
+import lombok.Value;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 
 /**
@@ -27,22 +27,12 @@ import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
  * the legacy status of FragaSvar code, it is not done in the same manner as with the Arende entities, but instead
  * quicker solution.
  */
-@AutoValue
-public abstract class FragaSvarView {
+@Value
+@Builder
+public class FragaSvarView {
 
-    public abstract FragaSvar getFragaSvar();
+    FragaSvar fragaSvar;
+    AnsweredWithIntyg answeredWithIntyg;
+    String answerDraft;
 
-    @Nullable
-    public abstract AnsweredWithIntyg getAnsweredWithIntyg();
-
-    @Nullable
-    public abstract String getAnswerDraft();
-
-    public static FragaSvarView create(FragaSvar fragaSvar, AnsweredWithIntyg besvaratMedIntyg, String answerDraft) {
-        return new AutoValue_FragaSvarView(fragaSvar, besvaratMedIntyg, answerDraft);
-    }
-
-    public static FragaSvarView create(FragaSvar fragaSvar) {
-        return new AutoValue_FragaSvarView(fragaSvar, null, null);
-    }
 }

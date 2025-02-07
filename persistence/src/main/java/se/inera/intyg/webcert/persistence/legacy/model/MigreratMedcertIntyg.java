@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,11 +19,11 @@
 package se.inera.intyg.webcert.persistence.legacy.model;
 
 import java.time.LocalDateTime;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.PrePersist;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
 import org.hibernate.annotations.Type;
 import se.inera.intyg.schemas.contract.Personnummer;
 
@@ -56,15 +56,12 @@ public class MigreratMedcertIntyg {
     private String patientPersonnummer;
 
     @Column(name = "SKAPAD_DATUM", nullable = false)
-    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime skapad;
 
     @Column(name = "SKICKAD_DATUM")
-    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime skickad;
 
     @Column(name = "MIGRERAD_DATUM", nullable = false)
-    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime migrerad;
 
     @Column(name = "MIGRERAD_FRAN", nullable = false)

@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (C) 2016 Inera AB (http://www.inera.se)
+  ~ Copyright (C) 2025 Inera AB (http://www.inera.se)
   ~
   ~ This file is part of sklintyg (https://github.com/sklintyg).
   ~
@@ -30,14 +30,13 @@
   <bean id="testProps" class="java.util.Properties">
     <constructor-arg>
       <props>
-        <prop key="icd10se.diagnos.code.files">classpath:/DiagnosService/icd10se/digit3.txt,classpath:/DiagnosService/icd10se/digit4.txt,classpath:/DiagnosService/icd10se/digit5.txt</prop>
+        <prop key="icd10se.diagnos.code.files">classpath:/DiagnosService/icd10se/icd-10-se.tsv</prop>
         <prop key="ksh97p.diagnos.code.files">classpath:/DiagnosService/KSH97P_SFAM_TESTKODER.ANS</prop>
       </props>
     </constructor-arg>
   </bean>
 
   <bean id="diagnosService" class="se.inera.intyg.webcert.web.service.diagnos.DiagnosServiceImpl" />
-
   <bean id="diagnosRepositoryFactory" class="se.inera.intyg.webcert.web.service.diagnos.repo.DiagnosRepositoryFactory" />
-
+  <bean id="icdCodeConverter" class="se.inera.intyg.webcert.web.service.diagnos.IcdCodeConverter" />
 </beans>

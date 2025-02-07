@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -69,6 +69,10 @@ public class GetCertificateResourceLinksImpl implements GetCertificateResourceLi
      */
     @Override
     public ResourceLinkDTO[] get(Certificate certificate) {
+        if (useLinksProvidedInCertificate(certificate)) {
+            return convertLinksProvidedInCertificate(certificate);
+        }
+
         final var accessEvaluationParameters = createAccessEvaluationParameters(certificate);
         final var availableFunctions = getCertificatesAvailableFunctions.get(certificate);
         final var functions = getAccessFunctions(certificate);
@@ -84,7 +88,31 @@ public class GetCertificateResourceLinksImpl implements GetCertificateResourceLi
     }
 
     /**
-     * Get all access functions that can be applied to a list of ResourceLinkTypeDTO's
+     * To support certificates returned from certificate-service we need to consider if
+     * the certificate already contains links. If the certificate do, then convert those
+     * links and return. If not evaluate as normal with available functions and access functions.
+     */
+    private static boolean useLinksProvidedInCertificate(Certificate certificate) {
+        return certificate.getLinks() != null;
+    }
+
+    private static ResourceLinkDTO[] convertLinksProvidedInCertificate(Certificate certificate) {
+        return certificate.getLinks().stream()
+            .map(link ->
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.valueOf(link.getType().name()),
+                    link.getTitle(),
+                    link.getName(),
+                    link.getDescription(),
+                    link.getBody(),
+                    link.isEnabled()
+                )
+            )
+            .toArray(ResourceLinkDTO[]::new);
+    }
+
+    /**
+     * Get all access functions that can be applied to a list of ResourceLinkTypeDTO's.
      *
      * @return all access functions that should be applied to a resource links
      */
@@ -112,11 +140,6 @@ public class GetCertificateResourceLinksImpl implements GetCertificateResourceLi
         functions.put(ResourceLinkTypeDTO.SIGN_CERTIFICATE_CONFIRMATION,
             (accessEvaluationParameters, certificate) ->
                 draftAccessServiceHelper.isAllowToSignWithConfirmation(accessEvaluationParameters)
-        );
-
-        functions.put(ResourceLinkTypeDTO.WARNING_DODSBEVIS_INTEGRATED,
-            (accessEvaluationParameters, certificate) ->
-                draftAccessServiceHelper.isAllowToEditUtkast(accessEvaluationParameters)
         );
 
         functions.put(ResourceLinkTypeDTO.WARNING_LUAENA_INTEGRATED,

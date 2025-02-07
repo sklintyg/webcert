@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.intygstjanststub;
 
+import jakarta.xml.bind.JAXB;
 import java.io.StringReader;
 import java.time.format.DateTimeFormatter;
-import javax.xml.bind.JAXB;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.clinicalprocess.healthcond.certificate.v1.ErrorIdType;
 import se.inera.ifv.insuranceprocess.healthreporting.registermedicalcertificateresponder.v3.RegisterMedicalCertificateType;

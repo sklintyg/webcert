@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -77,7 +77,7 @@ public class ChangeUnitServiceImpl implements ChangeUnitService {
     private void updateSigningService(String unitId, WebCertUser user) {
         final var chosenUnit = user.getValdVardenhet();
         if (chosenUnit != null) {
-            user.setUseSigningService(dssSignatureService.isUnitInIeWhitelist(unitId));
+            user.setUseSigningService(dssSignatureService.shouldUseSigningService(unitId));
         }
     }
 

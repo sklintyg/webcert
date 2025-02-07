@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -34,16 +34,9 @@ public abstract class BaseIntegrationController {
 
     protected WebCertUserService webCertUserService;
 
-    private String urlBaseTemplate;
-
     protected AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
     // api
-
-    @Autowired
-    public void setUrlBaseTemplate(String urlBaseTemplate) {
-        this.urlBaseTemplate = urlBaseTemplate;
-    }
 
     @Autowired
     public void setWebCertUserService(WebCertUserService webCertUserService) {
@@ -59,20 +52,15 @@ public abstract class BaseIntegrationController {
 
     protected abstract UserOriginType getGrantedRequestOrigin();
 
-    protected String getUrlBaseTemplate() {
-        return urlBaseTemplate;
-    }
-
     protected WebCertUserService getWebCertUserService() {
         return webCertUserService;
     }
 
-    protected void validateParameters(Map<String, Object> parameters) {
-        parameters.forEach((key, value) -> validateParameter(key, (String) value));
+    protected void validateParameters(Map<String, String> parameters) {
+        parameters.forEach(this::validateParameter);
     }
 
     protected void validateParameter(String paramName, String paramValue) {
-        // Input validation
         if (Strings.nullToEmpty(paramValue).trim().isEmpty()) {
             throw new IllegalArgumentException(
                 String.format("Path/query parameter '%s' was either whitespace, empty (\"\") or null", paramName));

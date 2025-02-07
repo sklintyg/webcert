@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,8 +20,8 @@ package se.inera.intyg.webcert.persistence.config;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import jakarta.persistence.EntityManagerFactory;
 import java.util.Properties;
-import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import liquibase.integration.spring.SpringLiquibase;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,8 +48,6 @@ public abstract class JpaConfigBase {
     @Value("${db.pool.maxSize}")
     private int dbPoolMaxSize;
 
-    @Value("${hibernate.dialect}")
-    private String hibernateDialect;
     @Value("${hibernate.hbm2ddl.auto}")
     private String hibernateHbm2ddl;
     @Value("${hibernate.ejb.naming_strategy}")
@@ -69,7 +67,6 @@ public abstract class JpaConfigBase {
         entityManagerFactoryBean.setPackagesToScan(BASE_PACKAGES);
 
         final Properties jpaProperties = new Properties();
-        jpaProperties.put("hibernate.dialect", hibernateDialect);
         jpaProperties.put("hibernate.hbm2ddl.auto", hibernateHbm2ddl);
         jpaProperties.put("hibernate.ejb.naming_strategy", hibernateNamingStrategy);
         jpaProperties.put("hibernate.show_sql", hibernateShowSql);

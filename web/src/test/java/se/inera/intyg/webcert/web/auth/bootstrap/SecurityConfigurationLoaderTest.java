@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -75,7 +75,7 @@ public class SecurityConfigurationLoaderTest {
     public void loadConfigurationAndAssertTypeOfObjects() {
         AuthoritiesConfiguration configuration = loader.getAuthoritiesConfiguration();
 
-        assertEquals(4, configuration.getRequestOrigins().size());
+        assertEquals(2, configuration.getRequestOrigins().size());
         assertEquals(8, configuration.getPrivileges().size());
         assertEquals(4, configuration.getRoles().size());
         assertEquals(2, configuration.getTitles().size());

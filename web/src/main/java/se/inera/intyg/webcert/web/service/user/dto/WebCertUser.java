@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,21 +19,27 @@
 package se.inera.intyg.webcert.web.service.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticatedPrincipal;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.webcert.web.auth.common.AuthConstants;
 import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionInfo;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
-/**
- * @author andreaskaltenbach
- */
-public class WebCertUser extends IntygUser {
+@Setter
+@Getter
+public class WebCertUser extends IntygUser implements Serializable, Saml2AuthenticatedPrincipal {
 
+    @Serial
     private static final long serialVersionUID = -2624303818412468774L;
 
     private Map<String, String> anvandarPreference = new HashMap<>();
@@ -47,14 +53,13 @@ public class WebCertUser extends IntygUser {
         super("only-for-test-use");
     }
 
-    /**
-     * The copy-constructor.
-     */
     public WebCertUser(IntygUser intygUser) {
         super(intygUser.getHsaId());
         this.userTermsApprovedOrSubscriptionInUse = intygUser.isUserTermsApprovedOrSubscriptionInUse();
         this.personId = intygUser.getPersonId();
         this.isSekretessMarkerad = intygUser.isSekretessMarkerad();
+        this.fornamn = intygUser.getFornamn();
+        this.efternamn = intygUser.getEfternamn();
         this.namn = intygUser.getNamn();
         this.titel = intygUser.getTitel();
         this.forskrivarkod = intygUser.getForskrivarkod();
@@ -75,10 +80,6 @@ public class WebCertUser extends IntygUser {
         this.roleTypeName = intygUser.getRoleTypeName();
     }
 
-    public Map<String, String> getAnvandarPreference() {
-        return this.anvandarPreference;
-    }
-
     @Override
     public boolean equals(final Object o) {
         if (super.equals(o)) {
@@ -93,42 +94,6 @@ public class WebCertUser extends IntygUser {
     @Override
     public int hashCode() {
         return super.hashCode() + Objects.hash(this.anvandarPreference, this.parameters, this.subscriptionInfo);
-    }
-
-    public void setAnvandarPreference(Map<String, String> anvandarMetadata) {
-        this.anvandarPreference = anvandarMetadata;
-    }
-
-    public IntegrationParameters getParameters() {
-        return parameters;
-    }
-
-    public void setParameters(IntegrationParameters parameters) {
-        this.parameters = parameters;
-    }
-
-    public boolean isUseSigningService() {
-        return useSigningService;
-    }
-
-    public void setUseSigningService(boolean useSigningService) {
-        this.useSigningService = useSigningService;
-    }
-
-    public SubscriptionInfo getSubscriptionInfo() {
-        return subscriptionInfo;
-    }
-
-    public void setSubscriptionInfo(SubscriptionInfo subscriptionInfo) {
-        this.subscriptionInfo = subscriptionInfo;
-    }
-
-    public String getIdentityProviderForSign() {
-        return identityProviderForSign;
-    }
-
-    public void setIdentityProviderForSign(String identityProviderForSign) {
-        this.identityProviderForSign = identityProviderForSign;
     }
 
     @JsonIgnore
@@ -152,11 +117,24 @@ public class WebCertUser extends IntygUser {
         return false;
     }
 
-    public String getLaunchFromOrigin() {
-        return launchFromOrigin;
+    public boolean isSjfActive() {
+        return parameters != null && parameters.isSjf();
     }
 
-    public void setLaunchFromOrigin(String launchFromOrigin) {
-        this.launchFromOrigin = launchFromOrigin;
+    public boolean isUnitInactive() {
+        return parameters != null && parameters.isInactiveUnit();
+    }
+
+    @Override
+    public String getName() {
+        return "";
+    }
+
+    @Override
+    public String getRelyingPartyRegistrationId() {
+        return switch (authenticationMethod) {
+            case BANK_ID, MOBILT_BANK_ID -> AuthConstants.REGISTRATION_ID_ELEG;
+            default -> AuthConstants.REGISTRATION_ID_SITHS_NORMAL;
+        };
     }
 }

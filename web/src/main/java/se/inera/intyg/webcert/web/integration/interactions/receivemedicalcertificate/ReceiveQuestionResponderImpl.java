@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -32,6 +32,8 @@ import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequ
 import se.inera.ifv.insuranceprocess.healthreporting.receivemedicalcertificatequestionsponder.v1.ReceiveMedicalCertificateQuestionType;
 import se.inera.intyg.common.schemas.insuranceprocess.healthreporting.utils.ResultOfCallUtil;
 import se.inera.intyg.common.support.common.enumerations.EventCode;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.web.converter.FragaSvarConverter;
 import se.inera.intyg.webcert.web.event.CertificateEventService;
@@ -61,6 +63,7 @@ public class ReceiveQuestionResponderImpl implements ReceiveMedicalCertificateQu
     private CertificateEventService certificateEventService;
 
     @Override
+    @PerformanceLogging(eventAction = "receive-medical-certificate-question", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public ReceiveMedicalCertificateQuestionResponseType receiveMedicalCertificateQuestion(
         AttributedURIType logicalAddress, ReceiveMedicalCertificateQuestionType request) {
 

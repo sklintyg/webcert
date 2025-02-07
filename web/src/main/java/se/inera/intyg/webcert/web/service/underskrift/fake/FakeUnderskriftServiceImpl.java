@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -25,7 +25,7 @@ import java.util.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.infra.xmldsig.service.FakeSignatureServiceImpl;
+import se.inera.intyg.infra.xmldsig.service.FakeSignatureService;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -39,7 +39,7 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 public class FakeUnderskriftServiceImpl extends BaseXMLSignatureService implements FakeUnderskriftService {
 
     @Autowired
-    private FakeSignatureServiceImpl fakeSignatureService;
+    private FakeSignatureService fakeSignatureService;
 
     @Autowired
     private MonitoringLogService monitoringLogService;

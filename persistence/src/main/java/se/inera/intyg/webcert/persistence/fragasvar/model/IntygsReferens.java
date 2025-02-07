@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,8 +19,8 @@
 package se.inera.intyg.webcert.persistence.fragasvar.model;
 
 import java.time.LocalDateTime;
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import org.hibernate.annotations.Type;
 import se.inera.intyg.schemas.contract.Personnummer;
 
@@ -40,7 +40,6 @@ public class IntygsReferens {
     private String patientNamn;
 
     @Column(name = "SIGNERINGS_DATUM")
-    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime signeringsDatum;
 
     public IntygsReferens() {

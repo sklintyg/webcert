@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,23 +18,15 @@
  */
 package se.inera.intyg.webcert.web.service.facade;
 
-import se.inera.intyg.common.support.facade.builder.CertificateBuilder;
-import se.inera.intyg.common.support.facade.model.*;
-import se.inera.intyg.common.support.facade.model.config.CertificateDataConfigSickLeavePeriod;
-import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
-import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
-import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
-import se.inera.intyg.common.support.facade.model.metadata.Unit;
-import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDateRange;
-import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDateRangeList;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
 public class ResourceLinkFacadeTestHelper {
 

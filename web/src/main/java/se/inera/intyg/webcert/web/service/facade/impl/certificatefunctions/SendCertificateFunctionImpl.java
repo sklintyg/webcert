@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,7 +30,7 @@ import se.inera.intyg.common.luse.support.LuseEntryPoint;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
-import se.inera.intyg.common.support.facade.model.config.CertificateDataConfigTypes;
+import se.inera.intyg.common.support.facade.model.config.CertificateDataConfigType;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDateRange;
 import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDateRangeList;
@@ -166,7 +166,7 @@ public class SendCertificateFunctionImpl implements SendCertificateFunction {
 
     private boolean hasShortSickleavePeriod(Certificate certificate) {
         final var optionalSickLeavePeriod = certificate.getData().values().stream()
-            .filter(dataElement -> dataElement.getConfig().getType() == CertificateDataConfigTypes.UE_SICK_LEAVE_PERIOD).findFirst();
+            .filter(dataElement -> dataElement.getConfig().getType() == CertificateDataConfigType.UE_CHECKBOX_DATE_RANGE_LIST).findFirst();
         if (optionalSickLeavePeriod.isPresent()) {
             final var sickLeavePeriod = (CertificateDataValueDateRangeList) optionalSickLeavePeriod.get().getValue();
             long sickLeaveLength = 0;

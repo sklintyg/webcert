@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -27,8 +27,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.assertj.core.util.Lists;
-import se.inera.intyg.infra.integration.pu.model.Person;
-import se.inera.intyg.infra.integration.pu.model.PersonSvar;
+import se.inera.intyg.infra.pu.integration.api.model.Person;
+import se.inera.intyg.infra.pu.integration.api.model.PersonSvar;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.Privilege;
@@ -37,7 +37,6 @@ import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.access.data.AccessServiceTestData;
-import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionInfo;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
@@ -236,8 +235,8 @@ abstract public class AccessServiceTestToolkit {
         final Person person = mock(Person.class);
 
         doReturn(person).when(personSvar).getPerson();
-        doReturn(false).when(person).isAvliden();
-        doReturn(false).when(person).isSekretessmarkering();
+        doReturn(false).when(person).avliden();
+        doReturn(false).when(person).sekretessmarkering();
 
         return personSvar;
     }
@@ -247,8 +246,8 @@ abstract public class AccessServiceTestToolkit {
         final Person person = mock(Person.class);
 
         doReturn(person).when(personSvar).getPerson();
-        doReturn(true).when(person).isAvliden();
-        doReturn(false).when(person).isSekretessmarkering();
+        doReturn(true).when(person).avliden();
+        doReturn(false).when(person).sekretessmarkering();
 
         return personSvar;
     }

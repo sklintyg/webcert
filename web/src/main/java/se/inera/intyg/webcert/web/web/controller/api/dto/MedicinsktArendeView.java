@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,43 +18,16 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
-import com.google.auto.value.AutoValue;
-import javax.annotation.Nullable;
+import lombok.Builder;
+import lombok.Value;
 
-@AutoValue
-public abstract class MedicinsktArendeView {
+@Value
+@Builder
+public class MedicinsktArendeView {
 
-    public abstract Integer getPosition();
-
-    @Nullable
-    public abstract Integer getInstans();
-
-    public abstract String getFrageId();
-
-    public abstract String getText();
-
-    public abstract String getJsonPropertyHandle();
-
-    public abstract Builder toBuilder();
-
-    public static Builder builder() {
-        return new AutoValue_MedicinsktArendeView.Builder();
-    }
-
-    @AutoValue.Builder
-    public abstract static class Builder {
-
-        public abstract Builder setPosition(Integer position);
-
-        public abstract Builder setInstans(Integer instans);
-
-        public abstract Builder setText(String text);
-
-        public abstract Builder setFrageId(String frageId);
-
-        public abstract Builder setJsonPropertyHandle(String jsonPropertyHandle);
-
-        public abstract MedicinsktArendeView build();
-    }
-
+    Integer position;
+    Integer instans;
+    String frageId;
+    String text;
+    String jsonPropertyHandle;
 }

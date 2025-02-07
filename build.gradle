@@ -1,81 +1,73 @@
-import se.inera.intyg.IntygPluginKt
-
-import java.nio.file.Files
-import java.nio.file.Paths
-
 plugins {
-    id "se.inera.intyg.plugin.common" version "3.3.1" apply false
-    id "io.spring.dependency-management" version "1.1.3" apply false
-    id "com.netflix.nebula.node" version "3.0.0" apply false
-    id "org.gretty" version "3.0.9" apply false
+    id "org.gretty" version "4.1.5" apply false
+    id "io.spring.dependency-management" version "1.1.6" apply false
+    id 'org.sonarqube' version '5.1.0.4882'
+    id "org.owasp.dependencycheck" version "10.0.4"
     id 'test-report-aggregation'
+    id 'jacoco'
 }
 
 ext {
-    commonVersion = System.properties['commonVersion'] ?: '3.21.0-SNAPSHOT'
-    infraVersion = System.properties['infraVersion'] ?: '3.21.0-SNAPSHOT'
-    refDataVersion = System.properties['refDataVersion'] ?: '1.0-SNAPSHOT'
+    commonVersion = System.properties['commonVersion'] ?: '4.0.0-SNAPSHOT'
+    infraVersion = System.properties['infraVersion'] ?: '4.0.0-SNAPSHOT'
+    refDataVersion = '20'
 
-    funktionstjansterGrpSchemasVersion = "1.0.6.1"
-    intygClinicalprocessSchemasVersion = "1.0.24.1"
-    intygHealthcondRehabilitationSchemasVersion = "1.1.3.1"
-    intygTransportstyrelsenSchemasVersion = "1.0.5.1"
-    ppSchemasVersion = "1.0.5.1"
-    ppTermsSchemasVersion = "1.0.5.1"
-    rivtaClinicalprocessSchemasVersion = "4.0.5.2"
-    rivtaGetPersonsPersonSchemasVersion = "3.1.1.1"
-    rivtaInsuranceprocessSchemasVersion = "3.1.0.5.1"
-    rivtaItintegrationMonitoringSchemasVersion = "1.0.0.5.1"
-    schemasContractVersion = "2.1.8.1"
-    srsSchemasVersion = "0.0.16.1"
+    funktionstjansterGrpSchemasVersion = "2.0.0.2"
+    intygClinicalprocessSchemasVersion = "1.0.24.2"
+    intygHealthcondRehabilitationSchemasVersion = "1.1.3.2"
+    intygTransportstyrelsenSchemasVersion = "1.0.5.3"
+    ppSchemasVersion = "1.0.5.2"
+    ppTermsSchemasVersion = "1.0.5.2"
+    rivtaClinicalprocessSchemasVersion = "4.0.5.3"
+    rivtaGetPersonsPersonSchemasVersion = "3.1.1.2"
+    rivtaInsuranceprocessSchemasVersion = "3.1.0.5.2"
+    rivtaItintegrationMonitoringSchemasVersion = "1.0.0.5.2"
+    schemasContractVersion = "2.1.8.2"
+    srsSchemasVersion = "0.0.16.2"
 
-    autovalueVersion = "1.10.4"
-    camelVersion = "3.21.2"
-    commonsIoVersion = "2.14.0"
-    cxfVersion = "3.6.2"
-    embeddedRedisVersion = "0.7.2"
+    camelVersion = "4.8.0"
+    commonsIoVersion = "2.17.0"
+    cxfVersion = "4.0.5"
     geronimoJmsVersion = "1.1.1"
-    guavaVersion = "32.1.3-jre"
-    jadiraUserTypeVersion = "6.0.1.GA"
-    jakartaJwsApiVersion = "2.1.0" // version 3.0.0 -> warning: "class file for javax.jws.soap.SOAPBinding$ParameterStyle not found"
-    jaxb2Version = "0.13.1"
+    guavaVersion = "33.3.1-jre"
+    jakartaJwsApiVersion = "3.0.0"
+    jaxb2Version = "3.0.0"
     jexcelVersion = "1.0.9"
-    jsonwebtokenVersion = "0.11.5"
-    jwksVersion = "0.22.0"
-    luceneAnalyzersCommonVersion = "9.8.0"
-    openWsVersion = "1.5.4"
-    opensamlVersion = "2.6.4"
-    phSchematronVersion = "5.6.5"
-    picocliVersion = "4.7.5"
-    shedlockSpringVersion = "4.46.0"
-    springSecuritySaml2CoreVersion = "1.0.3.RELEASE"
-    stAntlr4Version = "4.3.4"
-    swaggerJaxrsVersion = "1.6.12"
-    vavrVersion = "0.10.4"
+    jodaTimeVersion = "2.13.0"
+    logbackEcsEncoderVersion = "1.6.0"
+    luceneAnalyzersCommonVersion = "9.12.0"
+    phSchematronVersion = "7.1.3"
+    picocliVersion = "4.7.6"
+    shedlockSpringVersion = "5.16.0"
+    swaggerJaxrsVersion = "1.6.14"
+    vavrVersion = "0.10.5"
     xercesVersion = "2.12.2"
-    xmlToolingVersion = "1.4.4"
 
-    nodeJsVersion = "12.22.12"
-    npmVersion = "6.14.16"
+    springbootMavenBomVersion = "3.3.4"
 
-    springbootMavenBomVersion = "2.7.17"
+    nvdMirror = 'https://vulnz-nvd-mirror-devtest.intyg.nordicmedtest.se'
 }
 
 allprojects {
-    apply plugin: 'se.inera.intyg.plugin.common'
     apply plugin: "io.spring.dependency-management"
     apply plugin: 'java-library'
     apply plugin: 'idea'
+    apply plugin: 'jacoco'
+    apply plugin: 'war'
 
     group = 'se.inera.intyg.webcert'
     version = System.properties['buildVersion'] ?: '0-SNAPSHOT'
-    sourceCompatibility = 11
-    targetCompatibility = 11
+    sourceCompatibility = 21
+    targetCompatibility = 21
 
     dependencyManagement {
         imports {
             mavenBom "org.springframework.boot:spring-boot-dependencies:${springbootMavenBomVersion}"
         }
+    }
+
+    compileJava {
+        options.compilerArgs.add("-parameters")
     }
 
     dependencies {
@@ -92,39 +84,20 @@ allprojects {
         testImplementation "org.junit.jupiter:junit-jupiter-params"
         testImplementation "org.mockito:mockito-junit-jupiter"
         testImplementation "org.mockito:mockito-core"
-        testImplementation "se.inera.intyg.refdata:refdata:${refDataVersion}"
 
         testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
         testRuntimeOnly "org.junit.vintage:junit-vintage-engine"
     }
 
-    tasks.register('createVersionPropertyFile', VersionPropertyFileTask)
-
-    if (project.hasProperty('codeQuality')) {
-        tasks.register('spotbugsIncludesAndExcludes') {
-            dependsOn ":unzipBuildTools"
-            def spotbugsToolDir = "${rootProject.layout.buildDirectory.get().asFile}/build-tools/spotbugs"
-            spotbugsMain {
-                includeFilter.set(file("${spotbugsToolDir}/spotbugsIncludeFilter.xml"))
-                excludeFilter.set(file("${spotbugsToolDir}/spotbugsExcludeFilter.xml"))
-            }
-        }
-
-        checkstyleMain.dependsOn createVersionPropertyFile
-        jacocoTestReport.mustRunAfter createVersionPropertyFile
-        spotbugsMain.dependsOn('spotbugsIncludesAndExcludes')
-        spotbugsTest.enabled(false)
-        dependencies { spotbugsSlf4j "org.slf4j:slf4j-simple" }
-    }
-
     compileJava.options.encoding = 'UTF-8'
     compileJava.dependsOn processResources
-    compileTestJava.dependsOn createVersionPropertyFile
+    war.duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     test { useJUnitPlatform() }
 
     repositories {
         mavenLocal()
         maven { url "https://nexus.drift.inera.se/repository/it-public/" }
+        maven { url 'https://build.shibboleth.net/nexus/content/repositories/releases/' }
         mavenCentral {
             content {
                 excludeGroupByRegex "se\\.inera.*"
@@ -139,32 +112,41 @@ allprojects {
     }
 }
 
-subprojects.collect {subproject -> subproject.name }.each { subprojectName ->
-    dependencies { testReportAggregation project(":${subprojectName}") }
-}
+jacocoTestReport {
+    dependsOn test
 
-tasks.register('tagRelease', TagReleaseTask)
+    reports {
+        xml.required = true
+        html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+    }
 
-tasks.register('unzipBuildTools', Copy) {
-    into "${rootProject.layout.buildDirectory.get().asFile}/build-tools/"
-    from { zipTree(rootProject.buildscript.configurations.classpath.find { it.name.contains("se.inera.intyg.plugin.common") })
-            .matching { include "/spotbugs/**", "/git_hooks/**" }
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                    "**/testability/**",
+                    "**/integrationtest/**"
+            ])
+        }))
     }
 }
 
-tasks.register('applyGitHooks') {
-    dependsOn unzipBuildTools
-    doLast {
-        def repository = IntygPluginKt.findGitRepository(project.rootProject.projectDir)
-        def gitHooksDir = "${rootProject.layout.buildDirectory.get().asFile}/build-tools/git_hooks"
-        def commitMsg = file("${gitHooksDir}/commit-msg")
-        def preCommit = file("${gitHooksDir}/pre-commit")
-        def toDir = Paths.get(repository.directory.path, "hooks")
-
-        if (!Files.exists(toDir)) { Files.createDirectory(toDir) }
-        IntygPluginKt.copyFile(commitMsg, toDir)
-        IntygPluginKt.copyFile(preCommit, toDir)
+sonar {
+    properties {
+        property "sonar.projectKey", "intyg-webcert"
+        property "sonar.projectName", "intyg-webcert"
+        property "sonar.dependencyCheck.jsonReportPath", "${layout.buildDirectory.get()}/reports/dependency-check-report.json" as String
+        property "sonar.dependencyCheck.htmlReportPath", "${layout.buildDirectory.get()}/reports/dependency-check-report.html" as String
     }
 }
 
-createVersionPropertyFile.dependsOn(applyGitHooks)
+dependencyCheck {
+    formats = List.of("HTML", "JSON")
+    nvd.setDatafeedUrl(nvdMirror)
+    analyzers.setAssemblyEnabled(false)
+}
+
+reporting {
+    subprojects.collect {subproject -> subproject.name }.each { subprojectName ->
+        dependencies { testReportAggregation project(":${subprojectName}") }
+    }
+}

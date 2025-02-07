@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -36,11 +36,23 @@ import se.inera.intyg.common.luse.support.LuseEntryPoint;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
 import se.inera.intyg.common.ts_diabetes.support.TsDiabetesEntryPoint;
+import se.inera.intyg.webcert.web.csintegration.testability.CSTestabilityIntegrationService;
+import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CertificateType;
 import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateFillType;
 
 @Component
 public class SupportedCertificateTypesUtil {
+
+    private final CertificateServiceProfile certificateServiceProfile;
+    private final CSTestabilityIntegrationService csTestabilityIntegrationService;
+
+
+    public SupportedCertificateTypesUtil(CertificateServiceProfile certificateServiceProfile,
+        CSTestabilityIntegrationService csTestabilityIntegrationService) {
+        this.certificateServiceProfile = certificateServiceProfile;
+        this.csTestabilityIntegrationService = csTestabilityIntegrationService;
+    }
 
     public List<CertificateType> get() {
         final var certificateTypes = new ArrayList<CertificateType>();
@@ -170,6 +182,12 @@ public class SupportedCertificateTypesUtil {
                 Arrays.asList(CreateCertificateFillType.EMPTY, CreateCertificateFillType.MINIMAL, CreateCertificateFillType.MAXIMAL)
             )
         );
+
+        if (certificateServiceProfile.active()) {
+            certificateTypes.addAll(
+                csTestabilityIntegrationService.getSupportedTypes()
+            );
+        }
         return certificateTypes;
     }
 }

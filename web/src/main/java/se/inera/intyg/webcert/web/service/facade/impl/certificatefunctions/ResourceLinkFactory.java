@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -25,6 +25,10 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
 public class ResourceLinkFactory {
 
+    private ResourceLinkFactory() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static ResourceLinkDTO read() {
         return ResourceLinkDTO.create(
             ResourceLinkTypeDTO.READ_CERTIFICATE,
@@ -39,15 +43,6 @@ public class ResourceLinkFactory {
             ResourceLinkTypeDTO.CREATE_CERTIFICATE,
             "Skapa intyg",
             enabled ? "Skapa ett intygsutkast." : "",
-            enabled
-        );
-    }
-
-    public static ResourceLinkDTO confirmDodsbevis(boolean enabled) {
-        return ResourceLinkDTO.create(
-            ResourceLinkTypeDTO.CREATE_DODSBEVIS_CONFIRMATION,
-            "Visa bekräftelsemodal för dödsbevis",
-            "Visa modal med ett bekräftelsemeddelande.",
             enabled
         );
     }

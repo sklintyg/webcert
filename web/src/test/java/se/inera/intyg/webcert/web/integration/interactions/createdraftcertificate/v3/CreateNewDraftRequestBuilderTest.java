@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -38,8 +38,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
-import se.inera.intyg.infra.integration.pu.model.Person;
-import se.inera.intyg.infra.integration.pu.model.PersonSvar;
+import se.inera.intyg.infra.pu.integration.api.model.Person;
+import se.inera.intyg.infra.pu.integration.api.model.PersonSvar;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.IntygUser;
@@ -96,8 +96,7 @@ public class CreateNewDraftRequestBuilderTest extends BaseCreateDraftCertificate
         user = buildWebCertUser();
         user.changeValdVardenhet(UNIT_HSAID);
         person = new Person(Personnummer.createPersonnummer(PERSONNUMMER).get(), false, false, FORNAMN, MELLANNAMN, EFTERNAMN,
-            PATIENT_POSTADRESS,
-            PATIENT_POSTNUMMER, PATIENT_POSTORT);
+            PATIENT_POSTADRESS, PATIENT_POSTNUMMER, PATIENT_POSTORT, false);
         final var personSvar = PersonSvar.found(person);
 
         when(patientDetailsResolver.getPersonFromPUService(any(Personnummer.class))).thenReturn(personSvar);

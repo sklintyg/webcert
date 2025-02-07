@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,11 +20,14 @@ package se.inera.intyg.webcert.notification_sender.certificatesender.services;
 
 import org.apache.camel.Body;
 import org.apache.camel.Header;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.webcert.common.Constants;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
+import se.inera.intyg.webcert.logging.MdcHelper;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
 
 /**
  * Camel message processor responsible for consuming {@link Constants#STORE_MESSAGE} messages,
@@ -34,12 +37,19 @@ public class CertificateStoreProcessor {
 
     @Autowired
     private IntygModuleRegistry moduleRegistry;
+    @Autowired
+    private MdcHelper mdcHelper;
 
     public void process(@Body String utkastAsJson,
         @Header(Constants.INTYGS_TYP) String intygsTyp,
         @Header(Constants.LOGICAL_ADDRESS) String logicalAddress)
         throws TemporaryException {
         try {
+            MDC.put(MdcLogConstants.TRACE_ID_KEY, mdcHelper.traceId());
+            MDC.put(MdcLogConstants.SPAN_ID_KEY, mdcHelper.spanId());
+            MDC.put(MdcLogConstants.EVENT_CERTIFICATE_TYPE, intygsTyp);
+            MDC.put(MdcLogConstants.EVENT_LOGICAL_ADDRESS, logicalAddress);
+
             ModuleApi moduleApi = moduleRegistry.getModuleApi(intygsTyp,
                 moduleRegistry.resolveVersionFromUtlatandeJson(intygsTyp, utkastAsJson));
 
@@ -47,6 +57,8 @@ public class CertificateStoreProcessor {
 
         } catch (Exception e) {
             throw new TemporaryException(e);
+        } finally {
+            MDC.clear();
         }
     }
 }

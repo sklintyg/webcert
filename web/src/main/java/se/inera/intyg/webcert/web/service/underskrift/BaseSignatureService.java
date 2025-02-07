@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -72,13 +72,13 @@ public abstract class BaseSignatureService {
         }
     }
 
-    protected void checkDigests(Utkast utkast, String computedHash, String signatureHash) {
+    protected void checkDigests(String certificateId, String computedHash, String signatureHash) {
         if (!computedHash.equals(signatureHash)) {
             LOG.error("Signing of utkast '{}' failed since the payload has been modified since signing was initialized",
-                utkast.getIntygsId());
+                certificateId);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INVALID_STATE,
                 "Internal error signing utkast, the payload of utkast "
-                    + utkast.getIntygsId() + " has been modified since signing was initialized");
+                    + certificateId + " has been modified since signing was initialized");
         }
     }
 

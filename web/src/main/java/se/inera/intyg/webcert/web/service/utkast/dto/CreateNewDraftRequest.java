@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,12 +19,15 @@
 package se.inera.intyg.webcert.web.service.utkast.dto;
 
 import java.util.Optional;
-
+import lombok.Getter;
+import lombok.Setter;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.riv.clinicalprocess.healthcond.certificate.v33.Forifyllnad;
 
+@Getter
+@Setter
 public class CreateNewDraftRequest {
 
     private String intygId;
@@ -42,6 +45,8 @@ public class CreateNewDraftRequest {
     private HoSPersonal hosPerson;
 
     private Optional<Forifyllnad> forifyllnad = Optional.empty();
+
+    private boolean testability = false;
 
     public CreateNewDraftRequest() {
         // Needed for deserialization
@@ -65,68 +70,4 @@ public class CreateNewDraftRequest {
         this.forifyllnad = forifyllnad;
     }
     // CHECKSTYLE:ON ParameterNumber
-
-    public String getIntygId() {
-        return intygId;
-    }
-
-    public void setIntygId(String intygId) {
-        this.intygId = intygId;
-    }
-
-    public String getIntygType() {
-        return intygType;
-    }
-
-    public void setIntygType(String intygType) {
-        this.intygType = intygType;
-    }
-
-    public UtkastStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(UtkastStatus status) {
-        this.status = status;
-    }
-
-    public Patient getPatient() {
-        return patient;
-    }
-
-    public void setPatient(Patient patient) {
-        this.patient = patient;
-    }
-
-    public HoSPersonal getHosPerson() {
-        return hosPerson;
-    }
-
-    public void setHosPerson(HoSPersonal hosPerson) {
-        this.hosPerson = hosPerson;
-    }
-
-    public String getReferens() {
-        return referens;
-    }
-
-    public void setReferens(String referens) {
-        this.referens = referens;
-    }
-
-    public String getIntygTypeVersion() {
-        return intygTypeVersion;
-    }
-
-    public void setIntygTypeVersion(String intygTypeVersion) {
-        this.intygTypeVersion = intygTypeVersion;
-    }
-
-    public Optional<Forifyllnad> getForifyllnad() {
-        return forifyllnad;
-    }
-
-    public void setForifyllnad(Optional<Forifyllnad> forifyllnad) {
-        this.forifyllnad = forifyllnad;
-    }
 }

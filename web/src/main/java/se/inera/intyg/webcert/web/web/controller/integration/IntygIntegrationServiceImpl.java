@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,11 +18,9 @@
  */
 package se.inera.intyg.webcert.web.web.controller.integration;
 
+import com.google.common.base.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.google.common.base.Strings;
-
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -36,7 +34,7 @@ import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest
 /**
  * @author Magnus Ekstrand on 2017-10-09.
  */
-@Service
+@Service("integrationServiceForWC")
 public class IntygIntegrationServiceImpl extends IntegrationServiceImpl {
 
     @Autowired
@@ -94,12 +92,21 @@ public class IntygIntegrationServiceImpl extends IntegrationServiceImpl {
     }
 
     private void logSammanhallenSjukforing(String intygsTyp, String intygsId, Utkast utkast, WebCertUser user) {
-        if (user.getParameters().isSjf()) {
-            if (!utkast.getVardgivarId().equals(user.getValdVardgivare().getId())) {
-                monitoringLog.logIntegratedOtherCaregiver(intygsId, intygsTyp, utkast.getVardgivarId(), utkast.getEnhetsId());
-            } else if (!user.getValdVardenhet().getHsaIds().contains(utkast.getEnhetsId())) {
-                monitoringLog.logIntegratedOtherUnit(intygsId, intygsTyp, utkast.getEnhetsId());
-            }
+        if (!user.getParameters().isSjf()) {
+            return;
+        }
+
+        final var draftCareProviderId = utkast.getVardgivarId();
+        final var draftCareUnitId = utkast.getEnhetsId();
+        final var userCareProviderId = user.getValdVardgivare().getId();
+        final var userCareUnitId = user.getValdVardenhet().getId();
+
+        if (!draftCareProviderId.equals(userCareProviderId)) {
+            monitoringLog.logIntegratedOtherCaregiver(intygsId, intygsTyp, draftCareProviderId, draftCareUnitId, userCareProviderId,
+                userCareUnitId);
+        } else if (!user.getValdVardenhet().getHsaIds().contains(draftCareUnitId)) {
+            monitoringLog.logIntegratedOtherUnit(intygsId, intygsTyp, draftCareProviderId, draftCareUnitId, userCareProviderId,
+                userCareUnitId);
         }
     }
 

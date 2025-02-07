@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,10 +18,10 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift;
 
+import jakarta.xml.bind.JAXBElement;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Base64;
-import javax.xml.bind.JAXBElement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.w3._2000._09.xmldsig_.KeyInfoType;
 import org.w3._2000._09.xmldsig_.ObjectFactory;
@@ -39,6 +39,8 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEn
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.web.csintegration.certificate.FinalizedCertificateSignature;
+import se.inera.intyg.webcert.web.csintegration.certificate.SignCertificateService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
@@ -54,6 +56,9 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
     private PrepareSignatureService prepareSignatureService;
 
     @Autowired
+    private SignCertificateService signCertificateService;
+
+    @Autowired
     private XMLDSigService xmldSigService;
 
     protected SignaturBiljett finalizeXMLDSigSignature(String x509certificate, WebCertUser user, SignaturBiljett biljett,
@@ -61,20 +66,9 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
         Utkast utkast) {
         try {
             IntygXMLDSignature intygXmldSignature = (IntygXMLDSignature) biljett.getIntygSignature();
-
-            applySignature(user, rawSignature, intygXmldSignature, biljett.getSignMethod());
-
-            // Store X509 in SignatureType
-            if (x509certificate != null && !x509certificate.isEmpty()) {
-                KeyInfoType keyInfoType = xmldSigService.buildKeyInfoForCertificate(x509certificate);
-                intygXmldSignature.getSignatureType().setKeyInfo(keyInfoType);
-            }
-
-            // This isn't strictly necessary...
-            performBasicSignatureValidation(x509certificate, utkast, intygXmldSignature);
-
+            applySignature(rawSignature, intygXmldSignature, biljett.getSignMethod());
+            storeX509InSignatureType(x509certificate, intygXmldSignature);
             String signatureXml = marshallSignatureToString(intygXmldSignature.getSignatureType());
-
             createAndPersistSignatureForXMLDSig(utkast, biljett, signatureXml, user);
 
             // If all good, change status of ticket
@@ -88,20 +82,41 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
         }
     }
 
-    private void performBasicSignatureValidation(String x509certificate, Utkast utkast, IntygXMLDSignature intygXmldSignature) {
-        // again, convert JSON to XML.
-        String utkastXml = utkastModelToXMLConverter.utkastToXml(intygXmldSignature.getIntygJson(), utkast.getIntygsTyp());
+    protected FinalizedCertificateSignature finalizeXMLDSigSignatureForCS(String x509certificate, SignaturBiljett biljett,
+        byte[] rawSignature) {
+        try {
+            final var intygXmldSignature = (IntygXMLDSignature) biljett.getIntygSignature();
+            applySignature(rawSignature, intygXmldSignature, biljett.getSignMethod());
+            storeX509InSignatureType(x509certificate, intygXmldSignature);
 
-        // This is the base64 encoded
-        // <RegisterCertificate><intyg>...data...<Signature>...</Signature></intyg></<RegisterCertificate>>
-        // that we're storing.
+            final var signatureXml = marshallSignatureToString(intygXmldSignature.getSignatureType());
+            final var certificate = signCertificateService.sign(biljett.getIntygsId(), signatureXml, biljett.getVersion());
+            biljett.setStatus(SignaturStatus.SIGNERAD);
+
+            return FinalizedCertificateSignature.builder()
+                .signaturBiljett(biljett)
+                .certificate(certificate)
+                .build();
+
+        } catch (Throwable e) {
+            redisTicketTracker.updateStatus(biljett.getTicketId(), SignaturStatus.OKAND);
+            throw e;
+        }
+    }
+
+    private void storeX509InSignatureType(String x509certificate, IntygXMLDSignature intygXmldSignature) {
+        // Store X509 in SignatureType
+        if (x509certificate != null && !x509certificate.isEmpty()) {
+            KeyInfoType keyInfoType = xmldSigService.buildKeyInfoForCertificate(x509certificate);
+            intygXmldSignature.getSignatureType().setKeyInfo(keyInfoType);
+        }
+    }
+
+    private void performBasicSignatureValidation(String x509certificate, Utkast utkast, IntygXMLDSignature intygXmldSignature) {
+        String utkastXml = utkastModelToXMLConverter.utkastToXml(intygXmldSignature.getIntygJson(), utkast.getIntygsTyp());
         String finalXml = prepareSignatureService.encodeSignatureIntoSignedXml(intygXmldSignature.getSignatureType(),
             utkastXml);
-
-        // Only store if we received a certificate.
         if (x509certificate != null && !x509certificate.isEmpty()) {
-
-            // Due to a bug with SAXON and the JDK DSIG validator, do NOT check references.
             boolean validationResult = xmldSigService.validateSignatureValidity(finalXml, false).isValid();
             if (!validationResult) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, "Signature is invalid.");
@@ -118,7 +133,7 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
         }
     }
 
-    private void applySignature(WebCertUser user, byte[] rawSignature, IntygXMLDSignature intygXmldSignature, SignMethod signMethod) {
+    private void applySignature(byte[] rawSignature, IntygXMLDSignature intygXmldSignature, SignMethod signMethod) {
         SignatureValueType svt = new SignatureValueType();
         switch (signMethod) {
             case NETID_PLUGIN:
@@ -155,7 +170,7 @@ public abstract class BaseXMLSignatureService extends BaseSignatureService {
         TransformAndDigestResponse transformAndDigestResponse = prepareSignatureService
             .transformAndGenerateDigest(utkastXml, biljett.getIntygsId());
 
-        checkDigests(utkast, signingXmlHash, new String(transformAndDigestResponse.getDigest(), StandardCharsets.UTF_8));
+        checkDigests(utkast.getIntygsId(), signingXmlHash, new String(transformAndDigestResponse.getDigest(), StandardCharsets.UTF_8));
         checkVersion(utkast, biljett);
 
         // For WC 6.1, we want to store the following:

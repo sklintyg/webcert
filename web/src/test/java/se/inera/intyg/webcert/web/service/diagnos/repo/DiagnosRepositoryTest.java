@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,57 +19,61 @@
 package se.inera.intyg.webcert.web.service.diagnos.repo;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.containsStringIgnoringCase;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.startsWith;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Every.everyItem;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.List;
-
 import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration("classpath:/DiagnosService/DiagnosRepositoryFactoryTest-context.xml")
-public class DiagnosRepositoryTest {
+class DiagnosRepositoryTest {
 
-    private static final String FILE_1 = "classpath:DiagnosService/icd10se/digit3.txt";
-    private static final String FILE_2 = "classpath:DiagnosService/icd10se/digit4.txt";
-    private static final String FILE_3 = "classpath:DiagnosService/icd10se/digit5.txt";
+    private static final String FILE = "classpath:DiagnosService/icd10se/icd-10-se.tsv";
 
     @Autowired
     private DiagnosRepositoryFactory factory;
 
     private DiagnosRepository repo;
 
-    @Before
+    @BeforeEach
     public void setup() {
-        List<String> fileList = Arrays.asList(FILE_1, FILE_2, FILE_3);
+        List<String> fileList = List.of(FILE);
         DiagnosRepositoryImpl repoImpl = (DiagnosRepositoryImpl) factory.createAndInitDiagnosRepository(fileList,
             StandardCharsets.UTF_8);
-        assertEquals(35665, repoImpl.nbrOfDiagosis());
+        assertEquals(38628, repoImpl.nbrOfDiagosis());
         this.repo = repoImpl;
     }
 
     @Test
-    public void testSanitizeCodeValue() {
+    void testSanitizeCodeValue() {
         DiagnosRepositoryImpl repoImpl = new DiagnosRepositoryImpl();
-        assertNull("null should return null", repoImpl.sanitizeCodeValue(null));
-        assertNull("emptry string should return null", repoImpl.sanitizeCodeValue(""));
-        assertNull("spaces should return null", repoImpl.sanitizeCodeValue("  "));
-        assertNull(". should return null", repoImpl.sanitizeCodeValue("."));
-        assertNull(". and spaces should return null", repoImpl.sanitizeCodeValue(". "));
+        assertNull(repoImpl.sanitizeCodeValue(null), "null should return null");
+        assertNull(repoImpl.sanitizeCodeValue(""), "emptry string should return null");
+        assertNull(repoImpl.sanitizeCodeValue("  "), "spaces should return null");
+        assertNull(repoImpl.sanitizeCodeValue("."), ". should return null");
+        assertNull(repoImpl.sanitizeCodeValue(". "), ". and spaces should return null");
         assertEquals("A", repoImpl.sanitizeCodeValue("A"));
         assertEquals("A", repoImpl.sanitizeCodeValue("a"));
         assertEquals("A", repoImpl.sanitizeCodeValue(" A "));
@@ -87,7 +91,7 @@ public class DiagnosRepositoryTest {
     }
 
     @Test
-    public void testGetByCodeWithNullAndEmpty() {
+    void testGetByCodeWithNullAndEmpty() {
         List<Diagnos> res = repo.getDiagnosesByCode(null);
         assertTrue(res.isEmpty());
 
@@ -96,87 +100,87 @@ public class DiagnosRepositoryTest {
     }
 
     @Test
-    public void testGetByCodeFour() {
+    void testGetByCodeFour() {
         String code = "A184";
         List<Diagnos> res = repo.getDiagnosesByCode(code);
         assertEquals(1, res.size());
-        assertEquals("A184", res.get(0).getKod());
-        assertThat(res.get(0).getBeskrivning(), containsString("Tuberkulos"));
+        assertEquals("A184", res.getFirst().getKod());
+        assertThat(res.getFirst().getBeskrivning(), containsString("Tuberkulos"));
     }
 
     @Test
-    public void testGetByCodeFourAndDot() {
+    void testGetByCodeFourAndDot() {
         String code = "A18.4";
         List<Diagnos> res = repo.getDiagnosesByCode(code);
         assertEquals(1, res.size());
-        assertEquals("A184", res.get(0).getKod());
-        assertThat(res.get(0).getBeskrivning(), containsString("Tuberkulos"));
+        assertEquals("A184", res.getFirst().getKod());
+        assertThat(res.getFirst().getBeskrivning(), containsString("Tuberkulos"));
     }
 
     @Test
-    public void testGetByCodeFive() {
+    void testGetByCodeFive() {
         String code = "A184E";
         List<Diagnos> res = repo.getDiagnosesByCode(code);
         assertEquals(1, res.size());
-        assertEquals("A184E", res.get(0).getKod());
-        assertThat(res.get(0).getBeskrivning(), containsString("Tuberkulöst"));
+        assertEquals("A184E", res.getFirst().getKod());
+        assertThat(res.getFirst().getBeskrivning(), containsString("Tuberkulöst"));
     }
 
     @Test
-    public void testGetByCodeFiveAndDot() {
+    void testGetByCodeFiveAndDot() {
         String code = "A18.4E";
         List<Diagnos> res = repo.getDiagnosesByCode(code);
         assertEquals(1, res.size());
-        assertEquals("A184E", res.get(0).getKod());
-        assertThat(res.get(0).getBeskrivning(), containsString("Tuberkulöst"));
+        assertEquals("A184E", res.getFirst().getKod());
+        assertThat(res.getFirst().getBeskrivning(), containsString("Tuberkulöst"));
     }
 
     @Test
-    public void testGetByCodeWithMalformedCode() {
+    void testGetByCodeWithMalformedCode() {
         String code = " c 76  ";
         List<Diagnos> res = repo.getDiagnosesByCode(code);
         assertEquals(1, res.size());
         assertNotNull(res);
-        assertEquals("C76", res.get(0).getKod());
+        assertEquals("C76", res.getFirst().getKod());
     }
 
     @Test
-    public void testCodeSearchWithFragmentThree() {
+    void testCodeSearchWithFragmentThree() {
         String codeFragment = "A08";
         List<Diagnos> res = repo.searchDiagnosisByCode(codeFragment, 100);
         assertEquals(10, res.size());
     }
 
     @Test
-    public void testCodeSearchWithFragmentFour() {
+    void testCodeSearchWithFragmentFour() {
         String codeFragment = "A083";
         List<Diagnos> res = repo.searchDiagnosisByCode(codeFragment, 100);
         assertEquals(4, res.size());
     }
 
     @Test
-    public void testCodeSearchWithFragmentFourAndDot() {
+    void testCodeSearchWithFragmentFourAndDot() {
         String codeFragment = "A08.3";
         List<Diagnos> res = repo.searchDiagnosisByCode(codeFragment, 100);
         assertEquals(4, res.size());
     }
 
     @Test
-    public void testCodeSearchWithFullCode() {
+    void testCodeSearchWithFullCode() {
         String codeFragment = "A083B";
         List<Diagnos> res = repo.searchDiagnosisByCode(codeFragment, 100);
         assertEquals(1, res.size());
     }
 
     @Test
-    public void testCodeSearchWithFullCodeAndDot() {
+    void testCodeSearchWithFullCodeAndDot() {
         String codeFragment = "A08.3B";
         List<Diagnos> res = repo.searchDiagnosisByCode(codeFragment, 100);
         assertEquals(1, res.size());
     }
 
     @Test
-    public void testCodeSearchWithNonExistingFragment() {
+    void testCodeSearchWithNonExistingFragment() {
         String codeFragment = "C99";
         List<Diagnos> res = repo.searchDiagnosisByCode(codeFragment, 100);
         assertNotNull(res);
@@ -184,7 +188,7 @@ public class DiagnosRepositoryTest {
     }
 
     @Test
-    public void testCodeSearchWithNoInput() {
+    void testCodeSearchWithNoInput() {
         String codeFragment = "";
         List<Diagnos> res = repo.searchDiagnosisByCode(codeFragment, 100);
         assertNotNull(res);
@@ -192,7 +196,7 @@ public class DiagnosRepositoryTest {
     }
 
     @Test
-    public void testCodeSearchWithNull() {
+    void testCodeSearchWithNull() {
         final String codeFragment = null;
         List<Diagnos> res = repo.searchDiagnosisByCode(codeFragment, 100);
         assertNotNull(res);
@@ -200,14 +204,14 @@ public class DiagnosRepositoryTest {
     }
 
     @Test
-    public void testDescriptionSearchWithNoInput() {
+    void testDescriptionSearchWithNoInput() {
         List<Diagnos> res = repo.searchDiagnosisByDescription("", 100);
         assertNotNull(res);
         assertTrue(res.isEmpty());
     }
 
     @Test
-    public void testDescriptionSearchWithNull() {
+    void testDescriptionSearchWithNull() {
         // Given
         String searchTerm = null;
         int greaterThanZero = Integer.MAX_VALUE;
@@ -222,7 +226,7 @@ public class DiagnosRepositoryTest {
     }
 
     @Test
-    public void testDescriptionSearchWithNonExistentTerm() {
+    void testDescriptionSearchWithNonExistentTerm() {
         // Given
         String searchTerm = "foobar";
         int greaterThanZero = 100;
@@ -237,7 +241,7 @@ public class DiagnosRepositoryTest {
     }
 
     @Test
-    public void testDescriptionSearchWithMatchAtBeginningOfDescription() {
+    void testDescriptionSearchWithMatchAtBeginningOfDescription() {
         // Given
         String searchTerm = "Botuli";
         int greaterThanZero = Integer.MAX_VALUE;
@@ -253,7 +257,7 @@ public class DiagnosRepositoryTest {
     }
 
     @Test
-    public void testDescriptionSearchWithMatchInTheMiddleOfDescription() {
+    void testDescriptionSearchWithMatchInTheMiddleOfDescription() {
         // Given
         String searchTerm = "sputumundersökning";
         int greaterThanZero = Integer.MAX_VALUE;
@@ -269,7 +273,7 @@ public class DiagnosRepositoryTest {
     }
 
     @Test
-    public void testDescriptionSearchWithPartialWord() {
+    void testDescriptionSearchWithPartialWord() {
         // Given
         String searchTerm = "tumundersökni";
         int greaterThanZero = Integer.MAX_VALUE;
@@ -286,7 +290,7 @@ public class DiagnosRepositoryTest {
     }
 
     @Test
-    public void testDescriptionSearchWithMultipleResults() {
+    void testDescriptionSearchWithMultipleResults() {
         // Given
         String searchTerm = "Paratyfoidfebe";
         int greaterThanAvailableResults = Integer.MAX_VALUE;
@@ -302,7 +306,7 @@ public class DiagnosRepositoryTest {
     }
 
     @Test
-    public void testDescriptionSearchWithMultipleWordSearchTerm() {
+    void testDescriptionSearchWithMultipleWordSearchTerm() {
         // Given
         String searchTerm = "Tuberkulos i andningsorganen, ej verifierad bakteriologiskt eller histologiskt";
         int greaterThanAvailableResults = Integer.MAX_VALUE;
@@ -318,7 +322,7 @@ public class DiagnosRepositoryTest {
     }
 
     @Test
-    public void testDescriptionSearchWithMultipleTruncatedWordSearchTerm() {
+    void testDescriptionSearchWithMultipleTruncatedWordSearchTerm() {
         // Given
         String searchTerm = "Tuber i andningsor, ej verifie bakteriologi eller histologi";
         int greaterThanAvailableResults = Integer.MAX_VALUE;
@@ -335,7 +339,7 @@ public class DiagnosRepositoryTest {
     }
 
     @Test
-    public void testDescriptionSearchWithMultiplePartialWordSearchTerm() {
+    void testDescriptionSearchWithMultiplePartialWordSearchTerm() {
         // Given
         String searchTerm = "ber i ndningsor, j rifie teriologi eller histologi";
         int greaterThanAvailableResults = Integer.MAX_VALUE;
@@ -352,7 +356,7 @@ public class DiagnosRepositoryTest {
     }
 
     @Test
-    public void testDescriptionSearchWithMultipleResultsCanReturnLess() {
+    void testDescriptionSearchWithMultipleResultsCanReturnLess() {
         // Given
         String searchTerm = "Sekundär malign tumör";
         int oneLessThanAvailableResults = 2;
@@ -368,7 +372,7 @@ public class DiagnosRepositoryTest {
     }
 
     @Test
-    public void testDescriptionSearchIgnoresCase() {
+    void testDescriptionSearchIgnoresCase() {
         // Given
         String searchTerm = "Lungtuberkulos";
         int greaterThanAvailableResults = Integer.MAX_VALUE;

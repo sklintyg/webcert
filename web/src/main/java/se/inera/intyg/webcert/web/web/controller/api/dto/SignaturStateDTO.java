@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,11 +19,15 @@
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import lombok.Getter;
+import lombok.Setter;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 
+@Setter
+@Getter
 public class SignaturStateDTO {
 
     private String id;
@@ -32,70 +36,16 @@ public class SignaturStateDTO {
     private SignaturStatus status;
     private String hash;
     private SignaturTyp signaturTyp;
+    private String autoStartToken;
+    private String qrCode;
 
     // Signing Service
     private String actionUrl;
     private String signRequest;
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getIntygsId() {
-        return intygsId;
-    }
-
-    public void setIntygsId(String intygsId) {
-        this.intygsId = intygsId;
-    }
-
-    public long getVersion() {
-        return version;
-    }
-
-    public void setVersion(long version) {
-        this.version = version;
-    }
-
-    public SignaturStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(SignaturStatus status) {
-        this.status = status;
-    }
-
-    public void setHash(String hash) {
-        this.hash = hash;
-    }
-
-    public String getActionUrl() {
-        return actionUrl;
-    }
-
-    public void setActionUrl(String actionUrl) {
-        this.actionUrl = actionUrl;
-    }
-
-    public String getSignRequest() {
-        return signRequest;
-    }
-
-    public void setSignRequest(String signRequest) {
-        this.signRequest = signRequest;
-    }
-
     @JsonIgnore
     public SignaturTyp getSignaturTyp() {
         return signaturTyp;
-    }
-
-    public void setSignaturTyp(SignaturTyp signaturTyp) {
-        this.signaturTyp = signaturTyp;
     }
 
     /**
@@ -108,7 +58,7 @@ public class SignaturStateDTO {
             return null;
         }
         if (signaturTyp == SignaturTyp.XMLDSIG) {
-            return Base64.getEncoder().encodeToString(hash.getBytes(Charset.forName("UTF-8")));
+            return Base64.getEncoder().encodeToString(hash.getBytes(StandardCharsets.UTF_8));
         }
         return hash;
     }
@@ -121,6 +71,8 @@ public class SignaturStateDTO {
         private SignaturStatus status;
         private String hash;
         private SignaturTyp signaturTyp;
+        private String autoStartToken;
+        private String qrCode;
 
         // Signing Service
         private String actionUrl;
@@ -131,6 +83,16 @@ public class SignaturStateDTO {
 
         public static SignaturStateDTOBuilder aSignaturStateDTO() {
             return new SignaturStateDTOBuilder();
+        }
+
+        public SignaturStateDTOBuilder withQrCode(String qrData) {
+            this.qrCode = qrData;
+            return this;
+        }
+
+        public SignaturStateDTOBuilder withAutoStartToken(String autoStartToken) {
+            this.autoStartToken = autoStartToken;
+            return this;
         }
 
         public SignaturStateDTOBuilder withId(String id) {
@@ -183,6 +145,8 @@ public class SignaturStateDTO {
             signaturStateDTO.setSignaturTyp(signaturTyp);
             signaturStateDTO.setActionUrl(actionUrl);
             signaturStateDTO.setSignRequest(signRequest);
+            signaturStateDTO.setAutoStartToken(autoStartToken);
+            signaturStateDTO.setQrCode(qrCode);
             return signaturStateDTO;
         }
     }

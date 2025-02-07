@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,15 +22,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
+import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceStatisticService;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -39,7 +42,11 @@ import se.inera.intyg.webcert.web.service.util.StatisticsHelper;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
 @Service
+@Slf4j
 public class UserStatisticsServiceImpl implements UserStatisticsService {
+
+    @Value("${max.number.of.commissions.for.statistics:15}")
+    private Integer maxCommissionsForStatistics;
 
     private static final Logger LOG = LoggerFactory.getLogger(UserStatisticsServiceImpl.class);
 
@@ -48,16 +55,18 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
     private final AuthoritiesHelper authoritiesHelper;
     private final FragaSvarService fragaSvarService;
     private final ArendeService arendeService;
+    private final CertificateServiceStatisticService certificateServiceStatisticService;
 
     @Autowired
     public UserStatisticsServiceImpl(WebCertUserService webCertUserService, UtkastService utkastService,
         AuthoritiesHelper authoritiesHelper, FragaSvarService fragaSvarService,
-        ArendeService arendeService) {
+        ArendeService arendeService, CertificateServiceStatisticService certificateServiceStatisticService) {
         this.webCertUserService = webCertUserService;
         this.utkastService = utkastService;
         this.authoritiesHelper = authoritiesHelper;
         this.fragaSvarService = fragaSvarService;
         this.arendeService = arendeService;
+        this.certificateServiceStatisticService = certificateServiceStatisticService;
     }
 
     @Override
@@ -68,10 +77,25 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
             return null;
         }
 
-        final var unitIds = getUnitIds(user);
+        final var careUnitIds = getCareUnitIds(user);
 
-        if (unitIds == null) {
+        if (careUnitIds.isEmpty()) {
             return null;
+        }
+
+        final var maxCommissionsExceeded = careUnitIds.size() > maxCommissionsForStatistics;
+
+        if (maxCommissionsExceeded && user.getValdVardenhet() == null) {
+            log.info("Number of commissions ({}) exceeds maxCommissionsForStatistics ({}) without selected unit. No statistics will "
+                + "be collected.", careUnitIds.size(), maxCommissionsForStatistics);
+            return null;
+        }
+
+        final var unitIds = maxCommissionsExceeded ? user.getValdVardenhet().getHsaIds() : getUnitIds(user);
+
+        if (maxCommissionsExceeded) {
+            log.info("Number of commissions ({}) exceeds maxCommissionsForStatistics ({}) with selected unit. Statistics will be collected "
+                + "for selected care unit only.", careUnitIds.size(), maxCommissionsForStatistics);
         }
 
         final var statistics = new UserStatisticsDTO();
@@ -91,8 +115,11 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
             );
         }
 
-        addCareProviderStatistics(statistics, user.getVardgivare(), draftsMap, questionsMap);
+        if (!maxCommissionsExceeded) {
+            addCareProviderStatistics(statistics, user.getVardgivare(), draftsMap, questionsMap);
+        }
 
+        certificateServiceStatisticService.add(statistics, unitIds, user, maxCommissionsExceeded);
         return statistics;
     }
 
@@ -102,14 +129,18 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
             for (Vardenhet unit : careProvider.getVardenheter()) {
                 final var subUnitIds = unit.getHsaIds();
                 subUnitIds.remove(unit.getId());
-                addUnitStatistics(statistics, unit.getId(), subUnitIds, draftMap, questionMap);
-                addSubUnitsStatistics(statistics, subUnitIds, draftMap, questionMap);
+                addUnitStatistics(statistics, unit.getId(), subUnitIds, draftMap, questionMap, careProvider.getId());
+                addSubUnitsStatistics(statistics, subUnitIds, draftMap, questionMap, careProvider.getId(), unit.getId());
             }
         }
     }
 
     private void addUnitStatistics(UserStatisticsDTO statistics, String unitId, List<String> subUnitIds, Map<String, Long> draftMap,
-        Map<String, Long> questionMap) {
+        Map<String, Long> questionMap, String careProviderId) {
+        if (unitId == null) {
+            LOG.warn("Care provider with id '{}' includes care unit without id. Statistics will not be included for unit.", careProviderId);
+            return;
+        }
         final var draftsOnSubUnits = sumStatisticsForUnits(subUnitIds, draftMap);
         final var questionsOnSubUnits = sumStatisticsForUnits(subUnitIds, questionMap);
         final var draftsOnUnit = getFromMap(unitId, draftMap);
@@ -118,8 +149,14 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
     }
 
     private void addSubUnitsStatistics(UserStatisticsDTO statistics, List<String> unitIds, Map<String, Long> draftMap,
-        Map<String, Long> questionMap) {
+        Map<String, Long> questionMap, String careProviderId, String careUnitId) {
         for (String unitId : unitIds) {
+            if (unitId == null) {
+                LOG.warn(
+                    "Care provider with id '{}' & care unit with id '{}' includes sub unit without id. Statistics will not be included for"
+                        + " sub unit.", careProviderId, careUnitId);
+                continue;
+            }
             final var nbrOfDrafts = getFromMap(unitId, draftMap);
             final var nbrOfQuestions = getFromMap(unitId, questionMap);
             statistics.addUnitStatistics(unitId, new UnitStatisticsDTO(nbrOfDrafts, nbrOfQuestions));
@@ -178,6 +215,16 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
             return null;
         }
         return units;
+    }
+
+    private List<String> getCareUnitIds(WebCertUser user) {
+        List<String> allIds = new ArrayList<>();
+        for (Vardgivare v : user.getVardgivare()) {
+            for (Vardenhet ve : v.getVardenheter()) {
+                allIds.add(ve.getId());
+            }
+        }
+        return allIds;
     }
 
     private Map<String, Long> getMergedMapOfQuestions(List<String> unitIds, Set<String> certificateTypes) {

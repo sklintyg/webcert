@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,21 +19,20 @@
 package se.inera.intyg.webcert.web.web.controller.legacyintegration;
 
 import io.swagger.annotations.Api;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.MediaType;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 
 /**
  * Controller to enable a landsting user to access certificates directly from a link.
  *
  * This controller inherits from the FragaSvarUthoppController which manages
- * request for UTHOPP links. In this scenario we change the request origin to be
- * NORMAL instead of UTHOPP. This inheritance is somewhat confusing but it make
+ * request for UTHOPP links. This inheritance is somewhat confusing but it make
  * sense if we look at it from a functional perspective.
  */
 // CHECKSTYLE:OFF LineLength
 @Path("/basic-certificate")
-@Api(value = "/webcert/web/user/basic-certificate", description = "REST API för fråga/svar via normal link, landstingspersonal", produces = MediaType.APPLICATION_JSON)
+@Api(value = "/webcert/web/user/basic-certificate", produces = MediaType.APPLICATION_JSON)
 public class CertificateIntegrationController extends FragaSvarUthoppController {
     // CHECKSTYLE:ON LineLength
 

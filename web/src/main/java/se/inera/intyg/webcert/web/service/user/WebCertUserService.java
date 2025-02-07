@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,8 +18,8 @@
  */
 package se.inera.intyg.webcert.web.service.user;
 
+import jakarta.servlet.http.HttpSession;
 import java.util.List;
-import javax.servlet.http.HttpSession;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 public interface WebCertUserService {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,26 +18,25 @@
  */
 package se.inera.intyg.webcert.persistence.fragasvar.model;
 
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.PostLoad;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
-import javax.persistence.Table;
-import org.hibernate.annotations.Type;
 import se.inera.intyg.webcert.persistence.model.Status;
 
 @Entity
@@ -48,7 +47,7 @@ public class FragaSvar {
      * The (system-wide) unique id for this entity.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long internReferens;
 
     @Column(name = "EXTERN_REFERENS")
@@ -65,26 +64,21 @@ public class FragaSvar {
     private String frageText;
 
     @Column(name = "FRAGE_SIGNERINGS_DATUM")
-    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime frageSigneringsDatum;
 
     @Column(name = "FRAGE_SKICKAD_DATUM")
-    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime frageSkickadDatum;
 
     @Column(name = "SVARS_TEXT")
     private String svarsText;
 
     @Column(name = "SVAR_SIGNERINGS_DATUM")
-    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime svarSigneringsDatum;
 
     @Column(name = "SVAR_SKICKAD_DATUM")
-    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime svarSkickadDatum;
 
     @Column(name = "SENASTE_HANDELSE")
-    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime senasteHandelse;
 
     @ElementCollection(fetch = FetchType.LAZY)
@@ -96,7 +90,6 @@ public class FragaSvar {
     private String meddelandeRubrik;
 
     @Column(name = "SISTA_DATUM_FOR_SVAR")
-    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDate")
     private LocalDate sistaDatumForSvar;
 
     @Column(name = "VARD_AKTOR_HSAID")

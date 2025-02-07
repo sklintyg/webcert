@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,22 +18,23 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade;
 
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.facade.list.config.ListDraftsConfigFacadeServiceImpl;
 import se.inera.intyg.webcert.web.service.facade.list.config.ListPreviousCertificatesConfigFacadeServiceImpl;
 import se.inera.intyg.webcert.web.service.facade.list.config.ListQuestionsConfigFacadeServiceImpl;
 import se.inera.intyg.webcert.web.service.facade.list.config.ListSignedCertificatesConfigFacadeServiceImpl;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.UpdateListConfigRequestDTO;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 @Path("/list/config")
 public class ListConfigController {
@@ -62,6 +63,7 @@ public class ListConfigController {
     @GET
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "list-config-get-list-or-drafts-config", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getListOfDraftsConfig() {
         LOG.debug("Getting config for list of drafts");
         final var config = draftListConfigFacadeService.get();
@@ -72,6 +74,7 @@ public class ListConfigController {
     @GET
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "list-config-get-list-of-signed-certificates-config", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getListOfSignedCertificatesConfig() {
         LOG.debug("Getting config for list of signed certificates");
         final var config = listSignedCertificatesConfigFacadeService.get();
@@ -82,6 +85,7 @@ public class ListConfigController {
     @GET
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "list-config-get-list-of-previous-certificates-config", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getListOfPreviousCertificatesConfig() {
         LOG.debug("Getting config for list of previous certificates");
         final var config = listPreviousCertificatesConfigFacadeService.get();
@@ -92,6 +96,7 @@ public class ListConfigController {
     @POST
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "list-config-get-list-of-questions", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getListOfQuestions(String unitId) {
         LOG.debug("Getting config for list of unhandled questions");
         final var config = listQuestionsConfigFacadeService.get(unitId);
@@ -102,6 +107,7 @@ public class ListConfigController {
     @POST
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "list-config-update-list-of-questions-config", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response updateListOfQuestionsConfig(UpdateListConfigRequestDTO request) {
         LOG.debug("Getting updated config for list of unhandled questions");
         final var updatedConfig = listQuestionsConfigFacadeService.update(request.getConfig(), request.getUnitId());

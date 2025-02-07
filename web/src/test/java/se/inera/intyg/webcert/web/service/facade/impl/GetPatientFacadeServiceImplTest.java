@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,14 +18,23 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.infra.integration.pu.model.Person;
-import se.inera.intyg.infra.integration.pu.model.PersonSvar;
-import se.inera.intyg.infra.integration.pu.services.PUService;
+import se.inera.intyg.infra.pu.integration.api.model.Person;
+import se.inera.intyg.infra.pu.integration.api.model.PersonSvar;
+import se.inera.intyg.infra.pu.integration.api.services.PUService;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.patient.GetPatientFacadeServiceImpl;
 import se.inera.intyg.webcert.web.service.facade.patient.InvalidPatientIdException;
@@ -33,25 +42,19 @@ import se.inera.intyg.webcert.web.service.facade.patient.PatientNoNameException;
 import se.inera.intyg.webcert.web.service.facade.patient.PatientSearchErrorException;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 public class GetPatientFacadeServiceImplTest {
-
-    @Mock
-    private PUService puService;
-    @Mock
-    private MonitoringLogService monitoringService;
-
-    @InjectMocks
-    private GetPatientFacadeServiceImpl getPatientFacadeService;
 
     private final static String PATIENT_ID = "191212121212";
     private final static String FIRSTNAME = "firstname";
     private final static String LASTNAME = "lastname";
     private final static String MIDDLENAME = "middlename";
-
+    @Mock
+    private PUService puService;
+    @Mock
+    private MonitoringLogService monitoringService;
+    @InjectMocks
+    private GetPatientFacadeServiceImpl getPatientFacadeService;
 
     void setupPatient(boolean protectedPerson, boolean testIndicated, boolean deceased, boolean includeMiddleName) {
         PersonSvar personSvar = createPersonSvar(protectedPerson, testIndicated, deceased, includeMiddleName);
@@ -216,14 +219,15 @@ public class GetPatientFacadeServiceImplTest {
     @Test
     void shallThrowExceptionIfPatientHasNoFirstName() {
         final var patient = new Person(Personnummer.createPersonnummer("191212121212").get(), false, false, null, "name", "name", "", "",
-            "");
+            "", false);
         doReturn(PersonSvar.found(patient)).when(puService).getPerson(any());
         assertThrows(PatientNoNameException.class, () -> getPatientFacadeService.getPatient(PATIENT_ID));
     }
 
     @Test
     void shallThrowExceptionIfPatientHasNoLastName() {
-        final var patient = new Person(Personnummer.createPersonnummer("191212121212").get(), false, false, "", "name", null, "", "", "");
+        final var patient = new Person(Personnummer.createPersonnummer("191212121212").get(), false, false, "", "name", null, "", "", "",
+            false);
         doReturn(PersonSvar.found(patient)).when(puService).getPerson(any());
         assertThrows(PatientNoNameException.class, () -> getPatientFacadeService.getPatient(PATIENT_ID));
     }

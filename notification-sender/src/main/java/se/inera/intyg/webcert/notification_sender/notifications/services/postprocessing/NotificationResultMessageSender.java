@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,7 +19,7 @@
 package se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import javax.jms.TextMessage;
+import jakarta.jms.TextMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

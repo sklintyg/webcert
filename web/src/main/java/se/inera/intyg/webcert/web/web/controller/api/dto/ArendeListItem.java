@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,12 +18,10 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 
@@ -184,6 +182,10 @@ public class ArendeListItem {
 
     public void addLink(ActionLink link) {
         this.links.add(link);
+    }
+
+    public void setLinks(List<ActionLink> links) {
+        this.links = links;
     }
 
     public void setTestIntyg(boolean isTestIntyg) {

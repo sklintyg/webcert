@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.service.facade.list;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
@@ -30,6 +31,7 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.web.csintegration.aggregate.ListCertificatesAggregator;
 import se.inera.intyg.webcert.web.service.facade.list.config.GetStaffInfoFacadeService;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterBooleanValue;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterPersonIdValue;
@@ -73,6 +75,7 @@ public class ListPreviousCertificatesFacadeServiceImpl implements ListPreviousCe
     private final ListSortHelper listSortHelper;
     private final ListDecorator listDecorator;
     private final CertificateForPatientService certificateForPatientService;
+    private final ListCertificatesAggregator listCertificatesAggregator;
 
     @Autowired
     public ListPreviousCertificatesFacadeServiceImpl(WebCertUserService webCertUserService, LogService logService,
@@ -83,7 +86,7 @@ public class ListPreviousCertificatesFacadeServiceImpl implements ListPreviousCe
         AuthoritiesHelper authoritiesHelper,
         ResourceLinkHelper resourceLinkHelper,
         ListSortHelper listSortHelper, ListDecorator listDecorator,
-        CertificateForPatientService certificatesForPatientService) {
+        CertificateForPatientService certificatesForPatientService, ListCertificatesAggregator listCertificatesAggregator) {
         this.webCertUserService = webCertUserService;
         this.logService = logService;
         this.listPaginationHelper = listPaginationHelper;
@@ -95,6 +98,7 @@ public class ListPreviousCertificatesFacadeServiceImpl implements ListPreviousCe
         this.listSortHelper = listSortHelper;
         this.listDecorator = listDecorator;
         this.certificateForPatientService = certificatesForPatientService;
+        this.listCertificatesAggregator = listCertificatesAggregator;
     }
 
     @Override
@@ -103,14 +107,18 @@ public class ListPreviousCertificatesFacadeServiceImpl implements ListPreviousCe
         final var user = webCertUserService.getUser();
         final var units = getUnits();
 
-        final var protectedPatientStatus = checkUserAccess(user, patientId);
         final var certificatesForPatient = certificateForPatientService.get(filter, patientId, units);
-        final var filteredList = filterProtectedPatients(protectedPatientStatus, certificatesForPatient);
+        final var filteredList = filterProtectedPatients(user, patientId, certificatesForPatient);
 
         resourceLinkHelper.decorateIntygWithValidActionLinks(filteredList, patientId);
         listDecorator.decorateWithCertificateTypeName(filteredList);
 
-        final var convertedList = convertList(filteredList);
+        final var listFromCertificateService = listCertificatesAggregator.listCertificatesForPatient(patientId.getOriginalPnr());
+        final var mergedList = Stream
+            .concat(filteredList.stream(), listFromCertificateService.stream())
+            .collect(Collectors.toList());
+
+        final var convertedList = convertList(mergedList);
         listSortHelper.sort(convertedList, getOrderBy(filter), getAscending(filter));
 
         final var filteredListOnStatus = filterListOnStatus(filter, convertedList);
@@ -130,14 +138,25 @@ public class ListPreviousCertificatesFacadeServiceImpl implements ListPreviousCe
         return value.getValue();
     }
 
-    private List<ListIntygEntry> filterProtectedPatients(SekretessStatus protectedPatientStatus, List<ListIntygEntry> list) {
-        if (protectedPatientStatus == SekretessStatus.TRUE) {
-            final var allowedTypes = authoritiesHelper.getIntygstyperAllowedForSekretessmarkering();
-            return list.stream()
-                .filter(certificate -> allowedTypes.contains(certificate.getIntygType()))
-                .collect(Collectors.toList());
+    private List<ListIntygEntry> filterProtectedPatients(WebCertUser user, Personnummer patientId, List<ListIntygEntry> list) {
+        final var protectedPatientStatus = patientDetailsResolver.getSekretessStatus(patientId);
+        if (protectedPatientStatus == SekretessStatus.UNDEFINED) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
+                "Error checking sekretessmarkering state in PU-service.");
         }
-        return list;
+
+        if (protectedPatientStatus == SekretessStatus.FALSE) {
+            return list;
+        }
+        
+        return list.stream()
+            .filter(certificate ->
+                authoritiesValidator
+                    .given(user, certificate.getIntygType())
+                    .privilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT)
+                    .isVerified()
+            )
+            .collect(Collectors.toList());
     }
 
     private Personnummer formatPatientId(ListFilter filter) {
@@ -173,7 +192,7 @@ public class ListPreviousCertificatesFacadeServiceImpl implements ListPreviousCe
 
     private List<CertificateListItem> performStatusFiltering(List<CertificateListItem> list, List<String> wantedStatuses) {
         return list.stream()
-            .filter((item) -> wantedStatuses.contains((String) item.getValue("STATUS")))
+            .filter(item -> wantedStatuses.contains((String) item.getValue("STATUS")))
             .collect(Collectors.toList());
     }
 
@@ -185,30 +204,13 @@ public class ListPreviousCertificatesFacadeServiceImpl implements ListPreviousCe
         return statusFilter.getValue().equals(statusType.toString());
     }
 
-    private SekretessStatus checkUserAccess(WebCertUser user, Personnummer patientId) {
-        final var protectedPatientStatus = patientDetailsResolver.getSekretessStatus(patientId);
-        if (protectedPatientStatus == SekretessStatus.UNDEFINED) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
-                "Error checking sekretessmarkering state in PU-service.");
-        }
-
-        authoritiesValidator.given(user)
-            .privilegeIf(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, protectedPatientStatus == SekretessStatus.TRUE)
-            .orThrow(
-                new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM_SEKRETESSMARKERING,
-                    "User missing required privilege or cannot handle sekretessmarkerad patient")
-            );
-
-        return protectedPatientStatus;
-    }
-
     private void logListUsage(Personnummer patientId, WebCertUser user) {
         logService.logListIntyg(user, patientId.getPersonnummerWithDash());
     }
 
     private List<CertificateListItem> convertList(List<ListIntygEntry> intygEntryList) {
         return intygEntryList.stream()
-            .map((item) -> certificateListItemConverter.convert(item, LIST_TYPE))
+            .map(item -> certificateListItemConverter.convert(item, LIST_TYPE))
             .collect(Collectors.toList());
     }
 }

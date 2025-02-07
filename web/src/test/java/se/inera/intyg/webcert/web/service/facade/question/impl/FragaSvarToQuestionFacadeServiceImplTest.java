@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -80,7 +80,10 @@ class FragaSvarToQuestionFacadeServiceImplTest {
         final var fragaSvar = new FragaSvar();
         fragaSvar.setAmne(Amne.KOMPLETTERING_AV_LAKARINTYG);
 
-        final var fragaSvarViews = List.of(FragaSvarView.create(fragaSvar), FragaSvarView.create(fragaSvar));
+        final var fragaSvarViews = List.of(
+            FragaSvarView.builder().fragaSvar(new FragaSvar()).build(),
+            FragaSvarView.builder().fragaSvar(new FragaSvar()).build()
+        );
 
         doReturn(fragaSvarViews)
             .when(fragaSvarService)
@@ -90,14 +93,19 @@ class FragaSvarToQuestionFacadeServiceImplTest {
             .when(fragaSvarToQuestionConverter)
             .convert(any(FragaSvar.class));
 
-        final var actualComplementQuestions = fragaSvarToQuestionFacadeService.getComplementQuestions(CERTIFICATE_ID);
+        final var actualComplementQuestions = fragaSvarToQuestionFacadeService.getComplementQuestions(
+            CERTIFICATE_ID);
 
         assertIterableEquals(expectedResult, actualComplementQuestions);
     }
 
     private void setupMockToReturnQuestions() {
         doReturn(
-            List.of(FragaSvarView.create(new FragaSvar()), FragaSvarView.create(new FragaSvar()), FragaSvarView.create(new FragaSvar())))
+            List.of(
+                FragaSvarView.builder().fragaSvar(new FragaSvar()).build(),
+                FragaSvarView.builder().fragaSvar(new FragaSvar()).build(),
+                FragaSvarView.builder().fragaSvar(new FragaSvar()).build()
+            ))
             .when(fragaSvarService)
             .getFragaSvar(CERTIFICATE_ID);
 

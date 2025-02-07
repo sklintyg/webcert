@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.access;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -64,6 +64,38 @@ public class AccessServiceEvaluationTest {
     public void setup() {
         accessServiceEvaluation = AccessServiceEvaluation
             .create(webCertUserService, patientDetailsResolver, utkastService, intygTextsService);
+    }
+
+    @Test
+    public void shallNotAllowIfFeatureInactiveCertificateTypeIsTrue() {
+        final var feature = new Feature();
+        feature.setGlobal(true);
+        feature.setIntygstyper(Collections.singletonList("ts-bas"));
+
+        final var features = Map.of(AuthoritiesConstants.FEATURE_INACTIVE_CERTIFICATE_TYPE, feature);
+        when(user.getFeatures()).thenReturn(features);
+
+        final var actualAccessResult = accessServiceEvaluation.given(user, "ts-bas")
+            .checkInactiveCertificateType()
+            .evaluate();
+
+        assertEquals(AccessResultCode.INACTIVE_CERTIFICATE_TYPE, actualAccessResult.getCode());
+    }
+
+    @Test
+    public void shallAllowIfFeatureInactiveCertificateTypeIsFalse() {
+        final var feature = new Feature();
+        feature.setGlobal(true);
+        feature.setIntygstyper(Collections.singletonList("ts-bas"));
+
+        final var features = Map.of(AuthoritiesConstants.FEATURE_INACTIVE_CERTIFICATE_TYPE, feature);
+        when(user.getFeatures()).thenReturn(features);
+
+        final var actualAccessResult = accessServiceEvaluation.given(user, "ts-diabetes")
+            .checkInactiveCertificateType()
+            .evaluate();
+
+        assertEquals(AccessResultCode.NO_PROBLEM, actualAccessResult.getCode());
     }
 
     @Test
@@ -250,7 +282,7 @@ public class AccessServiceEvaluationTest {
 
     private SubscriptionInfo getSubscriptionInfo(SubscriptionAction subscriptionAction, int numberOfMissingSubscriptions) {
         final var missingSubscriptionList = getMissingSubscriptionsList(numberOfMissingSubscriptions);
-        final var subscriptionInfo = new SubscriptionInfo("date1", "date2");
+        final var subscriptionInfo = new SubscriptionInfo();
         subscriptionInfo.setSubscriptionAction(subscriptionAction);
         subscriptionInfo.setCareProvidersMissingSubscription(List.copyOf(missingSubscriptionList));
         return subscriptionInfo;

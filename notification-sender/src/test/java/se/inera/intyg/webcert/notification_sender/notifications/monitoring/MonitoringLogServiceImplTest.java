@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,8 +18,7 @@
  */
 package se.inera.intyg.webcert.notification_sender.notifications.monitoring;
 
-
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 
 import ch.qos.logback.classic.Level;
@@ -28,18 +27,19 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
 import java.time.LocalDateTime;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.LoggerFactory;
 
-@RunWith(MockitoJUnitRunner.class)
-public class MonitoringLogServiceImplTest {
+@ExtendWith(MockitoExtension.class)
+class MonitoringLogServiceImplTest {
 
     @Mock
     private Appender<ILoggingEvent> mockAppender;
@@ -47,34 +47,35 @@ public class MonitoringLogServiceImplTest {
     @Captor
     private ArgumentCaptor<LoggingEvent> captorLoggingEvent;
 
-    final private MonitoringLogService logService = new MonitoringLogServiceImpl();
+    @InjectMocks
+    private MonitoringLogServiceImpl logService;
 
-    private final static long EVENT_ID = 1234L;
-    private final static String EVENT_TYPE = "EVENT_TYPE";
-    private final static String CORRELATION_ID = "CORRELATION_ID";
-    private final static String LOGICAL_ADDRESS = "LOGICAL_ADDRESS";
-    private final static String CERTIFICATE_ID = "CERTIFICATE_ID";
-    private final static String ERROR_CODE = "ERROR_CODE";
-    private final static String ERROR_MESSAGE = "ERROR_MESSAGE";
-    private final static int DELIVERY_ATTEMPT = 14;
-    private final static LocalDateTime NEXT_REDELIEVERY_TIME = LocalDateTime.of(
+    private static final long EVENT_ID = 1234L;
+    private static final String EVENT_TYPE = "EVENT_TYPE";
+    private static final String CORRELATION_ID = "CORRELATION_ID";
+    private static final String LOGICAL_ADDRESS = "LOGICAL_ADDRESS";
+    private static final String CERTIFICATE_ID = "CERTIFICATE_ID";
+    private static final String ERROR_CODE = "ERROR_CODE";
+    private static final String ERROR_MESSAGE = "ERROR_MESSAGE";
+    private static final int DELIVERY_ATTEMPT = 14;
+    private static final LocalDateTime NEXT_REDELIEVERY_TIME = LocalDateTime.of(
         2021, 2, 21, 16, 1, 23, 123456789
     );
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         final var logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         logger.addAppender(mockAppender);
     }
 
-    @After
-    public void teardown() {
+    @AfterEach
+    void teardown() {
         final var logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         logger.detachAppender(mockAppender);
     }
 
     @Test
-    public void shouldLogNotificationDeliverySuccess() {
+    void shouldLogNotificationDeliverySuccess() {
         logService.logStatusUpdateForCareStatusSuccess(EVENT_ID, EVENT_TYPE, CERTIFICATE_ID, CORRELATION_ID,
             LOGICAL_ADDRESS, DELIVERY_ATTEMPT);
         verifyLog("STATUS_UPDATE_RESULT_SUCCESS Status update for care success on "
@@ -88,7 +89,7 @@ public class MonitoringLogServiceImplTest {
     }
 
     @Test
-    public void shouldLogNotificationDeliveryResend() {
+    void shouldLogNotificationDeliveryResend() {
         logService.logStatusUpdateForCareStatusResend(EVENT_ID, EVENT_TYPE, LOGICAL_ADDRESS, CERTIFICATE_ID, CORRELATION_ID, ERROR_CODE,
             ERROR_MESSAGE, DELIVERY_ATTEMPT, NEXT_REDELIEVERY_TIME);
         verifyLog("STATUS_UPDATE_RESULT_RESEND Status update for care failure on "
@@ -105,7 +106,7 @@ public class MonitoringLogServiceImplTest {
     }
 
     @Test
-    public void shouldLogNotificationDeliveryFailure() {
+    void shouldLogNotificationDeliveryFailure() {
         logService.logStatusUpdateForCareStatusFailure(EVENT_ID, EVENT_TYPE, LOGICAL_ADDRESS, CERTIFICATE_ID, CORRELATION_ID, ERROR_CODE,
             ERROR_MESSAGE, DELIVERY_ATTEMPT);
         verifyLog("STATUS_UPDATE_RESULT_FAILURE Status update for care failure on "

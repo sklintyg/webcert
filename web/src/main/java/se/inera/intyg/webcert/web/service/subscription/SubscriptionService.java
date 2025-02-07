@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -25,12 +25,6 @@ public interface SubscriptionService {
     boolean checkSubscriptions(WebCertUser webcertUser);
 
     boolean isUnregisteredElegUserMissingSubscription(String personId);
-
-    boolean isSubscriptionRequired();
-
-    boolean isSubscriptionAdaptation();
-
-    boolean isAnySubscriptionFeatureActive();
 
     void acknowledgeSubscriptionModal(WebCertUser webCertUser);
 

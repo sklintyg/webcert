@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -26,9 +26,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.support.Constants;
 import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
-import se.inera.intyg.infra.integration.pu.model.Person;
-import se.inera.intyg.infra.integration.pu.model.PersonSvar;
-import se.inera.intyg.infra.integration.pu.services.PUService;
+import se.inera.intyg.infra.pu.integration.api.model.Person;
+import se.inera.intyg.infra.pu.integration.api.model.PersonSvar;
+import se.inera.intyg.infra.pu.integration.api.services.PUService;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
@@ -60,7 +60,7 @@ public class NotificationPatientEnricher {
 
                 PersonSvar personSvar = puService.getPerson(personnummer);
                 if (personSvar.getStatus() == PersonSvar.Status.FOUND) {
-                    if (!personSvar.getPerson().isSekretessmarkering()) {
+                    if (!personSvar.getPerson().sekretessmarkering()) {
                         intyg.setPatient(buildPatientFromPersonSvar(personSvar.getPerson()));
                     } else {
                         intyg.getPatient().setEfternamn(SEKRETESSMARKERING);
@@ -88,7 +88,7 @@ public class NotificationPatientEnricher {
         se.riv.clinicalprocess.healthcond.certificate.v3.Patient patient =
             new se.riv.clinicalprocess.healthcond.certificate.v3.Patient();
 
-        Optional<Personnummer> personnummer = Optional.ofNullable(person.getPersonnummer());
+        Optional<Personnummer> personnummer = Optional.ofNullable(person.personnummer());
 
         if (personnummer.isEmpty()) {
             throw new IllegalArgumentException("Call to buildPatientFromPersonSvar contained a null personnummer.");
@@ -102,15 +102,15 @@ public class NotificationPatientEnricher {
         personId.setExtension(personnummer.get().getPersonnummer());
 
         patient.setPersonId(personId);
-        patient.setFornamn(nullSafe(person.getFornamn()));
-        if (person.getMellannamn() != null) {
-            patient.setMellannamn(person.getMellannamn());
+        patient.setFornamn(nullSafe(person.fornamn()));
+        if (person.mellannamn() != null) {
+            patient.setMellannamn(person.mellannamn());
         }
 
-        patient.setEfternamn(nullSafe(person.getEfternamn()));
-        patient.setPostadress(nullSafe(person.getPostadress()));
-        patient.setPostnummer(nullSafe(person.getPostnummer()));
-        patient.setPostort(nullSafe(person.getPostort()));
+        patient.setEfternamn(nullSafe(person.efternamn()));
+        patient.setPostadress(nullSafe(person.postadress()));
+        patient.setPostnummer(nullSafe(person.postnummer()));
+        patient.setPostort(nullSafe(person.postort()));
 
         return patient;
     }

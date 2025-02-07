@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -80,6 +80,14 @@ public class CertificateServiceTest {
         var certificateListResponse = certificateService.listCertificatesForDoctor(null);
         verify(logService, times(0)).logListIntyg(any(), any());
         assertTrue(certificateListResponse.isErrorFromIT());
+    }
+
+    @Test
+    public void shouldReturnListOfEmptyCertificatesIfErrorGettingCertificatesFromIT() {
+        Mockito.when(itIntegrationService.getCertificatesForDoctor(null, null)).thenReturn(null);
+        var certificateListResponse = certificateService.listCertificatesForDoctor(null);
+        verify(logService, times(0)).logListIntyg(any(), any());
+        assertTrue(certificateListResponse.getCertificates().isEmpty());
     }
 
     @Test

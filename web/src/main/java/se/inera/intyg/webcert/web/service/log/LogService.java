@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.log;
 
-import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.dto.LogUser;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -234,7 +233,6 @@ public interface LogService {
      * Creates a log event when a user sends message to recipient
      *
      * @param user the user who performs the action that is being logged
-     * @param message the message being sent
      */
-    void logCreateMessage(WebCertUser user, Arende message);
+    void logCreateMessage(WebCertUser user, String personId, String certificateId);
 }

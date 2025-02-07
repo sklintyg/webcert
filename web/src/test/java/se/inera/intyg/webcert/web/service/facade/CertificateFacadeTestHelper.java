@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.service.facade;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import se.inera.intyg.common.support.facade.builder.CertificateBuilder;
 import se.inera.intyg.common.support.facade.model.Certificate;
@@ -26,7 +27,8 @@ import se.inera.intyg.common.support.facade.model.CertificateDataElement;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
-import se.inera.intyg.common.support.facade.model.config.CertificateDataConfigSickLeavePeriod;
+import se.inera.intyg.common.support.facade.model.Staff;
+import se.inera.intyg.common.support.facade.model.config.CertificateDataConfigCheckboxDateRangeList;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
@@ -37,16 +39,16 @@ import se.inera.intyg.common.support.facade.model.value.CertificateDataValueDate
 public class CertificateFacadeTestHelper {
 
     public static Certificate createCertificate(String certificateType, CertificateStatus status) {
-        return createCertificateWithChildRelation(certificateType, status, null);
+        return createCertificateWithChildRelation(certificateType, status, (CertificateRelation) null);
     }
 
     public static Certificate createCertificate(String certificateType, CertificateStatus status, boolean addressFromPU) {
-        return createCertificateWithChildRelation(certificateType, status, null, addressFromPU);
+        return createCertificateWithChildRelation(certificateType, status, addressFromPU, (CertificateRelation) null);
     }
 
     public static Certificate createCertificateWithChildRelation(String certificateType, CertificateStatus status,
-        CertificateRelation relation) {
-        return createCertificateWithChildRelation(certificateType, status, relation, true);
+        CertificateRelation... relation) {
+        return createCertificateWithChildRelation(certificateType, status, true, relation);
     }
 
     public static Certificate createCertificateTypeWithVersion(String certificateType, CertificateStatus status, boolean addressFromPU,
@@ -61,6 +63,8 @@ public class CertificateFacadeTestHelper {
             .type(certificateType)
             .typeVersion(typeVersion)
             .status(status)
+            .signed(LocalDateTime.now())
+            .modified(LocalDateTime.now().plusDays(5))
             .patient(
                 Patient.builder()
                     .personId(
@@ -102,6 +106,11 @@ public class CertificateFacadeTestHelper {
                     .email("email")
                     .phoneNumber("phoneNumber")
                     .build()
+            ).issuedBy(Staff.builder()
+                .fullName("fullName")
+                .personId("personId")
+                .prescriptionCode("prescriptionCode")
+                .build()
             );
 
         return CertificateBuilder.create()
@@ -110,7 +119,7 @@ public class CertificateFacadeTestHelper {
     }
 
     public static Certificate createCertificateWithChildRelation(String certificateType, CertificateStatus status,
-        CertificateRelation relation, boolean addressFromPU) {
+        boolean addressFromPU, CertificateRelation... relation) {
         final var metadataBuilder = CertificateMetadata.builder()
             .id("certificateId")
             .type(certificateType)
@@ -157,15 +166,19 @@ public class CertificateFacadeTestHelper {
                     .email("email")
                     .phoneNumber("phoneNumber")
                     .build()
+            ).issuedBy(Staff.builder()
+                .fullName("fullName")
+                .personId("personId")
+                .prescriptionCode("prescriptionCode")
+                .build()
             );
+        ;
 
-        if (relation != null) {
+        if (relation != null && relation.length > 0 && relation[0] != null) {
             metadataBuilder.relations(
                 CertificateRelations.builder()
                     .children(
-                        new CertificateRelation[]{
-                            relation
-                        }
+                        relation
                     )
                     .build()
             );
@@ -268,7 +281,7 @@ public class CertificateFacadeTestHelper {
 
         final var sickLeavePeriod = CertificateDataElement.builder()
             .config(
-                CertificateDataConfigSickLeavePeriod.builder().build()
+                CertificateDataConfigCheckboxDateRangeList.builder().build()
             )
             .value(
                 CertificateDataValueDateRangeList.builder()

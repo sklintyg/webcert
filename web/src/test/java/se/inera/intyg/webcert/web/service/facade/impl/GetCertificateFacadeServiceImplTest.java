@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -63,6 +63,7 @@ import se.inera.intyg.webcert.web.service.facade.util.UtkastToCertificateConvert
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
 @ExtendWith(MockitoExtension.class)
 class GetCertificateFacadeServiceImplTest {
@@ -258,12 +259,14 @@ class GetCertificateFacadeServiceImplTest {
 
         private static final String CERTIFICATE_ID = "certificateId";
         private final IntygContentHolder intygContentHolder = IntygContentHolder.builder()
-            .setRevoked(false)
-            .setDeceased(false)
-            .setSekretessmarkering(false)
-            .setPatientNameChangedInPU(false)
-            .setPatientAddressChangedInPU(false)
-            .setTestIntyg(false)
+            .revoked(false)
+            .deceased(false)
+            .sekretessmarkering(false)
+            .patientNameChangedInPU(false)
+            .patientAddressChangedInPU(false)
+            .testIntyg(false)
+            .relations(new Relations())
+            .latestMajorTextVersion(true)
             .build();
 
         @BeforeEach

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.service.utkast;
 
 import com.google.common.base.Strings;
+import jakarta.persistence.OptimisticLockException;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -33,7 +34,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
-import javax.persistence.OptimisticLockException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -219,6 +219,13 @@ public class UtkastServiceImpl implements UtkastService {
 
         if (UtkastStatus.DRAFT_COMPLETE == savedUtkast.getStatus()) {
             generateCertificateEvent(savedUtkast, EventCode.KFSIGN);
+        }
+
+        // If testability is set, return the draft without sending notifications or pdl log
+        if (request.isTestability()) {
+            monitoringService.logUtkastCreated(savedUtkast.getIntygsId(), savedUtkast.getIntygsTyp(),
+                savedUtkast.getEnhetsId(), savedUtkast.getSkapadAv().getHsaId(), nrPrefillElements);
+            return savedUtkast;
         }
 
         // Notify stakeholders when a draft has been created

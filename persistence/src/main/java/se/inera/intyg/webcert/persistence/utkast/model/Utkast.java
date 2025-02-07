@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,30 +18,26 @@
  */
 package se.inera.intyg.webcert.persistence.utkast.model;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.Basic;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.util.Objects;
-
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Basic;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.OneToOne;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
-import javax.persistence.Table;
-import javax.persistence.Version;
-
-import org.hibernate.annotations.Type;
-
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.peristence.dao.util.DaoUtil;
@@ -96,7 +92,6 @@ public class Utkast {
     private String patientEfternamn;
 
     @Column(name = "SKAPAD")
-    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime skapad;
 
     @Version
@@ -113,7 +108,6 @@ public class Utkast {
     private VardpersonReferens senastSparadAv;
 
     @Column(name = "SENAST_SPARAD_DATUM")
-    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime senastSparadDatum;
 
     @Lob
@@ -132,11 +126,9 @@ public class Utkast {
     private String skickadTillMottagare;
 
     @Column(name = "SKICKAD_TILL_MOTTAGARE_DATUM")
-    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime skickadTillMottagareDatum;
 
     @Column(name = "ATERKALLAD_DATUM")
-    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime aterkalladDatum;
 
     @Column(name = "RELATION_INTYG_ID")
@@ -147,7 +139,6 @@ public class Utkast {
     private RelationKod relationKod;
 
     @Column(name = "KLART_FOR_SIGNERING_DATUM")
-    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime klartForSigneringDatum;
 
     @Column(name = "TEST_INTYG", columnDefinition = "TINYINT(1)")

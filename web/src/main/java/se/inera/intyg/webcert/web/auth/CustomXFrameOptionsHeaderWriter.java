@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,27 +19,19 @@
 package se.inera.intyg.webcert.web.auth;
 
 import static org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter.XFRAME_OPTIONS_HEADER;
-import static se.inera.intyg.infra.security.common.model.UserOriginType.READONLY;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.web.header.HeaderWriter;
-import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import org.springframework.stereotype.Component;
 
-/**
- * Created by marced on 2017-10-25.
- */
+@Component
+@Slf4j
 public class CustomXFrameOptionsHeaderWriter implements HeaderWriter {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CustomXFrameOptionsHeaderWriter.class);
-
-    @Autowired
-    private WebCertUserService userService;
-
     private static final String PDF_API_IDENTIFIER = "/pdf";
+    private static final String DENY = "DENY";
 
     @Override
     public void writeHeaders(HttpServletRequest request, HttpServletResponse response) {
@@ -47,18 +39,14 @@ public class CustomXFrameOptionsHeaderWriter implements HeaderWriter {
         final var requestUri = request.getRequestURI();
 
         if (shouldSkipHeader(requestUri)) {
-            LOG.debug("Skipping  " + XFRAME_OPTIONS_HEADER + " header for request to " + requestUri);
+            log.debug("Skipping {} header for request to {}", XFRAME_OPTIONS_HEADER, requestUri);
         } else {
-            response.addHeader(XFRAME_OPTIONS_HEADER, "DENY");
+            response.addHeader(XFRAME_OPTIONS_HEADER, DENY);
         }
     }
 
     private boolean shouldSkipHeader(String requestUri) {
-        return !userService.hasAuthenticationContext() || READONLY.name().equals(userService.getUser().getOrigin())
-            || isRequestForPdfApi(requestUri);
-    }
-
-    private boolean isRequestForPdfApi(String requestUri) {
         return requestUri.contains(PDF_API_IDENTIFIER);
     }
+
 }

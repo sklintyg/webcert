@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,7 +30,6 @@ import static org.mockito.Mockito.when;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
 import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,7 +39,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
-
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
@@ -50,7 +48,7 @@ import se.inera.intyg.common.support.modules.support.api.dto.CreateDraftCopyHold
 import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftResponse;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
-import se.inera.intyg.infra.integration.pu.model.Person;
+import se.inera.intyg.infra.pu.integration.api.model.Person;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
@@ -95,7 +93,7 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
 
         CreateRenewalCopyRequest renewalRequest = buildRenewalRequest();
         Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
-            "postort");
+            "postort", false);
 
         when(mockModuleApi.createRenewalFromTemplate(any(CreateDraftCopyHolder.class), any())).thenReturn(INTYG_JSON);
         Utlatande utlatande = new Fk7263Utlatande();
@@ -133,7 +131,7 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
 
         CreateRenewalCopyRequest renewalRequest = buildRenewalRequest();
         Person patientDetails = new Person(PATIENT_SSN, false, false, PATIENT_FNAME, PATIENT_MNAME, PATIENT_LNAME, "Postadr", "12345",
-            "postort");
+            "postort", false);
 
         when(mockModuleApi.createRenewalFromTemplate(any(CreateDraftCopyHolder.class), any())).thenReturn(INTYG_JSON);
 
@@ -168,7 +166,8 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
         when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
 
-        UtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromOrignalUtkast(renewalRequest, null, false);
+        UtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromOrignalUtkast(renewalRequest, null,
+            false);
 
         assertNotNull(builderResponse.getUtkast());
         assertNotNull(builderResponse.getUtkast().getModel());
@@ -244,16 +243,17 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
         Fk7263Utlatande utlatande = new CustomObjectMapper().readValue(new ClassPathResource(
             "IntygDraftServiceImplTest/utlatande.json").getFile(), Fk7263Utlatande.class);
         return IntygContentHolder.builder()
-            .setContents("<external-json/>")
-            .setUtlatande(utlatande)
-            .setStatuses(status)
-            .setRevoked(false)
-            .setRelations(new Relations())
-            .setDeceased(false)
-            .setSekretessmarkering(false)
-            .setPatientNameChangedInPU(false)
-            .setPatientAddressChangedInPU(false)
-            .setTestIntyg(false)
+            .contents("<external-json/>")
+            .utlatande(utlatande)
+            .statuses(status)
+            .revoked(false)
+            .relations(new Relations())
+            .deceased(false)
+            .sekretessmarkering(false)
+            .patientNameChangedInPU(false)
+            .patientAddressChangedInPU(false)
+            .testIntyg(false)
+            .latestMajorTextVersion(true)
             .build();
     }
 

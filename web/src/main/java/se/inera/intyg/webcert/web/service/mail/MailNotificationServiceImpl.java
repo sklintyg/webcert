@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,6 +19,12 @@
 package se.inera.intyg.webcert.web.service.mail;
 
 import com.google.common.base.Strings;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.xml.ws.WebServiceException;
+import java.util.Locale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,13 +43,6 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
-
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import javax.xml.ws.WebServiceException;
-import java.util.Locale;
 
 /**
  * @author andreaskaltenbach
@@ -89,15 +88,20 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     @Autowired
     private HsaOrganizationsService hsaOrganizationsService;
 
-    private void logError(String type, MailNotification mailNotification, Exception e) {
-        String message = "";
-        if (e != null) {
-            message = ": " + e.getMessage();
-        }
-        LOG.error("Notification mail for " + type + " '" + mailNotification.getQaId()
-            + "' concerning certificate '" + mailNotification.getCertificateId()
-            + "' couldn't be sent to " + mailNotification.getCareUnitId()
-            + " (" + mailNotification.getCareUnitName() + ")" + message);
+    private void logError(String type, MailNotification mailNotification, Exception ex) {
+        LOG.error(String.format("Notification mail for %s '%s' concerning certificate '%s' couldn't be sent to %s (%s) due to reason '%s'",
+                type, mailNotification.getQaId(), mailNotification.getCertificateId(), mailNotification.getCareUnitId(),
+                mailNotification.getCareUnitName(), ex.getMessage()
+            ),
+            ex
+        );
+    }
+
+    private void logError(String type, MailNotification mailNotification, String reason) {
+        LOG.error("Notification mail for {} '{}' concerning certificate '{}' couldn't be sent to {} ({}) due to reason '{}'",
+            type, mailNotification.getQaId(), mailNotification.getCertificateId(), mailNotification.getCareUnitId(),
+            mailNotification.getCareUnitName(), reason
+        );
     }
 
     @Override
@@ -107,7 +111,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
         MailNotificationEnhet recipient = getUnit(mailNotification);
 
         if (recipient == null) {
-            logError(type, mailNotification, null);
+            logError(type, mailNotification, "Missing recipient");
         } else {
             try {
                 String reason = "incoming question '" + mailNotification.getQaId() + "'";
@@ -126,7 +130,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
         MailNotificationEnhet recipient = getUnit(mailNotification);
 
         if (recipient == null) {
-            logError(type, mailNotification, null);
+            logError(type, mailNotification, "Missing recipient");
         } else {
             try {
                 String reason = "incoming answer on question '" + mailNotification.getQaId() + "'";
@@ -136,14 +140,6 @@ public class MailNotificationServiceImpl implements MailNotificationService {
                 logError(type, mailNotification, e);
             }
         }
-    }
-
-    public void setAdminMailAddress(String adminMailAddress) {
-        this.adminMailAddress = adminMailAddress;
-    }
-
-    public void setWebCertHostUrl(String webCertHostUrl) {
-        this.webCertHostUrl = webCertHostUrl;
     }
 
     private void sendNotificationMailToEnhet(String type, MailNotification mailNotification, String subject, String body,
@@ -157,18 +153,17 @@ public class MailNotificationServiceImpl implements MailNotificationService {
             if (recipientAddress == null) {
                 recipientAddress = getParentMailAddress(receivingEnhet.getHsaId());
             }
-        } catch (WebServiceException e) {
-            LOG.error("Failed to contact HSA to get HSA Id '" + receivingEnhet.getHsaId() + "' : " + e.getMessage());
-            logError(type, mailNotification, null);
+        } catch (WebServiceException ex) {
+            logError(type, mailNotification, ex);
             return;
         }
 
         if (recipientAddress != null) {
             sendNotificationToUnit(recipientAddress, subject, body);
-            monitoringService.logMailSent(receivingEnhet.getHsaId(), reason);
+            monitoringService.logMailSent(receivingEnhet.getHsaId(), reason, mailNotification);
         } else {
             sendAdminMailAboutMissingEmailAddress(receivingEnhet, mailNotification);
-            monitoringService.logMailMissingAddress(receivingEnhet.getHsaId(), reason);
+            monitoringService.logMailMissingAddress(receivingEnhet.getHsaId(), reason, mailNotification);
         }
     }
 
@@ -176,8 +171,8 @@ public class MailNotificationServiceImpl implements MailNotificationService {
         String parent;
         try {
             parent = hsaOrganizationsService.getParentUnit(mottagningsId);
-        } catch (HsaServiceCallException e) {
-            LOG.warn("Could not call HSA for {}, cause: {}", mottagningsId, e.getMessage());
+        } catch (HsaServiceCallException ex) {
+            LOG.warn(String.format("Could not call HSA for '%s', cause: '%s'", mottagningsId, ex.getMessage()), ex);
             return null;
         }
         MailNotificationEnhet parentEnhet = retrieveDataFromHsa(parent);
@@ -249,8 +244,8 @@ public class MailNotificationServiceImpl implements MailNotificationService {
         try {
             Vardenhet enhetData = hsaOrganizationsService.getVardenhet(careUnitId);
             return new MailNotificationEnhet(enhetData.getId(), enhetData.getNamn(), enhetData.getEpost());
-        } catch (WebServiceException e) {
-            LOG.error("Failed to contact HSA to get HSA Id '" + careUnitId + "' : " + e.getMessage());
+        } catch (WebServiceException ex) {
+            LOG.error(String.format("Failed to contact HSA to get HSA Id '%s' : '%s'", careUnitId, ex.getMessage()), ex);
             return null;
         }
     }
@@ -264,9 +259,9 @@ public class MailNotificationServiceImpl implements MailNotificationService {
                     return new MailNotificationEnhet(hsaId, enhet.getEnhetsnamn(), enhet.getEpost());
                 }
             }
-            LOG.error("Failed to lookup privatepractitioner with HSA Id '" + hsaId + "'");
+            LOG.error("Failed to lookup privatepractitioner with HSA Id '{}'", hsaId);
         } catch (Exception e) {
-            LOG.error("Failed to contact ppService to get HSA Id '" + hsaId + "'", e);
+            LOG.error(String.format("Failed to contact ppService to get HSA Id '%s'", hsaId), e);
         }
         return null;
     }
@@ -274,7 +269,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     @Override
     @Transactional(readOnly = true)
     public String intygsUrl(MailNotification mailNotification) {
-        String url = String.valueOf(webCertHostUrl) + "/webcert/web/user/"
+        String url = webCertHostUrl + "/webcert/web/user/"
             + resolvePathSegment(mailNotification.getCareUnitId(), mailNotification.getCertificateId()) + "/";
         if (!Fk7263EntryPoint.MODULE_ID.equalsIgnoreCase(mailNotification.getCertificateType())) {
             url += mailNotification.getCertificateType() + "/";
@@ -284,7 +279,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
             url += "?enhet=" + mailNotification.getCareUnitId();
         }
 
-        LOG.debug("Intygsurl: " + url);
+        LOG.debug("Intygsurl: {}", url);
         return url;
     }
 

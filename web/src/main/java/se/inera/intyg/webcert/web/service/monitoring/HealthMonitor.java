@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,17 +20,17 @@ package se.inera.intyg.webcert.web.service.monitoring;
 
 import io.prometheus.client.Collector;
 import io.prometheus.client.Gauge;
+import jakarta.annotation.PostConstruct;
+import jakarta.jms.Connection;
+import jakarta.jms.ConnectionFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.servlet.http.HttpServletResponse;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
-import javax.annotation.PostConstruct;
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;

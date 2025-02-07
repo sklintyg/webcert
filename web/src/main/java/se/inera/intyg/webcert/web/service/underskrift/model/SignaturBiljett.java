@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -24,9 +24,13 @@ import static java.util.Objects.nonNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import lombok.Getter;
+import lombok.Setter;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
 import se.inera.intyg.infra.xmldsig.model.IntygSignature;
 
+@Setter
+@Getter
 public class SignaturBiljett implements Serializable {
 
     private String ticketId;
@@ -38,88 +42,10 @@ public class SignaturBiljett implements Serializable {
     private SignaturTyp signaturTyp;
     private String hash;
     private SignMethod signMethod;
-    private boolean wc2ClientRequest;
+    private String autoStartToken;
+    private String qrStartToken;
+    private String qrStartSecret;
     private static final long serialVersionUID = 1L;
-
-    public String getTicketId() {
-        return ticketId;
-    }
-
-    public void setTicketId(String ticketId) {
-        this.ticketId = ticketId;
-    }
-
-    public String getIntygsId() {
-        return intygsId;
-    }
-
-    public void setIntygsId(String intygsId) {
-        this.intygsId = intygsId;
-    }
-
-    public long getVersion() {
-        return version;
-    }
-
-    public void setVersion(long version) {
-        this.version = version;
-    }
-
-    public SignaturStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(SignaturStatus status) {
-        this.status = status;
-    }
-
-    public IntygSignature getIntygSignature() {
-        return intygSignature;
-    }
-
-    public void setIntygSignature(IntygSignature intygSignature) {
-        this.intygSignature = intygSignature;
-    }
-
-    public LocalDateTime getSkapad() {
-        return skapad;
-    }
-
-    public void setSkapad(LocalDateTime skapad) {
-        this.skapad = skapad;
-    }
-
-    public SignaturTyp getSignaturTyp() {
-        return signaturTyp;
-    }
-
-    public void setSignaturTyp(SignaturTyp signaturTyp) {
-        this.signaturTyp = signaturTyp;
-    }
-
-    public String getHash() {
-        return hash;
-    }
-
-    public void setHash(String hash) {
-        this.hash = hash;
-    }
-
-    public SignMethod getSignMethod() {
-        return signMethod;
-    }
-
-    public void setSignMethod(SignMethod signMethod) {
-        this.signMethod = signMethod;
-    }
-
-    public boolean isWc2ClientRequest() {
-        return wc2ClientRequest;
-    }
-
-    public void setWc2ClientRequest(boolean wc2ClientRequest) {
-        this.wc2ClientRequest = wc2ClientRequest;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -140,19 +66,20 @@ public class SignaturBiljett implements Serializable {
         return Objects.hash(ticketId, intygsId, version);
     }
 
-
     public static final class SignaturBiljettBuilder {
 
-        private String ticketId;
+        private final String ticketId;
         private String intygsId;
         private long version;
         private SignaturStatus status;
         private IntygSignature intygSignature;
         private LocalDateTime skapad;
-        private SignaturTyp signaturTyp;
+        private final SignaturTyp signaturTyp;
         private String hash;
         private SignMethod signMethod;
-        private boolean wc2ClientRequest;
+        private String autoStartToken;
+        private String qrStartToken;
+        private String qrStartSecret;
 
         private SignaturBiljettBuilder(String ticketId, SignaturTyp signaturTyp, SignMethod signMethod) {
             this.ticketId = ticketId;
@@ -162,6 +89,21 @@ public class SignaturBiljett implements Serializable {
 
         public static SignaturBiljettBuilder aSignaturBiljett(String ticketId, SignaturTyp signaturTyp, SignMethod signMethod) {
             return new SignaturBiljettBuilder(ticketId, signaturTyp, signMethod);
+        }
+
+        public SignaturBiljettBuilder withQrStartSecret(String qrStartSecret) {
+            this.qrStartSecret = qrStartSecret;
+            return this;
+        }
+
+        public SignaturBiljettBuilder withQrStartToken(String qrStartToken) {
+            this.qrStartToken = qrStartToken;
+            return this;
+        }
+
+        public SignaturBiljettBuilder withAutoStartToken(String autoStartToken) {
+            this.autoStartToken = autoStartToken;
+            return this;
         }
 
         public SignaturBiljettBuilder withIntygsId(String intygsId) {
@@ -199,11 +141,6 @@ public class SignaturBiljett implements Serializable {
             return this;
         }
 
-        public SignaturBiljettBuilder withWc2ClientRequest(boolean wc2Client) {
-            this.wc2ClientRequest = wc2Client;
-            return this;
-        }
-
         public SignaturBiljett build() {
             checkArgument(nonNull(ticketId));
             checkArgument(nonNull(signaturTyp));
@@ -219,7 +156,9 @@ public class SignaturBiljett implements Serializable {
             signaturBiljett.setSignaturTyp(signaturTyp);
             signaturBiljett.setHash(hash);
             signaturBiljett.setSignMethod(signMethod);
-            signaturBiljett.setWc2ClientRequest(wc2ClientRequest);
+            signaturBiljett.setAutoStartToken(autoStartToken);
+            signaturBiljett.setQrStartToken(qrStartToken);
+            signaturBiljett.setQrStartSecret(qrStartSecret);
             return signaturBiljett;
         }
     }

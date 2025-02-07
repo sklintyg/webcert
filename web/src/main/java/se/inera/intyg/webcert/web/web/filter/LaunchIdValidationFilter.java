@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,17 +19,23 @@
 package se.inera.intyg.webcert.web.web.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
+import org.springframework.lang.NonNull;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
@@ -40,15 +46,36 @@ import se.inera.intyg.webcert.web.web.handlers.WebcertRestExceptionResponse;
 public class LaunchIdValidationFilter extends OncePerRequestFilter {
 
     private static final Logger LOG = LoggerFactory.getLogger(LaunchIdValidationFilter.class);
+    private static RequestMatcher requestMatcher;
+
     @Autowired
     @Qualifier("objectMapper")
     private ObjectMapper mapper;
+
     @Autowired
-    WebCertUserService webCertUserService;
+    private WebCertUserService webCertUserService;
+
+    static {
+        final String[] publicEndPoints = {"/api/configuration/**", "/api/log/**"};
+        ignorePatterns(publicEndPoints);
+    }
+
+    private static void ignorePatterns(String... antPatterns) {
+        List<RequestMatcher> matchers = new ArrayList<>();
+        for (String pattern : antPatterns) {
+            matchers.add(new AntPathRequestMatcher(pattern, null));
+        }
+        requestMatcher = new OrRequestMatcher(matchers);
+    }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-        throws ServletException, IOException {
+    protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
+        return requestMatcher.matches(request);
+    }
+
+    @Override
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
+        @NonNull FilterChain filterChain) throws ServletException, IOException {
         if (continueFilterChain(request)) {
             filterChain.doFilter(request, response);
             return;
@@ -63,9 +90,8 @@ public class LaunchIdValidationFilter extends OncePerRequestFilter {
         final var webcertRestExceptionResponse = getWebcertRestExceptionResponse();
         errorDetails.put("errorCode", webcertRestExceptionResponse.getErrorCode());
         errorDetails.put("message", webcertRestExceptionResponse.getMessage());
-        LOG.info(String.format("provided launchId: %s - does not match with current session launchId: %s - session will be invalidated.",
-            launchId,
-            user.getParameters().getLaunchId()));
+        LOG.info("Provided launchId: '{}'- does not match with current session launchId: '{}' - session will be invalidated.", launchId,
+            user.getParameters().getLaunchId());
 
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);

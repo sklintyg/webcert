@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,8 +19,8 @@
 package se.inera.intyg.webcert.mailstub;
 
 import com.google.common.base.Strings;
+import jakarta.mail.internet.MimeMessage;
 import java.util.stream.Collectors;
-import javax.mail.internet.MimeMessage;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;

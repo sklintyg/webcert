@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (C) 2016 Inera AB (http://www.inera.se)
+  ~ Copyright (C) 2025 Inera AB (http://www.inera.se)
   ~
   ~ This file is part of sklintyg (https://github.com/sklintyg).
   ~
@@ -19,13 +19,16 @@
   -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:sec="http://cxf.apache.org/configuration/security"
-    xmlns:jaxws="http://cxf.apache.org/jaxws" xmlns:http="http://cxf.apache.org/transports/http/configuration"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:sec="http://cxf.apache.org/configuration/security"
+    xmlns:jaxws="http://cxf.apache.org/jaxws"
+    xmlns:http="http://cxf.apache.org/transports/http/configuration"
+    xmlns:soap="http://cxf.apache.org/bindings/soap"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
         http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
         http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
-        http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/configuration/security.xsd">
+        http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/configuration/security.xsd
+        http://cxf.apache.org/bindings/soap http://cxf.apache.org/schemas/configuration/soap.xsd">
 
   <!-- Clients using NTJP -->
   <beans>
@@ -62,8 +65,12 @@
         address="${privatepractitioner.pingforconfiguration.endpoint.url}"/>
 
     <jaxws:client id="grpServicePortTypeClient"
-        serviceClass="se.funktionstjanster.grp.v1.GrpServicePortType"
-        address="${cgi.funktionstjanster.grp.url}"/>
+        serviceClass="se.funktionstjanster.grp.v2.GrpServicePortType"
+        address="${cgi.funktionstjanster.grp.url}">
+      <jaxws:binding>
+        <soap:soapBinding version="1.2"/>
+      </jaxws:binding>
+    </jaxws:client>
 
     <jaxws:client id="registerCertificateClient"
         serviceClass="se.riv.clinicalprocess.healthcond.certificate.registerCertificate.v3.RegisterCertificateResponderInterface"

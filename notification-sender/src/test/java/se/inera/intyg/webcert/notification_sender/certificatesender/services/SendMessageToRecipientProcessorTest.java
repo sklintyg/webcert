@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -26,17 +26,17 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import javax.xml.ws.WebServiceException;
-
+import jakarta.xml.ws.WebServiceException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import se.inera.intyg.common.support.integration.converter.util.ResultTypeUtil;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
+import se.inera.intyg.webcert.logging.MdcHelper;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientType;
@@ -52,10 +52,14 @@ public class SendMessageToRecipientProcessorTest {
     private static final String XML_BODY =
         "<SendMessageToRecipient xmlns=\"urn:riv:clinicalprocess:healthcond:certificate:SendMessageToRecipientResponder:2\"><meddelande-id>"
             + MESSAGE_ID + "</meddelande-id></SendMessageToRecipient>";
-    @InjectMocks
-    SendMessageToRecipientProcessor sendMessageProcessor;
+
+    @Spy
+    private MdcHelper mdcHelper;
     @Mock
     private SendMessageToRecipientResponderInterface sendMessageToRecipientResponder;
+
+    @InjectMocks
+    private SendMessageToRecipientProcessor sendMessageProcessor;
 
     @Test
     public void processTest() throws Exception {

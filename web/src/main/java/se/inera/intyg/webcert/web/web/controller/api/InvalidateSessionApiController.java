@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,14 +19,16 @@
 package se.inera.intyg.webcert.web.web.controller.api;
 
 import io.swagger.annotations.Api;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.launchid.InvalidateSessionService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.InvalidateRequest;
 
@@ -45,6 +47,7 @@ public class InvalidateSessionApiController {
     @POST
     @Path(INVALIDATE_ENDPOINT)
     @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PerformanceLogging(eventAction = "invalidate-session-invalidate", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public Response invalidateSession(InvalidateRequest invalidateRequest) {
         if (invalidateRequest.formatIsWrong()) {
             LOG.info(String.format("launchId: %s OR userHsaId: %s - is wrong format. request will not be handled any further",

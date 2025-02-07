@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -61,5 +61,15 @@ public enum ElegLoginMethod {
     /**
      * Mobilt BankID (Telia, future).
      */
-    CCP13
+    CCP13,
+
+    /**
+     * Mobilt BankID (statisk QR-kod).
+     */
+    CCP19,
+
+    /**
+     * Mobilt BankID (rörlig QR-kod).
+     */
+    CCP28
 }

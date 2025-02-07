@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,9 +22,9 @@ import static se.inera.intyg.webcert.common.enumerations.NotificationDeliverySta
 import static se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum.RESEND;
 import static se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategyEnum.STANDARD;
 
+import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.Optional;
-import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.lang.NonNull;

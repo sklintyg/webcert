@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -28,7 +28,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.facade.SaveCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
-@Service
+@Service("saveCertificateFacadeServiceWC")
 public class SaveCertificateFacadeServiceImpl implements SaveCertificateFacadeService {
 
     private static final Logger LOG = LoggerFactory.getLogger(SaveCertificateFacadeServiceImpl.class);

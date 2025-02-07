@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -152,7 +152,7 @@ public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationT
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(moduleApi.updateBeforeViewing(anyString(), any(Patient.class))).thenReturn("MODEL");
 
-        when(logRequestFactory.createLogRequestFromUtlatande(any(Utlatande.class))).thenReturn(new LogRequest());
+        when(logRequestFactory.createLogRequestFromUtlatande(any(Utlatande.class), anyString())).thenReturn(LogRequest.builder().build());
         when(intygTextsService.isLatestMajorVersion(any(String.class), any(String.class))).thenReturn(true);
     }
 

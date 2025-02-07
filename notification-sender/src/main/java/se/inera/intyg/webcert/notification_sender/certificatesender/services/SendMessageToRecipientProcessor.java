@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,16 +18,19 @@
  */
 package se.inera.intyg.webcert.notification_sender.certificatesender.services;
 
-import javax.xml.ws.WebServiceException;
+import jakarta.xml.ws.WebServiceException;
 import org.apache.camel.Body;
 import org.apache.camel.Header;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.oxm.UnmarshallingFailureException;
 import se.inera.intyg.webcert.common.Constants;
 import se.inera.intyg.webcert.common.client.converter.SendMessageToRecipientTypeConverter;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
+import se.inera.intyg.webcert.logging.MdcHelper;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientType;
@@ -39,11 +42,18 @@ public class SendMessageToRecipientProcessor {
 
     @Autowired
     private SendMessageToRecipientResponderInterface sendMessageToRecipientResponder;
+    @Autowired
+    private MdcHelper mdcHelper;
 
     public void process(@Body String xmlBody, @Header(Constants.INTYGS_ID) String intygsId,
         @Header(Constants.LOGICAL_ADDRESS) String logicalAddress) throws TemporaryException {
 
         try {
+            MDC.put(MdcLogConstants.TRACE_ID_KEY, mdcHelper.traceId());
+            MDC.put(MdcLogConstants.SPAN_ID_KEY, mdcHelper.spanId());
+            MDC.put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId);
+            MDC.put(MdcLogConstants.EVENT_LOGICAL_ADDRESS, logicalAddress);
+
             SendMessageToRecipientType parameters = SendMessageToRecipientTypeConverter.fromXml(xmlBody);
             SendMessageToRecipientResponseType response = sendMessageToRecipientResponder.sendMessageToRecipient(logicalAddress,
                 parameters);
@@ -68,6 +78,8 @@ public class SendMessageToRecipientProcessor {
             LOG.error("Call to sendMessageToRecipient for intyg {} caused an error: {}. Will retry",
                 intygsId, e.getMessage());
             throw new TemporaryException(e.getMessage());
+        } finally {
+            MDC.clear();
         }
     }
 }

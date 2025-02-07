@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,6 +18,12 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions;
 
+import static se.inera.intyg.common.support.facade.model.CertificateRelationType.COMPLEMENTED;
+import static se.inera.intyg.common.support.facade.model.CertificateRelationType.REPLACED;
+import static se.inera.intyg.common.support.facade.model.CertificateStatus.SIGNED;
+
+import java.util.Arrays;
+import java.util.Objects;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
@@ -26,13 +32,6 @@ import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
-
-import java.util.Arrays;
-import java.util.Objects;
-
-import static se.inera.intyg.common.support.facade.model.CertificateRelationType.COMPLEMENTED;
-import static se.inera.intyg.common.support.facade.model.CertificateRelationType.REPLACED;
-import static se.inera.intyg.common.support.facade.model.CertificateStatus.SIGNED;
 
 public class CertificateRenewFunction {
 

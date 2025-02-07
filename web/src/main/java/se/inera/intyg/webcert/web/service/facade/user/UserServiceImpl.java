@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -68,6 +68,7 @@ public class UserServiceImpl implements UserService {
             .hsaId(webCertUser.getHsaId())
             .name(webCertUser.getNamn())
             .role(getRole(webCertUser))
+            .origin(webCertUser.getOrigin())
             .launchId(launchId)
             .loggedInUnit(
                 Unit.builder()
@@ -167,6 +168,7 @@ public class UserServiceImpl implements UserService {
             case NET_ID:
                 return SigningMethod.DSS;
             case MOBILT_BANK_ID:
+                return SigningMethod.MOBILT_BANK_ID;
             case BANK_ID:
                 return SigningMethod.BANK_ID;
             default:

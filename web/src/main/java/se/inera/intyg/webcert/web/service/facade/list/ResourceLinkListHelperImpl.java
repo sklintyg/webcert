@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,6 +18,10 @@
  */
 package se.inera.intyg.webcert.web.service.facade.list;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
@@ -41,11 +45,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 public class ResourceLinkListHelperImpl implements ResourceLinkListHelper {
@@ -174,6 +173,9 @@ public class ResourceLinkListHelperImpl implements ResourceLinkListHelper {
     }
 
     private boolean validateRenew(ActionLink link, String certificateType, CertificateRelations relations, CertificateStatus status) {
+        if (link.getType() == ActionLinkType.FORNYA_INTYG_FRAN_CERTIFICATE_SERVICE) {
+            return true;
+        }
         return link.getType() == ActionLinkType.FORNYA_INTYG
             && CertificateRenewFunction.validate(certificateType, relations, status, authoritiesHelper);
     }

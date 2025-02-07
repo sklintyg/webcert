@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,6 +19,8 @@
 package se.inera.intyg.webcert.web.service.underskrift.xmldsig;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
@@ -26,6 +28,7 @@ import se.inera.intyg.infra.xmldsig.factory.PartialSignatureFactory;
 import se.inera.intyg.infra.xmldsig.model.IntygXMLDSignature;
 import se.inera.intyg.infra.xmldsig.service.PrepareSignatureService;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.web.csintegration.certificate.FinalizedCertificateSignature;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.underskrift.BaseXMLSignatureService;
 import se.inera.intyg.webcert.web.service.underskrift.CommonUnderskriftService;
@@ -35,11 +38,9 @@ import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
+@Slf4j
 @Service
 public class XmlUnderskriftServiceImpl extends BaseXMLSignatureService implements CommonUnderskriftService {
-
-    @Autowired
-    private UtkastModelToXMLConverter utkastModelToXMLConverter;
 
     @Autowired
     private PrepareSignatureService prepareSignatureService;
@@ -48,9 +49,8 @@ public class XmlUnderskriftServiceImpl extends BaseXMLSignatureService implement
     private MonitoringLogService monitoringLogService;
 
     @Override
-    public SignaturBiljett skapaSigneringsBiljettMedDigest(String intygsId, String intygsTyp, long version, String utkastJson,
-        SignMethod signMethod, String ticketId, boolean isWc2ClientRequest) {
-        String registerCertificateXml = utkastModelToXMLConverter.utkastToXml(utkastJson, intygsTyp);
+    public SignaturBiljett skapaSigneringsBiljettMedDigest(String intygsId, String intygsTyp, long version, Optional<String> utkastJson,
+        SignMethod signMethod, String ticketId, String certificateXml) {
 
         String signatureAlgorithm;
         if (SignMethod.SIGN_SERVICE.equals(signMethod)) {
@@ -60,8 +60,8 @@ public class XmlUnderskriftServiceImpl extends BaseXMLSignatureService implement
         }
 
         IntygXMLDSignature intygSignature = prepareSignatureService
-            .prepareSignature(registerCertificateXml, intygsId, signatureAlgorithm);
-        intygSignature.setIntygJson(utkastJson);
+            .prepareSignature(certificateXml, intygsId, signatureAlgorithm);
+        intygSignature.setIntygJson(utkastJson.orElse(null));
 
         SignaturBiljett biljett = SignaturBiljett.SignaturBiljettBuilder
             .aSignaturBiljett(ticketId, SignaturTyp.XMLDSIG, signMethod)
@@ -71,7 +71,6 @@ public class XmlUnderskriftServiceImpl extends BaseXMLSignatureService implement
             .withStatus(SignaturStatus.BEARBETAR)
             .withSkapad(LocalDateTime.now())
             .withHash(intygSignature.getSignedInfoForSigning())
-            .withWc2ClientRequest(isWc2ClientRequest)
             .build();
 
         redisTicketTracker.trackBiljett(biljett);
@@ -86,5 +85,15 @@ public class XmlUnderskriftServiceImpl extends BaseXMLSignatureService implement
             utkast.getRelationKod());
 
         return redisTicketTracker.updateStatus(sb.getTicketId(), sb.getStatus());
+    }
+
+    @Override
+    public FinalizedCertificateSignature finalizeSignatureForCS(SignaturBiljett ticket, byte[] signatur, String certifikat) {
+        final var finalizedCertificateSignature = finalizeXMLDSigSignatureForCS(certifikat, ticket, signatur);
+        redisTicketTracker.updateStatus(
+            finalizedCertificateSignature.getSignaturBiljett().getTicketId(),
+            finalizedCertificateSignature.getSignaturBiljett().getStatus()
+        );
+        return finalizedCertificateSignature;
     }
 }

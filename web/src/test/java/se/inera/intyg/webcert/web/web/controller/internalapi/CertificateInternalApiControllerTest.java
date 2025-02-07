@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,44 +20,26 @@
 package se.inera.intyg.webcert.web.web.controller.internalapi;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.common.support.facade.model.CertificateText;
-import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
-import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
-import se.inera.intyg.webcert.web.service.facade.internalapi.service.GetAvailableFunctionsForCertificateService;
-import se.inera.intyg.webcert.web.service.facade.internalapi.service.GetCertificatePdfService;
-import se.inera.intyg.webcert.web.service.facade.internalapi.service.GetTextsForCertificateService;
-import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionDTO;
-import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionTypeDTO;
+import se.inera.intyg.webcert.web.csintegration.aggregate.GetCertificateInternalAggregator;
+import se.inera.intyg.webcert.web.csintegration.aggregate.GetGetCertificateInternalPdfAggregator;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetCertificateIntegrationRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetCertificateResponse;
 
 @ExtendWith(MockitoExtension.class)
 class CertificateInternalApiControllerTest {
 
-    private static final Certificate EXPECTED_CERTIFICATE = new Certificate();
-    private static final List<AvailableFunctionDTO> EXPECTED_AVAILABLE_FUNCTIONS = List.of(
-        AvailableFunctionDTO.create(AvailableFunctionTypeDTO.CUSTOMIZE_PRINT_CERTIFICATE, null,
-            null, null, true)
-    );
-    private static final List<CertificateText> EXPECTED_TEXTS = List.of(
-        CertificateText.builder().build()
-    );
     private static final byte[] EXPECTED_PDF_DATA = new byte[0];
     private static final String EXPECTED_FILENAME = "filename";
     private static final CertificatePdfResponseDTO EXPECTED_PDL_RESPONSE = CertificatePdfResponseDTO.create(
@@ -65,19 +47,13 @@ class CertificateInternalApiControllerTest {
         EXPECTED_PDF_DATA
     );
     private static final String CERTIFICATE_ID = "certificateId";
-    private static final boolean SHOULD_NOT_PDL_LOG = false;
-    private static final boolean SHOULD_NOT_VALIDATE_ACCESS = false;
-    private static final String TYPE = "TYPE";
-    private static final String TYPE_VERSION = "TYPE_VERSION";
+    private static final String CUSTOMIZATION_ID = "customizationId";
+    private static final String PERSON_ID = "personId";
     @Mock
-    private GetAvailableFunctionsForCertificateService getAvailableFunctionsForCertificateService;
+    private GetGetCertificateInternalPdfAggregator getCertificateInternalPdfAggregator;
 
     @Mock
-    private GetCertificatePdfService getCertificatePdfService;
-    @Mock
-    private GetTextsForCertificateService getTextsForCertificateService;
-    @Mock
-    private GetCertificateFacadeService getCertificateFacadeService;
+    private GetCertificateInternalAggregator certificateInternalAggregator;
 
     @InjectMocks
     private CertificateInternalApiController certificateInternalApiController;
@@ -85,77 +61,39 @@ class CertificateInternalApiControllerTest {
     @Nested
     class GetCertificate {
 
-        @BeforeEach
-        void setUp() {
-            EXPECTED_CERTIFICATE.setMetadata(CertificateMetadata.builder()
-                .type(TYPE)
-                .typeVersion(TYPE_VERSION)
-                .build()
+        private static final String PERSON_ID = "personId";
+
+        @Test
+        void shallReturnGetCertificateResponse() {
+            final var expectedResponse = GetCertificateResponse.create(new Certificate());
+            final var getCertificateIntegrationRequestDTO = GetCertificateIntegrationRequestDTO.builder()
+                .personId(PERSON_ID)
+                .build();
+
+            doReturn(expectedResponse).when(certificateInternalAggregator).get(CERTIFICATE_ID, PERSON_ID);
+
+            final var getCertificateResponse = certificateInternalApiController.getCertificate(
+                getCertificateIntegrationRequestDTO,
+                CERTIFICATE_ID
             );
-            doReturn(EXPECTED_CERTIFICATE)
-                .when(getCertificateFacadeService).getCertificate(CERTIFICATE_ID, SHOULD_NOT_PDL_LOG, SHOULD_NOT_VALIDATE_ACCESS);
-            doReturn(EXPECTED_AVAILABLE_FUNCTIONS)
-                .when(getAvailableFunctionsForCertificateService).get(EXPECTED_CERTIFICATE);
+
+            assertEquals(expectedResponse, getCertificateResponse);
         }
-
-        @Test
-        void shallReturnCertificate() {
-            final var actualCertificateResponse = certificateInternalApiController.getCertificate(CERTIFICATE_ID);
-            assertEquals(EXPECTED_CERTIFICATE, actualCertificateResponse.getCertificate());
-        }
-
-        @Test
-        void shallReturnAvailableFunctions() {
-            final var actualCertificateResponse = certificateInternalApiController.getCertificate(CERTIFICATE_ID);
-            assertEquals(EXPECTED_AVAILABLE_FUNCTIONS, actualCertificateResponse.getAvailableFunctions());
-        }
-
-        @Test
-        void shallReturnCertificateTexts() {
-            when(getTextsForCertificateService.get(TYPE, TYPE_VERSION))
-                .thenReturn(EXPECTED_TEXTS);
-
-            final var actualCertificateResponse = certificateInternalApiController.getCertificate(CERTIFICATE_ID);
-
-            assertEquals(EXPECTED_TEXTS, actualCertificateResponse.getTexts());
-        }
-
-        @Test
-        void shallNotPdlLogWhenRetrievingCertificate() {
-            final var booleanArgumentCaptor = ArgumentCaptor.forClass(Boolean.class);
-            certificateInternalApiController.getCertificate(CERTIFICATE_ID);
-            verify(getCertificateFacadeService).getCertificate(
-                anyString(),
-                booleanArgumentCaptor.capture(),
-                anyBoolean()
-            );
-            assertEquals(SHOULD_NOT_PDL_LOG, booleanArgumentCaptor.getValue());
-        }
-
-        @Test
-        void shallNotValidateAccessWhenRetrievingCertificate() {
-            final var booleanArgumentCaptor = ArgumentCaptor.forClass(Boolean.class);
-            certificateInternalApiController.getCertificate(CERTIFICATE_ID);
-            verify(getCertificateFacadeService).getCertificate(
-                anyString(),
-                anyBoolean(),
-                booleanArgumentCaptor.capture()
-            );
-            assertEquals(SHOULD_NOT_VALIDATE_ACCESS, booleanArgumentCaptor.getValue());
-        }
-
     }
 
     @Nested
     class GetPdfData {
 
-        private final CertificatePdfRequestDTO printCertificateRequest = new CertificatePdfRequestDTO();
+        private final CertificatePdfRequestDTO printCertificateRequest = CertificatePdfRequestDTO.builder()
+            .customizationId(CUSTOMIZATION_ID)
+            .personId(PERSON_ID)
+            .build();
 
         @BeforeEach
         void setUp() {
             doReturn(EXPECTED_PDL_RESPONSE)
-                .when(getCertificatePdfService)
-                .get(printCertificateRequest.getCustomizationId(), CERTIFICATE_ID);
+                .when(getCertificateInternalPdfAggregator)
+                .get(CUSTOMIZATION_ID, CERTIFICATE_ID, PERSON_ID);
         }
 
         @Test

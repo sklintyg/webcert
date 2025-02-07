@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -118,7 +118,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
     @Test
     public void testRevokeIntyg() throws Exception {
 
-        when(logRequestFactory.createLogRequestFromUtlatande(any(Utlatande.class))).thenReturn(new LogRequest());
+        when(logRequestFactory.createLogRequestFromUtlatande(any(Utlatande.class))).thenReturn(LogRequest.builder().build());
         when(intygRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(signedUtkast));
 
         // do the call
@@ -154,7 +154,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
     @Test
     public void testRevokeCompletedIntyg() throws Exception {
 
-        when(logRequestFactory.createLogRequestFromUtlatande(any(Utlatande.class))).thenReturn(new LogRequest());
+        when(logRequestFactory.createLogRequestFromUtlatande(any(Utlatande.class))).thenReturn(LogRequest.builder().build());
         when(intygRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(signedUtkast));
         when(intygRelationHelper.getRelationsForIntyg(INTYG_ID)).thenReturn(childRelations);
         when(intygRelationHelper.getRelationsForIntyg(PARENT_INTYG_ID)).thenReturn(parentRelations);

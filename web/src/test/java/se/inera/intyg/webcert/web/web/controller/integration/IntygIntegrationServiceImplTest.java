@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -24,8 +24,11 @@ import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
@@ -61,6 +64,7 @@ import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
+import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
@@ -75,19 +79,23 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirect
 @RunWith(MockitoJUnitRunner.class)
 public class IntygIntegrationServiceImplTest {
 
-    private final String ALTERNATE_SSN = "19010101-0101";
+    private static final String REFERENS = "referens";
+    private static final String ALTERNATE_SSN = "19010101-0101";
 
-    private final String INTYGSTYP = "lisjp";
-    private final String INTYGSTYP_VERSION = "1.9";
-    private final String INTYGSID = "A1234-B5678-C90123-D4567";
-    private final String ENHETSID = "11111";
+    private static final String INTYGSTYP = "lisjp";
+    private static final String INTYGSTYP_VERSION = "1.9";
+    private static final String INTYGSID = "A1234-B5678-C90123-D4567";
+    private static final String ENHETSID = "11111";
 
-    private final String VARDENHETID_USER = "222222";
-    private final String VARDENHETNAMN_USER = "Vardenhet2";
-    private final String VARDGIVAREID_USER = "vg1";
-    private final String VARDGIVARENAMN_USER = "Vardgivare1";
-    private final String VARDGIVAREID_UTKAST = "vg2";
-    private final String VARDGIVARENAMN_UTKAST = "Vardgivare2";
+    private static final String VARDENHETID_USER = "222222";
+    private static final String VARDENHETNAMN_USER = "Vardenhet2";
+    private static final String VARDGIVAREID_USER = "vg1";
+    private static final String VARDGIVARENAMN_USER = "Vardgivare1";
+    private static final String VARDGIVAREID_UTKAST = "vg2";
+    private static final String VARDGIVARENAMN_UTKAST = "Vardgivare2";
+
+    @Mock
+    private ReferensService referensService;
 
     @Mock
     private MonitoringLogService monitoringLog;
@@ -112,11 +120,39 @@ public class IntygIntegrationServiceImplTest {
 
     @Before
     public void setupMock() {
-        doNothing().when(monitoringLog).logIntegratedOtherCaregiver(anyString(), anyString(), anyString(), anyString());
+        doNothing().when(monitoringLog).logIntegratedOtherCaregiver(anyString(), anyString(), anyString(), anyString(), anyString(),
+            anyString());
         IntygTypeInfo intygTypeInfo = new IntygTypeInfo(INTYGSID, INTYGSTYP, INTYGSTYP_VERSION);
         when(intygService.getIntygTypeInfo(any(String.class), any(Utkast.class))).thenReturn(intygTypeInfo);
     }
 
+    @Test
+    public void shallStoreReferenceIfProvidedAndNotYetAdded() {
+        final var user = createDefaultUser();
+        final var integrationParameters = mock(IntegrationParameters.class);
+        user.setParameters(integrationParameters);
+
+        doReturn(Optional.of(createUtkast())).when(utkastRepository).findById(anyString());
+        doReturn(REFERENS).when(integrationParameters).getReference();
+        doReturn(false).when(referensService).referensExists(INTYGSID);
+
+        testee.prepareRedirectToIntyg(INTYGSID, user);
+        verify(referensService).saveReferens(INTYGSID, REFERENS);
+    }
+
+
+    @Test
+    public void shallNotStoreReferenceIfNotProvided() {
+        final var user = createDefaultUser();
+        final var integrationParameters = mock(IntegrationParameters.class);
+        user.setParameters(integrationParameters);
+
+        doReturn(Optional.of(createUtkast())).when(utkastRepository).findById(anyString());
+        doReturn(null).when(integrationParameters).getReference();
+
+        testee.prepareRedirectToIntyg(INTYGSID, user);
+        verifyNoInteractions(referensService);
+    }
 
     @Test
     public void prepareRedirectToIntygSuccess() {
@@ -133,7 +169,7 @@ public class IntygIntegrationServiceImplTest {
         user.setParameters(parameters);
 
         // when
-        PrepareRedirectToIntyg prepareRedirectToIntyg = testee.prepareRedirectToIntyg(INTYGSTYP, INTYGSID, user);
+        PrepareRedirectToIntyg prepareRedirectToIntyg = testee.prepareRedirectToIntyg(INTYGSID, user);
 
         // then
         verify(utkastRepository).findById(anyString());
@@ -161,7 +197,7 @@ public class IntygIntegrationServiceImplTest {
         user.setParameters(parameters);
 
         // when
-        PrepareRedirectToIntyg prepareRedirectToIntyg = testee.prepareRedirectToIntyg(INTYGSTYP, INTYGSID, user);
+        PrepareRedirectToIntyg prepareRedirectToIntyg = testee.prepareRedirectToIntyg(INTYGSID, user);
 
         // then
         verify(utkastRepository).findById(anyString());
@@ -191,7 +227,7 @@ public class IntygIntegrationServiceImplTest {
         user.setParameters(parameters);
 
         // when
-        PrepareRedirectToIntyg prepareRedirectToIntyg = testee.prepareRedirectToIntyg(INTYGSTYP, INTYGSID, user);
+        PrepareRedirectToIntyg prepareRedirectToIntyg = testee.prepareRedirectToIntyg(INTYGSID, user);
 
         // then
         verify(utkastRepository).findById(anyString());
@@ -226,7 +262,7 @@ public class IntygIntegrationServiceImplTest {
         user.getAuthorities().put(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, p);
 
         // when
-        PrepareRedirectToIntyg prepareRedirectToIntyg = testee.prepareRedirectToIntyg(INTYGSTYP, INTYGSID, user);
+        PrepareRedirectToIntyg prepareRedirectToIntyg = testee.prepareRedirectToIntyg(INTYGSID, user);
 
         // then
         verify(utkastRepository).findById(anyString());
@@ -252,12 +288,13 @@ public class IntygIntegrationServiceImplTest {
         WebCertUser user = createDefaultUser();
         user.setParameters(parameters);
         user.setValdVardgivare(createVardgivare());
+        user.setValdVardenhet(createVardenhet());
 
         // when
-        testee.prepareRedirectToIntyg(INTYGSTYP, INTYGSID, user);
+        testee.prepareRedirectToIntyg(INTYGSID, user);
 
         // then
-        verify(monitoringLog).logIntegratedOtherCaregiver(anyString(), anyString(), anyString(), anyString());
+        verify(monitoringLog).logIntegratedOtherCaregiver(anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
     }
 
     @Test
@@ -273,13 +310,14 @@ public class IntygIntegrationServiceImplTest {
 
         WebCertUser user = createDefaultUser();
         user.setParameters(parameters);
-        user.setValdVardgivare(createVardenhet());
+        user.setValdVardgivare(createVardgivare());
+        user.setValdVardenhet(createVardenhet());
 
         // when
-        testee.prepareRedirectToIntyg(INTYGSTYP, INTYGSID, user);
+        testee.prepareRedirectToIntyg(INTYGSID, user);
 
         // then
-        verify(monitoringLog).logIntegratedOtherCaregiver(anyString(), anyString(), anyString(), anyString());
+        verify(monitoringLog).logIntegratedOtherCaregiver(anyString(), anyString(), anyString(), anyString(), anyString(), anyString());
 
     }
 
@@ -297,7 +335,7 @@ public class IntygIntegrationServiceImplTest {
         user.setParameters(parameters);
 
         // when
-        testee.prepareRedirectToIntyg(INTYGSTYP, INTYGSID, user);
+        testee.prepareRedirectToIntyg(INTYGSID, user);
 
         // if code reaches this point we fail the test
         fail();

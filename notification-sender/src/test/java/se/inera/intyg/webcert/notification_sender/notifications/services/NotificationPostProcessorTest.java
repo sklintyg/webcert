@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,13 +19,14 @@
 package se.inera.intyg.webcert.notification_sender.notifications.services;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.camel.Message;
@@ -33,8 +34,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
+import se.inera.intyg.webcert.logging.MdcHelper;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultMessage;
 import se.inera.intyg.webcert.notification_sender.notifications.dto.NotificationResultType;
 import se.inera.intyg.webcert.notification_sender.notifications.services.postprocessing.NotificationPostProcessingService;
@@ -45,20 +49,23 @@ public class NotificationPostProcessorTest {
 
     @Mock
     private NotificationPostProcessingService notificationPostProcessingService;
-
-    private NotificationPostProcessor notificationPostProcessor;
-
+    @Spy
+    private MdcHelper mdcHelper;
+    @Mock
+    private Message message;
+    @Spy
     private ObjectMapper objectMapper;
+
+    @InjectMocks
+    private NotificationPostProcessor notificationPostProcessor;
 
     @Before
     public void setup() {
-        objectMapper = new ObjectMapper();
-        notificationPostProcessor = new NotificationPostProcessor(objectMapper, notificationPostProcessingService);
+        when(message.getHeader(anyString())).thenReturn("headerValue");
     }
 
     @Test
     public void shallProcessNotificationResultMessage() throws Exception {
-        final var message = mock(Message.class);
         final var notificationResultMessage = createNotificationResultMessage();
         final var body = objectMapper.writeValueAsString(notificationResultMessage);
         final var argumentCaptor = ArgumentCaptor.forClass(NotificationResultMessage.class);
@@ -73,8 +80,7 @@ public class NotificationPostProcessorTest {
 
     @Test
     public void shallNotProcessNotificationResultMessageIfCorrupt() {
-        final var message = mock(Message.class);
-        final var body = "JUST ADD SOME TEXT THAT WILL NOT SUCCESSFULLY BE PARSED!";
+        final var body = "Text for parsing";
 
         doReturn(body).when(message).getBody(String.class);
 
@@ -85,7 +91,6 @@ public class NotificationPostProcessorTest {
 
     @Test(expected = Exception.class)
     public void shallNotCatchExceptionsExceptJsonProcessingExceptions() throws Exception {
-        final var message = mock(Message.class);
         final var notificationResultMessage = createNotificationResultMessage();
         final var body = objectMapper.writeValueAsString(notificationResultMessage);
 
@@ -96,7 +101,7 @@ public class NotificationPostProcessorTest {
 
         notificationPostProcessor.process(message);
 
-        assertFalse("Should never reach this assert!", true);
+        fail("Should never reach this assert!");
     }
 
     private NotificationResultMessage createNotificationResultMessage() {

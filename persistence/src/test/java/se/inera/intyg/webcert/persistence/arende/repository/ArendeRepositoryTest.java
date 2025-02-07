@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -27,7 +27,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -125,7 +125,7 @@ public class ArendeRepositoryTest {
         repo.save(buildArende(signeratAv1HsaId, signeratAv1Namn, enhet));
         repo.save(buildArende(signeratAv2HsaId, signeratAv2Namn, enhet));
 
-        List<Object[]> result = repo.findSigneratAvByEnhet(Arrays.asList(enhet));
+        List<Object[]> result = repo.findSigneratAvByEnhet(List.of(enhet));
 
         assertEquals(2, result.size());
         assertEquals(expected1[0], result.get(0)[0]);
@@ -144,7 +144,7 @@ public class ArendeRepositoryTest {
         repo.save(buildArende(signeratAv1HsaId, signeratAv1Namn, enhet));
         repo.save(buildArende(signeratAv2HsaId, signeratAv2Namn, enhet));
 
-        List<Object[]> result = repo.findSigneratAvByEnhet(Arrays.asList("annan enhet"));
+        List<Object[]> result = repo.findSigneratAvByEnhet(List.of("annan enhet"));
         assertTrue(result.isEmpty());
     }
 
@@ -162,8 +162,8 @@ public class ArendeRepositoryTest {
 
         List<Object[]> result = repo.findSigneratAvByEnhet(Arrays.asList(enhet2, "annan enhet"));
         assertEquals(1, result.size());
-        assertEquals(expected[0], result.get(0)[0]);
-        assertEquals(expected[1], result.get(0)[1]);
+        assertEquals(expected[0], result.getFirst()[0]);
+        assertEquals(expected[1], result.getFirst()[1]);
     }
 
     @Test
@@ -182,9 +182,9 @@ public class ArendeRepositoryTest {
         repo.save(buildArende(enhet, Status.CLOSED));
         repo.save(buildArende("annan enhet", Status.PENDING_INTERNAL_ACTION));
 
-        List<Arende> result = repo.findByEnhet(Arrays.asList(enhet));
+        List<Arende> result = repo.findByEnhet(List.of(enhet));
         assertEquals(1, result.size());
-        assertEquals(enhet, result.get(0).getEnhetId());
+        assertEquals(enhet, result.getFirst().getEnhetId());
     }
 
     @Test
@@ -210,7 +210,7 @@ public class ArendeRepositoryTest {
             buildArende("signeratAv", enhet, Status.PENDING_INTERNAL_ACTION, null, "svarPaId", "SKICKAT_AV", LocalDate.now().minusDays(3)));
 
         Filter filter = new Filter();
-        filter.setEnhetsIds(Arrays.asList(enhet));
+        filter.setEnhetsIds(List.of(enhet));
 
         List<Arende> result = repo.filterArende(filter);
         assertEquals(0, result.size());
@@ -244,7 +244,7 @@ public class ArendeRepositoryTest {
 
     private Filter buildDefaultFilter(String enhet) {
         Filter filter = new Filter();
-        filter.setEnhetsIds(Arrays.asList(enhet));
+        filter.setEnhetsIds(Collections.singletonList(enhet));
         filter.setIntygsTyper(Stream.of("INTYG_TYP").collect(Collectors.toSet()));
         return filter;
     }
@@ -470,38 +470,6 @@ public class ArendeRepositoryTest {
     }
 
     @Test
-    public void testFilterArendePaginated() {
-        final String enhet = "enhet";
-        repo.save(buildArende("signeratAv", enhet, Status.CLOSED, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
-        repo.save(buildArende("signeratAv", enhet, Status.ANSWERED, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
-        repo.save(buildArende("signeratAv", enhet, Status.PENDING_EXTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
-        repo.save(buildArende("signeratAv", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
-
-        Filter filter = buildDefaultFilter(enhet);
-        filter.setStartFrom(0);
-        filter.setPageSize(1);
-
-        List<Arende> result = repo.filterArende(filter);
-        assertEquals(1, result.size());
-    }
-
-    @Test
-    public void testFilterArendePaginated2() {
-        final String enhet = "enhet";
-        repo.save(buildArende("signeratAv", enhet, Status.CLOSED, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
-        repo.save(buildArende("signeratAv", enhet, Status.ANSWERED, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
-        repo.save(buildArende("signeratAv", enhet, Status.PENDING_EXTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
-        repo.save(buildArende("signeratAv", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
-
-        Filter filter = buildDefaultFilter(enhet);
-        filter.setStartFrom(1);
-        filter.setPageSize(10);
-
-        List<Arende> result = repo.filterArende(filter);
-        assertEquals(2, result.size());
-    }
-
-    @Test
     public void testFilterArendeCount() {
         final String enhet = "enhet";
         repo.save(buildArende("signeratAv", enhet, Status.CLOSED, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
@@ -532,7 +500,7 @@ public class ArendeRepositoryTest {
         repo.save(buildArende("signeratAv", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
 
         Filter filter = new Filter();
-        filter.setEnhetsIds(Arrays.asList(enhet));
+        filter.setEnhetsIds(List.of(enhet));
 
         List<Arende> result = repo.filterArende(filter);
         assertEquals(0, result.size());
@@ -544,7 +512,7 @@ public class ArendeRepositoryTest {
         repo.save(buildArende("signeratAv", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
 
         Filter filter = new Filter();
-        filter.setEnhetsIds(Arrays.asList(enhet));
+        filter.setEnhetsIds(List.of(enhet));
         filter.setIntygsTyper(Stream.of("ANNAN_TYP").collect(Collectors.toSet()));
 
         List<Arende> result = repo.filterArende(filter);
@@ -560,7 +528,7 @@ public class ArendeRepositoryTest {
 
         List<Arende> result = repo.findBySvarPaId(fraga.getMeddelandeId());
         assertEquals(1, result.size());
-        assertEquals(svar.getMeddelandeId(), result.get(0).getMeddelandeId());
+        assertEquals(svar.getMeddelandeId(), result.getFirst().getMeddelandeId());
     }
 
     @Test
@@ -572,7 +540,7 @@ public class ArendeRepositoryTest {
 
         List<Arende> result = repo.findByPaminnelseMeddelandeId(fraga.getMeddelandeId());
         assertEquals(1, result.size());
-        assertEquals(paminnelse.getMeddelandeId(), result.get(0).getMeddelandeId());
+        assertEquals(paminnelse.getMeddelandeId(), result.getFirst().getMeddelandeId());
     }
 
     @Test
@@ -616,7 +584,7 @@ public class ArendeRepositoryTest {
         repo.save(arendeType3);
 
         List<String> enhetsIds = Arrays.asList("enhet1", "enhet2");
-        Set<String> intygsTyper = new HashSet<>(Arrays.asList("INTYG_TYP", "INTYG_TYP_2"));
+        Set<String> intygsTyper = Set.of("INTYG_TYP", "INTYG_TYP_2");
         List<GroupableItem> res = repo.getUnhandledByEnhetIdsAndIntygstyper(enhetsIds, intygsTyper);
         assertNotNull(res);
         assertEquals(4, res.size());

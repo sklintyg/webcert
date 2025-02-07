@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -25,7 +25,6 @@ import static se.inera.intyg.webcert.web.service.facade.question.util.QuestionUt
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
-
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
 import se.inera.intyg.common.support.facade.model.question.Answer;
@@ -46,6 +45,7 @@ public class QuestionConverterImpl implements QuestionConverter {
             .id(Long.toString(arendeDraft.getId()))
             .type(getTypeFromAmneAsString(arendeDraft.getAmne()))
             .message(arendeDraft.getText())
+            .certificateId(arendeDraft.getIntygId())
             .build();
     }
 
@@ -119,6 +119,7 @@ public class QuestionConverterImpl implements QuestionConverter {
 
         return Question.builder()
             .id(arende.getMeddelandeId())
+            .certificateId(arende.getIntygsId())
             .type(getType(arende.getAmne()))
             .author(getAuthor(arende))
             .subject(getSubject(arende))

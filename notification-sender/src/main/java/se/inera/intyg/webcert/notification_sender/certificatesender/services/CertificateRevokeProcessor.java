@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -23,16 +23,21 @@ import static com.google.common.base.Preconditions.checkArgument;
 import com.google.common.base.Strings;
 import org.apache.camel.Body;
 import org.apache.camel.Header;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.webcert.common.Constants;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
+import se.inera.intyg.webcert.logging.MdcHelper;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
 
 public class CertificateRevokeProcessor {
 
     @Autowired
-    private IntygModuleRegistry registry;
+    private  IntygModuleRegistry registry;
+    @Autowired
+    private  MdcHelper mdcHelper;
 
     public void process(@Body String xmlBody,
         @Header(Constants.INTYGS_ID) String intygsId,
@@ -51,10 +56,18 @@ public class CertificateRevokeProcessor {
             Constants.INTYGS_TYP_VERSION);
 
         try {
+            MDC.put(MdcLogConstants.TRACE_ID_KEY, mdcHelper.traceId());
+            MDC.put(MdcLogConstants.SPAN_ID_KEY, mdcHelper.spanId());
+            MDC.put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId);
+            MDC.put(MdcLogConstants.EVENT_CERTIFICATE_TYPE, intygsTyp);
+            MDC.put(MdcLogConstants.EVENT_LOGICAL_ADDRESS, logicalAddress);
+
             ModuleApi moduleApi = registry.getModuleApi(intygsTyp, intygsTypVersion);
             moduleApi.revokeCertificate(xmlBody, logicalAddress);
         } catch (Exception e) {
             throw new TemporaryException(e.getMessage());
+        } finally {
+            MDC.clear();
         }
     }
 }

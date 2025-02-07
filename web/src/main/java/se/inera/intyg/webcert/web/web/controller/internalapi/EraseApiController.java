@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,13 +18,15 @@
  */
 package se.inera.intyg.webcert.web.web.controller.internalapi;
 
-import javax.ws.rs.DELETE;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.erase.EraseService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 
@@ -40,6 +42,7 @@ public class EraseApiController extends AbstractApiController {
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
+    @PerformanceLogging(eventAction = "erase-erase-data-for-care-provider", eventType = MdcLogConstants.EVENT_TYPE_DELETION)
     public void eraseDataForCareProvider(@PathParam("id") String careProviderId) {
         eraseService.eraseCertificates(careProviderId, eraseCertificatesPageSize);
     }

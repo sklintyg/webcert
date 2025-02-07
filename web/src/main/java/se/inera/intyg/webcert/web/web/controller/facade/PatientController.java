@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,18 +18,22 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade;
 
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.facade.patient.GetPatientFacadeService;
 import se.inera.intyg.webcert.web.service.facade.patient.InvalidPatientIdException;
 import se.inera.intyg.webcert.web.service.facade.patient.PatientNoNameException;
 import se.inera.intyg.webcert.web.service.facade.patient.PatientSearchErrorException;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.PatientResponseDTO;
-
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 @Path("/patient")
 public class PatientController {
@@ -43,6 +47,7 @@ public class PatientController {
     @Path("/{patientId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "patient-get-patient", eventType = MdcLogConstants.EVENT_TYPE_ERROR)
     public Response getPatient(@PathParam("patientId") @NotNull String patientId) {
         try {
             final var patient = getPatientFacadeService.getPatient(patientId);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,98 +18,21 @@
  */
 package se.inera.intyg.webcert.web.service.log.dto;
 
+import lombok.Builder;
+import lombok.Value;
 import se.inera.intyg.schemas.contract.Personnummer;
 
+@Value
+@Builder
 public class LogRequest {
 
-    private String intygId;
-
-    private Personnummer patientId;
-
-    private String patientName;
-
-    private String intygCareUnitId;
-    private String intygCareUnitName;
-
-    private String intygCareGiverId;
-    private String intygCareGiverName;
-
-    private String additionalInfo;
-    private Boolean isTestIntyg;
-
-    public LogRequest() {
-        super();
-    }
-
-    public String getIntygId() {
-        return intygId;
-    }
-
-    public void setIntygId(String intygId) {
-        this.intygId = intygId;
-    }
-
-    public Personnummer getPatientId() {
-        return patientId;
-    }
-
-    public void setPatientId(Personnummer patientId) {
-        this.patientId = patientId;
-    }
-
-    public String getPatientName() {
-        return patientName;
-    }
-
-    public void setPatientName(String patientName) {
-        this.patientName = patientName;
-    }
-
-    public String getIntygCareUnitId() {
-        return intygCareUnitId;
-    }
-
-    public void setIntygCareUnitId(String intygCareUnitId) {
-        this.intygCareUnitId = intygCareUnitId;
-    }
-
-    public String getIntygCareUnitName() {
-        return intygCareUnitName;
-    }
-
-    public void setIntygCareUnitName(String intygCareUnitName) {
-        this.intygCareUnitName = intygCareUnitName;
-    }
-
-    public String getIntygCareGiverId() {
-        return intygCareGiverId;
-    }
-
-    public void setIntygCareGiverId(String intygCareGiverId) {
-        this.intygCareGiverId = intygCareGiverId;
-    }
-
-    public String getIntygCareGiverName() {
-        return intygCareGiverName;
-    }
-
-    public void setIntygCareGiverName(String intygCareGiverName) {
-        this.intygCareGiverName = intygCareGiverName;
-    }
-
-    public String getAdditionalInfo() {
-        return additionalInfo;
-    }
-
-    public void setAdditionalInfo(String additionalInfo) {
-        this.additionalInfo = additionalInfo;
-    }
-
-    public void setTestIntyg(boolean isTestIntyg) {
-        this.isTestIntyg = isTestIntyg;
-    }
-
-    public boolean isTestIntyg() {
-        return isTestIntyg;
-    }
+    String intygId;
+    Personnummer patientId;
+    String patientName;
+    String intygCareUnitId;
+    String intygCareUnitName;
+    String intygCareGiverId;
+    String intygCareGiverName;
+    String additionalInfo;
+    boolean testIntyg;
 }

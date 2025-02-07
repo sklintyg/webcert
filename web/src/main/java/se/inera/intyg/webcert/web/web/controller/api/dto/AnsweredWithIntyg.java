@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,30 +18,17 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
-import com.google.auto.value.AutoValue;
 import java.time.LocalDateTime;
-import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import lombok.Builder;
+import lombok.Value;
 
-@AutoValue
-public abstract class AnsweredWithIntyg {
+@Value
+@Builder
+public class AnsweredWithIntyg {
 
-    public abstract String getIntygsId();
-
-    public abstract String getSigneratAv();
-
-    public abstract LocalDateTime getSigneratDatum();
-
-    public abstract LocalDateTime getSkickatDatum();
-
-    public abstract String getNamnetPaSkapareAvIntyg();
-
-    public static AnsweredWithIntyg create(String intygsId, String signeratAv, LocalDateTime signeratDatum, LocalDateTime skickatDatum,
-        String namnetPaSkapareAvIntyg) {
-        return new AutoValue_AnsweredWithIntyg(intygsId, signeratAv, signeratDatum, skickatDatum, namnetPaSkapareAvIntyg);
-    }
-
-    public static AnsweredWithIntyg create(Utkast intyg) {
-        return new AutoValue_AnsweredWithIntyg(intyg.getIntygsId(), intyg.getSignatur().getSigneradAv(),
-            intyg.getSignatur().getSigneringsDatum(), intyg.getSkickadTillMottagareDatum(), intyg.getSkapadAv().getNamn());
-    }
+    String intygsId;
+    String signeratAv;
+    LocalDateTime signeratDatum;
+    LocalDateTime skickatDatum;
+    String namnetPaSkapareAvIntyg;
 }

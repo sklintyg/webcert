@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -41,6 +41,7 @@ import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
 import se.inera.intyg.common.ts_diabetes.support.TsDiabetesEntryPoint;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
+import se.inera.intyg.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.Privilege;
@@ -73,6 +74,9 @@ public abstract class BaseCreateDraftCertificateValidatorTest {
     @Mock
     protected AuthoritiesHelper authoritiesHelper;
 
+    @Mock
+    protected FeaturesHelper featuresHelper;
+
     //    @Before
     public void setup() throws ModuleNotFoundException {
         when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, FK7263.toLowerCase())).thenReturn(true);
@@ -86,17 +90,17 @@ public abstract class BaseCreateDraftCertificateValidatorTest {
         when(moduleRegistry.moduleExists(TsBasEntryPoint.MODULE_ID)).thenReturn(true);
         when(moduleRegistry.moduleExists(LuseEntryPoint.MODULE_ID)).thenReturn(true);
 
-        when(moduleRegistry.getIntygModule(eq(Fk7263EntryPoint.MODULE_ID))).thenReturn(buildIntygModule(FK7263, true));
-        when(moduleRegistry.getIntygModule(eq(TsBasEntryPoint.MODULE_ID))).thenReturn(buildIntygModule(TSBAS, false));
-        when(moduleRegistry.getIntygModule(eq(LuseEntryPoint.MODULE_ID))).thenReturn(buildIntygModule(LUSE, false));
+        when(moduleRegistry.getIntygModule(eq(Fk7263EntryPoint.MODULE_ID))).thenReturn(buildIntygModule(FK7263));
+        when(moduleRegistry.getIntygModule(eq(TsBasEntryPoint.MODULE_ID))).thenReturn(buildIntygModule(TSBAS));
+        when(moduleRegistry.getIntygModule(eq(LuseEntryPoint.MODULE_ID))).thenReturn(buildIntygModule(LUSE));
 
         when(authoritiesHelper.getIntygstyperAllowedForSekretessmarkering()).thenReturn(new HashSet<>(ALL_INTYG_TYPES));
 
         user = buildUser();
     }
 
-    protected IntygModule buildIntygModule(String id, boolean deprecated) {
-        return new IntygModule(id, "", "", "", "", "", "", "", "", deprecated);
+    protected IntygModule buildIntygModule(String id) {
+        return new IntygModule(id, "", "", "", "", "", "", "", "");
     }
 
     protected WebCertUser buildUser() {

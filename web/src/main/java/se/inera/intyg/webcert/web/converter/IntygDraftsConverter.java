@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -86,6 +86,8 @@ public class IntygDraftsConverter {
         entry.setUpdatedSignedBy(resolvedSignedBy(utkast));
         entry.setUpdatedSignedById(resolvedSignedById(utkast));
         entry.setLastUpdatedSigned(utkast.getSenastSparadDatum());
+        entry.setLastUpdated(utkast.getSenastSparadDatum());
+        entry.setSigned(utkast.getSenastSparadDatum());
         entry.setPatientId(utkast.getPatientPersonnummer());
         entry.setVidarebefordrad(utkast.getVidarebefordrad());
         entry.setStatus(resolveStatus(utkast));
@@ -185,6 +187,8 @@ public class IntygDraftsConverter {
         entry.setUpdatedSignedBy(source.getSkapadAv().getFullstandigtNamn());
         entry.setUpdatedSignedById(source.getSkapadAv().getPersonalId().toString());
         entry.setLastUpdatedSigned(source.getSigneringstidpunkt());
+        entry.setSigned(source.getSigneringstidpunkt());
+        entry.setLastUpdated(source.getSigneringstidpunkt());
         entry.setPatientId(personnummer);
         entry.setVardenhetId(source.getSkapadAv().getEnhet().getEnhetsId().getExtension());
         entry.setVardgivarId(source.getSkapadAv().getEnhet().getVardgivare().getVardgivareId().getExtension());

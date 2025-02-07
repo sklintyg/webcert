@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,10 +18,10 @@
  */
 package se.inera.intyg.webcert.web.web.controller.api;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.ok;
-import static javax.ws.rs.core.Response.status;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
+import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
+import static jakarta.ws.rs.core.Response.ok;
+import static jakarta.ws.rs.core.Response.status;
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.CAREGIVER_ID;
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.CARE_UNIT_ID;
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.CONNECTIVITY;
@@ -36,19 +36,21 @@ import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringReques
 import static se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest.WIDTH;
 
 import io.swagger.annotations.Api;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.HeaderParam;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.monitoring.logging.UserAgentInfo;
 import se.inera.intyg.infra.monitoring.logging.UserAgentParser;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest;
@@ -57,7 +59,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.MonitoringRequest;
  * Controller that logs messages from JavaScript to the normal log.
  */
 @Path("/jslog")
-@Api(value = "jslog", description = "REST API för loggning från frontend till backend-log", produces = MediaType.APPLICATION_JSON)
+@Api(value = "jslog", produces = MediaType.APPLICATION_JSON)
 public class JsLogApiController extends AbstractApiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(JsLogApiController.class);
@@ -71,6 +73,7 @@ public class JsLogApiController extends AbstractApiController {
     @POST
     @Path("/debug")
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "js-log-debug", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response debug(String message) {
         LOG.debug(message);
         return ok().build();
@@ -80,6 +83,7 @@ public class JsLogApiController extends AbstractApiController {
     @Path("/monitoring")
     @Consumes(APPLICATION_JSON)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "js-log-monitoring", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response monitoring(MonitoringRequest request, @HeaderParam(HttpHeaders.USER_AGENT) String userAgent) {
         if (request == null || !request.isValid()) {
             return status(BAD_REQUEST).build();
@@ -116,6 +120,7 @@ public class JsLogApiController extends AbstractApiController {
     @Path("/srs")
     @Consumes(APPLICATION_JSON)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "js-log-srs-monitoring", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response srsMonitoring(MonitoringRequest request) {
         if (request == null || !request.isValid()) {
             return status(BAD_REQUEST).build();

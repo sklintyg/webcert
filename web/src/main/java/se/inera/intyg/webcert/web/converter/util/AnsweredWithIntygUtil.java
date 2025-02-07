@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -67,8 +67,15 @@ public final class AnsweredWithIntygUtil {
         return utkastRepository.findAllByRelationIntygsId(intygsId).stream()
             .filter(u -> Objects.equals(u.getRelationKod(), RelationKod.KOMPLT))
             .filter(u -> u.getSignatur() != null)
-            .map(AnsweredWithIntyg::create)
+            .map(utkast ->
+                AnsweredWithIntyg.builder()
+                    .intygsId(utkast.getIntygsId())
+                    .signeratAv(utkast.getSignatur().getSigneradAv())
+                    .signeratDatum(utkast.getSignatur().getSigneringsDatum())
+                    .skickatDatum(utkast.getSkickadTillMottagareDatum())
+                    .namnetPaSkapareAvIntyg(utkast.getSkapadAv().getNamn())
+                    .build()
+            )
             .collect(Collectors.toList());
     }
-
 }

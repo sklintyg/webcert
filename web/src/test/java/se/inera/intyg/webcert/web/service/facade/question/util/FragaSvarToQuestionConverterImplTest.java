@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -26,7 +26,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
@@ -97,6 +96,12 @@ class FragaSvarToQuestionConverterImplTest {
     void shallIncludeId() {
         final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
         assertEquals(fragaSvar.getInternReferens().toString(), actualQuestions.getId());
+    }
+
+    @Test
+    void shallIncludeCertificateId() {
+        final var actualQuestions = fragaSvarToQuestionConverter.convert(fragaSvar);
+        assertEquals(fragaSvar.getIntygsReferens().getIntygsId(), actualQuestions.getCertificateId());
     }
 
     @Test
@@ -316,7 +321,7 @@ class FragaSvarToQuestionConverterImplTest {
                                 new CertificateRelation[]{
                                     CertificateRelation.builder()
                                         .type(CertificateRelationType.COMPLEMENTED)
-                                        .created(LocalDateTime.now().plus(1, ChronoUnit.DAYS))
+                                        .created(LocalDateTime.now().plusDays(1))
                                         .status(CertificateStatus.SIGNED)
                                         .build()
                                 }
@@ -349,7 +354,7 @@ class FragaSvarToQuestionConverterImplTest {
                                 new CertificateRelation[]{
                                     CertificateRelation.builder()
                                         .type(CertificateRelationType.COMPLEMENTED)
-                                        .created(LocalDateTime.now().plus(1, ChronoUnit.DAYS))
+                                        .created(LocalDateTime.now().plusDays(1))
                                         .status(CertificateStatus.REVOKED)
                                         .build()
                                 }
@@ -382,7 +387,7 @@ class FragaSvarToQuestionConverterImplTest {
                                 new CertificateRelation[]{
                                     CertificateRelation.builder()
                                         .type(CertificateRelationType.COMPLEMENTED)
-                                        .created(LocalDateTime.now().plus(1, ChronoUnit.DAYS))
+                                        .created(LocalDateTime.now().plusDays(1))
                                         .status(CertificateStatus.REVOKED)
                                         .build()
                                 }
@@ -391,7 +396,7 @@ class FragaSvarToQuestionConverterImplTest {
                     .build()
             );
 
-            fragaSvar.setSvarSkickadDatum(LocalDateTime.now().plus(2, ChronoUnit.DAYS));
+            fragaSvar.setSvarSkickadDatum(LocalDateTime.now().plusDays(2));
 
             doReturn(certificate)
                 .when(getCertificateFacadeService)

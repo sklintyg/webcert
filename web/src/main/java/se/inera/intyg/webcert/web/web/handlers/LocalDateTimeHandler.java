@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,17 +18,17 @@
  */
 package se.inera.intyg.webcert.web.web.handlers;
 
+import jakarta.ws.rs.ext.ParamConverter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import javax.ws.rs.ext.ParamConverter;
 
 /**
  * Handler to handle JAX-RS parameters represented by Joda-Time types.
  */
-public class LocalDateTimeHandler implements javax.ws.rs.ext.ParamConverterProvider {
+public class LocalDateTimeHandler implements jakarta.ws.rs.ext.ParamConverterProvider {
 
     @Override
     public <T> ParamConverter<T> getConverter(Class<T> aClass, Type type, Annotation[] annotations) {

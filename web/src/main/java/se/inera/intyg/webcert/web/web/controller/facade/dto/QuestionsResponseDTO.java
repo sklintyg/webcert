@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,31 +18,37 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import lombok.Builder;
+import lombok.Value;
 import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.QuestionsResponseDTO.QuestionsResponseDTOBuilder;
 
+@JsonDeserialize(builder = QuestionsResponseDTOBuilder.class)
+@Value
+@Builder
 public class QuestionsResponseDTO {
 
-    private List<QuestionDTO> questions;
-
-    public List<QuestionDTO> getQuestions() {
-        return questions;
-    }
-
-    public void setQuestions(List<QuestionDTO> questions) {
-        this.questions = questions;
-    }
+    List<QuestionDTO> questions;
 
     public static QuestionsResponseDTO create(List<Question> questions, Map<Question, List<ResourceLinkDTO>> links) {
-        final var questionsResponseDTO = new QuestionsResponseDTO();
         final var questionDTOList = new ArrayList<QuestionDTO>();
-        questions.stream().forEach(
+        questions.forEach(
             question -> questionDTOList.add(QuestionDTO.create(question, links.getOrDefault(question, Collections.emptyList())))
         );
-        questionsResponseDTO.setQuestions(questionDTOList);
-        return questionsResponseDTO;
+
+        return QuestionsResponseDTO.builder()
+            .questions(questionDTOList)
+            .build();
+    }
+
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class QuestionsResponseDTOBuilder {
+
     }
 }

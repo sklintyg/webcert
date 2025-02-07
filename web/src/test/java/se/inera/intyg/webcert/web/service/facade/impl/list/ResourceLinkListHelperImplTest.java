@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,6 +18,12 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl.list;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+
+import java.util.HashMap;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,14 +50,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
-
-import java.util.HashMap;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -117,6 +115,16 @@ class ResourceLinkListHelperImplTest {
             final var entry = setupListIntygEntry(CertificateListItemStatus.INCOMPLETE.toString(), ActionLinkType.FORNYA_INTYG);
             final var resourceLinks = resourceLinkListHelper.get(entry, CertificateListItemStatus.INCOMPLETE);
             assertEquals(0, resourceLinks.size());
+        }
+
+        @Test
+        void shouldIncludeRenewResourceLinkIfFromCertificateService() {
+            setup(true, false);
+            final var entry = setupListIntygEntry(CertificateListItemStatus.INCOMPLETE.toString(),
+                ActionLinkType.FORNYA_INTYG_FRAN_CERTIFICATE_SERVICE);
+            final var resourceLinks = resourceLinkListHelper.get(entry, CertificateListItemStatus.SIGNED);
+            assertEquals(1, resourceLinks.size());
+            assertEquals(ResourceLinkTypeDTO.RENEW_CERTIFICATE, resourceLinks.get(0).getType());
         }
     }
 

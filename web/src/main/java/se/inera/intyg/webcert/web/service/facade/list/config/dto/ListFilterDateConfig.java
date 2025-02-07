@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -28,6 +28,11 @@ public class ListFilterDateConfig extends ListFilterConfig {
 
     public ListFilterDateConfig(String id, String title) {
         super(ListFilterType.DATE, id, title);
+    }
+
+    public ListFilterDateConfig(String id, String title, LocalDateTime defaultValue) {
+        super(ListFilterType.DATE, id, title);
+        this.defaultValue = defaultValue;
     }
 
     public ListFilterDateConfig(String id, String title, LocalDateTime max, LocalDateTime min, LocalDateTime defaultValue) {

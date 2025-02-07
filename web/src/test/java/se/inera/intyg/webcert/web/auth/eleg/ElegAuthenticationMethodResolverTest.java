@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,82 +18,75 @@
  */
 package se.inera.intyg.webcert.web.auth.eleg;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.security.saml.SAMLCredential;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
-import se.inera.intyg.webcert.web.auth.common.BaseSAMLCredentialTest;
 
-/**
- * Created by eriklupander on 2015-08-26.
- */
-@RunWith(MockitoJUnitRunner.class)
-public class ElegAuthenticationMethodResolverTest extends BaseSAMLCredentialTest {
+@ExtendWith(MockitoExtension.class)
+class ElegAuthenticationMethodResolverTest  {
 
     private static final String MOBILT_BANK_ID_LOGIN_METHOD = "ccp11";
+    private static final String MOBILT_BANK_ID_STATIC_QR_CODE = "ccp19";
+    private static final String MOBILT_BANK_ID_NON_STATIC_QR_CODE = "ccp28";
     private static final String BANK_ID_LOGIN_METHOD = "ccp10";
     private static final String NET_ID_LOGIN_METHOD = "ccp8";
     private static final String INDETERMINATE_LOGIN_METHOD = "";
     private static final String UNKNOWN_LOGIN_METHOD = "ccp7";
 
-    @Mock
-    private ElegAuthenticationAttributeHelper elegAuthenticationAttributeHelper;
-
     @InjectMocks
-    private ElegAuthenticationMethodResolverImpl testee;
+    private ElegAuthenticationMethodResolver elegAuthenticationMethodResolver;
 
-    @BeforeClass
-    public static void setup() throws Exception {
-        bootstrapSamlAssertions();
 
-    }
-
-    @Test
-    public void testBankID() {
-        when(elegAuthenticationAttributeHelper.getAttribute(any(SAMLCredential.class), anyString())).thenReturn(BANK_ID_LOGIN_METHOD);
-        AuthenticationMethod authMetod = testee.resolveAuthenticationMethod(buildPrivatlakareSamlCredential());
+   @Test
+    void testBankID() {
+        AuthenticationMethod authMetod = elegAuthenticationMethodResolver.resolveAuthenticationMethod(BANK_ID_LOGIN_METHOD);
         assertEquals(AuthenticationMethod.BANK_ID, authMetod);
     }
 
     @Test
-    public void testMobiltBankID() {
-        when(elegAuthenticationAttributeHelper.getAttribute(any(SAMLCredential.class), anyString()))
-            .thenReturn(MOBILT_BANK_ID_LOGIN_METHOD);
-        AuthenticationMethod authMetod = testee.resolveAuthenticationMethod(buildPrivatlakareSamlCredential());
+    void testMobiltBankIDCCP11() {
+        AuthenticationMethod authMetod = elegAuthenticationMethodResolver.resolveAuthenticationMethod(MOBILT_BANK_ID_LOGIN_METHOD);
         assertEquals(AuthenticationMethod.MOBILT_BANK_ID, authMetod);
     }
 
     @Test
-    public void testNetID() {
-        when(elegAuthenticationAttributeHelper.getAttribute(any(SAMLCredential.class), anyString())).thenReturn(NET_ID_LOGIN_METHOD);
-        AuthenticationMethod authMetod = testee.resolveAuthenticationMethod(buildPrivatlakareSamlCredential());
+    void testMobiltBankIDCCP19() {
+        AuthenticationMethod authMetod = elegAuthenticationMethodResolver.resolveAuthenticationMethod(MOBILT_BANK_ID_STATIC_QR_CODE);
+        assertEquals(AuthenticationMethod.MOBILT_BANK_ID, authMetod);
+    }
+
+    @Test
+    void testMobiltBankIDCCP28() {
+        AuthenticationMethod authMetod = elegAuthenticationMethodResolver.resolveAuthenticationMethod(MOBILT_BANK_ID_NON_STATIC_QR_CODE);
+        assertEquals(AuthenticationMethod.MOBILT_BANK_ID, authMetod);
+    }
+
+    @Test
+    void testNetID() {
+        AuthenticationMethod authMetod = elegAuthenticationMethodResolver.resolveAuthenticationMethod(NET_ID_LOGIN_METHOD);
         assertEquals(AuthenticationMethod.NET_ID, authMetod);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testNoIssuerThrowsException() {
-        when(elegAuthenticationAttributeHelper.getAttribute(any(SAMLCredential.class), anyString())).thenReturn(null);
-        testee.resolveAuthenticationMethod(buildPrivatlakareSamlCredential());
+    @Test
+    void testNoIssuerThrowsException() {
+        assertThrows(IllegalArgumentException.class, () ->
+            elegAuthenticationMethodResolver.resolveAuthenticationMethod(null));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testIndeterminateIssuerThrowsException() {
-        when(elegAuthenticationAttributeHelper.getAttribute(any(SAMLCredential.class), anyString())).thenReturn(INDETERMINATE_LOGIN_METHOD);
-        testee.resolveAuthenticationMethod(buildPrivatlakareSamlCredential());
+    @Test
+    void testIndeterminateIssuerThrowsException() {
+        assertThrows(IllegalArgumentException.class, () ->
+            elegAuthenticationMethodResolver.resolveAuthenticationMethod(INDETERMINATE_LOGIN_METHOD));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testUnknwonIssuerThrowsException() {
-        when(elegAuthenticationAttributeHelper.getAttribute(any(SAMLCredential.class), anyString())).thenReturn(UNKNOWN_LOGIN_METHOD);
-        testee.resolveAuthenticationMethod(buildPrivatlakareSamlCredential());
+    @Test
+    void testUnknwonIssuerThrowsException() {
+        assertThrows(IllegalArgumentException.class, () ->
+            elegAuthenticationMethodResolver.resolveAuthenticationMethod(UNKNOWN_LOGIN_METHOD));
     }
 }

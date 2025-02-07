@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -30,6 +30,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
+import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastServiceImpl;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygTypeInfo;
@@ -45,24 +46,27 @@ public abstract class IntegrationServiceImpl implements IntegrationService {
 
     @Autowired
     private IntygService intygService;
-
     @Autowired
     private PatientDetailsResolver patientDetailsResolver;
-
     @Autowired
     private UtkastRepository utkastRepository;
+    @Autowired
+    private ReferensService referensService;
 
     // api
 
     @Override
-    public PrepareRedirectToIntyg prepareRedirectToIntyg(String intygTyp, String intygId, WebCertUser user) {
-        return prepareRedirectToIntyg(intygTyp, intygId, user, null);
+    public PrepareRedirectToIntyg prepareRedirectToIntyg(String intygId, WebCertUser user) {
+        return prepareRedirectToIntyg(intygId, user, null);
     }
 
     @Override
-    public PrepareRedirectToIntyg prepareRedirectToIntyg(
-        final String intygTyp, final String intygId,
+    public PrepareRedirectToIntyg prepareRedirectToIntyg(final String intygId,
         final WebCertUser user, final Personnummer prepareBeforeAlternateSsn) {
+
+        if (user.getParameters() != null) {
+            handleReference(intygId, user.getParameters().getReference());
+        }
 
         Utkast utkast = utkastRepository.findById(intygId).orElse(null);
 
@@ -73,6 +77,12 @@ public abstract class IntegrationServiceImpl implements IntegrationService {
         ensurePreparation(intygTypeInfo.getIntygType(), intygId, utkast, user, prepareBeforeAlternateSsn);
 
         return createPrepareRedirectToIntyg(intygTypeInfo, UtkastServiceImpl.isUtkast(utkast));
+    }
+
+    private void handleReference(String intygId, String reference) {
+        if (reference != null && !referensService.referensExists(intygId)) {
+            referensService.saveReferens(intygId, reference);
+        }
     }
 
     // protected scope

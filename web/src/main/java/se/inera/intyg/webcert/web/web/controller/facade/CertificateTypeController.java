@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,20 +18,22 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade;
 
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateTypesFacadeService;
 
 @Path("/certificate/type")
@@ -43,8 +45,8 @@ public class CertificateTypeController {
 
     private final GetCertificateTypesFacadeService getCertificateTypesFacadeService;
 
-    @Autowired
-    public CertificateTypeController(GetCertificateTypesFacadeService getCertificateTypesFacadeService) {
+    public CertificateTypeController(
+        @Qualifier("certificateTypeInfoAggregator") GetCertificateTypesFacadeService getCertificateTypesFacadeService) {
         this.getCertificateTypesFacadeService = getCertificateTypesFacadeService;
     }
 
@@ -52,6 +54,7 @@ public class CertificateTypeController {
     @Path("/{patientId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "certificate-type-get-certificate-types", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getCertificateTypes(@PathParam("patientId") @NotNull String patientId) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Retrieving certificate types for patient");

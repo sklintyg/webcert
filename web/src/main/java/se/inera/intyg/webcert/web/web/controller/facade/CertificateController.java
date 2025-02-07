@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,28 +18,31 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade;
 
-import static se.inera.intyg.webcert.web.web.controller.moduleapi.UtkastModuleApiController.LAST_SAVED_DRAFT;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.RequestBody;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.modules.support.facade.dto.CertificateEventDTO;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.facade.ComplementCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.CopyCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.CreateCertificateFacadeService;
@@ -86,41 +89,55 @@ public class CertificateController {
 
     private static final String UTF_8_CHARSET = ";charset=utf-8";
 
+    public static final String LAST_SAVED_DRAFT = "lastSavedDraft";
+
     @Autowired
+    @Qualifier("getCertificateAggregator")
     private GetCertificateFacadeService getCertificateFacadeService;
     @Autowired
+    @Qualifier("saveCertificateAggregator")
     private SaveCertificateFacadeService saveCertificateFacadeService;
     @Autowired
+    @Qualifier("validateCertificateAggregator")
     private ValidateCertificateFacadeService validationCertificateFacadeService;
     @Autowired
     private SignCertificateFacadeService signCertificateFacadeService;
     @Autowired
+    @Qualifier("deleteCertificateAggregator")
     private DeleteCertificateFacadeService deleteCertificateFacadeService;
     @Autowired
+    @Qualifier("revokeCertificateAggregator")
     private RevokeCertificateFacadeService revokeCertificateFacadeService;
     @Autowired
+    @Qualifier("replaceCertificateAggregator")
     private ReplaceCertificateFacadeService replaceCertificateFacadeService;
     @Autowired
     private CopyCertificateFacadeService copyCertificateFacadeService;
     @Autowired
+    @Qualifier("renewCertificateAggregator")
     private RenewCertificateFacadeService renewCertificateFacadeService;
     @Autowired
+    @Qualifier("forwardCertificateAggregator")
     private ForwardCertificateFacadeService forwardCertificateFacadeService;
     @Autowired
-    private ReadyForSignFacadeService readyForSignFacadeService;
+    private ReadyForSignFacadeService readyForSignAggregator;
     @Autowired
+    @Qualifier("getCertificateEventsAggregator")
     private GetCertificateEventsFacadeService getCertificateEventsFacadeService;
     @Autowired
     private GetCertificateResourceLinks getCertificateResourceLinks;
     @Autowired
+    @Qualifier("sendCertificateAggregator")
     private SendCertificateFacadeService sendCertificateFacadeService;
     @Autowired
+    @Qualifier("complementCertificateAggregator")
     private ComplementCertificateFacadeService complementCertificateFacadeService;
     @Autowired
     private CreateCertificateFromTemplateFacadeService createCertificateFromTemplateFacadeService;
     @Autowired
     private CreateCertificateFromCandidateFacadeService createCertificateFromCandidateFacadeService;
     @Autowired
+    @Qualifier("createCertificateAggregator")
     private CreateCertificateFacadeService createCertificateFacadeService;
 
     @Autowired
@@ -133,6 +150,7 @@ public class CertificateController {
     @Path("/{certificateId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "certificate-get-certificate", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getCertificate(@PathParam("certificateId") @NotNull String certificateId) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Getting certificate with id: '{}'", certificateId);
@@ -148,6 +166,7 @@ public class CertificateController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "certificate-save-certificate", eventType = MdcLogConstants.EVENT_TYPE_CREATION)
     public Response saveCertificate(@PathParam("certificateId") String certificateId, @RequestBody @NotNull Certificate certificate,
         @Context HttpServletRequest request) {
         if (LOG.isDebugEnabled()) {
@@ -169,10 +188,12 @@ public class CertificateController {
     @Path("/{certificateId}/validate")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "certificate-validate-certificate", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response validateCertificate(@PathParam("certificateId") String certificateId, @RequestBody @NotNull Certificate certificate) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Validating certificate with id: '{}'", certificateId);
         }
+
         final var validationErrors = validationCertificateFacadeService.validate(certificate);
         return Response.ok(ValidateCertificateResponseDTO.create(validationErrors)).build();
     }
@@ -181,6 +202,7 @@ public class CertificateController {
     @Path("/{certificateId}/sign")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "certificate-sign-certificate", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public Response signCertificate(@PathParam("certificateId") String certificateId, @RequestBody @NotNull Certificate certificate) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Signing certificate with id: '{}'", certificateId);
@@ -195,6 +217,7 @@ public class CertificateController {
     @Path("/{certificateId}/{version}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "certificate-delete-certificate", eventType = MdcLogConstants.EVENT_TYPE_DELETION)
     public Response deleteCertificate(@PathParam("certificateId") @NotNull String certificateId,
         @PathParam("version") @NotNull long version) {
         if (LOG.isDebugEnabled()) {
@@ -208,6 +231,7 @@ public class CertificateController {
     @Path("/{certificateId}/revoke")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "certificate-revoke-certificate", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public Response revokeCertificate(@PathParam("certificateId") @NotNull String certificateId,
         @RequestBody @NotNull RevokeCertificateRequestDTO revokeCertificate) {
         if (LOG.isDebugEnabled()) {
@@ -232,6 +256,7 @@ public class CertificateController {
     @Path("/{certificateId}/replace")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "certificate-replace-certificate", eventType = MdcLogConstants.EVENT_TYPE_CREATION)
     public Response replaceCertificate(@PathParam("certificateId") @NotNull String certificateId,
         @RequestBody @NotNull NewCertificateRequestDTO newCertificateRequestDTO) {
         if (LOG.isDebugEnabled()) {
@@ -245,6 +270,7 @@ public class CertificateController {
     @Path("/{certificateId}/renew")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "certificate-renew-certificate", eventType = MdcLogConstants.EVENT_TYPE_CREATION)
     public Response renewCertificate(@PathParam("certificateId") @NotNull String certificateId) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Renewing certificate with id: '{}'", certificateId);
@@ -257,6 +283,7 @@ public class CertificateController {
     @Path("/{certificateId}/template")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "certificate-create-certificate-from-template", eventType = MdcLogConstants.EVENT_TYPE_CREATION)
     public Response createCertificateFromTemplate(@PathParam("certificateId") @NotNull String certificateId) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Creating draft from template with id: '{}'", certificateId);
@@ -269,6 +296,7 @@ public class CertificateController {
     @Path("/{certificateId}/candidate")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "certificate-create-certificate-from-candidate", eventType = MdcLogConstants.EVENT_TYPE_CREATION)
     public Response createCertificateFromCandidate(@PathParam("certificateId") @NotNull String certificateId) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Filling draft of id: '{}' with candidate", certificateId);
@@ -281,6 +309,7 @@ public class CertificateController {
     @Path("/{certificateId}/complement")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "certificate-complement-certificate", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public Response complementCertificate(@PathParam("certificateId") @NotNull String certificateId,
         @RequestBody @NotNull ComplementCertificateRequestDTO complementCertificateRequest) {
         if (LOG.isDebugEnabled()) {
@@ -300,6 +329,7 @@ public class CertificateController {
     @Path("/{certificateId}/answercomplement")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "certificate-answer-complement-certificate", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public Response answerComplementCertificate(@PathParam("certificateId") @NotNull String certificateId,
         @RequestBody @NotNull ComplementCertificateRequestDTO complementCertificateRequest) {
         if (LOG.isDebugEnabled()) {
@@ -319,6 +349,7 @@ public class CertificateController {
     @Path("/{certificateId}/copy")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "certificate-copy-certificate", eventType = MdcLogConstants.EVENT_TYPE_CREATION)
     public Response copyCertificate(@PathParam("certificateId") @NotNull String certificateId,
         @RequestBody @NotNull NewCertificateRequestDTO copyCertificate) {
         if (LOG.isDebugEnabled()) {
@@ -334,6 +365,7 @@ public class CertificateController {
     @Path("/{certificateId}/forward")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "certificate-forward-certificate", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public Response forwardCertificate(@PathParam("certificateId") @NotNull String certificateId,
         @RequestBody @NotNull ForwardCertificateRequestDTO forwardCertificate) {
         if (LOG.isDebugEnabled()) {
@@ -356,11 +388,12 @@ public class CertificateController {
     @Path("/{certificateId}/readyforsign")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "certificate-ready-for-sign", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public Response readyForSign(@PathParam("certificateId") @NotNull String certificateId) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Ready for sign certificate with id: '{}' ", certificateId);
         }
-        final var certificate = readyForSignFacadeService.readyForSign(certificateId);
+        final var certificate = readyForSignAggregator.readyForSign(certificateId);
 
         final var resourceLinks = getCertificateResourceLinks.get(certificate);
         final var certificateDTO = CertificateDTO.create(certificate, resourceLinks);
@@ -371,6 +404,7 @@ public class CertificateController {
     @Path("/{certificateId}/send")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "certificate-send-certificate", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public Response sendCertificate(@PathParam("certificateId") @NotNull String certificateId) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Sending certificate with id: '{}'", certificateId);
@@ -383,18 +417,24 @@ public class CertificateController {
     @Path("/{certificateId}/events")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "certificate-get-certificate-events", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getCertificateEvents(@PathParam("certificateId") @NotNull String certificateId) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Retrieving events for certificate with id: '{}'", certificateId);
         }
-        final var certificateEvents = getCertificateEventsFacadeService.getCertificateEvents(certificateId);
-        return Response.ok(CertificateEventResponseDTO.create(certificateEvents)).build();
+        try {
+            final var certificateEvents = getCertificateEventsFacadeService.getCertificateEvents(certificateId);
+            return Response.ok(CertificateEventResponseDTO.create(certificateEvents)).build();
+        } catch (Exception e) {
+            return Response.ok(CertificateEventResponseDTO.create(new CertificateEventDTO[0])).build();
+        }
     }
 
     @POST
     @Path("/{certificateType}/{patientId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "certificate-create-certificate", eventType = MdcLogConstants.EVENT_TYPE_CREATION)
     public Response createCertificate(@PathParam("certificateType") String certificateType, @PathParam("patientId") String patientId) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Creating certificate with type: '{}'", certificateType);
@@ -411,6 +451,7 @@ public class CertificateController {
     @Path("/{certificateId}/related")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "certificate-get-related-certificate", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getRelatedCertificate(@PathParam("certificateId") @NotNull String certificateId) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Get related certificate for certificateId: '{}'", certificateId);
@@ -423,6 +464,7 @@ public class CertificateController {
     @Path("/{certificateId}/candidatemessage")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "certificate-get-candidate-message-for-certificate", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getCandidateMessageForCertificate(@PathParam("certificateId") @NotNull String certificateId) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Get candidate message for certificateId: '{}'", certificateId);

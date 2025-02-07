@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,6 +20,15 @@ package se.inera.intyg.webcert.web.web.controller.moduleapi;
 
 import com.google.common.base.Joiner;
 import io.swagger.annotations.Api;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +39,8 @@ import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -40,18 +51,11 @@ import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.StatsResponse;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.VardenhetStats;
 import se.inera.intyg.webcert.web.web.controller.moduleapi.dto.VardgivareStats;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.util.*;
-
 /**
  * @author marced
  */
 @Path("/stat")
-@Api(value = "stat", description = "REST API - moduleapi - stat", produces = MediaType.APPLICATION_JSON)
+@Api(value = "stat", produces = MediaType.APPLICATION_JSON)
 public class StatModuleApiController extends AbstractApiController {
 
     private static final String SEPARATOR = " - ";
@@ -74,6 +78,7 @@ public class StatModuleApiController extends AbstractApiController {
     @Path("/")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "stat-module-get-statistics", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getStatistics() {
 
         StatsResponse statsResponse = new StatsResponse();

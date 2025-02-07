@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,6 +18,40 @@
  */
 package se.inera.intyg.webcert.web.service.utkast;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.anyList;
+import static org.mockito.Mockito.anySet;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
+import jakarta.persistence.OptimisticLockException;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -73,23 +107,15 @@ import se.inera.intyg.webcert.web.service.referens.ReferensService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.util.StatisticsGroupByUtil;
-import se.inera.intyg.webcert.web.service.utkast.dto.*;
+import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
+import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
+import se.inera.intyg.webcert.web.service.utkast.dto.PreviousIntyg;
+import se.inera.intyg.webcert.web.service.utkast.dto.SaveDraftResponse;
+import se.inera.intyg.webcert.web.service.utkast.dto.UpdatePatientOnDraftRequest;
 import se.inera.intyg.webcert.web.service.utkast.util.CreateIntygsIdStrategy;
 import se.inera.intyg.webcert.web.service.utkast.util.UtkastServiceHelper;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.riv.clinicalprocess.healthcond.certificate.v33.Forifyllnad;
-
-import javax.persistence.OptimisticLockException;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
-
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.anyList;
-import static org.mockito.Mockito.anySet;
-import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
@@ -217,7 +243,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         revokedLockedUtkast.setAterkalladDatum(LocalDateTime.now());
         when(moduleRegistry.resolveVersionFromUtlatandeJson(anyString(), anyString())).thenReturn(INTYG_TYPE_VERSION);
 
-        when(logRequestFactory.createLogRequestFromUtkast(any(Utkast.class))).thenReturn(new LogRequest());
+        when(logRequestFactory.createLogRequestFromUtkast(any(Utkast.class))).thenReturn(LogRequest.builder().build());
     }
 
     private VardpersonReferens setupVardperson(HoSPersonal hoSPerson) {
@@ -234,7 +260,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         setupReferensMocks();
         Utkast res = utkastService.createNewDraft(request);
         assertFalse(request.getForifyllnad().isPresent());
-        assertTrue(res.getStatus() == UtkastStatus.DRAFT_INCOMPLETE);
+        assertEquals(res.getStatus(), UtkastStatus.DRAFT_INCOMPLETE);
         verify(certificateEventService)
             .createCertificateEvent(anyString(), anyString(), eq(EventCode.SKAPAT));
     }
@@ -244,7 +270,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         CreateNewDraftRequest request = setupForifyllnadUtkast(ValidationStatus.INVALID);
         Utkast res = utkastService.createNewDraft(request);
         assertTrue(request.getForifyllnad().isPresent());
-        assertTrue(res.getStatus() == UtkastStatus.DRAFT_INCOMPLETE);
+        assertEquals(res.getStatus(), UtkastStatus.DRAFT_INCOMPLETE);
         verify(certificateEventService)
             .createCertificateEvent(anyString(), anyString(), eq(EventCode.SKAPAT));
     }
@@ -254,7 +280,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         CreateNewDraftRequest request = setupForifyllnadUtkast(ValidationStatus.VALID);
         Utkast res = utkastService.createNewDraft(request);
         assertTrue(request.getForifyllnad().isPresent());
-        assertTrue(res.getStatus() == UtkastStatus.DRAFT_COMPLETE);
+        assertEquals(res.getStatus(), UtkastStatus.DRAFT_COMPLETE);
 
         InOrder inOrder = inOrder(certificateEventService);
         inOrder.verify(certificateEventService)
@@ -337,9 +363,10 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     @Test
     public void testDeleteDraftWrongVersion() {
         when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
+        final var version = utkast.getVersion() - 1;
 
         try {
-            utkastService.deleteUnsignedDraft(INTYG_ID, utkast.getVersion() - 1);
+            utkastService.deleteUnsignedDraft(INTYG_ID, version);
             Assert.fail("OptimisticLockException expected");
         } catch (OptimisticLockException e) {
             // Expected
@@ -861,7 +888,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         assertNotNull(res.get("utkast"));
         assertTrue(res.get("utkast").get("db").isSameVardgivare());
-        assertEquals(res.get("utkast").get("db").getLatestIntygsId(), "db2");
+        assertEquals("db2", res.get("utkast").get("db").getLatestIntygsId());
         assertFalse(res.get("utkast").get("doi").isSameVardgivare());
 
         verify(utkastRepository).findAllByPatientPersonnummerAndIntygsTypIn(eq(PERSONNUMMER.getPersonnummerWithDash()),
@@ -889,7 +916,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         assertNotNull(res.get("utkast"));
         assertTrue(res.get("utkast").get("db").isSameVardgivare());
-        assertEquals(res.get("utkast").get("db").getLatestIntygsId(), "db1");
+        assertEquals("db1", res.get("utkast").get("db").getLatestIntygsId());
 
         verify(utkastRepository).findAllByPatientPersonnummerAndIntygsTypIn(eq(PERSONNUMMER.getPersonnummerWithDash()),
             eq(activeModules));
@@ -917,7 +944,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         assertNotNull(res.get("intyg"));
         assertTrue(res.get("intyg").get("db").isSameVardgivare());
-        assertEquals(res.get("intyg").get("db").getLatestIntygsId(), "db2");
+        assertEquals("db2", res.get("intyg").get("db").getLatestIntygsId());
         assertFalse(res.get("intyg").get("doi").isSameVardgivare());
 
         verify(utkastRepository).findAllByPatientPersonnummerAndIntygsTypIn(eq(PERSONNUMMER.getPersonnummerWithDash()),
@@ -943,7 +970,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         assertNotNull(res.get("intyg"));
         assertTrue(res.get("intyg").get("db").isSameVardgivare());
-        assertEquals(res.get("intyg").get("db").getLatestIntygsId(), "db2");
+        assertEquals("db2", res.get("intyg").get("db").getLatestIntygsId());
 
         verify(utkastRepository).findAllByPatientPersonnummerAndIntygsTypIn(eq(PERSONNUMMER.getPersonnummerWithDash()),
             eq(activeModules));
@@ -968,7 +995,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         assertNotNull(res.get("intyg"));
         assertTrue(res.get("intyg").get("db").isSameVardgivare());
-        assertEquals(res.get("intyg").get("db").getLatestIntygsId(), "db1");
+        assertEquals("db1", res.get("intyg").get("db").getLatestIntygsId());
 
         verify(utkastRepository).findAllByPatientPersonnummerAndIntygsTypIn(eq(PERSONNUMMER.getPersonnummerWithDash()),
             eq(activeModules));
@@ -1166,7 +1193,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void shallPdlLogReadActivityByDefault() {
-        final var expectedLogRequest = new LogRequest();
+        final var expectedLogRequest = LogRequest.builder().build();
         final var user = createUser();
         when(utkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, INTYG_TYPE)).thenReturn(utkast);
         when(userService.getUser()).thenReturn(user);
@@ -1177,7 +1204,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void shallPdlLogReadActivityWithSjfWhenDifferentCareProvider() {
-        final var expectedLogRequest = new LogRequest();
+        final var expectedLogRequest = LogRequest.builder().build();
         final var user = createUser(true);
         utkast.setVardgivarId("Vardgivare2");
         when(utkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, INTYG_TYPE)).thenReturn(utkast);
@@ -1189,7 +1216,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void shallMonitorLogWhenPdlLogging() {
-        final var expectedLogRequest = new LogRequest();
+        final var expectedLogRequest = LogRequest.builder().build();
         final var user = createUser(true);
         when(utkastRepository.getIntygsTyp(INTYG_ID)).thenReturn(INTYG_TYPE);
         when(utkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, INTYG_TYPE)).thenReturn(utkast);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,59 +19,16 @@
 package se.inera.intyg.webcert.web.web.controller.integration.dto;
 
 import java.io.Serializable;
+import lombok.Data;
 
 /**
  * @author Magnus Ekstrand on 2017-10-12.
  */
+@Data
 public class PrepareRedirectToIntyg implements Serializable {
 
     private String intygTyp;
     private String intygTypeVersion;
     private String intygId;
-
     private boolean utkast;
-
-    // getters and setters
-
-    public String getIntygTyp() {
-        return intygTyp;
-    }
-
-    public void setIntygTyp(String intygTyp) {
-        this.intygTyp = intygTyp;
-    }
-
-    public String getIntygId() {
-        return intygId;
-    }
-
-    public void setIntygId(String intygId) {
-        this.intygId = intygId;
-    }
-
-    public boolean isUtkast() {
-        return utkast;
-    }
-
-    public void setUtkast(boolean utkast) {
-        this.utkast = utkast;
-    }
-
-    @Override
-    public String toString() {
-        return "PrepareRedirectToIntyg {"
-            + "intygTyp='" + intygTyp + '\''
-            + "intygTypeVersion='" + intygTypeVersion + '\''
-            + ", intygId='" + intygId + '\''
-            + ", utkast=" + utkast
-            + "}";
-    }
-
-    public String getIntygTypeVersion() {
-        return intygTypeVersion;
-    }
-
-    public void setIntygTypeVersion(String intygTypeVersion) {
-        this.intygTypeVersion = intygTypeVersion;
-    }
 }

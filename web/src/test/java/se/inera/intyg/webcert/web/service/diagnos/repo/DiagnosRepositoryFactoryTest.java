@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,24 +18,23 @@
  */
 package se.inera.intyg.webcert.web.service.diagnos.repo;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import se.inera.intyg.webcert.web.service.diagnos.model.Diagnos;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration("classpath:/DiagnosService/DiagnosRepositoryFactoryTest-context.xml")
-public class DiagnosRepositoryFactoryTest {
+class DiagnosRepositoryFactoryTest {
 
     private static final String LINE_1 = "A00-   Tyfoidfeber";
     private static final String LINE_1_KOD = "A00-";
@@ -53,29 +52,28 @@ public class DiagnosRepositoryFactoryTest {
     private static final String REALLY_MESSY_LINE = "  A050   Matförgiftning orsakad av stafylokocker  ";
     private static final String LINE_WITH_BOM = "\uFEFFA050   Matförgiftning orsakad av stafylokocker  ";
 
-    private static final String FILE_1 = "classpath:/DiagnosService/icd10se/digit3.txt";
-    private static final String FILE_2 = "classpath:/DiagnosService/icd10se/digit4.txt";
+    private static final String FILE_1 = "classpath:/DiagnosService/icd10se/icd-10-se.tsv";
     private static final String FILE_3 = "classpath:/DiagnosService/KSH97P_SFAM_TESTKODER.ANS";
 
     @Autowired
     private DiagnosRepositoryFactory factory;
 
-    @Before
+    @BeforeEach
     public void setup() {
 
     }
 
     @Test
-    public void testCreateRepository() {
-        List<String> fileList = Arrays.asList(FILE_1, FILE_2);
+    void testCreateRepository() {
+        List<String> fileList = List.of(FILE_1);
         DiagnosRepositoryImpl repository = (DiagnosRepositoryImpl) factory.createAndInitDiagnosRepository(fileList,
             StandardCharsets.UTF_8);
         assertNotNull(repository);
-        assertEquals(11699, repository.nbrOfDiagosis());
+        assertEquals(38628, repository.nbrOfDiagosis());
     }
 
     @Test
-    public void testReadDiagnosFile() throws Exception {
+    void testReadDiagnosFile() throws Exception {
         DiagnosRepositoryImpl diagnosRepository = new DiagnosRepositoryImpl();
         factory.populateRepoFromDiagnosisCodeFile(FILE_3, diagnosRepository, StandardCharsets.ISO_8859_1);
         diagnosRepository.openLuceneIndexReader();
@@ -84,27 +82,27 @@ public class DiagnosRepositoryFactoryTest {
     }
 
     @Test
-    public void testCreateDiagnosFromString() {
+    void testCreateDiagnosFromString() {
 
-        Diagnos res = factory.createDiagnosFromString(LINE_1, false);
+        Diagnos res = factory.createDiagnosFromString(LINE_1, false, StandardCharsets.ISO_8859_1);
 
         assertNotNull(res);
         assertEquals(LINE_1_KOD, res.getKod());
         assertEquals(LINE_1_BESK, res.getBeskrivning());
 
-        res = factory.createDiagnosFromString(LINE_2, false);
+        res = factory.createDiagnosFromString(LINE_2, false, StandardCharsets.ISO_8859_1);
 
         assertNotNull(res);
         assertEquals(LINE_2_KOD, res.getKod());
         assertEquals(LINE_2_BESK, res.getBeskrivning());
 
-        res = factory.createDiagnosFromString(LINE_3, false);
+        res = factory.createDiagnosFromString(LINE_3, false, StandardCharsets.ISO_8859_1);
 
         assertNotNull(res);
         assertEquals(LINE_3_KOD, res.getKod());
         assertEquals(LINE_3_BESK, res.getBeskrivning());
 
-        res = factory.createDiagnosFromString(LINE_4, false);
+        res = factory.createDiagnosFromString(LINE_4, false, StandardCharsets.ISO_8859_1);
 
         assertNotNull(res);
         assertEquals(LINE_4_KOD, res.getKod());
@@ -113,22 +111,22 @@ public class DiagnosRepositoryFactoryTest {
     }
 
     @Test
-    public void testWithNullsAndEmpty() {
+    void testWithStandardCharsetAndEmpty() {
 
-        Diagnos res = factory.createDiagnosFromString(null, false);
+        Diagnos res = factory.createDiagnosFromString(null, false, StandardCharsets.ISO_8859_1);
         assertNull(res);
 
-        res = factory.createDiagnosFromString("", false);
+        res = factory.createDiagnosFromString("", false, StandardCharsets.ISO_8859_1);
         assertNull(res);
 
-        res = factory.createDiagnosFromString("  ", false);
+        res = factory.createDiagnosFromString("  ", false, StandardCharsets.ISO_8859_1);
         assertNull(res);
     }
 
     @Test
-    public void testWithMessyString() {
+    void testWithMessyString() {
 
-        Diagnos res = factory.createDiagnosFromString(REALLY_MESSY_LINE, false);
+        Diagnos res = factory.createDiagnosFromString(REALLY_MESSY_LINE, false, StandardCharsets.ISO_8859_1);
         assertNotNull(res);
         assertEquals("A050", res.getKod());
         assertEquals("Matförgiftning orsakad av stafylokocker", res.getBeskrivning());
@@ -136,13 +134,24 @@ public class DiagnosRepositoryFactoryTest {
     }
 
     @Test
-    public void testRemoveBOMFromString() {
+    void testRemoveBOMFromString() {
 
-        Diagnos res = factory.createDiagnosFromString(LINE_WITH_BOM, true);
+        Diagnos res = factory.createDiagnosFromString(LINE_WITH_BOM, true, StandardCharsets.ISO_8859_1);
         assertNotNull(res);
         assertEquals("A050", res.getKod());
         assertEquals("Matförgiftning orsakad av stafylokocker", res.getBeskrivning());
 
     }
 
+    @Test
+    void testGetDiagnosisFromIcdCodeConverter() {
+        final var tsvContent = "\"A02.2\"\t\"1997-01-01\"\t\"A02\"\t\"Lokaliserade salmonellainfektioner"
+            + "\"\t\"\"\t\"\"\t\"Renal tubulo-interstitiell sjukdom orsakad av salmonella (N16.0*)\"\t\"\""
+            + "\t\"\"\t\"\"\t\"\"\t\"\"\t\"Etiologisk kod (†)\"\t\"\"\t\"\"\t\"Subkategorikod, fyrställig (fem tecken med punkt)\"";
+
+        Diagnos res = factory.createDiagnosFromString(tsvContent, true, StandardCharsets.UTF_8);
+        assertNotNull(res);
+        assertEquals("A022", res.getKod());
+        assertEquals("Lokaliserade salmonellainfektioner", res.getBeskrivning());
+    }
 }

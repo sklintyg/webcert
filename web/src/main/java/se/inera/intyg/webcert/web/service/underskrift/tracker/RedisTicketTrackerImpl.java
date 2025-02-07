@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,13 +18,14 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift.tracker;
 
+import jakarta.annotation.Resource;
 import java.util.concurrent.TimeUnit;
-import javax.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
@@ -69,6 +70,31 @@ public class RedisTicketTrackerImpl implements RedisTicketTracker {
         sb.setStatus(status);
         valueOps.set(buildKey(ticketId), sb);
         return sb;
+    }
+
+    @Override
+    public void updateAutoStartToken(String ticketId, @NonNull String autoStartToken) {
+        SignaturBiljett sb = valueOps.get(buildKey(ticketId));
+
+        if (sb == null) {
+            throw new IllegalStateException(String.format("Signature ticket id '%s' not found when updating autostarttoken.", ticketId));
+        }
+
+        sb.setAutoStartToken(autoStartToken);
+        valueOps.set(buildKey(ticketId), sb);
+    }
+
+    @Override
+    public void updateQrCodeProperties(String ticketId, String qrStartToken, String qrStartSecret) {
+        SignaturBiljett sb = valueOps.get(buildKey(ticketId));
+
+        if (sb == null) {
+            throw new IllegalStateException(String.format("Signature ticket id '%s' not found when updating qr properties.", ticketId));
+        }
+
+        sb.setQrStartToken(qrStartToken);
+        sb.setQrStartSecret(qrStartSecret);
+        valueOps.set(buildKey(ticketId), sb);
     }
 
     private String buildKey(String ticketId) {

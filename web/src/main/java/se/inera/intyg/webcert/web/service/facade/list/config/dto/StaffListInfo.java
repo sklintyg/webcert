@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,29 +18,15 @@
  */
 package se.inera.intyg.webcert.web.service.facade.list.config.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+
+@Data
+@Builder
+@AllArgsConstructor
 public class StaffListInfo {
 
     private String hsaId;
     private String name;
-
-    public StaffListInfo(String hsaId, String name) {
-        this.hsaId = hsaId;
-        this.name = name;
-    }
-
-    public String getHsaId() {
-        return hsaId;
-    }
-
-    public void setHsaId(String hsaId) {
-        this.hsaId = hsaId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 }

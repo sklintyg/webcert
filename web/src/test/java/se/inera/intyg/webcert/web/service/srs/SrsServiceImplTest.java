@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -24,7 +24,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -33,7 +32,8 @@ import static org.mockito.Mockito.when;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import org.apache.commons.lang.StringUtils;
+import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -63,6 +63,7 @@ import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacade;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SrsServiceImplTest {
@@ -105,13 +106,15 @@ public class SrsServiceImplTest {
     private static IntygContentHolder buildIntygContentHolder(String certificateId, String diagnosisCode, String extendsCertificateId,
         boolean signed) {
         IntygContentHolder certHolder = IntygContentHolder.builder()
-            .setContents("DUMMY-MODEL-" + certificateId)
-            .setRevoked(false)
-            .setDeceased(false)
-            .setSekretessmarkering(false)
-            .setPatientAddressChangedInPU(false)
-            .setPatientNameChangedInPU(false)
-            .setTestIntyg(false) // It's a kind of testintyg but we want to unit test as if it was a real one
+            .contents("DUMMY-MODEL-" + certificateId)
+            .revoked(false)
+            .deceased(false)
+            .sekretessmarkering(false)
+            .patientAddressChangedInPU(false)
+            .patientNameChangedInPU(false)
+            .testIntyg(false) // It's a kind of testintyg but we want to unit test as if it was a real one
+            .relations(new Relations())
+            .latestMajorTextVersion(true)
             .build();
         return certHolder;
     }
@@ -182,40 +185,39 @@ public class SrsServiceImplTest {
             refEq(buildUtdataFilter(false, true, true)), anyList(), anyInt()))
             .thenReturn(srsResponseWithoutPrediction);
 
-        when(diagnosService.getDiagnosisByCode(eq("F438A"), eq(Diagnoskodverk.ICD_10_SE)))
-            .thenReturn(DiagnosResponse.ok(asList(DIAGNOSIS_F438A), false));
+        when(diagnosService.getDiagnosisByCode("F438A", Diagnoskodverk.ICD_10_SE))
+            .thenReturn(DiagnosResponse.ok(List.of(DIAGNOSIS_F438A), false));
 
-        when(diagnosService.getDiagnosisByCode(eq("F438"), eq(Diagnoskodverk.ICD_10_SE)))
-            .thenReturn(DiagnosResponse.ok(asList(DIAGNOSIS_F438), false));
+        when(diagnosService.getDiagnosisByCode("F438", Diagnoskodverk.ICD_10_SE))
+            .thenReturn(DiagnosResponse.ok(List.of(DIAGNOSIS_F438), false));
 
-        when(diagnosService.getDiagnosisByCode(eq("F43"), eq(Diagnoskodverk.ICD_10_SE)))
-            .thenReturn(DiagnosResponse.ok(asList(DIAGNOSIS_F43), false));
+        when(diagnosService.getDiagnosisByCode("F43", Diagnoskodverk.ICD_10_SE))
+            .thenReturn(DiagnosResponse.ok(List.of(DIAGNOSIS_F43), false));
 
-        when(intygService.fetchIntygDataWithRelations(eq("intyg-id-123"), eq(LisjpEntryPoint.MODULE_ID)))
+        when(intygService.fetchIntygDataWithRelations("intyg-id-123", LisjpEntryPoint.MODULE_ID))
             .thenReturn(buildIntygContentHolder("intyg-id-123", "F438A", "parent-intyg-id-1", false));
 
-        when(intygService.fetchIntygDataWithRelations(eq("parent-intyg-id-1"), eq(LisjpEntryPoint.MODULE_ID)))
+        when(intygService.fetchIntygDataWithRelations("parent-intyg-id-1", LisjpEntryPoint.MODULE_ID))
             .thenReturn(buildIntygContentHolder("parent-intyg-id-1", "F438A", "parent-intyg-id2", true));
 
-        when(intygService.fetchIntygDataWithRelations(eq("parent-intyg-id-2"), eq(LisjpEntryPoint.MODULE_ID)))
+        when(intygService.fetchIntygDataWithRelations("parent-intyg-id-2", LisjpEntryPoint.MODULE_ID))
             .thenReturn(buildIntygContentHolder("parent-intyg-id-2", "F438A", null, true));
 
-        when(intygService.fetchIntygDataWithRelations(eq("parent-intyg-id-3"), eq(LisjpEntryPoint.MODULE_ID)))
+        when(intygService.fetchIntygDataWithRelations("parent-intyg-id-3", LisjpEntryPoint.MODULE_ID))
             .thenReturn(buildIntygContentHolder("parent-intyg-id-3", "F438A", null, true));
 
         // Match dummy models to generate different utlatande
-        when(intygModuleFacade.getUtlatandeFromInternalModel(eq(LisjpEntryPoint.MODULE_ID), eq("DUMMY-MODEL-intyg-id-123")))
+        when(intygModuleFacade.getUtlatandeFromInternalModel(LisjpEntryPoint.MODULE_ID, "DUMMY-MODEL-intyg-id-123"))
             .thenReturn(buildUtlatande("intyg-id-123", "F438A", "parent-intyg-id-1"));
 
-        when(intygModuleFacade.getUtlatandeFromInternalModel(eq(LisjpEntryPoint.MODULE_ID), eq("DUMMY-MODEL-parent-intyg-id-1")))
+        when(intygModuleFacade.getUtlatandeFromInternalModel(LisjpEntryPoint.MODULE_ID, "DUMMY-MODEL-parent-intyg-id-1"))
             .thenReturn(buildUtlatande("parent-intyg-id-1", "F438A", "parent-intyg-id-2"));
 
-        when(intygModuleFacade.getUtlatandeFromInternalModel(eq(LisjpEntryPoint.MODULE_ID), eq("DUMMY-MODEL-parent-intyg-id-2")))
+        when(intygModuleFacade.getUtlatandeFromInternalModel(LisjpEntryPoint.MODULE_ID, "DUMMY-MODEL-parent-intyg-id-2"))
             .thenReturn(buildUtlatande("parent-intyg-id-2", "F438A", "parent-intyg-id-3"));
 
-        when(intygModuleFacade.getUtlatandeFromInternalModel(eq(LisjpEntryPoint.MODULE_ID), eq("DUMMY-MODEL-parent-intyg-id-3")))
+        when(intygModuleFacade.getUtlatandeFromInternalModel(LisjpEntryPoint.MODULE_ID, "DUMMY-MODEL-parent-intyg-id-3"))
             .thenReturn(buildUtlatande("parent-intyg-id-3", "F438A", null));
-
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -240,14 +242,14 @@ public class SrsServiceImplTest {
     public void getSrsShouldLogShowPredictionIfPredictionIsIncluded() throws Exception {
         srsServiceUnderTest.getSrs(user, "intyg-id-123", "191212121212", "F438A",
             true, true, true, new ArrayList<SrsQuestionResponse>(), 15);
-        verify(logService, times(1)).logShowPrediction(eq("191212121212"), eq("intyg-id-123"));
+        verify(logService, times(1)).logShowPrediction("191212121212", "intyg-id-123");
     }
 
     @Test
     public void getSrsShouldNotLogShowPredictionIfPredictionIsNotIncluded() throws Exception {
         srsServiceUnderTest.getSrs(user, "intyg-id-123", "191212121212", "F438A",
             false, true, true, new ArrayList<SrsQuestionResponse>(), 15);
-        verify(logService, times(0)).logShowPrediction(eq("191212121212"), eq("intyg-id-123"));
+        verify(logService, times(0)).logShowPrediction("191212121212", "intyg-id-123");
     }
 
     @Test

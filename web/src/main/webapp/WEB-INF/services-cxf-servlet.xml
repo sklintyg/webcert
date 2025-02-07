@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (C) 2016 Inera AB (http://www.inera.se)
+  ~ Copyright (C) 2025 Inera AB (http://www.inera.se)
   ~
   ~ This file is part of sklintyg (https://github.com/sklintyg).
   ~
@@ -18,22 +18,24 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jaxws="http://cxf.apache.org/jaxws"
+<beans xmlns:context="http://www.springframework.org/schema/context"
     xmlns:cxf="http://cxf.apache.org/core" xmlns:http="http://cxf.apache.org/transports/http/configuration"
-    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:jaxws="http://cxf.apache.org/jaxws" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.springframework.org/schema/beans"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-        http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
-        http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
-        http://cxf.apache.org/transports/http/configuration
-                http://cxf.apache.org/schemas/configuration/http-conf.xsd">
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+    http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
+    http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd">
 
   <context:annotation-config/>
 
+  <cxf:bus>
+    <cxf:features>
+      <cxf:logging/>
+    </cxf:features>
+  </cxf:bus>
   <import resource="classpath:fk-stub-context.xml"/>
   <import resource="classpath:fmb-stub-context.xml"/>
-  <import resource="classpath:hsatk-stub-context.xml"/>
   <import resource="classpath:tak-stub-context.xml"/>
   <import resource="classpath:pu-stub-context.xml"/>
   <import resource="classpath:ia-stub-context.xml"/>
@@ -44,15 +46,11 @@
   <import resource="classpath:/intygstjanst-stub-context.xml"/>
   <import resource="classpath:/loggtjanst-stub-context.xml"/>
   <import resource="classpath:/notification-stub-context.xml"/>
-  <import resource="classpath:/kundportalen-stub-context.xml"/>
-  <!--  <import resource="classpath:/webcert-testability-api-context.xml" /> -->
+  <import resource="classpath:/servicenow-stub-context.xml"/>
   <import resource="classpath:/swagger-api-context.xml"/>
+  <import resource="classpath:/hsa-integration-intyg-proxy-service-config.xml"/>
 
-  <cxf:bus>
-    <cxf:features>
-      <cxf:logging/>
-    </cxf:features>
-  </cxf:bus>
+  <import resource="classpath:/pu-integration-intyg-proxy-service-config.xml"/>
 
   <!-- ws endpoints -->
   <jaxws:endpoint address="/create-draft-certificate/v3.0" implementor="se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3.CreateDraftCertificateResponderImpl">

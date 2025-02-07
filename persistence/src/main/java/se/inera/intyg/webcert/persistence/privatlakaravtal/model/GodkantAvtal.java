@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,14 +18,13 @@
  */
 package se.inera.intyg.webcert.persistence.privatlakaravtal.model;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.time.LocalDateTime;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import org.hibernate.annotations.Type;
 
 /**
  * Created by eriklupander on 2015-08-05.
@@ -35,7 +34,7 @@ import org.hibernate.annotations.Type;
 public class GodkantAvtal {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long internReferens;
 
     @Column(name = "AVTAL_VERSION")
@@ -45,7 +44,6 @@ public class GodkantAvtal {
     private String hsaId;
 
     @Column(name = "GODKAND_DATUM")
-    @Type(type = "org.jadira.usertype.dateandtime.threeten.PersistentLocalDateTime")
     private LocalDateTime godkandDatum;
 
     public Long getInternReferens() {

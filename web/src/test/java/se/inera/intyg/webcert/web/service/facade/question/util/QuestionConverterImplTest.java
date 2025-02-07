@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,7 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.facade.question.util;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -49,19 +51,21 @@ class QuestionConverterImplTest {
     @Nested
     class ReceivedAdministativeQuestions {
 
-        private final String QUESTION_ID = "1000";
-        private final String AUTHOR_CERTIFICATE_RECEIVER = "Försäkringskassan";
-        private final String AUTHOR = "author";
-        private final String SUBJECT_WITHOUT_HEADER = "Avstämningsmöte";
-        private final String SUBJECT_WITH_HEADER = "Avstämningsmöte - Rubrik";
-        private final String HEADER = "Rubrik";
-        private final LocalDateTime SENT = LocalDateTime.now();
-        private final String SENT_BY_FK = "FK";
-        private final boolean IS_HANDLED = true;
-        private final boolean IS_FORWARDED = true;
-        private final String MESSAGE = "message";
-        private final LocalDateTime LAST_UPDATE = LocalDateTime.now().plusDays(1);
-        private final LocalDate LAST_DATE_TO_REPLY = LocalDate.now();
+        private static final String QUESTION_ID = "1000";
+        private static final String CERTIFICATE_ID = "CERTIFICATE_ID";
+        private static final String AUTHOR_CERTIFICATE_RECEIVER = "Försäkringskassan";
+        private static final String AUTHOR = "author";
+        private static final String SUBJECT_WITHOUT_HEADER = "Avstämningsmöte";
+        private static final String SUBJECT_WITH_HEADER = "Avstämningsmöte - Rubrik";
+        private static final String HEADER = "Rubrik";
+        private static final String SENT_BY_FK = "FK";
+        private static final boolean IS_HANDLED = true;
+        private static final boolean IS_FORWARDED = true;
+        private static final String MESSAGE = "message";
+
+        private final LocalDateTime lastUpdate = LocalDateTime.now().plusDays(1);
+        private final LocalDate lastDateToReply = LocalDate.now();
+        private final LocalDateTime sent = LocalDateTime.now();
 
         private Arende arende;
 
@@ -71,13 +75,14 @@ class QuestionConverterImplTest {
             arende.setMeddelandeId(QUESTION_ID);
             arende.setVardaktorName(AUTHOR);
             arende.setAmne(ArendeAmne.AVSTMN);
-            arende.setTimestamp(SENT);
+            arende.setTimestamp(sent);
             arende.setSkickatAv(SENT_BY_FK);
             arende.setStatus(Status.CLOSED);
             arende.setVidarebefordrad(IS_FORWARDED);
             arende.setMeddelande(MESSAGE);
-            arende.setSenasteHandelse(LAST_UPDATE);
-            arende.setSistaDatumForSvar(LAST_DATE_TO_REPLY);
+            arende.setSenasteHandelse(lastUpdate);
+            arende.setSistaDatumForSvar(lastDateToReply);
+            arende.setIntygsId(CERTIFICATE_ID);
         }
 
         @Test
@@ -85,6 +90,13 @@ class QuestionConverterImplTest {
             final var actualQuestion = questionConverter.convert(arende);
 
             assertEquals(QUESTION_ID, actualQuestion.getId());
+        }
+
+        @Test
+        void shallReturnQuestionWithCertificateId() {
+            final var actualQuestion = questionConverter.convert(arende);
+
+            assertEquals(CERTIFICATE_ID, actualQuestion.getCertificateId());
         }
 
         @Test
@@ -148,7 +160,7 @@ class QuestionConverterImplTest {
         void shallReturnQuestionWithSent() {
             final var actualQuestion = questionConverter.convert(arende);
 
-            assertEquals(SENT, actualQuestion.getSent());
+            assertEquals(sent, actualQuestion.getSent());
         }
 
         @Test
@@ -176,33 +188,28 @@ class QuestionConverterImplTest {
         void shallReturnQuestionWithLastUpdate() {
             final var actualQuestion = questionConverter.convert(arende);
 
-            assertEquals(LAST_UPDATE, actualQuestion.getLastUpdate());
+            assertEquals(lastUpdate, actualQuestion.getLastUpdate());
         }
 
         @Test
         void shallReturnQuestionWithLastDateToReply() {
             final var actualQuestion = questionConverter.convert(arende);
 
-            assertEquals(LAST_DATE_TO_REPLY, actualQuestion.getLastDateToReply());
+            assertEquals(lastDateToReply, actualQuestion.getLastDateToReply());
         }
     }
 
     @Nested
     class ReceivedComplementQuestions {
 
-        private final String QUESTION_ID = "1000";
-        private final String AUTHOR_CERTIFICATE_RECEIVER = "Försäkringskassan";
-        private final String AUTHOR = "author";
-        private final String SUBJECT_WITHOUT_HEADER = "Avstämningsmöte";
-        private final String SUBJECT_WITH_HEADER = "Avstämningsmöte - Rubrik";
-        private final String HEADER = "Rubrik";
-        private final LocalDateTime SENT = LocalDateTime.now();
-        private final String SENT_BY_FK = "FK";
-        private final boolean IS_HANDLED = true;
-        private final boolean IS_FORWARDED = true;
-        private final String MESSAGE = "message";
-        private final LocalDateTime LAST_UPDATE = LocalDateTime.now().plusDays(1);
-        private final LocalDate LAST_DATE_TO_REPLY = LocalDate.now();
+        private static final String QUESTION_ID = "1000";
+        private static final String AUTHOR = "author";
+        private static final String SENT_BY_FK = "FK";
+        private static final boolean IS_FORWARDED = true;
+        private static final String MESSAGE = "message";
+        private final LocalDateTime lastUpdate = LocalDateTime.now().plusDays(1);
+        private final LocalDate lastDateToReply = LocalDate.now();
+        private final LocalDateTime sent = LocalDateTime.now();
 
         private Arende arende;
         private Complement[] expectedComplements;
@@ -214,13 +221,13 @@ class QuestionConverterImplTest {
             arende.setMeddelandeId(QUESTION_ID);
             arende.setVardaktorName(AUTHOR);
             arende.setAmne(ArendeAmne.KOMPLT);
-            arende.setSkickatTidpunkt(SENT);
+            arende.setSkickatTidpunkt(sent);
             arende.setSkickatAv(SENT_BY_FK);
             arende.setStatus(Status.CLOSED);
             arende.setVidarebefordrad(IS_FORWARDED);
             arende.setMeddelande(MESSAGE);
-            arende.setSenasteHandelse(LAST_UPDATE);
-            arende.setSistaDatumForSvar(LAST_DATE_TO_REPLY);
+            arende.setSenasteHandelse(lastUpdate);
+            arende.setSistaDatumForSvar(lastDateToReply);
 
             expectedComplements = new Complement[]{Complement.builder().build()};
             expectedAnswerByCertificate = CertificateRelation.builder().build();
@@ -261,7 +268,7 @@ class QuestionConverterImplTest {
             final var actualQuestion = questionConverter
                 .convert(arende, expectedComplements, expectedAnswerByCertificate, new ArendeDraft(), Collections.emptyList());
 
-            assertEquals(LAST_DATE_TO_REPLY, actualQuestion.getLastDateToReply());
+            assertEquals(lastDateToReply, actualQuestion.getLastDateToReply());
 
         }
     }
@@ -269,23 +276,19 @@ class QuestionConverterImplTest {
     @Nested
     class AnswerOnReceivedAdministativeQuestions {
 
-        private final String QUESTION_ID = "1000";
-        private final String AUTHOR_CERTIFICATE_RECEIVER = "Försäkringskassan";
-        private final String AUTHOR = "author";
-        private final String SUBJECT_WITHOUT_HEADER = "Avstämningsmöte";
-        private final String SUBJECT_WITH_HEADER = "Avstämningsmöte - Rubrik";
-        private final String HEADER = "Rubrik";
-        private final LocalDateTime SENT = LocalDateTime.now();
-        private final String SENT_BY_FK = "FK";
-        private final boolean IS_HANDLED = true;
-        private final boolean IS_FORWARDED = true;
-        private final String MESSAGE = "message";
-        private final LocalDateTime LAST_UPDATE = LocalDateTime.now().plusDays(1);
+        private static final String QUESTION_ID = "1000";
+        private static final String AUTHOR = "author";
+        private static final String SENT_BY_FK = "FK";
+        private static final boolean IS_FORWARDED = true;
+        private static final String MESSAGE = "message";
 
-        private final String ANSWER_AUTHOR = "answer author";
-        private final String ANSWER_ID = "answerId";
-        private final LocalDateTime ANSWER_SENT = LocalDateTime.now();
-        private final String ANSWER_MESSAGE = "answer message";
+        private final LocalDateTime lastUpdate = LocalDateTime.now().plusDays(1);
+        private final LocalDateTime sent = LocalDateTime.now();
+        private final LocalDateTime answerSent = LocalDateTime.now();
+
+        private static final String ANSWER_AUTHOR = "answer author";
+        private static final String ANSWER_ID = "answerId";
+        private static final String ANSWER_MESSAGE = "answer message";
 
         private Arende arende;
         private Arende arendeSvar;
@@ -297,17 +300,17 @@ class QuestionConverterImplTest {
             arende.setMeddelandeId(QUESTION_ID);
             arende.setVardaktorName(AUTHOR);
             arende.setAmne(ArendeAmne.AVSTMN);
-            arende.setTimestamp(SENT);
+            arende.setTimestamp(sent);
             arende.setSkickatAv(SENT_BY_FK);
             arende.setStatus(Status.CLOSED);
             arende.setVidarebefordrad(IS_FORWARDED);
             arende.setMeddelande(MESSAGE);
-            arende.setSenasteHandelse(LAST_UPDATE);
+            arende.setSenasteHandelse(lastUpdate);
 
             arendeSvar = new Arende();
             arendeSvar.setMeddelandeId(ANSWER_ID);
             arendeSvar.setVardaktorName(ANSWER_AUTHOR);
-            arendeSvar.setTimestamp(ANSWER_SENT);
+            arendeSvar.setTimestamp(answerSent);
             arendeSvar.setMeddelande(ANSWER_MESSAGE);
 
             arendeSvarDraft = new ArendeDraft();
@@ -363,7 +366,7 @@ class QuestionConverterImplTest {
         void shallReturnAnswerWithSent() {
             final var actualQuestion = questionConverter.convert(arende, new Complement[0], null, arendeSvar, Collections.emptyList());
 
-            assertEquals(ANSWER_SENT, actualQuestion.getAnswer().getSent());
+            assertEquals(answerSent, actualQuestion.getAnswer().getSent());
         }
 
         @Test
@@ -392,35 +395,30 @@ class QuestionConverterImplTest {
     @Nested
     class ReminderOnReceivedAdministativeQuestions {
 
-        private final String QUESTION_ID = "1000";
-        private final String AUTHOR_CERTIFICATE_RECEIVER = "Försäkringskassan";
-        private final String AUTHOR = "author";
-        private final String SUBJECT_WITHOUT_HEADER = "Avstämningsmöte";
-        private final String SUBJECT_WITH_HEADER = "Avstämningsmöte - Rubrik";
-        private final String HEADER = "Rubrik";
-        private final LocalDateTime SENT = LocalDateTime.now();
-        private final String SENT_BY_FK = "FK";
-        private final boolean IS_HANDLED = true;
-        private final boolean IS_FORWARDED = true;
-        private final String MESSAGE = "message";
-        private final LocalDateTime LAST_UPDATE = LocalDateTime.now().plusDays(1);
+        private static final String QUESTION_ID = "1000";
+        private static final String AUTHOR = "author";
+        private static final String SENT_BY_FK = "FK";
+        private static final boolean IS_FORWARDED = true;
+        private static final String MESSAGE = "message";
 
-        private final String ANSWER_AUTHOR = "answer author";
-        private final String ANSWER_ID = "answerId";
-        private final LocalDateTime ANSWER_SENT = LocalDateTime.now();
-        private final String ANSWER_MESSAGE = "answer message";
+        private static final String ANSWER_AUTHOR = "answer author";
+        private static final String ANSWER_ID = "answerId";
+        private static final String ANSWER_MESSAGE = "answer message";
 
-        private final String REMINDER_AUTHOR = "Försäkringskassan";
-        private String REMINDER_ID = "reminderId";
-        private String REMINDER_MESSAGE = "reminderMessage";
-        private LocalDateTime REMINDER_SENT = LocalDateTime.now();
+        private static final String REMINDER_AUTHOR = "Försäkringskassan";
+        private static final String REMINDER_ID = "reminderId";
+        private static final String REMINDER_MESSAGE = "reminderMessage";
+
+        private final LocalDateTime reminderSent = LocalDateTime.now();
+        private final LocalDateTime sent = LocalDateTime.now();
+        private final LocalDateTime lastUpdate = LocalDateTime.now().plusDays(1);
+        private final LocalDateTime answerSent = LocalDateTime.now();
+        private final LocalDate lastDateToReply = LocalDate.now();
 
         private Arende arende;
         private Arende arendeSvar;
         private ArendeDraft arendeSvarDraft;
         private Arende arendePaminnelse;
-
-        private final LocalDate LAST_DATE_TO_REPLY = LocalDate.now();
 
         @BeforeEach
         void setup() {
@@ -428,17 +426,17 @@ class QuestionConverterImplTest {
             arende.setMeddelandeId(QUESTION_ID);
             arende.setVardaktorName(AUTHOR);
             arende.setAmne(ArendeAmne.AVSTMN);
-            arende.setTimestamp(SENT);
+            arende.setTimestamp(sent);
             arende.setSkickatAv(SENT_BY_FK);
             arende.setStatus(Status.CLOSED);
             arende.setVidarebefordrad(IS_FORWARDED);
             arende.setMeddelande(MESSAGE);
-            arende.setSenasteHandelse(LAST_UPDATE);
+            arende.setSenasteHandelse(lastUpdate);
 
             arendeSvar = new Arende();
             arendeSvar.setMeddelandeId(ANSWER_ID);
             arendeSvar.setVardaktorName(ANSWER_AUTHOR);
-            arendeSvar.setTimestamp(ANSWER_SENT);
+            arendeSvar.setTimestamp(answerSent);
             arendeSvar.setMeddelande(ANSWER_MESSAGE);
 
             arendeSvarDraft = new ArendeDraft();
@@ -448,9 +446,9 @@ class QuestionConverterImplTest {
             arendePaminnelse = new Arende();
             arendePaminnelse.setMeddelandeId(REMINDER_ID);
             arendePaminnelse.setMeddelande(REMINDER_MESSAGE);
-            arendePaminnelse.setTimestamp(REMINDER_SENT);
+            arendePaminnelse.setTimestamp(reminderSent);
             arendePaminnelse.setSkickatAv(SENT_BY_FK);
-            arendePaminnelse.setSistaDatumForSvar(LAST_DATE_TO_REPLY);
+            arendePaminnelse.setSistaDatumForSvar(lastDateToReply);
         }
 
         @Test
@@ -482,14 +480,14 @@ class QuestionConverterImplTest {
             final var actualQuestion = questionConverter
                 .convert(arende, new Complement[0], null, arendeSvar, Collections.singletonList(arendePaminnelse));
 
-            assertEquals(REMINDER_SENT, actualQuestion.getReminders()[0].getSent());
+            assertEquals(reminderSent, actualQuestion.getReminders()[0].getSent());
         }
 
         @Test
         void shallReturnQuestionWithoutRemindersIfAnswerIsNull() {
             final var actualQuestion = questionConverter.convert(arende, new Complement[0], null, (Arende) null, Collections.emptyList());
 
-            assertTrue(actualQuestion.getReminders().length == 0, "Reminders should be empty");
+            assertEquals(0, actualQuestion.getReminders().length, "Reminders should be empty");
         }
 
         @Test
@@ -505,7 +503,7 @@ class QuestionConverterImplTest {
             final var actualQuestion = questionConverter
                 .convert(arende, new Complement[0], null, (ArendeDraft) null, Collections.emptyList());
 
-            assertTrue(actualQuestion.getReminders().length == 0, "Reminders should be empty");
+            assertEquals(0, actualQuestion.getReminders().length, "Reminders should be empty");
         }
 
         @Test
@@ -513,7 +511,7 @@ class QuestionConverterImplTest {
             final var actualQuestion = questionConverter
                 .convert(arende, new Complement[0], null, arendeSvar, Collections.singletonList(arendePaminnelse));
 
-            assertEquals(LAST_DATE_TO_REPLY, actualQuestion.getLastDateToReply());
+            assertEquals(lastDateToReply, actualQuestion.getLastDateToReply());
         }
 
         @Test
@@ -535,9 +533,8 @@ class QuestionConverterImplTest {
     @Nested
     class SendAdministrativeQuestions {
 
-        private final long QUESTION_ID = 1000L;
-        private final QuestionType TYPE = QuestionType.COORDINATION;
-        private final String MESSAGE = "message";
+        private static final long QUESTION_ID = 1000L;
+        private static final String MESSAGE = "message";
 
         private ArendeDraft arendeDraft;
 

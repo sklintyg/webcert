@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -27,19 +27,20 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
+import jakarta.annotation.PostConstruct;
+import jakarta.xml.ws.WebServiceException;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.chrono.ChronoLocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.annotation.PostConstruct;
-import javax.xml.ws.WebServiceException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,7 +96,6 @@ import se.inera.intyg.webcert.web.service.intyg.decorator.UtkastIntygDecorator;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
-import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsRequest;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygWithNotificationsResponse;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
@@ -421,7 +421,7 @@ public class IntygServiceImpl implements IntygService {
                 // hämta från IT om ej finns i WC eller är signerat (INTYG-7580)
                 intyg = getIntygData(intygsId, intygsTyp, false);
             } else {
-                intyg = buildIntygContentHolderFromUtkast(utkast, false);
+                intyg = buildIntygContentHolderFromUtkast(utkast);
             }
 
             UtkastStatus utkastStatus = (utkast != null) ? utkast.getStatus() : UtkastStatus.SIGNED;
@@ -494,7 +494,7 @@ public class IntygServiceImpl implements IntygService {
             certificateSenderService.storeCertificate(utkast.getIntygsId(), utkast.getIntygsTyp(), utkast.getModel());
             return IntygServiceResult.OK;
         } catch (CertificateSenderException cse) {
-            LOG.error("Could not put certificate store message on queue: " + cse.getMessage());
+            LOG.error(String.format("Could not put certificate store message on queue: %s", cse.getMessage()), cse);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, cse);
         }
     }
@@ -541,8 +541,7 @@ public class IntygServiceImpl implements IntygService {
             .createCertificateEvent(intygsId, webCertUserService.getUser().getHsaId(), EventCode.SKICKAT, "Recipient: " + recipient);
 
         // send PDL log event
-        LogRequest logRequest = logRequestFactory.createLogRequestFromUtlatande(utlatande);
-        logRequest.setAdditionalInfo(sendConfig.getPatientConsentMessage());
+        LogRequest logRequest = logRequestFactory.createLogRequestFromUtlatande(utlatande, sendConfig.getPatientConsentMessage());
         logService.logSendIntygToRecipient(logRequest);
 
         markUtkastWithSendDateAndRecipient(optionalUtkast.orElse(null), intygsId, recipient);
@@ -563,14 +562,12 @@ public class IntygServiceImpl implements IntygService {
         }
 
         // Specialfall för fk7263 utfärdade innan patientuppgifter rensades från intyg.
-        if (Fk7263EntryPoint.MODULE_ID.equalsIgnoreCase(intyg.getTyp())) {
-            if (sekretessStatus != SekretessStatus.FALSE) {
-                if (intyg.getGrundData().getSigneringsdatum().isBefore(sekretessmarkeringStartDatum)) {
-                    throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CERTIFICATE_TYPE_SEKRETESSMARKERING_HAS_PUDATA,
-                        "Cannot send certificate for sekretessmarkerad patient having existing name or address.");
-                }
-
+        if (Fk7263EntryPoint.MODULE_ID.equalsIgnoreCase(intyg.getTyp()) && sekretessStatus != SekretessStatus.FALSE) {
+            if (intyg.getGrundData().getSigneringsdatum().isBefore(sekretessmarkeringStartDatum)) {
+                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.CERTIFICATE_TYPE_SEKRETESSMARKERING_HAS_PUDATA,
+                    "Cannot send certificate for sekretessmarkerad patient having existing name or address.");
             }
+
         }
     }
 
@@ -678,16 +675,19 @@ public class IntygServiceImpl implements IntygService {
     }
 
     @Override
-    public List<IntygWithNotificationsResponse> listCertificatesForCareWithQA(IntygWithNotificationsRequest request) {
+    public List<IntygWithNotificationsResponse> listCertificatesForCareWithQA(List<Handelse> notificationsForWC) {
+        if (notificationsForWC.isEmpty()) {
+            return Collections.emptyList();
+        }
+
         final var intygWithNotificationsResponses = new ArrayList<IntygWithNotificationsResponse>();
 
-        final var allNotifications = notificationService.findNotifications(request);
-
-        final var notificationCertificateIdHash = getNotificationCertificateIdHash(allNotifications);
+        final var notificationCertificateIdHash = getNotificationCertificateIdHash(notificationsForWC);
 
         final var draftMap = getDraftMap(notificationCertificateIdHash.keySet());
 
         for (var certificateId : notificationCertificateIdHash.keySet()) {
+
             final var notifications = notificationCertificateIdHash.get(certificateId);
 
             IntygWithNotificationsResponse response = null;
@@ -841,10 +841,10 @@ public class IntygServiceImpl implements IntygService {
             LOG.error("An WebServiceException occured when trying to send intyg: " + intygsId, wse);
             return IntygServiceResult.FAILED;
         } catch (RuntimeException e) {
-            LOG.error("Module problems occured when trying to send intyg " + intygsId, e);
+            LOG.error(String.format("Module problems occured when trying to send intyg %s", intygsId), e);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
         } catch (JsonProcessingException e) {
-            LOG.error("Error writing skickatAv as string when trying to send intyg " + intygsId, e);
+            LOG.error(String.format("Error writing skickatAv as string when trying to send intyg %s", intygsId), e);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
         } catch (CertificateSenderException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
@@ -921,18 +921,18 @@ public class IntygServiceImpl implements IntygService {
             final LocalDateTime created = utkast != null ? utkast.getSkapad() : null;
 
             return IntygContentHolder.builder()
-                .setContents(internalIntygJsonModel)
-                .setUtlatande(certificate.getUtlatande())
-                .setStatuses(certificate.getMetaData().getStatus())
-                .setRevoked(certificate.isRevoked())
-                .setRelations(certificateRelations)
-                .setCreated(created)
-                .setDeceased(isDeceased(personId))
-                .setSekretessmarkering(sekretessmarkering)
-                .setPatientNameChangedInPU(patientNameChanged)
-                .setPatientAddressChangedInPU(patientAddressChanged)
-                .setTestIntyg(utlatande.getGrundData().getPatient().isTestIndicator())
-                .setLatestMajorTextVersion(intygTextsService.isLatestMajorVersion(intygType, intygTypeVersion))
+                .contents(internalIntygJsonModel)
+                .utlatande(certificate.getUtlatande())
+                .statuses(certificate.getMetaData().getStatus())
+                .revoked(certificate.isRevoked())
+                .relations(certificateRelations)
+                .created(created)
+                .deceased(isDeceased(personId))
+                .sekretessmarkering(sekretessmarkering)
+                .patientNameChangedInPU(patientNameChanged)
+                .patientAddressChangedInPU(patientAddressChanged)
+                .testIntyg(utlatande.getGrundData().getPatient().isTestIndicator())
+                .latestMajorTextVersion(intygTextsService.isLatestMajorVersion(intygType, intygTypeVersion))
                 .build();
 
         } catch (IntygModuleFacadeException me) {
@@ -942,7 +942,7 @@ public class IntygServiceImpl implements IntygService {
             if (utkast == null) {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
             }
-            return buildIntygContentHolderFromUtkast(utkast, relations);
+            return buildIntygContentHolderFromUtkast(utkast);
         } catch (WebServiceException wse) {
             // Something went wrong communication-wise, try to find a matching Utkast instead.
             Utkast utkast = utkastRepository.findByIntygsIdAndIntygsTyp(intygId, intygType);
@@ -951,14 +951,14 @@ public class IntygServiceImpl implements IntygService {
                     "Cannot get intyg. Intygstjansten was not reachable and the Utkast could "
                         + "not be found, perhaps it was issued by a non-webcert system?");
             }
-            return buildIntygContentHolderFromUtkast(utkast, relations);
+            return buildIntygContentHolderFromUtkast(utkast);
         } catch (ModuleNotFoundException | ModuleException e) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, e);
         }
     }
 
     // NOTE! INTYG-4086. This method is used when fetching Intyg/Utkast from WC locally.
-    private IntygContentHolder buildIntygContentHolderFromUtkast(Utkast utkast, boolean relations) {
+    private IntygContentHolder buildIntygContentHolderFromUtkast(Utkast utkast) {
 
         try {
             // INTYG-4086: Patient object populated according to ruleset for the intygstyp at hand.
@@ -1002,18 +1002,18 @@ public class IntygServiceImpl implements IntygService {
                 newPatientData);
 
             return IntygContentHolder.builder()
-                .setContents(internalIntygJsonModel)
-                .setUtlatande(utlatande)
-                .setStatuses(statuses)
-                .setRevoked(utkast.getAterkalladDatum() != null)
-                .setRelations(certificateRelations)
-                .setCreated(utkast.getSkapad())
-                .setDeceased(isDeceased(utkast.getPatientPersonnummer()))
-                .setSekretessmarkering(sekretessmarkerad)
-                .setPatientNameChangedInPU(patientNameChanged)
-                .setPatientAddressChangedInPU(patientAddressChanged)
-                .setTestIntyg(utkast.isTestIntyg())
-                .setLatestMajorTextVersion(intygTextsService.isLatestMajorVersion(utlatande.getTyp(), utlatande.getTextVersion()))
+                .contents(internalIntygJsonModel)
+                .utlatande(utlatande)
+                .statuses(statuses)
+                .revoked(utkast.getAterkalladDatum() != null)
+                .relations(certificateRelations)
+                .created(utkast.getSkapad())
+                .deceased(isDeceased(utkast.getPatientPersonnummer()))
+                .sekretessmarkering(sekretessmarkerad)
+                .patientNameChangedInPU(patientNameChanged)
+                .patientAddressChangedInPU(patientAddressChanged)
+                .testIntyg(utkast.isTestIntyg())
+                .latestMajorTextVersion(intygTextsService.isLatestMajorVersion(utlatande.getTyp(), utlatande.getTextVersion()))
                 .build();
 
         } catch (ModuleException | ModuleNotFoundException e) {

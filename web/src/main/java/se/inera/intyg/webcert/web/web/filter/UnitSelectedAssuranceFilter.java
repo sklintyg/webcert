@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,19 +18,20 @@
  */
 package se.inera.intyg.webcert.web.web.filter;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import se.inera.intyg.webcert.web.logging.HashPatientIdHelper;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
@@ -64,12 +65,12 @@ public class UnitSelectedAssuranceFilter extends OncePerRequestFilter {
         WebCertUser user = getUser();
         boolean continueRequestIf = user == null || user.getValdVardenhet() != null || isIgnoredUrl(request);
 
-        LOG.debug("continueRequestIf " + request.getRequestURI() + " = " + continueRequestIf);
+        LOG.debug("continueRequestIf " + HashPatientIdHelper.fromUrl(request.getRequestURI()) + " = " + continueRequestIf);
 
         if (continueRequestIf) {
             filterChain.doFilter(request, response);
         } else {
-            LOG.error("User accessed " + request.getRequestURI() + " but has not selected a care unit");
+            LOG.error("User accessed " + HashPatientIdHelper.fromUrl(request.getRequestURI()) + " but has not selected a care unit");
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }

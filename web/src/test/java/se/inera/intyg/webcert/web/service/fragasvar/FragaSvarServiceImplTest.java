@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,10 +18,44 @@
  */
 package se.inera.intyg.webcert.web.service.fragasvar;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.anySet;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.MoreCollectors;
+import jakarta.xml.soap.SOAPFactory;
+import jakarta.xml.soap.SOAPFault;
+import jakarta.xml.ws.soap.SOAPFaultException;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.assertj.core.util.Lists;
 import org.junit.Before;
 import org.junit.Test;
@@ -86,21 +120,6 @@ import se.inera.intyg.webcert.web.service.util.StatisticsGroupByUtil;
 import se.inera.intyg.webcert.web.web.controller.api.dto.FragaSvarView;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
-import javax.xml.soap.SOAPFactory;
-import javax.xml.soap.SOAPFault;
-import javax.xml.ws.soap.SOAPFaultException;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.anySet;
-import static org.mockito.Mockito.*;
-import static se.inera.intyg.webcert.web.util.ReflectionUtils.setStaticFinalAttribute;
-
 @RunWith(MockitoJUnitRunner.class)
 public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
@@ -149,11 +168,6 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
 
     @InjectMocks
     private FragaSvarServiceImpl service;
-
-    @Before
-    public void setUpLoggerFactory() throws Exception {
-        setStaticFinalAttribute(FragaSvarServiceImpl.class, "LOGGER", loggerMock);
-    }
 
     @Before
     public void setupCommonBehaviour() {
@@ -348,7 +362,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
             .thenReturn(getIntygContentHolder());
 
         when(webCertUserService.getUser()).thenReturn(createUser());
-        when(webCertUserService.isAuthorizedForUnit(eq("VardenhetY"), eq(false))).thenReturn(true);
+        when(webCertUserService.isAuthorizedForUnit("VardenhetY", false)).thenReturn(true);
 
         ArgumentCaptor<FragaSvar> capture = ArgumentCaptor.forClass(FragaSvar.class);
         when(fragasvarRepositoryMock.save(capture.capture())).thenReturn(fraga);
@@ -583,7 +597,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
 
         doReturn(Lists.newArrayList(komplFragaSvar, ovrigtFragaSvar))
             .when(fragasvarRepositoryMock)
-            .findByIntygsReferensIntygsId(eq(INTYG_ID));
+            .findByIntygsReferensIntygsId(INTYG_ID);
 
         doReturn(komplFragaSvar)
             .when(fragasvarRepositoryMock)
@@ -625,7 +639,7 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         wsResponse.setResult(ResultOfCallUtil.okResult());
 
         when(webCertUserService.isAuthorizedForUnit(any(String.class), eq(false))).thenReturn(true);
-        when(fragasvarRepositoryMock.findById(eq(1L))).thenReturn(Optional.of(fragaSvar));
+        when(fragasvarRepositoryMock.findById(1L)).thenReturn(Optional.of(fragaSvar));
 
         service.saveSvar(fragaSvar.getInternReferens(), "svarsText");
     }
@@ -684,16 +698,17 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         status.add(new se.inera.intyg.common.support.model.Status(CertificateState.RECEIVED, "HSVARD", LocalDateTime.now()));
         status.add(new se.inera.intyg.common.support.model.Status(CertificateState.SENT, "FKASSA", LocalDateTime.now()));
         return IntygContentHolder.builder()
-            .setContents("<external-json/>")
-            .setUtlatande(getUtlatande())
-            .setStatuses(status)
-            .setRevoked(false)
-            .setRelations(new Relations())
-            .setDeceased(false)
-            .setSekretessmarkering(false)
-            .setPatientNameChangedInPU(false)
-            .setPatientAddressChangedInPU(false)
-            .setTestIntyg(false)
+            .contents("<external-json/>")
+            .utlatande(getUtlatande())
+            .statuses(status)
+            .revoked(false)
+            .relations(new Relations())
+            .deceased(false)
+            .sekretessmarkering(false)
+            .patientNameChangedInPU(false)
+            .patientAddressChangedInPU(false)
+            .testIntyg(false)
+            .latestMajorTextVersion(true)
             .build();
     }
 
@@ -701,16 +716,17 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         List<se.inera.intyg.common.support.model.Status> status = new ArrayList<>();
         status.add(new se.inera.intyg.common.support.model.Status(CertificateState.RECEIVED, "HSVARD", LocalDateTime.now()));
         return IntygContentHolder.builder()
-            .setContents("<external-json/>")
-            .setUtlatande(getUtlatande())
-            .setStatuses(status)
-            .setRevoked(false)
-            .setRelations(new Relations())
-            .setDeceased(false)
-            .setSekretessmarkering(false)
-            .setPatientNameChangedInPU(false)
-            .setPatientAddressChangedInPU(false)
-            .setTestIntyg(false)
+            .contents("<external-json/>")
+            .utlatande(getUtlatande())
+            .statuses(status)
+            .revoked(false)
+            .relations(new Relations())
+            .deceased(false)
+            .sekretessmarkering(false)
+            .patientNameChangedInPU(false)
+            .patientAddressChangedInPU(false)
+            .testIntyg(false)
+            .latestMajorTextVersion(true)
             .build();
     }
 
@@ -720,16 +736,17 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
         status.add(new se.inera.intyg.common.support.model.Status(CertificateState.SENT, "FKASSA", LocalDateTime.now()));
         status.add(new se.inera.intyg.common.support.model.Status(CertificateState.CANCELLED, "HSVARD", LocalDateTime.now()));
         return IntygContentHolder.builder()
-            .setContents("<external-json/>")
-            .setUtlatande(getUtlatande())
-            .setStatuses(status)
-            .setRevoked(true)
-            .setRelations(new Relations())
-            .setDeceased(false)
-            .setSekretessmarkering(false)
-            .setPatientNameChangedInPU(false)
-            .setPatientAddressChangedInPU(false)
-            .setTestIntyg(false)
+            .contents("<external-json/>")
+            .utlatande(getUtlatande())
+            .statuses(status)
+            .revoked(true)
+            .relations(new Relations())
+            .deceased(false)
+            .sekretessmarkering(false)
+            .patientNameChangedInPU(false)
+            .patientAddressChangedInPU(false)
+            .testIntyg(false)
+            .latestMajorTextVersion(true)
             .build();
     }
 

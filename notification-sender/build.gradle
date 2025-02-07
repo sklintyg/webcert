@@ -3,6 +3,7 @@ test {
 }
 
 tasks.register('camelTest', Test) {
+    useJUnitPlatform()
     outputs.upToDateWhen { false }
     include '**/*IT*'
 }
@@ -19,11 +20,12 @@ compileJava.dependsOn copyResources
 
 dependencies {
     implementation project(':webcert-common')
+    implementation project(':webcert-logging')
     implementation project(':webcert-persistence')
 
     implementation "com.fasterxml.jackson.core:jackson-databind"
     implementation "com.google.guava:guava:${guavaVersion}"
-    implementation ("com.helger:ph-schematron:${phSchematronVersion}") { exclude group: "com.helger", module: "ph-jaxb-pom" }
+    implementation "com.helger.schematron:ph-schematron-xslt:${phSchematronVersion}"
     implementation "jakarta.persistence:jakarta.persistence-api"
     implementation "jakarta.transaction:jakarta.transaction-api"
     implementation "org.apache.camel:camel-activemq:${camelVersion}"
@@ -41,7 +43,7 @@ dependencies {
     implementation "se.inera.intyg.common:integration-util:${commonVersion}"
     implementation "se.inera.intyg.infra:hsa-integration-api:${infraVersion}"
     implementation "se.inera.intyg.infra:monitoring:${infraVersion}"
-    implementation "se.inera.intyg.infra:pu-integration:${infraVersion}"
+    implementation "se.inera.intyg.infra:pu-integration-api:${infraVersion}"
     implementation "se.inera.intyg.schemas:schemas-contract:${schemasContractVersion}"
     implementation "se.inera.intyg.infra:security-authorities:${infraVersion}"
     implementation "se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:${rivtaClinicalprocessSchemasVersion}"
@@ -50,6 +52,10 @@ dependencies {
     runtimeOnly "org.apache.camel:camel-cxf-spring-transport:${camelVersion}"
     runtimeOnly "org.apache.camel:camel-jackson:${camelVersion}"
     runtimeOnly "org.apache.camel:camel-spring:${camelVersion}"
+    runtimeOnly "se.inera.intyg.infra:pu-integration-intyg-proxy-service:${infraVersion}"
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
 
     compileOnly "org.apache.geronimo.specs:geronimo-jms_1.1_spec:${geronimoJmsVersion}"
     testCompileOnly "org.apache.geronimo.specs:geronimo-jms_1.1_spec:${geronimoJmsVersion}"
@@ -59,4 +65,7 @@ dependencies {
     testImplementation "org.apache.camel:camel-test-spring-junit5:${camelVersion}"
     testImplementation "org.awaitility:awaitility"
     testImplementation "se.inera.intyg.common:lisjp:${commonVersion}"
+
+    implementation "com.sun.xml.bind:jaxb-impl"
+    implementation "jakarta.xml.bind:jakarta.xml.bind-api"
 }

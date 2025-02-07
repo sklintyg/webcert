@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,8 +20,8 @@ package se.inera.intyg.webcert.common.client.converter;
 
 import static org.junit.Assert.assertEquals;
 
+import jakarta.xml.bind.JAXBException;
 import java.time.LocalDateTime;
-import javax.xml.bind.JAXBException;
 import org.junit.Test;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.SendMessageToRecipientType;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;

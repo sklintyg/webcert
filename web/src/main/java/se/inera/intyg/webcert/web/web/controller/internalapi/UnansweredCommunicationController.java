@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,14 +19,16 @@
 
 package se.inera.intyg.webcert.web.web.controller.internalapi;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.unansweredcommunication.UnansweredCommunicationService;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.UnansweredCommunicationRequest;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.UnansweredCommunicationResponse;
@@ -47,6 +49,7 @@ public class UnansweredCommunicationController {
     @PrometheusTimeMethod
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PerformanceLogging(eventAction = "unanswwered-communications-get-unanswered", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public UnansweredCommunicationResponse getUnansweredCommunications(@RequestBody UnansweredCommunicationRequest request) {
         return unansweredCommunicationService.get(request);
     }

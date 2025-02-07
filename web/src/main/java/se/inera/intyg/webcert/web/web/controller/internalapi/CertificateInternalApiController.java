@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,64 +20,46 @@
 package se.inera.intyg.webcert.web.web.controller.internalapi;
 
 import io.swagger.annotations.Api;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.RequestBody;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
-import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
-import se.inera.intyg.webcert.web.service.facade.internalapi.service.GetAvailableFunctionsForCertificateService;
-import se.inera.intyg.webcert.web.service.facade.internalapi.service.GetCertificatePdfService;
-import se.inera.intyg.webcert.web.service.facade.internalapi.service.GetTextsForCertificateService;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetCertificateIntegrationRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetCertificateResponse;
 
 @Path("/certificate")
 @Api(value = "/internalapi/certificate", produces = MediaType.APPLICATION_JSON)
 public class CertificateInternalApiController {
 
-    private final GetCertificateFacadeService getCertificateFacadeService;
-    private final GetAvailableFunctionsForCertificateService getAvailableFunctionsForCertificateService;
-    private final GetCertificatePdfService getCertificatePdfService;
-    private final GetTextsForCertificateService getTextsForCertificateService;
-
+    private final GetCertificateInteralApi getCertificateInternalAggregator;
+    private final GetCertificatePdfService getCertificateInternalPdfAggregator;
     private static final String UTF_8_CHARSET = ";charset=utf-8";
-    private static final boolean SHOULD_NOT_PDL_LOG = false;
-    private static final boolean SHOULD_NOT_VALIDATE_ACCESS = false;
 
-    public CertificateInternalApiController(GetCertificateFacadeService getCertificateFacadeService,
-        GetAvailableFunctionsForCertificateService getAvailableFunctionsForCertificateService,
-        GetCertificatePdfService getCertificatePdfService,
-        GetTextsForCertificateService getTextsForCertificateService) {
-        this.getCertificateFacadeService = getCertificateFacadeService;
-        this.getAvailableFunctionsForCertificateService = getAvailableFunctionsForCertificateService;
-        this.getCertificatePdfService = getCertificatePdfService;
-        this.getTextsForCertificateService = getTextsForCertificateService;
+    public CertificateInternalApiController(
+        @Qualifier("getCertificateInternalAggregator") GetCertificateInteralApi getCertificateInternalAggregator,
+        @Qualifier("getCertificateInternalPdfAggregator") GetCertificatePdfService getCertificateInternalPdfAggregator) {
+        this.getCertificateInternalAggregator = getCertificateInternalAggregator;
+        this.getCertificateInternalPdfAggregator = getCertificateInternalPdfAggregator;
     }
 
-    @GET
+    @POST
     @Path("/{certificateId}")
     @PrometheusTimeMethod
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    public GetCertificateResponse getCertificate(@PathParam("certificateId") String certificateId) {
-        final var certificate = getCertificateFacadeService.getCertificate(certificateId, SHOULD_NOT_PDL_LOG, SHOULD_NOT_VALIDATE_ACCESS);
-        final var availableFunction = getAvailableFunctionsForCertificateService.get(certificate);
-        final var texts = getTextsForCertificateService.get(
-            certificate.getMetadata().getType(),
-            certificate.getMetadata().getTypeVersion()
-        );
-
-        return GetCertificateResponse.create(
-            certificate,
-            availableFunction,
-            texts
-        );
+    @PerformanceLogging(eventAction = "certificate-internal-get-certificate", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+    public GetCertificateResponse getCertificate(@RequestBody GetCertificateIntegrationRequestDTO request,
+        @PathParam("certificateId") String certificateId) {
+        return getCertificateInternalAggregator.get(certificateId, request.getPersonId());
     }
 
     @POST
@@ -85,11 +67,13 @@ public class CertificateInternalApiController {
     @PrometheusTimeMethod
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PerformanceLogging(eventAction = "certificate-internal-get-pdf-data", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public CertificatePdfResponseDTO getPdfData(@RequestBody CertificatePdfRequestDTO request,
         @PathParam("certificateId") String certificateId) {
-        return getCertificatePdfService.get(
+        return getCertificateInternalPdfAggregator.get(
             request.getCustomizationId(),
-            certificateId
+            certificateId,
+            request.getPersonId()
         );
     }
 }

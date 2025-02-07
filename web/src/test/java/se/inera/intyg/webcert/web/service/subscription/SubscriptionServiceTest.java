@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -26,12 +26,9 @@ import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import static se.inera.intyg.infra.security.common.model.AuthoritiesConstants.FEATURE_SUBSCRIPTION_ADAPTATION_PERIOD;
-import static se.inera.intyg.infra.security.common.model.AuthoritiesConstants.FEATURE_SUBSCRIPTION_REQUIRED;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.ELEG_AUTHN_CLASSES;
 import static se.inera.intyg.webcert.web.auth.common.AuthConstants.SITHS_AUTHN_CLASSES;
 
@@ -40,7 +37,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -48,32 +44,27 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClientResponseException;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
-import se.inera.intyg.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
-import se.inera.intyg.schemas.contract.util.HashUtility;
-import se.inera.intyg.webcert.integration.kundportalen.service.SubscriptionRestServiceImpl;
+import se.inera.intyg.webcert.integration.api.subscription.AuthenticationMethodEnum;
+import se.inera.intyg.webcert.integration.api.subscription.SubscriptionIntegrationService;
+import se.inera.intyg.webcert.logging.HashUtility;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionAction;
 import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionInfo;
-import se.inera.intyg.webcert.integration.kundportalen.enumerations.AuthenticationMethodEnum;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @ExtendWith(MockitoExtension.class)
-public class SubscriptionServiceTest {
+class SubscriptionServiceTest {
 
     @Mock
-    private SubscriptionRestServiceImpl subscriptionRestService;
-
-    @Mock
-    private FeaturesHelper featuresHelper;
+    private SubscriptionIntegrationService subscriptionIntegrationService;
 
     @Mock
     private MonitoringLogService monitoringLogService;
@@ -85,27 +76,19 @@ public class SubscriptionServiceTest {
     private SubscriptionServiceImpl subscriptionService;
 
     private static final String PERSON_ID = "191212121212";
-    private static final String ADAPTATION_START_DATE = "subscriptionAdaptationStartDate";
-    private static final String REQUIRE_START_DATE = "requireSubscriptionStartDate";
-
-    @BeforeEach
-    public void setup() {
-        ReflectionTestUtils.setField(subscriptionService, ADAPTATION_START_DATE, ADAPTATION_START_DATE);
-        ReflectionTestUtils.setField(subscriptionService, REQUIRE_START_DATE, REQUIRE_START_DATE);
-    }
 
     @Test
-    public void shouldNotCallRestServiceWhenNotFristaendeUser() {
+    void shouldNotCallRestServiceWhenNotFristaendeUser() {
         final var sithsUser = createWebCertSithsUser(1, 1, 1);
         sithsUser.setOrigin(UserOriginType.DJUPINTEGRATION.name());
 
         subscriptionService.checkSubscriptions(sithsUser);
 
-        verifyNoInteractions(subscriptionRestService);
+        verifyNoInteractions(subscriptionIntegrationService);
     }
 
     @Test
-    public void shouldAlwaysHaveSubscriptionActionNoneAndEmptyMissingSubscriptionListWhenNotFristaendeUser() {
+    void shouldAlwaysHaveSubscriptionActionNoneAndEmptyMissingSubscriptionListWhenNotFristaendeUser() {
         final var sithsUser = createWebCertSithsUser(2, 1, 1);
         sithsUser.setOrigin(UserOriginType.DJUPINTEGRATION.name());
 
@@ -119,81 +102,34 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldSetSubscriptionStartDatesWhenSithsUser() {
+    void shouldNotCallRestServiceWhenNoOrganizationsForSithsUser() {
         final var sithsUser = createWebCertSithsUser(1, 1, 1);
-        sithsUser.setOrigin(UserOriginType.DJUPINTEGRATION.name());
+        sithsUser.getVardgivare().getFirst().getVardenheter().getFirst().setVardgivareOrgnr(null);
 
         subscriptionService.checkSubscriptions(sithsUser);
 
-        assertAll(
-            () -> assertEquals(ADAPTATION_START_DATE, sithsUser.getSubscriptionInfo().getSubscriptionAdaptationStartDate()),
-            () -> assertEquals(REQUIRE_START_DATE, sithsUser.getSubscriptionInfo().getRequireSubscriptionStartDate())
-        );
+        verifyNoInteractions(subscriptionIntegrationService);
     }
 
     @Test
-    public void shouldNotCallRestServiceWhenNoOrganizationsForSithsUser() {
-        final var sithsUser = createWebCertSithsUser(1, 1, 1);
-        sithsUser.getVardgivare().get(0).getVardenheter().get(0).setVardgivareOrgnr(null);
-
-        setFeaturesHelperMockToReturn(true, true);
-
-        subscriptionService.checkSubscriptions(sithsUser);
-
-        verifyNoInteractions(subscriptionRestService);
-    }
-
-    @Test
-    public void shouldHaveExactImmutableCopyOfMissingSubscriptions() {
+    void shouldHaveExactImmutableCopyOfMissingSubscriptions() {
         final var webCertUser = createWebCertSithsUser(3, 3, 3);
 
         setRestServiceMockToReturn(3);
-        setFeaturesHelperMockToReturn(false, true);
         subscriptionService.checkSubscriptions(webCertUser);
 
+        final var missimgSubscriptions = webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscription();
         assertAll(
             () -> assertIterableEquals(webCertUser.getSubscriptionInfo().getCareProvidersForSubscriptionModal(),
                 webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscription()),
-            () -> assertThrows(UnsupportedOperationException.class, () -> webCertUser.getSubscriptionInfo()
-                .getCareProvidersMissingSubscription().remove(1))
+            () -> assertThrows(UnsupportedOperationException.class, () -> missimgSubscriptions.remove(1))
         );
     }
 
     @Test
-    public void shouldSetSubscriptionActionNoneAndEmptyMissingSubscriptionListWhenNoSubscriptionFeaturesActive() {
-        final var webCertUser = createWebCertSithsUser(1, 1, 0);
-
-        setFeaturesHelperMockToReturn(false, false);
-
-        subscriptionService.checkSubscriptions(webCertUser);
-
-        assertAll(
-            () -> assertEquals(SubscriptionAction.NONE, webCertUser.getSubscriptionInfo().getSubscriptionAction()),
-            () -> assertTrue(webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscription().isEmpty())
-        );
-    }
-
-    @Test
-    public void shouldSetSubscriptionActionWarnWhenFeatureSubscriptionAdaptation() {
-        final var webCertUser = createWebCertSithsUser(1, 1, 0);
-
-        setRestServiceMockToReturn(1);
-        setFeaturesHelperMockToReturn(true, false);
-
-        subscriptionService.checkSubscriptions(webCertUser);
-
-        assertAll(
-            () -> assertEquals(SubscriptionAction.WARN, webCertUser.getSubscriptionInfo().getSubscriptionAction()),
-            () -> assertEquals(1, webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscription().size())
-        );
-    }
-
-    @Test
-    public void shouldSetSubscriptionActionBlockWhenFeatureSubscriptionRequired() {
+    void shouldSetSubscriptionActionBlockWhenFeatureSubscriptionRequired() {
         final var webCertUser = createWebCertSithsUser(2, 1, 0);
-
         setRestServiceMockToReturn(1);
-        setFeaturesHelperMockToReturn(true, true);
 
         subscriptionService.checkSubscriptions(webCertUser);
 
@@ -205,39 +141,34 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldUseCareProviderOrganizationNumberWhenSithsUser() {
+    void shouldUseCareProviderOrganizationNumberWhenSithsUser() {
         final var webCertUser = createWebCertSithsUser(1, 1, 1);
         final var expectedOrganizationNumber = "CARE_PROVIDER_ORGANIZATION_NO_1";
-
         setRestServiceMockToReturn(0);
-        setFeaturesHelperMockToReturn(true, false);
 
         subscriptionService.checkSubscriptions(webCertUser);
 
-        verify(subscriptionRestService).getMissingSubscriptions(restServiceParamCaptor.capture(), any(AuthenticationMethodEnum.class));
+        verify(subscriptionIntegrationService).getMissingSubscriptions(restServiceParamCaptor.capture(),
+            any(AuthenticationMethodEnum.class));
 
         assertAll(
             () -> assertTrue(restServiceParamCaptor.getValue().containsKey(expectedOrganizationNumber)),
-            () -> assertEquals("CARE_PROVIDER_HSA_ID_1", restServiceParamCaptor.getValue().get(expectedOrganizationNumber).get(0))
+            () -> assertEquals("CARE_PROVIDER_HSA_ID_1", restServiceParamCaptor.getValue().get(expectedOrganizationNumber).getFirst())
         );
     }
 
     @Test
-    public void shouldNotThrowExceptionIfSithsUserIsMissingSingleSubscriptionWhenSubscriptionRequired() {
+    void shouldNotThrowExceptionIfSithsUserIsMissingSingleSubscriptionWhenSubscriptionRequired() {
         final var webCertUser = createWebCertSithsUser(1, 1, 0);
-
         setRestServiceMockToReturn(1);
-        setFeaturesHelperMockToReturn(false, true);
 
         assertDoesNotThrow(() -> subscriptionService.checkSubscriptions(webCertUser));
     }
 
     @Test
-    public void shouldNotThrowExceptionIfSithsUserIsMissingAllSubscriptionsWhenSubscriptionRequired() {
+    void shouldNotThrowExceptionIfSithsUserIsMissingAllSubscriptionsWhenSubscriptionRequired() {
         final var webCertUser = createWebCertSithsUser(3, 1, 1);
-
         setRestServiceMockToReturn(3);
-        setFeaturesHelperMockToReturn(false, true);
 
         subscriptionService.checkSubscriptions(webCertUser);
 
@@ -245,23 +176,20 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldQueryOrgNumberForAllCareProviders() {
+    void shouldQueryOrgNumberForAllCareProviders() {
         final var webCertUser = createWebCertSithsUser(3, 1, 0);
-
         setRestServiceMockToReturn(1);
-        setFeaturesHelperMockToReturn(true, true);
 
         subscriptionService.checkSubscriptions(webCertUser);
 
-        verify(subscriptionRestService).getMissingSubscriptions(restServiceParamCaptor.capture(), any(AuthenticationMethodEnum.class));
+        verify(subscriptionIntegrationService).getMissingSubscriptions(restServiceParamCaptor.capture(),
+            any(AuthenticationMethodEnum.class));
         assertEquals(3, restServiceParamCaptor.getValue().size());
     }
 
     @Test
-    public void shouldMonitorLogLoginAttemptsMissingSubscriptionWhenSubscriptionRequired() {
+    void shouldMonitorLogLoginAttemptsMissingSubscriptionWhenSubscriptionRequired() {
         final var webcertUser = createWebCertSithsUser(3, 1, 2);
-
-        setFeaturesHelperMockToReturn(false, true);
         setRestServiceMockToReturn(2);
 
         subscriptionService.checkSubscriptions(webcertUser);
@@ -271,61 +199,44 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldMonitorlogWhenRestClientExceptionForSithsUser() {
+    void shouldMonitorlogWhenRestClientExceptionForSithsUser() {
         final var sithsUser = createWebCertSithsUser(2, 2, 1);
-
         setMockToReturnRestClientException();
-        setFeaturesHelperMockToReturn(false, true);
 
         subscriptionService.checkSubscriptions(sithsUser);
 
-        verify(subscriptionRestService).getMissingSubscriptions(restServiceParamCaptor.capture(), any(AuthenticationMethodEnum.class));
+        verify(subscriptionIntegrationService).getMissingSubscriptions(restServiceParamCaptor.capture(),
+            any(AuthenticationMethodEnum.class));
 
         final var param = restServiceParamCaptor.getValue().values().stream().flatMap(Collection::stream).collect(Collectors.toList());
         verify(monitoringLogService).logSubscriptionServiceCallFailure(param, "MESSAGE_TEXT");
     }
 
     @Test
-    public void shouldMonitorlogWhenRestClientResponseExceptionSubtypeForSithsUser() {
+    void shouldMonitorlogWhenRestClientResponseExceptionSubtypeForSithsUser() {
         final var sithsUser = createWebCertSithsUser(1, 2, 2);
-
         setMockToReturnRestClientResponseException(403);
-        setFeaturesHelperMockToReturn(false, true);
 
         subscriptionService.checkSubscriptions(sithsUser);
 
-        verify(subscriptionRestService).getMissingSubscriptions(restServiceParamCaptor.capture(), any(AuthenticationMethodEnum.class));
+        verify(subscriptionIntegrationService).getMissingSubscriptions(restServiceParamCaptor.capture(),
+            any(AuthenticationMethodEnum.class));
 
         final var param = restServiceParamCaptor.getValue().values().stream().flatMap(Collection::stream).collect(Collectors.toList());
         verify(monitoringLogService).logSubscriptionServiceCallFailure(param, "MESSAGE_TEXT");
     }
 
     @Test
-    public void shouldMonitorLogSubscriptionWarningForSithsUserWhenSubscriptionAdaptation() {
-        final var sithsUser = createWebCertSithsUser(3, 2, 0);
-        final var expectedHsaIds = List.of("CARE_PROVIDER_HSA_ID_1", "CARE_PROVIDER_HSA_ID_2").toString();
-        final var expectedUserId = sithsUser.getHsaId();
-
-        setRestServiceMockToReturn(2);
-        setFeaturesHelperMockToReturn(true, false);
-
-        subscriptionService.checkSubscriptions(sithsUser);
-
-        verify(monitoringLogService).logSubscriptionWarnings(expectedUserId, AuthenticationMethodEnum.SITHS.name(), expectedHsaIds);
-    }
-
-    @Test
-    public void shouldHandleMultipleCareProvidersWithSameOrgNumberForSithsUser() {
+    void shouldHandleMultipleCareProvidersWithSameOrgNumberForSithsUser() {
         final var sithsUser = createWebCertSithsUser(4, 2, 0);
-        sithsUser.getVardgivare().get(1).getVardenheter().get(0).setVardgivareOrgnr("CARE_PROVIDER_ORGANIZATION_NO_1");
-        sithsUser.getVardgivare().get(2).getVardenheter().get(0).setVardgivareOrgnr("CARE_PROVIDER_ORGANIZATION_NO_1");
-
+        sithsUser.getVardgivare().get(1).getVardenheter().getFirst().setVardgivareOrgnr("CARE_PROVIDER_ORGANIZATION_NO_1");
+        sithsUser.getVardgivare().get(2).getVardenheter().getFirst().setVardgivareOrgnr("CARE_PROVIDER_ORGANIZATION_NO_1");
         setRestServiceMockToReturn(3);
-        setFeaturesHelperMockToReturn(true, false);
 
         subscriptionService.checkSubscriptions(sithsUser);
 
-        verify(subscriptionRestService).getMissingSubscriptions(restServiceParamCaptor.capture(), any(AuthenticationMethodEnum.class));
+        verify(subscriptionIntegrationService).getMissingSubscriptions(restServiceParamCaptor.capture(),
+            any(AuthenticationMethodEnum.class));
         assertAll(
             () -> assertEquals(3, restServiceParamCaptor.getValue().get("CARE_PROVIDER_ORGANIZATION_NO_1").size()),
             () -> assertEquals(1, restServiceParamCaptor.getValue().get("CARE_PROVIDER_ORGANIZATION_NO_4").size())
@@ -333,53 +244,36 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldSetSubscriptionStartDatesWhenElegUser() {
-        final var elegUser = createWebCertElegUser();
-
-        subscriptionService.checkSubscriptions(elegUser);
-
-        assertAll(
-            () -> assertEquals(ADAPTATION_START_DATE, elegUser.getSubscriptionInfo().getSubscriptionAdaptationStartDate()),
-            () -> assertEquals(REQUIRE_START_DATE, elegUser.getSubscriptionInfo().getRequireSubscriptionStartDate())
-        );
-    }
-
-    @Test
-    public void shouldNotCallRestServiceWhenNoOrganizationsForElegUser() {
+    void shouldNotCallRestServiceWhenNoOrganizationsForElegUser() {
         final var elegUser = createWebCertElegUser();
         elegUser.setPersonId(null);
 
-        setFeaturesHelperMockToReturn(true, true);
-
         subscriptionService.checkSubscriptions(elegUser);
 
-        verifyNoInteractions(subscriptionRestService);
+        verifyNoInteractions(subscriptionIntegrationService);
     }
 
     @Test
-    public void shouldUsePersonalIdAsOrganizationNumberWhenElegUser() {
+    void shouldUsePersonalIdAsOrganizationNumberWhenElegUser() {
         final var webCertUser = createWebCertElegUser();
         final var personId = webCertUser.getPersonId();
         final var expectedOrganizationNumber = personId.substring(2, 8) + "-" + personId.substring(personId.length() - 4);
-
         setRestServiceMockToReturn(0);
-        setFeaturesHelperMockToReturn(true, false);
 
         subscriptionService.checkSubscriptions(webCertUser);
 
-        verify(subscriptionRestService).getMissingSubscriptions(restServiceParamCaptor.capture(), any(AuthenticationMethodEnum.class));
+        verify(subscriptionIntegrationService).getMissingSubscriptions(restServiceParamCaptor.capture(),
+            any(AuthenticationMethodEnum.class));
         assertAll(
             () -> assertTrue(restServiceParamCaptor.getValue().containsKey(expectedOrganizationNumber)),
-            () -> assertEquals("CARE_PROVIDER_HSA_ID_1", restServiceParamCaptor.getValue().get(expectedOrganizationNumber).get(0))
+            () -> assertEquals("CARE_PROVIDER_HSA_ID_1", restServiceParamCaptor.getValue().get(expectedOrganizationNumber).getFirst())
         );
     }
 
     @Test
-    public void shouldReturnTrueIfElegUserHasSubscriptionWhenSubscriptionRequired() {
+    void shouldReturnTrueIfElegUserHasSubscriptionWhenSubscriptionRequired() {
         final var elegUser = createWebCertElegUser();
-
         setRestServiceMockToReturn(0);
-        setFeaturesHelperMockToReturn(false, true);
 
         final var hasSubscription = subscriptionService.checkSubscriptions(elegUser);
 
@@ -387,23 +281,9 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldReturnTrueIfElegUserHasSubscriptionWhenSubscriptionAdaptation() {
+    void shouldReturnFalseIfElegUserIsMissingSubscriptionWhenSubscriptionRequired() {
         final var elegUser = createWebCertElegUser();
-
-        setRestServiceMockToReturn(0);
-        setFeaturesHelperMockToReturn(true, false);
-
-        final var hasSubscription = subscriptionService.checkSubscriptions(elegUser);
-
-        assertTrue(hasSubscription);
-    }
-
-    @Test
-    public void shouldReturnFalseIfElegUserIsMissingSubscriptionWhenSubscriptionAdaptation() {
-        final var elegUser = createWebCertElegUser();
-
         setRestServiceMockToReturn(1);
-        setFeaturesHelperMockToReturn(true, false);
 
         final var hasSubscription = subscriptionService.checkSubscriptions(elegUser);
 
@@ -411,83 +291,54 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldReturnFalseIfElegUserIsMissingSubscriptionWhenSubscriptionRequired() {
+    void shouldMonitorlogWhenRestClientExceptionForElegUser() {
         final var elegUser = createWebCertElegUser();
-
-        setRestServiceMockToReturn(1);
-        setFeaturesHelperMockToReturn(true, true);
-
-        final var hasSubscription = subscriptionService.checkSubscriptions(elegUser);
-
-        assertFalse(hasSubscription);
-    }
-
-    @Test
-    public void shouldMonitorlogWhenRestClientExceptionForElegUser() {
-        final var elegUser = createWebCertElegUser();
-
         setMockToReturnRestClientException();
-        setFeaturesHelperMockToReturn(false, true);
 
         subscriptionService.checkSubscriptions(elegUser);
 
-        verify(subscriptionRestService).getMissingSubscriptions(restServiceParamCaptor.capture(), any(AuthenticationMethodEnum.class));
+        verify(subscriptionIntegrationService).getMissingSubscriptions(restServiceParamCaptor.capture(),
+            any(AuthenticationMethodEnum.class));
 
         final var param = restServiceParamCaptor.getValue().values().stream().flatMap(Collection::stream).collect(Collectors.toList());
         verify(monitoringLogService).logSubscriptionServiceCallFailure(param, "MESSAGE_TEXT");
     }
 
     @Test
-    public void shouldMonitorlogWhenRestClientResponseExceptionSubtypeForElegUser() {
+    void shouldMonitorlogWhenRestClientResponseExceptionSubtypeForElegUser() {
         final var elegUser = createWebCertElegUser();
-
         setMockToReturnRestClientResponseException(503);
-        setFeaturesHelperMockToReturn(false, true);
 
         subscriptionService.checkSubscriptions(elegUser);
 
-        verify(subscriptionRestService).getMissingSubscriptions(restServiceParamCaptor.capture(), any(AuthenticationMethodEnum.class));
+        verify(subscriptionIntegrationService).getMissingSubscriptions(restServiceParamCaptor.capture(),
+            any(AuthenticationMethodEnum.class));
 
         final var param = restServiceParamCaptor.getValue().values().stream().flatMap(Collection::stream).collect(Collectors.toList());
         verify(monitoringLogService).logSubscriptionServiceCallFailure(param, "MESSAGE_TEXT");
     }
 
     @Test
-    public void shouldMonitorLogSubscriptionWarningForElegUserWhenSubscriptionAdaptation() {
-        final var elegUser = createWebCertElegUser();
-        final var expectedHsaIds = List.of(elegUser.getVardgivare().get(0).getId()).toString();
-        final var expectedUserId = elegUser.getHsaId();
-
-        setRestServiceMockToReturn(1);
-        setFeaturesHelperMockToReturn(true, false);
-
-        subscriptionService.checkSubscriptions(elegUser);
-
-        verify(monitoringLogService).logSubscriptionWarnings(expectedUserId, AuthenticationMethodEnum.ELEG.name(), expectedHsaIds);
-    }
-
-    @Test
-    public void shouldNotCallRestServiceWhenNoOrganizationsForUnregisteredElegUser() {
-        setFeaturesHelperMockToReturn(true, true);
+    void shouldNotCallRestServiceWhenNoOrganizationsForUnregisteredElegUser() {
 
         final var response = subscriptionService.isUnregisteredElegUserMissingSubscription(null);
 
-        verifyNoInteractions(subscriptionRestService);
+        verifyNoInteractions(subscriptionIntegrationService);
         assertTrue(response);
     }
 
     @Test
-    public void shouldUsePersonalIdWhenQueryForUnregisteredElegUser() {
+    void shouldUsePersonalIdWhenQueryForUnregisteredElegUser() {
         final var restServiceParamCaptor = ArgumentCaptor.forClass(String.class);
 
         subscriptionService.isUnregisteredElegUserMissingSubscription(PERSON_ID);
 
-        verify(subscriptionRestService).isMissingSubscriptionUnregisteredElegUser(restServiceParamCaptor.capture());
+        verify(subscriptionIntegrationService).isMissingSubscriptionUnregisteredElegUser(restServiceParamCaptor.capture());
         assertEquals("121212-1212", restServiceParamCaptor.getValue());
     }
 
     @Test
-    public void shouldReturnValueReceivedFromRestServiceForUnregisteredElegUser() {
+    void shouldReturnValueReceivedFromRestServiceForUnregisteredElegUser() {
 
         setRestServiceUnregisteredElegMockToReturn(true);
         final var boolean1 = subscriptionService.isUnregisteredElegUserMissingSubscription(PERSON_ID);
@@ -501,7 +352,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldReturnFalseWhenExceptionReceivedFromRestServiceForUnregistered() {
+    void shouldReturnFalseWhenExceptionReceivedFromRestServiceForUnregistered() {
         setMockToReturnRestClientExceptionForUnregistered();
 
         final var response = subscriptionService.isUnregisteredElegUserMissingSubscription(PERSON_ID);
@@ -510,11 +361,9 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldMonitorLogLoginAttemptsMissingSubscriptionWhenSubscriptionRequiredForUnregElegUser() {
+    void shouldMonitorLogLoginAttemptsMissingSubscriptionWhenSubscriptionRequiredForUnregElegUser() {
         final var expectedUserId = HashUtility.hash(PERSON_ID);
         final var expectedOrg = HashUtility.hash("121212-1212");
-
-        setFeaturesHelperMockToReturn(false, true);
         setRestServiceUnregisteredElegMockToReturn(true);
 
         subscriptionService.isUnregisteredElegUserMissingSubscription(PERSON_ID);
@@ -523,7 +372,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldMonitorlogWhenRestClientExceptionForUnregisteredElegUser() {
+    void shouldMonitorlogWhenRestClientExceptionForUnregisteredElegUser() {
         final var hashedOrgNo = List.of(HashUtility.hash("121212-1212"));
         setMockToReturnRestClientExceptionForUnregistered();
 
@@ -533,7 +382,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldMonitorlogWhenRestClientResponseExceptionSubtypeForUnregisteredElegUser() {
+    void shouldMonitorlogWhenRestClientResponseExceptionSubtypeForUnregisteredElegUser() {
         final var hashedOrgNo = List.of(HashUtility.hash("121212-1212"));
 
         setMockToReturnRestClientResponseExceptionForUnregistered();
@@ -544,20 +393,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldMonitorLogSubscriptionWarningForUnregisteredElegUserWhenSubscriptionAdaptation() {
-        final var expectedOrgNo = HashUtility.hash("121212-1212");
-        final var expectedPersonId = HashUtility.hash(PERSON_ID);
-
-        setRestServiceUnregisteredElegMockToReturn(true);
-        setFeaturesHelperMockToReturn(true, false);
-
-        subscriptionService.isUnregisteredElegUserMissingSubscription(PERSON_ID);
-
-        verify(monitoringLogService).logSubscriptionWarnings(expectedPersonId, AuthenticationMethodEnum.ELEG.name(), expectedOrgNo);
-    }
-
-    @Test
-    public void shouldRemoveCareProviderFromMissingSubscriptionListWhenAcknowledgedModalElegUser() {
+    void shouldRemoveCareProviderFromMissingSubscriptionListWhenAcknowledgedModalElegUser() {
         final var careProviderIndex = 0;
         final var webCertUser = createWebCertElegUser();
         setSelectedCareProviderForSubscriptionModalDisplay(webCertUser, careProviderIndex);
@@ -566,7 +402,7 @@ public class SubscriptionServiceTest {
             () -> assertEquals(SubscriptionAction.BLOCK, webCertUser.getSubscriptionInfo().getSubscriptionAction()),
             () -> assertEquals(1, webCertUser.getSubscriptionInfo().getCareProvidersForSubscriptionModal().size()),
             () -> assertTrue(webCertUser.getSubscriptionInfo().getCareProvidersForSubscriptionModal().contains(webCertUser.getVardgivare()
-                .get(careProviderIndex).getId()))
+                .getFirst().getId()))
         );
 
         subscriptionService.acknowledgeSubscriptionModal(webCertUser);
@@ -578,7 +414,7 @@ public class SubscriptionServiceTest {
     }
 
     @Test
-    public void shouldRemoveCareProviderFromMissingSubscriptionListWhenAcknowledgedModalForSithsUserWithMultipleCareProviders() {
+    void shouldRemoveCareProviderFromMissingSubscriptionListWhenAcknowledgedModalForSithsUserWithMultipleCareProviders() {
         final var careProviderIndex = 1;
         final var webCertUser = createWebCertSithsUser(3, 2, 1);
         setSelectedCareProviderForSubscriptionModalDisplay(webCertUser, careProviderIndex);
@@ -603,67 +439,9 @@ public class SubscriptionServiceTest {
         );
     }
 
-    @Test
-    public void shouldReturnTrueOnlyWhenSubscriptionAdaptationIsSinglyActivated() {
-        setFeaturesHelperMockToReturn(true, false);
-        final var boolean1 = subscriptionService.isSubscriptionAdaptation();
-
-        setFeaturesHelperMockToReturn(true, true);
-        final var boolean2 = subscriptionService.isSubscriptionAdaptation();
-
-        setFeaturesHelperMockToReturn(false, false);
-        final var boolean3 = subscriptionService.isSubscriptionAdaptation();
-
-        assertAll(
-            () -> assertTrue(boolean1),
-            () -> assertFalse(boolean2),
-            () -> assertFalse(boolean3)
-        );
-    }
-
-    @Test
-    public void shouldReturnTrueWheneverSubscriptionRequiredIsActivated() {
-        setFeaturesHelperMockToReturn(true, true);
-        final var boolean1 = subscriptionService.isSubscriptionRequired();
-
-        setFeaturesHelperMockToReturn(false, true);
-        final var boolean2 = subscriptionService.isSubscriptionRequired();
-
-        setFeaturesHelperMockToReturn(false, false);
-        final var boolean3 = subscriptionService.isSubscriptionRequired();
-
-        assertAll(
-            () -> assertTrue(boolean1),
-            () -> assertTrue(boolean2),
-            () -> assertFalse(boolean3)
-        );
-    }
-
-    @Test
-    public void shouldReturnTrueWhenAnySubscriptionFeatureIsActivated() {
-        setFeaturesHelperMockToReturn(true, false);
-        final var boolean1 = subscriptionService.isAnySubscriptionFeatureActive();
-
-        setFeaturesHelperMockToReturn(false, true);
-        final var boolean2 = subscriptionService.isAnySubscriptionFeatureActive();
-
-        setFeaturesHelperMockToReturn(true, true);
-        final var boolean3 = subscriptionService.isAnySubscriptionFeatureActive();
-
-        setFeaturesHelperMockToReturn(false, false);
-        final var boolean4 = subscriptionService.isAnySubscriptionFeatureActive();
-
-        assertAll(
-            () -> assertTrue(boolean1),
-            () -> assertTrue(boolean2),
-            () -> assertTrue(boolean3),
-            () -> assertFalse(boolean4)
-        );
-    }
-
     private void setRestServiceMockToReturn(int careProviderHsaIdCount) {
         final var careProviderHsaIds = getMissingSubscriptionList(careProviderHsaIdCount);
-        when(subscriptionRestService.getMissingSubscriptions(any(), any())).thenReturn(careProviderHsaIds);
+        when(subscriptionIntegrationService.getMissingSubscriptions(any(), any())).thenReturn(careProviderHsaIds);
     }
 
     private List<String> getMissingSubscriptionList(int numberOfMissingSubscriptions) {
@@ -676,32 +454,27 @@ public class SubscriptionServiceTest {
     }
 
     private void setRestServiceUnregisteredElegMockToReturn(Boolean isMissingSubscription) {
-        when(subscriptionRestService.isMissingSubscriptionUnregisteredElegUser(any(String.class))).thenReturn(isMissingSubscription);
-    }
-
-    private void setFeaturesHelperMockToReturn(boolean subscriptionAdaptation, boolean subscriptionRequired) {
-        lenient().when(featuresHelper.isFeatureActive(FEATURE_SUBSCRIPTION_REQUIRED)).thenReturn(subscriptionRequired);
-        lenient().when(featuresHelper.isFeatureActive(FEATURE_SUBSCRIPTION_ADAPTATION_PERIOD)).thenReturn(subscriptionAdaptation);
+        when(subscriptionIntegrationService.isMissingSubscriptionUnregisteredElegUser(any(String.class))).thenReturn(isMissingSubscription);
     }
 
     private void setMockToReturnRestClientExceptionForUnregistered() {
         final var e = new RestClientException("MESSAGE_TEXT");
-        when(subscriptionRestService.isMissingSubscriptionUnregisteredElegUser(any(String.class))).thenThrow(e);
+        when(subscriptionIntegrationService.isMissingSubscriptionUnregisteredElegUser(any(String.class))).thenThrow(e);
     }
 
     private void setMockToReturnRestClientResponseExceptionForUnregistered() {
         final var e = new RestClientResponseException("MESSAGE_TEXT", 500, "statusText", null, null, null);
-        when(subscriptionRestService.isMissingSubscriptionUnregisteredElegUser(any(String.class))).thenThrow(e);
+        when(subscriptionIntegrationService.isMissingSubscriptionUnregisteredElegUser(any(String.class))).thenThrow(e);
     }
 
     private void setMockToReturnRestClientException() {
         final var e = new RestClientException("MESSAGE_TEXT");
-        when(subscriptionRestService.getMissingSubscriptions(any(), any(AuthenticationMethodEnum.class))).thenThrow(e);
+        when(subscriptionIntegrationService.getMissingSubscriptions(any(), any(AuthenticationMethodEnum.class))).thenThrow(e);
     }
 
     private void setMockToReturnRestClientResponseException(int httpStatusCode) {
         final var e = new RestClientResponseException("MESSAGE_TEXT", httpStatusCode, "statusText", null, null, null);
-        when(subscriptionRestService.getMissingSubscriptions(any(), any(AuthenticationMethodEnum.class))).thenThrow(e);
+        when(subscriptionIntegrationService.getMissingSubscriptions(any(), any(AuthenticationMethodEnum.class))).thenThrow(e);
     }
 
     private WebCertUser createWebCertElegUser() {
@@ -710,8 +483,8 @@ public class SubscriptionServiceTest {
         webCertUser.setVardgivare(getCareProviders(1, 1, 0));
         webCertUser.setRoles(Map.of(AuthoritiesConstants.ROLE_PRIVATLAKARE, new Role()));
 
-        final var careProvider = webCertUser.getVardgivare().get(0);
-        careProvider.getVardenheter().get(0).setId(careProvider.getId());
+        final var careProvider = webCertUser.getVardgivare().getFirst();
+        careProvider.getVardenheter().getFirst().setId(careProvider.getId());
         return webCertUser;
     }
 

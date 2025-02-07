@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,18 +18,30 @@
  */
 package se.inera.intyg.webcert.web.auth.eleg;
 
-import org.springframework.security.saml.SAMLCredential;
+import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 
-/**
- * Resolves {@link AuthenticationMethod} used for a e-leg authentication.
- *
- * E.g. NetID, BankID or Mobilt BankID.
- *
- * Created by eriklupander on 2015-08-24.
- */
-public interface ElegAuthenticationMethodResolver {
+@Service
+public class ElegAuthenticationMethodResolver {
 
-    AuthenticationMethod resolveAuthenticationMethod(SAMLCredential samlCredential);
+    public AuthenticationMethod resolveAuthenticationMethod(String loginMethod) {
 
+        if (loginMethod == null) {
+            throw new IllegalArgumentException("Authentication method must not be null");
+        }
+
+        ElegLoginMethod loginMethodEnum;
+        try {
+            loginMethodEnum = ElegLoginMethod.valueOf(loginMethod.toUpperCase());
+
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Failure parsing AuthenticationMethod '%s' received in SAML attribute 'LoginMethod'."
+                .formatted(loginMethod), e);
+        }
+        return switch (loginMethodEnum) {
+            case CCP1, CCP2, CCP8 -> AuthenticationMethod.NET_ID;
+            case CCP10, CCP12 -> AuthenticationMethod.BANK_ID;
+            case CCP11, CCP13, CCP19, CCP28 -> AuthenticationMethod.MOBILT_BANK_ID;
+        };
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -24,6 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import se.inera.intyg.common.db.support.DbModuleEntryPoint;
+import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
@@ -34,7 +36,10 @@ import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.facade.TypeAheadProvider;
 import se.inera.intyg.infra.integration.hsatk.services.HsatkOrganizationService;
+import se.inera.intyg.infra.security.authorities.FeaturesHelper;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 @Component
 public class IntygToCertificateConverterImpl implements IntygToCertificateConverter {
@@ -56,6 +61,8 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
 
     private final CertificateRecipientConverter certificateRecipientConverter;
 
+    private final FeaturesHelper featuresHelper;
+
     @Autowired
     public IntygToCertificateConverterImpl(IntygModuleRegistry moduleRegistry,
         IntygTextsService intygTextsService,
@@ -63,7 +70,8 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
         CertificateRelationsConverter certificateRelationsConverter,
         HsatkOrganizationService hsatkOrganizationService,
         TypeAheadProvider typeAheadProvider,
-        CertificateRecipientConverter certificateRecipientConverter) {
+        CertificateRecipientConverter certificateRecipientConverter,
+        FeaturesHelper featuresHelper) {
         this.moduleRegistry = moduleRegistry;
         this.intygTextsService = intygTextsService;
         this.patientConverter = patientConverter;
@@ -71,6 +79,7 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
         this.hsatkOrganizationService = hsatkOrganizationService;
         this.typeAheadProvider = typeAheadProvider;
         this.certificateRecipientConverter = certificateRecipientConverter;
+        this.featuresHelper = featuresHelper;
     }
 
     @Override
@@ -139,6 +148,15 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
         certificateToReturn.getMetadata().setLatestMajorVersion(
             intygTextsService.isLatestMajorVersion(certificateToReturn.getMetadata().getType(),
                 certificateToReturn.getMetadata().getTypeVersion())
+        );
+
+        certificateToReturn.getMetadata().setInactiveCertificateType(
+            featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_INACTIVE_CERTIFICATE_TYPE, certificateToReturn.getMetadata().getType())
+        );
+
+        certificateToReturn.getMetadata().setAvailableForCitizen(
+            !(certificate.getUtlatande().getTyp().equals(DbModuleEntryPoint.MODULE_ID)
+                || certificate.getUtlatande().getTyp().equals(DoiModuleEntryPoint.MODULE_ID))
         );
 
         return certificateToReturn;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,11 +20,13 @@ package se.inera.intyg.webcert.notification_sender.notifications.services;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
+import se.inera.intyg.webcert.logging.MdcHelper;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.notification_sender.notifications.filter.NotificationMessageDiscardFilter;
 
 /**
@@ -40,27 +42,36 @@ import se.inera.intyg.webcert.notification_sender.notifications.filter.Notificat
  *
  * Created by eriklupander on 2016-07-04.
  */
+
+@Slf4j
 public class NotificationAggregator {
 
-    private static final Logger LOG = LoggerFactory.getLogger(NotificationAggregator.class);
+    @Autowired
+    private MdcHelper mdcHelper;
 
     public List<Message> process(Exchange exchange) {
 
-        // Extract the list of exchanges (i.e. messages) from the Exchange.GROUPED_EXCHANGE property.
-        List<Exchange> grouped = exchange.getIn().getBody(List.class);
+        try {
+            MDC.put(MdcLogConstants.TRACE_ID_KEY, mdcHelper.traceId());
+            MDC.put(MdcLogConstants.SPAN_ID_KEY, mdcHelper.spanId());
 
-        if (grouped == null || grouped.isEmpty()) {
-            LOG.info("No aggregated log messages, this is normal if camel aggregator has a batch timeout. Doing nothing.");
-            return Collections.emptyList();
+            List<Exchange> grouped = exchange.getIn().getBody(List.class);
+
+            if (grouped == null || grouped.isEmpty()) {
+                log.info("No aggregated log messages, this is normal if camel aggregator has a batch timeout. Doing nothing.");
+                return Collections.emptyList();
+            }
+
+            // Pull the inbound messages from the exchanges
+            List<Message> aggregatedList = grouped.stream()
+                .map(Exchange::getIn)
+                .toList();
+
+            // And finally let the filtering component do its job, passing on a List of those messages we want to pass down
+            // the route.
+            return new NotificationMessageDiscardFilter().process(aggregatedList);
+        } finally {
+            MDC.clear();
         }
-
-        // Pull the inbound messages from the exchanges
-        List<Message> aggregatedList = grouped.stream()
-            .map(Exchange::getIn)
-            .collect(Collectors.toList());
-
-        // And finally let the filtering component do its job, passing on a List of those messages we want to pass down
-        // the route.
-        return new NotificationMessageDiscardFilter().process(aggregatedList);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -23,6 +23,18 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,22 +46,11 @@ import se.inera.intyg.infra.integration.srs.model.SrsResponse;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.srs.SrsService;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
 import se.riv.clinicalprocess.healthcond.certificate.types.v2.ResultCodeEnum;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.util.List;
 
 //CHECKSTYLE:OFF ParameterNumber
 @Path("/srs")
@@ -75,6 +76,7 @@ public class SrsApiController extends AbstractApiController {
         @ApiResponse(code = NO_CONTENT, message = "No prediction model found")
     })
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "srs-get-srs", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getSrs(@ApiParam(value = "Intyg id", required = true) @PathParam("intygId") String intygId,
         @ApiParam(value = "Personnummer", required = true) @PathParam("personnummer") String personnummer,
         @ApiParam(value = "Diagnosis Code", required = true) @PathParam("diagnosisCode") String diagnosisCode,
@@ -100,6 +102,7 @@ public class SrsApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @ApiOperation(value = "Get questions for diagnosis code", httpMethod = "GET", produces = MediaType.APPLICATION_JSON)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "srs-get-question", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getQuestions(
         @ApiParam(value = "Diagnosis code") @PathParam("diagnosisCode") String diagnosisCode,
         @ApiParam(value = "Prediction model version") @QueryParam("modelVersion") String modelVersion
@@ -118,6 +121,7 @@ public class SrsApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @ApiOperation(value = "Get consent for patient and careunit", httpMethod = "GET", produces = MediaType.APPLICATION_JSON)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "srs-get-consent", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getConsent(
         @ApiParam(value = "Personnummer") @PathParam("personnummer") String personnummer,
         @ApiParam(value = "HsaId för vårdenhet") @PathParam("vardenhetHsaId") String careUnitHsaId) {
@@ -136,6 +140,7 @@ public class SrsApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Set consent for patient and careunit", httpMethod = "PUT", produces = MediaType.APPLICATION_JSON)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "srs-set-consent", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public Response setConsent(
         @ApiParam(value = "Personnummer") @PathParam("personnummer") String personnummer,
         @ApiParam(value = "HsaId för vårdenhet") @PathParam("vardenhetHsaId") String careUnitHsaId,
@@ -156,6 +161,7 @@ public class SrsApiController extends AbstractApiController {
     @Consumes(MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Set own opinion for risk prediction", httpMethod = "PUT", produces = MediaType.APPLICATION_JSON)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "srs-set-own-opinion", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public Response setOwnOpinion(
         @ApiParam(value = "Personnummer") @PathParam("personnummer") String personnummer,
         @ApiParam(value = "HSA-Id för vårdgivare") @PathParam("vardgivareHsaId") String vardgivareHsaId,
@@ -178,6 +184,7 @@ public class SrsApiController extends AbstractApiController {
     @Path("/codes")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "srs-get-diagnosis-codes", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getDiagnosisCodes(
         @ApiParam(value = "Prediction model version") @QueryParam("modelVersion") String modelVersion
     ) {
@@ -190,6 +197,7 @@ public class SrsApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @ApiOperation(value = "Get SRS info for diagnosecode", httpMethod = "GET", produces = MediaType.APPLICATION_JSON)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "srs-get-srs-for-diagnosis-codes", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getSrsForDiagnosisCodes(@PathParam("diagnosisCode") String diagnosisCode) {
         authoritiesValidator.given(getWebCertUserService().getUser()).features(AuthoritiesConstants.FEATURE_SRS).orThrow();
         SrsForDiagnosisResponse srsForDiagnose = srsService.getSrsForDiagnosis(diagnosisCode);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.notification;
 
+import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -25,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import javax.xml.bind.JAXBException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +33,8 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.notification_sender.notifications.services.redelivery.NotificationRedeliveryService;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
@@ -53,13 +55,12 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
     private HandelseRepository eventRepository;
 
     @Override
+    @PerformanceLogging(eventAction = "job-resend-scheduled-notifications", eventType = MdcLogConstants.EVENT_TYPE_CHANGE,
+        eventCategory = MdcLogConstants.EVENT_CATEGORY_PROCESS)
     public void resendScheduledNotifications(int batchSize) {
         final var startTimeInMilliseconds = System.currentTimeMillis();
-
         final var notificationsToResend = notificationRedeliveryService.getNotificationsForRedelivery(batchSize);
-
         final var successfullySent = resend(notificationsToResend);
-
         final var endTimeInMilliseconds = System.currentTimeMillis();
 
         LOG.debug("Processed {} notification for redelivery in {} seconds. Number of failures: {}.",

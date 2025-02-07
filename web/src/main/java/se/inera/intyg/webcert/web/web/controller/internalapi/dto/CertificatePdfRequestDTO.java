@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,44 +19,22 @@
 
 package se.inera.intyg.webcert.web.web.controller.internalapi.dto;
 
-import java.util.Objects;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import lombok.Builder;
+import lombok.Value;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfRequestDTO.CertificatePdfRequestDTOBuilder;
 
+@JsonDeserialize(builder = CertificatePdfRequestDTOBuilder.class)
+@Value
+@Builder
 public class CertificatePdfRequestDTO {
 
-    private String customizationId;
+    String customizationId;
+    String personId;
 
-    public CertificatePdfRequestDTO() {
-    }
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class CertificatePdfRequestDTOBuilder {
 
-    public CertificatePdfRequestDTO(String customizationId) {
-        this.customizationId = customizationId;
-    }
-
-    public String getCustomizationId() {
-        return customizationId;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        final CertificatePdfRequestDTO that = (CertificatePdfRequestDTO) o;
-        return Objects.equals(customizationId, that.customizationId);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(customizationId);
-    }
-
-    @Override
-    public String toString() {
-        return "PrintCertificateRequestDTO{"
-            + "customizationId='" + customizationId + '\''
-            + '}';
     }
 }

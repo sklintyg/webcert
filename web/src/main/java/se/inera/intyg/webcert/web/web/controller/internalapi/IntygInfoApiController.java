@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -19,17 +19,19 @@
 package se.inera.intyg.webcert.web.web.controller.internalapi;
 
 import io.swagger.annotations.Api;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
 import java.util.Optional;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.infra.intyginfo.dto.WcIntygInfo;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.intyginfo.IntygInfoService;
 
 @Path("/intygInfo")
@@ -45,6 +47,7 @@ public class IntygInfoApiController {
     @Path("/{intygId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "intyg-info-get-certificate-info", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getIntygInfo(@PathParam("intygId") String intygId) {
 
         Optional<WcIntygInfo> wcIntygInfo = intygInfoService.getIntygInfo(intygId);

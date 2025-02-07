@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -76,6 +76,7 @@ class UserServiceImplTest {
     private static final String HSA_ID = "HSA_ID";
     private static final String NAME = "NAME";
     private static final String ROLE = "ROLE";
+    private static final String ORIGIN = "ORIGIN";
     public static final String ROLE_NAME = "ROLE_NAME";
     public static final String ROLE_DESCRIPTION = "ROLE_DESCRIPTION";
     private static final Map<String, String> PREFERENCES = Map.of("wc.preference", "true");
@@ -128,6 +129,10 @@ class UserServiceImplTest {
             doReturn(PREFERENCES)
                 .when(user)
                 .getAnvandarPreference();
+
+            doReturn(ORIGIN)
+                .when(user)
+                .getOrigin();
         }
 
         @Test
@@ -209,6 +214,12 @@ class UserServiceImplTest {
             assertEquals(CARE_PROVIDER_ID, careProvider.getId());
             assertEquals(CARE_UNIT_ID, careUnit.getUnitId());
             assertEquals(UNIT_ID, unit.getUnitId());
+        }
+
+        @Test
+        void shallReturnOrigin() {
+            final var actualUser = userService.getLoggedInUser();
+            assertEquals(ORIGIN, actualUser.getOrigin());
         }
     }
 
@@ -345,7 +356,7 @@ class UserServiceImplTest {
                 .getAuthenticationMethod();
 
             final var actualUser = userService.getLoggedInUser();
-            assertEquals(se.inera.intyg.common.support.facade.model.user.SigningMethod.BANK_ID, actualUser.getSigningMethod());
+            assertEquals(se.inera.intyg.common.support.facade.model.user.SigningMethod.MOBILT_BANK_ID, actualUser.getSigningMethod());
         }
     }
 
@@ -491,21 +502,7 @@ class UserServiceImplTest {
             final var loggedInUser = userService.getLoggedInUser();
             assertFalse(loggedInUser.getCareProviders().get(0).isMissingSubscription());
         }
-
-        @Test
-        void careProviderIsNotConsideredAsMissingSubscriptionIfActionIsWarn() {
-            final var subscriptionInfo = new SubscriptionInfo();
-            subscriptionInfo.setCareProvidersMissingSubscription(
-                Collections.singletonList(CARE_PROVIDER_ID)
-            );
-            subscriptionInfo.setSubscriptionAction(SubscriptionAction.WARN);
-
-            doReturn(subscriptionInfo).when(user).getSubscriptionInfo();
-
-            final var loggedInUser = userService.getLoggedInUser();
-            assertFalse(loggedInUser.getCareProviders().get(0).isMissingSubscription());
-        }
-
+        
         @Test
         void careProviderIsNotConsideredAsMissingSubscriptionIfActionIsNone() {
             final var subscriptionInfo = new SubscriptionInfo();

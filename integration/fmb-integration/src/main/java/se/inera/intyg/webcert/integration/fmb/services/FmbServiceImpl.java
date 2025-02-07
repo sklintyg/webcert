@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,6 +20,8 @@ package se.inera.intyg.webcert.integration.fmb.services;
 
 import static java.util.Objects.nonNull;
 import static org.springframework.util.CollectionUtils.isEmpty;
+import static se.inera.intyg.webcert.logging.MdcLogConstants.SPAN_ID_KEY;
+import static se.inera.intyg.webcert.logging.MdcLogConstants.TRACE_ID_KEY;
 import static se.inera.intyg.webcert.persistence.fmb.model.fmb.Beskrivning.BeskrivningBuilder.aBeskrivning;
 import static se.inera.intyg.webcert.persistence.fmb.model.fmb.DiagnosInformation.DiagnosInformationBuilder.aDiagnosInformation;
 import static se.inera.intyg.webcert.persistence.fmb.model.fmb.Icd10Kod.Icd10KodBuilder.anIcd10Kod;
@@ -31,7 +33,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Ints;
 import io.vavr.control.Try;
-import java.lang.invoke.MethodHandles;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -40,11 +41,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Configuration;
+import org.slf4j.MDC;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -62,6 +62,9 @@ import se.inera.intyg.webcert.integration.fmb.model.typfall.Fmbtillstand;
 import se.inera.intyg.webcert.integration.fmb.model.typfall.Rekommenderadsjukskrivning;
 import se.inera.intyg.webcert.integration.fmb.model.typfall.Typfall;
 import se.inera.intyg.webcert.integration.fmb.model.typfall.TypfallData;
+import se.inera.intyg.webcert.logging.MdcHelper;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.Beskrivning;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.BeskrivningTyp;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.DiagnosInformation;
@@ -72,33 +75,35 @@ import se.inera.intyg.webcert.persistence.fmb.model.fmb.Referens;
 import se.inera.intyg.webcert.persistence.fmb.model.fmb.TypFall;
 import se.inera.intyg.webcert.persistence.fmb.repository.DiagnosInformationRepository;
 
+@Slf4j
 @Service
 @Transactional
-@Configuration
 @EnableScheduling
+@RequiredArgsConstructor
 public class FmbServiceImpl implements FmbService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final String JOB_NAME = "FmbServiceUpdate.run";
 
+    private final MdcHelper mdcHelper;
     private final FmbConsumer fmbConsumer;
     private final DiagnosInformationRepository repository;
-
-    public FmbServiceImpl(final FmbConsumer fmbConsumer, final DiagnosInformationRepository repository) {
-        this.fmbConsumer = fmbConsumer;
-        this.repository = repository;
-    }
 
     @Override
     @Scheduled(cron = "${fmb.dataupdate.cron}")
     @SchedulerLock(name = JOB_NAME)
+    @PerformanceLogging(eventAction = "job-update-fmb-data", eventType = MdcLogConstants.EVENT_TYPE_INFO)
     public void updateData() {
         try {
-            LOG.info("FMB data update started");
+            MDC.put(TRACE_ID_KEY, mdcHelper.traceId());
+            MDC.put(SPAN_ID_KEY, mdcHelper.spanId());
+
+            log.info("FMB data update started");
             performUpdate();
-            LOG.info("FMB data update done");
+            log.info("FMB data update done");
         } catch (Exception e) {
-            LOG.error("Failed to update FMB", e);
+            log.error("Failed to update FMB", e);
+        } finally {
+            MDC.clear();
         }
     }
 
@@ -115,7 +120,7 @@ public class FmbServiceImpl implements FmbService {
         });
 
         if (result.isFailure()) {
-            LOG.warn("Failed to fetch FMB information");
+            log.warn("Failed to fetch FMB information");
             result.getCause().printStackTrace();
         }
     }
@@ -155,7 +160,7 @@ public class FmbServiceImpl implements FmbService {
                     .referensList(convertToReferensList(attributes))
                     .senastUppdaterad(senasteAndring.orElse(null))
                     .build();
-            }).collect(Collectors.toList());
+            }).toList();
     }
 
     private void validateResponse(final FmdxInformation diagnosinformation, final Typfall typfall) {
@@ -181,10 +186,10 @@ public class FmbServiceImpl implements FmbService {
             .map(kod -> anIcfKod()
                 .icfKodTyp(kodTyp)
                 .kod(kod.getOptionalKod().isPresent()
-                    ? kod.getOptionalKod().get().replaceAll("\\.", "").toUpperCase(Locale.ENGLISH)
+                    ? kod.getOptionalKod().get().replace(".", "").toUpperCase(Locale.ENGLISH)
                     : null)
                 .build())
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private List<TypFall> convertToTypFallList(final Typfall typfall, final Kod kod) {
@@ -197,7 +202,7 @@ public class FmbServiceImpl implements FmbService {
                 .maximalSjukrivningstidSourceValue(attributes.getRekommenderadsjukskrivning().getMaximalsjukskrivningstid())
                 .maximalSjukrivningstidSourceUnit(attributes.getRekommenderadsjukskrivning().getMaximalsjukskrivningsenhet())
                 .build())
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private Integer convertToAntalDagar(final Rekommenderadsjukskrivning rekommenderadsjukskrivning) {
@@ -205,8 +210,8 @@ public class FmbServiceImpl implements FmbService {
             return null;
         }
 
-        final int antal = Integer.valueOf(rekommenderadsjukskrivning.getMaximalsjukskrivningstid());
-        final TidEnhet enhet = TidEnhet.of(rekommenderadsjukskrivning.getMaximalsjukskrivningsenhet()).get();
+        final int antal = Integer.parseInt(rekommenderadsjukskrivning.getMaximalsjukskrivningstid());
+        final TidEnhet enhet = TidEnhet.of(rekommenderadsjukskrivning.getMaximalsjukskrivningsenhet()).orElseThrow();
         return antal * enhet.getInDays();
     }
 
@@ -227,12 +232,12 @@ public class FmbServiceImpl implements FmbService {
         return attributes.getDiagnoskod().stream()
             .map(kod -> anIcd10Kod()
                 .kod(kod.getOptionalKod().isPresent()
-                    ? kod.getOptionalKod().get().replaceAll("\\.", "").toUpperCase(Locale.ENGLISH)
+                    ? kod.getOptionalKod().get().replace(".", "").toUpperCase(Locale.ENGLISH)
                     : null)
                 .beskrivning(kod.getBeskrivning())
                 .typFallList(convertToTypFallList(typfallList, kod))
                 .build())
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private List<Referens> convertToReferensList(final Attributes attributes) {
@@ -241,6 +246,6 @@ public class FmbServiceImpl implements FmbService {
                 .text(referens.getText())
                 .uri(referens.getUri())
                 .build())
-            .collect(Collectors.toList());
+            .toList();
     }
 }

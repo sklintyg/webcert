@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -20,11 +20,11 @@ package se.inera.intyg.webcert.web.integration.internalnotification;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageListener;
-import javax.jms.TextMessage;
-import org.apache.commons.lang.StringUtils;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.MessageListener;
+import jakarta.jms.TextMessage;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +38,9 @@ import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.webcert.web.csintegration.certificate.PublishCertificateStatusUpdateService;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
+import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 
@@ -66,6 +69,15 @@ public class InternalNotificationMessageListener implements MessageListener {
     @Value("${intygstjanst.logicaladdress}")
     private String logicalAddress;
 
+    @Autowired
+    private CertificateServiceProfile certificateServiceProfile;
+
+    @Autowired
+    private CSIntegrationService csIntegrationService;
+
+    @Autowired
+    private PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+
     @Override
     @JmsListener(destination = "${internal.notification.queueName}")
     public void onMessage(Message message) {
@@ -90,6 +102,13 @@ public class InternalNotificationMessageListener implements MessageListener {
                     LOG.debug("Not forwarding internal notification to care system, care unit '{}' is not integrated.", enhetsId);
                     return;
                 }
+
+                if (profileActiveAndCertificateExistsInCertificateService(intygsId)) {
+                    final var certificate = csIntegrationService.getInternalCertificate(intygsId);
+                    publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKICKA);
+                    return;
+                }
+
                 ModuleApi moduleApi = intygModuleRegistry.getModuleApi(intygsTyp, intygsTypVersion);
                 CertificateResponse certificateResponse = moduleApi.getCertificate(intygsId, logicalAddress, "HSVARD");
 
@@ -102,5 +121,10 @@ public class InternalNotificationMessageListener implements MessageListener {
                 LOG.error("Caught {} transforming internal notification to external notification. Message: {}", e.getMessage());
             }
         }
+    }
+
+    private boolean profileActiveAndCertificateExistsInCertificateService(String intygsId) {
+        return Boolean.TRUE.equals(certificateServiceProfile.active())
+            && Boolean.TRUE.equals(csIntegrationService.certificateExists(intygsId));
     }
 }

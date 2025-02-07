@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -22,9 +22,9 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,6 +34,8 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.service.facade.ResourceLinkFacadeTestHelper;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.GetUserResourceLinksImpl;
@@ -157,7 +159,7 @@ class GetUserResourceLinksImplTest {
         }
 
         @Test
-        void shallNotIncludeSignedCertificatesListIfUserIsNotDoctor() {
+        void shallNotIncludeSignedCertificatesListIfUserIsCareAdmin() {
             final var user = getUserWithOriginAndRole("NORMAL", false);
             final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.ACCESS_SIGNED_CERTIFICATES_LIST);
@@ -365,8 +367,7 @@ class GetUserResourceLinksImplTest {
                 }
 
                 final var subscriptionInfo = new SubscriptionInfo();
-                subscriptionInfo.setRequireSubscriptionStartDate(LocalDate.now().minusDays(1).toString());
-                subscriptionInfo.setSubscriptionAction(SubscriptionAction.WARN);
+                subscriptionInfo.setSubscriptionAction(SubscriptionAction.BLOCK);
                 subscriptionInfo.setCareProvidersMissingSubscription(missingSubscriptions);
                 subscriptionInfo.setCareProvidersForSubscriptionModal(subscriptionWarning);
                 user.setSubscriptionInfo(subscriptionInfo);
@@ -444,7 +445,8 @@ class GetUserResourceLinksImplTest {
     WebCertUser getUserWithOriginAndRole(String origin, boolean isDoctor) {
         final var user = mock(WebCertUser.class);
         when(user.getOrigin()).thenReturn(origin);
-        when(user.isLakare()).thenReturn(isDoctor);
+        when(user.getRoles()).thenReturn(
+            isDoctor ? Map.of(AuthoritiesConstants.ROLE_LAKARE, new Role()) : Map.of(AuthoritiesConstants.ROLE_ADMIN, new Role()));
         return user;
     }
 

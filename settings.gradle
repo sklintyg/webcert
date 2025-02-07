@@ -14,14 +14,15 @@ include ':notification-sender'
 include ':pp-integration'
 include ':fmb-integration'
 include ':tak-integration'
-include ':kundportalen-integration'
 include ':fk-stub'
 include ':intygstjanst-stub'
 include ':mail-stub'
 include ':notification-stub'
 include ':webcert-web'
 include ':webcert-liquibase-runner'
-include ':webcert-protractor'
+include ':integration-api'
+include ':servicenow-integration'
+include ':webcert-logging'
 
 project(':webcert-common').projectDir = "$rootDir/common" as File
 project(':webcert-persistence').projectDir = "$rootDir/persistence" as File
@@ -29,12 +30,12 @@ project(':notification-sender').projectDir = "$rootDir/notification-sender" as F
 project(':pp-integration').projectDir = "$rootDir/integration/pp-integration" as File
 project(':fmb-integration').projectDir = "$rootDir/integration/fmb-integration" as File
 project(':tak-integration').projectDir = "$rootDir/integration/tak-integration" as File
-project(':kundportalen-integration').projectDir = "$rootDir/integration/kundportalen-integration" as File
 project(':fk-stub').projectDir = "$rootDir/stubs/fk-stub" as File
 project(':intygstjanst-stub').projectDir = "$rootDir/stubs/intygstjanst-stub" as File
 project(':mail-stub').projectDir = "$rootDir/stubs/mail-stub" as File
 project(':notification-stub').projectDir = "$rootDir/stubs/notification-stub" as File
 project(':webcert-web').projectDir = "$rootDir/web" as File
 project(':webcert-liquibase-runner').projectDir = "$rootDir/tools/liquibase-runner" as File
-project(':webcert-protractor').projectDir = "$rootDir/test" as File
-
+project(':integration-api').projectDir = "$rootDir/integration/integration-api" as File
+project(':servicenow-integration').projectDir = "$rootDir/integration/servicenow-integration" as File
+project(':webcert-logging').projectDir = "$rootDir/logging" as File

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -21,24 +21,21 @@ package se.inera.intyg.webcert.notification_sender.certificatesender.services;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import javax.xml.ws.WebServiceException;
-
+import jakarta.xml.ws.WebServiceException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import se.inera.intyg.webcert.common.client.SendCertificateServiceClient;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
+import se.inera.intyg.webcert.logging.MdcHelper;
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v2.SendCertificateToRecipientResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 
-/**
- * Created by eriklupander on 2015-05-22.
- */
 @RunWith(MockitoJUnitRunner.class)
 public class CertificateSendProcessorTest {
 
@@ -49,10 +46,12 @@ public class CertificateSendProcessorTest {
     private static final String LOGICAL_ADDRESS1 = "logicalAddress1";
 
     @Mock
-    SendCertificateServiceClient sendServiceClient;
+    private SendCertificateServiceClient sendServiceClient;
+    @Spy
+    private MdcHelper mdcHelper;
 
     @InjectMocks
-    CertificateSendProcessor certificateSendProcessor = new CertificateSendProcessor();
+    private CertificateSendProcessor certificateSendProcessor = new CertificateSendProcessor();
 
     @Test
     public void testSendCertificate() throws Exception {

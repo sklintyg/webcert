@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -41,6 +41,10 @@ import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
+import se.inera.intyg.webcert.web.csintegration.testability.CertificateServiceCreateRequest;
+import se.inera.intyg.webcert.web.csintegration.testability.CertificateServiceTestabilityUtil;
+import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.integration.util.HoSPersonHelper;
 import se.inera.intyg.webcert.web.service.facade.util.UtkastToCertificateConverter;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
@@ -53,27 +57,27 @@ import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCe
 public class CreateCertificateTestabilityUtil {
 
     private final IntygModuleRegistry moduleRegistry;
-
     private final WebcertUserDetailsService webcertUserDetailsService;
-
     private final PatientDetailsResolver patientDetailsResolver;
-
     private final UtkastService utkastService;
-
     private final UtkastToCertificateConverter utkastToCertificateConverter;
-
     private final UtkastRepository utkastRepository;
-
     private final IntygTextsService intygTextsService;
-
     private final TypeAheadProvider typeAheadProvider;
+    private final CertificateServiceProfile certificateServiceProfile;
+    private final CertificateServiceTestabilityUtil certificateServiceTestabilityUtil;
+    private final CSIntegrationService csIntegrationService;
+    private final UpdateIntygstjanstTestabilityUtil updateIntygstjanstTestabilityUtil;
 
     @Autowired
-    public CreateCertificateTestabilityUtil(IntygModuleRegistry moduleRegistry,
+    public CreateCertificateTestabilityUtil(
+        IntygModuleRegistry moduleRegistry,
         WebcertUserDetailsService webcertUserDetailsService,
         PatientDetailsResolver patientDetailsResolver, UtkastService utkastService,
         UtkastToCertificateConverter utkastToCertificateConverter, UtkastRepository utkastRepository,
-        IntygTextsService intygTextsService, TypeAheadProvider typeAheadProvider) {
+        IntygTextsService intygTextsService, TypeAheadProvider typeAheadProvider, CertificateServiceProfile certificateServiceProfile,
+        CertificateServiceTestabilityUtil certificateServiceTestabilityUtil, CSIntegrationService csIntegrationService,
+        UpdateIntygstjanstTestabilityUtil updateIntygstjanstTestabilityUtil) {
         this.moduleRegistry = moduleRegistry;
         this.webcertUserDetailsService = webcertUserDetailsService;
         this.patientDetailsResolver = patientDetailsResolver;
@@ -82,6 +86,29 @@ public class CreateCertificateTestabilityUtil {
         this.utkastRepository = utkastRepository;
         this.intygTextsService = intygTextsService;
         this.typeAheadProvider = typeAheadProvider;
+        this.certificateServiceProfile = certificateServiceProfile;
+        this.certificateServiceTestabilityUtil = certificateServiceTestabilityUtil;
+        this.csIntegrationService = csIntegrationService;
+        this.updateIntygstjanstTestabilityUtil = updateIntygstjanstTestabilityUtil;
+    }
+
+    private static String getSkickadTillMottagare(String certificateType) {
+        switch (certificateType) {
+            case "lisjp":
+            case "luse":
+            case "luae_na":
+            case "luae_fs":
+                return "FKASSA";
+            case "ts-bas":
+            case "ts-diabetes":
+                return "TRANSP";
+            case "db":
+                return "SKV";
+            case "doi":
+                return "SOS";
+            default:
+                throw new IllegalArgumentException(String.format("The certificatetype '%s' cannot be sent!", certificateType));
+        }
     }
 
     public String createNewCertificate(@NotNull CreateCertificateRequestDTO createCertificateRequest) {
@@ -96,6 +123,19 @@ public class CreateCertificateTestabilityUtil {
             createCertificateRequest.getCertificateTypeVersion()
         );
 
+        if (certificateServiceProfile.activeAndSupportsType(createCertificateRequest.getCertificateType())) {
+            final var modelIdDTO = csIntegrationService.certificateTypeExists(createCertificateRequest.getCertificateType());
+            return certificateServiceTestabilityUtil.create(
+                CertificateServiceCreateRequest.builder()
+                    .patient(patient)
+                    .hosPerson(hosPersonal)
+                    .certificateModelId(modelIdDTO.orElseThrow())
+                    .fillType(createCertificateRequest.getFillType())
+                    .status(createCertificateRequest.getStatus())
+                    .build()
+            );
+        }
+
         final var createNewDraftRequest = new CreateNewDraftRequest(
             null,
             createCertificateRequest.getCertificateType(),
@@ -105,6 +145,8 @@ public class CreateCertificateTestabilityUtil {
             patient
         );
 
+        createNewDraftRequest.setTestability(true);
+
         final var utkast = createNewDraft(createNewDraftRequest);
         final var updateJsonModel = getUpdateJsonModel(utkast, createCertificateRequest);
         utkast.setModel(updateJsonModel);
@@ -112,6 +154,8 @@ public class CreateCertificateTestabilityUtil {
         updateCertificateWithRequestedStatus(createCertificateRequest, hosPersonal, utkast);
 
         utkastRepository.save(utkast);
+
+        updateIntygstjanstTestabilityUtil.update(utkast, hosPersonal, createCertificateRequest.getPersonId());
 
         return utkast.getIntygsId();
     }
@@ -169,7 +213,7 @@ public class CreateCertificateTestabilityUtil {
             utkast.setStatus(UtkastStatus.SIGNED);
             updateJsonBeforeSigning(hosPersonal, utkast, signature);
             if (createCertificateRequest.isSent()) {
-                utkast.setSkickadTillMottagare("FKASSA");
+                utkast.setSkickadTillMottagare(getSkickadTillMottagare(createCertificateRequest.getCertificateType()));
                 utkast.setSkickadTillMottagareDatum(LocalDateTime.now());
             }
         } else if (createCertificateRequest.getStatus() == CertificateStatus.LOCKED) {
@@ -228,27 +272,33 @@ public class CreateCertificateTestabilityUtil {
 
     private IntygUser getUser(String personId) {
         try {
-            return webcertUserDetailsService.loadUserByHsaId(personId);
+            return webcertUserDetailsService.buildUserPrincipal(personId, "");
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
     }
 
     private Patient getPatient(String patientId, String type, String typeVersion) {
-        final var patient = patientDetailsResolver.resolvePatient(
-            Personnummer.createPersonnummer(patientId).orElseThrow(),
+        final var personnummer = Personnummer.createPersonnummer(patientId).orElseThrow();
+        final var patient = csIntegrationService.certificateTypeExists(type).isPresent()
+            ? new Patient() : patientDetailsResolver.resolvePatient(
+            personnummer,
             type,
-            typeVersion);
-        final var personFromPUService = patientDetailsResolver.getPersonFromPUService(patient.getPersonId());
-        patient.setFornamn(personFromPUService.getPerson().getFornamn());
-        patient.setMellannamn(personFromPUService.getPerson().getMellannamn());
-        patient.setEfternamn(personFromPUService.getPerson().getEfternamn());
-        patient.setTestIndicator(personFromPUService.getPerson().isTestIndicator());
-        patient.setAvliden(personFromPUService.getPerson().isAvliden());
-        patient.setSekretessmarkering(personFromPUService.getPerson().isSekretessmarkering());
-        patient.setPostadress(personFromPUService.getPerson().getPostadress());
-        patient.setPostnummer(personFromPUService.getPerson().getPostnummer());
-        patient.setPostort(personFromPUService.getPerson().getPostort());
+            typeVersion
+        );
+        final var personFromPUService = patientDetailsResolver.getPersonFromPUService(
+            personnummer
+        );
+        patient.setPersonId(personnummer);
+        patient.setFornamn(personFromPUService.getPerson().fornamn());
+        patient.setMellannamn(personFromPUService.getPerson().mellannamn());
+        patient.setEfternamn(personFromPUService.getPerson().efternamn());
+        patient.setTestIndicator(personFromPUService.getPerson().testIndicator());
+        patient.setAvliden(personFromPUService.getPerson().avliden());
+        patient.setSekretessmarkering(personFromPUService.getPerson().sekretessmarkering());
+        patient.setPostadress(personFromPUService.getPerson().postadress());
+        patient.setPostnummer(personFromPUService.getPerson().postnummer());
+        patient.setPostort(personFromPUService.getPerson().postort());
         return patient;
     }
 }

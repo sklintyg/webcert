@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -63,6 +63,11 @@ public enum ActionLinkType {
      * Renew certificate.
      */
     FORNYA_INTYG,
+
+    /**
+     * Renew certificate from certificate service.
+     */
+    FORNYA_INTYG_FRAN_CERTIFICATE_SERVICE,
 
     /**
      * Invalidate certificate.

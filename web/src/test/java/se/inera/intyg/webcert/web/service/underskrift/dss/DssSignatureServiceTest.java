@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -27,6 +27,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import jakarta.xml.bind.JAXBElement;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -37,16 +38,12 @@ import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import javax.xml.bind.JAXBElement;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.opensaml.DefaultBootstrap;
-import org.opensaml.xml.ConfigurationException;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -136,24 +133,19 @@ public class DssSignatureServiceTest {
         String[] packages = {"se.inera.intyg.webcert.dss.xsd"};
         marshaller.setPackagesToScan(packages);
 
-        marshaller.setMarshallerProperties(new HashMap<String, Object>() {
+        marshaller.setMarshallerProperties(new HashMap<>() {
             {
-                put(javax.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT, false);
-                put(javax.xml.bind.Marshaller.JAXB_ENCODING, "UTF-8");
+                put(jakarta.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT, false);
+                put(jakarta.xml.bind.Marshaller.JAXB_ENCODING, "UTF-8");
             }
         });
     }
 
 
     public DssSignatureServiceTest() {
-        MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.openMocks(this);
         dssSignatureService = new DssSignatureService(dssMetadataService, dssSignMessageService, webCertUserService, utkastRepository,
             dssSignMessageIdpProvider, underskriftService, redisTicketTracker, monitoringLogService, moduleRegistry);
-    }
-
-    @BeforeClass
-    public static void init() throws ConfigurationException {
-        DefaultBootstrap.bootstrap();
     }
 
     @Test
@@ -171,7 +163,7 @@ public class DssSignatureServiceTest {
         when(dssSignMessageService.signSignRequest(any()))
             .thenReturn("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>");
         when(moduleRegistry.getIntygModule(anyString()))
-            .thenReturn(new IntygModule("intygsTyp", "intygsTyp", null, null, "intygsTyp", null, null, null, null, false, false));
+            .thenReturn(new IntygModule("intygsTyp", "intygsTyp", null, null, "intygsTyp", null, null, null, null));
 
         ReflectionTestUtils.setField(dssSignatureService, "dssClientEntityHostUrl", "https://wc.localtest.me:8020");
         ReflectionTestUtils.setField(dssSignatureService, "dssClientResponseHostUrl", "https://wc.localtest.me:8020");
@@ -245,7 +237,9 @@ public class DssSignatureServiceTest {
 
         assertEquals(ticketIdCaptor.getValue(), "0ff25a22-d78a-46c0-ae78-58e34b62ce90");
 
+        // CHECKSTYLE:OFF LineLength
         var certByteArray = "MIILpjCCCo6gAwIBAgIILGNiAxjmjgowDQYJKoZIhvcNAQELBQAwgYMxOTA3BgNVBAMMMENHSSBTdmVyaWdlIEFCIFNUIFN1YnN0YW50aWFsIERTUyBFbmQgVXNlciBDQSB2MjEdMBsGA1UECwwURFNTIEVuZCBVc2VyIFNpZ25pbmcxGjAYBgNVBAoMEUNHSSBTdmVyaWdlIEFCIFNUMQswCQYDVQQGEwJTRTAeFw0yMDA1MDcwNDA5NDdaFw0yMTA1MDcxMDAzMzNaMFMxDzANBgNVBCoMBkFuZHJldzEQMA4GA1UEBAwHRGlsbGFyZDEVMBMGA1UEBRMMMTk2NzA3MTgzMTMwMRcwFQYDVQQDDA5BbmRyZXcgRGlsbGFyZDBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABE2xWh+y5JLNUYMG69z7feKgXKnK1UIzP6yiaFVofi2RHONk8+Bg9rSX1g5Og65BurXk+2JNv6UwPd9MOk4ShUujggkWMIIJEjAMBgNVHRMBAf8EAjAAME0GA1UdHwRGMEQwQqBAoD6GPGh0dHA6Ly9lc2lnbi52Mi5zdC5zaWduYXR1cmVzZXJ2aWNlLnNlL3Rlc3RDQVN1YnN0YW50aWFsLmNybDAdBgNVHQ4EFgQUtU4TPRik8Zvy1lRTXsP80YfM1AIwHwYDVR0jBBgwFoAU3VXF2mDN4t1bNOpUiJzA4h8SfrswGAYDVR0gBBEwDzANBgsrBgEEAYH1fgMIAjAOBgNVHQ8BAf8EBAMCBkAwgghHBgcqhXCBSQUBBIIIOjCCCDYwgggyDCtodHRwOi8vaWQuZWxlZ25hbW5kZW4uc2UvYXV0aC1jb250LzEuMC9zYWNpDIIIATxzYWNpOlNBTUxBdXRoQ29udGV4dCB4bWxuczpzYWNpPSJodHRwOi8vaWQuZWxlZ25hbW5kZW4uc2UvYXV0aC1jb250LzEuMC9zYWNpIiB4bWxuczpkcz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC8wOS94bWxkc2lnIyIgeG1sbnM6eGVuYz0iaHR0cDovL3d3dy53My5vcmcvMjAwMS8wNC94bWxlbmMjIiB4bWxuczpzYW1sPSJ1cm46b2FzaXM6bmFtZXM6dGM6U0FNTDoyLjA6YXNzZXJ0aW9uIj48c2FjaTpBdXRoQ29udGV4dEluZm8gSWRlbnRpdHlQcm92aWRlcj0iaHR0cHM6Ly90ZXN0aWRwLnYyLnNpZ25hdHVyZXNlcnZpY2Uuc2Uvc2FtbHYyL2lkcC9tZXRhZGF0YSIgQXV0aGVudGljYXRpb25JbnN0YW50PSIyMDIwLTA1LTA3VDA2OjE0OjQ3LjM4OCswMjowMCIgQXV0aG5Db250ZXh0Q2xhc3NSZWY9InVybjpvYXNpczpuYW1lczp0YzpTQU1MOjIuMDphYzpjbGFzc2VzOlBhc3N3b3JkUHJvdGVjdGVkVHJhbnNwb3J0IiBBc3NlcnRpb25SZWY9Il83MDM5ZjBkMjIyNzVmNDFhZDEyYTU0MDZkYmFhNGE2YSIvPjxzYWNpOklkQXR0cmlidXRlcz48c2FjaTpBdHRyaWJ1dGVNYXBwaW5nIFR5cGU9InJkbiIgUmVmPSIyLjUuNC40MiI+PHNhbWw6QXR0cmlidXRlIE5hbWU9InVybjpvaWQ6Mi41LjQuNDIiIE5hbWVGb3JtYXQ9InVybjpvYXNpczpuYW1lczp0YzpTQU1MOjIuMDphdHRybmFtZS1mb3JtYXQ6dXJpIj48c2FtbDpBdHRyaWJ1dGVWYWx1ZSB4bWxuczp4c2k9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEvWE1MU2NoZW1hLWluc3RhbmNlIiB4bWxuczp4cz0iaHR0cDovL3d3dy53My5vcmcvMjAwMS9YTUxTY2hlbWEiIHhzaTp0eXBlPSJ4czpzdHJpbmciPkFuZHJldzwvc2FtbDpBdHRyaWJ1dGVWYWx1ZT48L3NhbWw6QXR0cmlidXRlPjwvc2FjaTpBdHRyaWJ1dGVNYXBwaW5nPjxzYWNpOkF0dHJpYnV0ZU1hcHBpbmcgVHlwZT0icmRuIiBSZWY9IjIuNS40LjQiPjxzYW1sOkF0dHJpYnV0ZSBOYW1lPSJ1cm46b2lkOjIuNS40LjQiIE5hbWVGb3JtYXQ9InVybjpvYXNpczpuYW1lczp0YzpTQU1MOjIuMDphdHRybmFtZS1mb3JtYXQ6dXJpIj48c2FtbDpBdHRyaWJ1dGVWYWx1ZSB4bWxuczp4c2k9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEvWE1MU2NoZW1hLWluc3RhbmNlIiB4bWxuczp4cz0iaHR0cDovL3d3dy53My5vcmcvMjAwMS9YTUxTY2hlbWEiIHhzaTp0eXBlPSJ4czpzdHJpbmciPkRpbGxhcmQ8L3NhbWw6QXR0cmlidXRlVmFsdWU+PC9zYW1sOkF0dHJpYnV0ZT48L3NhY2k6QXR0cmlidXRlTWFwcGluZz48c2FjaTpBdHRyaWJ1dGVNYXBwaW5nIFR5cGU9InJkbiIgUmVmPSIyLjUuNC41Ij48c2FtbDpBdHRyaWJ1dGUgTmFtZT0idXJuOm9pZDoxLjIuNzUyLjI5LjQuMTMiIE5hbWVGb3JtYXQ9InVybjpvYXNpczpuYW1lczp0YzpTQU1MOjIuMDphdHRybmFtZS1mb3JtYXQ6dXJpIj48c2FtbDpBdHRyaWJ1dGVWYWx1ZSB4bWxuczp4c2k9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEvWE1MU2NoZW1hLWluc3RhbmNlIiB4bWxuczp4cz0iaHR0cDovL3d3dy53My5vcmcvMjAwMS9YTUxTY2hlbWEiIHhzaTp0eXBlPSJ4czpzdHJpbmciPjE5NjcwNzE4MzEzMDwvc2FtbDpBdHRyaWJ1dGVWYWx1ZT48L3NhbWw6QXR0cmlidXRlPjwvc2FjaTpBdHRyaWJ1dGVNYXBwaW5nPjxzYWNpOkF0dHJpYnV0ZU1hcHBpbmcgVHlwZT0icmRuIiBSZWY9IjIuNS40LjMiPjxzYW1sOkF0dHJpYnV0ZSBOYW1lPSJ1cm46b2lkOjIuMTYuODQwLjEuMTEzNzMwLjMuMS4yNDEiIE5hbWVGb3JtYXQ9InVybjpvYXNpczpuYW1lczp0YzpTQU1MOjIuMDphdHRybmFtZS1mb3JtYXQ6dXJpIj48c2FtbDpBdHRyaWJ1dGVWYWx1ZSB4bWxuczp4c2k9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEvWE1MU2NoZW1hLWluc3RhbmNlIiB4bWxuczp4cz0iaHR0cDovL3d3dy53My5vcmcvMjAwMS9YTUxTY2hlbWEiIHhzaTp0eXBlPSJ4czpzdHJpbmciPkFuZHJldyBEaWxsYXJkPC9zYW1sOkF0dHJpYnV0ZVZhbHVlPjwvc2FtbDpBdHRyaWJ1dGU+PC9zYWNpOkF0dHJpYnV0ZU1hcHBpbmc+PC9zYWNpOklkQXR0cmlidXRlcz48L3NhY2k6U0FNTEF1dGhDb250ZXh0PjANBgkqhkiG9w0BAQsFAAOCAQEAmDwgUV0PaZ/pIBrlx4vEIXoiqrG6s2PhSxGX5BbBhL08uCMM7Bempv/1mxueXfXksooQvEMe7zO3TdjtB0i4oIYwORQp2A71Y8aBb/cLIt/KAarS3q/1tYs3ui/EuIPRGcRD5pbfZvLkdEgBlU+cEMh5uvApCI4gfPwbqjCDwitjqnKZRGwt6z/+2zfuuqvXWeZDBkoUsWXXHYtoWXLheGruOdk8Eh2YlseqqtSSi7CKwkSxROdea9+0XBjj7pzrKhuXSpMJ6plo0GvJJV1fPrgH8xPWXVxM1NF8i4UXgIxKwmRZmAtk0c6erKGqhOVztegaobde3ontsoEyl/UBLQ==";
+        // CHECKSTYLE:ON LineLength
         assertEquals(certificateCaptor.getValue(), certByteArray);
 
         var signByteArray = Base64.getDecoder()
@@ -306,53 +300,51 @@ public class DssSignatureServiceTest {
 
     @Test
     public void isUnitInIeWhitelist() {
-
-        // No units in whitelist
-        assertFalse(dssSignatureService.isUnitInIeWhitelist(""));
-        assertFalse(dssSignatureService.isUnitInIeWhitelist(null));
-        assertFalse(dssSignatureService.isUnitInIeWhitelist("TSTNMT2321000156-1077"));
+        assertTrue(dssSignatureService.shouldUseSigningService(""));
+        assertTrue(dssSignatureService.shouldUseSigningService(null));
+        assertTrue(dssSignatureService.shouldUseSigningService("TSTNMT2321000156-1077"));
 
         // Just one empty post in whitelist
         ReflectionTestUtils
             .setField(dssSignatureService, "dssUnitWhitelistForIe", Arrays.asList(""));
-        assertFalse(dssSignatureService.isUnitInIeWhitelist("TSTNMT2321000156-1077"));
-        assertFalse(dssSignatureService.isUnitInIeWhitelist("TSTNMT23210001512-WILDCARD"));
-        assertFalse(dssSignatureService.isUnitInIeWhitelist("TSTNMT23210001512WILDCARD"));
-        assertFalse(dssSignatureService.isUnitInIeWhitelist("FINNS_INTE"));
+        assertTrue(dssSignatureService.shouldUseSigningService("TSTNMT2321000156-1077"));
+        assertTrue(dssSignatureService.shouldUseSigningService("TSTNMT23210001512-WILDCARD"));
+        assertTrue(dssSignatureService.shouldUseSigningService("TSTNMT23210001512WILDCARD"));
+        assertTrue(dssSignatureService.shouldUseSigningService("FINNS_INTE"));
 
-        // One big wildcard in whitelist
+        // Shall return true for all units if wildcare * is used
         ReflectionTestUtils
             .setField(dssSignatureService, "dssUnitWhitelistForIe", Arrays.asList("*"));
-        assertTrue(dssSignatureService.isUnitInIeWhitelist("TSTNMT2321000156-1077"));
-        assertTrue(dssSignatureService.isUnitInIeWhitelist("TSTNMT23210001512-WILDCARD"));
-        assertTrue(dssSignatureService.isUnitInIeWhitelist("TSTNMT23210001512WILDCARD"));
-        assertTrue(dssSignatureService.isUnitInIeWhitelist("FINNS_INTE"));
+        assertFalse(dssSignatureService.shouldUseSigningService("TSTNMT2321000156-1077"));
+        assertFalse(dssSignatureService.shouldUseSigningService("TSTNMT23210001512-WILDCARD"));
+        assertFalse(dssSignatureService.shouldUseSigningService("TSTNMT23210001512WILDCARD"));
+        assertFalse(dssSignatureService.shouldUseSigningService("FINNS_INTE"));
 
         // One strict and one wildcard unit in whitelist
         ReflectionTestUtils
             .setField(dssSignatureService, "dssUnitWhitelistForIe", Arrays.asList("TSTNMT2321000156-1077", "TSTNMT23210001512-*"));
-        assertTrue(dssSignatureService.isUnitInIeWhitelist("TSTNMT2321000156-1077"));
-        assertFalse(dssSignatureService.isUnitInIeWhitelist("TSTNMT2321000156-107"));
-        assertFalse(dssSignatureService.isUnitInIeWhitelist("TSTNMT2321000156-10777"));
-        assertTrue(dssSignatureService.isUnitInIeWhitelist("TSTNMT23210001512-WILDCARD"));
-        assertFalse(dssSignatureService.isUnitInIeWhitelist("TSTNMT23210001512WILDCARD"));
-        assertFalse(dssSignatureService.isUnitInIeWhitelist("FINNS_INTE"));
+        assertFalse(dssSignatureService.shouldUseSigningService("TSTNMT2321000156-1077"));
+        assertTrue(dssSignatureService.shouldUseSigningService("TSTNMT2321000156-107"));
+        assertTrue(dssSignatureService.shouldUseSigningService("TSTNMT2321000156-10777"));
+        assertFalse(dssSignatureService.shouldUseSigningService("TSTNMT23210001512-WILDCARD"));
+        assertTrue(dssSignatureService.shouldUseSigningService("TSTNMT23210001512WILDCARD"));
+        assertTrue(dssSignatureService.shouldUseSigningService("FINNS_INTE"));
 
         // Mixed upper and lowercase in whitelist and currentCareUnit
         // One strict and one wildcard unit in whitelist
         ReflectionTestUtils
             .setField(dssSignatureService, "dssUnitWhitelistForIe", Arrays.asList("tStNmT2321000156-1077", "tStNmT23210001512-*"));
-        assertTrue(dssSignatureService.isUnitInIeWhitelist("TsTnMt2321000156-1077"));
-        assertTrue(dssSignatureService.isUnitInIeWhitelist("TsTnMt23210001512-WILDCARD"));
-        assertFalse(dssSignatureService.isUnitInIeWhitelist("TsTnMt23210001512WILDCARD"));
-        assertFalse(dssSignatureService.isUnitInIeWhitelist("FiNNS_iNTE"));
+        assertFalse(dssSignatureService.shouldUseSigningService("TsTnMt2321000156-1077"));
+        assertFalse(dssSignatureService.shouldUseSigningService("TsTnMt23210001512-WILDCARD"));
+        assertTrue(dssSignatureService.shouldUseSigningService("TsTnMt23210001512WILDCARD"));
+        assertTrue(dssSignatureService.shouldUseSigningService("FiNNS_iNTE"));
 
         // One wildcard value in whitelist
         ReflectionTestUtils
             .setField(dssSignatureService, "dssUnitWhitelistForIe", Arrays.asList("TSTNMT23210001512*"));
-        assertFalse(dssSignatureService.isUnitInIeWhitelist("TSTNMT2321000156-1077"));
-        assertTrue(dssSignatureService.isUnitInIeWhitelist("TSTNMT23210001512-WILDCARD"));
-        assertTrue(dssSignatureService.isUnitInIeWhitelist("TSTNMT23210001512WILDCARD"));
-        assertFalse(dssSignatureService.isUnitInIeWhitelist("FINNS_INTE"));
+        assertTrue(dssSignatureService.shouldUseSigningService("TSTNMT2321000156-1077"));
+        assertFalse(dssSignatureService.shouldUseSigningService("TSTNMT23210001512-WILDCARD"));
+        assertFalse(dssSignatureService.shouldUseSigningService("TSTNMT23210001512WILDCARD"));
+        assertTrue(dssSignatureService.shouldUseSigningService("FINNS_INTE"));
     }
 }

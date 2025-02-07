@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -26,23 +26,20 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import javax.xml.ws.WebServiceException;
-
+import jakarta.xml.ws.WebServiceException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ExternalServiceCallException;
 import se.inera.intyg.webcert.common.Constants;
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
+import se.inera.intyg.webcert.logging.MdcHelper;
 
-/**
- * Created by eriklupander on 2015-05-22.
- */
 @RunWith(MockitoJUnitRunner.class)
 public class CertificateRevokeProcessorTest {
 
@@ -54,6 +51,8 @@ public class CertificateRevokeProcessorTest {
 
     @Mock
     private IntygModuleRegistry registry;
+    @Spy
+    private MdcHelper mdcHelper;
 
     @InjectMocks
     CertificateRevokeProcessor certificateRevokeProcessor = new CertificateRevokeProcessor();

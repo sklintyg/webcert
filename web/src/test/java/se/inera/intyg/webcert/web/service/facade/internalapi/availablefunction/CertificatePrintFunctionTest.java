@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -33,6 +33,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.common.ag114.support.Ag114EntryPoint;
 import se.inera.intyg.common.ag7804.support.Ag7804EntryPoint;
 import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.support.facade.model.Certificate;
@@ -49,8 +50,9 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFuncti
 @ExtendWith(MockitoExtension.class)
 class CertificatePrintFunctionTest {
 
-    private static final String CORRECT_TYPE = Ag7804EntryPoint.MODULE_ID;
-    private static final String WRONG_TYPE = Fk7263EntryPoint.MODULE_ID;
+    private static final String AG7804 = Ag7804EntryPoint.MODULE_ID;
+    private static final String AG114 = Ag114EntryPoint.MODULE_ID;
+    private static final String FK7263 = Fk7263EntryPoint.MODULE_ID;
     private static final String QUESTION_SMITTBARAR_PENNING = "27";
     private static final String NOT_QUESTION_SMITTBARAR_PENNING = "NOT_AVSTANGNING_SMITTSKYDD_SVAR_ID_27";
     public static final String FILE_NAME = "lakarintyg_for_sjukpenning";
@@ -75,36 +77,43 @@ class CertificatePrintFunctionTest {
         }
 
         @Test
-        void shouldOnlyReturnPrintCertificateIfTypeIsNotAg7804() {
-            final var certificate = buildCertificate(new Certificate(), WRONG_TYPE, QUESTION_SMITTBARAR_PENNING, null);
+        void shouldOnlyReturnPrintCertificateIfTypeIsNotAg7804OrAg114() {
+            final var certificate = buildCertificate(new Certificate(), FK7263, QUESTION_SMITTBARAR_PENNING, null);
             final var result = certificatePrintFunction.get(certificate);
             assertEquals(List.of(EXPECTED_PRINT_FUNCTION), result);
         }
 
         @Test
         void shoulReturnPrintCertificateAndSmittbarareInfoIfTypeIsAg7804ButQuestionSmittbararpenningIsTrue() {
-            final var certificate = buildCertificate(new Certificate(), CORRECT_TYPE, QUESTION_SMITTBARAR_PENNING, true);
+            final var certificate = buildCertificate(new Certificate(), AG7804, QUESTION_SMITTBARAR_PENNING, true);
             final var result = certificatePrintFunction.get(certificate);
             assertEquals(List.of(EXPECTED_PRINT_FUNCTION, EXPECTED_SMITTBARAR_PENNING_FUNCTION), result);
         }
 
         @Test
         void shouldOnlyReturnPrintCertificateIfTypeIsAg7804ButQuestionSmittbararpenningIsMissing() {
-            final var certificate = buildCertificate(new Certificate(), CORRECT_TYPE, NOT_QUESTION_SMITTBARAR_PENNING, false);
+            final var certificate = buildCertificate(new Certificate(), AG7804, NOT_QUESTION_SMITTBARAR_PENNING, false);
             final var result = certificatePrintFunction.get(certificate);
             assertEquals(List.of(EXPECTED_PRINT_FUNCTION), result);
         }
 
         @Test
         void shouldReturnCustomizePrintCertificateIfTypeIsAg7804AndQuestionSmittbararpenningIsFalse() {
-            final var certificate = buildCertificate(new Certificate(), CORRECT_TYPE, QUESTION_SMITTBARAR_PENNING, false);
+            final var certificate = buildCertificate(new Certificate(), AG7804, QUESTION_SMITTBARAR_PENNING, false);
             final var result = certificatePrintFunction.get(certificate);
             assertEquals(List.of(EXPECTED_CUSTOMIZE_FUNCTION), result);
         }
 
         @Test
         void shouldReturnCustomizePrintCertificateIfTypeIsAg7804AndQuestionSmittbararpenningIsNull() {
-            final var certificate = buildCertificate(new Certificate(), CORRECT_TYPE, QUESTION_SMITTBARAR_PENNING, null);
+            final var certificate = buildCertificate(new Certificate(), AG7804, QUESTION_SMITTBARAR_PENNING, null);
+            final var result = certificatePrintFunction.get(certificate);
+            assertEquals(List.of(EXPECTED_CUSTOMIZE_FUNCTION), result);
+        }
+
+        @Test
+        void shouldReturnCustomizePrintCertificateIfTypeIsAg114() {
+            final var certificate = buildCertificate(new Certificate(), AG114, NOT_QUESTION_SMITTBARAR_PENNING, false);
             final var result = certificatePrintFunction.get(certificate);
             assertEquals(List.of(EXPECTED_CUSTOMIZE_FUNCTION), result);
         }
@@ -126,7 +135,7 @@ class CertificatePrintFunctionTest {
 
     @Test
     void shouldReturnEmptyIfFeatureIsInactive() {
-        final var certificate = buildCertificate(new Certificate(), CORRECT_TYPE, QUESTION_SMITTBARAR_PENNING, null);
+        final var certificate = buildCertificate(new Certificate(), AG7804, QUESTION_SMITTBARAR_PENNING, null);
         final var result = certificatePrintFunction.get(certificate);
         assertEquals(Collections.emptyList(), result);
     }
@@ -141,7 +150,7 @@ class CertificatePrintFunctionTest {
         final var relations = CertificateRelations.builder()
             .children(relationChildren)
             .build();
-        return buildCertificate(certificate, CORRECT_TYPE, QUESTION_SMITTBARAR_PENNING, true, relations);
+        return buildCertificate(certificate, AG7804, QUESTION_SMITTBARAR_PENNING, true, relations);
     }
 
     private static Certificate buildCertificate(Certificate certificate, String type, String questionId,

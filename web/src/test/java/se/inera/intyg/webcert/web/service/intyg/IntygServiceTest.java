@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -43,6 +43,9 @@ import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.ws.WebServiceException;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
@@ -58,10 +61,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import javax.xml.transform.stream.StreamSource;
-import javax.xml.ws.WebServiceException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.assertj.core.util.Lists;
@@ -97,8 +97,8 @@ import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse
 import se.inera.intyg.common.support.modules.support.api.notification.ArendeCount;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
-import se.inera.intyg.infra.integration.pu.model.Person;
-import se.inera.intyg.infra.integration.pu.model.PersonSvar;
+import se.inera.intyg.infra.pu.integration.api.model.Person;
+import se.inera.intyg.infra.pu.integration.api.model.PersonSvar;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
@@ -160,93 +160,63 @@ public class IntygServiceTest {
     private static final String PERSON_ID = "19121212-1212";
 
     private static final Personnummer PERSNR = Personnummer.createPersonnummer(PERSON_ID).orElse(null);
-
-    private ListCertificatesForCareResponseType listResponse;
-    private VardpersonReferens vardpersonReferens;
-
-    private String json;
-
-    @Mock
-    private IntygModuleRegistry moduleRegistry;
-
-    @Mock
-    private ModuleApi moduleApi;
-
-    @Mock
-    private AuthoritiesHelper authoritiesHelper;
-
-    @Mock
-    private ListCertificatesForCareResponderInterface listCertificatesForCareResponder;
-
-    @Mock
-    private IntygRelationHelper intygRelationHelper;
-
-    @Mock
-    private IntygModuleFacade moduleFacade;
-
-    @Mock
-    private UtkastRepository utkastRepository;
-
-    @Mock
-    private CertificateEventService certificateEventService;
-
-    @Mock
-    private LogService logservice;
-
-    @Mock
-    private LogRequestFactory logRequestFactory;
-
-    @Mock
-    private WebCertUser webcertUser;
-
-    @Mock
-    private WebCertUserService webCertUserService;
-
-    @Mock
-    private MonitoringLogService mockMonitoringService;
-
-    @Mock
-    private CertificateRelationService certificateRelationService;
-
-    @Mock
-    private NotificationService notificationService;
-
-    @Mock
-    private CertificateSenderService certificateSenderService;
-
-    @Mock
-    private ArendeService arendeService;
-
-    @Mock
-    private FragorOchSvarCreator fragorOchSvarCreator;
-
-    @Mock
-    private PatientDetailsResolver patientDetailsResolver;
-
-    @Mock
-    private UtkastIntygDecorator utkastIntygDecorator;
-
-    @Mock
-    private ReferensService referensService;
-
-    @Spy
-    private ObjectMapper objectMapper = new CustomObjectMapper();
-
-    @Mock
-    private GetCertificateTypeInfoResponderInterface getCertificateTypeInfoService;
-
-    @Mock
-    private CertificateAccessServiceHelper certificateAccessServiceHelper;
-
     @Mock
     SelectableVardenhet vardgivare;
-
     @Mock
     WebCertUser user;
-
     @Mock
     IntegrationParameters intParam;
-
+    private ListCertificatesForCareResponseType listResponse;
+    private VardpersonReferens vardpersonReferens;
+    private String json;
+    @Mock
+    private IntygModuleRegistry moduleRegistry;
+    @Mock
+    private ModuleApi moduleApi;
+    @Mock
+    private AuthoritiesHelper authoritiesHelper;
+    @Mock
+    private ListCertificatesForCareResponderInterface listCertificatesForCareResponder;
+    @Mock
+    private IntygRelationHelper intygRelationHelper;
+    @Mock
+    private IntygModuleFacade moduleFacade;
+    @Mock
+    private UtkastRepository utkastRepository;
+    @Mock
+    private CertificateEventService certificateEventService;
+    @Mock
+    private LogService logservice;
+    @Mock
+    private LogRequestFactory logRequestFactory;
+    @Mock
+    private WebCertUser webcertUser;
+    @Mock
+    private WebCertUserService webCertUserService;
+    @Mock
+    private MonitoringLogService mockMonitoringService;
+    @Mock
+    private CertificateRelationService certificateRelationService;
+    @Mock
+    private NotificationService notificationService;
+    @Mock
+    private CertificateSenderService certificateSenderService;
+    @Mock
+    private ArendeService arendeService;
+    @Mock
+    private FragorOchSvarCreator fragorOchSvarCreator;
+    @Mock
+    private PatientDetailsResolver patientDetailsResolver;
+    @Mock
+    private UtkastIntygDecorator utkastIntygDecorator;
+    @Mock
+    private ReferensService referensService;
+    @Spy
+    private ObjectMapper objectMapper = new CustomObjectMapper();
+    @Mock
+    private GetCertificateTypeInfoResponderInterface getCertificateTypeInfoService;
+    @Mock
+    private CertificateAccessServiceHelper certificateAccessServiceHelper;
     @Mock
     private IntygTextsService intygTextsService;
 
@@ -358,8 +328,9 @@ public class IntygServiceTest {
 
     @Before
     public void setupPdlLogging() {
-        when(logRequestFactory.createLogRequestFromUtlatande(any(Utlatande.class))).thenReturn(new LogRequest());
-        when(logRequestFactory.createLogRequestFromUtlatande(any(Utlatande.class), anyBoolean())).thenReturn(new LogRequest());
+        when(logRequestFactory.createLogRequestFromUtlatande(any(Utlatande.class))).thenReturn(LogRequest.builder().build());
+        when(logRequestFactory.createLogRequestFromUtlatande(any(Utlatande.class), anyString())).thenReturn(LogRequest.builder().build());
+        when(logRequestFactory.createLogRequestFromUtlatande(any(Utlatande.class), anyBoolean())).thenReturn(LogRequest.builder().build());
     }
 
     private void setupUserAndVardgivare() {
@@ -1167,6 +1138,13 @@ public class IntygServiceTest {
     }
 
     @Test
+    public void shallReturnEmptyListIfNotificationsIsEmpty() {
+        assertEquals(Collections.emptyList(), intygService.listCertificatesForCareWithQA(
+            Collections.emptyList())
+        );
+    }
+
+    @Test
     public void testListCertificatesForCareWithQAOk() throws Exception {
         final List<String> enhetList = Collections.singletonList("enhet");
 
@@ -1186,14 +1164,13 @@ public class IntygServiceTest {
         ArendeCount received = new ArendeCount(5, 6, 7, 8);
 
         when(moduleRegistry.listAllModules()).thenReturn(
-            Collections.singletonList(new IntygModule(intygType, "", "", "", "", "", "", "", "", false)));
+            Collections.singletonList(new IntygModule(intygType, "", "", "", "", "", "", "", "")));
         when(utkastRepository.findAllById(any())).thenReturn(Collections.singletonList(getDraft(intygId)));
-        when(notificationService.findNotifications(any())).thenReturn(Collections.singletonList(handelse));
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(fragorOchSvarCreator.createArenden(eq(intygId), anyString())).thenReturn(Pair.of(sent, received));
 
         List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(
-            new IntygWithNotificationsRequest.Builder().setPersonnummer(PERSNR).setEnhetId(enhetList).build());
+            Collections.singletonList(handelse));
 
         assertNotNull(res);
         assertEquals(1, res.size());
@@ -1225,16 +1202,12 @@ public class IntygServiceTest {
         handelse.setCode(HandelsekodEnum.SKAPAT);
         handelse.setIntygsId(intygId);
 
-        ArendeCount sent = new ArendeCount(1, 2, 3, 4);
-        ArendeCount received = new ArendeCount(5, 6, 7, 8);
-
         when(moduleRegistry.listAllModules()).thenReturn(
-            Collections.singletonList(new IntygModule(intygType, "", "", "", "", "", "", "", "", false)));
+            Collections.singletonList(new IntygModule(intygType, "", "", "", "", "", "", "", "")));
         when(utkastRepository.findAllById(any())).thenReturn(Collections.emptyList());
-        when(notificationService.findNotifications(any())).thenReturn(Collections.singletonList(handelse));
 
         List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(
-            new IntygWithNotificationsRequest.Builder().setPersonnummer(PERSNR).setEnhetId(enhetList).build());
+            Collections.singletonList(handelse));
 
         assertNotNull(res);
         assertEquals(0, res.size());
@@ -1268,13 +1241,12 @@ public class IntygServiceTest {
         draftList.add(getDraft(intygId));
 
         when(moduleRegistry.listAllModules()).thenReturn(
-            Collections.singletonList(new IntygModule(intygType, "", "", "", "", "", "", "", "", false)));
+            Collections.singletonList(new IntygModule(intygType, "", "", "", "", "", "", "", "")));
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(fragorOchSvarCreator.createArenden(eq(intygId), anyString())).thenReturn(Pair.of(sent, received));
-        doReturn(Collections.singletonList(handelse)).when(notificationService).findNotifications(request);
         doReturn(draftList).when(utkastRepository).findAllById(any());
 
-        List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(request);
+        List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(Collections.singletonList(handelse));
 
         assertNotNull(res);
         assertEquals(1, res.size());
@@ -1317,13 +1289,12 @@ public class IntygServiceTest {
             .build();
 
         when(moduleRegistry.listAllModules()).thenReturn(
-            Collections.singletonList(new IntygModule(intygType, "", "", "", "", "", "", "", "", false)));
+            Collections.singletonList(new IntygModule(intygType, "", "", "", "", "", "", "", "")));
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(fragorOchSvarCreator.createArenden(eq(CERTIFICATE_ID), anyString())).thenReturn(Pair.of(sent, received));
-        doReturn(Collections.singletonList(handelse)).when(notificationService).findNotifications(request);
         doReturn(Collections.emptyList()).when(utkastRepository).findAllById(any());
 
-        List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(request);
+        List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(Collections.singletonList(handelse));
 
         assertNotNull(res);
         assertEquals(1, res.size());
@@ -1352,7 +1323,7 @@ public class IntygServiceTest {
         when(notificationService.getNotifications(eq(intygId))).thenReturn(Collections.emptyList());
 
         List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(
-            new IntygWithNotificationsRequest.Builder().setPersonnummer(PERSNR).setEnhetId(enhetList).build());
+            Collections.emptyList());
 
         assertNotNull(res);
         assertEquals(0, res.size());
@@ -1377,15 +1348,13 @@ public class IntygServiceTest {
         ArendeCount received = new ArendeCount(5, 6, 7, 8);
 
         when(moduleRegistry.listAllModules()).thenReturn(
-            Collections.singletonList(new IntygModule(intygType, "", "", "", "", "", "", "", "", false)));
+            Collections.singletonList(new IntygModule(intygType, "", "", "", "", "", "", "", "")));
         when(utkastRepository.findAllById(any())).thenReturn(Collections.singletonList(getDraft(intygId)));
-        when(notificationService.findNotifications(any())).thenReturn(Collections.singletonList(handelse));
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(fragorOchSvarCreator.createArenden(eq(intygId), anyString())).thenReturn(Pair.of(sent, received));
 
         List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(
-            new IntygWithNotificationsRequest.Builder().setPersonnummer(PERSNR).setVardgivarId(vardgivarId)
-                .build());
+            Collections.singletonList(handelse));
 
         assertNotNull(res);
         assertEquals(1, res.size());
@@ -1412,7 +1381,7 @@ public class IntygServiceTest {
         final String intygId = "intygId";
 
         when(moduleRegistry.listAllModules())
-            .thenReturn(Collections.singletonList(new IntygModule(intygType, "", "", "", "", "", "", "", "", false)));
+            .thenReturn(Collections.singletonList(new IntygModule(intygType, "", "", "", "", "", "", "", "")));
         when(utkastRepository.findDraftsByPatientAndVardgivareAndStatus(eq(PERSON_ID), eq(vardgivarId),
             eq(Arrays.asList(UtkastStatus.values())), eq(Collections.singleton(intygType))))
             .thenReturn(Collections.singletonList(getDraft(intygId)));
@@ -1420,11 +1389,7 @@ public class IntygServiceTest {
             .thenReturn(Collections.emptyList());
 
         List<IntygWithNotificationsResponse> res = intygService.listCertificatesForCareWithQA(
-            new IntygWithNotificationsRequest.Builder()
-                .setPersonnummer(PERSNR)
-                .setVardgivarId(vardgivarId)
-                .setStartDate(start)
-                .setEndDate(end).build());
+            Collections.emptyList());
 
         assertNotNull(res);
         assertEquals(0, res.size());

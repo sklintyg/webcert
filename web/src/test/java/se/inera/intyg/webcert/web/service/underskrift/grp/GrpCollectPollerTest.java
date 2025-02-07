@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,36 +18,35 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift.grp;
 
+import static com.mobilityguard.grp.service.v2.ProgressStatusType.COMPLETE;
+import static com.mobilityguard.grp.service.v2.ProgressStatusType.OUTSTANDING_TRANSACTION;
+import static com.mobilityguard.grp.service.v2.ProgressStatusType.STARTED;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static se.funktionstjanster.grp.v1.ProgressStatusType.COMPLETE;
-import static se.funktionstjanster.grp.v1.ProgressStatusType.OUTSTANDING_TRANSACTION;
-import static se.funktionstjanster.grp.v1.ProgressStatusType.STARTED;
 
+import com.mobilityguard.grp.service.v2.CollectRequestType;
+import com.mobilityguard.grp.service.v2.CollectResponseType;
+import com.mobilityguard.grp.service.v2.FaultStatusType;
+import com.mobilityguard.grp.service.v2.GrpFaultType;
+import com.mobilityguard.grp.service.v2.ProgressStatusType;
+import com.mobilityguard.grp.service.v2.Property;
+import com.mobilityguard.grp.service.v2.ValidationInfoType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.authentication.TestingAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextImpl;
-import se.funktionstjanster.grp.v1.CollectRequestType;
-import se.funktionstjanster.grp.v1.CollectResponseType;
-import se.funktionstjanster.grp.v1.FaultStatusType;
-import se.funktionstjanster.grp.v1.GrpFault;
-import se.funktionstjanster.grp.v1.GrpFaultType;
-import se.funktionstjanster.grp.v1.GrpServicePortType;
-import se.funktionstjanster.grp.v1.ProgressStatusType;
-import se.funktionstjanster.grp.v1.Property;
+import se.funktionstjanster.grp.v2.GrpException;
+import se.funktionstjanster.grp.v2.GrpServicePortType;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Privilege;
-import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
@@ -63,10 +62,8 @@ public class GrpCollectPollerTest extends AuthoritiesConfigurationTestSetup {
 
     @Mock
     private UnderskriftService underskriftService;
-
     @Mock
     private RedisTicketTracker redisTicketTracker;
-
     @Mock
     private GrpServicePortType grpService;
 
@@ -74,7 +71,7 @@ public class GrpCollectPollerTest extends AuthoritiesConfigurationTestSetup {
     private GrpCollectPollerImpl grpCollectPoller;
 
     @Test
-    public void testSingleSuccessfulCollect() throws GrpFault {
+    public void testSingleSuccessfulCollect() throws GrpException {
 
         when(grpService.collect(any(CollectRequestType.class))).thenReturn(buildResp(COMPLETE));
 
@@ -89,7 +86,7 @@ public class GrpCollectPollerTest extends AuthoritiesConfigurationTestSetup {
     }
 
     @Test
-    public void testSuccessfulCollectAfterTwoOngoingPlusOneComplete() throws GrpFault {
+    public void testSuccessfulCollectAfterTwoOngoingPlusOneComplete() throws GrpException {
 
         when(grpService.collect(any(CollectRequestType.class))).thenReturn(
             buildResp(STARTED),
@@ -106,9 +103,9 @@ public class GrpCollectPollerTest extends AuthoritiesConfigurationTestSetup {
     }
 
     @Test
-    public void testCollectFailsOnGrpFaultWhenUserCancelled() throws GrpFault {
+    public void testCollectFailsOnGrpFaultWhenUserCancelled() throws GrpException {
 
-        when(grpService.collect(any(CollectRequestType.class))).thenThrow(buildFault(FaultStatusType.USER_CANCEL));
+        when(grpService.collect(any(CollectRequestType.class))).thenThrow(buildException(FaultStatusType.USER_CANCEL));
         grpCollectPoller.setOrderRef(ORDER_REF);
         grpCollectPoller.setTicketId(TX_ID);
         grpCollectPoller.setSecurityContext(buildAuthentication());
@@ -120,9 +117,9 @@ public class GrpCollectPollerTest extends AuthoritiesConfigurationTestSetup {
     }
 
     @Test
-    public void testCollectFailsOnGrpFaultWhenGrpTxExpires() throws GrpFault {
+    public void testCollectFailsOnGrpFaultWhenGrpTxExpires() throws GrpException {
 
-        when(grpService.collect(any(CollectRequestType.class))).thenThrow(buildFault(FaultStatusType.EXPIRED_TRANSACTION));
+        when(grpService.collect(any(CollectRequestType.class))).thenThrow(buildException(FaultStatusType.EXPIRED_TRANSACTION));
         grpCollectPoller.setOrderRef(ORDER_REF);
         grpCollectPoller.setTicketId(TX_ID);
         grpCollectPoller.setSecurityContext(buildAuthentication());
@@ -133,35 +130,36 @@ public class GrpCollectPollerTest extends AuthoritiesConfigurationTestSetup {
         verify(redisTicketTracker, times(1)).updateStatus(TX_ID, SignaturStatus.OKAND);
     }
 
-    private GrpFault buildFault(FaultStatusType faultStatusType) {
-        GrpFaultType grpFaultType = new GrpFaultType();
+    private GrpException buildException(FaultStatusType faultStatusType) {
+        final var grpFaultType = new GrpFaultType();
         grpFaultType.setFaultStatus(faultStatusType);
         grpFaultType.setDetailedDescription("detailed-desc");
-        GrpFault fault = new GrpFault("", grpFaultType);
-        return fault;
+        return new GrpException("", grpFaultType);
     }
 
     private CollectResponseType buildResp(ProgressStatusType progressStatusType) {
-        CollectResponseType resp = new CollectResponseType();
+        final var resp = new CollectResponseType();
         resp.setProgressStatus(progressStatusType);
         Property p = new Property();
         p.setName("Subject.SerialNumber");
         p.setValue(PERSON_ID);
         resp.getAttributes().add(p);
-        resp.setSignature("signature");
+        final var validationInfoType = new ValidationInfoType();
+        validationInfoType.setSignature("signature");
+        resp.setValidationInfo(validationInfoType);
         return resp;
     }
 
     private SecurityContext buildAuthentication() {
-        Role role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
+        final var role = AUTHORITIES_RESOLVER.getRole(AuthoritiesConstants.ROLE_LAKARE);
 
-        WebCertUser user = new WebCertUser();
+        final var user = new WebCertUser();
         user.setRoles(AuthoritiesResolverUtil.toMap(role));
         user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
         user.setPersonId(PERSON_ID);
 
-        Authentication authentication = new TestingAuthenticationToken(user, null);
-        SecurityContext securityContext = new SecurityContextImpl();
+        final var authentication = new TestingAuthenticationToken(user, null);
+        final var securityContext = new SecurityContextImpl();
         securityContext.setAuthentication(authentication);
         return securityContext;
     }

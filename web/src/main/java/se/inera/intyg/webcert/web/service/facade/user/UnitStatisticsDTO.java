@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -24,6 +24,9 @@ public class UnitStatisticsDTO {
     private long questionsOnUnit;
     private long draftsOnSubUnits;
     private long questionsOnSubUnits;
+
+    public UnitStatisticsDTO() {
+    }
 
     public UnitStatisticsDTO(long draftsOnUnit, long questionsOnUnit) {
         this.draftsOnUnit = draftsOnUnit;
@@ -67,5 +70,20 @@ public class UnitStatisticsDTO {
 
     public void setQuestionsOnSubUnits(long questionsOnSubUnits) {
         this.questionsOnSubUnits = questionsOnSubUnits;
+    }
+
+    public void merge(UnitStatisticsDTO unitStatisticsDTO) {
+        this.draftsOnUnit += unitStatisticsDTO.draftsOnUnit;
+        this.questionsOnUnit += unitStatisticsDTO.questionsOnUnit;
+        this.draftsOnSubUnits += unitStatisticsDTO.draftsOnSubUnits;
+        this.questionsOnSubUnits += unitStatisticsDTO.questionsOnSubUnits;
+    }
+
+    public void addDraftsOnSubUnits(long draftsOnSubUnits) {
+        this.draftsOnSubUnits += draftsOnSubUnits;
+    }
+
+    public void addQuestionsOnSubUnits(long questionsOnSubUnits) {
+        this.questionsOnSubUnits += questionsOnSubUnits;
     }
 }

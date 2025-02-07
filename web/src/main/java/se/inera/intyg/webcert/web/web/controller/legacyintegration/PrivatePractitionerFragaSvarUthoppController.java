@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -21,8 +21,8 @@ package se.inera.intyg.webcert.web.web.controller.legacyintegration;
 import static se.inera.intyg.infra.security.common.model.AuthoritiesConstants.ROLE_PRIVATLAKARE;
 
 import io.swagger.annotations.Api;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.MediaType;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 
 /**

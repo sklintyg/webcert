@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -28,7 +28,7 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 import se.inera.intyg.webcert.web.service.receiver.CertificateReceiverService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.IntygReceiver;
 
-@Service
+@Service("sendCertificateFromWebcert")
 public class SendCertificateFacadeServiceImpl implements SendCertificateFacadeService {
 
     private final IntygService intygService;

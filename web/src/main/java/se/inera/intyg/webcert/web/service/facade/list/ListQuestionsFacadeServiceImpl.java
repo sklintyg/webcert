@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.web.service.facade.list;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,7 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.web.csintegration.certificate.ListCertificateQuestionsFromCS;
 import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
@@ -36,8 +39,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 
-import java.util.stream.Collectors;
-
 @Service
 public class ListQuestionsFacadeServiceImpl implements ListSignedCertificatesFacadeService {
 
@@ -48,18 +49,24 @@ public class ListQuestionsFacadeServiceImpl implements ListSignedCertificatesFac
     private final ArendeService arendeService;
     private final WebCertUserService webCertUserService;
     private final CertificateAccessServiceHelper certificateAccessServiceHelper;
+    private final PaginationAndLoggingService paginationAndLoggingService;
+    private final ListCertificateQuestionsFromCS listCertificateQuestionsFromCS;
 
     @Autowired
     public ListQuestionsFacadeServiceImpl(QuestionFilterConverter questionFilterConverter,
         CertificateListItemConverter certificateListItemConverter,
         ArendeService arendeService,
         WebCertUserService webCertUserService,
-        CertificateAccessServiceHelper certificateAccessServiceHelper) {
+        CertificateAccessServiceHelper certificateAccessServiceHelper,
+        PaginationAndLoggingService paginationAndLoggingService,
+        ListCertificateQuestionsFromCS listCertificateQuestionsFromCS) {
         this.questionFilterConverter = questionFilterConverter;
         this.certificateListItemConverter = certificateListItemConverter;
         this.arendeService = arendeService;
         this.webCertUserService = webCertUserService;
         this.certificateAccessServiceHelper = certificateAccessServiceHelper;
+        this.paginationAndLoggingService = paginationAndLoggingService;
+        this.listCertificateQuestionsFromCS = listCertificateQuestionsFromCS;
     }
 
     @Override
@@ -68,14 +75,23 @@ public class ListQuestionsFacadeServiceImpl implements ListSignedCertificatesFac
 
         final var convertedFilter = questionFilterConverter.convert(filter);
 
-        final var listResponse = arendeService.filterArende(convertedFilter, true);
-        final var convertedList = listResponse.getResults()
-            .stream()
+        final var listResponseFromWC = arendeService.filterArende(convertedFilter, true);
+        final var listResponseFromCS = listCertificateQuestionsFromCS.list(convertedFilter);
+        final var questionsFromWC = listResponseFromWC.getResults().stream()
             .map(this::decorateWithResourceLinks)
+            .collect(Collectors.toList());
+
+        final var aggregatedList = Stream.concat(questionsFromWC.stream(), listResponseFromCS.getResults().stream())
+            .collect(Collectors.toList());
+
+        final var paginatedList = paginationAndLoggingService.get(convertedFilter, aggregatedList, webCertUserService.getUser());
+
+        final var convertedList = paginatedList
+            .stream()
             .map(certificateListItemConverter::convert)
             .collect(Collectors.toList());
 
-        return new ListInfo(listResponse.getTotalCount(), convertedList);
+        return new ListInfo(listResponseFromWC.getTotalCount() + listResponseFromCS.getTotalCount(), convertedList);
     }
 
     private Vardenhet getUnit() {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -36,15 +36,15 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.Session;
+import jakarta.jms.TextMessage;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Session;
-import javax.jms.TextMessage;
 import org.apache.activemq.command.ActiveMQTextMessage;
 import org.junit.Before;
 import org.junit.Test;
@@ -62,10 +62,8 @@ import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
-import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
-import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
@@ -83,6 +81,7 @@ import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.csintegration.certificate.IntegratedUnitNotificationEvaluator;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
@@ -114,6 +113,11 @@ public class NotificationServiceImplTest {
     private static final Long FRAGASVAR_ID = 1L;
 
     private static final String USER_REFERENCE = "some-ref";
+    private static final String CARE_PROVIDER_ID = "CARE_PROVIDER_ID";
+    private static final LocalDateTime ISSUING_DATE = LocalDateTime.now();
+
+    @Mock
+    private IntegratedUnitNotificationEvaluator integratedUnitNotificationEvaluator;
 
     @Mock
     private IntegreradeEnheterRegistry integreradeEnheterRegistry;
@@ -542,7 +546,7 @@ public class NotificationServiceImplTest {
     public void testQuestionReceivedArendeIntegreradEnhet() throws Exception {
         when(integreradeEnheterRegistry.isEnhetIntegrerad(ENHET_ID, INTYG_TYP_FK)).thenReturn(true);
         when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
-        notificationService.sendNotificationForQuestionReceived(createArende());
+        notificationService.sendNotificationForQuestionReceived(createArende(), CARE_PROVIDER_ID, ISSUING_DATE);
         verifySuccessfulInvocations(HandelsekodEnum.NYFRFM);
     }
 
@@ -552,7 +556,7 @@ public class NotificationServiceImplTest {
         when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
         doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
         try {
-            notificationService.sendNotificationForQuestionReceived(createArende());
+            notificationService.sendNotificationForQuestionReceived(createArende(), CARE_PROVIDER_ID, ISSUING_DATE);
         } finally {
             verify(template).send(any(MessageCreator.class));
             verifyNoInteractions(mockMonitoringLogService);
@@ -562,7 +566,7 @@ public class NotificationServiceImplTest {
     @Test
     public void testQuestionReceivedArendeSendsMail() {
         when(integreradeEnheterRegistry.isEnhetIntegrerad(ENHET_ID, INTYG_TYP_FK)).thenReturn(false);
-        notificationService.sendNotificationForQuestionReceived(createArende());
+        notificationService.sendNotificationForQuestionReceived(createArende(), CARE_PROVIDER_ID, ISSUING_DATE);
 
         ArgumentCaptor<MailNotification> mailNotificationCaptor = ArgumentCaptor.forClass(MailNotification.class);
         verify(mailNotificationService).sendMailForIncomingQuestion(mailNotificationCaptor.capture());
@@ -582,7 +586,7 @@ public class NotificationServiceImplTest {
     public void testAnswerRecievedArendeIntegreradEnhet() throws Exception {
         when(integreradeEnheterRegistry.isEnhetIntegrerad(ENHET_ID, INTYG_TYP_FK)).thenReturn(true);
         when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
-        notificationService.sendNotificationForAnswerRecieved(createArende());
+        notificationService.sendNotificationForAnswerRecieved(createArende(), CARE_PROVIDER_ID, ISSUING_DATE);
         verifySuccessfulInvocations(HandelsekodEnum.NYSVFM);
     }
 
@@ -592,7 +596,7 @@ public class NotificationServiceImplTest {
         when(utkastRepo.findById(INTYG_ID)).thenReturn(Optional.of(createUtkast()));
         doThrow(new DestinationResolutionException("")).when(template).send(any(MessageCreator.class));
         try {
-            notificationService.sendNotificationForAnswerRecieved(createArende());
+            notificationService.sendNotificationForAnswerRecieved(createArende(), CARE_PROVIDER_ID, ISSUING_DATE);
         } finally {
             verify(template).send(any(MessageCreator.class));
             verifyNoInteractions(mockMonitoringLogService);
@@ -602,7 +606,7 @@ public class NotificationServiceImplTest {
     @Test
     public void testAnswerRecievedArendeSendsMail() {
         when(integreradeEnheterRegistry.isEnhetIntegrerad(ENHET_ID, INTYG_TYP_FK)).thenReturn(false);
-        notificationService.sendNotificationForAnswerRecieved(createArende());
+        notificationService.sendNotificationForAnswerRecieved(createArende(), CARE_PROVIDER_ID, ISSUING_DATE);
 
         ArgumentCaptor<MailNotification> mailNotificationCaptor = ArgumentCaptor.forClass(MailNotification.class);
         verify(mailNotificationService).sendMailForIncomingAnswer(mailNotificationCaptor.capture());

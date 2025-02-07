@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -33,10 +33,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
     @JsonSubTypes.Type(value = ListFilterTextValue.class, name = "ORDER"),
     @JsonSubTypes.Type(value = ListFilterBooleanValue.class, name = "BOOLEAN"),
     @JsonSubTypes.Type(value = ListFilterNumberValue.class, name = "NUMBER")
-
-
 })
-
 public interface ListFilterValue {
 
     ListFilterType getType();

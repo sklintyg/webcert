@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,6 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.access;
 
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+
 import java.util.List;
 import org.mockito.Mock;
 import se.inera.intyg.common.services.texts.IntygTextsService;
@@ -34,9 +37,6 @@ import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionInfo;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
-
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 
 abstract public class AccessTest {
 
@@ -65,7 +65,7 @@ abstract public class AccessTest {
     public static final String vardgivarId = "VardgivarId";
     public static final String PERSONNUMMER_TOLVAN = "191212121212";
     public static final Personnummer PERSONNUMMER = Personnummer.createPersonnummer(PERSONNUMMER_TOLVAN).get();
-    public static final SubscriptionInfo SUBSCRIPTION_INFO = new SubscriptionInfo("date1", "date2");
+    public static final SubscriptionInfo SUBSCRIPTION_INFO = new SubscriptionInfo();
 
     public AccessTest(String intygsTyp, AccessServiceTestData accessServiceTestData) {
         this.intygsTyp = intygsTyp;
@@ -376,7 +376,7 @@ abstract public class AccessTest {
 
     protected void setupMocksForMissingSubscription() {
         final WebCertUser user = AccessServiceTestToolkit.createUser(intygsTyp, accessServiceTestData);
-        final var subscriptionInfo = new SubscriptionInfo("date1", "date2");
+        final var subscriptionInfo = new SubscriptionInfo();
         subscriptionInfo.setSubscriptionAction(SubscriptionAction.BLOCK);
         subscriptionInfo.setCareProvidersMissingSubscription(List.of(vardgivarId));
         doReturn(user)

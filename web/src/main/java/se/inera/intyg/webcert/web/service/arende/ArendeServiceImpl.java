@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -77,6 +77,7 @@ import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderException;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
+import se.inera.intyg.webcert.web.service.facade.list.PaginationAndLoggingService;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
@@ -171,6 +172,8 @@ public class ArendeServiceImpl implements ArendeService {
     private LogService logService;
     @Autowired
     private MessageImportService messageImportService;
+    @Autowired
+    private PaginationAndLoggingService paginationAndLoggingService;
 
     private final AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
@@ -203,6 +206,10 @@ public class ArendeServiceImpl implements ArendeService {
         }
 
         Utkast utkast = utkastRepository.findById(certificateId).orElse(null);
+        return getArendeForUtkast(arende, utkast, certificateId);
+    }
+
+    private Arende getArendeForUtkast(Arende arende, Utkast utkast, String certificateId) {
         if (utkast != null) {
             validateArende(certificateId, utkast);
 
@@ -212,26 +219,29 @@ public class ArendeServiceImpl implements ArendeService {
 
             monitoringLog.logArendeReceived(certificateId, utkast.getIntygsTyp(), utkast.getEnhetsId(), arende.getAmne(),
                 arende.getKomplettering().stream().map(MedicinsktArende::getFrageId).collect(Collectors.toList()),
-                arende.getSvarPaId() != null);
-        } else {
-            final var certificate = intygService.fetchIntygDataForInternalUse(certificateId, false);
-
-            validateArende(certificate);
-
-            ArendeConverter.decorateMessageFromCertificate(arende, certificate.getUtlatande(), LocalDateTime.now(systemClock));
-
-            updateSenasteHandelseAndStatusForRelatedArende(arende);
-
-            monitoringLog.logArendeReceived(certificateId, certificate.getUtlatande().getTyp(),
-                certificate.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getEnhetsid(), arende.getAmne(),
-                arende.getKomplettering().stream().map(MedicinsktArende::getFrageId).collect(Collectors.toList()),
-                arende.getSvarPaId() != null);
+                arende.getSvarPaId() != null, arende.getMeddelandeId());
+            Arende saved = arendeRepository.save(arende);
+            sendNotificationAndCreateEventForIncomingMessage(saved, utkast.getVardgivarId(), utkast.getSignatur().getSigneringsDatum());
+            return saved;
         }
+        final var certificate = intygService.fetchIntygDataForInternalUse(certificateId, false);
 
+        validateArende(certificate);
+
+        ArendeConverter.decorateMessageFromCertificate(arende, certificate.getUtlatande(), LocalDateTime.now(systemClock));
+
+        updateSenasteHandelseAndStatusForRelatedArende(arende);
+
+        monitoringLog.logArendeReceived(certificateId, certificate.getUtlatande().getTyp(),
+            certificate.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getEnhetsid(), arende.getAmne(),
+            arende.getKomplettering().stream().map(MedicinsktArende::getFrageId).collect(Collectors.toList()),
+            arende.getSvarPaId() != null, arende.getMeddelandeId());
         Arende saved = arendeRepository.save(arende);
-
-        sendNotificationAndCreateEventForIncomingMessage(saved);
-
+        sendNotificationAndCreateEventForIncomingMessage(
+            saved,
+            certificate.getUtlatande().getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarid(),
+            certificate.getUtlatande().getGrundData().getSigneringsdatum()
+        );
         return saved;
     }
 
@@ -268,9 +278,9 @@ public class ArendeServiceImpl implements ArendeService {
                 LocalDateTime.now(systemClock), webcertUserService.getUser().getNamn(), hsaEmployeeService);
         }
 
-        Arende saved = processOutgoingMessage(arende, NotificationEvent.NEW_QUESTION_FROM_CARE, EventCode.NYFRFV, true);
+        Arende saved = processOutgoingMessage(arende, NotificationEvent.NEW_QUESTION_FROM_CARE, true);
 
-        logService.logCreateMessage(webcertUserService.getUser(), saved);
+        logService.logCreateMessage(webcertUserService.getUser(), saved.getPatientPersonId(), saved.getIntygsId());
 
         arendeDraftService.delete(intygId, null);
         return saved;
@@ -314,9 +324,9 @@ public class ArendeServiceImpl implements ArendeService {
         Arende arende = ArendeConverter.createAnswerFromArende(meddelande, svarPaMeddelande, LocalDateTime.now(systemClock),
             webcertUserService.getUser().getNamn());
 
-        Arende saved = processOutgoingMessage(arende, NotificationEvent.NEW_ANSWER_FROM_CARE, EventCode.HANFRFM, true);
+        Arende saved = processOutgoingMessage(arende, NotificationEvent.NEW_ANSWER_FROM_CARE, true);
 
-        logService.logCreateMessage(webcertUserService.getUser(), saved);
+        logService.logCreateMessage(webcertUserService.getUser(), saved.getPatientPersonId(), saved.getIntygsId());
 
         arendeDraftService.delete(svarPaMeddelande.getIntygsId(), svarPaMeddelandeId);
         return arendeViewConverter.convertToArendeConversationView(svarPaMeddelande, saved, null,
@@ -347,7 +357,7 @@ public class ArendeServiceImpl implements ArendeService {
                     user.getNamn());
 
                 arendeDraftService.delete(arende.getIntygsId(), arende.getMeddelandeId());
-                Arende saved = processOutgoingMessage(answer, NotificationEvent.NEW_ANSWER_FROM_CARE, EventCode.HANFRFM,
+                Arende saved = processOutgoingMessage(answer, NotificationEvent.NEW_ANSWER_FROM_CARE,
                     Objects.equals(arende.getMeddelandeId(), latest.getMeddelandeId()));
 
                 allArende.add(saved);
@@ -432,7 +442,7 @@ public class ArendeServiceImpl implements ArendeService {
 
         sendNotificationAndCreateEvent(openedArende, notificationEvent);
 
-        logService.logCreateMessage(webcertUserService.getUser(), openedArende);
+        logService.logCreateMessage(webcertUserService.getUser(), openedArende.getPatientPersonId(), openedArende.getIntygsId());
 
         return arendeViewConverter.convertToArendeConversationView(openedArende,
             arendeRepository.findBySvarPaId(meddelandeId).stream().findFirst().orElse(null),
@@ -494,8 +504,20 @@ public class ArendeServiceImpl implements ArendeService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public QueryFragaSvarResponse filterArende(QueryFragaSvarParameter filterParameters) {
-        return filterArende(filterParameters, false);
+        final var orignalPageSize = filterParameters.getPageSize();
+        final var startFrom = filterParameters.getStartFrom();
+
+        final var filteredArende = filterArende(filterParameters, false);
+        filterParameters.setPageSize(orignalPageSize);
+        filterParameters.setStartFrom(startFrom);
+
+        final var arendeListItems = paginationAndLoggingService.get(filterParameters, filteredArende.getResults(),
+            webcertUserService.getUser());
+
+        filteredArende.setResults(arendeListItems);
+        return filteredArende;
     }
 
     @Override
@@ -513,9 +535,6 @@ public class ArendeServiceImpl implements ArendeService {
             filter = FilterConverter.convert(filterParameters, user.getIdsOfSelectedVardenhet(), intygstyperForPrivilege);
         }
 
-        int originalStartFrom = filter.getStartFrom();
-        int originalPageSize = filter.getPageSize();
-
         // INTYG-4086: Do NOT perform any paging. We must first load all applicable QA / ärenden, then apply
         // sekretessmarkering filtering. THEN - we can do paging stuff in-memory. Very inefficient...
         filter.setStartFrom(null);
@@ -523,8 +542,6 @@ public class ArendeServiceImpl implements ArendeService {
 
         List<ArendeListItem> results = arendeRepository.filterArende(filter).stream()
             .map(ArendeListItemConverter::convert)
-            .filter(Objects::nonNull)
-            .filter(this::isUnhandled)
             // We need to decorate the ArendeListItem with information whether there exist a reminder or not because
             // they want to display this information to the user. We cannot do this without a database access, hence
             // we do it after the convertToDto
@@ -536,58 +553,32 @@ public class ArendeServiceImpl implements ArendeService {
         QueryFragaSvarResponse response = new QueryFragaSvarResponse();
 
         Map<Personnummer, PatientDetailsResolverResponse> statusMap = patientDetailsResolver.getPersonStatusesForList(results.stream()
-            .map(ali -> Personnummer.createPersonnummer(ali.getPatientId()).get())
+            .map(ali -> Personnummer.createPersonnummer(ali.getPatientId()).orElseThrow())
             .collect(Collectors.toList()));
 
         // INTYG-4086, INTYG-4486: Filter out any items that doesn't pass sekretessmarkering rules
         results = results.stream()
             .filter(ali -> this.passesSekretessCheck(ali.getIntygTyp(), user,
-                statusMap.get(Personnummer.createPersonnummer(ali.getPatientId()).get())))
+                statusMap.get(Personnummer.createPersonnummer(ali.getPatientId()).orElseThrow())))
             .collect(Collectors.toList());
 
-        results.stream().forEach(ali -> markStatuses(ali, statusMap.get(Personnummer.createPersonnummer(ali.getPatientId()).get())));
+        results.forEach(ali -> markStatuses(ali, statusMap.get(Personnummer.createPersonnummer(ali.getPatientId()).orElseThrow())));
 
         response.setTotalCount(results.size());
 
-        if (originalStartFrom >= results.size()) {
-            response.setResults(new ArrayList<>());
-        } else {
-            // Get lakare name
-            Set<String> hsaIds = results.stream().map(ArendeListItem::getSigneratAv).collect(Collectors.toSet());
-            Map<String, String> hsaIdNameMap = getNamesByHsaIds(hsaIds);
+        // Get lakare name
+        Set<String> hsaIds = results.stream().map(ArendeListItem::getSigneratAv).collect(Collectors.toSet());
+        Map<String, String> hsaIdNameMap = getNamesByHsaIds(hsaIds);
 
-            // Update lakare name
-            results.forEach(row -> {
-                if (hsaIdNameMap.containsKey(row.getSigneratAv())) {
-                    row.setSigneratAvNamn(hsaIdNameMap.get(row.getSigneratAv()));
-                }
-            });
-
-            results.sort(getComparator(filterParameters.getOrderBy(), filterParameters.getOrderAscending()));
-
-            List<ArendeListItem> resultList = results
-                .subList(originalStartFrom, Math.min(originalPageSize + originalStartFrom, results.size()));
-
-            response.setResults(resultList);
-
-            // PDL Logging
-            resultList.stream().map(ArendeListItem::getPatientId).distinct().forEach(patient -> {
-                logService.logListIntyg(user, patient);
-            });
-        }
+        // Update lakare name
+        results.forEach(row -> {
+            if (hsaIdNameMap.containsKey(row.getSigneratAv())) {
+                row.setSigneratAvNamn(hsaIdNameMap.get(row.getSigneratAv()));
+            }
+        });
+        response.setResults(results);
 
         return response;
-    }
-
-    private boolean isUnhandled(ArendeListItem item) {
-        return !((item.getStatus() == Status.PENDING_INTERNAL_ACTION && isReminder(item) && item.getFragestallare().equals("FK"))
-            || item.getStatus() == Status.ANSWERED
-            || item.getStatus() == Status.CLOSED
-            || item.getAmne().equals("MAKULERING"));
-    }
-
-    private boolean isReminder(ArendeListItem item) {
-        return item.getAmne().equals("PAMINNELSE") || item.getAmne().equals("PAMINN");
     }
 
     Map<String, String> getNamesByHsaIds(Set<String> hsaIds) {
@@ -602,7 +593,7 @@ public class ArendeServiceImpl implements ArendeService {
 
     public static String getAmneString(String amne, Status status, Boolean paminnelse, String fragestallare) {
         String amneString = "";
-        if (paminnelse) {
+        if (Boolean.TRUE.equals(paminnelse)) {
             amneString = "Påminnelse: ";
         }
         if (status == Status.CLOSED) {
@@ -621,43 +612,6 @@ public class ArendeServiceImpl implements ArendeService {
             return amneString + INVANTA_SVAR;
         }
         return "";
-    }
-
-    private Comparator<ArendeListItem> getComparator(String orderBy, Boolean ascending) {
-        Comparator<ArendeListItem> comparator;
-        if (orderBy == null) {
-            comparator = Comparator.comparing(ArendeListItem::getReceivedDate);
-        } else {
-            switch (orderBy) {
-                case "amne":
-                    comparator = (a1, a2) -> {
-                        return getAmneString(a1.getAmne(), a1.getStatus(), a1.isPaminnelse(), a1.getFragestallare())
-                            .compareTo(getAmneString(a2.getAmne(), a2.getStatus(), a2.isPaminnelse(), a2.getFragestallare()));
-                    };
-                    break;
-                case "fragestallare":
-                    comparator = Comparator.comparing(ArendeListItem::getFragestallare);
-                    break;
-                case "patientId":
-                    comparator = Comparator.comparing(ArendeListItem::getPatientId);
-                    break;
-                case "signeratAvNamn":
-                    comparator = Comparator.comparing(ArendeListItem::getSigneratAvNamn);
-                    break;
-                case "vidarebefordrad":
-                    comparator = Comparator.comparing(ArendeListItem::isVidarebefordrad);
-                    break;
-                case "receivedDate":
-                default:
-                    comparator = Comparator.comparing(ArendeListItem::getReceivedDate);
-                    break;
-            }
-        }
-
-        if (ascending == null || !ascending) {
-            comparator = comparator.reversed();
-        }
-        return comparator;
     }
 
     private boolean passesSekretessCheck(String intygsTyp, WebCertUser user,
@@ -684,7 +638,7 @@ public class ArendeServiceImpl implements ArendeService {
             return null;
         } else {
             Arende closedArende = closeArendeAsHandled(arende);
-            logService.logCreateMessage(webcertUserService.getUser(), closedArende);
+            logService.logCreateMessage(webcertUserService.getUser(), closedArende.getPatientPersonId(), closedArende.getIntygsId());
             return arendeViewConverter.convertToArendeConversationView(closedArende,
                 arendeRepository.findBySvarPaId(meddelandeId).stream().findFirst().orElse(null),
                 null,
@@ -846,7 +800,13 @@ public class ArendeServiceImpl implements ArendeService {
             final var signedDate = certificate.getUtlatande().getGrundData().getSigneringsdatum();
             final var issuerByName = certificate.getUtlatande().getGrundData().getSkapadAv().getFullstandigtNamn();
 
-            return AnsweredWithIntyg.create(certificateId, issuerByName, signedDate, signedDate, issuerByName);
+            return AnsweredWithIntyg.builder()
+                .intygsId(certificateId)
+                .signeratAv(issuerByName)
+                .signeratDatum(signedDate)
+                .signeratDatum(signedDate)
+                .namnetPaSkapareAvIntyg(issuerByName)
+                .build();
         }
         return null;
     }
@@ -906,12 +866,12 @@ public class ArendeServiceImpl implements ArendeService {
     }
 
 
-    private void sendNotificationAndCreateEventForIncomingMessage(Arende saved) {
+    private void sendNotificationAndCreateEventForIncomingMessage(Arende saved, String careProviderId, LocalDateTime issuingDate) {
         String certificateId = saved.getIntygsId();
         String sentBy = saved.getSkickatAv();
 
         if (ArendeAmne.PAMINN == saved.getAmne() || saved.getSvarPaId() == null) {
-            notificationService.sendNotificationForQuestionReceived(saved);
+            notificationService.sendNotificationForQuestionReceived(saved, careProviderId, issuingDate);
 
             if (saved.getPaminnelseMeddelandeId() != null) {
                 certificateEventService.createCertificateEvent(certificateId, sentBy, EventCode.PAMINNELSE);
@@ -922,7 +882,7 @@ public class ArendeServiceImpl implements ArendeService {
                 certificateEventService.createCertificateEvent(certificateId, sentBy, EventCode.NYFRFM, message);
             }
         } else {
-            notificationService.sendNotificationForAnswerRecieved(saved);
+            notificationService.sendNotificationForAnswerRecieved(saved, careProviderId, issuingDate);
             certificateEventService.createCertificateEvent(certificateId, sentBy, EventCode.NYSVFM);
         }
     }
@@ -986,11 +946,10 @@ public class ArendeServiceImpl implements ArendeService {
     }
 
 
-    private Arende processOutgoingMessage(Arende arende, NotificationEvent notificationEvent, EventCode eventCode,
-        boolean sendToRecipient) {
+    private Arende processOutgoingMessage(Arende arende, NotificationEvent notificationEvent, boolean sendToRecipient) {
         Arende saved = arendeRepository.save(arende);
         monitoringLog.logArendeCreated(arende.getIntygsId(), arende.getIntygTyp(), arende.getEnhetId(), arende.getAmne(),
-            arende.getSvarPaId() != null);
+            arende.getSvarPaId() != null, arende.getMeddelandeId());
 
         updateSenasteHandelseAndStatusForRelatedArende(arende);
 

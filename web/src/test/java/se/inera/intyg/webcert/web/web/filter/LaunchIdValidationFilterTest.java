@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -27,13 +27,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Map;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -54,19 +54,18 @@ public class LaunchIdValidationFilterTest {
 
     @Mock
     private HttpServletRequest httpServletRequest;
-
     @Mock
     private ObjectMapper mapper;
     @Mock
     private HttpServletResponse httpServletResponse;
-
     @Mock
     private FilterChain filterChain;
-
     @Mock
     private WebCertUserService webCertUserService;
+
     @Captor
     ArgumentCaptor<Map> mapArgumentCaptor;
+
     @InjectMocks
     private LaunchIdValidationFilter filter = new LaunchIdValidationFilter();
 

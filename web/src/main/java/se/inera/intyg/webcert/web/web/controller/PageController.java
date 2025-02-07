@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,9 +18,9 @@
  */
 package se.inera.intyg.webcert.web.web.controller;
 
+import jakarta.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.Arrays;
-import javax.ws.rs.core.UriBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +33,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.maillink.MailLinkService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -61,19 +63,20 @@ public class PageController {
 
     @RequestMapping(value = "/maillink/intyg/{typ}/{intygId}", method = RequestMethod.GET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "page-redirect-to-certificate", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public ResponseEntity<Object> redirectToIntyg(@PathVariable("intygId") String intygId, @PathVariable("typ") String typ) {
         // WC 5.0 new: change vårdenhet
         String enhetHsaId = intygService.getIssuingVardenhetHsaId(intygId, typ);
         if (enhetHsaId == null) {
-            LOG.error("Could not redirect user to utkast using /maillink for intygsId '" + intygId
-                + "'. No enhetsId found for utkast. Does the utkast exist?");
+            LOG.error("Could not redirect user to utkast using /maillink for intygsId '{}. No enhetsId found for utkast. "
+                + "Does the utkast exist?", intygId);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         WebCertUser user = webCertUserService.getUser();
         if (!user.changeValdVardenhet(enhetHsaId)) {
             HttpHeaders httpHeaders = new HttpHeaders();
-            URI uri = UriBuilder.fromPath("/error.jsp")
+            URI uri = UriBuilder.fromPath("/error")
                 .queryParam("reason", "enhet.auth.exception")
                 .queryParam("enhetHsaId", enhetHsaId)
                 .build();

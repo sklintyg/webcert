@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -46,7 +46,10 @@ public class ListIntygEntry {
     @JsonIgnore
     private String statusName;
 
+    private LocalDateTime lastUpdated;
     private LocalDateTime lastUpdatedSigned;
+
+    private LocalDateTime signed;
 
     private String updatedSignedBy;
     private String updatedSignedById;
@@ -68,6 +71,21 @@ public class ListIntygEntry {
 
     private boolean isTestIntyg = false;
 
+    public LocalDateTime getSigned() {
+        return signed;
+    }
+
+    public void setSigned(LocalDateTime signed) {
+        this.signed = signed;
+    }
+
+    public void setLastUpdatedSigned(LocalDateTime lastUpdatedSigned) {
+        this.lastUpdatedSigned = lastUpdatedSigned;
+    }
+
+    public LocalDateTime getLastUpdatedSigned() {
+        return lastUpdatedSigned;
+    }
 
     public String getIntygId() {
         return intygId;
@@ -125,12 +143,12 @@ public class ListIntygEntry {
         this.statusName = statusName;
     }
 
-    public LocalDateTime getLastUpdatedSigned() {
-        return lastUpdatedSigned;
+    public LocalDateTime getLastUpdated() {
+        return lastUpdated;
     }
 
-    public void setLastUpdatedSigned(LocalDateTime lastUpdatedSigned) {
-        this.lastUpdatedSigned = lastUpdatedSigned;
+    public void setLastUpdated(LocalDateTime lastUpdated) {
+        this.lastUpdated = lastUpdated;
     }
 
     public String getUpdatedSignedBy() {
@@ -246,14 +264,15 @@ public class ListIntygEntry {
             && Objects.equals(lastUpdatedSigned, that.lastUpdatedSigned) && Objects.equals(updatedSignedBy,
             that.updatedSignedBy) && Objects.equals(updatedSignedById, that.updatedSignedById) && Objects.equals(
             vardenhetId, that.vardenhetId) && Objects.equals(vardgivarId, that.vardgivarId) && Objects.equals(relations,
-            that.relations) && Objects.equals(links, that.links);
+            that.relations) && Objects.equals(links, that.links) && Objects.equals(lastUpdated, that.lastUpdated)
+            && Objects.equals(signed, that.signed);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(intygId, patientId, source, intygType, intygTypeVersion, intygTypeName, status, statusName, lastUpdatedSigned,
             updatedSignedBy, updatedSignedById, vidarebefordrad, version, vardenhetId, vardgivarId, relations, sekretessmarkering, avliden,
-            links, isTestIntyg);
+            links, isTestIntyg, lastUpdated, signed);
     }
 
     @Override
@@ -279,6 +298,8 @@ public class ListIntygEntry {
             + ", avliden=" + avliden
             + ", links=" + links
             + ", isTestIntyg=" + isTestIntyg
+            + ", lastUpdated=" + lastUpdated
+            + ", signed=" + signed
             + '}';
     }
 }

@@ -7,7 +7,6 @@ dependencies {
   implementation "se.inera.intyg.common:common-support:${commonVersion}"
   implementation "se.inera.intyg.common:fk7263:${commonVersion}"
   implementation "se.inera.intyg.infra:hsa-integration-api:${infraVersion}"
-  implementation "se.inera.intyg.infra:hsatk-integration:${infraVersion}"
   implementation "se.inera.intyg.infra:security-authorities:${infraVersion}"
   implementation "se.inera.intyg.infra:security-common:${infraVersion}"
 

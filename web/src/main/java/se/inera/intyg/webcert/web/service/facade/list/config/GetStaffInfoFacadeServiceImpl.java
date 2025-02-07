@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -18,10 +18,14 @@
  */
 package se.inera.intyg.webcert.web.service.facade.list.config;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.webcert.web.csintegration.aggregate.ListCertificatesInfoAggregator;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
@@ -29,23 +33,15 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class GetStaffInfoFacadeServiceImpl implements GetStaffInfoFacadeService {
 
     private final WebCertUserService webCertUserService;
     private final UtkastService utkastService;
     private final ArendeService arendeService;
-    private static final Logger LOG = LoggerFactory.getLogger(GetStaffInfoFacadeServiceImpl.class);
-
-    @Autowired
-    public GetStaffInfoFacadeServiceImpl(WebCertUserService webCertUserService, UtkastService utkastService, ArendeService arendeService) {
-        this.webCertUserService = webCertUserService;
-        this.utkastService = utkastService;
-        this.arendeService = arendeService;
-    }
+    private final ListCertificatesInfoAggregator listCertificatesInfoAggregator;
 
     @Override
     public List<StaffListInfo> get() {
@@ -71,11 +67,28 @@ public class GetStaffInfoFacadeServiceImpl implements GetStaffInfoFacadeService 
     public List<String> getIdsOfSelectedUnit() {
         final var webCertUser = webCertUserService.getUser();
         final var units = webCertUser.getIdsOfSelectedVardenhet();
-        LOG.debug("Current user '{}' has assignments: {}", webCertUser.getHsaId(), units);
+        log.debug("Current user '{}' has assignments: {}", webCertUser.getHsaId(), units);
         return units;
     }
 
     private List<StaffListInfo> getStaffInfo() {
+        final var staffListFromWC = listStaffFromWC();
+        final var staffListFromCS = listCertificatesInfoAggregator.listCertificatesInfoForUnit();
+        return Stream.concat(
+                staffListFromWC.stream(),
+                staffListFromCS.stream().filter(ifNotAlreadyInStaffListFromWC(staffListFromWC))
+            )
+            .collect(Collectors.toList());
+    }
+
+    private static Predicate<StaffListInfo> ifNotAlreadyInStaffListFromWC(List<StaffListInfo> staffListFromWC) {
+        return staffListInfo ->
+            staffListFromWC.stream().noneMatch(staffWc ->
+                staffWc.getHsaId().equals(staffListInfo.getHsaId())
+            );
+    }
+
+    private List<StaffListInfo> listStaffFromWC() {
         final var user = webCertUserService.getUser();
         final var selectedUnitHsaId = user.getValdVardenhet().getId();
         final var staff = utkastService.getLakareWithDraftsByEnhet(selectedUnitHsaId);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -105,35 +105,8 @@ class CreateCertificateFacadeServiceImplTest {
                     .resolvePatient(any(Personnummer.class), eq(CERTIFICATE_TYPE), eq(LATEST_VERSION));
             }
 
-            @Test
-            void shallThrowExceptionIfModuleIsDeprecated() throws Exception {
-                doReturn(createDeprecatedIntygModule())
-                    .when(intygModuleRegistry)
-                    .getIntygModule(eq(CERTIFICATE_TYPE));
-
-                assertThrows(CreateCertificateException.class, () -> serviceUnderTest.create(CERTIFICATE_TYPE, PATIENT_ID),
-                    "Request for deprecated module");
-            }
-
-            @Test
-            void shallThrowExceptionIfModuleIsNotFound() throws Exception {
-                doThrow(ModuleNotFoundException.class)
-                    .when(intygModuleRegistry)
-                    .getIntygModule(eq(CERTIFICATE_TYPE));
-
-                assertThrows(CreateCertificateException.class, () -> serviceUnderTest.create(CERTIFICATE_TYPE, PATIENT_ID),
-                    "Request for unknown module");
-            }
-
             @Nested
             class TestsWithOkModule {
-
-                @BeforeEach
-                void setup() throws Exception {
-                    doReturn(createIntygModule())
-                        .when(intygModuleRegistry)
-                        .getIntygModule(eq(CERTIFICATE_TYPE));
-                }
 
                 @Test
                 void shallThrowExceptionIfDraftIsNotUnique() {
@@ -205,18 +178,7 @@ class CreateCertificateFacadeServiceImplTest {
 
     private IntygModule createIntygModule() {
         return new IntygModule("id", "label", "description", "detailedDescription", "issuerTypeId",
-            "cssPath", "scriptPath", "dependencyDefinitionPath", "defaultRecipient",
-            false, false);
-    }
-
-    private IntygModule createIntygModule(Boolean deprecated) {
-        return new IntygModule("id", "label", "description", "detailedDescription", "issuerTypeId",
-            "cssPath", "scriptPath", "dependencyDefinitionPath", "defaultRecipient",
-            deprecated, false);
-    }
-
-    private IntygModule createDeprecatedIntygModule() {
-        return createIntygModule(true);
+            "cssPath", "scriptPath", "dependencyDefinitionPath", "defaultRecipient");
     }
 
     private Utkast createCertificate() {
