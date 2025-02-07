@@ -19,18 +19,12 @@
 
 package se.inera.intyg.webcert.web.web.controller.internalapi.dto;
 
+import lombok.Builder;
+import lombok.Data;
+
+@Data
+@Builder
 public class SendNotificationResponseDTO {
 
     private Integer count;
-
-    public static SendNotificationResponseDTO create(Integer count) {
-        final var response = new SendNotificationResponseDTO();
-        response.count = count;
-
-        return response;
-    }
-
-    public Integer getCount() {
-        return count;
-    }
 }

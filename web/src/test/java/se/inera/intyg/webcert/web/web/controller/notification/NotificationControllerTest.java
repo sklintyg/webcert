@@ -35,13 +35,11 @@ import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum
 import se.inera.intyg.webcert.web.service.sendnotification.SendNotificationService;
 import se.inera.intyg.webcert.web.service.sendnotification.SendNotificationsForCareGiverService;
 import se.inera.intyg.webcert.web.service.sendnotification.SendNotificationsForCertificatesService;
-import se.inera.intyg.webcert.web.service.sendnotification.SendNotificationsForTimePeriodService;
 import se.inera.intyg.webcert.web.service.sendnotification.SendNotificationsForUnitsService;
 import se.inera.intyg.webcert.web.web.controller.internalapi.NotificationController;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForCareGiverRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForCertificatesRequestDTO;
-import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForTimePeriodRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForUnitsRequestDTO;
 
 @ExtendWith(MockitoExtension.class)
@@ -49,18 +47,28 @@ class NotificationControllerTest {
 
     private static final String ID = "ID";
     private static final Integer COUNT = 2;
-    private static final SendNotificationsForCertificatesRequestDTO CERTIFICATE_REQUEST = SendNotificationsForCertificatesRequestDTO.create(
-        List.of(ID), List.of(NotificationDeliveryStatusEnum.FAILURE), LocalDateTime.now(), LocalDateTime.now(), LocalDateTime.now()
-    );
-    private static final SendNotificationsForUnitsRequestDTO UNITS_REQUEST = SendNotificationsForUnitsRequestDTO.create(
-        List.of(ID), List.of(NotificationDeliveryStatusEnum.FAILURE), LocalDateTime.now(), LocalDateTime.now(), LocalDateTime.now()
-    );
-    private static final SendNotificationsForCareGiverRequestDTO CARE_GIVER_REQUEST = SendNotificationsForCareGiverRequestDTO.create(
-        List.of(NotificationDeliveryStatusEnum.FAILURE), LocalDateTime.now(), LocalDateTime.now(), LocalDateTime.now()
-    );
-    private static final SendNotificationsForTimePeriodRequestDTO TIME_PERIOD_REQUEST = SendNotificationsForTimePeriodRequestDTO.create(
-        List.of(NotificationDeliveryStatusEnum.FAILURE), LocalDateTime.now(), LocalDateTime.now(), LocalDateTime.now()
-    );
+    private static final SendNotificationsForCertificatesRequestDTO CERTIFICATE_REQUEST =
+        SendNotificationsForCertificatesRequestDTO.builder()
+            .certificateIds(List.of(ID))
+            .statuses(List.of(NotificationDeliveryStatusEnum.FAILURE))
+            .activationTime(LocalDateTime.now())
+            .start(LocalDateTime.now())
+            .end(LocalDateTime.now())
+            .build();
+    private static final SendNotificationsForUnitsRequestDTO UNITS_REQUEST = SendNotificationsForUnitsRequestDTO.builder()
+        .unitIds(List.of(ID))
+        .statuses(List.of(NotificationDeliveryStatusEnum.FAILURE))
+        .activationTime(LocalDateTime.now())
+        .start(LocalDateTime.now())
+        .end(LocalDateTime.now())
+        .build();
+    private static final SendNotificationsForCareGiverRequestDTO CARE_GIVER_REQUEST = SendNotificationsForCareGiverRequestDTO.builder()
+        .statuses(List.of(NotificationDeliveryStatusEnum.FAILURE))
+        .activationTime(LocalDateTime.now())
+        .start(LocalDateTime.now())
+        .end(LocalDateTime.now())
+        .build();
+
 
     @Mock
     private SendNotificationService sendNotificationService;
@@ -74,9 +82,6 @@ class NotificationControllerTest {
     @Mock
     private SendNotificationsForCareGiverService sendNotificationsForCareGiverService;
 
-    @Mock
-    private SendNotificationsForTimePeriodService sendNotificationsForTimePeriodService;
-
     @InjectMocks
     private NotificationController notificationController;
 
@@ -86,7 +91,11 @@ class NotificationControllerTest {
         @BeforeEach
         void setup() {
             when(sendNotificationsForCertificatesService.send(CERTIFICATE_REQUEST))
-                .thenReturn(SendNotificationResponseDTO.create(COUNT));
+                .thenReturn(
+                    SendNotificationResponseDTO.builder()
+                        .count(COUNT)
+                        .build()
+                );
         }
 
         @Test
@@ -103,7 +112,11 @@ class NotificationControllerTest {
         @BeforeEach
         void setup() {
             when(sendNotificationService.send(ID))
-                .thenReturn(SendNotificationResponseDTO.create(COUNT));
+                .thenReturn(
+                    SendNotificationResponseDTO.builder()
+                        .count(COUNT)
+                        .build()
+                );
         }
 
         @Test
@@ -120,7 +133,11 @@ class NotificationControllerTest {
         @BeforeEach
         void setup() {
             when(sendNotificationsForUnitsService.send(UNITS_REQUEST))
-                .thenReturn(SendNotificationResponseDTO.create(COUNT));
+                .thenReturn(
+                    SendNotificationResponseDTO.builder()
+                        .count(COUNT)
+                        .build()
+                );
         }
 
         @Test
@@ -137,29 +154,16 @@ class NotificationControllerTest {
         @BeforeEach
         void setup() {
             when(sendNotificationsForCareGiverService.send("ID", CARE_GIVER_REQUEST))
-                .thenReturn(SendNotificationResponseDTO.create(COUNT));
+                .thenReturn(
+                    SendNotificationResponseDTO.builder()
+                        .count(COUNT)
+                        .build()
+                );
         }
 
         @Test
         void shouldReturnResponseFromService() {
             final var response = notificationController.sendNotificationsForCareGiver("ID", CARE_GIVER_REQUEST);
-
-            assertEquals(COUNT, response.getCount());
-        }
-    }
-
-    @Nested
-    class SendNotificationsForTimePeriod {
-
-        @BeforeEach
-        void setup() {
-            when(sendNotificationsForTimePeriodService.send(TIME_PERIOD_REQUEST))
-                .thenReturn(SendNotificationResponseDTO.create(COUNT));
-        }
-
-        @Test
-        void shouldReturnResponseFromService() {
-            final var response = notificationController.sendNotificationsForTimePeriod(TIME_PERIOD_REQUEST);
 
             assertEquals(COUNT, response.getCount());
         }

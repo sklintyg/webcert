@@ -21,39 +21,16 @@ package se.inera.intyg.webcert.web.web.controller.internalapi.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.Builder;
+import lombok.Value;
 import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
 
+@Value
+@Builder
 public class SendNotificationsForCareGiverRequestDTO {
 
-    private List<NotificationDeliveryStatusEnum> statuses;
-    private LocalDateTime activationTime;
-    private LocalDateTime start;
-    private LocalDateTime end;
-
-    public static SendNotificationsForCareGiverRequestDTO create(List<NotificationDeliveryStatusEnum> statuses,
-        LocalDateTime activationTime, LocalDateTime start, LocalDateTime end) {
-        final var request = new SendNotificationsForCareGiverRequestDTO();
-        request.activationTime = activationTime;
-        request.statuses = statuses;
-        request.start = start;
-        request.end = end;
-
-        return request;
-    }
-
-    public List<NotificationDeliveryStatusEnum> getStatuses() {
-        return statuses;
-    }
-
-    public LocalDateTime getActivationTime() {
-        return activationTime;
-    }
-
-    public LocalDateTime getStart() {
-        return start;
-    }
-
-    public LocalDateTime getEnd() {
-        return end;
-    }
+    List<NotificationDeliveryStatusEnum> statuses;
+    LocalDateTime activationTime;
+    LocalDateTime start;
+    LocalDateTime end;
 }
