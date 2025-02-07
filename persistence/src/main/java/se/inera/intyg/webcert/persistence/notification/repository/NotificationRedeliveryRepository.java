@@ -98,6 +98,16 @@ public interface NotificationRedeliveryRepository extends JpaRepository<Notifica
         @Param("end") LocalDateTime end,
         @Param("activationTime") LocalDateTime activationTime);
 
+    @Query(value = """
+        SELECT COUNT(h.id) FROM Handelese h
+        INNER JOIN HandeleseMetadata hm ON h.id = hm.handeleseId
+        WHERE h.enhetsId LIKE :careGiverId AND hm.deliveryStatus IN :statuses
+        AND h.timestamp BETWEEN :start AND :end""", nativeQuery = true)
+    int countNotificationsForCareGiver(@Param("careGiverId") String careGiverId,
+        @Param("statuses") List<NotificationDeliveryStatusEnum> statuses,
+        @Param("start") LocalDateTime start,
+        @Param("end") LocalDateTime end);
+
     @Modifying
     @Query(value = """
         INSERT INTO NotificationRedelivery (HANDELSE_ID, REDELIVERY_STRATEGY, REDELIVERY_TIME)

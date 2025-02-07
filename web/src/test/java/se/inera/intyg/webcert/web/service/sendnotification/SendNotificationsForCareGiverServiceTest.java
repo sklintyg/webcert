@@ -28,6 +28,7 @@ import static org.mockito.Mockito.when;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -37,6 +38,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
 import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CountNotificationsForCareGiverRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForCareGiverRequestDTO;
 
 @ExtendWith(MockitoExtension.class)
@@ -56,6 +58,11 @@ class SendNotificationsForCareGiverServiceTest {
         .statuses(STATUSES)
         .activationTime(ACTIVATION_TIME)
         .build();
+    private static final CountNotificationsForCareGiverRequestDTO COUNT_REQUEST = CountNotificationsForCareGiverRequestDTO.builder()
+        .start(START)
+        .end(END)
+        .statuses(STATUSES)
+        .build();
 
     @Mock
     NotificationRedeliveryRepository notificationRedeliveryRepository;
@@ -66,71 +73,123 @@ class SendNotificationsForCareGiverServiceTest {
     @InjectMocks
     SendNotificationsForCareGiverService sendNotificationsForCareGiverService;
 
-    @BeforeEach
-    void setup() {
-        when(notificationRedeliveryRepository.sendNotificationsForCareGiver(ID, STATUSES, START, END, ACTIVATION_TIME))
-            .thenReturn(COUNT);
+    @Nested
+    class SendNotifications {
 
-        ReflectionTestUtils.setField(sendNotificationsForCareGiverService, "maxDaysBackStartDate", LIMIT);
-        ReflectionTestUtils.setField(sendNotificationsForCareGiverService, "maxTimeInterval", LIMIT_INTERVAL);
+        @BeforeEach
+        void setup() {
+            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(ID, STATUSES, START, END, ACTIVATION_TIME))
+                .thenReturn(COUNT);
+
+            ReflectionTestUtils.setField(sendNotificationsForCareGiverService, "maxDaysBackStartDate", LIMIT);
+            ReflectionTestUtils.setField(sendNotificationsForCareGiverService, "maxTimeInterval", LIMIT_INTERVAL);
+        }
+
+        @Test
+        void shouldReturnResponseFromRepository() {
+            final var response = sendNotificationsForCareGiverService.send(ID, REQUEST);
+
+            assertEquals(COUNT, response.getCount());
+        }
+
+        @Test
+        void shouldValidateIds() {
+            final var captor = ArgumentCaptor.forClass(String.class);
+            sendNotificationsForCareGiverService.send(ID, REQUEST);
+
+            verify(sendNotificationRequestValidator).validateId(captor.capture());
+
+            assertEquals(ID, captor.getValue());
+        }
+
+        @Test
+        void shouldValidateDateUsingStart() {
+            final var captor = ArgumentCaptor.forClass(LocalDateTime.class);
+            sendNotificationsForCareGiverService.send(ID, REQUEST);
+
+            verify(sendNotificationRequestValidator).validateDate(captor.capture(), any(LocalDateTime.class), anyInt(), anyInt());
+
+            assertEquals(REQUEST.getStart(), captor.getValue());
+        }
+
+        @Test
+        void shouldValidateDateUsingEnd() {
+            final var captor = ArgumentCaptor.forClass(LocalDateTime.class);
+            sendNotificationsForCareGiverService.send(ID, REQUEST);
+
+            verify(sendNotificationRequestValidator).validateDate(any(LocalDateTime.class), captor.capture(), anyInt(), anyInt());
+
+            assertEquals(REQUEST.getEnd(), captor.getValue());
+        }
+
+        @Test
+        void shouldValidateDateUsingDaysBackLimit() {
+            final var captor = ArgumentCaptor.forClass(int.class);
+            sendNotificationsForCareGiverService.send(ID, REQUEST);
+
+            verify(sendNotificationRequestValidator).validateDate(any(LocalDateTime.class), any(LocalDateTime.class), anyInt(),
+                captor.capture());
+
+            assertEquals(LIMIT, captor.getValue());
+        }
+
+        @Test
+        void shouldValidateDateUsingIntervalLimit() {
+            final var captor = ArgumentCaptor.forClass(int.class);
+            sendNotificationsForCareGiverService.send(ID, REQUEST);
+
+            verify(sendNotificationRequestValidator).validateDate(any(LocalDateTime.class), any(LocalDateTime.class), captor.capture(),
+                anyInt());
+
+            assertEquals(LIMIT_INTERVAL, captor.getValue());
+        }
+
     }
 
-    @Test
-    void shouldReturnResponseFromRepository() {
-        final var response = sendNotificationsForCareGiverService.send(ID, REQUEST);
+    @Nested
+    class CountNotifications {
 
-        assertEquals(COUNT, response.getCount());
-    }
+        @BeforeEach
+        void setup() {
+            when(notificationRedeliveryRepository.countNotificationsForCareGiver(ID, STATUSES, START, END))
+                .thenReturn(COUNT);
+        }
 
-    @Test
-    void shouldValidateIds() {
-        final var captor = ArgumentCaptor.forClass(String.class);
-        sendNotificationsForCareGiverService.send(ID, REQUEST);
+        @Test
+        void shouldReturnResponseFromRepository() {
+            final var response = sendNotificationsForCareGiverService.count(ID, COUNT_REQUEST);
 
-        verify(sendNotificationRequestValidator).validateId(captor.capture());
+            assertEquals(COUNT, response.getCount());
+        }
 
-        assertEquals(ID, captor.getValue());
-    }
+        @Test
+        void shouldValidateIds() {
+            final var captor = ArgumentCaptor.forClass(String.class);
+            sendNotificationsForCareGiverService.count(ID, COUNT_REQUEST);
 
-    @Test
-    void shouldValidateDateUsingStart() {
-        final var captor = ArgumentCaptor.forClass(LocalDateTime.class);
-        sendNotificationsForCareGiverService.send(ID, REQUEST);
+            verify(sendNotificationRequestValidator).validateId(captor.capture());
 
-        verify(sendNotificationRequestValidator).validateDate(captor.capture(), any(LocalDateTime.class), anyInt(), anyInt());
+            assertEquals(ID, captor.getValue());
+        }
 
-        assertEquals(REQUEST.getStart(), captor.getValue());
-    }
+        @Test
+        void shouldValidateDateUsingStart() {
+            final var captor = ArgumentCaptor.forClass(LocalDateTime.class);
+            sendNotificationsForCareGiverService.count(ID, COUNT_REQUEST);
 
-    @Test
-    void shouldValidateDateUsingEnd() {
-        final var captor = ArgumentCaptor.forClass(LocalDateTime.class);
-        sendNotificationsForCareGiverService.send(ID, REQUEST);
+            verify(sendNotificationRequestValidator).validateDate(captor.capture(), any(LocalDateTime.class), anyInt(), anyInt());
 
-        verify(sendNotificationRequestValidator).validateDate(any(LocalDateTime.class), captor.capture(), anyInt(), anyInt());
+            assertEquals(REQUEST.getStart(), captor.getValue());
+        }
 
-        assertEquals(REQUEST.getEnd(), captor.getValue());
-    }
+        @Test
+        void shouldValidateDateUsingEnd() {
+            final var captor = ArgumentCaptor.forClass(LocalDateTime.class);
+            sendNotificationsForCareGiverService.count(ID, COUNT_REQUEST);
 
-    @Test
-    void shouldValidateDateUsingDaysBackLimit() {
-        final var captor = ArgumentCaptor.forClass(int.class);
-        sendNotificationsForCareGiverService.send(ID, REQUEST);
+            verify(sendNotificationRequestValidator).validateDate(any(LocalDateTime.class), captor.capture(), anyInt(), anyInt());
 
-        verify(sendNotificationRequestValidator).validateDate(any(LocalDateTime.class), any(LocalDateTime.class), anyInt(),
-            captor.capture());
-
-        assertEquals(LIMIT, captor.getValue());
-    }
-
-    @Test
-    void shouldValidateDateUsingIntervalLimit() {
-        final var captor = ArgumentCaptor.forClass(int.class);
-        sendNotificationsForCareGiverService.send(ID, REQUEST);
-
-        verify(sendNotificationRequestValidator).validateDate(any(LocalDateTime.class), any(LocalDateTime.class), captor.capture(),
-            anyInt());
-
-        assertEquals(LIMIT_INTERVAL, captor.getValue());
+            assertEquals(REQUEST.getEnd(), captor.getValue());
+        }
     }
 }

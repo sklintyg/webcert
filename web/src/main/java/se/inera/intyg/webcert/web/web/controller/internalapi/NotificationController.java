@@ -31,6 +31,7 @@ import se.inera.intyg.webcert.web.service.sendnotification.SendNotificationServi
 import se.inera.intyg.webcert.web.service.sendnotification.SendNotificationsForCareGiverService;
 import se.inera.intyg.webcert.web.service.sendnotification.SendNotificationsForCertificatesService;
 import se.inera.intyg.webcert.web.service.sendnotification.SendNotificationsForUnitsService;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CountNotificationsForCareGiverRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForCareGiverRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForCertificatesRequestDTO;
@@ -79,4 +80,15 @@ public class NotificationController {
         @RequestBody SendNotificationsForCareGiverRequestDTO request) {
         return sendNotificationsForCareGiverService.send(careGiverId, request);
     }
+
+    @POST
+    @Path("count/caregiver/{careGiverId}")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    public SendNotificationResponseDTO countNotificationsForCareGiver(@PathParam("careGiverId") String careGiverId,
+        @RequestBody CountNotificationsForCareGiverRequestDTO request) {
+        return sendNotificationsForCareGiverService.count(careGiverId, request);
+    }
+
+
 }

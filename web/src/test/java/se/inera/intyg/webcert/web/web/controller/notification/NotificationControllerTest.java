@@ -37,6 +37,7 @@ import se.inera.intyg.webcert.web.service.sendnotification.SendNotificationsForC
 import se.inera.intyg.webcert.web.service.sendnotification.SendNotificationsForCertificatesService;
 import se.inera.intyg.webcert.web.service.sendnotification.SendNotificationsForUnitsService;
 import se.inera.intyg.webcert.web.web.controller.internalapi.NotificationController;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CountNotificationsForCareGiverRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForCareGiverRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForCertificatesRequestDTO;
@@ -68,6 +69,10 @@ class NotificationControllerTest {
         .start(LocalDateTime.now())
         .end(LocalDateTime.now())
         .build();
+    private static final CountNotificationsForCareGiverRequestDTO CARE_GIVER_COUNT_REQUEST =
+        CountNotificationsForCareGiverRequestDTO.builder()
+            .statuses(List.of(NotificationDeliveryStatusEnum.FAILURE))
+            .build();
 
 
     @Mock
@@ -151,19 +156,28 @@ class NotificationControllerTest {
     @Nested
     class SendNotificationsForCareGiver {
 
-        @BeforeEach
-        void setup() {
+        @Test
+        void shouldReturnResponseFromService() {
             when(sendNotificationsForCareGiverService.send("ID", CARE_GIVER_REQUEST))
                 .thenReturn(
                     SendNotificationResponseDTO.builder()
                         .count(COUNT)
                         .build()
                 );
+            final var response = notificationController.sendNotificationsForCareGiver("ID", CARE_GIVER_REQUEST);
+
+            assertEquals(COUNT, response.getCount());
         }
 
         @Test
-        void shouldReturnResponseFromService() {
-            final var response = notificationController.sendNotificationsForCareGiver("ID", CARE_GIVER_REQUEST);
+        void shouldReturnResponseFromCount() {
+            when(sendNotificationsForCareGiverService.count("ID", CARE_GIVER_COUNT_REQUEST))
+                .thenReturn(
+                    SendNotificationResponseDTO.builder()
+                        .count(COUNT)
+                        .build()
+                );
+            final var response = notificationController.countNotificationsForCareGiver("ID", CARE_GIVER_COUNT_REQUEST);
 
             assertEquals(COUNT, response.getCount());
         }

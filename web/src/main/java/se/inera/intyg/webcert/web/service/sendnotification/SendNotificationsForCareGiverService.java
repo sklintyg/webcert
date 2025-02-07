@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CountNotificationsForCareGiverRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForCareGiverRequestDTO;
 
@@ -49,6 +50,22 @@ public class SendNotificationsForCareGiverService {
             request.getStart(),
             request.getEnd(),
             request.getActivationTime()
+        );
+
+        return SendNotificationResponseDTO.builder()
+            .count(response)
+            .build();
+    }
+
+    public SendNotificationResponseDTO count(String careGiverId, CountNotificationsForCareGiverRequestDTO request) {
+        sendNotificationRequestValidator.validateId(careGiverId);
+        sendNotificationRequestValidator.validateDate(request.getStart(), request.getEnd(), maxTimeInterval, maxDaysBackStartDate);
+
+        final var response = notificationRedeliveryRepository.countNotificationsForCareGiver(
+            careGiverId,
+            request.getStatuses(),
+            request.getStart(),
+            request.getEnd()
         );
 
         return SendNotificationResponseDTO.builder()
