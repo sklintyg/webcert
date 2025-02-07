@@ -29,7 +29,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepositoryCustom;
+import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
 
 @ExtendWith(MockitoExtension.class)
 class SendNotificationServiceTest {
@@ -38,7 +38,7 @@ class SendNotificationServiceTest {
     private static final String ID = "ID";
 
     @Mock
-    NotificationRedeliveryRepositoryCustom notificationRedeliveryRepositoryCustom;
+    NotificationRedeliveryRepository notificationRedeliveryRepositoryCustom;
 
     @Mock
     SendNotificationRequestValidator sendNotificationRequestValidator;

@@ -36,24 +36,29 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
-import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepositoryCustom;
+import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForCertificatesRequestDTO;
 
 @ExtendWith(MockitoExtension.class)
 class SendNotificationsForCertificatesServiceTest {
 
     private static final Integer COUNT = 10;
+    private static final Integer LIMIT = 30;
     private static final List<String> IDS = List.of("ID");
     private static final List<NotificationDeliveryStatusEnum> STATUSES = List.of(NotificationDeliveryStatusEnum.FAILURE);
     private static final LocalDateTime START = LocalDateTime.now().minusDays(1);
     private static final LocalDateTime END = LocalDateTime.now();
     private static final LocalDateTime ACTIVATION_TIME = LocalDateTime.now();
-    private static final SendNotificationsForCertificatesRequestDTO REQUEST = SendNotificationsForCertificatesRequestDTO.create(IDS,
-        STATUSES, ACTIVATION_TIME, START, END);
-    private static final int LIMIT = 4;
+    private static final SendNotificationsForCertificatesRequestDTO REQUEST = SendNotificationsForCertificatesRequestDTO.builder()
+        .certificateIds(IDS)
+        .statuses(STATUSES)
+        .start(START)
+        .end(END)
+        .activationTime(ACTIVATION_TIME)
+        .build();
 
     @Mock
-    NotificationRedeliveryRepositoryCustom notificationRedeliveryRepositoryCustom;
+    NotificationRedeliveryRepository notificationRedeliveryRepository;
 
     @Mock
     SendNotificationRequestValidator sendNotificationRequestValidator;
@@ -63,7 +68,7 @@ class SendNotificationsForCertificatesServiceTest {
 
     @BeforeEach
     void setup() {
-        when(notificationRedeliveryRepositoryCustom.sendNotificationsForCertificates(IDS, STATUSES, START, END, ACTIVATION_TIME))
+        when(notificationRedeliveryRepository.sendNotificationsForCertificates(IDS, STATUSES, START, END, ACTIVATION_TIME))
             .thenReturn(COUNT);
 
         ReflectionTestUtils.setField(sendNotificationsForCertificatesService, "maxDaysBackStartDate", LIMIT);

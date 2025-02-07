@@ -36,7 +36,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
-import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepositoryCustom;
+import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForCareGiverRequestDTO;
 
 @ExtendWith(MockitoExtension.class)
@@ -44,17 +44,21 @@ class SendNotificationsForCareGiverServiceTest {
 
     private static final Integer COUNT = 10;
     private static final String ID = "ID";
+    private static final int LIMIT = 5;
+    private static final int LIMIT_INTERVAL = 10;
     private static final List<NotificationDeliveryStatusEnum> STATUSES = List.of(NotificationDeliveryStatusEnum.FAILURE);
     private static final LocalDateTime START = LocalDateTime.now().minusDays(1);
     private static final LocalDateTime END = LocalDateTime.now();
     private static final LocalDateTime ACTIVATION_TIME = LocalDateTime.now();
-    private static final SendNotificationsForCareGiverRequestDTO REQUEST = SendNotificationsForCareGiverRequestDTO.create(
-        STATUSES, ACTIVATION_TIME, START, END);
-    private static final int LIMIT = 4;
-    private static final int LIMIT_INTERVAL = 14;
+    private static final SendNotificationsForCareGiverRequestDTO REQUEST = SendNotificationsForCareGiverRequestDTO.builder()
+        .start(START)
+        .end(END)
+        .statuses(STATUSES)
+        .activationTime(ACTIVATION_TIME)
+        .build();
 
     @Mock
-    NotificationRedeliveryRepositoryCustom notificationRedeliveryRepositoryCustom;
+    NotificationRedeliveryRepository notificationRedeliveryRepository;
 
     @Mock
     SendNotificationRequestValidator sendNotificationRequestValidator;
@@ -64,7 +68,7 @@ class SendNotificationsForCareGiverServiceTest {
 
     @BeforeEach
     void setup() {
-        when(notificationRedeliveryRepositoryCustom.sendNotificationsForCareGiver(ID, STATUSES, START, END, ACTIVATION_TIME))
+        when(notificationRedeliveryRepository.sendNotificationsForCareGiver(ID, STATUSES, START, END, ACTIVATION_TIME))
             .thenReturn(COUNT);
 
         ReflectionTestUtils.setField(sendNotificationsForCareGiverService, "maxDaysBackStartDate", LIMIT);
