@@ -40,7 +40,7 @@ public class ServiceNowSubscriptionIntegrationServiceV2 implements SubscriptionI
     private final CheckSubscriptionService checkSubscriptionService;
 
     @Override
-    @PerformanceLogging(eventAction = "get-missing-subscriptions", eventType = MdcLogConstants.EVENT_TYPE_INFO)
+    @PerformanceLogging(eventAction = "get-missing-subscriptions-v2", eventType = MdcLogConstants.EVENT_TYPE_INFO)
     public List<String> getMissingSubscriptions(Map<String, List<String>> organizationNumberHsaIdMap, AuthenticationMethodEnum authMethod) {
         final var organizationResponse = subscriptionRestClientV2.getSubscriptionServiceResponse(
             organizationNumberHsaIdMap.keySet()
@@ -49,7 +49,7 @@ public class ServiceNowSubscriptionIntegrationServiceV2 implements SubscriptionI
     }
 
     @Override
-    @PerformanceLogging(eventAction = "is-missing-subscriptions-eleg-user", eventType = MdcLogConstants.EVENT_TYPE_INFO)
+    @PerformanceLogging(eventAction = "is-missing-subscriptions-eleg-user-v2", eventType = MdcLogConstants.EVENT_TYPE_INFO)
     public boolean isMissingSubscriptionUnregisteredElegUser(String organizationNumber) {
         final var organizationResponse = subscriptionRestClientV2.getSubscriptionServiceResponse(
             Set.of(organizationNumber)
