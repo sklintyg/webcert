@@ -47,6 +47,7 @@
       <bean class="se.inera.intyg.webcert.web.web.controller.internalapi.EraseApiController"/>
       <bean class="se.inera.intyg.webcert.web.web.controller.internalapi.UnansweredCommunicationController" />
       <bean class="se.inera.intyg.webcert.web.web.controller.internalapi.CertificateInternalApiController" />
+      <bean class="se.inera.intyg.webcert.web.web.controller.internalapi.NotificationController"/>
     </jaxrs:serviceBeans>
     <jaxrs:providers>
       <ref bean="jacksonJsonProvider" />
