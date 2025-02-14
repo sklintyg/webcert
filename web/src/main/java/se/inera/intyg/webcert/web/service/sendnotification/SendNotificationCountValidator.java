@@ -41,15 +41,15 @@ public class SendNotificationCountValidator {
         }
     }
 
-    private String buildErrorMessage(int numberOfInserts) {
-        return "Request exceeded maximum number of notifications allowed to be sent. Number of inserts '%s' exceeds the limit of '%s'"
-            .formatted(numberOfInserts, maxAllowedNotificationSend);
-    }
-
     public void notification(String notificationId) {
         final var insertsForNotification = notificationRedeliveryRepository.countNotification(notificationId);
         if (insertsForNotification > maxAllowedNotificationSend) {
             throw new IllegalArgumentException(buildErrorMessage(insertsForNotification));
         }
+    }
+
+    private String buildErrorMessage(int numberOfInserts) {
+        return "Request exceeded maximum number of notifications allowed to be sent. Number of inserts '%s' exceeds the limit of '%s'"
+            .formatted(numberOfInserts, maxAllowedNotificationSend);
     }
 }
