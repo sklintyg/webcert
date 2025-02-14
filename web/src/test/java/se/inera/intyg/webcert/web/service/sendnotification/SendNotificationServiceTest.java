@@ -20,6 +20,8 @@
 package se.inera.intyg.webcert.web.service.sendnotification;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -38,6 +40,9 @@ class SendNotificationServiceTest {
     private static final String ID = "ID";
 
     @Mock
+    SendNotificationCountValidator sendNotificationCountValidator;
+
+    @Mock
     NotificationRedeliveryRepository notificationRedeliveryRepositoryCustom;
 
     @Mock
@@ -45,6 +50,14 @@ class SendNotificationServiceTest {
 
     @InjectMocks
     SendNotificationService sendNotificationService;
+
+    @Test
+    void shouldThrowIfCountExceedLimit() {
+        doThrow(IllegalArgumentException.class).when(sendNotificationCountValidator)
+            .notification(ID);
+
+        assertThrows(IllegalArgumentException.class, () -> sendNotificationService.send(ID));
+    }
 
     @Test
     void shouldReturnResponseFromRepository() {

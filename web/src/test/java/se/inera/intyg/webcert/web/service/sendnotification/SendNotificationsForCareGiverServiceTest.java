@@ -20,8 +20,10 @@
 package se.inera.intyg.webcert.web.service.sendnotification;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -48,7 +50,8 @@ class SendNotificationsForCareGiverServiceTest {
     private static final String ID = "ID";
     private static final int LIMIT = 5;
     private static final int LIMIT_INTERVAL = 10;
-    private static final List<NotificationDeliveryStatusEnum> STATUSES = List.of(NotificationDeliveryStatusEnum.FAILURE);
+    private static final List<NotificationDeliveryStatusEnum> STATUSES = List.of(
+        NotificationDeliveryStatusEnum.FAILURE);
     private static final LocalDateTime START = LocalDateTime.now().minusDays(1);
     private static final LocalDateTime END = LocalDateTime.now();
     private static final LocalDateTime ACTIVATION_TIME = LocalDateTime.now();
@@ -63,6 +66,8 @@ class SendNotificationsForCareGiverServiceTest {
         .end(END)
         .statuses(STATUSES)
         .build();
+    @Mock
+    SendNotificationCountValidator sendNotificationCountValidator;
 
     @Mock
     NotificationRedeliveryRepository notificationRedeliveryRepository;
@@ -78,22 +83,38 @@ class SendNotificationsForCareGiverServiceTest {
 
         @BeforeEach
         void setup() {
-            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(ID, STATUSES, START, END, ACTIVATION_TIME))
-                .thenReturn(COUNT);
+            ReflectionTestUtils.setField(sendNotificationsForCareGiverService, "maxDaysBackStartDate",
+                LIMIT);
+            ReflectionTestUtils.setField(sendNotificationsForCareGiverService, "maxTimeInterval",
+                LIMIT_INTERVAL);
+        }
 
-            ReflectionTestUtils.setField(sendNotificationsForCareGiverService, "maxDaysBackStartDate", LIMIT);
-            ReflectionTestUtils.setField(sendNotificationsForCareGiverService, "maxTimeInterval", LIMIT_INTERVAL);
+        @Test
+        void shouldThrowIfCountExceedLimit() {
+            doThrow(IllegalArgumentException.class).when(sendNotificationCountValidator)
+                .careGiver(ID, REQUEST);
+
+            assertThrows(IllegalArgumentException.class, () -> sendNotificationsForCareGiverService.send(ID, REQUEST));
         }
 
         @Test
         void shouldReturnResponseFromRepository() {
+            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(ID, STATUSES, START, END,
+                ACTIVATION_TIME))
+                .thenReturn(COUNT);
+
             final var response = sendNotificationsForCareGiverService.send(ID, REQUEST);
 
             assertEquals(COUNT, response.getCount());
         }
 
+
         @Test
         void shouldValidateIds() {
+            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(ID, STATUSES, START, END,
+                ACTIVATION_TIME))
+                .thenReturn(COUNT);
+
             final var captor = ArgumentCaptor.forClass(String.class);
             sendNotificationsForCareGiverService.send(ID, REQUEST);
 
@@ -104,30 +125,43 @@ class SendNotificationsForCareGiverServiceTest {
 
         @Test
         void shouldValidateDateUsingStart() {
+            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(ID, STATUSES, START, END,
+                ACTIVATION_TIME))
+                .thenReturn(COUNT);
+
             final var captor = ArgumentCaptor.forClass(LocalDateTime.class);
             sendNotificationsForCareGiverService.send(ID, REQUEST);
 
-            verify(sendNotificationRequestValidator).validateDate(captor.capture(), any(LocalDateTime.class), anyInt(), anyInt());
+            verify(sendNotificationRequestValidator).validateDate(captor.capture(),
+                any(LocalDateTime.class), anyInt(), anyInt());
 
             assertEquals(REQUEST.getStart(), captor.getValue());
         }
 
         @Test
         void shouldValidateDateUsingEnd() {
+            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(ID, STATUSES, START, END,
+                ACTIVATION_TIME))
+                .thenReturn(COUNT);
             final var captor = ArgumentCaptor.forClass(LocalDateTime.class);
             sendNotificationsForCareGiverService.send(ID, REQUEST);
 
-            verify(sendNotificationRequestValidator).validateDate(any(LocalDateTime.class), captor.capture(), anyInt(), anyInt());
+            verify(sendNotificationRequestValidator).validateDate(any(LocalDateTime.class),
+                captor.capture(), anyInt(), anyInt());
 
             assertEquals(REQUEST.getEnd(), captor.getValue());
         }
 
         @Test
         void shouldValidateDateUsingDaysBackLimit() {
+            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(ID, STATUSES, START, END,
+                ACTIVATION_TIME))
+                .thenReturn(COUNT);
             final var captor = ArgumentCaptor.forClass(int.class);
             sendNotificationsForCareGiverService.send(ID, REQUEST);
 
-            verify(sendNotificationRequestValidator).validateDate(any(LocalDateTime.class), any(LocalDateTime.class), anyInt(),
+            verify(sendNotificationRequestValidator).validateDate(any(LocalDateTime.class),
+                any(LocalDateTime.class), anyInt(),
                 captor.capture());
 
             assertEquals(LIMIT, captor.getValue());
@@ -135,10 +169,14 @@ class SendNotificationsForCareGiverServiceTest {
 
         @Test
         void shouldValidateDateUsingIntervalLimit() {
+            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(ID, STATUSES, START, END,
+                ACTIVATION_TIME))
+                .thenReturn(COUNT);
             final var captor = ArgumentCaptor.forClass(int.class);
             sendNotificationsForCareGiverService.send(ID, REQUEST);
 
-            verify(sendNotificationRequestValidator).validateDate(any(LocalDateTime.class), any(LocalDateTime.class), captor.capture(),
+            verify(sendNotificationRequestValidator).validateDate(any(LocalDateTime.class),
+                any(LocalDateTime.class), captor.capture(),
                 anyInt());
 
             assertEquals(LIMIT_INTERVAL, captor.getValue());
@@ -151,7 +189,8 @@ class SendNotificationsForCareGiverServiceTest {
 
         @BeforeEach
         void setup() {
-            when(notificationRedeliveryRepository.countNotificationsForCareGiver(ID, STATUSES, START, END))
+            when(
+                notificationRedeliveryRepository.countNotificationsForCareGiver(ID, STATUSES, START, END))
                 .thenReturn(COUNT);
         }
 
@@ -177,7 +216,8 @@ class SendNotificationsForCareGiverServiceTest {
             final var captor = ArgumentCaptor.forClass(LocalDateTime.class);
             sendNotificationsForCareGiverService.count(ID, COUNT_REQUEST);
 
-            verify(sendNotificationRequestValidator).validateDate(captor.capture(), any(LocalDateTime.class), anyInt(), anyInt());
+            verify(sendNotificationRequestValidator).validateDate(captor.capture(),
+                any(LocalDateTime.class), anyInt(), anyInt());
 
             assertEquals(REQUEST.getStart(), captor.getValue());
         }
@@ -187,7 +227,8 @@ class SendNotificationsForCareGiverServiceTest {
             final var captor = ArgumentCaptor.forClass(LocalDateTime.class);
             sendNotificationsForCareGiverService.count(ID, COUNT_REQUEST);
 
-            verify(sendNotificationRequestValidator).validateDate(any(LocalDateTime.class), captor.capture(), anyInt(), anyInt());
+            verify(sendNotificationRequestValidator).validateDate(any(LocalDateTime.class),
+                captor.capture(), anyInt(), anyInt());
 
             assertEquals(REQUEST.getEnd(), captor.getValue());
         }

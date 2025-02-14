@@ -33,6 +33,7 @@ public class SendNotificationsForCareGiverService {
 
     private final NotificationRedeliveryRepository notificationRedeliveryRepository;
     private final SendNotificationRequestValidator sendNotificationRequestValidator;
+    private final SendNotificationCountValidator sendNotificationCountValidator;
 
     @Value("${timeinterval.maxdays.caregiver:1}")
     private int maxTimeInterval;
@@ -40,10 +41,13 @@ public class SendNotificationsForCareGiverService {
     @Value("${timelimit.daysback.start:365}")
     private int maxDaysBackStartDate;
 
-    public SendNotificationResponseDTO send(String careGiverId, SendNotificationsForCareGiverRequestDTO request) {
+    public SendNotificationResponseDTO send(String careGiverId,
+        SendNotificationsForCareGiverRequestDTO request) {
         sendNotificationRequestValidator.validateId(careGiverId);
-        sendNotificationRequestValidator.validateDate(request.getStart(), request.getEnd(), maxTimeInterval, maxDaysBackStartDate);
+        sendNotificationRequestValidator.validateDate(request.getStart(), request.getEnd(),
+            maxTimeInterval, maxDaysBackStartDate);
 
+        sendNotificationCountValidator.careGiver(careGiverId, request);
         final var response = notificationRedeliveryRepository.sendNotificationsForCareGiver(
             careGiverId,
             request.getStatuses(),
@@ -57,9 +61,11 @@ public class SendNotificationsForCareGiverService {
             .build();
     }
 
-    public SendNotificationResponseDTO count(String careGiverId, CountNotificationsForCareGiverRequestDTO request) {
+    public SendNotificationResponseDTO count(String careGiverId,
+        CountNotificationsForCareGiverRequestDTO request) {
         sendNotificationRequestValidator.validateId(careGiverId);
-        sendNotificationRequestValidator.validateDate(request.getStart(), request.getEnd(), maxTimeInterval, maxDaysBackStartDate);
+        sendNotificationRequestValidator.validateDate(request.getStart(), request.getEnd(),
+            maxTimeInterval, maxDaysBackStartDate);
 
         final var response = notificationRedeliveryRepository.countNotificationsForCareGiver(
             careGiverId,

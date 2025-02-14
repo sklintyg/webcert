@@ -32,6 +32,7 @@ public class SendNotificationsForUnitsService {
 
     private final NotificationRedeliveryRepository notificationRedeliveryRepository;
     private final SendNotificationRequestValidator sendNotificationRequestValidator;
+    private final SendNotificationCountValidator sendNotificationCountValidator;
 
     @Value("${timeinterval.maxdays.unit:7}")
     private int maxTimeInterval;
@@ -43,6 +44,7 @@ public class SendNotificationsForUnitsService {
         sendNotificationRequestValidator.validateIds(request.getUnitIds());
         sendNotificationRequestValidator.validateDate(request.getStart(), request.getEnd(), maxTimeInterval, maxDaysBackStartDate);
 
+        sendNotificationCountValidator.units(request);
         final var response = notificationRedeliveryRepository.sendNotificationsForUnits(
             request.getUnitIds(),
             request.getStatuses(),
