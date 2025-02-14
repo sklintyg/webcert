@@ -30,10 +30,12 @@ public class SendNotificationService {
 
     private final NotificationRedeliveryRepository notificationRedeliveryRepository;
     private final SendNotificationRequestValidator sendNotificationRequestValidator;
+    private final SendNotificationCountValidator sendNotificationCountValidator;
 
     public SendNotificationResponseDTO send(String notificationId) {
         sendNotificationRequestValidator.validateId(notificationId);
 
+        sendNotificationCountValidator.notification(notificationId);
         final var response = notificationRedeliveryRepository.sendNotification(notificationId);
         return SendNotificationResponseDTO.builder()
             .count(response)

@@ -32,6 +32,7 @@ public class SendNotificationsForCertificatesService {
 
     private final NotificationRedeliveryRepository notificationRedeliveryRepository;
     private final SendNotificationRequestValidator sendNotificationRequestValidator;
+    private final SendNotificationCountValidator sendNotificationCountValidator;
 
     @Value("${timelimit.daysback.start:365}")
     private int maxDaysBackStartDate;
@@ -40,6 +41,7 @@ public class SendNotificationsForCertificatesService {
         sendNotificationRequestValidator.validateIds(request.getCertificateIds());
         sendNotificationRequestValidator.validateDate(request.getStart(), request.getEnd(), maxDaysBackStartDate);
 
+        sendNotificationCountValidator.certiticates(request);
         final var response = notificationRedeliveryRepository.sendNotificationsForCertificates(
             request.getCertificateIds(),
             request.getStatuses(),

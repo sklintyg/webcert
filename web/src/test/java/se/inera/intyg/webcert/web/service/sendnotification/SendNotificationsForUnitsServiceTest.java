@@ -20,14 +20,17 @@
 package se.inera.intyg.webcert.web.service.sendnotification;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -57,6 +60,8 @@ class SendNotificationsForUnitsServiceTest {
         .end(END)
         .activationTime(ACTIVATION_TIME)
         .build();
+    @Mock
+    SendNotificationCountValidator sendNotificationCountValidator;
 
     @Mock
     NotificationRedeliveryRepository notificationRedeliveryRepository;
@@ -67,71 +72,84 @@ class SendNotificationsForUnitsServiceTest {
     @InjectMocks
     SendNotificationsForUnitsService sendNotificationsForUnitsService;
 
-    @BeforeEach
-    void setup() {
-        when(notificationRedeliveryRepository.sendNotificationsForUnits(IDS, STATUSES, START, END, ACTIVATION_TIME))
-            .thenReturn(COUNT);
-
-        ReflectionTestUtils.setField(sendNotificationsForUnitsService, "maxDaysBackStartDate", LIMIT);
-        ReflectionTestUtils.setField(sendNotificationsForUnitsService, "maxTimeInterval", LIMIT_INTERVAL);
-    }
 
     @Test
-    void shouldReturnResponseFromRepository() {
-        final var response = sendNotificationsForUnitsService.send(REQUEST);
+    void shouldThrowIfCountExceedLimit() {
+        doThrow(IllegalArgumentException.class).when(sendNotificationCountValidator)
+            .units(REQUEST);
 
-        assertEquals(COUNT, response.getCount());
+        assertThrows(IllegalArgumentException.class, () -> sendNotificationsForUnitsService.send(REQUEST));
     }
 
-    @Test
-    void shouldValidateIds() {
-        final var captor = ArgumentCaptor.forClass(List.class);
-        sendNotificationsForUnitsService.send(REQUEST);
+    @Nested
+    class SendTests {
 
-        verify(sendNotificationRequestValidator).validateIds(captor.capture());
+        @BeforeEach
+        void setup() {
+            when(notificationRedeliveryRepository.sendNotificationsForUnits(IDS, STATUSES, START, END, ACTIVATION_TIME))
+                .thenReturn(COUNT);
 
-        assertEquals(REQUEST.getUnitIds(), captor.getValue());
-    }
+            ReflectionTestUtils.setField(sendNotificationsForUnitsService, "maxDaysBackStartDate", LIMIT);
+            ReflectionTestUtils.setField(sendNotificationsForUnitsService, "maxTimeInterval", LIMIT_INTERVAL);
+        }
 
-    @Test
-    void shouldValidateDateUsingStart() {
-        final var captor = ArgumentCaptor.forClass(LocalDateTime.class);
-        sendNotificationsForUnitsService.send(REQUEST);
+        @Test
+        void shouldReturnResponseFromRepository() {
+            final var response = sendNotificationsForUnitsService.send(REQUEST);
 
-        verify(sendNotificationRequestValidator).validateDate(captor.capture(), any(LocalDateTime.class), anyInt(), anyInt());
+            assertEquals(COUNT, response.getCount());
+        }
 
-        assertEquals(REQUEST.getStart(), captor.getValue());
-    }
+        @Test
+        void shouldValidateIds() {
+            final var captor = ArgumentCaptor.forClass(List.class);
+            sendNotificationsForUnitsService.send(REQUEST);
 
-    @Test
-    void shouldValidateDateUsingEnd() {
-        final var captor = ArgumentCaptor.forClass(LocalDateTime.class);
-        sendNotificationsForUnitsService.send(REQUEST);
+            verify(sendNotificationRequestValidator).validateIds(captor.capture());
 
-        verify(sendNotificationRequestValidator).validateDate(any(LocalDateTime.class), captor.capture(), anyInt(), anyInt());
+            assertEquals(REQUEST.getUnitIds(), captor.getValue());
+        }
 
-        assertEquals(REQUEST.getEnd(), captor.getValue());
-    }
+        @Test
+        void shouldValidateDateUsingStart() {
+            final var captor = ArgumentCaptor.forClass(LocalDateTime.class);
+            sendNotificationsForUnitsService.send(REQUEST);
 
-    @Test
-    void shouldValidateDateUsingDaysBackLimit() {
-        final var captor = ArgumentCaptor.forClass(int.class);
-        sendNotificationsForUnitsService.send(REQUEST);
+            verify(sendNotificationRequestValidator).validateDate(captor.capture(), any(LocalDateTime.class), anyInt(), anyInt());
 
-        verify(sendNotificationRequestValidator).validateDate(any(LocalDateTime.class), any(LocalDateTime.class), anyInt(),
-            captor.capture());
+            assertEquals(REQUEST.getStart(), captor.getValue());
+        }
 
-        assertEquals(LIMIT, captor.getValue());
-    }
+        @Test
+        void shouldValidateDateUsingEnd() {
+            final var captor = ArgumentCaptor.forClass(LocalDateTime.class);
+            sendNotificationsForUnitsService.send(REQUEST);
 
-    @Test
-    void shouldValidateDateUsingIntervalLimit() {
-        final var captor = ArgumentCaptor.forClass(int.class);
-        sendNotificationsForUnitsService.send(REQUEST);
+            verify(sendNotificationRequestValidator).validateDate(any(LocalDateTime.class), captor.capture(), anyInt(), anyInt());
 
-        verify(sendNotificationRequestValidator).validateDate(any(LocalDateTime.class), any(LocalDateTime.class), captor.capture(),
-            anyInt());
+            assertEquals(REQUEST.getEnd(), captor.getValue());
+        }
 
-        assertEquals(LIMIT_INTERVAL, captor.getValue());
+        @Test
+        void shouldValidateDateUsingDaysBackLimit() {
+            final var captor = ArgumentCaptor.forClass(int.class);
+            sendNotificationsForUnitsService.send(REQUEST);
+
+            verify(sendNotificationRequestValidator).validateDate(any(LocalDateTime.class), any(LocalDateTime.class), anyInt(),
+                captor.capture());
+
+            assertEquals(LIMIT, captor.getValue());
+        }
+
+        @Test
+        void shouldValidateDateUsingIntervalLimit() {
+            final var captor = ArgumentCaptor.forClass(int.class);
+            sendNotificationsForUnitsService.send(REQUEST);
+
+            verify(sendNotificationRequestValidator).validateDate(any(LocalDateTime.class), any(LocalDateTime.class), captor.capture(),
+                anyInt());
+
+            assertEquals(LIMIT_INTERVAL, captor.getValue());
+        }
     }
 }
