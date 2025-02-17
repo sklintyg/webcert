@@ -46,7 +46,7 @@ public class GetIntygInfoEventsService {
     private static IntygInfoEvent getEvent(Handelse handelse) {
         IntygInfoEvent event = getEvent(handelse, null);
         if (event != null) {
-            final var status = handelse.getHandelseMetaData().getDeliveryStatus();
+            final var status = handelse.getHandelseMetaData().getDeliveryStatus().toString();
             event.addData("status", status);
         }
         return event;
