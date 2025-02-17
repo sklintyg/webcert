@@ -171,4 +171,48 @@ class SendNotificationRequestValidatorTest {
         }
     }
 
+    @Nested
+    class ValidateCertificateIds {
+
+        @Test
+        void shouldThrowExceptionIfIdsAreEmpty() {
+            final var ids = new ArrayList<String>();
+            assertThrows(IllegalArgumentException.class, () -> sendNotificationRequestValidator.validateCertificateIds(ids));
+        }
+
+        @Test
+        void shouldThrowExceptionIfIdsAreNull() {
+            assertThrows(IllegalArgumentException.class, () -> sendNotificationRequestValidator.validateCertificateIds(null));
+        }
+
+        @Test
+        void shouldThrowExceptionIfIdHasIncorrectFormat() {
+            final var ids = List.of(
+                "wrong-a0ff-4f99-ab29-d45a1e5fc9a4",
+                "941dd794-9cba-4cb8-95e6-ac7da48c07c7",
+                "9565ca3c-bd09-4fb3-8fcf-e5043959dfe5"
+            );
+            assertThrows(IllegalArgumentException.class, () -> sendNotificationRequestValidator.validateCertificateIds(ids));
+        }
+
+        @Test
+        void shouldThrowExceptionIfIdIsEmpty() {
+            final var ids = List.of(
+                "",
+                "941dd794-9cba-4cb8-95e6-ac7da48c07c7",
+                "9565ca3c-qd09-4fz3-8fyf-e5043959dfe5"
+            );
+            assertThrows(IllegalArgumentException.class, () -> sendNotificationRequestValidator.validateCertificateIds(ids));
+        }
+
+        @Test
+        void shouldNotThrowIfIdHasCorrectFormat() {
+            final var ids = List.of(
+                "3c6f9296-a0ff-4f99-ab29-d45a1e5fc9a4",
+                "941dd794-9cba-4cb8-95e6-ac7da48c07c7",
+                "9565ca3c-qd09-4fz3-8fyf-e5043959dfe5"
+            );
+            assertDoesNotThrow(() -> sendNotificationRequestValidator.validateCertificateIds(ids));
+        }
+    }
 }

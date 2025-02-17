@@ -38,7 +38,7 @@ public class SendNotificationsForCertificatesService {
     private int maxDaysBackStartDate;
 
     public SendNotificationResponseDTO send(SendNotificationsForCertificatesRequestDTO request) {
-        sendNotificationRequestValidator.validateIds(request.getCertificateIds());
+        sendNotificationRequestValidator.validateCertificateIds(request.getCertificateIds());
         sendNotificationRequestValidator.validateDate(request.getStart(), request.getEnd(), maxDaysBackStartDate);
 
         sendNotificationCountValidator.certiticates(request);
