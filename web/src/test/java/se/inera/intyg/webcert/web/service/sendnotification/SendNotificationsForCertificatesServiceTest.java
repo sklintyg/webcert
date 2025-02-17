@@ -67,8 +67,16 @@ class SendNotificationsForCertificatesServiceTest {
     @Mock
     SendNotificationRequestValidator sendNotificationRequestValidator;
 
+    @Mock
+    SendNotificationRequestSanitizer sendNotificationRequestSanitizer;
+
     @InjectMocks
     SendNotificationsForCertificatesService sendNotificationsForCertificatesService;
+
+    @BeforeEach
+    void setUp() {
+        when(sendNotificationRequestSanitizer.sanitize(REQUEST)).thenReturn(REQUEST);
+    }
     
     @Test
     void shouldThrowIfCountExceedLimit() {
@@ -136,6 +144,14 @@ class SendNotificationsForCertificatesServiceTest {
             assertEquals(LIMIT, captor.getValue());
         }
 
-    }
+        @Test
+        void shouldSanitizeRequest() {
+            final var captor = ArgumentCaptor.forClass(SendNotificationsForCertificatesRequestDTO.class);
+            sendNotificationsForCertificatesService.send(REQUEST);
 
+            verify(sendNotificationRequestSanitizer).sanitize(captor.capture());
+
+            assertEquals(REQUEST, captor.getValue());
+        }
+    }
 }

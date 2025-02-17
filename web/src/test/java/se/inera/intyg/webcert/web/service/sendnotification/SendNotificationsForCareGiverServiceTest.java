@@ -75,6 +75,9 @@ class SendNotificationsForCareGiverServiceTest {
     @Mock
     SendNotificationRequestValidator sendNotificationRequestValidator;
 
+    @Mock
+    SendNotificationRequestSanitizer sendNotificationRequestSanitizer;
+
     @InjectMocks
     SendNotificationsForCareGiverService sendNotificationsForCareGiverService;
 
@@ -87,6 +90,7 @@ class SendNotificationsForCareGiverServiceTest {
                 LIMIT);
             ReflectionTestUtils.setField(sendNotificationsForCareGiverService, "maxTimeInterval",
                 LIMIT_INTERVAL);
+            when(sendNotificationRequestSanitizer.sanitize(ID)).thenReturn(ID);
         }
 
         @Test
@@ -192,6 +196,7 @@ class SendNotificationsForCareGiverServiceTest {
             when(
                 notificationRedeliveryRepository.countNotificationsForCareGiver(ID, STATUSES, START, END))
                 .thenReturn(COUNT);
+            when(sendNotificationRequestSanitizer.sanitize(ID)).thenReturn(ID);
         }
 
         @Test
@@ -231,6 +236,30 @@ class SendNotificationsForCareGiverServiceTest {
                 captor.capture(), anyInt(), anyInt());
 
             assertEquals(REQUEST.getEnd(), captor.getValue());
+        }
+    }
+
+    @Nested
+    class SanitizeTest {
+
+        @Test
+        void shouldSanitizeIdForSend() {
+            final var captor = ArgumentCaptor.forClass(String.class);
+            sendNotificationsForCareGiverService.send(ID, REQUEST);
+
+            verify(sendNotificationRequestSanitizer).sanitize(captor.capture());
+
+            assertEquals(ID, captor.getValue());
+        }
+
+        @Test
+        void shouldSanitizeIdForCount() {
+            final var captor = ArgumentCaptor.forClass(String.class);
+            sendNotificationsForCareGiverService.count(ID, COUNT_REQUEST);
+
+            verify(sendNotificationRequestSanitizer).sanitize(captor.capture());
+
+            assertEquals(ID, captor.getValue());
         }
     }
 }

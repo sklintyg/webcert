@@ -31,12 +31,14 @@ public class SendNotificationService {
     private final NotificationRedeliveryRepository notificationRedeliveryRepository;
     private final SendNotificationRequestValidator sendNotificationRequestValidator;
     private final SendNotificationCountValidator sendNotificationCountValidator;
+    private final SendNotificationRequestSanitizer sendNotificationRequestSanitizer;
 
     public SendNotificationResponseDTO send(String notificationId) {
-        sendNotificationRequestValidator.validateId(notificationId);
+        final var sanitizedNotificationId = sendNotificationRequestSanitizer.sanitize(notificationId);
+        sendNotificationRequestValidator.validateId(sanitizedNotificationId);
 
-        sendNotificationCountValidator.notification(notificationId);
-        final var response = notificationRedeliveryRepository.sendNotification(notificationId);
+        sendNotificationCountValidator.notification(sanitizedNotificationId);
+        final var response = notificationRedeliveryRepository.sendNotification(sanitizedNotificationId);
         return SendNotificationResponseDTO.builder()
             .count(response)
             .build();

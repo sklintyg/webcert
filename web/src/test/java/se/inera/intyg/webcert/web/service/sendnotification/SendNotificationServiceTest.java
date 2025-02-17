@@ -25,6 +25,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -48,8 +49,16 @@ class SendNotificationServiceTest {
     @Mock
     SendNotificationRequestValidator sendNotificationRequestValidator;
 
+    @Mock
+    SendNotificationRequestSanitizer sendNotificationRequestSanitizer;
+
     @InjectMocks
     SendNotificationService sendNotificationService;
+
+    @BeforeEach
+    void setUp() {
+        when(sendNotificationRequestSanitizer.sanitize(ID)).thenReturn(ID);
+    }
 
     @Test
     void shouldThrowIfCountExceedLimit() {
@@ -75,6 +84,16 @@ class SendNotificationServiceTest {
         sendNotificationService.send(ID);
 
         verify(sendNotificationRequestValidator).validateId(captor.capture());
+
+        assertEquals(ID, captor.getValue());
+    }
+
+    @Test
+    void shouldSanitizeId() {
+        final var captor = ArgumentCaptor.forClass(String.class);
+        sendNotificationService.send(ID);
+
+        verify(sendNotificationRequestSanitizer).sanitize(captor.capture());
 
         assertEquals(ID, captor.getValue());
     }
