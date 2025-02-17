@@ -33,7 +33,6 @@ public class SendNotificationsForUnitsService {
     private final NotificationRedeliveryRepository notificationRedeliveryRepository;
     private final SendNotificationRequestValidator sendNotificationRequestValidator;
     private final SendNotificationCountValidator sendNotificationCountValidator;
-    private final SendNotificationRequestSanitizer sendNotificationRequestSanitizer;
 
     @Value("${timeinterval.maxdays.unit:7}")
     private int maxTimeInterval;
@@ -42,7 +41,7 @@ public class SendNotificationsForUnitsService {
     private int maxDaysBackStartDate;
 
     public SendNotificationResponseDTO send(SendNotificationsForUnitsRequestDTO request) {
-        final var sanitizedRequest = sendNotificationRequestSanitizer.sanitize(request);
+        final var sanitizedRequest = SendNotificationRequestSanitizer.sanitize(request);
 
         sendNotificationRequestValidator.validateIds(sanitizedRequest.getUnitIds());
         sendNotificationRequestValidator.validateDate(sanitizedRequest.getStart(), sanitizedRequest.getEnd(), maxTimeInterval,

@@ -25,7 +25,6 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -38,7 +37,8 @@ import se.inera.intyg.webcert.persistence.notification.repository.NotificationRe
 class SendNotificationServiceTest {
 
     private static final Integer COUNT = 10;
-    private static final String ID = "ID";
+    private static final String ID = "ID ID";
+    private static final String SANITIZED_ID = "IDID";
 
     @Mock
     SendNotificationCountValidator sendNotificationCountValidator;
@@ -49,28 +49,20 @@ class SendNotificationServiceTest {
     @Mock
     SendNotificationRequestValidator sendNotificationRequestValidator;
 
-    @Mock
-    SendNotificationRequestSanitizer sendNotificationRequestSanitizer;
-
     @InjectMocks
     SendNotificationService sendNotificationService;
-
-    @BeforeEach
-    void setUp() {
-        when(sendNotificationRequestSanitizer.sanitize(ID)).thenReturn(ID);
-    }
 
     @Test
     void shouldThrowIfCountExceedLimit() {
         doThrow(IllegalArgumentException.class).when(sendNotificationCountValidator)
-            .notification(ID);
+            .notification(SANITIZED_ID);
 
         assertThrows(IllegalArgumentException.class, () -> sendNotificationService.send(ID));
     }
 
     @Test
     void shouldReturnResponseFromRepository() {
-        when(notificationRedeliveryRepositoryCustom.sendNotification(ID))
+        when(notificationRedeliveryRepositoryCustom.sendNotification(SANITIZED_ID))
             .thenReturn(COUNT);
 
         final var response = sendNotificationService.send(ID);
@@ -85,16 +77,6 @@ class SendNotificationServiceTest {
 
         verify(sendNotificationRequestValidator).validateId(captor.capture());
 
-        assertEquals(ID, captor.getValue());
-    }
-
-    @Test
-    void shouldSanitizeId() {
-        final var captor = ArgumentCaptor.forClass(String.class);
-        sendNotificationService.send(ID);
-
-        verify(sendNotificationRequestSanitizer).sanitize(captor.capture());
-
-        assertEquals(ID, captor.getValue());
+        assertEquals(SANITIZED_ID, captor.getValue());
     }
 }

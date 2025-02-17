@@ -33,13 +33,12 @@ public class SendNotificationsForCertificatesService {
     private final NotificationRedeliveryRepository notificationRedeliveryRepository;
     private final SendNotificationRequestValidator sendNotificationRequestValidator;
     private final SendNotificationCountValidator sendNotificationCountValidator;
-    private final SendNotificationRequestSanitizer sendNotificationRequestSanitizer;
 
     @Value("${timelimit.daysback.start:365}")
     private int maxDaysBackStartDate;
 
     public SendNotificationResponseDTO send(SendNotificationsForCertificatesRequestDTO request) {
-        final var sanitizedRequest = sendNotificationRequestSanitizer.sanitize(request);
+        final var sanitizedRequest = SendNotificationRequestSanitizer.sanitize(request);
 
         sendNotificationRequestValidator.validateIds(sanitizedRequest.getCertificateIds());
         sendNotificationRequestValidator.validateDate(sanitizedRequest.getStart(), sanitizedRequest.getEnd(), maxDaysBackStartDate);

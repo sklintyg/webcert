@@ -34,7 +34,6 @@ public class SendNotificationsForCareGiverService {
     private final NotificationRedeliveryRepository notificationRedeliveryRepository;
     private final SendNotificationRequestValidator sendNotificationRequestValidator;
     private final SendNotificationCountValidator sendNotificationCountValidator;
-    private final SendNotificationRequestSanitizer sendNotificationRequestSanitizer;
 
     @Value("${timeinterval.maxdays.caregiver:1}")
     private int maxTimeInterval;
@@ -44,7 +43,7 @@ public class SendNotificationsForCareGiverService {
 
     public SendNotificationResponseDTO send(String careGiverId,
         SendNotificationsForCareGiverRequestDTO request) {
-        final var sanitizedId = sendNotificationRequestSanitizer.sanitize(careGiverId);
+        final var sanitizedId = SendNotificationRequestSanitizer.sanitize(careGiverId);
 
         sendNotificationRequestValidator.validateId(sanitizedId);
         sendNotificationRequestValidator.validateDate(request.getStart(), request.getEnd(),
@@ -66,7 +65,7 @@ public class SendNotificationsForCareGiverService {
 
     public SendNotificationResponseDTO count(String careGiverId,
         CountNotificationsForCareGiverRequestDTO request) {
-        final var sanitizedId = sendNotificationRequestSanitizer.sanitize(careGiverId);
+        final var sanitizedId = SendNotificationRequestSanitizer.sanitize(careGiverId);
 
         sendNotificationRequestValidator.validateId(sanitizedId);
         sendNotificationRequestValidator.validateDate(request.getStart(), request.getEnd(),

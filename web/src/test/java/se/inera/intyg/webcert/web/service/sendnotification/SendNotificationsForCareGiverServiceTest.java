@@ -47,7 +47,8 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificatio
 class SendNotificationsForCareGiverServiceTest {
 
     private static final Integer COUNT = 10;
-    private static final String ID = "ID";
+    private static final String ID = "ID ID";
+    private static final String SANITIZED_ID = "IDID";
     private static final int LIMIT = 5;
     private static final int LIMIT_INTERVAL = 10;
     private static final List<NotificationDeliveryStatusEnum> STATUSES = List.of(
@@ -75,9 +76,6 @@ class SendNotificationsForCareGiverServiceTest {
     @Mock
     SendNotificationRequestValidator sendNotificationRequestValidator;
 
-    @Mock
-    SendNotificationRequestSanitizer sendNotificationRequestSanitizer;
-
     @InjectMocks
     SendNotificationsForCareGiverService sendNotificationsForCareGiverService;
 
@@ -90,20 +88,19 @@ class SendNotificationsForCareGiverServiceTest {
                 LIMIT);
             ReflectionTestUtils.setField(sendNotificationsForCareGiverService, "maxTimeInterval",
                 LIMIT_INTERVAL);
-            when(sendNotificationRequestSanitizer.sanitize(ID)).thenReturn(ID);
         }
 
         @Test
         void shouldThrowIfCountExceedLimit() {
             doThrow(IllegalArgumentException.class).when(sendNotificationCountValidator)
-                .careGiver(ID, REQUEST);
+                .careGiver(SANITIZED_ID, REQUEST);
 
             assertThrows(IllegalArgumentException.class, () -> sendNotificationsForCareGiverService.send(ID, REQUEST));
         }
 
         @Test
         void shouldReturnResponseFromRepository() {
-            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(ID, STATUSES, START, END,
+            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(SANITIZED_ID, STATUSES, START, END,
                 ACTIVATION_TIME))
                 .thenReturn(COUNT);
 
@@ -115,7 +112,7 @@ class SendNotificationsForCareGiverServiceTest {
 
         @Test
         void shouldValidateIds() {
-            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(ID, STATUSES, START, END,
+            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(SANITIZED_ID, STATUSES, START, END,
                 ACTIVATION_TIME))
                 .thenReturn(COUNT);
 
@@ -124,12 +121,12 @@ class SendNotificationsForCareGiverServiceTest {
 
             verify(sendNotificationRequestValidator).validateId(captor.capture());
 
-            assertEquals(ID, captor.getValue());
+            assertEquals(SANITIZED_ID, captor.getValue());
         }
 
         @Test
         void shouldValidateDateUsingStart() {
-            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(ID, STATUSES, START, END,
+            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(SANITIZED_ID, STATUSES, START, END,
                 ACTIVATION_TIME))
                 .thenReturn(COUNT);
 
@@ -144,7 +141,7 @@ class SendNotificationsForCareGiverServiceTest {
 
         @Test
         void shouldValidateDateUsingEnd() {
-            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(ID, STATUSES, START, END,
+            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(SANITIZED_ID, STATUSES, START, END,
                 ACTIVATION_TIME))
                 .thenReturn(COUNT);
             final var captor = ArgumentCaptor.forClass(LocalDateTime.class);
@@ -158,7 +155,7 @@ class SendNotificationsForCareGiverServiceTest {
 
         @Test
         void shouldValidateDateUsingDaysBackLimit() {
-            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(ID, STATUSES, START, END,
+            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(SANITIZED_ID, STATUSES, START, END,
                 ACTIVATION_TIME))
                 .thenReturn(COUNT);
             final var captor = ArgumentCaptor.forClass(int.class);
@@ -173,7 +170,7 @@ class SendNotificationsForCareGiverServiceTest {
 
         @Test
         void shouldValidateDateUsingIntervalLimit() {
-            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(ID, STATUSES, START, END,
+            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(SANITIZED_ID, STATUSES, START, END,
                 ACTIVATION_TIME))
                 .thenReturn(COUNT);
             final var captor = ArgumentCaptor.forClass(int.class);
@@ -194,9 +191,8 @@ class SendNotificationsForCareGiverServiceTest {
         @BeforeEach
         void setup() {
             when(
-                notificationRedeliveryRepository.countNotificationsForCareGiver(ID, STATUSES, START, END))
+                notificationRedeliveryRepository.countNotificationsForCareGiver(SANITIZED_ID, STATUSES, START, END))
                 .thenReturn(COUNT);
-            when(sendNotificationRequestSanitizer.sanitize(ID)).thenReturn(ID);
         }
 
         @Test
@@ -213,7 +209,7 @@ class SendNotificationsForCareGiverServiceTest {
 
             verify(sendNotificationRequestValidator).validateId(captor.capture());
 
-            assertEquals(ID, captor.getValue());
+            assertEquals(SANITIZED_ID, captor.getValue());
         }
 
         @Test
@@ -236,30 +232,6 @@ class SendNotificationsForCareGiverServiceTest {
                 captor.capture(), anyInt(), anyInt());
 
             assertEquals(REQUEST.getEnd(), captor.getValue());
-        }
-    }
-
-    @Nested
-    class SanitizeTest {
-
-        @Test
-        void shouldSanitizeIdForSend() {
-            final var captor = ArgumentCaptor.forClass(String.class);
-            sendNotificationsForCareGiverService.send(ID, REQUEST);
-
-            verify(sendNotificationRequestSanitizer).sanitize(captor.capture());
-
-            assertEquals(ID, captor.getValue());
-        }
-
-        @Test
-        void shouldSanitizeIdForCount() {
-            final var captor = ArgumentCaptor.forClass(String.class);
-            sendNotificationsForCareGiverService.count(ID, COUNT_REQUEST);
-
-            verify(sendNotificationRequestSanitizer).sanitize(captor.capture());
-
-            assertEquals(ID, captor.getValue());
         }
     }
 }

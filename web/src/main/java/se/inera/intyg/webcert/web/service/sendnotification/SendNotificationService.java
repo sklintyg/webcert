@@ -31,10 +31,9 @@ public class SendNotificationService {
     private final NotificationRedeliveryRepository notificationRedeliveryRepository;
     private final SendNotificationRequestValidator sendNotificationRequestValidator;
     private final SendNotificationCountValidator sendNotificationCountValidator;
-    private final SendNotificationRequestSanitizer sendNotificationRequestSanitizer;
 
     public SendNotificationResponseDTO send(String notificationId) {
-        final var sanitizedNotificationId = sendNotificationRequestSanitizer.sanitize(notificationId);
+        final var sanitizedNotificationId = SendNotificationRequestSanitizer.sanitize(notificationId);
         sendNotificationRequestValidator.validateId(sanitizedNotificationId);
 
         sendNotificationCountValidator.notification(sanitizedNotificationId);

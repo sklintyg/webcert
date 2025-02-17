@@ -2,20 +2,21 @@ package se.inera.intyg.webcert.web.service.sendnotification;
 
 import java.util.Collections;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.apache.commons.lang3.StringUtils;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForUnitsRequestDTO;
 
-@Component
-@RequiredArgsConstructor
 public class SendNotificationRequestSanitizer {
 
-    public String sanitize(String value) {
-        return removeBlankSpace(value);
+    private SendNotificationRequestSanitizer() {
+        throw new IllegalStateException("Utility class");
     }
 
-    public SendNotificationsForCertificatesRequestDTO sanitize(SendNotificationsForCertificatesRequestDTO request) {
+    public static String sanitize(String value) {
+        return StringUtils.deleteWhitespace(value);
+    }
+
+    public static SendNotificationsForCertificatesRequestDTO sanitize(SendNotificationsForCertificatesRequestDTO request) {
         return SendNotificationsForCertificatesRequestDTO.builder()
             .certificateIds(removeBlankSpaces(request.getCertificateIds()))
             .statuses(request.getStatuses())
@@ -25,7 +26,7 @@ public class SendNotificationRequestSanitizer {
             .build();
     }
 
-    public SendNotificationsForUnitsRequestDTO sanitize(SendNotificationsForUnitsRequestDTO request) {
+    public static SendNotificationsForUnitsRequestDTO sanitize(SendNotificationsForUnitsRequestDTO request) {
         return SendNotificationsForUnitsRequestDTO.builder()
             .unitIds(removeBlankSpaces(request.getUnitIds()))
             .statuses(request.getStatuses())
@@ -35,19 +36,12 @@ public class SendNotificationRequestSanitizer {
             .build();
     }
 
-    private String removeBlankSpace(String value) {
-        if (value == null) {
-            return null;
-        }
-        return value.replaceAll("\\s+", "");
-    }
-
-    private List<String> removeBlankSpaces(List<String> values) {
+    private static List<String> removeBlankSpaces(List<String> values) {
         if (values == null) {
             return Collections.emptyList();
         }
         return values.stream()
-            .map(this::removeBlankSpace)
+            .map(StringUtils::deleteWhitespace)
             .toList();
     }
 }
