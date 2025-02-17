@@ -37,8 +37,9 @@ public class CertificateRelationToIntygEventInfoConverter {
         final var relationEvent = createEvent(
             relation.getCreated(),
             type,
-            relatedCertificate != null ? "intygsId" : null,
-            relation.getCertificateId());
+            "intygsId",
+            relation.getCertificateId()
+        );
 
         if (relatedCertificate != null) {
             relationEvent.addData("name", relatedCertificate.getMetadata().getIssuedBy().getFullName());

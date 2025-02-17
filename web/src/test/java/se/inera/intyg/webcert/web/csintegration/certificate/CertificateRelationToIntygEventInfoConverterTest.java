@@ -154,8 +154,10 @@ class CertificateRelationToIntygEventInfoConverterTest {
             final var certificateRelation = CertificateRelation.builder()
                 .type(CertificateRelationType.EXTENDED)
                 .created(LocalDateTime.now())
+                .certificateId(CERTIFICATE_ID)
                 .build();
             final var expected = new IntygInfoEvent(Source.WEBCERT, certificateRelation.getCreated(), IntygInfoEventType.IS007);
+            expected.addData("intygsId", CERTIFICATE_ID);
 
             final var result = certificateRelationToIntygEventInfoConverter.convert(certificateRelation, null);
 
@@ -170,8 +172,10 @@ class CertificateRelationToIntygEventInfoConverterTest {
             final var certificateRelation = CertificateRelation.builder()
                 .type(CertificateRelationType.COMPLEMENTED)
                 .created(LocalDateTime.now())
+                .certificateId(CERTIFICATE_ID)
                 .build();
             final var expected = new IntygInfoEvent(Source.WEBCERT, certificateRelation.getCreated(), IntygInfoEventType.IS014);
+            expected.addData("intygsId", CERTIFICATE_ID);
 
             final var result = certificateRelationToIntygEventInfoConverter.convert(certificateRelation, null);
 
@@ -186,8 +190,10 @@ class CertificateRelationToIntygEventInfoConverterTest {
             final var certificateRelation = CertificateRelation.builder()
                 .type(CertificateRelationType.REPLACED)
                 .created(LocalDateTime.now())
+                .certificateId(CERTIFICATE_ID)
                 .build();
             final var expected = new IntygInfoEvent(Source.WEBCERT, certificateRelation.getCreated(), IntygInfoEventType.IS008);
+            expected.addData("intygsId", CERTIFICATE_ID);
 
             final var result = certificateRelationToIntygEventInfoConverter.convert(certificateRelation, null);
 
@@ -202,8 +208,10 @@ class CertificateRelationToIntygEventInfoConverterTest {
             final var certificateRelation = CertificateRelation.builder()
                 .type(CertificateRelationType.COPIED)
                 .created(LocalDateTime.now())
+                .certificateId(CERTIFICATE_ID)
                 .build();
             final var expected = new IntygInfoEvent(Source.WEBCERT, certificateRelation.getCreated(), IntygInfoEventType.IS026);
+            expected.addData("intygsId", CERTIFICATE_ID);
 
             final var result = certificateRelationToIntygEventInfoConverter.convert(certificateRelation, null);
 
