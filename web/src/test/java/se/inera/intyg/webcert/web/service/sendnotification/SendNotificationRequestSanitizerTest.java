@@ -1,14 +1,12 @@
 package se.inera.intyg.webcert.web.service.sendnotification;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForCertificatesRequestDTO;
@@ -33,9 +31,6 @@ class SendNotificationRequestSanitizerTest {
             .activationTime(DATE_TIME)
             .statuses(List.of(NotificationDeliveryStatusEnum.FAILURE));
 
-    @InjectMocks
-    private SendNotificationRequestSanitizer sendNotificationRequestSanitizer;
-
     @Test
     void shouldSanitizeCertificatesRequest() {
         final var request = CERTIFICATES_REQUEST_BUILDER
@@ -46,7 +41,7 @@ class SendNotificationRequestSanitizerTest {
             .certificateIds(List.of("certificateId1", "certificateId2", "certificateId3"))
             .build();
 
-        final var result = sendNotificationRequestSanitizer.sanitize(request);
+        final var result = SendNotificationRequestSanitizer.sanitize(request);
 
         assertEquals(expected, result);
     }
@@ -57,7 +52,7 @@ class SendNotificationRequestSanitizerTest {
             .certificateIds(null)
             .build();
 
-        final var result = sendNotificationRequestSanitizer.sanitize(request);
+        final var result = SendNotificationRequestSanitizer.sanitize(request);
 
         assertEquals(Collections.emptyList(), result.getCertificateIds());
     }
@@ -72,7 +67,7 @@ class SendNotificationRequestSanitizerTest {
             .unitIds(List.of("unitId1", "unitId2", "unitId3"))
             .build();
 
-        final var result = sendNotificationRequestSanitizer.sanitize(request);
+        final var result = SendNotificationRequestSanitizer.sanitize(request);
 
         assertEquals(expected, result);
     }
@@ -83,7 +78,7 @@ class SendNotificationRequestSanitizerTest {
             .unitIds(null)
             .build();
 
-        final var result = sendNotificationRequestSanitizer.sanitize(request);
+        final var result = SendNotificationRequestSanitizer.sanitize(request);
 
         assertEquals(Collections.emptyList(), result.getUnitIds());
     }
@@ -91,15 +86,8 @@ class SendNotificationRequestSanitizerTest {
     @Test
     void shouldRemoveBlankSpaceFromString() {
         final var stringWithBlankSpace = "string ";
-        final var result = sendNotificationRequestSanitizer.sanitize(stringWithBlankSpace);
+        final var result = SendNotificationRequestSanitizer.sanitize(stringWithBlankSpace);
 
         assertEquals("string", result);
-    }
-
-    @Test
-    void shouldReturnNullIfIdIsNull() {
-        final var result = sendNotificationRequestSanitizer.sanitize((String) null);
-
-        assertNull(result);
     }
 }
