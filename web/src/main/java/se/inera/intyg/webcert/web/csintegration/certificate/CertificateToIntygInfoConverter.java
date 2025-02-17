@@ -1,0 +1,130 @@
+/*
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package se.inera.intyg.webcert.web.csintegration.certificate;
+
+import com.google.common.collect.Streams;
+import java.util.List;
+import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.common.support.facade.model.question.QuestionType;
+import se.inera.intyg.infra.intyginfo.dto.WcIntygInfo;
+import se.inera.intyg.webcert.web.service.intyginfo.GetIntygInfoEventsService;
+
+@Component
+@RequiredArgsConstructor
+public class CertificateToIntygInfoConverter {
+
+    private final GetIntygInfoEventsService getIntygInfoEventsService;
+    private final CertificateRelationsToIntygInfoEventsConverter certificateRelationsToIntygInfoEventsConverter;
+
+    public WcIntygInfo convert(Certificate certificate, List<Question> questions) {
+        final var metadata = certificate.getMetadata();
+
+        final var wcIntygInfo = new WcIntygInfo();
+
+        wcIntygInfo.setIntygId(metadata.getId());
+        wcIntygInfo.setIntygType(metadata.getType());
+        wcIntygInfo.setIntygVersion(metadata.getTypeVersion());
+        wcIntygInfo.setSignedDate(metadata.getSigned());
+        wcIntygInfo.setSentToRecipient(metadata.isSent() ? metadata.getRecipient().getSent() : null);
+        wcIntygInfo.setSignedByName(metadata.getIssuedBy().getFullName());
+        wcIntygInfo.setSignedByHsaId(metadata.getIssuedBy().getPersonId());
+        wcIntygInfo.setCareUnitName(metadata.getCareUnit().getUnitName());
+        wcIntygInfo.setCareUnitHsaId(metadata.getCareUnit().getUnitId());
+        wcIntygInfo.setCareGiverName(metadata.getCareProvider().getUnitName());
+        wcIntygInfo.setCareGiverHsaId(metadata.getCareProvider().getUnitId());
+        wcIntygInfo.setTestCertificate(metadata.isTestCertificate());
+
+        wcIntygInfo.setCreatedInWC(true);
+        wcIntygInfo.setDraftCreated(metadata.getCreated());
+
+        final var complements = getComplements(questions);
+        final var complementsAnswered = getComplementsAnswered(questions);
+        final var adminQuestionsSent = getAdminQuestionsSent(questions);
+        final var adminQuestionsReceived = getAdminQuestionsReceived(questions);
+        final var adminQuestionsSentAnswered = getAdminQuestionsSentAnswered(questions);
+        final var adminQuestionsReceivedAnswered = getAdminQuestionsReceivedAnswered(questions);
+
+        wcIntygInfo.setKompletteringar(complements.size());
+        wcIntygInfo.setKompletteringarAnswered(complementsAnswered.size());
+        wcIntygInfo.setAdministrativaFragorSent(adminQuestionsSent.size());
+        wcIntygInfo.setAdministrativaFragorSentAnswered(adminQuestionsSentAnswered.size());
+        wcIntygInfo.setAdministrativaFragorReceived(adminQuestionsReceived.size());
+        wcIntygInfo.setAdministrativaFragorReceivedAnswered(adminQuestionsReceivedAnswered.size());
+
+        final var notificationEvents = getIntygInfoEventsService.get(metadata.getId());
+        final var relationEvents = certificateRelationsToIntygInfoEventsConverter.convert(certificate);
+
+        wcIntygInfo.setEvents(
+            Streams.concat(notificationEvents.stream(), relationEvents.stream()).collect(Collectors.toList())
+        );
+
+        return wcIntygInfo;
+    }
+
+    private static List<Question> getComplements(List<Question> questions) {
+        return questions.stream()
+            .filter(question -> question.getType() == QuestionType.COMPLEMENT)
+            .toList();
+    }
+
+    private static List<Question> getComplementsAnswered(List<Question> questions) {
+        return questions.stream()
+            .filter(question -> question.getType() == QuestionType.COMPLEMENT
+                && question.getAnswer() != null && question.getAnswer().getSent() != null)
+            .toList();
+    }
+
+    private static List<Question> getAdminQuestionsSent(List<Question> questions) {
+        return questions.stream()
+            .filter(question -> question.getType() != QuestionType.COMPLEMENT
+                && question.getAuthor().equalsIgnoreCase("WC"))
+            .toList();
+    }
+
+    private static List<Question> getAdminQuestionsReceived(List<Question> questions) {
+        return questions.stream()
+            .filter(question -> question.getType() != QuestionType.COMPLEMENT
+                && !question.getAuthor().equalsIgnoreCase("WC"))
+            .toList();
+    }
+
+    private static List<Question> getAdminQuestionsSentAnswered(List<Question> questions) {
+        return questions.stream()
+            .filter(question -> question.getType() != QuestionType.COMPLEMENT
+                && question.getAuthor().equalsIgnoreCase("WC")
+                && question.getAnswer() != null
+                && question.getAnswer().getSent() != null)
+            .toList();
+    }
+
+    private static List<Question> getAdminQuestionsReceivedAnswered(List<Question> questions) {
+        return questions.stream()
+            .filter(question -> question.getType() != QuestionType.COMPLEMENT
+                && !question.getAuthor().equalsIgnoreCase("WC")
+                && question.getAnswer() != null
+                && question.getAnswer().getSent() != null)
+            .toList();
+    }
+
+}
