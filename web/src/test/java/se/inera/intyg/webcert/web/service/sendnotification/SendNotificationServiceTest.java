@@ -37,7 +37,8 @@ import se.inera.intyg.webcert.persistence.notification.repository.NotificationRe
 class SendNotificationServiceTest {
 
     private static final Integer COUNT = 10;
-    private static final String ID = "ID";
+    private static final String ID = "ID ID";
+    private static final String SANITIZED_ID = "IDID";
 
     @Mock
     SendNotificationCountValidator sendNotificationCountValidator;
@@ -54,14 +55,14 @@ class SendNotificationServiceTest {
     @Test
     void shouldThrowIfCountExceedLimit() {
         doThrow(IllegalArgumentException.class).when(sendNotificationCountValidator)
-            .notification(ID);
+            .notification(SANITIZED_ID);
 
         assertThrows(IllegalArgumentException.class, () -> sendNotificationService.send(ID));
     }
 
     @Test
     void shouldReturnResponseFromRepository() {
-        when(notificationRedeliveryRepositoryCustom.sendNotification(ID))
+        when(notificationRedeliveryRepositoryCustom.sendNotification(SANITIZED_ID))
             .thenReturn(COUNT);
 
         final var response = sendNotificationService.send(ID);
@@ -76,6 +77,6 @@ class SendNotificationServiceTest {
 
         verify(sendNotificationRequestValidator).validateId(captor.capture());
 
-        assertEquals(ID, captor.getValue());
+        assertEquals(SANITIZED_ID, captor.getValue());
     }
 }

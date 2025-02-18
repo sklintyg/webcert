@@ -41,16 +41,19 @@ public class SendNotificationsForUnitsService {
     private int maxDaysBackStartDate;
 
     public SendNotificationResponseDTO send(SendNotificationsForUnitsRequestDTO request) {
-        sendNotificationRequestValidator.validateIds(request.getUnitIds());
-        sendNotificationRequestValidator.validateDate(request.getStart(), request.getEnd(), maxTimeInterval, maxDaysBackStartDate);
+        final var sanitizedRequest = SendNotificationRequestSanitizer.sanitize(request);
 
-        sendNotificationCountValidator.units(request);
+        sendNotificationRequestValidator.validateIds(sanitizedRequest.getUnitIds());
+        sendNotificationRequestValidator.validateDate(sanitizedRequest.getStart(), sanitizedRequest.getEnd(), maxTimeInterval,
+            maxDaysBackStartDate);
+
+        sendNotificationCountValidator.units(sanitizedRequest);
         final var response = notificationRedeliveryRepository.sendNotificationsForUnits(
-            request.getUnitIds(),
-            request.getStatuses(),
-            request.getStart(),
-            request.getEnd(),
-            request.getActivationTime()
+            sanitizedRequest.getUnitIds(),
+            sanitizedRequest.getStatuses(),
+            sanitizedRequest.getStart(),
+            sanitizedRequest.getEnd(),
+            sanitizedRequest.getActivationTime()
         );
 
         return SendNotificationResponseDTO.builder()

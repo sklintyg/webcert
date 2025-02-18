@@ -47,7 +47,8 @@ class SendNotificationsForCertificatesServiceTest {
 
     private static final Integer COUNT = 10;
     private static final Integer LIMIT = 30;
-    private static final List<String> IDS = List.of("ID");
+    private static final List<String> IDS = List.of("ID ID");
+    private static final List<String> SANITIZED_IDS = List.of("IDID");
     private static final List<NotificationDeliveryStatusEnum> STATUSES = List.of(NotificationDeliveryStatusEnum.FAILURE);
     private static final LocalDateTime START = LocalDateTime.now().minusDays(1);
     private static final LocalDateTime END = LocalDateTime.now();
@@ -59,6 +60,14 @@ class SendNotificationsForCertificatesServiceTest {
         .end(END)
         .activationTime(ACTIVATION_TIME)
         .build();
+    private static final SendNotificationsForCertificatesRequestDTO SANITIZED_REQUEST = SendNotificationsForCertificatesRequestDTO.builder()
+        .certificateIds(SANITIZED_IDS)
+        .statuses(STATUSES)
+        .start(START)
+        .end(END)
+        .activationTime(ACTIVATION_TIME)
+        .build();
+
     @Mock
     SendNotificationCountValidator sendNotificationCountValidator;
     @Mock
@@ -73,7 +82,7 @@ class SendNotificationsForCertificatesServiceTest {
     @Test
     void shouldThrowIfCountExceedLimit() {
         doThrow(IllegalArgumentException.class).when(sendNotificationCountValidator)
-            .certiticates(REQUEST);
+            .certiticates(SANITIZED_REQUEST);
 
         assertThrows(IllegalArgumentException.class, () -> sendNotificationsForCertificatesService.send(REQUEST));
     }
@@ -83,7 +92,7 @@ class SendNotificationsForCertificatesServiceTest {
 
         @BeforeEach
         void setup() {
-            when(notificationRedeliveryRepository.sendNotificationsForCertificates(IDS, STATUSES, START, END, ACTIVATION_TIME))
+            when(notificationRedeliveryRepository.sendNotificationsForCertificates(SANITIZED_IDS, STATUSES, START, END, ACTIVATION_TIME))
                 .thenReturn(COUNT);
 
             ReflectionTestUtils.setField(sendNotificationsForCertificatesService, "maxDaysBackStartDate", LIMIT);
@@ -103,7 +112,7 @@ class SendNotificationsForCertificatesServiceTest {
 
             verify(sendNotificationRequestValidator).validateCertificateIds(captor.capture());
 
-            assertEquals(REQUEST.getCertificateIds(), captor.getValue());
+            assertEquals(SANITIZED_IDS, captor.getValue());
         }
 
         @Test

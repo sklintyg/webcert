@@ -48,7 +48,8 @@ class SendNotificationsForUnitsServiceTest {
     private static final Integer COUNT = 10;
     private static final Integer LIMIT = 5;
     private static final Integer LIMIT_INTERVAL = 10;
-    private static final List<String> IDS = List.of("ID");
+    private static final List<String> IDS = List.of("ID ID");
+    private static final List<String> SANITIZED_IDS = List.of("IDID");
     private static final List<NotificationDeliveryStatusEnum> STATUSES = List.of(NotificationDeliveryStatusEnum.FAILURE);
     private static final LocalDateTime START = LocalDateTime.now().minusDays(1);
     private static final LocalDateTime END = LocalDateTime.now();
@@ -60,6 +61,14 @@ class SendNotificationsForUnitsServiceTest {
         .end(END)
         .activationTime(ACTIVATION_TIME)
         .build();
+    private static final SendNotificationsForUnitsRequestDTO SANITIZED_REQUEST = SendNotificationsForUnitsRequestDTO.builder()
+        .unitIds(SANITIZED_IDS)
+        .statuses(STATUSES)
+        .start(START)
+        .end(END)
+        .activationTime(ACTIVATION_TIME)
+        .build();
+
     @Mock
     SendNotificationCountValidator sendNotificationCountValidator;
 
@@ -72,11 +81,10 @@ class SendNotificationsForUnitsServiceTest {
     @InjectMocks
     SendNotificationsForUnitsService sendNotificationsForUnitsService;
 
-
     @Test
     void shouldThrowIfCountExceedLimit() {
         doThrow(IllegalArgumentException.class).when(sendNotificationCountValidator)
-            .units(REQUEST);
+            .units(SANITIZED_REQUEST);
 
         assertThrows(IllegalArgumentException.class, () -> sendNotificationsForUnitsService.send(REQUEST));
     }
@@ -86,7 +94,7 @@ class SendNotificationsForUnitsServiceTest {
 
         @BeforeEach
         void setup() {
-            when(notificationRedeliveryRepository.sendNotificationsForUnits(IDS, STATUSES, START, END, ACTIVATION_TIME))
+            when(notificationRedeliveryRepository.sendNotificationsForUnits(SANITIZED_IDS, STATUSES, START, END, ACTIVATION_TIME))
                 .thenReturn(COUNT);
 
             ReflectionTestUtils.setField(sendNotificationsForUnitsService, "maxDaysBackStartDate", LIMIT);
@@ -107,7 +115,7 @@ class SendNotificationsForUnitsServiceTest {
 
             verify(sendNotificationRequestValidator).validateIds(captor.capture());
 
-            assertEquals(REQUEST.getUnitIds(), captor.getValue());
+            assertEquals(SANITIZED_IDS, captor.getValue());
         }
 
         @Test
