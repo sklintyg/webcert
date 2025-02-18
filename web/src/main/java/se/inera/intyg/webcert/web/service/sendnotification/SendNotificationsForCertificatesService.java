@@ -40,10 +40,11 @@ public class SendNotificationsForCertificatesService {
     public SendNotificationResponseDTO send(SendNotificationsForCertificatesRequestDTO request) {
         final var sanitizedRequest = SendNotificationRequestSanitizer.sanitize(request);
 
-        sendNotificationRequestValidator.validateIds(sanitizedRequest.getCertificateIds());
+        sendNotificationRequestValidator.validateCertificateIds(sanitizedRequest.getCertificateIds());
         sendNotificationRequestValidator.validateDate(sanitizedRequest.getStart(), sanitizedRequest.getEnd(), maxDaysBackStartDate);
 
         sendNotificationCountValidator.certiticates(sanitizedRequest);
+
         final var response = notificationRedeliveryRepository.sendNotificationsForCertificates(
             sanitizedRequest.getCertificateIds(),
             sanitizedRequest.getStatuses(),

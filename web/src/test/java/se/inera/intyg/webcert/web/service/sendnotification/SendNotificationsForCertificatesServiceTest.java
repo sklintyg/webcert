@@ -110,7 +110,7 @@ class SendNotificationsForCertificatesServiceTest {
             final var captor = ArgumentCaptor.forClass(List.class);
             sendNotificationsForCertificatesService.send(REQUEST);
 
-            verify(sendNotificationRequestValidator).validateIds(captor.capture());
+            verify(sendNotificationRequestValidator).validateCertificateIds(captor.capture());
 
             assertEquals(SANITIZED_IDS, captor.getValue());
         }
@@ -144,5 +144,7 @@ class SendNotificationsForCertificatesServiceTest {
 
             assertEquals(LIMIT, captor.getValue());
         }
+
     }
+
 }

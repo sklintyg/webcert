@@ -22,6 +22,7 @@ package se.inera.intyg.webcert.web.service.sendnotification;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.regex.Pattern;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -39,6 +40,25 @@ public class SendNotificationRequestValidator {
         if (ids == null || ids.isEmpty()) {
             throw new IllegalArgumentException(
                 "Ids are empty, cannot send notifications"
+            );
+        }
+    }
+
+    public void validateCertificateIds(List<String> ids) {
+        if (ids == null || ids.isEmpty()) {
+            throw new IllegalArgumentException(
+                "Certificate ids are empty, cannot send notifications"
+            );
+        }
+        ids.forEach(this::validateCertificateIdFormat);
+    }
+
+    private void validateCertificateIdFormat(String id) {
+        final var validFormat = Pattern.compile("^[0-9a-zA-Z]{8}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{12}$");
+
+        if (!validFormat.matcher(id).matches()) {
+            throw new IllegalArgumentException(
+                String.format("Certificate id '%s' has incorrect format, cannot send notifications", id)
             );
         }
     }
