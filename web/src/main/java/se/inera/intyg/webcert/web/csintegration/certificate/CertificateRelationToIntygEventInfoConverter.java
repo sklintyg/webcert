@@ -31,12 +31,10 @@ import se.inera.intyg.infra.intyginfo.dto.IntygInfoEventType;
 @Component
 public class CertificateRelationToIntygEventInfoConverter {
 
-    public IntygInfoEvent convert(CertificateRelation relation, Certificate relatedCertificate) {
-        final var type = getType(relation);
-
+    public IntygInfoEvent convert(CertificateRelation relation, Certificate relatedCertificate, boolean isChild) {
         final var relationEvent = createEvent(
             relation.getCreated(),
-            type,
+            getType(relation, isChild),
             "intygsId",
             relation.getCertificateId()
         );
@@ -49,12 +47,12 @@ public class CertificateRelationToIntygEventInfoConverter {
         return relationEvent;
     }
 
-    private static IntygInfoEventType getType(CertificateRelation relation) {
+    private static IntygInfoEventType getType(CertificateRelation relation, boolean isChild) {
         return switch (relation.getType()) {
-            case EXTENDED -> IntygInfoEventType.IS007;
-            case REPLACED -> IntygInfoEventType.IS008;
-            case COMPLEMENTED -> IntygInfoEventType.IS014;
-            case COPIED -> IntygInfoEventType.IS026;
+            case EXTENDED -> isChild ? IntygInfoEventType.IS007 : IntygInfoEventType.IS019;
+            case REPLACED -> isChild ? IntygInfoEventType.IS008 : IntygInfoEventType.IS020;
+            case COMPLEMENTED -> isChild ? IntygInfoEventType.IS014 : IntygInfoEventType.IS021;
+            case COPIED -> isChild ? IntygInfoEventType.IS026 : IntygInfoEventType.IS022;
         };
     }
 

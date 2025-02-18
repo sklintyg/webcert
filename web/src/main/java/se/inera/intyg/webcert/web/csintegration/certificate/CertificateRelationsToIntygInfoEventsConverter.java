@@ -29,7 +29,6 @@ import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
 import se.inera.intyg.infra.intyginfo.dto.IntygInfoEvent;
-import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 
 @RequiredArgsConstructor
@@ -38,7 +37,6 @@ public class CertificateRelationsToIntygInfoEventsConverter {
 
     private final CertificateRelationToIntygEventInfoConverter certificateRelationToIntygEventInfoConverter;
     private final CSIntegrationService csIntegrationService;
-    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
 
     public List<IntygInfoEvent> convert(Certificate certificate) {
         if (certificate.getMetadata().getRelations() == null) {
@@ -48,8 +46,11 @@ public class CertificateRelationsToIntygInfoEventsConverter {
         List<IntygInfoEvent> events = new ArrayList<>();
 
         if (certificate.getMetadata().getRelations().getParent() != null) {
+            final var relatedCertificate = csIntegrationService.getInternalCertificate(
+                certificate.getMetadata().getRelations().getParent().getCertificateId()
+            );
             final var parentRelation = certificateRelationToIntygEventInfoConverter
-                .convert(certificate.getMetadata().getRelations().getParent(), null);
+                .convert(certificate.getMetadata().getRelations().getParent(), relatedCertificate, false);
             events.add(parentRelation);
         }
 
@@ -66,10 +67,9 @@ public class CertificateRelationsToIntygInfoEventsConverter {
     }
 
     private IntygInfoEvent convertChildRelation(CertificateRelation childRelation) {
-        final var relatedCertificate = csIntegrationService.getCertificate(
-            childRelation.getCertificateId(),
-            csIntegrationRequestFactory.getCertificateRequest()
+        final var relatedCertificate = csIntegrationService.getInternalCertificate(
+            childRelation.getCertificateId()
         );
-        return certificateRelationToIntygEventInfoConverter.convert(childRelation, relatedCertificate);
+        return certificateRelationToIntygEventInfoConverter.convert(childRelation, relatedCertificate, true);
     }
 }
