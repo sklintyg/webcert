@@ -58,8 +58,8 @@ public class SendNotificationsForCertificatesService {
 
         LOG.info(
             "Resent status update. Number of updates: '{}'. Using parameters: certificateIds '{}', statuses '{}', start '{}', end '{}', activationTime '{}'",
-            response, request.getCertificateIds(), request.getStatuses(), request.getStart(), request.getEnd(),
-            request.getActivationTime());
+            response, request.getCertificateIds(), request.getStatuses(), request.getStart(), request.getEnd(), request.getActivationTime()
+        );
 
         return SendNotificationResponseDTO.builder()
             .count(response)

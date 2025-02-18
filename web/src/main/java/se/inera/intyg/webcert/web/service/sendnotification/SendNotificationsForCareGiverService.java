@@ -63,7 +63,8 @@ public class SendNotificationsForCareGiverService {
 
         LOG.info(
             "Resent status update. Number of updates: '{}'. Using parameters: careGiverId '{}', statuses '{}', start '{}', end '{}', activationTime '{}'",
-            response, careGiverId, request.getStatuses(), request.getStart(), request.getEnd(), request.getActivationTime());
+            response, careGiverId, request.getStatuses(), request.getStart(), request.getEnd(), request.getActivationTime()
+        );
 
         return SendNotificationResponseDTO.builder()
             .count(response)

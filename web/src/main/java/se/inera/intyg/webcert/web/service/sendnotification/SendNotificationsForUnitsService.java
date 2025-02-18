@@ -61,7 +61,8 @@ public class SendNotificationsForUnitsService {
 
         LOG.info(
             "Resent status update. Number of updates: '{}'. Using parameters: certificateIds '{}', statuses '{}', start '{}', end '{}' ",
-            response, request.getUnitIds(), request.getStatuses(), request.getStart(), request.getEnd());
+            response, request.getUnitIds(), request.getStatuses(), request.getStart(), request.getEnd()
+        );
 
         return SendNotificationResponseDTO.builder()
             .count(response)
