@@ -43,13 +43,15 @@ public class SendNotificationsForCareGiverService {
 
     public SendNotificationResponseDTO send(String careGiverId,
         SendNotificationsForCareGiverRequestDTO request) {
-        sendNotificationRequestValidator.validateId(careGiverId);
+        final var sanitizedId = SendNotificationRequestSanitizer.sanitize(careGiverId);
+
+        sendNotificationRequestValidator.validateId(sanitizedId);
         sendNotificationRequestValidator.validateDate(request.getStart(), request.getEnd(),
             maxTimeInterval, maxDaysBackStartDate);
 
-        sendNotificationCountValidator.careGiver(careGiverId, request);
+        sendNotificationCountValidator.careGiver(sanitizedId, request);
         final var response = notificationRedeliveryRepository.sendNotificationsForCareGiver(
-            careGiverId,
+            sanitizedId,
             request.getStatuses(),
             request.getStart(),
             request.getEnd(),
@@ -63,12 +65,14 @@ public class SendNotificationsForCareGiverService {
 
     public SendNotificationResponseDTO count(String careGiverId,
         CountNotificationsForCareGiverRequestDTO request) {
-        sendNotificationRequestValidator.validateId(careGiverId);
+        final var sanitizedId = SendNotificationRequestSanitizer.sanitize(careGiverId);
+
+        sendNotificationRequestValidator.validateId(sanitizedId);
         sendNotificationRequestValidator.validateDate(request.getStart(), request.getEnd(),
             maxTimeInterval, maxDaysBackStartDate);
 
         final var response = notificationRedeliveryRepository.countNotificationsForCareGiver(
-            careGiverId,
+            sanitizedId,
             request.getStatuses(),
             request.getStart(),
             request.getEnd()

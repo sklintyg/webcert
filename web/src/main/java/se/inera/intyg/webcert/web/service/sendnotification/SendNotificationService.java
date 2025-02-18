@@ -33,10 +33,11 @@ public class SendNotificationService {
     private final SendNotificationCountValidator sendNotificationCountValidator;
 
     public SendNotificationResponseDTO send(String notificationId) {
-        sendNotificationRequestValidator.validateId(notificationId);
+        final var sanitizedNotificationId = SendNotificationRequestSanitizer.sanitize(notificationId);
+        sendNotificationRequestValidator.validateId(sanitizedNotificationId);
 
-        sendNotificationCountValidator.notification(notificationId);
-        final var response = notificationRedeliveryRepository.sendNotification(notificationId);
+        sendNotificationCountValidator.notification(sanitizedNotificationId);
+        final var response = notificationRedeliveryRepository.sendNotification(sanitizedNotificationId);
         return SendNotificationResponseDTO.builder()
             .count(response)
             .build();

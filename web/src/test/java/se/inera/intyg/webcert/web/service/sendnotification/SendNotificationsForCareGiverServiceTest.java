@@ -47,7 +47,8 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificatio
 class SendNotificationsForCareGiverServiceTest {
 
     private static final Integer COUNT = 10;
-    private static final String ID = "ID";
+    private static final String ID = "ID ID";
+    private static final String SANITIZED_ID = "IDID";
     private static final int LIMIT = 5;
     private static final int LIMIT_INTERVAL = 10;
     private static final List<NotificationDeliveryStatusEnum> STATUSES = List.of(
@@ -92,14 +93,14 @@ class SendNotificationsForCareGiverServiceTest {
         @Test
         void shouldThrowIfCountExceedLimit() {
             doThrow(IllegalArgumentException.class).when(sendNotificationCountValidator)
-                .careGiver(ID, REQUEST);
+                .careGiver(SANITIZED_ID, REQUEST);
 
             assertThrows(IllegalArgumentException.class, () -> sendNotificationsForCareGiverService.send(ID, REQUEST));
         }
 
         @Test
         void shouldReturnResponseFromRepository() {
-            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(ID, STATUSES, START, END,
+            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(SANITIZED_ID, STATUSES, START, END,
                 ACTIVATION_TIME))
                 .thenReturn(COUNT);
 
@@ -111,7 +112,7 @@ class SendNotificationsForCareGiverServiceTest {
 
         @Test
         void shouldValidateIds() {
-            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(ID, STATUSES, START, END,
+            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(SANITIZED_ID, STATUSES, START, END,
                 ACTIVATION_TIME))
                 .thenReturn(COUNT);
 
@@ -120,12 +121,12 @@ class SendNotificationsForCareGiverServiceTest {
 
             verify(sendNotificationRequestValidator).validateId(captor.capture());
 
-            assertEquals(ID, captor.getValue());
+            assertEquals(SANITIZED_ID, captor.getValue());
         }
 
         @Test
         void shouldValidateDateUsingStart() {
-            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(ID, STATUSES, START, END,
+            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(SANITIZED_ID, STATUSES, START, END,
                 ACTIVATION_TIME))
                 .thenReturn(COUNT);
 
@@ -140,7 +141,7 @@ class SendNotificationsForCareGiverServiceTest {
 
         @Test
         void shouldValidateDateUsingEnd() {
-            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(ID, STATUSES, START, END,
+            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(SANITIZED_ID, STATUSES, START, END,
                 ACTIVATION_TIME))
                 .thenReturn(COUNT);
             final var captor = ArgumentCaptor.forClass(LocalDateTime.class);
@@ -154,7 +155,7 @@ class SendNotificationsForCareGiverServiceTest {
 
         @Test
         void shouldValidateDateUsingDaysBackLimit() {
-            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(ID, STATUSES, START, END,
+            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(SANITIZED_ID, STATUSES, START, END,
                 ACTIVATION_TIME))
                 .thenReturn(COUNT);
             final var captor = ArgumentCaptor.forClass(int.class);
@@ -169,7 +170,7 @@ class SendNotificationsForCareGiverServiceTest {
 
         @Test
         void shouldValidateDateUsingIntervalLimit() {
-            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(ID, STATUSES, START, END,
+            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(SANITIZED_ID, STATUSES, START, END,
                 ACTIVATION_TIME))
                 .thenReturn(COUNT);
             final var captor = ArgumentCaptor.forClass(int.class);
@@ -190,7 +191,7 @@ class SendNotificationsForCareGiverServiceTest {
         @BeforeEach
         void setup() {
             when(
-                notificationRedeliveryRepository.countNotificationsForCareGiver(ID, STATUSES, START, END))
+                notificationRedeliveryRepository.countNotificationsForCareGiver(SANITIZED_ID, STATUSES, START, END))
                 .thenReturn(COUNT);
         }
 
@@ -208,7 +209,7 @@ class SendNotificationsForCareGiverServiceTest {
 
             verify(sendNotificationRequestValidator).validateId(captor.capture());
 
-            assertEquals(ID, captor.getValue());
+            assertEquals(SANITIZED_ID, captor.getValue());
         }
 
         @Test

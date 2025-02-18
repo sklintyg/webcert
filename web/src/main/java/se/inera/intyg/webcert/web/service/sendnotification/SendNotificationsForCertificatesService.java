@@ -38,16 +38,18 @@ public class SendNotificationsForCertificatesService {
     private int maxDaysBackStartDate;
 
     public SendNotificationResponseDTO send(SendNotificationsForCertificatesRequestDTO request) {
-        sendNotificationRequestValidator.validateIds(request.getCertificateIds());
-        sendNotificationRequestValidator.validateDate(request.getStart(), request.getEnd(), maxDaysBackStartDate);
+        final var sanitizedRequest = SendNotificationRequestSanitizer.sanitize(request);
 
-        sendNotificationCountValidator.certiticates(request);
+        sendNotificationRequestValidator.validateIds(sanitizedRequest.getCertificateIds());
+        sendNotificationRequestValidator.validateDate(sanitizedRequest.getStart(), sanitizedRequest.getEnd(), maxDaysBackStartDate);
+
+        sendNotificationCountValidator.certiticates(sanitizedRequest);
         final var response = notificationRedeliveryRepository.sendNotificationsForCertificates(
-            request.getCertificateIds(),
-            request.getStatuses(),
-            request.getStart(),
-            request.getEnd(),
-            request.getActivationTime()
+            sanitizedRequest.getCertificateIds(),
+            sanitizedRequest.getStatuses(),
+            sanitizedRequest.getStart(),
+            sanitizedRequest.getEnd(),
+            sanitizedRequest.getActivationTime()
         );
 
         return SendNotificationResponseDTO.builder()
