@@ -61,7 +61,7 @@ public class CertificateRelationToIntygEventInfoConverter {
     private IntygInfoEvent createEvent(LocalDateTime date, IntygInfoEventType type, String key1, String data1) {
         IntygInfoEvent event = new IntygInfoEvent(Source.WEBCERT, date, type);
 
-        if (!Objects.isNull(key1)) {
+        if (!Objects.isNull(key1) && !Objects.isNull(data1)) {
             event.addData(key1, data1);
         }
 

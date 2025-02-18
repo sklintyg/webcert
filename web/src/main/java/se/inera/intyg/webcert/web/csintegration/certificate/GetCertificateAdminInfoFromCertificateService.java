@@ -24,7 +24,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.intyginfo.dto.WcIntygInfo;
-import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.service.intyginfo.IntygInfoServiceInterface;
 
@@ -34,7 +33,6 @@ import se.inera.intyg.webcert.web.service.intyginfo.IntygInfoServiceInterface;
 public class GetCertificateAdminInfoFromCertificateService implements IntygInfoServiceInterface {
 
     private final CSIntegrationService csIntegrationService;
-    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
     private final CertificateToIntygInfoConverter certificateToIntygInfoConverter;
 
     @Override
@@ -46,9 +44,8 @@ public class GetCertificateAdminInfoFromCertificateService implements IntygInfoS
         }
 
         log.debug("Getting certificate from certificate service with id '{}'", certificateId);
-        final var certificate = csIntegrationService.getCertificate(
-            certificateId,
-            csIntegrationRequestFactory.getCertificateRequest()
+        final var certificate = csIntegrationService.getInternalCertificate(
+            certificateId
         );
         log.debug("Certificate with id '{}' was retrieved from certificate service", certificateId);
 

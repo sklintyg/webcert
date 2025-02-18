@@ -34,9 +34,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.infra.intyginfo.dto.WcIntygInfo;
-import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
 
 @ExtendWith(MockitoExtension.class)
 class GetCertificateAdminInfoFromCertificateServiceTest {
@@ -44,15 +42,12 @@ class GetCertificateAdminInfoFromCertificateServiceTest {
     @Mock
     CSIntegrationService csIntegrationService;
     @Mock
-    CSIntegrationRequestFactory csIntegrationRequestFactory;
-    @Mock
     CertificateToIntygInfoConverter certificateToIntygInfoConverter;
     @InjectMocks
     GetCertificateAdminInfoFromCertificateService getCertificateAdminInfoFromCertificateService;
 
     private static final String CERTIFICATE_ID = "ID";
     private static final Certificate CERTIFICATE = new Certificate();
-    private static final GetCertificateRequestDTO REQUEST = GetCertificateRequestDTO.builder().build();
     private static final WcIntygInfo INTYG_INFO = new WcIntygInfo();
     private static final List<Question> QUESTIONS = List.of(Question.builder().build());
 
@@ -70,12 +65,10 @@ class GetCertificateAdminInfoFromCertificateServiceTest {
         void setup() {
             when(csIntegrationService.certificateExists(CERTIFICATE_ID))
                 .thenReturn(true);
-            when(csIntegrationService.getCertificate(CERTIFICATE_ID, REQUEST))
+            when(csIntegrationService.getInternalCertificate(CERTIFICATE_ID))
                 .thenReturn(CERTIFICATE);
             when(csIntegrationService.getQuestions(CERTIFICATE_ID))
                 .thenReturn(QUESTIONS);
-            when(csIntegrationRequestFactory.getCertificateRequest())
-                .thenReturn(REQUEST);
             when(certificateToIntygInfoConverter.convert(CERTIFICATE, QUESTIONS))
                 .thenReturn(INTYG_INFO);
         }
