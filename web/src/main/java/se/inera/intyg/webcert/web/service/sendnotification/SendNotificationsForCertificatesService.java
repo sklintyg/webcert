@@ -20,6 +20,8 @@
 package se.inera.intyg.webcert.web.service.sendnotification;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
@@ -33,6 +35,7 @@ public class SendNotificationsForCertificatesService {
     private final NotificationRedeliveryRepository notificationRedeliveryRepository;
     private final SendNotificationRequestValidator sendNotificationRequestValidator;
     private final SendNotificationCountValidator sendNotificationCountValidator;
+    private static final Logger LOG = LoggerFactory.getLogger(SendNotificationsForCertificatesService.class);
 
     @Value("${timelimit.daysback.start:365}")
     private int maxDaysBackStartDate;
@@ -52,6 +55,11 @@ public class SendNotificationsForCertificatesService {
             sanitizedRequest.getEnd(),
             sanitizedRequest.getActivationTime()
         );
+
+        LOG.info(
+            "Resent status update. Number of updates: '{}'. Using parameters: certificateIds '{}', statuses '{}', start '{}', end '{}', activationTime '{}'",
+            response, request.getCertificateIds(), request.getStatuses(), request.getStart(), request.getEnd(),
+            request.getActivationTime());
 
         return SendNotificationResponseDTO.builder()
             .count(response)
