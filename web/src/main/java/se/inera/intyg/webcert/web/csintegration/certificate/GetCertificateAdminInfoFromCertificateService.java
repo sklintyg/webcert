@@ -29,7 +29,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService
 import se.inera.intyg.webcert.web.service.intyginfo.IntygInfoServiceInterface;
 
 @Slf4j
-@Service("getCertificateFromCS")
+@Service("getCertificateAdminInfoFromCS")
 @RequiredArgsConstructor
 public class GetCertificateAdminInfoFromCertificateService implements IntygInfoServiceInterface {
 

@@ -57,7 +57,7 @@ import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView.ArendeType;
 
-@Service("getCertificateInfoFromWebcert")
+@Service("getCertificateAdminInfoFromWC")
 @RequiredArgsConstructor
 public class IntygInfoService implements IntygInfoServiceInterface {
 

@@ -34,9 +34,9 @@ public class CertificateAdminInfoAggregator implements IntygInfoServiceInterface
     private final CertificateServiceProfile certificateServiceProfile;
 
     public CertificateAdminInfoAggregator(
-        @Qualifier("getCertificateInfoFromWebcert")
+        @Qualifier("getCertificateAdminInfoFromWC")
         IntygInfoServiceInterface getCertificateInfoFromWebcert,
-        @Qualifier("getCertificateInfoFromCertificateService")
+        @Qualifier("getCertificateAdminInfoFromCS")
         IntygInfoServiceInterface getCertificateInfoFromCertificateService,
         CertificateServiceProfile certificateServiceProfile) {
         this.getCertificateAdminInfoFromWebcert = getCertificateInfoFromWebcert;
