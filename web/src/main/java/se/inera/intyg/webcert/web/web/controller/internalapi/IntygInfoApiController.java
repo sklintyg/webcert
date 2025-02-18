@@ -27,7 +27,6 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import java.util.Optional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import se.inera.intyg.infra.intyginfo.dto.WcIntygInfo;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
@@ -37,13 +36,16 @@ import se.inera.intyg.webcert.web.service.intyginfo.IntygInfoServiceInterface;
 
 @Path("/intygInfo")
 @Api(value = "/internalapi/intygInfo", produces = MediaType.APPLICATION_JSON)
-@RequiredArgsConstructor
 public class IntygInfoApiController {
 
     private static final String UTF_8_CHARSET = ";charset=utf-8";
 
-    @Qualifier("certificateTypeInfoAggregator")
     private final IntygInfoServiceInterface intygInfoService;
+
+    public IntygInfoApiController(@Qualifier("certificateAdminInfoAggregator")
+    IntygInfoServiceInterface intygInfoService) {
+        this.intygInfoService = intygInfoService;
+    }
 
     @GET
     @Path("/{intygId}")

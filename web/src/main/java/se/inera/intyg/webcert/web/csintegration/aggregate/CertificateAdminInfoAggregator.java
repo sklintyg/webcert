@@ -26,7 +26,7 @@ import se.inera.intyg.infra.intyginfo.dto.WcIntygInfo;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.intyginfo.IntygInfoServiceInterface;
 
-@Service("certificateTypeInfoAggregator")
+@Service("certificateAdminInfoAggregator")
 public class CertificateAdminInfoAggregator implements IntygInfoServiceInterface {
 
     private final IntygInfoServiceInterface getCertificateAdminInfoFromWebcert;
