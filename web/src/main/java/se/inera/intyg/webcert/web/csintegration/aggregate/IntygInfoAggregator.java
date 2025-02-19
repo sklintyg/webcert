@@ -26,33 +26,33 @@ import se.inera.intyg.infra.intyginfo.dto.WcIntygInfo;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.intyginfo.IntygInfoServiceInterface;
 
-@Service("certificateAdminInfoAggregator")
+@Service("intygInfoAggregator")
 public class IntygInfoAggregator implements IntygInfoServiceInterface {
 
-    private final IntygInfoServiceInterface getCertificateAdminInfoFromWebcert;
-    private final IntygInfoServiceInterface getCertificateAdminInfoFromCertificateService;
+    private final IntygInfoServiceInterface getIntygInfoFromWC;
+    private final IntygInfoServiceInterface getIntygInfoFromCS;
     private final CertificateServiceProfile certificateServiceProfile;
 
     public IntygInfoAggregator(
-        @Qualifier("getCertificateAdminInfoFromWC")
+        @Qualifier("getIntygInfoFromWC")
         IntygInfoServiceInterface getCertificateInfoFromWebcert,
-        @Qualifier("getCertificateAdminInfoFromCS")
+        @Qualifier("getIntygInfoFromCS")
         IntygInfoServiceInterface getCertificateInfoFromCertificateService,
         CertificateServiceProfile certificateServiceProfile) {
-        this.getCertificateAdminInfoFromWebcert = getCertificateInfoFromWebcert;
-        this.getCertificateAdminInfoFromCertificateService = getCertificateInfoFromCertificateService;
+        this.getIntygInfoFromWC = getCertificateInfoFromWebcert;
+        this.getIntygInfoFromCS = getCertificateInfoFromCertificateService;
         this.certificateServiceProfile = certificateServiceProfile;
     }
 
     @Override
     public Optional<WcIntygInfo> getIntygInfo(String intygId) {
         if (!certificateServiceProfile.active()) {
-            return getCertificateAdminInfoFromWebcert.getIntygInfo(intygId);
+            return getIntygInfoFromWC.getIntygInfo(intygId);
         }
 
-        final var certificateFromCertificateService = getCertificateAdminInfoFromCertificateService.getIntygInfo(intygId);
+        final var certificateFromCertificateService = getIntygInfoFromCS.getIntygInfo(intygId);
 
-        return certificateFromCertificateService.isEmpty() ? getCertificateAdminInfoFromWebcert.getIntygInfo(intygId)
+        return certificateFromCertificateService.isEmpty() ? getIntygInfoFromWC.getIntygInfo(intygId)
             : certificateFromCertificateService;
     }
 }

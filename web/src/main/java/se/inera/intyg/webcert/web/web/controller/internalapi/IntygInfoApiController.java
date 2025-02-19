@@ -42,7 +42,7 @@ public class IntygInfoApiController {
 
     private final IntygInfoServiceInterface intygInfoService;
 
-    public IntygInfoApiController(@Qualifier("certificateAdminInfoAggregator")
+    public IntygInfoApiController(@Qualifier("intygInfoAggregator")
     IntygInfoServiceInterface intygInfoService) {
         this.intygInfoService = intygInfoService;
     }
