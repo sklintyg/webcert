@@ -20,7 +20,6 @@
 package se.inera.intyg.webcert.web.service.sendnotification;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationResponseDTO;
@@ -34,23 +33,16 @@ public class SendNotificationsForCertificatesService {
     private final SendNotificationRequestValidator sendNotificationRequestValidator;
     private final SendNotificationCountValidator sendNotificationCountValidator;
 
-    @Value("${timelimit.daysback.start:365}")
-    private int maxDaysBackStartDate;
-
     public SendNotificationResponseDTO send(SendNotificationsForCertificatesRequestDTO request) {
         final var sanitizedRequest = SendNotificationRequestSanitizer.sanitize(request);
 
         sendNotificationRequestValidator.validateCertificateIds(sanitizedRequest.getCertificateIds());
-        sendNotificationRequestValidator.validateDate(sanitizedRequest.getStart(), sanitizedRequest.getEnd(), maxDaysBackStartDate);
 
-        sendNotificationCountValidator.certiticates(sanitizedRequest);
+        sendNotificationCountValidator.certificates(sanitizedRequest);
 
         final var response = notificationRedeliveryRepository.sendNotificationsForCertificates(
             sanitizedRequest.getCertificateIds(),
-            sanitizedRequest.getStatuses(),
-            sanitizedRequest.getStart(),
-            sanitizedRequest.getEnd(),
-            sanitizedRequest.getActivationTime()
+            sanitizedRequest.getStatuses()
         );
 
         return SendNotificationResponseDTO.builder()

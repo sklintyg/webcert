@@ -25,16 +25,16 @@ public class SendNotificationCountValidator {
         }
     }
 
-    public void certiticates(SendNotificationsForCertificatesRequestDTO request) {
+    public void certificates(SendNotificationsForCertificatesRequestDTO request) {
         final var insertsForCertificates = notificationRedeliveryRepository.countInsertsForCertificates(
-            request.getCertificateIds(), request.getStatuses(), request.getStart(), request.getEnd());
+            request.getCertificateIds(), request.getStatuses());
         if (insertsForCertificates > maxAllowedNotificationSend) {
             throw new IllegalArgumentException(buildErrorMessage(insertsForCertificates));
         }
     }
 
     public void units(SendNotificationsForUnitsRequestDTO request) {
-        final var insertsForUnits = notificationRedeliveryRepository.countInsertsForCertificates(
+        final var insertsForUnits = notificationRedeliveryRepository.countInsertsForUnits(
             request.getUnitIds(), request.getStatuses(), request.getStart(), request.getEnd());
         if (insertsForUnits > maxAllowedNotificationSend) {
             throw new IllegalArgumentException(buildErrorMessage(insertsForUnits));

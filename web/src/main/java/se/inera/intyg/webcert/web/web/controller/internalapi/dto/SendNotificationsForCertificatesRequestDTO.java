@@ -19,7 +19,6 @@
 
 package se.inera.intyg.webcert.web.web.controller.internalapi.dto;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Builder;
 import lombok.Value;
@@ -31,7 +30,4 @@ public class SendNotificationsForCertificatesRequestDTO {
 
     List<String> certificateIds;
     List<NotificationDeliveryStatusEnum> statuses;
-    LocalDateTime activationTime;
-    LocalDateTime start;
-    LocalDateTime end;
 }

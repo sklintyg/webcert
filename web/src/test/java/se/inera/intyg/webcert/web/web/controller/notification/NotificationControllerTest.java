@@ -52,9 +52,6 @@ class NotificationControllerTest {
         SendNotificationsForCertificatesRequestDTO.builder()
             .certificateIds(List.of(ID))
             .statuses(List.of(NotificationDeliveryStatusEnum.FAILURE))
-            .activationTime(LocalDateTime.now())
-            .start(LocalDateTime.now())
-            .end(LocalDateTime.now())
             .build();
     private static final SendNotificationsForUnitsRequestDTO UNITS_REQUEST = SendNotificationsForUnitsRequestDTO.builder()
         .unitIds(List.of(ID))
