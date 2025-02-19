@@ -20,6 +20,8 @@
 package se.inera.intyg.webcert.web.service.sendnotification;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationResponseDTO;
@@ -32,17 +34,27 @@ public class SendNotificationsForCertificatesService {
     private final NotificationRedeliveryRepository notificationRedeliveryRepository;
     private final SendNotificationRequestValidator sendNotificationRequestValidator;
     private final SendNotificationCountValidator sendNotificationCountValidator;
+    private static final Logger LOG = LoggerFactory.getLogger(SendNotificationsForCertificatesService.class);
 
     public SendNotificationResponseDTO send(SendNotificationsForCertificatesRequestDTO request) {
+        LOG.info(
+            "Attempting to resend status updates. Using parameters: certificateIds '{}', statuses '{}'",
+            request.getCertificateIds(), request.getStatuses()
+        );
+
         final var sanitizedRequest = SendNotificationRequestSanitizer.sanitize(request);
 
         sendNotificationRequestValidator.validateCertificateIds(sanitizedRequest.getCertificateIds());
-
         sendNotificationCountValidator.certificates(sanitizedRequest);
 
         final var response = notificationRedeliveryRepository.sendNotificationsForCertificates(
             sanitizedRequest.getCertificateIds(),
             sanitizedRequest.getStatuses()
+        );
+
+        LOG.info(
+            "Successfully resent status updates. Number of updates: '{}'. Using parameters: certificateIds '{}', statuses '{}'",
+            response, request.getCertificateIds(), request.getStatuses()
         );
 
         return SendNotificationResponseDTO.builder()

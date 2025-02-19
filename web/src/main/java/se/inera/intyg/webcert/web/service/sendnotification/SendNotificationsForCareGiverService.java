@@ -20,6 +20,8 @@
 package se.inera.intyg.webcert.web.service.sendnotification;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
@@ -34,6 +36,7 @@ public class SendNotificationsForCareGiverService {
     private final NotificationRedeliveryRepository notificationRedeliveryRepository;
     private final SendNotificationRequestValidator sendNotificationRequestValidator;
     private final SendNotificationCountValidator sendNotificationCountValidator;
+    private static final Logger LOG = LoggerFactory.getLogger(SendNotificationsForCareGiverService.class);
 
     @Value("${timeinterval.maxdays.caregiver:1}")
     private int maxTimeInterval;
@@ -43,6 +46,11 @@ public class SendNotificationsForCareGiverService {
 
     public SendNotificationResponseDTO send(String careGiverId,
         SendNotificationsForCareGiverRequestDTO request) {
+        LOG.info(
+            "Attempting to resend status updates. Using parameters: careGiverId '{}', statuses '{}', start '{}', end '{}', activationTime '{}'",
+            careGiverId, request.getStatuses(), request.getStart(), request.getEnd(), request.getActivationTime()
+        );
+
         final var sanitizedId = SendNotificationRequestSanitizer.sanitize(careGiverId);
 
         sendNotificationRequestValidator.validateId(sanitizedId);
@@ -58,6 +66,11 @@ public class SendNotificationsForCareGiverService {
             request.getActivationTime()
         );
 
+        LOG.info(
+            "Successfully resent status updates. Number of updates: '{}'. Using parameters: careGiverId '{}', statuses '{}', start '{}', end '{}', activationTime '{}'",
+            response, careGiverId, request.getStatuses(), request.getStart(), request.getEnd(), request.getActivationTime()
+        );
+
         return SendNotificationResponseDTO.builder()
             .count(response)
             .build();
@@ -65,6 +78,11 @@ public class SendNotificationsForCareGiverService {
 
     public SendNotificationResponseDTO count(String careGiverId,
         CountNotificationsForCareGiverRequestDTO request) {
+        LOG.info(
+            "Attempting to count status updates. Using parameters: careGiverId '{}', statuses '{}', start '{}', end '{}', activationTime '{}'",
+            careGiverId, request.getStatuses(), request.getStart(), request.getEnd(), request.getActivationTime()
+        );
+
         final var sanitizedId = SendNotificationRequestSanitizer.sanitize(careGiverId);
 
         sendNotificationRequestValidator.validateId(sanitizedId);
@@ -76,6 +94,11 @@ public class SendNotificationsForCareGiverService {
             request.getStatuses(),
             request.getStart(),
             request.getEnd()
+        );
+
+        LOG.info(
+            "Successfully counted status updates. Using parameters: careGiverId '{}', statuses '{}', start '{}', end '{}', activationTime '{}'",
+            careGiverId, request.getStatuses(), request.getStart(), request.getEnd(), request.getActivationTime()
         );
 
         return SendNotificationResponseDTO.builder()

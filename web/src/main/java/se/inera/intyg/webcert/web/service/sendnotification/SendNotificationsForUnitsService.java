@@ -20,6 +20,8 @@
 package se.inera.intyg.webcert.web.service.sendnotification;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
@@ -33,6 +35,7 @@ public class SendNotificationsForUnitsService {
     private final NotificationRedeliveryRepository notificationRedeliveryRepository;
     private final SendNotificationRequestValidator sendNotificationRequestValidator;
     private final SendNotificationCountValidator sendNotificationCountValidator;
+    private static final Logger LOG = LoggerFactory.getLogger(SendNotificationsForUnitsService.class);
 
     @Value("${timeinterval.maxdays.unit:7}")
     private int maxTimeInterval;
@@ -41,6 +44,11 @@ public class SendNotificationsForUnitsService {
     private int maxDaysBackStartDate;
 
     public SendNotificationResponseDTO send(SendNotificationsForUnitsRequestDTO request) {
+        LOG.info(
+            "Attempting to resend status updates. Using parameters: certificateIds '{}', statuses '{}', start '{}', end '{}' ",
+            request.getUnitIds(), request.getStatuses(), request.getStart(), request.getEnd()
+        );
+
         final var sanitizedRequest = SendNotificationRequestSanitizer.sanitize(request);
 
         sendNotificationRequestValidator.validateIds(sanitizedRequest.getUnitIds());
@@ -54,6 +62,11 @@ public class SendNotificationsForUnitsService {
             sanitizedRequest.getStart(),
             sanitizedRequest.getEnd(),
             sanitizedRequest.getActivationTime()
+        );
+
+        LOG.info(
+            "Successfully resent status updates. Number of updates: '{}'. Using parameters: certificateIds '{}', statuses '{}', start '{}', end '{}' ",
+            response, request.getUnitIds(), request.getStatuses(), request.getStart(), request.getEnd()
         );
 
         return SendNotificationResponseDTO.builder()
