@@ -32,8 +32,7 @@ public class SendNotificationRequestValidator {
 
     private static final Logger LOG = LoggerFactory.getLogger(SendNotificationRequestValidator.class);
     private static final String LOG_MESSAGE_PREFIX = "Validation of status update failed with reason: ";
-
-
+    
     public void validateId(String id) {
         if (id == null || id.isBlank() || id.isEmpty()) {
             LOG.warn(LOG_MESSAGE_PREFIX + "Id is empty");
