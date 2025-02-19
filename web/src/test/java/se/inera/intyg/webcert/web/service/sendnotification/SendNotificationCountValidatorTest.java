@@ -80,7 +80,7 @@ class SendNotificationCountValidatorTest {
                 .unitIds(List.of("unit1", "unit2"))
                 .build();
 
-            when(notificationRedeliveryRepository.countInsertsForCertificates(request.getUnitIds(), request.getStatuses(),
+            when(notificationRedeliveryRepository.countInsertsForUnits(request.getUnitIds(), request.getStatuses(),
                 request.getStart(),
                 request.getEnd())).thenReturn(LIMIT + 1);
 
@@ -96,7 +96,7 @@ class SendNotificationCountValidatorTest {
                 .unitIds(List.of("unit1", "unit2"))
                 .build();
 
-            when(notificationRedeliveryRepository.countInsertsForCertificates(request.getUnitIds(), request.getStatuses(),
+            when(notificationRedeliveryRepository.countInsertsForUnits(request.getUnitIds(), request.getStatuses(),
                 request.getStart(),
                 request.getEnd())).thenReturn(LIMIT);
 
@@ -110,33 +110,27 @@ class SendNotificationCountValidatorTest {
         @Test
         void shallThrowIfLimitExceeded() {
             final var request = SendNotificationsForCertificatesRequestDTO.builder()
-                .start(LocalDateTime.now())
-                .end(LocalDateTime.now())
                 .statuses(List.of(NotificationDeliveryStatusEnum.FAILURE))
                 .certificateIds(List.of("cert1", "cert2"))
                 .build();
 
-            when(notificationRedeliveryRepository.countInsertsForCertificates(request.getCertificateIds(), request.getStatuses(),
-                request.getStart(),
-                request.getEnd())).thenReturn(LIMIT + 1);
+            when(notificationRedeliveryRepository.countInsertsForCertificates(request.getCertificateIds(), request.getStatuses()))
+                .thenReturn(LIMIT + 1);
 
-            assertThrows(IllegalArgumentException.class, () -> sendNotificationCountValidator.certiticates(request));
+            assertThrows(IllegalArgumentException.class, () -> sendNotificationCountValidator.certificates(request));
         }
 
         @Test
         void shallNotThrowIfLimitIsNotExceeded() {
             final var request = SendNotificationsForCertificatesRequestDTO.builder()
-                .start(LocalDateTime.now())
-                .end(LocalDateTime.now())
                 .statuses(List.of(NotificationDeliveryStatusEnum.FAILURE))
                 .certificateIds(List.of("cert1", "cert2"))
                 .build();
 
-            when(notificationRedeliveryRepository.countInsertsForCertificates(request.getCertificateIds(), request.getStatuses(),
-                request.getStart(),
-                request.getEnd())).thenReturn(LIMIT);
+            when(notificationRedeliveryRepository.countInsertsForCertificates(request.getCertificateIds(), request.getStatuses()))
+                .thenReturn(LIMIT);
 
-            assertDoesNotThrow(() -> sendNotificationCountValidator.certiticates(request));
+            assertDoesNotThrow(() -> sendNotificationCountValidator.certificates(request));
         }
     }
 

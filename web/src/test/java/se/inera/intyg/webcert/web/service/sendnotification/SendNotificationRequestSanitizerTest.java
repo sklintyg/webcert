@@ -19,9 +19,6 @@ class SendNotificationRequestSanitizerTest {
 
     private static final SendNotificationsForCertificatesRequestDTO.SendNotificationsForCertificatesRequestDTOBuilder
         CERTIFICATES_REQUEST_BUILDER = SendNotificationsForCertificatesRequestDTO.builder()
-        .start(DATE_TIME)
-        .end(DATE_TIME)
-        .activationTime(DATE_TIME)
         .statuses(List.of(NotificationDeliveryStatusEnum.FAILURE));
 
     private final SendNotificationsForUnitsRequestDTO.SendNotificationsForUnitsRequestDTOBuilder UNITS_REQUEST_BUILDER =
