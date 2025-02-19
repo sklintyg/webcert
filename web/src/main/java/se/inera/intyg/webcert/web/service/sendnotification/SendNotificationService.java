@@ -36,6 +36,8 @@ public class SendNotificationService {
     private static final Logger LOG = LoggerFactory.getLogger(SendNotificationService.class);
 
     public SendNotificationResponseDTO send(String notificationId) {
+        LOG.info("Attempting to resend status updates. Using parameters: notificationId '{}'", notificationId);
+
         final var sanitizedNotificationId = SendNotificationRequestSanitizer.sanitize(notificationId);
 
         sendNotificationRequestValidator.validateId(sanitizedNotificationId);
@@ -43,7 +45,8 @@ public class SendNotificationService {
 
         final var response = notificationRedeliveryRepository.sendNotification(sanitizedNotificationId);
 
-        LOG.info("Resent status update. Number of updates: '{}'. Using parameters: notificationId '{}'", response, notificationId);
+        LOG.info("Successfully resent status updates. Number of updates: '{}'. Using parameters: notificationId '{}'", response,
+            notificationId);
 
         return SendNotificationResponseDTO.builder()
             .count(response)

@@ -41,6 +41,11 @@ public class SendNotificationsForCertificatesService {
     private int maxDaysBackStartDate;
 
     public SendNotificationResponseDTO send(SendNotificationsForCertificatesRequestDTO request) {
+        LOG.info(
+            "Attempting to resend status updates. Using parameters: certificateIds '{}', statuses '{}', start '{}', end '{}', activationTime '{}'",
+            request.getCertificateIds(), request.getStatuses(), request.getStart(), request.getEnd(), request.getActivationTime()
+        );
+
         final var sanitizedRequest = SendNotificationRequestSanitizer.sanitize(request);
 
         sendNotificationRequestValidator.validateCertificateIds(sanitizedRequest.getCertificateIds());
@@ -57,7 +62,7 @@ public class SendNotificationsForCertificatesService {
         );
 
         LOG.info(
-            "Resent status update. Number of updates: '{}'. Using parameters: certificateIds '{}', statuses '{}', start '{}', end '{}', activationTime '{}'",
+            "Successfully resent status updates. Number of updates: '{}'. Using parameters: certificateIds '{}', statuses '{}', start '{}', end '{}', activationTime '{}'",
             response, request.getCertificateIds(), request.getStatuses(), request.getStart(), request.getEnd(), request.getActivationTime()
         );
 

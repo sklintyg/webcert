@@ -46,6 +46,11 @@ public class SendNotificationsForCareGiverService {
 
     public SendNotificationResponseDTO send(String careGiverId,
         SendNotificationsForCareGiverRequestDTO request) {
+        LOG.info(
+            "Attempting to resend status updates. Using parameters: careGiverId '{}', statuses '{}', start '{}', end '{}', activationTime '{}'",
+            careGiverId, request.getStatuses(), request.getStart(), request.getEnd(), request.getActivationTime()
+        );
+
         final var sanitizedId = SendNotificationRequestSanitizer.sanitize(careGiverId);
 
         sendNotificationRequestValidator.validateId(sanitizedId);
@@ -62,7 +67,7 @@ public class SendNotificationsForCareGiverService {
         );
 
         LOG.info(
-            "Resent status update. Number of updates: '{}'. Using parameters: careGiverId '{}', statuses '{}', start '{}', end '{}', activationTime '{}'",
+            "Successfully resent status updates. Number of updates: '{}'. Using parameters: careGiverId '{}', statuses '{}', start '{}', end '{}', activationTime '{}'",
             response, careGiverId, request.getStatuses(), request.getStart(), request.getEnd(), request.getActivationTime()
         );
 
@@ -73,6 +78,11 @@ public class SendNotificationsForCareGiverService {
 
     public SendNotificationResponseDTO count(String careGiverId,
         CountNotificationsForCareGiverRequestDTO request) {
+        LOG.info(
+            "Attempting to count status updates. Using parameters: careGiverId '{}', statuses '{}', start '{}', end '{}', activationTime '{}'",
+            careGiverId, request.getStatuses(), request.getStart(), request.getEnd(), request.getActivationTime()
+        );
+
         final var sanitizedId = SendNotificationRequestSanitizer.sanitize(careGiverId);
 
         sendNotificationRequestValidator.validateId(sanitizedId);
@@ -84,6 +94,11 @@ public class SendNotificationsForCareGiverService {
             request.getStatuses(),
             request.getStart(),
             request.getEnd()
+        );
+
+        LOG.info(
+            "Successfully counted status updates. Using parameters: careGiverId '{}', statuses '{}', start '{}', end '{}', activationTime '{}'",
+            careGiverId, request.getStatuses(), request.getStart(), request.getEnd(), request.getActivationTime()
         );
 
         return SendNotificationResponseDTO.builder()
