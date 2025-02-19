@@ -77,15 +77,12 @@ public interface NotificationRedeliveryRepository extends
     @Modifying
     @Query(value = """
         INSERT INTO NotificationRedelivery (HANDELSE_ID, REDELIVERY_STRATEGY, REDELIVERY_TIME)
-        SELECT h.id, 'STANDARD', :activationTime FROM Handelese h
+        SELECT h.id, 'STANDARD', now() FROM Handelese h
         INNER JOIN HandeleseMetadata hm ON h.id = hm.handeleseId
         WHERE h.intygsId IN :certificateIds AND hm.deliveryStatus IN :statuses
-        AND h.timestamp BETWEEN :start AND :end ORDER BY h.timestamp""", nativeQuery = true)
+        ORDER BY h.timestamp""", nativeQuery = true)
     int sendNotificationsForCertificates(@Param("certificateIds") List<String> certificateIds,
-        @Param("statuses") List<NotificationDeliveryStatusEnum> statuses,
-        @Param("start") LocalDateTime start,
-        @Param("end") LocalDateTime end,
-        @Param("activationTime") LocalDateTime activationTime);
+        @Param("statuses") List<NotificationDeliveryStatusEnum> statuses);
 
     @Modifying
     @Query(value = """
@@ -142,12 +139,9 @@ public interface NotificationRedeliveryRepository extends
     @Query(value = """
         SELECT COUNT(h.id) FROM Handelese h
         INNER JOIN HandeleseMetadata hm ON h.id = hm.handeleseId
-        WHERE h.intygsId IN :certificateIds AND hm.deliveryStatus IN :statuses
-        AND h.timestamp BETWEEN :start AND :end""", nativeQuery = true)
+        WHERE h.intygsId IN :certificateIds AND hm.deliveryStatus IN :statuses""", nativeQuery = true)
     int countInsertsForCertificates(@Param("certificateIds") List<String> certificateIds,
-        @Param("statuses") List<NotificationDeliveryStatusEnum> statuses,
-        @Param("start") LocalDateTime start,
-        @Param("end") LocalDateTime end);
+        @Param("statuses") List<NotificationDeliveryStatusEnum> statuses);
 
     @Query(value = """
         SELECT COUNT(h.id) FROM Handelese h

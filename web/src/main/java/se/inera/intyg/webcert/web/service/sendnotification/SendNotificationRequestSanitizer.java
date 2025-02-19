@@ -20,9 +20,6 @@ public class SendNotificationRequestSanitizer {
         return SendNotificationsForCertificatesRequestDTO.builder()
             .certificateIds(removeBlankSpaces(request.getCertificateIds()))
             .statuses(request.getStatuses())
-            .start(request.getStart())
-            .end(request.getEnd())
-            .activationTime(request.getActivationTime())
             .build();
     }
 
