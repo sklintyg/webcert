@@ -27,13 +27,13 @@ import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.intyginfo.IntygInfoServiceInterface;
 
 @Service("certificateAdminInfoAggregator")
-public class CertificateAdminInfoAggregator implements IntygInfoServiceInterface {
+public class IntygInfoAggregator implements IntygInfoServiceInterface {
 
     private final IntygInfoServiceInterface getCertificateAdminInfoFromWebcert;
     private final IntygInfoServiceInterface getCertificateAdminInfoFromCertificateService;
     private final CertificateServiceProfile certificateServiceProfile;
 
-    public CertificateAdminInfoAggregator(
+    public IntygInfoAggregator(
         @Qualifier("getCertificateAdminInfoFromWC")
         IntygInfoServiceInterface getCertificateInfoFromWebcert,
         @Qualifier("getCertificateAdminInfoFromCS")
@@ -46,13 +46,13 @@ public class CertificateAdminInfoAggregator implements IntygInfoServiceInterface
 
     @Override
     public Optional<WcIntygInfo> getIntygInfo(String intygId) {
-        final var certificateFromWebcert = getCertificateAdminInfoFromWebcert.getIntygInfo(intygId);
         if (!certificateServiceProfile.active()) {
-            return certificateFromWebcert;
+            return getCertificateAdminInfoFromWebcert.getIntygInfo(intygId);
         }
 
         final var certificateFromCertificateService = getCertificateAdminInfoFromCertificateService.getIntygInfo(intygId);
 
-        return certificateFromCertificateService.isEmpty() ? certificateFromWebcert : certificateFromCertificateService;
+        return certificateFromCertificateService.isEmpty() ? getCertificateAdminInfoFromWebcert.getIntygInfo(intygId)
+            : certificateFromCertificateService;
     }
 }

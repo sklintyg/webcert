@@ -37,14 +37,14 @@ import se.inera.intyg.infra.intyginfo.dto.WcIntygInfo;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 
 @ExtendWith(MockitoExtension.class)
-class GetCertificateAdminInfoFromCertificateServiceTest {
+class GetIntygInfoFromCertificateServiceTest {
 
     @Mock
     CSIntegrationService csIntegrationService;
     @Mock
     CertificateToIntygInfoConverter certificateToIntygInfoConverter;
     @InjectMocks
-    GetCertificateAdminInfoFromCertificateService getCertificateAdminInfoFromCertificateService;
+    GetIntygInfoFromCertificateService getIntygInfoFromCertificateService;
 
     private static final String CERTIFICATE_ID = "ID";
     private static final Certificate CERTIFICATE = new Certificate();
@@ -54,7 +54,7 @@ class GetCertificateAdminInfoFromCertificateServiceTest {
     @Test
     void shouldReturnOptionalEmptyIfCertificateDoesNotExistInCS() {
         assertTrue(
-            getCertificateAdminInfoFromCertificateService.getIntygInfo(CERTIFICATE_ID).isEmpty()
+            getIntygInfoFromCertificateService.getIntygInfo(CERTIFICATE_ID).isEmpty()
         );
     }
 
@@ -76,7 +76,7 @@ class GetCertificateAdminInfoFromCertificateServiceTest {
         @Test
         void shouldReturnCertificate() {
             assertEquals(INTYG_INFO,
-                getCertificateAdminInfoFromCertificateService.getIntygInfo(CERTIFICATE_ID).get()
+                getIntygInfoFromCertificateService.getIntygInfo(CERTIFICATE_ID).get()
             );
         }
     }

@@ -35,7 +35,7 @@ import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.intyginfo.IntygInfoServiceInterface;
 
 @ExtendWith(MockitoExtension.class)
-class CertificateAdminInfoAggregatorTest {
+class IntygInfoAggregatorTest {
 
     private static final String ID = "ID";
     private static final WcIntygInfo CERTIFICATE_FROM_CS = new WcIntygInfo();
@@ -52,7 +52,7 @@ class CertificateAdminInfoAggregatorTest {
         getCertificateFromCS = mock(IntygInfoServiceInterface.class);
         certificateServiceProfile = mock(CertificateServiceProfile.class);
 
-        aggregator = new CertificateAdminInfoAggregator(
+        aggregator = new IntygInfoAggregator(
             getCertificateFromWC,
             getCertificateFromCS,
             certificateServiceProfile
