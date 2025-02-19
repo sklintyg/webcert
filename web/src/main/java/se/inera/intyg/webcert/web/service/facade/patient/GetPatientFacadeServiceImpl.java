@@ -18,8 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.facade.patient;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Patient;
@@ -27,28 +26,29 @@ import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.infra.pu.integration.api.model.PersonSvar;
 import se.inera.intyg.infra.pu.integration.api.services.PUService;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.logging.HashUtility;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
+@Slf4j
 @Service
 public class GetPatientFacadeServiceImpl implements GetPatientFacadeService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetPatientFacadeServiceImpl.class);
-
     private final PUService puService;
-
     private final MonitoringLogService monitoringService;
+    private final HashUtility hashUtility;
 
     @Autowired
-    public GetPatientFacadeServiceImpl(PUService puService, MonitoringLogService monitoringService) {
+    public GetPatientFacadeServiceImpl(PUService puService, MonitoringLogService monitoringService, HashUtility hashUtility) {
         this.puService = puService;
         this.monitoringService = monitoringService;
+        this.hashUtility = hashUtility;
     }
 
     @Override
     public Patient getPatient(String patientId) throws InvalidPatientIdException, PatientSearchErrorException, PatientNoNameException {
         Personnummer formattedPatientId = formatPatientId(patientId);
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Getting patient info for: {}", formattedPatientId.getPersonnummerHash());
+        if (log.isDebugEnabled()) {
+            log.debug("Getting patient info for: {}", hashUtility.hash(formattedPatientId.getPersonnummer()));
         }
 
         PersonSvar personSvar = puService.getPerson(formattedPatientId);

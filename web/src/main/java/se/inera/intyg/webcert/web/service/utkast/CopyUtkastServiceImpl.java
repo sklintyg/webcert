@@ -44,6 +44,7 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.logging.HashUtility;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.event.CertificateEventService;
@@ -155,6 +156,9 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
     @Autowired
     private PatientDetailsResolver patientDetailsResolver;
+
+    @Autowired
+    private HashUtility hashUtility;
 
     @Override
     public CreateCompletionCopyResponse createCompletion(CreateCompletionCopyRequest copyRequest) {
@@ -606,13 +610,13 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         PersonSvar personSvar = getPersonSvar(personnummer);
 
         if (PersonSvar.Status.ERROR.equals(personSvar.getStatus())) {
-            LOG.error("An error occured when using '{}' to lookup person data", personnummer.getPersonnummerHash());
+            LOG.error("An error occured when using '{}' to lookup person data", hashUtility.hash(personnummer.getPersonnummer()));
             return null;
         } else if (PersonSvar.Status.NOT_FOUND.equals(personSvar.getStatus())) {
-            LOG.error("No person data was found using '{}' to lookup person data", personnummer.getPersonnummerHash());
+            LOG.error("No person data was found using '{}' to lookup person data", hashUtility.hash(personnummer.getPersonnummer()));
             throw new WebCertServiceException(
                 WebCertServiceErrorCodeEnum.DATA_NOT_FOUND,
-                "No person data found using '" + personnummer.getPersonnummerHash() + "'");
+                "No person data found using '" + hashUtility.hash(personnummer.getPersonnummer()) + "'");
         }
 
         return personSvar.getPerson();
