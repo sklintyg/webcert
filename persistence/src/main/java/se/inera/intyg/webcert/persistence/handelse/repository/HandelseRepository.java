@@ -23,6 +23,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 
 public interface HandelseRepository extends JpaRepository<Handelse, Long> {
@@ -54,6 +55,48 @@ public interface HandelseRepository extends JpaRepository<Handelse, Long> {
 
     @Query("select h from Handelse h where h.intygsId in :certificateIds")
     List<Handelse> getHandelseByIntygsIds(@Param("certificateIds") List<String> certificateIds);
+
+    @Query(value = """
+        SELECT COUNT(h.ID) FROM HANDELSE h
+        INNER JOIN HandelseMetadata hm ON h.ID = hm.HANDELSE_ID
+        WHERE h.ENHETS_ID LIKE :careGiverId AND hm.DELIVERY_STATUS IN :statuses
+        AND h.TIMESTAMP BETWEEN :start AND :end""", nativeQuery = true)
+    int countInsertsForCareGiver(@Param("careGiverId") String careGiverId,
+        @Param("statuses") List<NotificationDeliveryStatusEnum> statuses,
+        @Param("start") LocalDateTime start,
+        @Param("end") LocalDateTime end);
+
+    @Query(value = """
+        SELECT COUNT(h.ID) FROM HANDELSE h
+        INNER JOIN HANDELSE_METADATA hm ON h.ID = hm.HANDELSE_ID
+        WHERE h.INTYGS_ID IN :certificateIds AND hm.DELIVERY_STATUS IN :statuses""", nativeQuery = true)
+    int countInsertsForCertificates(@Param("certificateIds") List<String> certificateIds,
+        @Param("statuses") List<NotificationDeliveryStatusEnum> statuses);
+
+    @Query(value = """
+        SELECT COUNT(h.ID) FROM HANDELSE h
+        INNER JOIN HANDELSE_METADATA hm ON h.ID = hm.HANDELSE_ID
+        WHERE h.ENHETS_ID IN :unitIds AND hm.DELIVERY_STATUS IN :statuses
+        AND h.TIMESTAMP BETWEEN :start AND :end""", nativeQuery = true)
+    int countInsertsForUnits(@Param("unitIds") List<String> unitIds,
+        @Param("statuses") List<NotificationDeliveryStatusEnum> statuses,
+        @Param("start") LocalDateTime start,
+        @Param("end") LocalDateTime end);
+
+    @Query(value = """
+        SELECT COUNT(h.ID) FROM HANDELSE h
+        WHERE h.id = :notificationId""", nativeQuery = true)
+    int countNotification(@Param("notificationId") String notificationId);
+
+    @Query(value = """
+        SELECT COUNT(h.ID) FROM HANDELSE h
+        INNER JOIN HANDELSE_METADATA hm ON h.ID = hm.HANDELSE_ID
+        WHERE h.ENHETS_ID LIKE :careGiverId AND hm.DELIVERY_STATUS IN :statuses
+        AND h.TIMESTAMP BETWEEN :start AND :end""", nativeQuery = true)
+    int countNotificationsForCareGiver(@Param("careGiverId") String careGiverId,
+        @Param("statuses") List<NotificationDeliveryStatusEnum> statuses,
+        @Param("start") LocalDateTime start,
+        @Param("end") LocalDateTime end);
 
     default int eraseHandelseByCertificateIds(List<String> certificateIds) {
         final var handelseList = getHandelseByIntygsIds(certificateIds);

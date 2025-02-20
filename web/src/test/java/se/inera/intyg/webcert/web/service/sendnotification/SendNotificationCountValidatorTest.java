@@ -15,7 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
-import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
+import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForCareGiverRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForUnitsRequestDTO;
@@ -25,7 +25,7 @@ class SendNotificationCountValidatorTest {
 
     private static final int LIMIT = 10;
     @Mock
-    NotificationRedeliveryRepository notificationRedeliveryRepository;
+    HandelseRepository handelseRepository;
     @InjectMocks
     SendNotificationCountValidator sendNotificationCountValidator;
 
@@ -47,7 +47,7 @@ class SendNotificationCountValidatorTest {
                 .statuses(List.of(NotificationDeliveryStatusEnum.FAILURE))
                 .build();
 
-            when(notificationRedeliveryRepository.countInsertsForCareGiver(ID, request.getStatuses(), request.getStart(),
+            when(handelseRepository.countInsertsForCareGiver(ID, request.getStatuses(), request.getStart(),
                 request.getEnd())).thenReturn(LIMIT + 1);
 
             assertThrows(IllegalArgumentException.class, () -> sendNotificationCountValidator.careGiver(ID, request));
@@ -61,7 +61,7 @@ class SendNotificationCountValidatorTest {
                 .statuses(List.of(NotificationDeliveryStatusEnum.FAILURE))
                 .build();
 
-            when(notificationRedeliveryRepository.countInsertsForCareGiver(ID, request.getStatuses(), request.getStart(),
+            when(handelseRepository.countInsertsForCareGiver(ID, request.getStatuses(), request.getStart(),
                 request.getEnd())).thenReturn(LIMIT);
 
             assertDoesNotThrow(() -> sendNotificationCountValidator.careGiver(ID, request));
@@ -80,7 +80,7 @@ class SendNotificationCountValidatorTest {
                 .unitIds(List.of("unit1", "unit2"))
                 .build();
 
-            when(notificationRedeliveryRepository.countInsertsForUnits(request.getUnitIds(), request.getStatuses(),
+            when(handelseRepository.countInsertsForUnits(request.getUnitIds(), request.getStatuses(),
                 request.getStart(),
                 request.getEnd())).thenReturn(LIMIT + 1);
 
@@ -96,7 +96,7 @@ class SendNotificationCountValidatorTest {
                 .unitIds(List.of("unit1", "unit2"))
                 .build();
 
-            when(notificationRedeliveryRepository.countInsertsForUnits(request.getUnitIds(), request.getStatuses(),
+            when(handelseRepository.countInsertsForUnits(request.getUnitIds(), request.getStatuses(),
                 request.getStart(),
                 request.getEnd())).thenReturn(LIMIT);
 
@@ -114,7 +114,7 @@ class SendNotificationCountValidatorTest {
                 .certificateIds(List.of("cert1", "cert2"))
                 .build();
 
-            when(notificationRedeliveryRepository.countInsertsForCertificates(request.getCertificateIds(), request.getStatuses()))
+            when(handelseRepository.countInsertsForCertificates(request.getCertificateIds(), request.getStatuses()))
                 .thenReturn(LIMIT + 1);
 
             assertThrows(IllegalArgumentException.class, () -> sendNotificationCountValidator.certificates(request));
@@ -127,7 +127,7 @@ class SendNotificationCountValidatorTest {
                 .certificateIds(List.of("cert1", "cert2"))
                 .build();
 
-            when(notificationRedeliveryRepository.countInsertsForCertificates(request.getCertificateIds(), request.getStatuses()))
+            when(handelseRepository.countInsertsForCertificates(request.getCertificateIds(), request.getStatuses()))
                 .thenReturn(LIMIT);
 
             assertDoesNotThrow(() -> sendNotificationCountValidator.certificates(request));
@@ -141,14 +141,14 @@ class SendNotificationCountValidatorTest {
 
         @Test
         void shallThrowIfLimitExceeded() {
-            when(notificationRedeliveryRepository.countNotification(NOTIFICATION_ID)).thenReturn(LIMIT + 1);
+            when(handelseRepository.countNotification(NOTIFICATION_ID)).thenReturn(LIMIT + 1);
 
             assertThrows(IllegalArgumentException.class, () -> sendNotificationCountValidator.notification(NOTIFICATION_ID));
         }
 
         @Test
         void shallNotThrowIfLimitIsNotExceeded() {
-            when(notificationRedeliveryRepository.countNotification(NOTIFICATION_ID)).thenReturn(LIMIT);
+            when(handelseRepository.countNotification(NOTIFICATION_ID)).thenReturn(LIMIT);
 
             assertDoesNotThrow(() -> sendNotificationCountValidator.notification(NOTIFICATION_ID));
         }

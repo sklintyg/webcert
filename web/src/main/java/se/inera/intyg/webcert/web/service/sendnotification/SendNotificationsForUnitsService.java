@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.service.sendnotification;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +44,7 @@ public class SendNotificationsForUnitsService {
     @Value("${timelimit.daysback.start:365}")
     private int maxDaysBackStartDate;
 
+    @Transactional
     public SendNotificationResponseDTO send(SendNotificationsForUnitsRequestDTO request) {
         LOG.info(
             "Attempting to resend status updates. Using parameters: certificateIds '{}', statuses '{}', start '{}', end '{}' ",

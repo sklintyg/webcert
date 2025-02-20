@@ -19,14 +19,18 @@
 
 package se.inera.intyg.webcert.web.web.controller.internalapi.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Builder;
 import lombok.Value;
 import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForUnitsRequestDTO.SendNotificationsForUnitsRequestDTOBuilder;
 
 @Value
 @Builder
+@JsonDeserialize(builder = SendNotificationsForUnitsRequestDTOBuilder.class)
 public class SendNotificationsForUnitsRequestDTO {
 
     List<String> unitIds;
@@ -34,4 +38,9 @@ public class SendNotificationsForUnitsRequestDTO {
     LocalDateTime activationTime;
     LocalDateTime start;
     LocalDateTime end;
+
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class SendNotificationsForUnitsRequestDTOBuilder {
+
+    }
 }

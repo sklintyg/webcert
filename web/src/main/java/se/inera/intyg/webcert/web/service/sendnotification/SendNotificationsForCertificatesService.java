@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.service.sendnotification;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +37,7 @@ public class SendNotificationsForCertificatesService {
     private final SendNotificationCountValidator sendNotificationCountValidator;
     private static final Logger LOG = LoggerFactory.getLogger(SendNotificationsForCertificatesService.class);
 
+    @Transactional
     public SendNotificationResponseDTO send(SendNotificationsForCertificatesRequestDTO request) {
         LOG.info(
             "Attempting to resend status updates. Using parameters: certificateIds '{}', statuses '{}'",

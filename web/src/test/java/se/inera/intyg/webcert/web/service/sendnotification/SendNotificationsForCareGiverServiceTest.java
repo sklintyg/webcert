@@ -39,6 +39,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
+import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CountNotificationsForCareGiverRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForCareGiverRequestDTO;
@@ -72,6 +73,9 @@ class SendNotificationsForCareGiverServiceTest {
 
     @Mock
     NotificationRedeliveryRepository notificationRedeliveryRepository;
+
+    @Mock
+    HandelseRepository handelseRepository;
 
     @Mock
     SendNotificationRequestValidator sendNotificationRequestValidator;
@@ -191,7 +195,7 @@ class SendNotificationsForCareGiverServiceTest {
         @BeforeEach
         void setup() {
             when(
-                notificationRedeliveryRepository.countNotificationsForCareGiver(SANITIZED_ID, STATUSES, START, END))
+                handelseRepository.countNotificationsForCareGiver(SANITIZED_ID, STATUSES, START, END))
                 .thenReturn(COUNT);
         }
 
