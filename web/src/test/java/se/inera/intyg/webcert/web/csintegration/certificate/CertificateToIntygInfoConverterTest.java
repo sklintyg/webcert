@@ -85,6 +85,27 @@ class CertificateToIntygInfoConverterTest {
         assertNull(result.getSentToRecipient());
     }
 
+    @Test
+    void shouldSetNumberOfRecipientsTo0IfNoRecipient() {
+        metadata = CertificateMetadata.builder()
+            .id("123")
+            .type("TypeA")
+            .typeVersion("1.0")
+            .signed(LocalDateTime.now())
+            .issuedBy(Staff.builder().fullName("Dr. John Doe").personId("1234567890").build())
+            .careUnit(Unit.builder().unitName("Care Unit A").unitId("CU123").build())
+            .careProvider(Unit.builder().unitName("Care Provider A").unitId("CP123").build())
+            .sent(true)
+            .testCertificate(true)
+            .created(LocalDateTime.now())
+            .build();
+        certificate = new Certificate();
+        certificate.setMetadata(metadata);
+
+        final var result = certificateToIntygInfoConverter.convert(certificate, Collections.emptyList());
+        assertEquals(0, result.getNumberOfRecipients());
+    }
+
     @Nested
     class Prefilled {
 
@@ -193,8 +214,15 @@ class CertificateToIntygInfoConverterTest {
                 final var questions = Collections.singletonList(question);
 
                 final var result = certificateToIntygInfoConverter.convert(certificate, questions);
+
                 assertEquals(1, result.getAdministrativaFragorReceivedAnswered());
             }
+        }
+
+        @Test
+        void shouldSetNumberOfRecipientsTo1IfRecipient() {
+            final var result = certificateToIntygInfoConverter.convert(certificate, Collections.emptyList());
+            assertEquals(1, result.getNumberOfRecipients());
         }
 
         @Test

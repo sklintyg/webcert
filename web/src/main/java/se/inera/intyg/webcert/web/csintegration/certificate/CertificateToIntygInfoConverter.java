@@ -46,7 +46,9 @@ public class CertificateToIntygInfoConverter {
         wcIntygInfo.setIntygType(metadata.getType());
         wcIntygInfo.setIntygVersion(metadata.getTypeVersion());
         wcIntygInfo.setSignedDate(metadata.getSigned());
-        wcIntygInfo.setSentToRecipient(metadata.isSent() ? metadata.getRecipient().getSent() : null);
+        wcIntygInfo.setSentToRecipient(metadata.isSent() && metadata.getRecipient() != null
+            ? metadata.getRecipient().getSent() : null);
+        wcIntygInfo.setNumberOfRecipients(metadata.getRecipient() != null ? 1 : 0);
         wcIntygInfo.setSignedByName(metadata.getIssuedBy().getFullName());
         wcIntygInfo.setSignedByHsaId(metadata.getIssuedBy().getPersonId());
         wcIntygInfo.setCareUnitName(metadata.getCareUnit().getUnitName());
@@ -54,7 +56,6 @@ public class CertificateToIntygInfoConverter {
         wcIntygInfo.setCareGiverName(metadata.getCareProvider().getUnitName());
         wcIntygInfo.setCareGiverHsaId(metadata.getCareProvider().getUnitId());
         wcIntygInfo.setTestCertificate(metadata.isTestCertificate());
-
         wcIntygInfo.setCreatedInWC(true);
         wcIntygInfo.setDraftCreated(metadata.getCreated());
 
