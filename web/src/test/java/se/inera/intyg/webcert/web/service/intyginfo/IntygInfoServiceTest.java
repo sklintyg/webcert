@@ -40,7 +40,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
-import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
@@ -50,6 +49,8 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
+import se.inera.intyg.infra.intyginfo.dto.IntygInfoEvent;
+import se.inera.intyg.infra.intyginfo.dto.IntygInfoEvent.Source;
 import se.inera.intyg.infra.intyginfo.dto.WcIntygInfo;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
@@ -58,8 +59,6 @@ import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.fragasvar.model.IntygsReferens;
 import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarRepository;
-import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
-import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -81,9 +80,9 @@ public class IntygInfoServiceTest {
     @Mock
     private IntygModuleRegistry moduleRegistry;
     @Mock
-    private HandelseRepository handelseRepository;
-    @Mock
     private CertificateRelationService relationService;
+    @Mock
+    private GetIntygInfoEventsService getIntygInfoEventsService;
     @Mock
     private ModuleApi moduleApi;
 
@@ -98,7 +97,6 @@ public class IntygInfoServiceTest {
     @Test
     public void notFound() {
         when(utkastRepository.findById(anyString())).thenReturn(Optional.empty());
-        when(handelseRepository.findByIntygsId(anyString())).thenReturn(new ArrayList<>());
         when(arendeService.getArendenInternal(anyString())).thenReturn(new ArrayList<>());
         when(fragaSvarRepository.findByIntygsReferensIntygsId(anyString())).thenReturn(new ArrayList<>());
 
@@ -116,10 +114,7 @@ public class IntygInfoServiceTest {
         when(arendeService.getArendenInternal(anyString())).thenReturn(new ArrayList<>());
         when(fragaSvarRepository.findByIntygsReferensIntygsId(anyString())).thenReturn(new ArrayList<>());
 
-        List<Handelse> handelser = new ArrayList<>();
-        handelser.add(createHandelse(HandelsekodEnum.SKAPAT, intygId));
-
-        when(handelseRepository.findByIntygsId(anyString())).thenReturn(handelser);
+        when(getIntygInfoEventsService.get(intygId)).thenReturn(List.of(new IntygInfoEvent(Source.WEBCERT)));
 
         Optional<WcIntygInfo> optIntygInfo = testee.getIntygInfo(intygId);
 
@@ -136,7 +131,6 @@ public class IntygInfoServiceTest {
     public void onlyArende() {
         String intygId = "onlyArende";
         when(utkastRepository.findById(anyString())).thenReturn(Optional.empty());
-        when(handelseRepository.findByIntygsId(anyString())).thenReturn(new ArrayList<>());
         when(fragaSvarRepository.findByIntygsReferensIntygsId(anyString())).thenReturn(new ArrayList<>());
 
         List<Arende> arende = new ArrayList<>();
@@ -161,7 +155,6 @@ public class IntygInfoServiceTest {
     public void onlyFragaSvar() {
         String intygId = "onlyFragasvar";
         when(utkastRepository.findById(anyString())).thenReturn(Optional.empty());
-        when(handelseRepository.findByIntygsId(anyString())).thenReturn(new ArrayList<>());
         when(arendeService.getArendenInternal(anyString())).thenReturn(new ArrayList<>());
 
         List<FragaSvar> fragaSvars = new ArrayList<>();
@@ -192,10 +185,8 @@ public class IntygInfoServiceTest {
 
         when(utkastRepository.findById(anyString())).thenReturn(Optional.of(utkast));
 
-        List<Handelse> handelser = new ArrayList<>();
-        handelser.add(createHandelse(HandelsekodEnum.SKAPAT, intygId));
-        handelser.add(createHandelse(HandelsekodEnum.ANDRAT, intygId));
-        when(handelseRepository.findByIntygsId(anyString())).thenReturn(handelser);
+        when(getIntygInfoEventsService.get(intygId)).thenReturn(
+            List.of(new IntygInfoEvent(Source.WEBCERT), new IntygInfoEvent(Source.WEBCERT)));
 
         // Act
         Optional<WcIntygInfo> optIntygInfo = testee.getIntygInfo(intygId);
@@ -221,7 +212,6 @@ public class IntygInfoServiceTest {
         assertEquals(0, intygInfo.getAdministrativaFragorReceived());
         assertEquals(0, intygInfo.getAdministrativaFragorReceivedAnswered());
 
-        verify(handelseRepository).findByIntygsId(intygId);
         verifyNoInteractions(moduleRegistry);
         verify(relationService).findChildRelations(intygId);
         verify(arendeService).getArendenInternal(intygId);
@@ -235,12 +225,6 @@ public class IntygInfoServiceTest {
         Utkast utkast = createUtkast(intygId, UtkastStatus.SIGNED);
 
         when(utkastRepository.findById(eq(intygId))).thenReturn(Optional.of(utkast));
-
-        List<Handelse> handelser = new ArrayList<>();
-        handelser.add(createHandelse(HandelsekodEnum.SKAPAT, intygId));
-        handelser.add(createHandelse(HandelsekodEnum.ANDRAT, intygId));
-        handelser.add(createHandelse(HandelsekodEnum.KFSIGN, intygId));
-        when(handelseRepository.findByIntygsId(anyString())).thenReturn(handelser);
 
         List<Arende> arende = new ArrayList<>();
         arende.add(createArende(ArendeAmne.KOMPLT, intygId, FrageStallare.FORSAKRINGSKASSAN.getKod(), Status.CLOSED));
@@ -277,13 +261,12 @@ public class IntygInfoServiceTest {
         assertEquals(utkast.getSkapad(), intygInfo.getDraftCreated());
         assertEquals(utkast.getSkickadTillMottagareDatum(), intygInfo.getSentToRecipient());
 
-        assertEquals(15, intygInfo.getEvents().size());
+        assertEquals(12, intygInfo.getEvents().size());
         assertEquals(1, intygInfo.getKompletteringar());
         assertEquals(1, intygInfo.getKompletteringarAnswered());
         assertEquals(1, intygInfo.getAdministrativaFragorReceived());
         assertEquals(1, intygInfo.getAdministrativaFragorReceivedAnswered());
 
-        verify(handelseRepository).findByIntygsId(intygId);
         verify(moduleRegistry).getModuleApi(utkast.getIntygsTyp(), utkast.getIntygTypeVersion());
         verify(relationService).findChildRelations(intygId);
         verify(arendeService).getArendenInternal(intygId);
@@ -364,15 +347,6 @@ public class IntygInfoServiceTest {
         arende.setIntygTyp("lisjp");
 
         return arende;
-    }
-
-    private Handelse createHandelse(HandelsekodEnum code, String intygId) {
-        Handelse handelse = new Handelse();
-        handelse.setCode(code);
-        handelse.setIntygsId(intygId);
-        handelse.setTimestamp(LocalDateTime.now());
-
-        return handelse;
     }
 
     private WebcertCertificateRelation createRelation(RelationKod code, String toIntyg) {
