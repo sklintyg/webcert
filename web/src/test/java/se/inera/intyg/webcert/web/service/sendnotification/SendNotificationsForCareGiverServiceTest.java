@@ -52,8 +52,8 @@ class SendNotificationsForCareGiverServiceTest {
     private static final String SANITIZED_ID = "IDID";
     private static final int LIMIT = 5;
     private static final int LIMIT_INTERVAL = 10;
-    private static final List<NotificationDeliveryStatusEnum> STATUSES = List.of(
-        NotificationDeliveryStatusEnum.FAILURE);
+    private static final List<NotificationDeliveryStatusEnum> STATUSES = List.of(NotificationDeliveryStatusEnum.FAILURE);
+    private static final List<String> STATUS_LIST = List.of("FAILURE");
     private static final LocalDateTime START = LocalDateTime.now().minusDays(1);
     private static final LocalDateTime END = LocalDateTime.now();
     private static final LocalDateTime ACTIVATION_TIME = LocalDateTime.now();
@@ -104,7 +104,7 @@ class SendNotificationsForCareGiverServiceTest {
 
         @Test
         void shouldReturnResponseFromRepository() {
-            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(SANITIZED_ID, STATUSES, START, END,
+            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(SANITIZED_ID, STATUS_LIST, START, END,
                 ACTIVATION_TIME))
                 .thenReturn(COUNT);
 
@@ -116,7 +116,7 @@ class SendNotificationsForCareGiverServiceTest {
 
         @Test
         void shouldValidateIds() {
-            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(SANITIZED_ID, STATUSES, START, END,
+            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(SANITIZED_ID, STATUS_LIST, START, END,
                 ACTIVATION_TIME))
                 .thenReturn(COUNT);
 
@@ -130,7 +130,7 @@ class SendNotificationsForCareGiverServiceTest {
 
         @Test
         void shouldValidateDateUsingStart() {
-            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(SANITIZED_ID, STATUSES, START, END,
+            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(SANITIZED_ID, STATUS_LIST, START, END,
                 ACTIVATION_TIME))
                 .thenReturn(COUNT);
 
@@ -145,7 +145,7 @@ class SendNotificationsForCareGiverServiceTest {
 
         @Test
         void shouldValidateDateUsingEnd() {
-            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(SANITIZED_ID, STATUSES, START, END,
+            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(SANITIZED_ID, STATUS_LIST, START, END,
                 ACTIVATION_TIME))
                 .thenReturn(COUNT);
             final var captor = ArgumentCaptor.forClass(LocalDateTime.class);
@@ -159,7 +159,7 @@ class SendNotificationsForCareGiverServiceTest {
 
         @Test
         void shouldValidateDateUsingDaysBackLimit() {
-            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(SANITIZED_ID, STATUSES, START, END,
+            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(SANITIZED_ID, STATUS_LIST, START, END,
                 ACTIVATION_TIME))
                 .thenReturn(COUNT);
             final var captor = ArgumentCaptor.forClass(int.class);
@@ -174,7 +174,7 @@ class SendNotificationsForCareGiverServiceTest {
 
         @Test
         void shouldValidateDateUsingIntervalLimit() {
-            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(SANITIZED_ID, STATUSES, START, END,
+            when(notificationRedeliveryRepository.sendNotificationsForCareGiver(SANITIZED_ID, STATUS_LIST, START, END,
                 ACTIVATION_TIME))
                 .thenReturn(COUNT);
             final var captor = ArgumentCaptor.forClass(int.class);
@@ -195,7 +195,7 @@ class SendNotificationsForCareGiverServiceTest {
         @BeforeEach
         void setup() {
             when(
-                handelseRepository.countNotificationsForCareGiver(SANITIZED_ID, STATUSES, START, END))
+                handelseRepository.countNotificationsForCareGiver(SANITIZED_ID, STATUS_LIST, START, END))
                 .thenReturn(COUNT);
         }
 

@@ -29,7 +29,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 
 public interface NotificationRedeliveryRepository extends
@@ -82,7 +81,7 @@ public interface NotificationRedeliveryRepository extends
         WHERE h.INTYGS_ID IN :certificateIds AND hm.DELIVERY_STATUS IN :statuses
         ORDER BY h.TIMESTAMP""", nativeQuery = true)
     int sendNotificationsForCertificates(@Param("certificateIds") List<String> certificateIds,
-        @Param("statuses") List<NotificationDeliveryStatusEnum> statuses);
+        @Param("statuses") List<String> statuses);
 
     @Modifying
     @Query(value = """
@@ -92,7 +91,7 @@ public interface NotificationRedeliveryRepository extends
         WHERE h.ENHETS_ID IN :unitIds AND hm.DELIVERY_STATUS IN :statuses
         AND h.TIMESTAMP BETWEEN :start AND :end ORDER BY h.TIMESTAMP""", nativeQuery = true)
     int sendNotificationsForUnits(@Param("unitIds") List<String> unitIds,
-        @Param("statuses") List<NotificationDeliveryStatusEnum> statuses,
+        @Param("statuses") List<String> statuses,
         @Param("start") LocalDateTime start,
         @Param("end") LocalDateTime end,
         @Param("activationTime") LocalDateTime activationTime);
@@ -105,7 +104,7 @@ public interface NotificationRedeliveryRepository extends
         WHERE h.ENHETS_ID LIKE :careGiverId AND hm.DELIVERY_STATUS IN :statuses
         AND h.TIMESTAMP BETWEEN :start AND :end ORDER BY h.TIMESTAMP""", nativeQuery = true)
     int sendNotificationsForCareGiver(@Param("careGiverId") String careGiverId,
-        @Param("statuses") List<NotificationDeliveryStatusEnum> statuses,
+        @Param("statuses") List<String> statuses,
         @Param("start") LocalDateTime start,
         @Param("end") LocalDateTime end,
         @Param("activationTime") LocalDateTime activationTime);

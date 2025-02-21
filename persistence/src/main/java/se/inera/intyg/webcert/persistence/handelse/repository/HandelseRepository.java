@@ -94,7 +94,7 @@ public interface HandelseRepository extends JpaRepository<Handelse, Long> {
         WHERE h.ENHETS_ID LIKE :careGiverId AND hm.DELIVERY_STATUS IN :statuses
         AND h.TIMESTAMP BETWEEN :start AND :end""", nativeQuery = true)
     int countNotificationsForCareGiver(@Param("careGiverId") String careGiverId,
-        @Param("statuses") List<NotificationDeliveryStatusEnum> statuses,
+        @Param("statuses") List<String> statuses,
         @Param("start") LocalDateTime start,
         @Param("end") LocalDateTime end);
 

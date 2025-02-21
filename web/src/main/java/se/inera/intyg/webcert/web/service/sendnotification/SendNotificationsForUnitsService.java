@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
 import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForUnitsRequestDTO;
@@ -60,7 +61,9 @@ public class SendNotificationsForUnitsService {
         sendNotificationCountValidator.units(sanitizedRequest);
         final var response = notificationRedeliveryRepository.sendNotificationsForUnits(
             sanitizedRequest.getUnitIds(),
-            sanitizedRequest.getStatuses(),
+            sanitizedRequest.getStatuses().stream()
+                .map(NotificationDeliveryStatusEnum::value)
+                .toList(),
             sanitizedRequest.getStart(),
             sanitizedRequest.getEnd(),
             sanitizedRequest.getActivationTime()
