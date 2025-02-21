@@ -19,12 +19,21 @@
 
 package se.inera.intyg.webcert.web.web.controller.internalapi.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Data;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationResponseDTO.SendNotificationResponseDTOBuilder;
 
 @Data
 @Builder
+@JsonDeserialize(builder = SendNotificationResponseDTOBuilder.class)
 public class SendNotificationResponseDTO {
 
     private Integer count;
+
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class SendNotificationResponseDTOBuilder {
+
+    }
 }

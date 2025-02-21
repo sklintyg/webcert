@@ -45,6 +45,7 @@ class SendNotificationsForCertificatesServiceTest {
     private static final List<String> IDS = List.of("ID ID");
     private static final List<String> SANITIZED_IDS = List.of("IDID");
     private static final List<NotificationDeliveryStatusEnum> STATUSES = List.of(NotificationDeliveryStatusEnum.FAILURE);
+    private static final List<String> STATUS_LIST = List.of("FAILURE");
     private static final SendNotificationsForCertificatesRequestDTO REQUEST = SendNotificationsForCertificatesRequestDTO.builder()
         .certificateIds(IDS)
         .statuses(STATUSES)
@@ -78,7 +79,7 @@ class SendNotificationsForCertificatesServiceTest {
 
         @BeforeEach
         void setup() {
-            when(notificationRedeliveryRepository.sendNotificationsForCertificates(SANITIZED_IDS, STATUSES))
+            when(notificationRedeliveryRepository.sendNotificationsForCertificates(SANITIZED_IDS, STATUS_LIST))
                 .thenReturn(COUNT);
         }
 

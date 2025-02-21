@@ -51,6 +51,7 @@ class SendNotificationsForUnitsServiceTest {
     private static final List<String> IDS = List.of("ID ID");
     private static final List<String> SANITIZED_IDS = List.of("IDID");
     private static final List<NotificationDeliveryStatusEnum> STATUSES = List.of(NotificationDeliveryStatusEnum.FAILURE);
+    private static final List<String> STATUS_LIST = List.of("FAILURE");
     private static final LocalDateTime START = LocalDateTime.now().minusDays(1);
     private static final LocalDateTime END = LocalDateTime.now();
     private static final LocalDateTime ACTIVATION_TIME = LocalDateTime.now();
@@ -94,7 +95,7 @@ class SendNotificationsForUnitsServiceTest {
 
         @BeforeEach
         void setup() {
-            when(notificationRedeliveryRepository.sendNotificationsForUnits(SANITIZED_IDS, STATUSES, START, END, ACTIVATION_TIME))
+            when(notificationRedeliveryRepository.sendNotificationsForUnits(SANITIZED_IDS, STATUS_LIST, START, END, ACTIVATION_TIME))
                 .thenReturn(COUNT);
 
             ReflectionTestUtils.setField(sendNotificationsForUnitsService, "maxDaysBackStartDate", LIMIT);

@@ -19,11 +19,14 @@
 
 package se.inera.intyg.webcert.web.service.sendnotification;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
+import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CountNotificationsForCareGiverRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationResponseDTO;
@@ -34,6 +37,7 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificatio
 public class SendNotificationsForCareGiverService {
 
     private final NotificationRedeliveryRepository notificationRedeliveryRepository;
+    private final HandelseRepository handelseRepository;
     private final SendNotificationRequestValidator sendNotificationRequestValidator;
     private final SendNotificationCountValidator sendNotificationCountValidator;
     private static final Logger LOG = LoggerFactory.getLogger(SendNotificationsForCareGiverService.class);
@@ -44,6 +48,7 @@ public class SendNotificationsForCareGiverService {
     @Value("${timelimit.daysback.start:365}")
     private int maxDaysBackStartDate;
 
+    @Transactional
     public SendNotificationResponseDTO send(String careGiverId,
         SendNotificationsForCareGiverRequestDTO request) {
         LOG.info(
@@ -52,18 +57,21 @@ public class SendNotificationsForCareGiverService {
         );
 
         final var sanitizedId = SendNotificationRequestSanitizer.sanitize(careGiverId);
+        final var sanitizedRequest = SendNotificationRequestSanitizer.sanitize(request);
 
         sendNotificationRequestValidator.validateId(sanitizedId);
-        sendNotificationRequestValidator.validateDate(request.getStart(), request.getEnd(),
-            maxTimeInterval, maxDaysBackStartDate);
+        sendNotificationRequestValidator.validateDate(sanitizedRequest.getStart(), sanitizedRequest.getEnd(), maxTimeInterval,
+            maxDaysBackStartDate);
+        sendNotificationCountValidator.careGiver(sanitizedId, sanitizedRequest);
 
-        sendNotificationCountValidator.careGiver(sanitizedId, request);
         final var response = notificationRedeliveryRepository.sendNotificationsForCareGiver(
             sanitizedId,
-            request.getStatuses(),
-            request.getStart(),
-            request.getEnd(),
-            request.getActivationTime()
+            sanitizedRequest.getStatuses().stream()
+                .map(NotificationDeliveryStatusEnum::value)
+                .toList(),
+            sanitizedRequest.getStart(),
+            sanitizedRequest.getEnd(),
+            sanitizedRequest.getActivationTime()
         );
 
         LOG.info(
@@ -76,24 +84,26 @@ public class SendNotificationsForCareGiverService {
             .build();
     }
 
-    public SendNotificationResponseDTO count(String careGiverId,
-        CountNotificationsForCareGiverRequestDTO request) {
+    public SendNotificationResponseDTO count(String careGiverId, CountNotificationsForCareGiverRequestDTO request) {
         LOG.info(
             "Attempting to count status updates. Using parameters: careGiverId '{}', statuses '{}', start '{}', end '{}', activationTime '{}'",
             careGiverId, request.getStatuses(), request.getStart(), request.getEnd(), request.getActivationTime()
         );
 
         final var sanitizedId = SendNotificationRequestSanitizer.sanitize(careGiverId);
+        final var sanitizedRequest = SendNotificationRequestSanitizer.sanitize(request);
 
         sendNotificationRequestValidator.validateId(sanitizedId);
-        sendNotificationRequestValidator.validateDate(request.getStart(), request.getEnd(),
-            maxTimeInterval, maxDaysBackStartDate);
+        sendNotificationRequestValidator.validateDate(sanitizedRequest.getStart(), sanitizedRequest.getEnd(), maxTimeInterval,
+            maxDaysBackStartDate);
 
-        final var response = notificationRedeliveryRepository.countNotificationsForCareGiver(
+        final var response = handelseRepository.countNotificationsForCareGiver(
             sanitizedId,
-            request.getStatuses(),
-            request.getStart(),
-            request.getEnd()
+            sanitizedRequest.getStatuses().stream()
+                .map(NotificationDeliveryStatusEnum::value)
+                .toList(),
+            sanitizedRequest.getStart(),
+            sanitizedRequest.getEnd()
         );
 
         LOG.info(

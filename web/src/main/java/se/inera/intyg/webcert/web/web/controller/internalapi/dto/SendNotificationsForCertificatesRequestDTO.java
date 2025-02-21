@@ -19,15 +19,24 @@
 
 package se.inera.intyg.webcert.web.web.controller.internalapi.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.util.List;
 import lombok.Builder;
 import lombok.Value;
 import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForCertificatesRequestDTO.SendNotificationsForCertificatesRequestDTOBuilder;
 
 @Value
 @Builder
+@JsonDeserialize(builder = SendNotificationsForCertificatesRequestDTOBuilder.class)
 public class SendNotificationsForCertificatesRequestDTO {
 
     List<String> certificateIds;
     List<NotificationDeliveryStatusEnum> statuses;
+
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class SendNotificationsForCertificatesRequestDTOBuilder {
+
+    }
 }

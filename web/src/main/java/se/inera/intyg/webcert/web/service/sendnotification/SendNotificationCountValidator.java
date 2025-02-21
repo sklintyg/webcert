@@ -3,7 +3,7 @@ package se.inera.intyg.webcert.web.service.sendnotification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
+import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForCareGiverRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForUnitsRequestDTO;
@@ -12,13 +12,13 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificatio
 @RequiredArgsConstructor
 public class SendNotificationCountValidator {
 
-    private final NotificationRedeliveryRepository notificationRedeliveryRepository;
+    private final HandelseRepository handelseRepository;
 
     @Value("${max.allowed.notification.send}")
     private int maxAllowedNotificationSend;
 
     public void careGiver(String careGiverId, SendNotificationsForCareGiverRequestDTO request) {
-        final var insertsForCareGiver = notificationRedeliveryRepository.countInsertsForCareGiver(
+        final var insertsForCareGiver = handelseRepository.countInsertsForCareGiver(
             careGiverId, request.getStatuses(), request.getStart(), request.getEnd());
         if (insertsForCareGiver > maxAllowedNotificationSend) {
             throw new IllegalArgumentException(buildErrorMessage(insertsForCareGiver));
@@ -26,7 +26,7 @@ public class SendNotificationCountValidator {
     }
 
     public void certificates(SendNotificationsForCertificatesRequestDTO request) {
-        final var insertsForCertificates = notificationRedeliveryRepository.countInsertsForCertificates(
+        final var insertsForCertificates = handelseRepository.countInsertsForCertificates(
             request.getCertificateIds(), request.getStatuses());
         if (insertsForCertificates > maxAllowedNotificationSend) {
             throw new IllegalArgumentException(buildErrorMessage(insertsForCertificates));
@@ -34,7 +34,7 @@ public class SendNotificationCountValidator {
     }
 
     public void units(SendNotificationsForUnitsRequestDTO request) {
-        final var insertsForUnits = notificationRedeliveryRepository.countInsertsForUnits(
+        final var insertsForUnits = handelseRepository.countInsertsForUnits(
             request.getUnitIds(), request.getStatuses(), request.getStart(), request.getEnd());
         if (insertsForUnits > maxAllowedNotificationSend) {
             throw new IllegalArgumentException(buildErrorMessage(insertsForUnits));
@@ -42,7 +42,7 @@ public class SendNotificationCountValidator {
     }
 
     public void notification(String notificationId) {
-        final var insertsForNotification = notificationRedeliveryRepository.countNotification(notificationId);
+        final var insertsForNotification = handelseRepository.countNotification(notificationId);
         if (insertsForNotification > maxAllowedNotificationSend) {
             throw new IllegalArgumentException(buildErrorMessage(insertsForNotification));
         }
