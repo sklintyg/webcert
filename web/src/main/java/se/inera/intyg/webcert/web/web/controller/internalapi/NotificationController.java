@@ -63,11 +63,12 @@ public class NotificationController {
     }
 
     @POST
-    @Path("count/certificates")
+    @Path("/count/certificates")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
     @PerformanceLogging(eventAction = "count-status-updates-for-certificates", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public CountNotificationResponseDTO countNotificationsForCertificates(@RequestBody CountNotificationsForCertificatesRequestDTO request) {
+    public CountNotificationResponseDTO countNotificationsForCertificates(
+        @RequestBody CountNotificationsForCertificatesRequestDTO request) {
         return sendNotificationsForCertificatesService.count(request);
     }
 
@@ -90,7 +91,7 @@ public class NotificationController {
     }
 
     @POST
-    @Path("count/units")
+    @Path("/count/units")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
     @PerformanceLogging(eventAction = "count-status-updates-for-units", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
@@ -109,7 +110,7 @@ public class NotificationController {
     }
 
     @POST
-    @Path("count/caregiver/{careGiverId}")
+    @Path("/count/caregiver/{careGiverId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
     @PerformanceLogging(eventAction = "count-status-updates-for-care-giver", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
