@@ -67,6 +67,7 @@ class GetIntygInfoEventsServiceTest {
         final var handelse = getHandelse(HandelsekodEnum.valueOf(handelsekod));
         final var expected = new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.valueOf(eventType));
         expected.addData("status", NotificationDeliveryStatusEnum.SUCCESS.toString());
+        expected.addData("notificationId", "1");
         when(handelseRepository.findByIntygsId("ID")).thenReturn(List.of(handelse));
 
         final var events = getIntygInfoEventsService.get("ID");
@@ -79,6 +80,7 @@ class GetIntygInfoEventsServiceTest {
 
     private static Handelse getHandelse(HandelsekodEnum skapat) {
         final var handelse = new Handelse();
+        handelse.setId(1L);
         handelse.setCode(skapat);
         handelse.setTimestamp(LocalDateTime.now());
         handelse.setHandelseMetaData(new HandelseMetaData());

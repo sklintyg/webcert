@@ -23,9 +23,13 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
+import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CountNotificationResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CountNotificationsForCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForCertificatesRequestDTO;
 
@@ -34,14 +38,18 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificatio
 public class SendNotificationsForCertificatesService {
 
     private final NotificationRedeliveryRepository notificationRedeliveryRepository;
+    private final HandelseRepository handelseRepository;
     private final SendNotificationRequestValidator sendNotificationRequestValidator;
     private final SendNotificationCountValidator sendNotificationCountValidator;
     private static final Logger LOG = LoggerFactory.getLogger(SendNotificationsForCertificatesService.class);
 
+    @Value("${max.allowed.notification.send}")
+    private int maxAllowedNotificationSend;
+
     @Transactional
     public SendNotificationResponseDTO send(SendNotificationsForCertificatesRequestDTO request) {
         LOG.info(
-            "Attempting to resend status updates. Using parameters: certificateIds '{}', statuses '{}'",
+            "Attempting to resend Certificate status updates. Using parameters: certificateIds '{}', statuses '{}'",
             request.getCertificateIds(), request.getStatuses()
         );
 
@@ -64,6 +72,32 @@ public class SendNotificationsForCertificatesService {
 
         return SendNotificationResponseDTO.builder()
             .count(response)
+            .build();
+    }
+
+    public CountNotificationResponseDTO count(CountNotificationsForCertificatesRequestDTO request) {
+        LOG.info(
+            "Attempting to count status updates. Using parameters: statuses '{}'",
+             request.getStatuses()
+        );
+
+        final var sanitizedRequest = SendNotificationRequestSanitizer.sanitize(request);
+
+        sendNotificationRequestValidator.validateCertificateIds(sanitizedRequest.getCertificateIds());
+
+        final var response = handelseRepository.countNotificationsForCertificates(
+            sanitizedRequest.getCertificateIds(),
+            sanitizedRequest.getStatuses()
+        );
+
+        LOG.info(
+            "Successfully counted certificate status updates. Using parameters: statuses '{}'",
+            request.getStatuses()
+        );
+
+        return CountNotificationResponseDTO.builder()
+            .count(response)
+            .max(maxAllowedNotificationSend)
             .build();
     }
 }
