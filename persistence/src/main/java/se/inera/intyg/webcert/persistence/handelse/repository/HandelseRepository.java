@@ -93,7 +93,7 @@ public interface HandelseRepository extends JpaRepository<Handelse, Long> {
     @Query(value = """
         SELECT COUNT(h.ID) FROM HANDELSE h
         INNER JOIN HANDELSE_METADATA hm ON h.ID = hm.HANDELSE_ID
-        WHERE h.ENHETS_ID LIKE :careGiverId AND hm.DELIVERY_STATUS IN :statuses
+        WHERE h.VARDGIVAR_ID EQUALS :careGiverId AND hm.DELIVERY_STATUS IN :statuses
         AND h.TIMESTAMP BETWEEN :start AND :end""", nativeQuery = true)
     int countNotificationsForCareGiver(@Param("careGiverId") String careGiverId,
         @Param("statuses") List<NotificationDeliveryStatusEnum> statuses,
