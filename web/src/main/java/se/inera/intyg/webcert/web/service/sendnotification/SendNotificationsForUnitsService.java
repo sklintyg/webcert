@@ -26,7 +26,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
+import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CountNotificationResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CountNotificationsForUnitsRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForUnitsRequestDTO;
 
@@ -35,6 +38,7 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificatio
 public class SendNotificationsForUnitsService {
 
     private final NotificationRedeliveryRepository notificationRedeliveryRepository;
+    private final HandelseRepository handelseRepository;
     private final SendNotificationRequestValidator sendNotificationRequestValidator;
     private final SendNotificationCountValidator sendNotificationCountValidator;
     private static final Logger LOG = LoggerFactory.getLogger(SendNotificationsForUnitsService.class);
@@ -44,6 +48,9 @@ public class SendNotificationsForUnitsService {
 
     @Value("${timelimit.daysback.start:365}")
     private int maxDaysBackStartDate;
+
+    @Value("${max.allowed.notification.send}")
+    private int maxAllowedNotificationSend;
 
     @Transactional
     public SendNotificationResponseDTO send(SendNotificationsForUnitsRequestDTO request) {
@@ -76,6 +83,38 @@ public class SendNotificationsForUnitsService {
 
         return SendNotificationResponseDTO.builder()
             .count(response)
+            .build();
+    }
+
+    public CountNotificationResponseDTO count(CountNotificationsForUnitsRequestDTO request) {
+        LOG.info(
+            "Attempting to count Unit status updates. Using parameters: unitIds '{}', statuses '{}', activationTime '{}'",
+            request.getUnitIds(), request.getStatuses(), request.getActivationTime()
+        );
+
+
+        final var sanitizedIds = SendNotificationRequestSanitizer.sanitize(request.getUnitIds());
+        final var sanitizedRequest = SendNotificationRequestSanitizer.sanitize(request);
+
+        sendNotificationRequestValidator.validateIds(sanitizedIds);
+        sendNotificationRequestValidator.validateDate(sanitizedRequest.getStart(), sanitizedRequest.getEnd(), maxTimeInterval,
+            maxDaysBackStartDate);
+
+        final var response = handelseRepository.countNotificationsForUnits(
+            sanitizedIds,
+            sanitizedRequest.getStatuses(),
+            sanitizedRequest.getStart(),
+            sanitizedRequest.getEnd()
+        );
+
+        LOG.info(
+            "Successfully counted Unit status updates. Using parameters: unitIds '{}', statuses '{}', activationTime '{}'",
+             request.getUnitIds(), request.getStatuses(), request.getActivationTime()
+        );
+
+        return CountNotificationResponseDTO.builder()
+            .count(response)
+            .max(maxAllowedNotificationSend)
             .build();
     }
 }

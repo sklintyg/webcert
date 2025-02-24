@@ -35,7 +35,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
+import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CountNotificationsForCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForCertificatesRequestDTO;
 
 @ExtendWith(MockitoExtension.class)
@@ -54,6 +56,11 @@ class SendNotificationsForCertificatesServiceTest {
         .certificateIds(SANITIZED_IDS)
         .statuses(STATUSES)
         .build();
+    private static final CountNotificationsForCertificatesRequestDTO COUNT_REQUEST = CountNotificationsForCertificatesRequestDTO.builder()
+        .certificateIds(IDS)
+        .statuses(STATUSES)
+        .build();
+
 
     @Mock
     SendNotificationCountValidator sendNotificationCountValidator;
@@ -65,6 +72,9 @@ class SendNotificationsForCertificatesServiceTest {
 
     @InjectMocks
     SendNotificationsForCertificatesService sendNotificationsForCertificatesService;
+
+    @Mock
+    HandelseRepository handelseRepository;
     
     @Test
     void shouldThrowIfCountExceedLimit() {
@@ -99,5 +109,34 @@ class SendNotificationsForCertificatesServiceTest {
 
             assertEquals(SANITIZED_IDS, captor.getValue());
         }
+    }
+
+    @Nested
+    class CountNotifications {
+
+        @BeforeEach
+        void setup() {
+            when(
+                handelseRepository.countNotificationsForCertificates(SANITIZED_IDS, STATUSES))
+                .thenReturn(COUNT);
+        }
+
+        @Test
+        void shouldReturnResponseFromRepository() {
+            final var response = sendNotificationsForCertificatesService.count(COUNT_REQUEST);
+
+            assertEquals(COUNT, response.getCount());
+        }
+
+        @Test
+        void shouldValidateIds() {
+            final var captor = ArgumentCaptor.forClass(List.class);
+            sendNotificationsForCertificatesService.count(COUNT_REQUEST);
+
+            verify(sendNotificationRequestValidator).validateCertificateIds(captor.capture());
+
+            assertEquals(SANITIZED_IDS, captor.getValue());
+        }
+
     }
 }
