@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -26,7 +27,6 @@ import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -44,6 +44,7 @@ import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.infra.intyginfo.dto.IntygInfoEvent;
 import se.inera.intyg.infra.intyginfo.dto.IntygInfoEvent.Source;
+import se.inera.intyg.infra.intyginfo.dto.IntygInfoEventType;
 import se.inera.intyg.webcert.web.service.intyginfo.GetIntygInfoEventsService;
 
 @ExtendWith(MockitoExtension.class)
@@ -77,6 +78,14 @@ class CertificateToIntygInfoConverterTest {
             )
             .testCertificate(true)
             .created(LocalDateTime.now())
+            .createdBy(
+                Staff.builder()
+                    .fullName("Dr. Jane Test")
+                    .personId("0987654321")
+                    .build()
+            )
+            .readyForSign(LocalDateTime.now().minusMonths(1))
+            .revoked(LocalDateTime.now().minusDays(1))
             .build();
         certificate = new Certificate();
         certificate.setMetadata(metadata);
@@ -98,6 +107,12 @@ class CertificateToIntygInfoConverterTest {
             .sent(true)
             .testCertificate(true)
             .created(LocalDateTime.now())
+            .createdBy(
+                Staff.builder()
+                    .fullName("Dr. Jane Test")
+                    .personId("0987654321")
+                    .build()
+            )
             .build();
         certificate = new Certificate();
         certificate.setMetadata(metadata);
@@ -128,6 +143,14 @@ class CertificateToIntygInfoConverterTest {
                 )
                 .testCertificate(true)
                 .created(LocalDateTime.now())
+                .createdBy(
+                    Staff.builder()
+                        .fullName("Dr. Jane Test")
+                        .personId("0987654321")
+                        .build()
+                )
+                .readyForSign(LocalDateTime.now().minusMonths(1))
+                .revoked(LocalDateTime.now().minusDays(1))
                 .build();
             certificate = new Certificate();
             certificate.setMetadata(metadata);
@@ -317,7 +340,105 @@ class CertificateToIntygInfoConverterTest {
             when(certificateRelationsToIntygInfoEventsConverter.convert(certificate)).thenReturn(Collections.singletonList(event2));
 
             final var result = certificateToIntygInfoConverter.convert(certificate, Collections.emptyList());
-            assertEquals(List.of(event1, event2), result.getEvents());
+            assertAll(
+                () -> assertEquals(event1, result.getEvents().getFirst())
+            );
+        }
+
+        @Test
+        void shouldSetCreatedEvent() {
+            when(getIntygInfoEventsService.get(metadata.getId())).thenReturn(Collections.emptyList());
+            final var result = certificateToIntygInfoConverter.convert(certificate, Collections.emptyList());
+            final var createdEvent = result.getEvents().stream()
+                .filter(event -> event.getType() == IntygInfoEventType.IS001)
+                .findFirst()
+                .orElseThrow();
+            assertAll(
+                () -> assertEquals(
+                    metadata.getCreated(),
+                    createdEvent.getDate()
+                )
+            );
+        }
+
+        @Test
+        void shouldSetRevokedEvent() {
+            when(getIntygInfoEventsService.get(metadata.getId())).thenReturn(Collections.emptyList());
+
+            final var result = certificateToIntygInfoConverter.convert(certificate, Collections.emptyList());
+
+            final var revokedEvent = result.getEvents().stream()
+                .filter(event -> event.getType() == IntygInfoEventType.IS009)
+                .findFirst()
+                .orElseThrow();
+            assertEquals(
+                metadata.getRevoked(),
+                revokedEvent.getDate()
+            );
+        }
+
+        @Test
+        void shouldSetReadyForSignEvent() {
+            when(getIntygInfoEventsService.get(metadata.getId())).thenReturn(Collections.emptyList());
+
+            final var result = certificateToIntygInfoConverter.convert(certificate, Collections.emptyList());
+
+            final var readyForSignEvent = result.getEvents().stream()
+                .filter(event -> event.getType() == IntygInfoEventType.IS018)
+                .findFirst()
+                .orElseThrow();
+            assertEquals(
+                metadata.getReadyForSign(),
+                readyForSignEvent.getDate()
+
+            );
+        }
+
+        @Test
+        void shouldSetSentEvent() {
+            when(getIntygInfoEventsService.get(metadata.getId())).thenReturn(Collections.emptyList());
+
+            final var result = certificateToIntygInfoConverter.convert(certificate, Collections.emptyList());
+
+            final var sentEvent = result.getEvents().stream()
+                .filter(event -> event.getType() == IntygInfoEventType.IS006)
+                .findFirst()
+                .orElseThrow();
+            assertAll(
+                () -> assertEquals(
+                    metadata.getRecipient().getSent(),
+                    sentEvent.getDate()
+
+                ),
+                () -> assertEquals(
+                    certificate.getMetadata().getRecipient().getName(),
+                    sentEvent.getData().get("intygsmottagare")
+                )
+            );
+        }
+
+        @Test
+        void shouldSetSignedEvent() {
+            when(getIntygInfoEventsService.get(metadata.getId())).thenReturn(Collections.emptyList());
+            final var result = certificateToIntygInfoConverter.convert(certificate, Collections.emptyList());
+            final var signedEvent = result.getEvents().stream()
+                .filter(event -> event.getType() == IntygInfoEventType.IS004)
+                .findFirst()
+                .orElseThrow();
+            assertAll(
+                () -> assertEquals(
+                    metadata.getSigned(),
+                    signedEvent.getDate()
+                ),
+                () -> assertEquals(
+                    metadata.getIssuedBy().getPersonId(),
+                    signedEvent.getData().get("hsaId")
+                ),
+                () -> assertEquals(
+                    metadata.getIssuedBy().getFullName(),
+                    signedEvent.getData().get("name")
+                )
+            );
         }
     }
 }
