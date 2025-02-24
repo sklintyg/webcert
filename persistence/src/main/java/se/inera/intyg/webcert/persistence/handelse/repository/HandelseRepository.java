@@ -104,7 +104,7 @@ public interface HandelseRepository extends JpaRepository<Handelse, Long> {
         SELECT COUNT(h.ID) FROM HANDELSE h
         INNER JOIN HANDELSE_METADATA hm ON h.ID = hm.HANDELSE_ID
         WHERE h.INTYGS_ID IN :certificateIds
-        AND hm.DELIVERY_STATUS IN :statuses """, nativeQuery = true)
+        AND hm.DELIVERY_STATUS IN :statuses""", nativeQuery = true)
     int countNotificationsForCertificates(
         @Param("certificateIds") List<String> certificateIds,
         @Param("statuses") List<NotificationDeliveryStatusEnum> statuses);
