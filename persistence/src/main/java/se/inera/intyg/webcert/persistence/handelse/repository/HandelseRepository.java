@@ -57,11 +57,10 @@ public interface HandelseRepository extends JpaRepository<Handelse, Long> {
     List<Handelse> getHandelseByIntygsIds(@Param("certificateIds") List<String> certificateIds);
 
 
-
     @Query(value = """
         SELECT COUNT(h.ID) FROM HANDELSE h
-        INNER JOIN HandelseMetadata hm ON h.ID = hm.HANDELSE_ID
-        WHERE h.ENHETS_ID LIKE :careGiverId AND hm.DELIVERY_STATUS IN :statuses
+        INNER JOIN HANDELSE_METADATA hm ON h.ID = hm.HANDELSE_ID
+        WHERE h.VARDGIVAR_ID = :careGiverId AND hm.DELIVERY_STATUS IN :statuses
         AND h.TIMESTAMP BETWEEN :start AND :end""", nativeQuery = true)
     int countInsertsForCareGiver(@Param("careGiverId") String careGiverId,
         @Param("statuses") List<NotificationDeliveryStatusEnum> statuses,

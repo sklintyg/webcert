@@ -101,7 +101,7 @@ public interface NotificationRedeliveryRepository extends
         INSERT INTO NOTIFICATION_REDELIVERY (HANDELSE_ID, REDELIVERY_STRATEGY, REDELIVERY_TIME)
         SELECT h.ID, 'STANDARD', :activationTime FROM HANDELSE h
         INNER JOIN HANDELSE_METADATA hm ON h.ID = hm.HANDELSE_ID
-        WHERE h.ENHETS_ID LIKE :careGiverId AND hm.DELIVERY_STATUS IN :statuses
+        WHERE h.VARDGIVAR_ID = :careGiverId AND hm.DELIVERY_STATUS IN :statuses
         AND h.TIMESTAMP BETWEEN :start AND :end ORDER BY h.TIMESTAMP""", nativeQuery = true)
     int sendNotificationsForCareGiver(@Param("careGiverId") String careGiverId,
         @Param("statuses") List<String> statuses,
