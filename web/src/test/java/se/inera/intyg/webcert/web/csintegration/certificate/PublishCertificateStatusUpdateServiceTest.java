@@ -23,9 +23,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -41,7 +43,10 @@ import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.webcert.notification_sender.notifications.services.redelivery.NotificationRedeliveryService;
+import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.integreradenhet.model.IntegreradEnhet;
+import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
@@ -59,6 +64,8 @@ class PublishCertificateStatusUpdateServiceTest {
     private final IntygUser intygUser = new IntygUser(INTYG_USER_HSA_ID);
     private final WebCertUser webCertUser = new WebCertUser();
 
+    @Mock
+    private NotificationRedeliveryService notificationRedeliveryService;
     @Mock
     private WebCertUserService webCertUserService;
     @Mock
@@ -120,7 +127,8 @@ class PublishCertificateStatusUpdateServiceTest {
         void shallGetCertificateXmlWithCertificateId() {
             final var argumentCaptor = ArgumentCaptor.forClass(String.class);
 
-            publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKAPAT, Optional.empty(), Optional.empty());
+            publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKAPAT, Optional.empty(), Optional.empty()
+            );
 
             verify(csIntegrationService).getInternalCertificateXml(argumentCaptor.capture());
             assertEquals(CERTIFICATE_ID, argumentCaptor.getValue());
@@ -144,7 +152,8 @@ class PublishCertificateStatusUpdateServiceTest {
             doReturn(xml).when(csIntegrationService)
                 .getInternalCertificateXml(CERTIFICATE_ID);
 
-            publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKAPAT, Optional.of(intygUser), Optional.empty());
+            publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKAPAT, Optional.of(intygUser), Optional.empty()
+            );
 
             verify(notificationMessageFactory).create(certificate, xml, HandelsekodEnum.SKAPAT,
                 INTYG_USER_HSA_ID);
@@ -241,5 +250,44 @@ class PublishCertificateStatusUpdateServiceTest {
 
             assertEquals(TYPE_VERSION, argumentCaptor.getValue());
         }
+    }
+
+    @Nested
+    class Resend {
+
+        @Test
+        void shallNotAllowNonIntegratedUnit() {
+            final var event = mock(Handelse.class);
+            final var notificationRedelivery = mock(NotificationRedelivery.class);
+
+            doReturn(null).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
+
+            publishCertificateStatusUpdateService.resend(certificate, event, notificationRedelivery);
+
+            verifyNoInteractions(notificationRedeliveryService);
+        }
+
+        @Test
+        void shallCallNotificationMessageFactoryWithHsaIdFromRequestIfPresent() {
+            final var expectedHsaId = "expectedHsaId";
+            final var event = mock(Handelse.class);
+            final var notificationRedelivery = mock(NotificationRedelivery.class);
+            final var notificationMessage = new NotificationMessage();
+            final var expectedStatusUpdate = "expected".getBytes(StandardCharsets.UTF_8);
+            notificationMessage.setStatusUpdateXml(expectedStatusUpdate);
+
+            doReturn(new IntegreradEnhet()).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
+            doReturn(expectedHsaId).when(event).getHanteratAv();
+            doReturn(HandelsekodEnum.SKAPAT).when(event).getCode();
+            doReturn(notificationMessage).when(notificationMessageFactory)
+                .create(certificate, xml, HandelsekodEnum.SKAPAT, expectedHsaId);
+            doReturn(xml).when(csIntegrationService)
+                .getInternalCertificateXml(CERTIFICATE_ID);
+
+            publishCertificateStatusUpdateService.resend(certificate, event, notificationRedelivery);
+
+            verify(notificationRedeliveryService).resend(notificationRedelivery, event, expectedStatusUpdate);
+        }
+
     }
 }
