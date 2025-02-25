@@ -92,11 +92,7 @@ public class CreateDraftCertificateFromCS implements CreateDraftCertificate {
                 NO_PREFILL_ELEMENTS
             );
 
-            publishCertificateStatusUpdateService.publish(
-                createdCertificate, HandelsekodEnum.SKAPAT,
-                Optional.of(user),
-                Optional.empty()
-            );
+            publishCertificateStatusUpdateService.publish(createdCertificate, HandelsekodEnum.SKAPAT, Optional.of(user), Optional.empty());
 
             return createSuccessResponse(createdCertificate.getMetadata().getId(), createdCertificate.getMetadata().getUnit().getUnitId());
         } catch (Forbidden exception) {
