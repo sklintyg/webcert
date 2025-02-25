@@ -55,7 +55,7 @@ public class SendNotificationsForUnitsService {
     @Transactional
     public SendNotificationResponseDTO send(SendNotificationsForUnitsRequestDTO request) {
         LOG.info(
-            "Attempting to resend status updates. Using parameters: certificateIds '{}', statuses '{}', start '{}', end '{}' ",
+            "Attempting to resend status updates. Using parameters: unitId '{}', statuses '{}', start '{}', end '{}' ",
             request.getUnitIds(), request.getStatuses(), request.getStart(), request.getEnd()
         );
 
@@ -77,7 +77,7 @@ public class SendNotificationsForUnitsService {
         );
 
         LOG.info(
-            "Successfully resent status updates. Number of updates: '{}'. Using parameters: certificateIds '{}', statuses '{}', start '{}', end '{}' ",
+            "Successfully resent status updates. Number of updates: '{}'. Using parameters: unitId '{}', statuses '{}', start '{}', end '{}' ",
             response, request.getUnitIds(), request.getStatuses(), request.getStart(), request.getEnd()
         );
 
