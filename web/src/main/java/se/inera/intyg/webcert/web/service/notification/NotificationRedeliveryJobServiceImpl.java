@@ -18,9 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.notification;
 
-import jakarta.xml.bind.JAXBException;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,9 +27,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
-import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
-import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.notification_sender.notifications.services.redelivery.NotificationRedeliveryService;
@@ -43,13 +37,14 @@ import se.inera.intyg.webcert.persistence.notification.model.NotificationRedeliv
 @Service
 public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliveryJobService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(NotificationRedeliveryJobServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(
+        NotificationRedeliveryJobServiceImpl.class);
+
+    @Autowired
+    private NotificationRedeliveryAggregator notificationRedeliveryAggregator;
 
     @Autowired
     private NotificationRedeliveryService notificationRedeliveryService;
-
-    @Autowired
-    private NotificationRedeliveryStatusUpdateCreatorService notificationRedeliveryStatusUpdateCreatorService;
 
     @Autowired
     private HandelseRepository eventRepository;
@@ -59,7 +54,9 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
         eventCategory = MdcLogConstants.EVENT_CATEGORY_PROCESS)
     public void resendScheduledNotifications(int batchSize) {
         final var startTimeInMilliseconds = System.currentTimeMillis();
-        final var notificationsToResend = notificationRedeliveryService.getNotificationsForRedelivery(batchSize);
+        final var notificationsToResend = notificationRedeliveryService.getNotificationsForRedelivery(
+            batchSize
+        );
         final var successfullySent = resend(notificationsToResend);
         final var endTimeInMilliseconds = System.currentTimeMillis();
 
@@ -100,9 +97,7 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
 
     private boolean resend(NotificationRedelivery notificationRedelivery, Handelse event) {
         try {
-            final var statusUpdateXml = getCertificateStatusUpdateXmlABytes(notificationRedelivery, event);
-            notificationRedeliveryService.resend(notificationRedelivery, event, statusUpdateXml);
-            return true;
+            return notificationRedeliveryAggregator.resend(notificationRedelivery, event);
         } catch (Exception e) {
             LOG.error(getLogInfoString(notificationRedelivery) + "An exception occurred.", e);
             notificationRedeliveryService.handleErrors(notificationRedelivery, event, e);
@@ -111,17 +106,10 @@ public class NotificationRedeliveryJobServiceImpl implements NotificationRedeliv
     }
 
     private String getLogInfoString(NotificationRedelivery redelivery) {
-        return String.format("Failure resending message [notificationId: %s, correlationId: %s]. ", redelivery.getEventId(),
+        return String.format("Failure resending message [notificationId: %s, correlationId: %s]. ",
+            redelivery.getEventId(),
             redelivery.getCorrelationId());
     }
-
-    private byte[] getCertificateStatusUpdateXmlABytes(NotificationRedelivery notificationRedelivery, Handelse event)
-        throws ModuleNotFoundException, TemporaryException, ModuleException, IOException, JAXBException {
-        final var statusUpdateXml = notificationRedeliveryStatusUpdateCreatorService
-            .getCertificateStatusUpdateXml(notificationRedelivery, event);
-        return statusUpdateXml.getBytes(StandardCharsets.UTF_8);
-    }
-
 
     private int noOfFailed(List<NotificationRedelivery> notificationsToResend, int successfullySent) {
         return total(notificationsToResend) - successfullySent;
