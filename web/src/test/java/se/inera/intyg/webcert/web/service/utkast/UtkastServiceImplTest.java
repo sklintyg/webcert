@@ -61,6 +61,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.UtkastStatus;
@@ -89,6 +90,7 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.GroupableItem;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.logging.HashUtility;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
@@ -171,6 +173,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     private DraftAccessServiceHelper draftAccessServiceHelper;
     @Mock
     private ModuleApi moduleApi;
+    @Spy
+    private HashUtility hashUtility;
 
     @Spy
     private CreateIntygsIdStrategy mockIdStrategy = new CreateIntygsIdStrategy() {
@@ -244,6 +248,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(moduleRegistry.resolveVersionFromUtlatandeJson(anyString(), anyString())).thenReturn(INTYG_TYPE_VERSION);
 
         when(logRequestFactory.createLogRequestFromUtkast(any(Utkast.class))).thenReturn(LogRequest.builder().build());
+        ReflectionTestUtils.setField(hashUtility, "salt", "salt");
     }
 
     private VardpersonReferens setupVardperson(HoSPersonal hoSPerson) {

@@ -51,13 +51,15 @@ public class ListCertificatesForCareWithQAResponderImpl implements ListCertifica
     private final IntygService intygService;
     private final GetCertificatesWithQAFromCertificateService getCertificatesWithQAFromCertificateService;
     private final NotificationService notificationService;
+    private final HashUtility hashUtility;
 
     public ListCertificatesForCareWithQAResponderImpl(IntygService intygService,
         GetCertificatesWithQAFromCertificateService getCertificatesWithQAFromCertificateService,
-        NotificationService notificationService) {
+        NotificationService notificationService, HashUtility hashUtility) {
         this.intygService = intygService;
         this.getCertificatesWithQAFromCertificateService = getCertificatesWithQAFromCertificateService;
         this.notificationService = notificationService;
+        this.hashUtility = hashUtility;
     }
 
     @Override
@@ -72,7 +74,7 @@ public class ListCertificatesForCareWithQAResponderImpl implements ListCertifica
         final var response = new ListCertificatesForCareWithQAResponseType();
         final var start = System.currentTimeMillis();
         log.info("Started processing request: PersonId: '{}' - CareProviderId '{}' - UnitIds '{}'",
-            HashUtility.hash(intygWithNotificationsRequest.getPersonnummer().getPersonnummer()),
+            hashUtility.hash(intygWithNotificationsRequest.getPersonnummer().getPersonnummer()),
             intygWithNotificationsRequest.getVardgivarId(),
             intygWithNotificationsRequest.getEnhetId()
         );
@@ -95,7 +97,7 @@ public class ListCertificatesForCareWithQAResponderImpl implements ListCertifica
             log.info(
                 "Request processing completed. PersonId: '{}' CareProviderId '{}' UnitIds '{}'."
                     + " Returning '{}' number of certificates. Elapsed time: '{}' milliseconds",
-                HashUtility.hash(intygWithNotificationsRequest.getPersonnummer().getPersonnummer()),
+                hashUtility.hash(intygWithNotificationsRequest.getPersonnummer().getPersonnummer()),
                 intygWithNotificationsRequest.getVardgivarId(),
                 intygWithNotificationsRequest.getEnhetId(),
                 response.getList() != null ? response.getList().getItem().size() : 0,

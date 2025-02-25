@@ -31,6 +31,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import se.inera.intyg.webcert.integration.pp.util.ObjectCreator;
+import se.inera.intyg.webcert.logging.HashUtility;
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitioner.v1.rivtabp21.GetPrivatePractitionerResponderInterface;
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitionerresponder.v1.GetPrivatePractitionerResponseType;
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitionerresponder.v1.GetPrivatePractitionerType;
@@ -40,11 +41,13 @@ import se.riv.infrastructure.directory.privatepractitioner.v1.ResultCodeEnum;
 @RunWith(MockitoJUnitRunner.class)
 public class GetPrivatePractitionerResponderTest {
 
-    private final static String HSAID = "HSA0000-123456789";
-    private final static String PERSONNUMMER = "19121212-1212";
+    private static final String HSAID = "HSA0000-123456789";
+    private static final String PERSONNUMMER = "19121212-1212";
 
     @Mock
     private HoSPersonStub personStub;
+    @Mock
+    private HashUtility hashUtility;
 
     @InjectMocks
     private GetPrivatePractitionerResponderInterface ws = new GetPrivatePractitionerResponderStub();
@@ -113,6 +116,5 @@ public class GetPrivatePractitionerResponderTest {
         request.setPersonalIdentityNumber(PERSONNUMMER);
         return request;
     }
-
 
 }

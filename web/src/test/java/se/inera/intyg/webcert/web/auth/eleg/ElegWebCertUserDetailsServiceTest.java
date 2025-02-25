@@ -53,6 +53,7 @@ import se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerResultC
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.integration.pp.services.PPRestService;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
+import se.inera.intyg.webcert.logging.HashUtility;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.auth.common.AuthConstants;
@@ -90,6 +91,8 @@ public class ElegWebCertUserDetailsServiceTest extends AuthoritiesConfigurationT
     private ElegAuthenticationMethodResolver elegAuthenticationMethodResolver;
     @Mock
     private SubscriptionService subscriptionService;
+    @Mock
+    private HashUtility hashUtility;
     @InjectMocks
     private ElegWebCertUserDetailsService elegWebCertUserDetailsService;
 
