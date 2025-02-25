@@ -1,5 +1,6 @@
 package se.inera.intyg.webcert.web.service.sendnotification;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
@@ -39,7 +40,7 @@ public class SendNotificationRequestSanitizer {
             .statuses(removeIncorrectStatuses(request.getStatuses()))
             .start(request.getStart())
             .end(request.getEnd())
-            .activationTime(request.getActivationTime())
+            .activationTime(getActivationTime(request.getActivationTime()))
             .build();
     }
 
@@ -48,7 +49,7 @@ public class SendNotificationRequestSanitizer {
             .statuses(removeIncorrectStatuses(request.getStatuses()))
             .start(request.getStart())
             .end(request.getEnd())
-            .activationTime(request.getActivationTime())
+            .activationTime(getActivationTime(request.getActivationTime()))
             .build();
     }
 
@@ -57,7 +58,25 @@ public class SendNotificationRequestSanitizer {
             .statuses(removeIncorrectStatuses(request.getStatuses()))
             .start(request.getStart())
             .end(request.getEnd())
-            .activationTime(request.getActivationTime())
+            .activationTime(getActivationTime(request.getActivationTime()))
+            .build();
+    }
+
+
+    public static CountNotificationsForUnitsRequestDTO sanitize(CountNotificationsForUnitsRequestDTO request) {
+        return CountNotificationsForUnitsRequestDTO.builder()
+            .statuses(removeIncorrectStatuses(request.getStatuses()))
+            .end(request.getEnd())
+            .start(request.getStart())
+            .activationTime(getActivationTime(request.getActivationTime()))
+            .build();
+    }
+
+    public static CountNotificationsForCertificatesRequestDTO sanitize(CountNotificationsForCertificatesRequestDTO request) {
+        return CountNotificationsForCertificatesRequestDTO.builder()
+            .certificateIds(removeBlankSpaces(request.getCertificateIds()))
+            .statuses(removeIncorrectStatuses(request.getStatuses()))
+            .activationTime(getActivationTime(request.getActivationTime()))
             .build();
     }
 
@@ -76,20 +95,7 @@ public class SendNotificationRequestSanitizer {
             .toList();
     }
 
-    public static CountNotificationsForUnitsRequestDTO sanitize(CountNotificationsForUnitsRequestDTO request) {
-        return CountNotificationsForUnitsRequestDTO.builder()
-            .statuses(removeIncorrectStatuses(request.getStatuses()))
-            .end(request.getEnd())
-            .start(request.getStart())
-            .activationTime(request.getActivationTime())
-            .build();
-    }
-
-    public static CountNotificationsForCertificatesRequestDTO sanitize(CountNotificationsForCertificatesRequestDTO request) {
-        return CountNotificationsForCertificatesRequestDTO.builder()
-            .certificateIds(removeBlankSpaces(request.getCertificateIds()))
-            .statuses(removeIncorrectStatuses(request.getStatuses()))
-            .activationTime(request.getActivationTime())
-            .build();
+    private static LocalDateTime getActivationTime(final LocalDateTime request) {
+        return request == null ? LocalDateTime.now() : request;
     }
 }
