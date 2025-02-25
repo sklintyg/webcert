@@ -62,6 +62,8 @@ public class SendNotificationsForCareGiverService {
 
         final var sanitizedId = SendNotificationRequestSanitizer.sanitize(careGiverId);
         final var sanitizedRequest = SendNotificationRequestSanitizer.sanitize(request);
+        final var stringStatuses = SendNotificationRequestSanitizer.getStatusesAsString(sanitizedRequest.getStatuses());
+
 
         sendNotificationRequestValidator.validateId(sanitizedId);
         sendNotificationRequestValidator.validateDate(sanitizedRequest.getStart(), sanitizedRequest.getEnd(), maxTimeInterval,
@@ -70,9 +72,7 @@ public class SendNotificationsForCareGiverService {
 
         final var response = notificationRedeliveryRepository.sendNotificationsForCareGiver(
             sanitizedId,
-            sanitizedRequest.getStatuses().stream()
-                .map(NotificationDeliveryStatusEnum::value)
-                .toList(),
+            stringStatuses,
             sanitizedRequest.getStart(),
             sanitizedRequest.getEnd(),
             sanitizedRequest.getActivationTime()
@@ -96,6 +96,7 @@ public class SendNotificationsForCareGiverService {
 
         final var sanitizedId = SendNotificationRequestSanitizer.sanitize(careGiverId);
         final var sanitizedRequest = SendNotificationRequestSanitizer.sanitize(request);
+        final var stringStatuses = SendNotificationRequestSanitizer.getStatusesAsString(sanitizedRequest.getStatuses());
 
         sendNotificationRequestValidator.validateId(sanitizedId);
         sendNotificationRequestValidator.validateDate(sanitizedRequest.getStart(), sanitizedRequest.getEnd(), maxTimeInterval,
@@ -103,7 +104,7 @@ public class SendNotificationsForCareGiverService {
 
         final var response = handelseRepository.countNotificationsForCareGiver(
             sanitizedId,
-            sanitizedRequest.getStatuses(),
+            stringStatuses,
             sanitizedRequest.getStart(),
             sanitizedRequest.getEnd()
         );

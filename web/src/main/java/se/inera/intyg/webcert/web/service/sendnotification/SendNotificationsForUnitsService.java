@@ -55,11 +55,12 @@ public class SendNotificationsForUnitsService {
     @Transactional
     public SendNotificationResponseDTO send(SendNotificationsForUnitsRequestDTO request) {
         LOG.info(
-            "Attempting to resend status updates. Using parameters: unitId '{}', statuses '{}', start '{}', end '{}' ",
-            request.getUnitIds(), request.getStatuses(), request.getStart(), request.getEnd()
+            "Attempting to resend status updates. Using parameters: unitId '{}', statuses '{}', start '{}', end '{}' activationTime '{}' ",
+            request.getUnitIds(), request.getStatuses(), request.getStart(), request.getEnd(), request.getActivationTime()
         );
 
         final var sanitizedRequest = SendNotificationRequestSanitizer.sanitize(request);
+        final var stringStatuses = SendNotificationRequestSanitizer.getStatusesAsString(sanitizedRequest.getStatuses());
 
         sendNotificationRequestValidator.validateIds(sanitizedRequest.getUnitIds());
         sendNotificationRequestValidator.validateDate(sanitizedRequest.getStart(), sanitizedRequest.getEnd(), maxTimeInterval,
@@ -68,17 +69,15 @@ public class SendNotificationsForUnitsService {
         sendNotificationCountValidator.units(sanitizedRequest);
         final var response = notificationRedeliveryRepository.sendNotificationsForUnits(
             sanitizedRequest.getUnitIds(),
-            sanitizedRequest.getStatuses().stream()
-                .map(NotificationDeliveryStatusEnum::value)
-                .toList(),
+            stringStatuses,
             sanitizedRequest.getStart(),
             sanitizedRequest.getEnd(),
             sanitizedRequest.getActivationTime()
         );
 
         LOG.info(
-            "Successfully resent status updates. Number of updates: '{}'. Using parameters: unitId '{}', statuses '{}', start '{}', end '{}' ",
-            response, request.getUnitIds(), request.getStatuses(), request.getStart(), request.getEnd()
+            "Successfully resent status updates. Number of updates: '{}'. Using parameters: unitId '{}', statuses '{}', start '{}', end '{}' activationTime '{}' ",
+            response, request.getUnitIds(), request.getStatuses(), request.getStart(), request.getEnd(), request.getActivationTime()
         );
 
         return SendNotificationResponseDTO.builder()
@@ -88,13 +87,15 @@ public class SendNotificationsForUnitsService {
 
     public CountNotificationResponseDTO count(CountNotificationsForUnitsRequestDTO request) {
         LOG.info(
-            "Attempting to count Unit status updates. Using parameters: unitIds '{}', statuses '{}', activationTime '{}'",
-            request.getUnitIds(), request.getStatuses(), request.getActivationTime()
+            "Attempting to count Unit status updates. Using parameters: unitIds '{}', statuses '{}'",
+            request.getUnitIds(), request.getStatuses()
         );
 
 
         final var sanitizedIds = SendNotificationRequestSanitizer.sanitize(request.getUnitIds());
         final var sanitizedRequest = SendNotificationRequestSanitizer.sanitize(request);
+        final var stringStatuses = SendNotificationRequestSanitizer.getStatusesAsString(sanitizedRequest.getStatuses());
+
 
         sendNotificationRequestValidator.validateIds(sanitizedIds);
         sendNotificationRequestValidator.validateDate(sanitizedRequest.getStart(), sanitizedRequest.getEnd(), maxTimeInterval,
@@ -102,14 +103,14 @@ public class SendNotificationsForUnitsService {
 
         final var response = handelseRepository.countNotificationsForUnits(
             sanitizedIds,
-            sanitizedRequest.getStatuses(),
+            stringStatuses,
             sanitizedRequest.getStart(),
             sanitizedRequest.getEnd()
         );
 
         LOG.info(
-            "Successfully counted Unit status updates. Number of updates: '{}'. Using parameters: unitIds '{}', statuses '{}', activationTime '{}'",
-            response, request.getUnitIds(), request.getStatuses(), request.getActivationTime()
+            "Successfully counted Unit status updates. Number of updates: '{}'. Using parameters: unitIds '{}', statuses '{}'",
+            response, request.getUnitIds(), request.getStatuses()
         );
 
         return CountNotificationResponseDTO.builder()
