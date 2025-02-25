@@ -109,8 +109,8 @@ public class SendNotificationsForCareGiverService {
         );
 
         LOG.info(
-            "Successfully counted status updates. Using parameters: careGiverId '{}', statuses '{}', start '{}', end '{}', activationTime '{}'",
-            careGiverId, request.getStatuses(), request.getStart(), request.getEnd(), request.getActivationTime()
+            "Successfully counted status updates. Number of updates: '{}'. Using parameters: careGiverId '{}', statuses '{}', start '{}', end '{}', activationTime '{}'",
+            response, careGiverId, request.getStatuses(), request.getStart(), request.getEnd(), request.getActivationTime()
         );
 
         return CountNotificationResponseDTO.builder()

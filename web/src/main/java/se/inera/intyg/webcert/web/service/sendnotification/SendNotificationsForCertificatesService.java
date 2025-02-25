@@ -91,8 +91,8 @@ public class SendNotificationsForCertificatesService {
         );
 
         LOG.info(
-            "Successfully counted certificate status updates. Using parameters: statuses '{}'",
-            request.getStatuses()
+            "Successfully counted certificate status updates. Number of updates: '{}'. Using parameters: statuses '{}'",
+            response, request.getStatuses()
         );
 
         return CountNotificationResponseDTO.builder()

@@ -108,8 +108,8 @@ public class SendNotificationsForUnitsService {
         );
 
         LOG.info(
-            "Successfully counted Unit status updates. Using parameters: unitIds '{}', statuses '{}', activationTime '{}'",
-             request.getUnitIds(), request.getStatuses(), request.getActivationTime()
+            "Successfully counted Unit status updates. Number of updates: '{}'. Using parameters: unitIds '{}', statuses '{}', activationTime '{}'",
+            response, request.getUnitIds(), request.getStatuses(), request.getActivationTime()
         );
 
         return CountNotificationResponseDTO.builder()
