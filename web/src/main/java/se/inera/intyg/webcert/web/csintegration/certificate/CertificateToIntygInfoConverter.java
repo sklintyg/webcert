@@ -27,6 +27,9 @@ import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
+import se.inera.intyg.infra.intyginfo.dto.IntygInfoEvent;
+import se.inera.intyg.infra.intyginfo.dto.IntygInfoEvent.Source;
+import se.inera.intyg.infra.intyginfo.dto.IntygInfoEventType;
 import se.inera.intyg.infra.intyginfo.dto.WcIntygInfo;
 import se.inera.intyg.webcert.web.service.intyginfo.GetIntygInfoEventsService;
 
@@ -75,10 +78,49 @@ public class CertificateToIntygInfoConverter {
 
         final var notificationEvents = getIntygInfoEventsService.get(metadata.getId());
         final var relationEvents = certificateRelationsToIntygInfoEventsConverter.convert(certificate);
+        final var createdEvent = new IntygInfoEvent(Source.WEBCERT, certificate.getMetadata().getCreated(), IntygInfoEventType.IS001);
+        createdEvent.addData("hsaId", certificate.getMetadata().getCreatedBy().getPersonId());
+        createdEvent.addData("name", certificate.getMetadata().getCreatedBy().getFullName());
+
+        IntygInfoEvent signedEvent = null;
+        if (certificate.getMetadata().getSigned() != null) {
+            signedEvent = new IntygInfoEvent(Source.WEBCERT, certificate.getMetadata().getSigned(), IntygInfoEventType.IS004);
+            signedEvent.addData("hsaId", certificate.getMetadata().getIssuedBy().getPersonId());
+            signedEvent.addData("name", certificate.getMetadata().getIssuedBy().getFullName());
+        }
+        IntygInfoEvent sentEvent = null;
+        if (certificate.getMetadata().isSent() && certificate.getMetadata().getRecipient() != null) {
+            sentEvent = new IntygInfoEvent(Source.WEBCERT, certificate.getMetadata().getRecipient().getSent(), IntygInfoEventType.IS006);
+            sentEvent.addData("intygsmottagare", certificate.getMetadata().getRecipient().getName());
+
+        }
+        IntygInfoEvent revokedEvent = null;
+        if (certificate.getMetadata().getRevokedAt() != null) {
+            revokedEvent = new IntygInfoEvent(Source.WEBCERT, certificate.getMetadata().getRevokedAt(), IntygInfoEventType.IS009);
+            revokedEvent.addData("hsaId", certificate.getMetadata().getRevokedBy().getPersonId());
+            revokedEvent.addData("name", certificate.getMetadata().getRevokedBy().getFullName());
+        }
+        IntygInfoEvent readyForSignEvent = null;
+        if (certificate.getMetadata().getReadyForSign() != null) {
+            readyForSignEvent = new IntygInfoEvent(Source.WEBCERT, certificate.getMetadata().getReadyForSign(), IntygInfoEventType.IS018);
+        }
 
         wcIntygInfo.setEvents(
             Streams.concat(notificationEvents.stream(), relationEvents.stream()).collect(Collectors.toList())
         );
+        wcIntygInfo.getEvents().add(createdEvent);
+        if (signedEvent != null) {
+            wcIntygInfo.getEvents().add(signedEvent);
+        }
+        if (sentEvent != null) {
+            wcIntygInfo.getEvents().add(sentEvent);
+        }
+        if (revokedEvent != null) {
+            wcIntygInfo.getEvents().add(revokedEvent);
+        }
+        if (readyForSignEvent != null) {
+            wcIntygInfo.getEvents().add(readyForSignEvent);
+        }
 
         return wcIntygInfo;
     }
