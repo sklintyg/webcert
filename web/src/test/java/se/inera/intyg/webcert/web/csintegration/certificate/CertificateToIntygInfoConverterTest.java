@@ -86,6 +86,12 @@ class CertificateToIntygInfoConverterTest {
             )
             .readyForSign(LocalDateTime.now().minusMonths(1))
             .revokedAt(LocalDateTime.now().minusDays(1))
+            .revokedBy(
+                Staff.builder()
+                    .fullName("NAME")
+                    .personId("HSA_ID")
+                    .build()
+            )
             .build();
         certificate = new Certificate();
         certificate.setMetadata(metadata);
@@ -151,6 +157,12 @@ class CertificateToIntygInfoConverterTest {
                 )
                 .readyForSign(LocalDateTime.now().minusMonths(1))
                 .revokedAt(LocalDateTime.now().minusDays(1))
+                .revokedBy(
+                    Staff.builder()
+                        .fullName("NAME")
+                        .personId("HSA_ID")
+                        .build()
+                )
                 .build();
             certificate = new Certificate();
             certificate.setMetadata(metadata);
