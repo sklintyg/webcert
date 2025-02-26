@@ -95,8 +95,8 @@ public class SendNotificationRequestSanitizer {
             .toList();
     }
 
-    private static LocalDateTime getActivationTime(final LocalDateTime request) {
-        return request == null ? LocalDateTime.now() : request;
+    private static LocalDateTime getActivationTime(LocalDateTime activationTime) {
+        return activationTime == null ? LocalDateTime.now() : activationTime;
     }
 
     public static List<String> getStatusesAsString(List<NotificationDeliveryStatusEnum> statuses) {
