@@ -107,7 +107,6 @@ public final class MaximalSjukskrivningstidRequest {
     public String toString() {
         return new ToStringBuilder(this)
             .append("icd10Koder", icd10Koder)
-            .append("personnummer", personnummer.getPersonnummerHash())
             .append("periods", periods)
             .toString();
     }

@@ -60,6 +60,7 @@ import se.inera.intyg.webcert.common.model.GroupableItem;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.logging.HashUtility;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
@@ -146,6 +147,8 @@ public class FragaSvarServiceImpl implements FragaSvarService {
     private StatisticsGroupByUtil statisticsGroupByUtil;
     @Autowired
     private PatientDetailsResolver patientDetailsResolver;
+    @Autowired
+    private HashUtility hashUtility;
     private AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
     private static Predicate<FragaSvar> isCorrectAmne(Amne amne) {
@@ -262,7 +265,7 @@ public class FragaSvarServiceImpl implements FragaSvarService {
                 throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
                     "Cannot list fraga/svar for '"
                         + intygsId + "'. PU service unavailable or personnummer "
-                        + pnr.getPersonnummerHash() + " not valid");
+                        + hashUtility.hash(pnr.getPersonnummer()) + " not valid");
             }
 
             authoritiesValidator.given(user, intygsTyp)

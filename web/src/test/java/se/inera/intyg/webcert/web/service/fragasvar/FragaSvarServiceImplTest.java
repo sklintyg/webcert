@@ -93,6 +93,7 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.GroupableItem;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.logging.HashUtility;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
@@ -162,6 +163,8 @@ public class FragaSvarServiceImplTest extends AuthoritiesConfigurationTestSetup 
     private PatientDetailsResolver patientDetailsResolver;
     @Mock
     private AuthoritiesHelper authoritiesHelper;
+    @Mock
+    private HashUtility hashUtility;
 
     @Spy
     private ObjectMapper objectMapper = new CustomObjectMapper();
