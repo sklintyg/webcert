@@ -90,7 +90,7 @@ public class CertificateToIntygInfoConverter {
         }
         IntygInfoEvent sentEvent = null;
         if (certificate.getMetadata().isSent() && certificate.getMetadata().getRecipient() != null) {
-            sentEvent = new IntygInfoEvent(Source.WEBCERT, certificate.getMetadata().getSigned(), IntygInfoEventType.IS006);
+            sentEvent = new IntygInfoEvent(Source.WEBCERT, certificate.getMetadata().getRecipient().getSent(), IntygInfoEventType.IS006);
             sentEvent.addData("intygsmottagare", certificate.getMetadata().getRecipient().getName());
 
         }
