@@ -95,8 +95,10 @@ public class CertificateToIntygInfoConverter {
 
         }
         IntygInfoEvent revokedEvent = null;
-        if (certificate.getMetadata().getRevoked() != null) {
-            revokedEvent = new IntygInfoEvent(Source.WEBCERT, certificate.getMetadata().getRevoked(), IntygInfoEventType.IS009);
+        if (certificate.getMetadata().getRevokedAt() != null) {
+            revokedEvent = new IntygInfoEvent(Source.WEBCERT, certificate.getMetadata().getRevokedAt(), IntygInfoEventType.IS009);
+            revokedEvent.addData("hsaId", certificate.getMetadata().getRevokedBy().getPersonId());
+            revokedEvent.addData("name", certificate.getMetadata().getRevokedBy().getFullName());
         }
         IntygInfoEvent readyForSignEvent = null;
         if (certificate.getMetadata().getReadyForSign() != null) {

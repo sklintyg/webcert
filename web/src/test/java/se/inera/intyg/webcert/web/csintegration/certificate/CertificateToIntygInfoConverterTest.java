@@ -85,7 +85,7 @@ class CertificateToIntygInfoConverterTest {
                     .build()
             )
             .readyForSign(LocalDateTime.now().minusMonths(1))
-            .revoked(LocalDateTime.now().minusDays(1))
+            .revokedAt(LocalDateTime.now().minusDays(1))
             .build();
         certificate = new Certificate();
         certificate.setMetadata(metadata);
@@ -150,7 +150,7 @@ class CertificateToIntygInfoConverterTest {
                         .build()
                 )
                 .readyForSign(LocalDateTime.now().minusMonths(1))
-                .revoked(LocalDateTime.now().minusDays(1))
+                .revokedAt(LocalDateTime.now().minusDays(1))
                 .build();
             certificate = new Certificate();
             certificate.setMetadata(metadata);
@@ -372,7 +372,7 @@ class CertificateToIntygInfoConverterTest {
                 .findFirst()
                 .orElseThrow();
             assertEquals(
-                metadata.getRevoked(),
+                metadata.getRevokedAt(),
                 revokedEvent.getDate()
             );
         }
