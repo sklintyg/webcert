@@ -75,7 +75,7 @@ class SendNotificationsForCertificatesServiceTest {
 
     @Mock
     HandelseRepository handelseRepository;
-    
+
     @Test
     void shouldThrowIfCountExceedLimit() {
         doThrow(IllegalArgumentException.class).when(sendNotificationCountValidator)
@@ -117,7 +117,7 @@ class SendNotificationsForCertificatesServiceTest {
         @BeforeEach
         void setup() {
             when(
-                handelseRepository.countNotificationsForCertificates(SANITIZED_IDS, STATUSES))
+                handelseRepository.countNotificationsForCertificates(SANITIZED_IDS, List.of("FAILURE")))
                 .thenReturn(COUNT);
         }
 

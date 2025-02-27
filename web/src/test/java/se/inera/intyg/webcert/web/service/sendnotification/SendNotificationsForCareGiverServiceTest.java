@@ -195,7 +195,7 @@ class SendNotificationsForCareGiverServiceTest {
         @BeforeEach
         void setup() {
             when(
-                handelseRepository.countNotificationsForCareGiver(SANITIZED_ID, STATUSES, START, END))
+                handelseRepository.countNotificationsForCareGiver(SANITIZED_ID, List.of("FAILURE"), START, END))
                 .thenReturn(COUNT);
         }
 

@@ -47,7 +47,7 @@ class SendNotificationCountValidatorTest {
                 .statuses(List.of(NotificationDeliveryStatusEnum.FAILURE))
                 .build();
 
-            when(handelseRepository.countInsertsForCareGiver(ID, request.getStatuses(), request.getStart(),
+            when(handelseRepository.countInsertsForCareGiver(ID, List.of("FAILURE"), request.getStart(),
                 request.getEnd())).thenReturn(LIMIT + 1);
 
             assertThrows(IllegalArgumentException.class, () -> sendNotificationCountValidator.careGiver(ID, request));
@@ -61,7 +61,7 @@ class SendNotificationCountValidatorTest {
                 .statuses(List.of(NotificationDeliveryStatusEnum.FAILURE))
                 .build();
 
-            when(handelseRepository.countInsertsForCareGiver(ID, request.getStatuses(), request.getStart(),
+            when(handelseRepository.countInsertsForCareGiver(ID, List.of("FAILURE"), request.getStart(),
                 request.getEnd())).thenReturn(LIMIT);
 
             assertDoesNotThrow(() -> sendNotificationCountValidator.careGiver(ID, request));
@@ -80,7 +80,7 @@ class SendNotificationCountValidatorTest {
                 .unitIds(List.of("unit1", "unit2"))
                 .build();
 
-            when(handelseRepository.countInsertsForUnits(request.getUnitIds(), request.getStatuses(),
+            when(handelseRepository.countInsertsForUnits(request.getUnitIds(), List.of("FAILURE"),
                 request.getStart(),
                 request.getEnd())).thenReturn(LIMIT + 1);
 
@@ -96,7 +96,7 @@ class SendNotificationCountValidatorTest {
                 .unitIds(List.of("unit1", "unit2"))
                 .build();
 
-            when(handelseRepository.countInsertsForUnits(request.getUnitIds(), request.getStatuses(),
+            when(handelseRepository.countInsertsForUnits(request.getUnitIds(), List.of("FAILURE"),
                 request.getStart(),
                 request.getEnd())).thenReturn(LIMIT);
 
@@ -114,7 +114,7 @@ class SendNotificationCountValidatorTest {
                 .certificateIds(List.of("cert1", "cert2"))
                 .build();
 
-            when(handelseRepository.countInsertsForCertificates(request.getCertificateIds(), request.getStatuses()))
+            when(handelseRepository.countInsertsForCertificates(request.getCertificateIds(), List.of("FAILURE")))
                 .thenReturn(LIMIT + 1);
 
             assertThrows(IllegalArgumentException.class, () -> sendNotificationCountValidator.certificates(request));
@@ -127,7 +127,7 @@ class SendNotificationCountValidatorTest {
                 .certificateIds(List.of("cert1", "cert2"))
                 .build();
 
-            when(handelseRepository.countInsertsForCertificates(request.getCertificateIds(), request.getStatuses()))
+            when(handelseRepository.countInsertsForCertificates(request.getCertificateIds(), List.of("FAILURE")))
                 .thenReturn(LIMIT);
 
             assertDoesNotThrow(() -> sendNotificationCountValidator.certificates(request));
