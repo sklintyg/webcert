@@ -54,15 +54,15 @@ public class SendNotificationsForCertificatesService {
         );
 
         final var sanitizedRequest = SendNotificationRequestSanitizer.sanitize(request);
+        final var stringStatuses = SendNotificationRequestSanitizer.getStatusesAsString(sanitizedRequest.getStatuses());
+
 
         sendNotificationRequestValidator.validateCertificateIds(sanitizedRequest.getCertificateIds());
         sendNotificationCountValidator.certificates(sanitizedRequest);
 
         final var response = notificationRedeliveryRepository.sendNotificationsForCertificates(
             sanitizedRequest.getCertificateIds(),
-            sanitizedRequest.getStatuses().stream()
-                .map(NotificationDeliveryStatusEnum::value)
-                .toList()
+            stringStatuses
         );
 
         LOG.info(
@@ -82,17 +82,18 @@ public class SendNotificationsForCertificatesService {
         );
 
         final var sanitizedRequest = SendNotificationRequestSanitizer.sanitize(request);
+        final var stringStatuses = SendNotificationRequestSanitizer.getStatusesAsString(sanitizedRequest.getStatuses());
 
         sendNotificationRequestValidator.validateCertificateIds(sanitizedRequest.getCertificateIds());
 
         final var response = handelseRepository.countNotificationsForCertificates(
             sanitizedRequest.getCertificateIds(),
-            sanitizedRequest.getStatuses()
+            stringStatuses
         );
 
         LOG.info(
-            "Successfully counted certificate status updates. Using parameters: statuses '{}'",
-            request.getStatuses()
+            "Successfully counted certificate status updates. Number of updates: '{}'. Using parameters: statuses '{}'",
+            response, request.getStatuses()
         );
 
         return CountNotificationResponseDTO.builder()

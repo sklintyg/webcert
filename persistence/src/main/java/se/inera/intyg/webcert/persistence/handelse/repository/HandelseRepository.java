@@ -23,7 +23,6 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 
 public interface HandelseRepository extends JpaRepository<Handelse, Long> {
@@ -63,7 +62,7 @@ public interface HandelseRepository extends JpaRepository<Handelse, Long> {
         WHERE h.VARDGIVAR_ID = :careGiverId AND hm.DELIVERY_STATUS IN :statuses
         AND h.TIMESTAMP BETWEEN :start AND :end""", nativeQuery = true)
     int countInsertsForCareGiver(@Param("careGiverId") String careGiverId,
-        @Param("statuses") List<NotificationDeliveryStatusEnum> statuses,
+        @Param("statuses") List<String> statuses,
         @Param("start") LocalDateTime start,
         @Param("end") LocalDateTime end);
 
@@ -72,7 +71,7 @@ public interface HandelseRepository extends JpaRepository<Handelse, Long> {
         INNER JOIN HANDELSE_METADATA hm ON h.ID = hm.HANDELSE_ID
         WHERE h.INTYGS_ID IN :certificateIds AND hm.DELIVERY_STATUS IN :statuses""", nativeQuery = true)
     int countInsertsForCertificates(@Param("certificateIds") List<String> certificateIds,
-        @Param("statuses") List<NotificationDeliveryStatusEnum> statuses);
+        @Param("statuses") List<String> statuses);
 
     @Query(value = """
         SELECT COUNT(h.ID) FROM HANDELSE h
@@ -80,7 +79,7 @@ public interface HandelseRepository extends JpaRepository<Handelse, Long> {
         WHERE h.ENHETS_ID IN :unitIds AND hm.DELIVERY_STATUS IN :statuses
         AND h.TIMESTAMP BETWEEN :start AND :end""", nativeQuery = true)
     int countInsertsForUnits(@Param("unitIds") List<String> unitIds,
-        @Param("statuses") List<NotificationDeliveryStatusEnum> statuses,
+        @Param("statuses") List<String> statuses,
         @Param("start") LocalDateTime start,
         @Param("end") LocalDateTime end);
 
@@ -92,10 +91,10 @@ public interface HandelseRepository extends JpaRepository<Handelse, Long> {
     @Query(value = """
         SELECT COUNT(h.ID) FROM HANDELSE h
         INNER JOIN HANDELSE_METADATA hm ON h.ID = hm.HANDELSE_ID
-        WHERE h.VARDGIVAR_ID EQUALS :careGiverId AND hm.DELIVERY_STATUS IN :statuses
+        WHERE h.VARDGIVAR_ID = :careGiverId AND hm.DELIVERY_STATUS IN :statuses
         AND h.TIMESTAMP BETWEEN :start AND :end""", nativeQuery = true)
     int countNotificationsForCareGiver(@Param("careGiverId") String careGiverId,
-        @Param("statuses") List<NotificationDeliveryStatusEnum> statuses,
+        @Param("statuses") List<String> statuses,
         @Param("start") LocalDateTime start,
         @Param("end") LocalDateTime end);
 
@@ -106,7 +105,7 @@ public interface HandelseRepository extends JpaRepository<Handelse, Long> {
         AND hm.DELIVERY_STATUS IN :statuses""", nativeQuery = true)
     int countNotificationsForCertificates(
         @Param("certificateIds") List<String> certificateIds,
-        @Param("statuses") List<NotificationDeliveryStatusEnum> statuses);
+        @Param("statuses") List<String> statuses);
 
     @Query(value = """
         SELECT COUNT(h.ID) FROM HANDELSE h
@@ -115,7 +114,7 @@ public interface HandelseRepository extends JpaRepository<Handelse, Long> {
         AND h.TIMESTAMP BETWEEN :start AND :end""", nativeQuery = true)
     int countNotificationsForUnits(
         @Param("unitIds") List<String> unitIds,
-        @Param("statuses") List<NotificationDeliveryStatusEnum> statuses,
+        @Param("statuses") List<String> statuses,
         @Param("start") LocalDateTime start,
         @Param("end") LocalDateTime end);
 

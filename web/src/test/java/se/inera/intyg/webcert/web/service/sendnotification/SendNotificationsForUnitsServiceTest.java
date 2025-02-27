@@ -180,7 +180,7 @@ class SendNotificationsForUnitsServiceTest {
         @BeforeEach
         void setup() {
             when(
-                handelseRepository.countNotificationsForUnits(SANITIZED_IDS, STATUSES, START, END))
+                handelseRepository.countNotificationsForUnits(SANITIZED_IDS, List.of("FAILURE"), START, END))
                 .thenReturn(COUNT);
         }
 

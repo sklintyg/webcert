@@ -1,8 +1,10 @@
 package se.inera.intyg.webcert.web.service.sendnotification;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
 import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForCareGiverRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForCertificatesRequestDTO;
@@ -19,15 +21,19 @@ public class SendNotificationCountValidator {
 
     public void careGiver(String careGiverId, SendNotificationsForCareGiverRequestDTO request) {
         final var insertsForCareGiver = handelseRepository.countInsertsForCareGiver(
-            careGiverId, request.getStatuses(), request.getStart(), request.getEnd());
+            careGiverId, getStatusesAsString(request.getStatuses()), request.getStart(), request.getEnd());
         if (insertsForCareGiver > maxAllowedNotificationSend) {
             throw new IllegalArgumentException(buildErrorMessage(insertsForCareGiver));
         }
     }
 
+    private static List<String> getStatusesAsString(List<NotificationDeliveryStatusEnum> statuses) {
+        return statuses.stream().map(NotificationDeliveryStatusEnum::value).toList();
+    }
+
     public void certificates(SendNotificationsForCertificatesRequestDTO request) {
         final var insertsForCertificates = handelseRepository.countInsertsForCertificates(
-            request.getCertificateIds(), request.getStatuses());
+            request.getCertificateIds(), getStatusesAsString(request.getStatuses()));
         if (insertsForCertificates > maxAllowedNotificationSend) {
             throw new IllegalArgumentException(buildErrorMessage(insertsForCertificates));
         }
@@ -35,7 +41,7 @@ public class SendNotificationCountValidator {
 
     public void units(SendNotificationsForUnitsRequestDTO request) {
         final var insertsForUnits = handelseRepository.countInsertsForUnits(
-            request.getUnitIds(), request.getStatuses(), request.getStart(), request.getEnd());
+            request.getUnitIds(), getStatusesAsString(request.getStatuses()), request.getStart(), request.getEnd());
         if (insertsForUnits > maxAllowedNotificationSend) {
             throw new IllegalArgumentException(buildErrorMessage(insertsForUnits));
         }
