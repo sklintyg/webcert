@@ -29,7 +29,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 
 public interface NotificationRedeliveryRepository extends
@@ -76,91 +75,44 @@ public interface NotificationRedeliveryRepository extends
 
     @Modifying
     @Query(value = """
-        INSERT INTO NotificationRedelivery (HANDELSE_ID, REDELIVERY_STRATEGY, REDELIVERY_TIME)
-        SELECT h.id, 'STANDARD', :activationTime FROM Handelese h
-        INNER JOIN HandeleseMetadata hm ON h.id = hm.handeleseId
-        WHERE h.intygsId IN :certificateIds AND hm.deliveryStatus IN :statuses
-        AND h.timestamp BETWEEN :start AND :end ORDER BY h.timestamp""", nativeQuery = true)
+        INSERT INTO NOTIFICATION_REDELIVERY (HANDELSE_ID, REDELIVERY_STRATEGY, REDELIVERY_TIME)
+        SELECT h.ID, 'STANDARD', now() FROM HANDELSE h
+        INNER JOIN HANDELSE_METADATA hm ON h.ID = hm.HANDELSE_ID
+        WHERE h.INTYGS_ID IN :certificateIds AND hm.DELIVERY_STATUS IN :statuses
+        ORDER BY h.TIMESTAMP""", nativeQuery = true)
     int sendNotificationsForCertificates(@Param("certificateIds") List<String> certificateIds,
-        @Param("statuses") List<NotificationDeliveryStatusEnum> statuses,
-        @Param("start") LocalDateTime start,
-        @Param("end") LocalDateTime end,
-        @Param("activationTime") LocalDateTime activationTime);
+        @Param("statuses") List<String> statuses);
 
     @Modifying
     @Query(value = """
-        INSERT INTO NotificationRedelivery (HANDELSE_ID, REDELIVERY_STRATEGY, REDELIVERY_TIME)
-        SELECT h.id, 'STANDARD', :activationTime FROM Handelese h
-        INNER JOIN HandeleseMetadata hm ON h.id = hm.handeleseId
-        WHERE h.enhetsId IN :unitIds AND hm.deliveryStatus IN :statuses
-        AND h.timestamp BETWEEN :start AND :end ORDER BY h.timestamp""", nativeQuery = true)
+        INSERT INTO NOTIFICATION_REDELIVERY (HANDELSE_ID, REDELIVERY_STRATEGY, REDELIVERY_TIME)
+        SELECT h.ID, 'STANDARD', :activationTime FROM HANDELSE h
+        INNER JOIN HANDELSE_METADATA hm ON h.ID = hm.HANDELSE_ID
+        WHERE h.ENHETS_ID IN :unitIds AND hm.DELIVERY_STATUS IN :statuses
+        AND h.TIMESTAMP BETWEEN :start AND :end ORDER BY h.TIMESTAMP""", nativeQuery = true)
     int sendNotificationsForUnits(@Param("unitIds") List<String> unitIds,
-        @Param("statuses") List<NotificationDeliveryStatusEnum> statuses,
+        @Param("statuses") List<String> statuses,
         @Param("start") LocalDateTime start,
         @Param("end") LocalDateTime end,
         @Param("activationTime") LocalDateTime activationTime);
 
-    @Query(value = """
-        SELECT COUNT(h.id) FROM Handelese h
-        INNER JOIN HandeleseMetadata hm ON h.id = hm.handeleseId
-        WHERE h.enhetsId LIKE :careGiverId AND hm.deliveryStatus IN :statuses
-        AND h.timestamp BETWEEN :start AND :end""", nativeQuery = true)
-    int countNotificationsForCareGiver(@Param("careGiverId") String careGiverId,
-        @Param("statuses") List<NotificationDeliveryStatusEnum> statuses,
-        @Param("start") LocalDateTime start,
-        @Param("end") LocalDateTime end);
-
     @Modifying
     @Query(value = """
-        INSERT INTO NotificationRedelivery (HANDELSE_ID, REDELIVERY_STRATEGY, REDELIVERY_TIME)
-        SELECT h.id, 'STANDARD', :activationTime FROM Handelese h
-        INNER JOIN HandeleseMetadata hm ON h.id = hm.handeleseId
-        WHERE h.enhetsId LIKE :careGiverId AND hm.deliveryStatus IN :statuses
-        AND h.timestamp BETWEEN :start AND :end ORDER BY h.timestamp""", nativeQuery = true)
+        INSERT INTO NOTIFICATION_REDELIVERY (HANDELSE_ID, REDELIVERY_STRATEGY, REDELIVERY_TIME)
+        SELECT h.ID, 'STANDARD', :activationTime FROM HANDELSE h
+        INNER JOIN HANDELSE_METADATA hm ON h.ID = hm.HANDELSE_ID
+        WHERE h.VARDGIVAR_ID = :careGiverId AND hm.DELIVERY_STATUS IN :statuses
+        AND h.TIMESTAMP BETWEEN :start AND :end ORDER BY h.TIMESTAMP""", nativeQuery = true)
     int sendNotificationsForCareGiver(@Param("careGiverId") String careGiverId,
-        @Param("statuses") List<NotificationDeliveryStatusEnum> statuses,
+        @Param("statuses") List<String> statuses,
         @Param("start") LocalDateTime start,
         @Param("end") LocalDateTime end,
         @Param("activationTime") LocalDateTime activationTime);
 
     @Modifying
     @Query(value = """
-        INSERT INTO NotificationRedelivery (HANDELSE_ID, REDELIVERY_STRATEGY, REDELIVERY_TIME) \
-        SELECT h.id, 'STANDARD', now() FROM Handelese h WHERE h.id = :notificationId""", nativeQuery = true)
+        INSERT INTO NOTIFICATION_REDELIVERY (HANDELSE_ID, REDELIVERY_STRATEGY, REDELIVERY_TIME) \
+        SELECT h.ID, 'STANDARD', now() FROM HANDELSE h WHERE h.ID = :notificationId""", nativeQuery = true)
     int sendNotification(@Param("notificationId") String notificationId);
 
-    @Query(value = """
-        SELECT COUNT(h.id) FROM Handelese h
-        INNER JOIN HandeleseMetadata hm ON h.id = hm.handeleseId
-        WHERE h.enhetsId LIKE :careGiverId AND hm.deliveryStatus IN :statuses
-        AND h.timestamp BETWEEN :start AND :end""", nativeQuery = true)
-    int countInsertsForCareGiver(@Param("careGiverId") String careGiverId,
-        @Param("statuses") List<NotificationDeliveryStatusEnum> statuses,
-        @Param("start") LocalDateTime start,
-        @Param("end") LocalDateTime end);
-
-    @Query(value = """
-        SELECT COUNT(h.id) FROM Handelese h
-        INNER JOIN HandeleseMetadata hm ON h.id = hm.handeleseId
-        WHERE h.intygsId IN :certificateIds AND hm.deliveryStatus IN :statuses
-        AND h.timestamp BETWEEN :start AND :end""", nativeQuery = true)
-    int countInsertsForCertificates(@Param("certificateIds") List<String> certificateIds,
-        @Param("statuses") List<NotificationDeliveryStatusEnum> statuses,
-        @Param("start") LocalDateTime start,
-        @Param("end") LocalDateTime end);
-
-    @Query(value = """
-        SELECT COUNT(h.id) FROM Handelese h
-        INNER JOIN HandeleseMetadata hm ON h.id = hm.handeleseId
-        WHERE h.enhetsId IN :unitIds AND hm.deliveryStatus IN :statuses
-        AND h.timestamp BETWEEN :start AND :end""", nativeQuery = true)
-    int countInsertsForUnits(@Param("unitIds") List<String> unitIds,
-        @Param("statuses") List<NotificationDeliveryStatusEnum> statuses,
-        @Param("start") LocalDateTime start,
-        @Param("end") LocalDateTime end);
-
-    @Query(value = """
-        SELECT COUNT(h.id) FROM Handelese h
-        WHERE h.id = :notificationId""", nativeQuery = true)
-    int countNotification(@Param("notificationId") String notificationId);
 }

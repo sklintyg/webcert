@@ -20,21 +20,18 @@ package se.inera.intyg.webcert.web.service.intyginfo;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -50,8 +47,6 @@ import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarRepository;
-import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
-import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -62,28 +57,18 @@ import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 import se.inera.intyg.webcert.web.service.relation.CertificateRelationService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeView.ArendeType;
 
-@Service
-public class IntygInfoService {
+@Service("getIntygInfoFromWC")
+@RequiredArgsConstructor
+public class IntygInfoService implements IntygInfoServiceInterface {
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygInfoService.class);
 
-    @Autowired
-    private UtkastRepository utkastRepository;
-
-    @Autowired
-    private ArendeService arendeService;
-
-    @Autowired
-    private FragaSvarRepository fragaSvarRepository;
-
-    @Autowired
-    private IntygModuleRegistry moduleRegistry;
-
-    @Autowired
-    private HandelseRepository handelseRepository;
-
-    @Autowired
-    private CertificateRelationService relationService;
+    private final UtkastRepository utkastRepository;
+    private final ArendeService arendeService;
+    private final FragaSvarRepository fragaSvarRepository;
+    private final IntygModuleRegistry moduleRegistry;
+    private final GetIntygInfoEventsService getIntygInfoEventsService;
+    private final CertificateRelationService relationService;
 
     @Value("${job.utkastlock.locked.after.day}")
     private int lockedAfterDay;
@@ -94,12 +79,13 @@ public class IntygInfoService {
 
         WcIntygInfo response = new WcIntygInfo();
 
-        boolean foundHandelser = addHandelse(intygId, response);
+        final var events = getIntygInfoEventsService.get(intygId);
+        response.getEvents().addAll(events);
         boolean foundArenden = addArendeInformation(intygId, response);
 
         // Utkast not found but may have arenden (created in other system) or handelser (deleted utkast)
         if (utkast == null) {
-            if (foundHandelser || foundArenden) {
+            if (!events.isEmpty() || foundArenden) {
                 response.setIntygId(intygId);
 
                 return Optional.of(response);
@@ -108,7 +94,11 @@ public class IntygInfoService {
             return Optional.empty();
         }
 
-        response.setCreatedInWC(true);
+        response.setCreatedInWC(events.stream().anyMatch(
+            event -> event.getType() == IntygInfoEventType.IS101
+                || event.getType() == IntygInfoEventType.IS102
+                || event.getType() == IntygInfoEventType.IS103
+        ));
         response.setIntygId(utkast.getIntygsId());
         response.setIntygType(utkast.getIntygsTyp());
         response.setIntygVersion(utkast.getIntygTypeVersion());
@@ -146,64 +136,6 @@ public class IntygInfoService {
         addRelations(intygId, response);
 
         return Optional.of(response);
-    }
-
-    private boolean addHandelse(String intygsId, WcIntygInfo response) {
-        List<Handelse> handelses = handelseRepository.findByIntygsId(intygsId);
-        List<IntygInfoEvent> events = new ArrayList<>();
-
-        boolean createdInWC = false;
-
-        for (Handelse handelse : handelses) {
-            switch (handelse.getCode()) {
-
-                case SKAPAT:
-                    createdInWC = true;
-                    events.add(new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.IS101));
-                    break;
-                case ANDRAT:
-                    createdInWC = true;
-                    events.add(new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.IS102));
-                    break;
-                case RADERA:
-                    createdInWC = true;
-                    events.add(new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.IS103));
-                    break;
-                case KFSIGN:
-                    events.add(new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.IS105));
-                    break;
-                case SIGNAT:
-                    events.add(new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.IS106));
-                    break;
-                case SKICKA:
-                    events.add(new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.IS107));
-                    break;
-                case MAKULE:
-                    events.add(new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.IS108));
-                    break;
-                case NYFRFM:
-                    events.add(new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.IS109));
-                    break;
-                case NYFRFV:
-                    events.add(new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.IS110));
-                    break;
-                case NYSVFM:
-                    events.add(new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.IS111));
-                    break;
-                case HANFRFM:
-                    events.add(new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.IS112));
-                    break;
-                case HANFRFV:
-                    events.add(new IntygInfoEvent(Source.WEBCERT, handelse.getTimestamp(), IntygInfoEventType.IS113));
-                    break;
-            }
-        }
-
-        response.setCreatedInWC(createdInWC);
-
-        response.getEvents().addAll(events);
-
-        return !events.isEmpty();
     }
 
     private void addRelations(String intygsId, WcIntygInfo response) {

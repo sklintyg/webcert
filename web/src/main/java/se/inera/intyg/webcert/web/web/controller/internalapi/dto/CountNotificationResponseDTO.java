@@ -21,22 +21,20 @@ package se.inera.intyg.webcert.web.web.controller.internalapi.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import java.util.List;
 import lombok.Builder;
-import lombok.Value;
-import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
-import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForCertificatesRequestDTO.SendNotificationsForCertificatesRequestDTOBuilder;
+import lombok.Data;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CountNotificationResponseDTO.CountNotificationResponseDTOBuilder;
 
-@Value
+@Data
 @Builder
-@JsonDeserialize(builder = SendNotificationsForCertificatesRequestDTOBuilder.class)
-public class SendNotificationsForCertificatesRequestDTO {
+@JsonDeserialize(builder = CountNotificationResponseDTOBuilder.class)
+public class CountNotificationResponseDTO {
 
-    List<String> certificateIds;
-    List<NotificationDeliveryStatusEnum> statuses;
+    private Integer count;
+    private Integer max;
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class SendNotificationsForCertificatesRequestDTOBuilder {
+    public static class CountNotificationResponseDTOBuilder {
 
     }
 }

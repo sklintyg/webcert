@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -17,23 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.web.controller.internalapi.dto;
+package se.inera.intyg.webcert.web.service.intyginfo;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import lombok.Builder;
-import lombok.Data;
-import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationResponseDTO.SendNotificationResponseDTOBuilder;
+import java.util.Optional;
+import se.inera.intyg.infra.intyginfo.dto.WcIntygInfo;
 
-@Data
-@Builder
-@JsonDeserialize(builder = SendNotificationResponseDTOBuilder.class)
-public class SendNotificationResponseDTO {
+public interface IntygInfoServiceInterface {
 
-    private Integer count;
-
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class SendNotificationResponseDTOBuilder {
-
-    }
+    Optional<WcIntygInfo> getIntygInfo(String intygId);
 }

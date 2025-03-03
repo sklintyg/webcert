@@ -21,13 +21,10 @@ package se.inera.intyg.webcert.web.service.sendnotification;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -37,36 +34,33 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
+import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CountNotificationsForCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForCertificatesRequestDTO;
 
 @ExtendWith(MockitoExtension.class)
 class SendNotificationsForCertificatesServiceTest {
 
     private static final Integer COUNT = 10;
-    private static final Integer LIMIT = 30;
     private static final List<String> IDS = List.of("ID ID");
     private static final List<String> SANITIZED_IDS = List.of("IDID");
     private static final List<NotificationDeliveryStatusEnum> STATUSES = List.of(NotificationDeliveryStatusEnum.FAILURE);
-    private static final LocalDateTime START = LocalDateTime.now().minusDays(1);
-    private static final LocalDateTime END = LocalDateTime.now();
-    private static final LocalDateTime ACTIVATION_TIME = LocalDateTime.now();
+    private static final List<String> STATUS_LIST = List.of("FAILURE");
     private static final SendNotificationsForCertificatesRequestDTO REQUEST = SendNotificationsForCertificatesRequestDTO.builder()
         .certificateIds(IDS)
         .statuses(STATUSES)
-        .start(START)
-        .end(END)
-        .activationTime(ACTIVATION_TIME)
         .build();
     private static final SendNotificationsForCertificatesRequestDTO SANITIZED_REQUEST = SendNotificationsForCertificatesRequestDTO.builder()
         .certificateIds(SANITIZED_IDS)
         .statuses(STATUSES)
-        .start(START)
-        .end(END)
-        .activationTime(ACTIVATION_TIME)
         .build();
+    private static final CountNotificationsForCertificatesRequestDTO COUNT_REQUEST = CountNotificationsForCertificatesRequestDTO.builder()
+        .certificateIds(IDS)
+        .statuses(STATUSES)
+        .build();
+
 
     @Mock
     SendNotificationCountValidator sendNotificationCountValidator;
@@ -78,11 +72,14 @@ class SendNotificationsForCertificatesServiceTest {
 
     @InjectMocks
     SendNotificationsForCertificatesService sendNotificationsForCertificatesService;
-    
+
+    @Mock
+    HandelseRepository handelseRepository;
+
     @Test
     void shouldThrowIfCountExceedLimit() {
         doThrow(IllegalArgumentException.class).when(sendNotificationCountValidator)
-            .certiticates(SANITIZED_REQUEST);
+            .certificates(SANITIZED_REQUEST);
 
         assertThrows(IllegalArgumentException.class, () -> sendNotificationsForCertificatesService.send(REQUEST));
     }
@@ -92,10 +89,8 @@ class SendNotificationsForCertificatesServiceTest {
 
         @BeforeEach
         void setup() {
-            when(notificationRedeliveryRepository.sendNotificationsForCertificates(SANITIZED_IDS, STATUSES, START, END, ACTIVATION_TIME))
+            when(notificationRedeliveryRepository.sendNotificationsForCertificates(SANITIZED_IDS, STATUS_LIST))
                 .thenReturn(COUNT);
-
-            ReflectionTestUtils.setField(sendNotificationsForCertificatesService, "maxDaysBackStartDate", LIMIT);
         }
 
         @Test
@@ -114,37 +109,34 @@ class SendNotificationsForCertificatesServiceTest {
 
             assertEquals(SANITIZED_IDS, captor.getValue());
         }
+    }
 
-        @Test
-        void shouldValidateDateUsingStart() {
-            final var captor = ArgumentCaptor.forClass(LocalDateTime.class);
-            sendNotificationsForCertificatesService.send(REQUEST);
+    @Nested
+    class CountNotifications {
 
-            verify(sendNotificationRequestValidator).validateDate(captor.capture(), any(LocalDateTime.class), anyInt());
-
-            assertEquals(REQUEST.getStart(), captor.getValue());
+        @BeforeEach
+        void setup() {
+            when(
+                handelseRepository.countNotificationsForCertificates(SANITIZED_IDS, List.of("FAILURE")))
+                .thenReturn(COUNT);
         }
 
         @Test
-        void shouldValidateDateUsingEnd() {
-            final var captor = ArgumentCaptor.forClass(LocalDateTime.class);
-            sendNotificationsForCertificatesService.send(REQUEST);
+        void shouldReturnResponseFromRepository() {
+            final var response = sendNotificationsForCertificatesService.count(COUNT_REQUEST);
 
-            verify(sendNotificationRequestValidator).validateDate(any(LocalDateTime.class), captor.capture(), anyInt());
-
-            assertEquals(REQUEST.getEnd(), captor.getValue());
+            assertEquals(COUNT, response.getCount());
         }
 
         @Test
-        void shouldValidateDateUsingDaysBackLimit() {
-            final var captor = ArgumentCaptor.forClass(int.class);
-            sendNotificationsForCertificatesService.send(REQUEST);
+        void shouldValidateIds() {
+            final var captor = ArgumentCaptor.forClass(List.class);
+            sendNotificationsForCertificatesService.count(COUNT_REQUEST);
 
-            verify(sendNotificationRequestValidator).validateDate(any(LocalDateTime.class), any(LocalDateTime.class), captor.capture());
+            verify(sendNotificationRequestValidator).validateCertificateIds(captor.capture());
 
-            assertEquals(LIMIT, captor.getValue());
+            assertEquals(SANITIZED_IDS, captor.getValue());
         }
 
     }
-
 }

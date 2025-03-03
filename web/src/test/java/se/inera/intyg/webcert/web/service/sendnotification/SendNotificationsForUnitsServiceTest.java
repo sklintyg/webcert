@@ -39,7 +39,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.webcert.common.enumerations.NotificationDeliveryStatusEnum;
+import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.notification.repository.NotificationRedeliveryRepository;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CountNotificationsForUnitsRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForUnitsRequestDTO;
 
 @ExtendWith(MockitoExtension.class)
@@ -51,6 +53,7 @@ class SendNotificationsForUnitsServiceTest {
     private static final List<String> IDS = List.of("ID ID");
     private static final List<String> SANITIZED_IDS = List.of("IDID");
     private static final List<NotificationDeliveryStatusEnum> STATUSES = List.of(NotificationDeliveryStatusEnum.FAILURE);
+    private static final List<String> STATUS_LIST = List.of("FAILURE");
     private static final LocalDateTime START = LocalDateTime.now().minusDays(1);
     private static final LocalDateTime END = LocalDateTime.now();
     private static final LocalDateTime ACTIVATION_TIME = LocalDateTime.now();
@@ -68,6 +71,13 @@ class SendNotificationsForUnitsServiceTest {
         .end(END)
         .activationTime(ACTIVATION_TIME)
         .build();
+    private static final CountNotificationsForUnitsRequestDTO COUNT_REQUEST = CountNotificationsForUnitsRequestDTO.builder()
+        .start(START)
+        .end(END)
+        .unitIds(IDS)
+        .activationTime(ACTIVATION_TIME)
+        .statuses(STATUSES)
+        .build();
 
     @Mock
     SendNotificationCountValidator sendNotificationCountValidator;
@@ -80,6 +90,9 @@ class SendNotificationsForUnitsServiceTest {
 
     @InjectMocks
     SendNotificationsForUnitsService sendNotificationsForUnitsService;
+
+    @Mock
+    HandelseRepository handelseRepository;
 
     @Test
     void shouldThrowIfCountExceedLimit() {
@@ -94,7 +107,7 @@ class SendNotificationsForUnitsServiceTest {
 
         @BeforeEach
         void setup() {
-            when(notificationRedeliveryRepository.sendNotificationsForUnits(SANITIZED_IDS, STATUSES, START, END, ACTIVATION_TIME))
+            when(notificationRedeliveryRepository.sendNotificationsForUnits(SANITIZED_IDS, STATUS_LIST, START, END, ACTIVATION_TIME))
                 .thenReturn(COUNT);
 
             ReflectionTestUtils.setField(sendNotificationsForUnitsService, "maxDaysBackStartDate", LIMIT);
@@ -158,6 +171,56 @@ class SendNotificationsForUnitsServiceTest {
                 anyInt());
 
             assertEquals(LIMIT_INTERVAL, captor.getValue());
+        }
+    }
+
+    @Nested
+    class CountNotifications {
+
+        @BeforeEach
+        void setup() {
+            when(
+                handelseRepository.countNotificationsForUnits(SANITIZED_IDS, List.of("FAILURE"), START, END))
+                .thenReturn(COUNT);
+        }
+
+        @Test
+        void shouldReturnResponseFromRepository() {
+            final var response = sendNotificationsForUnitsService.count(COUNT_REQUEST);
+
+            assertEquals(COUNT, response.getCount());
+        }
+
+        @Test
+        void shouldValidateIds() {
+            final var captor = ArgumentCaptor.forClass(List.class);
+            sendNotificationsForUnitsService.count(COUNT_REQUEST);
+
+            verify(sendNotificationRequestValidator).validateIds(captor.capture());
+
+            assertEquals(SANITIZED_IDS, captor.getValue());
+        }
+
+        @Test
+        void shouldValidateDateUsingStart() {
+            final var captor = ArgumentCaptor.forClass(LocalDateTime.class);
+            sendNotificationsForUnitsService.count(COUNT_REQUEST);
+
+            verify(sendNotificationRequestValidator).validateDate(captor.capture(),
+                any(LocalDateTime.class), anyInt(), anyInt());
+
+            assertEquals(REQUEST.getStart(), captor.getValue());
+        }
+
+        @Test
+        void shouldValidateDateUsingEnd() {
+            final var captor = ArgumentCaptor.forClass(LocalDateTime.class);
+            sendNotificationsForUnitsService.count(COUNT_REQUEST);
+
+            verify(sendNotificationRequestValidator).validateDate(any(LocalDateTime.class),
+                captor.capture(), anyInt(), anyInt());
+
+            assertEquals(REQUEST.getEnd(), captor.getValue());
         }
     }
 }

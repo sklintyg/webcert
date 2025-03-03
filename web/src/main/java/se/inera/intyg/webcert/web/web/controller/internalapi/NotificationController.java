@@ -27,11 +27,16 @@ import jakarta.ws.rs.core.MediaType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestBody;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.sendnotification.SendNotificationService;
 import se.inera.intyg.webcert.web.service.sendnotification.SendNotificationsForCareGiverService;
 import se.inera.intyg.webcert.web.service.sendnotification.SendNotificationsForCertificatesService;
 import se.inera.intyg.webcert.web.service.sendnotification.SendNotificationsForUnitsService;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CountNotificationResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CountNotificationsForCareGiverRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CountNotificationsForCertificatesRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CountNotificationsForUnitsRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForCareGiverRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.SendNotificationsForCertificatesRequestDTO;
@@ -52,14 +57,26 @@ public class NotificationController {
     @Path("/certificates")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "resend-status-updates-for-certificates", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public SendNotificationResponseDTO sendNotificationsForCertificates(@RequestBody SendNotificationsForCertificatesRequestDTO request) {
         return sendNotificationsForCertificatesService.send(request);
+    }
+
+    @POST
+    @Path("/count/certificates")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "count-status-updates-for-certificates", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+    public CountNotificationResponseDTO countNotificationsForCertificates(
+        @RequestBody CountNotificationsForCertificatesRequestDTO request) {
+        return sendNotificationsForCertificatesService.count(request);
     }
 
     @POST
     @Path("/{notificationId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "resend-status-update", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public SendNotificationResponseDTO sendNotification(@PathParam("notificationId") String notificationId) {
         return sendNotificationService.send(notificationId);
     }
@@ -68,24 +85,36 @@ public class NotificationController {
     @Path("/units")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "resend-status-updates-for-units", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public SendNotificationResponseDTO sendNotificationsForUnits(@RequestBody SendNotificationsForUnitsRequestDTO request) {
         return sendNotificationsForUnitsService.send(request);
+    }
+
+    @POST
+    @Path("/count/units")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "count-status-updates-for-units", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+    public CountNotificationResponseDTO countNotificationsForUnits(@RequestBody CountNotificationsForUnitsRequestDTO request) {
+        return sendNotificationsForUnitsService.count(request);
     }
 
     @POST
     @Path("/caregiver/{careGiverId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "resend-status-updates-for-care-giver", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public SendNotificationResponseDTO sendNotificationsForCareGiver(@PathParam("careGiverId") String careGiverId,
         @RequestBody SendNotificationsForCareGiverRequestDTO request) {
         return sendNotificationsForCareGiverService.send(careGiverId, request);
     }
 
     @POST
-    @Path("count/caregiver/{careGiverId}")
+    @Path("/count/caregiver/{careGiverId}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
-    public SendNotificationResponseDTO countNotificationsForCareGiver(@PathParam("careGiverId") String careGiverId,
+    @PerformanceLogging(eventAction = "count-status-updates-for-care-giver", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+    public CountNotificationResponseDTO countNotificationsForCareGiver(@PathParam("careGiverId") String careGiverId,
         @RequestBody CountNotificationsForCareGiverRequestDTO request) {
         return sendNotificationsForCareGiverService.count(careGiverId, request);
     }

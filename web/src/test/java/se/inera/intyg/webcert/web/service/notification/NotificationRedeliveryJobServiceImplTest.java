@@ -49,7 +49,6 @@ import se.inera.intyg.common.support.modules.support.api.exception.ModuleExcepti
 import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.notification_sender.notifications.services.redelivery.NotificationRedeliveryService;
-import se.inera.intyg.webcert.notification_sender.notifications.services.v3.CertificateStatusUpdateForCareCreator;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
@@ -58,13 +57,10 @@ import se.inera.intyg.webcert.persistence.notification.model.NotificationRedeliv
 class NotificationRedeliveryJobServiceImplTest {
 
     @Mock
-    private NotificationRedeliveryStatusUpdateCreatorService notificationRedeliveryStatusUpdateCreatorService;
+    private NotificationRedeliveryAggregator notificationRedeliveryAggregator;
 
     @Mock
     private NotificationRedeliveryService notificationRedeliveryService;
-
-    @Mock
-    private CertificateStatusUpdateForCareCreator certificateStatusUpdateForCareCreator;
 
     @Mock
     private HandelseRepository eventRepository;
@@ -78,45 +74,24 @@ class NotificationRedeliveryJobServiceImplTest {
     @Test
     void shallResendANotificationThatIsUpForRedelivery() throws Exception {
         final var expectedNotificationRedelivery = createNotificationRedelivery();
-        final var expectedStatusUpdateXml = "CERTIFICATE_STATUS_XML";
         final var notificationRedeliveryList = Collections.singletonList(expectedNotificationRedelivery);
 
         final var captureNotificationRedelivery = ArgumentCaptor.forClass(NotificationRedelivery.class);
-        final var captureBytes = ArgumentCaptor.forClass(byte[].class);
+        final var handelseArgumentCaptor = ArgumentCaptor.forClass(Handelse.class);
+        final var eventsToReturn = createEventsToReturn(1);
 
         doReturn(notificationRedeliveryList).when(notificationRedeliveryService).getNotificationsForRedelivery(any(int.class));
-        doReturn(createEventsToReturn(1)).when(eventRepository).findAllById(any(Iterable.class));
-        doReturn(expectedStatusUpdateXml).when(notificationRedeliveryStatusUpdateCreatorService)
-            .getCertificateStatusUpdateXml(eq(expectedNotificationRedelivery), any(Handelse.class));
+        doReturn(eventsToReturn).when(eventRepository).findAllById(any(Iterable.class));
 
         notificationRedeliveryJobService.resendScheduledNotifications(100);
 
-        verify(notificationRedeliveryService).resend(
+        verify(notificationRedeliveryAggregator).resend(
             captureNotificationRedelivery.capture(),
-            any(Handelse.class),
-            captureBytes.capture());
+            handelseArgumentCaptor.capture()
+        );
 
         assertEquals(expectedNotificationRedelivery, captureNotificationRedelivery.getValue());
-        assertEquals(expectedStatusUpdateXml.getBytes().length, captureBytes.getValue().length);
-    }
-
-    @Test
-    void shallResendManyNotificationsThatAreUpForRedelivery() throws Exception {
-        final var numberOfMessages = 100;
-        final var notificationRedeliveryList = new ArrayList<NotificationRedelivery>();
-        for (int i = 0; i < numberOfMessages; i++) {
-            notificationRedeliveryList.add(createNotificationRedelivery());
-        }
-
-        doReturn(notificationRedeliveryList).when(notificationRedeliveryService).getNotificationsForRedelivery(any(int.class));
-        doReturn(createEventsToReturn(1)).when(eventRepository).findAllById(any(Iterable.class));
-        doReturn("CERTIFICATE_STATUS_XML").when(notificationRedeliveryStatusUpdateCreatorService)
-            .getCertificateStatusUpdateXml(any(NotificationRedelivery.class), any(Handelse.class));
-
-        notificationRedeliveryJobService.resendScheduledNotifications(100);
-
-        verify(notificationRedeliveryService, VerificationModeFactory.times(numberOfMessages))
-            .resend(any(NotificationRedelivery.class), any(Handelse.class), any(byte[].class));
+        assertEquals(eventsToReturn.getFirst(), handelseArgumentCaptor.getValue());
     }
 
     @Test
@@ -140,17 +115,20 @@ class NotificationRedeliveryJobServiceImplTest {
         notificationRedeliveryList.add(3, failingNotificationRedelivery);
         notificationRedeliveryList.add(7, failingNotificationRedelivery);
 
+        final var eventsToReturn = createEventsToReturn(1);
+
         doReturn(notificationRedeliveryList).when(notificationRedeliveryService).getNotificationsForRedelivery(any(int.class));
-        doReturn(createEventsToReturn(1)).when(eventRepository).findAllById(any(Iterable.class));
-        doReturn("CERTIFICATE_STATUS_XML").when(notificationRedeliveryStatusUpdateCreatorService)
-            .getCertificateStatusUpdateXml(any(NotificationRedelivery.class), any(Handelse.class));
-        doThrow(new RuntimeException("Failed!")).when(notificationRedeliveryStatusUpdateCreatorService)
-            .getCertificateStatusUpdateXml(eq(failingNotificationRedelivery), any(Handelse.class));
+        doReturn(eventsToReturn).when(eventRepository).findAllById(any(Iterable.class));
+        doReturn(true).when(notificationRedeliveryAggregator).resend(
+            any(NotificationRedelivery.class), eq(eventsToReturn.getFirst())
+        );
+        doThrow(new RuntimeException("Failed!")).when(notificationRedeliveryAggregator)
+            .resend(failingNotificationRedelivery, eventsToReturn.getFirst());
 
         notificationRedeliveryJobService.resendScheduledNotifications(100);
 
-        verify(notificationRedeliveryService, VerificationModeFactory.times(numberOfMessages))
-            .resend(any(NotificationRedelivery.class), any(Handelse.class), any(byte[].class));
+        verify(notificationRedeliveryAggregator, VerificationModeFactory.times(numberOfMessages + 2))
+            .resend(any(), any());
     }
 
     @Test
@@ -170,13 +148,15 @@ class NotificationRedeliveryJobServiceImplTest {
         root.addAppender(appender);
 
         final var captureLogMessage = ArgumentCaptor.forClass(ILoggingEvent.class);
+        final var eventsToReturn = createEventsToReturn(1);
 
         doReturn(notificationRedeliveryList).when(notificationRedeliveryService).getNotificationsForRedelivery(any(int.class));
-        doReturn(createEventsToReturn(1)).when(eventRepository).findAllById(any(Iterable.class));
-        doReturn("CERTIFICATE_STATUS_XML").when(notificationRedeliveryStatusUpdateCreatorService)
-            .getCertificateStatusUpdateXml(any(NotificationRedelivery.class), any(Handelse.class));
-        doThrow(new RuntimeException("Failed!")).when(notificationRedeliveryStatusUpdateCreatorService)
-            .getCertificateStatusUpdateXml(eq(failingNotificationRedelivery), any(Handelse.class));
+        doReturn(eventsToReturn).when(eventRepository).findAllById(any(Iterable.class));
+        doReturn(true).when(notificationRedeliveryAggregator).resend(
+            any(NotificationRedelivery.class), eq(eventsToReturn.getFirst())
+        );
+        doThrow(new RuntimeException("Failed!")).when(notificationRedeliveryAggregator)
+            .resend(failingNotificationRedelivery, eventsToReturn.getFirst());
 
         notificationRedeliveryJobService.resendScheduledNotifications(100);
 
@@ -208,8 +188,8 @@ class NotificationRedeliveryJobServiceImplTest {
 
         doReturn(notificationRedeliveryList).when(notificationRedeliveryService).getNotificationsForRedelivery(any(Integer.class));
         doReturn(createEventsToReturn(1)).when(eventRepository).findAllById(any(Iterable.class));
-        doThrow(WebCertServiceException.class).when(notificationRedeliveryStatusUpdateCreatorService)
-            .getCertificateStatusUpdateXml(eq(redelivery), any(Handelse.class));
+        doThrow(WebCertServiceException.class).when(notificationRedeliveryAggregator)
+            .resend(eq(redelivery), any(Handelse.class));
 
         notificationRedeliveryJobService.resendScheduledNotifications(any(Integer.class));
 

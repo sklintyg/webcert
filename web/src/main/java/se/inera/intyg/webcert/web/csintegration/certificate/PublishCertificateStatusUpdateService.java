@@ -25,6 +25,9 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.webcert.notification_sender.notifications.services.redelivery.NotificationRedeliveryService;
+import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
+import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
@@ -37,6 +40,7 @@ public class PublishCertificateStatusUpdateService {
     private final IntegreradeEnheterRegistry integreradeEnheterRegistry;
     private final CSIntegrationService csIntegrationService;
     private final NotificationMessageFactory notificationMessageFactory;
+    private final NotificationRedeliveryService notificationRedeliveryService;
     private final NotificationService notificationService;
     private final WebCertUserService webCertUserService;
 
@@ -46,6 +50,10 @@ public class PublishCertificateStatusUpdateService {
 
     public void publish(Certificate certificate, HandelsekodEnum eventType) {
         publish(certificate, eventType, Optional.empty(), Optional.empty());
+    }
+
+    public void resend(Certificate certificate, Handelse event, NotificationRedelivery notificationRedelivery) {
+        resendEvent(certificate, event, notificationRedelivery);
     }
 
     public void publish(Certificate certificate, HandelsekodEnum eventType, Optional<IntygUser> intygUser, Optional<String> xml) {
@@ -71,6 +79,27 @@ public class PublishCertificateStatusUpdateService {
             notificationMessage,
             certificate.getMetadata().getUnit().getUnitId(),
             certificate.getMetadata().getTypeVersion()
+        );
+    }
+
+    private void resendEvent(Certificate certificate, Handelse event, NotificationRedelivery notificationRedelivery) {
+        if (unitIsNotIntegrated(certificate)) {
+            return;
+        }
+
+        final var certificateXml = csIntegrationService.getInternalCertificateXml(certificate.getMetadata().getId());
+
+        final var notificationMessage = notificationMessageFactory.create(
+            certificate,
+            certificateXml,
+            event.getCode(),
+            event.getHanteratAv()
+        );
+
+        notificationRedeliveryService.resend(
+            notificationRedelivery,
+            event,
+            notificationMessage.getStatusUpdateXml()
         );
     }
 
