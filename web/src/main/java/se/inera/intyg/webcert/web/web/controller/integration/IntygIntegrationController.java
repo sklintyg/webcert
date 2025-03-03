@@ -269,6 +269,10 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
     private Response handleRedirectToIntyg(UriInfo uriInfo, String intygId, String enhetId, WebCertUser user) {
         try {
+            LOG.atDebug()
+                .addKeyValue("event.certificate.id", intygId)
+                .log("Launch for certificate with id '{}' with ref '{}'", intygId, user.getParameters().getReference());
+
             if (userHasNotSelectedVardenhet(enhetId)) {
                 if (userHasExactlyOneSelectableVardenhet(user)) {
                     changeValdVardenhet(user.getVardgivare().getFirst().getVardenheter().getFirst().getId(), user);
