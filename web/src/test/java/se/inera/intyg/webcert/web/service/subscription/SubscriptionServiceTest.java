@@ -36,14 +36,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClientResponseException;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
@@ -69,6 +71,9 @@ class SubscriptionServiceTest {
     @Mock
     private MonitoringLogService monitoringLogService;
 
+    @Spy
+    private HashUtility hashUtility;
+
     @Captor
     private ArgumentCaptor<Map<String, List<String>>> restServiceParamCaptor;
 
@@ -76,6 +81,11 @@ class SubscriptionServiceTest {
     private SubscriptionServiceImpl subscriptionService;
 
     private static final String PERSON_ID = "191212121212";
+
+    @BeforeEach
+    void setup() {
+        ReflectionTestUtils.setField(hashUtility, "salt", "salt");
+    }
 
     @Test
     void shouldNotCallRestServiceWhenNotFristaendeUser() {
@@ -208,7 +218,7 @@ class SubscriptionServiceTest {
         verify(subscriptionIntegrationService).getMissingSubscriptions(restServiceParamCaptor.capture(),
             any(AuthenticationMethodEnum.class));
 
-        final var param = restServiceParamCaptor.getValue().values().stream().flatMap(Collection::stream).collect(Collectors.toList());
+        final var param = restServiceParamCaptor.getValue().values().stream().flatMap(Collection::stream).toList();
         verify(monitoringLogService).logSubscriptionServiceCallFailure(param, "MESSAGE_TEXT");
     }
 
@@ -222,7 +232,7 @@ class SubscriptionServiceTest {
         verify(subscriptionIntegrationService).getMissingSubscriptions(restServiceParamCaptor.capture(),
             any(AuthenticationMethodEnum.class));
 
-        final var param = restServiceParamCaptor.getValue().values().stream().flatMap(Collection::stream).collect(Collectors.toList());
+        final var param = restServiceParamCaptor.getValue().values().stream().flatMap(Collection::stream).toList();
         verify(monitoringLogService).logSubscriptionServiceCallFailure(param, "MESSAGE_TEXT");
     }
 
@@ -300,7 +310,7 @@ class SubscriptionServiceTest {
         verify(subscriptionIntegrationService).getMissingSubscriptions(restServiceParamCaptor.capture(),
             any(AuthenticationMethodEnum.class));
 
-        final var param = restServiceParamCaptor.getValue().values().stream().flatMap(Collection::stream).collect(Collectors.toList());
+        final var param = restServiceParamCaptor.getValue().values().stream().flatMap(Collection::stream).toList();
         verify(monitoringLogService).logSubscriptionServiceCallFailure(param, "MESSAGE_TEXT");
     }
 
@@ -314,7 +324,7 @@ class SubscriptionServiceTest {
         verify(subscriptionIntegrationService).getMissingSubscriptions(restServiceParamCaptor.capture(),
             any(AuthenticationMethodEnum.class));
 
-        final var param = restServiceParamCaptor.getValue().values().stream().flatMap(Collection::stream).collect(Collectors.toList());
+        final var param = restServiceParamCaptor.getValue().values().stream().flatMap(Collection::stream).toList();
         verify(monitoringLogService).logSubscriptionServiceCallFailure(param, "MESSAGE_TEXT");
     }
 
@@ -362,8 +372,8 @@ class SubscriptionServiceTest {
 
     @Test
     void shouldMonitorLogLoginAttemptsMissingSubscriptionWhenSubscriptionRequiredForUnregElegUser() {
-        final var expectedUserId = HashUtility.hash(PERSON_ID);
-        final var expectedOrg = HashUtility.hash("121212-1212");
+        final var expectedUserId = hashUtility.hash(PERSON_ID);
+        final var expectedOrg = hashUtility.hash("121212-1212");
         setRestServiceUnregisteredElegMockToReturn(true);
 
         subscriptionService.isUnregisteredElegUserMissingSubscription(PERSON_ID);
@@ -373,7 +383,7 @@ class SubscriptionServiceTest {
 
     @Test
     void shouldMonitorlogWhenRestClientExceptionForUnregisteredElegUser() {
-        final var hashedOrgNo = List.of(HashUtility.hash("121212-1212"));
+        final var hashedOrgNo = List.of(hashUtility.hash("121212-1212"));
         setMockToReturnRestClientExceptionForUnregistered();
 
         subscriptionService.isUnregisteredElegUserMissingSubscription("191212121212");
@@ -383,7 +393,7 @@ class SubscriptionServiceTest {
 
     @Test
     void shouldMonitorlogWhenRestClientResponseExceptionSubtypeForUnregisteredElegUser() {
-        final var hashedOrgNo = List.of(HashUtility.hash("121212-1212"));
+        final var hashedOrgNo = List.of(hashUtility.hash("121212-1212"));
 
         setMockToReturnRestClientResponseExceptionForUnregistered();
 

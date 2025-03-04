@@ -36,6 +36,7 @@ import se.inera.intyg.infra.pu.integration.api.model.Person;
 import se.inera.intyg.infra.pu.integration.api.model.PersonSvar;
 import se.inera.intyg.infra.pu.integration.api.services.PUService;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.logging.HashUtility;
 import se.inera.intyg.webcert.web.service.facade.patient.GetPatientFacadeServiceImpl;
 import se.inera.intyg.webcert.web.service.facade.patient.InvalidPatientIdException;
 import se.inera.intyg.webcert.web.service.facade.patient.PatientNoNameException;
@@ -43,16 +44,19 @@ import se.inera.intyg.webcert.web.service.facade.patient.PatientSearchErrorExcep
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 @ExtendWith(MockitoExtension.class)
-public class GetPatientFacadeServiceImplTest {
+class GetPatientFacadeServiceImplTest {
 
-    private final static String PATIENT_ID = "191212121212";
-    private final static String FIRSTNAME = "firstname";
-    private final static String LASTNAME = "lastname";
-    private final static String MIDDLENAME = "middlename";
+    private static final String PATIENT_ID = "191212121212";
+    private static final String FIRSTNAME = "firstname";
+    private static final String LASTNAME = "lastname";
+    private static final String MIDDLENAME = "middlename";
+
     @Mock
     private PUService puService;
     @Mock
     private MonitoringLogService monitoringService;
+    @Mock
+    private HashUtility hashUtility;
     @InjectMocks
     private GetPatientFacadeServiceImpl getPatientFacadeService;
 
@@ -179,7 +183,7 @@ public class GetPatientFacadeServiceImplTest {
 
         getPatientFacadeService.getPatient(PATIENT_ID);
 
-        verify(monitoringService).logPULookup(Personnummer.createPersonnummer(PATIENT_ID).get(), "FOUND");
+        verify(monitoringService).logPULookup(Personnummer.createPersonnummer(PATIENT_ID).orElseThrow(), "FOUND");
     }
 
     @Test
@@ -188,7 +192,7 @@ public class GetPatientFacadeServiceImplTest {
 
         getPatientFacadeService.getPatient(PATIENT_ID);
 
-        verify(monitoringService).logPULookup(Personnummer.createPersonnummer(PATIENT_ID).get(), "NOT_FOUND");
+        verify(monitoringService).logPULookup(Personnummer.createPersonnummer(PATIENT_ID).orElseThrow(), "NOT_FOUND");
     }
 
     @Test
@@ -200,7 +204,7 @@ public class GetPatientFacadeServiceImplTest {
             e.printStackTrace();
         }
 
-        verify(monitoringService).logPULookup(Personnummer.createPersonnummer(PATIENT_ID).get(), "ERROR");
+        verify(monitoringService).logPULookup(Personnummer.createPersonnummer(PATIENT_ID).orElseThrow(), "ERROR");
     }
 
     @Test
@@ -218,7 +222,8 @@ public class GetPatientFacadeServiceImplTest {
 
     @Test
     void shallThrowExceptionIfPatientHasNoFirstName() {
-        final var patient = new Person(Personnummer.createPersonnummer("191212121212").get(), false, false, null, "name", "name", "", "",
+        final var patient = new Person(Personnummer.createPersonnummer("191212121212").orElseThrow(),
+            false, false, null, "name", "name", "", "",
             "", false);
         doReturn(PersonSvar.found(patient)).when(puService).getPerson(any());
         assertThrows(PatientNoNameException.class, () -> getPatientFacadeService.getPatient(PATIENT_ID));
@@ -226,7 +231,8 @@ public class GetPatientFacadeServiceImplTest {
 
     @Test
     void shallThrowExceptionIfPatientHasNoLastName() {
-        final var patient = new Person(Personnummer.createPersonnummer("191212121212").get(), false, false, "", "name", null, "", "", "",
+        final var patient = new Person(Personnummer.createPersonnummer("191212121212").orElseThrow(),
+            false, false, "", "name", null, "", "", "",
             false);
         doReturn(PersonSvar.found(patient)).when(puService).getPerson(any());
         assertThrows(PatientNoNameException.class, () -> getPatientFacadeService.getPatient(PATIENT_ID));
@@ -238,7 +244,7 @@ public class GetPatientFacadeServiceImplTest {
     }
 
     private PersonSvar createPersonSvar(boolean protectedPerson, boolean testIndicated, boolean deceased, boolean includeMiddleName) {
-        Person person = new Person(Personnummer.createPersonnummer(PATIENT_ID).get(), protectedPerson, deceased, FIRSTNAME,
+        Person person = new Person(Personnummer.createPersonnummer(PATIENT_ID).orElseThrow(), protectedPerson, deceased, FIRSTNAME,
             includeMiddleName ? MIDDLENAME : null, LASTNAME, "", "", "", testIndicated);
         return PersonSvar.found(person);
     }

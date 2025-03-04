@@ -73,6 +73,7 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.GroupableItem;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.logging.HashUtility;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastFilter;
@@ -174,6 +175,9 @@ public class UtkastServiceImpl implements UtkastService {
 
     @Autowired
     private UtkastServiceHelper utkastServiceHelper;
+
+    @Autowired
+    private HashUtility hashUtility;
 
     public static boolean isUtkast(Utkast utkast) {
         return utkast != null && ALL_DRAFT_STATUSES_INCLUDE_LOCKED.contains(utkast.getStatus());
@@ -996,7 +1000,7 @@ public class UtkastServiceImpl implements UtkastService {
 
     private boolean isHashEqual(Optional<Personnummer> thiz, Optional<Personnummer> that) {
         if (thiz.isPresent() && that.isPresent()) {
-            return thiz.get().getPersonnummerHash().equals(that.get().getPersonnummerHash());
+            return hashUtility.hash(thiz.get().getPersonnummer()).equals(hashUtility.hash(that.get().getPersonnummer()));
         }
 
         return false;

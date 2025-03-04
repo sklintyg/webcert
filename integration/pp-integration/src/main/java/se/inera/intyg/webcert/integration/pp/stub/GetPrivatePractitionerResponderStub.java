@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.logging.HashUtility;
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitioner.v1.rivtabp21.GetPrivatePractitionerResponderInterface;
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitionerresponder.v1.GetPrivatePractitionerResponseType;
 import se.riv.infrastructure.directory.privatepractitioner.getprivatepractitionerresponder.v1.GetPrivatePractitionerType;
@@ -47,6 +48,8 @@ public class GetPrivatePractitionerResponderStub implements GetPrivatePractition
 
     @Autowired
     private HoSPersonStub personStub;
+    @Autowired
+    private HashUtility hashUtility;
 
     @Override
     public GetPrivatePractitionerResponseType getPrivatePractitioner(String logicalAddress, GetPrivatePractitionerType parameters) {
@@ -97,16 +100,18 @@ public class GetPrivatePractitionerResponderStub implements GetPrivatePractition
     }
 
     private GetPrivatePractitionerResponseType getGetPrivatePractitionerResponseTypeForPnr(GetPrivatePractitionerType parameters) {
-        String id = parameters.getPersonalIdentityNumber();
-        Personnummer personnummer = Personnummer.createPersonnummer(id).orElse(null);
-        GetPrivatePractitionerResponseType response = new GetPrivatePractitionerResponseType();
+        final var id = parameters.getPersonalIdentityNumber();
+        final var personnummer = Personnummer.createPersonnummer(id);
+        final var hashedPersonId = personnummer.isPresent() ? hashUtility.hash(personnummer.get().getPersonnummer())
+            : hashUtility.hash(null);
+        final var response = new GetPrivatePractitionerResponseType();
 
         // if matching -- create error response
         if (PERSONNUMMER_ERROR_RESPONSE.equals(id)) {
             response.setHoSPerson(null);
             response.setResultCode(ResultCodeEnum.ERROR);
-            response.setResultText("FAILURE: an error occured while trying to get private practitioner with personal identity number: "
-                + Personnummer.getPersonnummerHashSafe(personnummer) + " exists.");
+            response.setResultText(("FAILURE: an error occured while trying to get private practitioner with personal identity "
+                + "number: %s exists.").formatted(hashedPersonId));
             return response;
         }
 
@@ -119,8 +124,7 @@ public class GetPrivatePractitionerResponderStub implements GetPrivatePractition
 
         if (person == null) {
             response.setResultCode(ResultCodeEnum.INFO);
-            response.setResultText("No private practitioner with personal identity number: "
-                + Personnummer.getPersonnummerHashSafe(personnummer) + " exists.");
+            response.setResultText("No private practitioner with personal identity number: %s exists.".formatted(hashedPersonId));
         } else {
             response.setHoSPerson(person);
             response.setResultCode(ResultCodeEnum.OK);

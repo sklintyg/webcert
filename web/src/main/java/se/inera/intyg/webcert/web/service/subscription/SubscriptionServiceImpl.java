@@ -52,11 +52,13 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private final SubscriptionIntegrationService subscriptionIntegrationService;
     private final MonitoringLogService monitoringLogService;
+    private final HashUtility hashUtility;
 
     public SubscriptionServiceImpl(SubscriptionIntegrationService subscriptionIntegrationService,
-        MonitoringLogService monitoringLogService) {
+        MonitoringLogService monitoringLogService, HashUtility hashUtility) {
         this.subscriptionIntegrationService = subscriptionIntegrationService;
         this.monitoringLogService = monitoringLogService;
+        this.hashUtility = hashUtility;
     }
 
     @Override
@@ -84,7 +86,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     public boolean isUnregisteredElegUserMissingSubscription(String personId) {
         try {
             final var organizationNumber = createOrganizationNumberFromPersonId(personId);
-            final var hashedOrganizationNumber = hashed(organizationNumber);
+            final var hashedOrganizationNumber = hash(organizationNumber);
             LOG.debug("Fetching subscription info for unregistered private practitioner with organization number {}.",
                 hashedOrganizationNumber);
             final var missingSubscription = isMissingSubscriptionUnregisteredElegUser(organizationNumber);
@@ -180,7 +182,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private void monitorLogMissingSubscription(boolean missingSubscription, String personId, String organizationNumber) {
         if (missingSubscription) {
-            monitoringLogService.logLoginAttemptMissingSubscription(hash(personId), ELEG.name(), hashed(organizationNumber));
+            monitoringLogService.logLoginAttemptMissingSubscription(hash(personId), ELEG.name(), hash(organizationNumber));
         }
     }
 
@@ -200,8 +202,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             return subscriptionIntegrationService.isMissingSubscriptionUnregisteredElegUser(organizationNumber);
         } catch (Exception e) {
             LOG.error("Subscription service call failure for unregistered eleg user with org number {}.",
-                hashed(organizationNumber), e);
-            monitorLogIfServiceCallFailure(List.of(hashed(organizationNumber)), e);
+                hash(organizationNumber), e);
+            monitorLogIfServiceCallFailure(List.of(hash(organizationNumber)), e);
             return false;
         }
     }
@@ -212,12 +214,8 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         }
     }
 
-    private String hash(String personId) {
-        return Personnummer.getPersonnummerHashSafe(Personnummer.createPersonnummer(personId).orElse(null));
-    }
-
-    private String hashed(String organizationNumber) {
-        return HashUtility.hash(organizationNumber);
+    private String hash(String id) {
+        return hashUtility.hash(id);
     }
 
     private List<String> flatMapCollection(Collection<List<String>> collection) {

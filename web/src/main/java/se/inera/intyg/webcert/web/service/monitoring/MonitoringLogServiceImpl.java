@@ -49,6 +49,9 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     @Autowired
     private WebCertUserService webCertUserService;
 
+    @Autowired
+    private HashUtility hashUtility;
+
     @Override
     public void logMailSent(String unitHsaId, String reason, MailNotification mailNotification) {
         try (MdcCloseableMap ignored = MdcCloseableMap.builder()
@@ -501,7 +504,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
 
     @Override
     public void logPULookup(Personnummer personNummer, String result) {
-        final var hashedPersonId = HashUtility.hash(personNummer.getPersonnummer());
+        final var hashedPersonId = hashUtility.hash(personNummer.getPersonnummer());
         try (MdcCloseableMap ignored = MdcCloseableMap.builder()
             .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.PU_LOOKUP))
             .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_INFO)
@@ -522,7 +525,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
             .put(MdcLogConstants.USER_ROLE, AuthoritiesConstants.ROLE_PRIVATLAKARE)
             .build()
         ) {
-            logEvent(MonitoringEvent.PP_TERMS_ACCEPTED, userId, Personnummer.getPersonnummerHashSafe(personId), avtalVersion);
+            logEvent(MonitoringEvent.PP_TERMS_ACCEPTED, userId, hashUtility.hash(personId.getPersonnummer()), avtalVersion);
         }
     }
 

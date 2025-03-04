@@ -25,6 +25,7 @@
 
     <bean class="se.inera.intyg.common.util.integration.json.CustomObjectMapper"/>
 
+    <bean class="se.inera.intyg.webcert.logging.HashUtility"/>
     <bean class="se.inera.intyg.webcert.integration.pp.stub.PPBootstrapBean"/>
     <bean class="se.inera.intyg.webcert.integration.pp.stub.HoSPersonStub"/>
     <bean class="se.inera.intyg.webcert.integration.pp.services.PPServiceImpl"/>

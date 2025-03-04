@@ -60,6 +60,7 @@ import se.inera.intyg.infra.pu.integration.api.services.PUService;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.logging.HashUtility;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
@@ -198,6 +199,9 @@ public class CopyUtkastServiceImplTest {
 
     @Mock
     private PatientDetailsResolver patientDetailsResolver;
+
+    @Mock
+    private HashUtility hashUtility;
 
     @InjectMocks
     private CopyUtkastService copyService = new CopyUtkastServiceImpl();

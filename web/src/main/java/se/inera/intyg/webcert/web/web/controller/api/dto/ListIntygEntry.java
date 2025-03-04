@@ -279,7 +279,6 @@ public class ListIntygEntry {
     public String toString() {
         return "ListIntygEntry{"
             + "intygId='" + intygId + '\''
-            + ", patientId=" + (patientId != null ? patientId.getPersonnummerHash() : null)
             + ", source=" + source
             + ", intygType='" + intygType + '\''
             + ", intygTypeVersion='" + intygTypeVersion + '\''
