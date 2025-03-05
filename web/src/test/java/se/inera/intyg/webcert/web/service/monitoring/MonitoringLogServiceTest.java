@@ -28,8 +28,6 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
-import com.google.common.collect.ImmutableMap;
-import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,7 +37,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.LoggerFactory;
-import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 
 /**
@@ -56,7 +53,7 @@ public class MonitoringLogServiceTest {
     @Captor
     private ArgumentCaptor<LoggingEvent> captorLoggingEvent;
 
-    private MonitoringLogService monitoringLogService = new MonitoringLogServiceImpl();
+    private final MonitoringLogService monitoringLogService = new MonitoringLogServiceImpl();
 
     @Before
     public void setup() {

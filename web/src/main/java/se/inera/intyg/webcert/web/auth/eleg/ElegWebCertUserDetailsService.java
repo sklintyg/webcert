@@ -47,6 +47,7 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEn
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.integration.pp.services.PPRestService;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
+import se.inera.intyg.webcert.logging.HashUtility;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.webcert.web.auth.common.AuthConstants;
 import se.inera.intyg.webcert.web.auth.common.BaseWebCertUserDetailsService;
@@ -64,14 +65,16 @@ import se.riv.infrastructure.directory.privatepractitioner.v1.SpecialitetType;
 @RequiredArgsConstructor
 public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService {
 
+    @Value("${privatepractitioner.logicaladdress}")
+    private String logicalAddress;
+
     private final PPService ppService;
     private final PPRestService ppRestService;
     private final PUService puService;
     private final AnvandarPreferenceRepository anvandarPreferenceRepository;
     private final Optional<UserOrigin> userOrigin;
     private final SubscriptionService subscriptionService;
-    @Value("${privatepractitioner.logicaladdress}")
-    private String logicalAddress;
+    private final HashUtility hashUtility;
 
     public WebCertUser buildFakeUserPrincipal(String personId) {
         return buildUserPrincipal(personId, AuthConstants.FAKE_AUTHENTICATION_ELEG_CONTEXT_REF, AuthenticationMethod.FAKE);
@@ -135,9 +138,9 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         if (ppAuthStatus == NO_ACCOUNT) {
             final var hasSubscription = !subscriptionService.isUnregisteredElegUserMissingSubscription(personId);
             if (hasSubscription) {
-                throw privatePractitionerAuthorizationException(hashed(personId));
+                throw privatePractitionerAuthorizationException(hashUtility.hash(personId));
             }
-            throw missingSubscriptionException(hashed(personId));
+            throw missingSubscriptionException(hashUtility.hash(personId));
         }
     }
 
@@ -151,10 +154,6 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
             throw privatePractitionerAuthorizationException(webCertUser.getHsaId());
         }
         throw missingSubscriptionException(webCertUser.getHsaId());
-    }
-
-    private String hashed(String personId) {
-        return Personnummer.getPersonnummerHashSafe(Personnummer.createPersonnummer(personId).orElse(null));
     }
 
     private PrivatePractitionerAuthorizationException privatePractitionerAuthorizationException(String hashedPersonIdOrHsaId) {
@@ -219,7 +218,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         } else {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
                 String.format("PU replied with %s - Sekretesstatus cannot be determined for person %s", person.getStatus(),
-                    personNummer.getPersonnummerHash()));
+                    hashUtility.hash(personNummer.getPersonnummer())));
         }
     }
 

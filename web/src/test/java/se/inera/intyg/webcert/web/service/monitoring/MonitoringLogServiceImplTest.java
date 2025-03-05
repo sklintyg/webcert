@@ -34,12 +34,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.LoggerFactory;
+import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.logging.HashUtility;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.fragasvar.model.Amne;
 import se.inera.intyg.webcert.web.service.mail.MailNotification;
@@ -75,19 +79,24 @@ class MonitoringLogServiceImplTest {
 
     private static final Personnummer PERSON_NUMMER = Personnummer.createPersonnummer(PERSON_ID).orElseThrow();
     private static final String MESSAGE_ID = "messageId";
+    private static final String SALT = "salt";
 
     @Mock
     private Appender<ILoggingEvent> mockAppender;
     @Mock
     private MailNotification mailNotification;
+    @Spy
+    private HashUtility hashUtility;
 
     @Captor
     private ArgumentCaptor<LoggingEvent> captorLoggingEvent;
 
-    private final MonitoringLogService logService = new MonitoringLogServiceImpl();
+    @InjectMocks
+    private MonitoringLogServiceImpl logService;
 
     @BeforeEach
     void setup() {
+        ReflectionTestUtils.setField(hashUtility, SALT, SALT);
         final Logger logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         logger.addAppender(mockAppender);
     }
@@ -303,14 +312,14 @@ class MonitoringLogServiceImplTest {
     void shouldLogPrivatePractitionerTermsApproved() {
         logService.logPrivatePractitionerTermsApproved(HSA_ID, PERSON_NUMMER, AVTAL_VERSION);
         verifyLog(Level.INFO,
-            "PP_TERMS_ACCEPTED User 'HSA_ID', personId '9a8b138a666f84da32e9383b49a15f46f6e08d2c492352aa0dfcc3f993773b0d' accepted private practitioner terms of version '98'");
+            "PP_TERMS_ACCEPTED User 'HSA_ID', personId 'be125ef854ae8e7083ab76ebd2d7cd748e05603e02aec5cc3afeacd57d8f5f4b' accepted private practitioner terms of version '98'");
     }
 
     @Test
     void shouldLogPULookup() {
         logService.logPULookup(PERSON_NUMMER, RESULT);
         verifyLog(Level.INFO,
-            "PU_LOOKUP Lookup performed on '9a8b138a666f84da32e9383b49a15f46f6e08d2c492352aa0dfcc3f993773b0d' with result 'RESULT'");
+            "PU_LOOKUP Lookup performed on 'be125ef854ae8e7083ab76ebd2d7cd748e05603e02aec5cc3afeacd57d8f5f4b' with result 'RESULT'");
     }
 
     @Test

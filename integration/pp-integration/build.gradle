@@ -1,4 +1,5 @@
 dependencies {
+  implementation project(':webcert-logging')
   implementation "com.fasterxml.jackson.core:jackson-databind"
   implementation "com.google.guava:guava:${guavaVersion}"
   implementation "jakarta.ws.rs:jakarta.ws.rs-api"

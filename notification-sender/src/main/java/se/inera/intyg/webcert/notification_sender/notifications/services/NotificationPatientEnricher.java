@@ -30,6 +30,7 @@ import se.inera.intyg.infra.pu.integration.api.model.Person;
 import se.inera.intyg.infra.pu.integration.api.model.PersonSvar;
 import se.inera.intyg.infra.pu.integration.api.services.PUService;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.logging.HashUtility;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
 
@@ -44,6 +45,8 @@ public class NotificationPatientEnricher {
 
     @Autowired
     private PUService puService;
+    @Autowired
+    private HashUtility hashUtility;
 
     public void enrichWithPatient(Intyg intyg) {
         // INTYG-4190, hämta patientens uppgifter från PU-tjänsten och klistra in i utlåtandet.
@@ -74,7 +77,7 @@ public class NotificationPatientEnricher {
                     throw new IllegalStateException("Could not query PU-service for enriching notification with patient data.");
                 } else {
                     LOG.warn("PU-service returned NOT_FOUND for personnummer: {}, not enriching notification.",
-                        personnummer.getPersonnummerHash());
+                        hashUtility.hash(personnummer.getPersonnummer()));
                 }
                 break;
             default:
