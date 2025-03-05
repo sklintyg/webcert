@@ -38,6 +38,5 @@
   <!-- Declaring this bean outside the beans-context.xml so unit/integration-tests doesn't have to configure the full PU-
   service including Ignite -->
   <bean id="notificationPatientEnricher" class="se.inera.intyg.webcert.notification_sender.notifications.services.NotificationPatientEnricher"/>
-  <bean id="hashUtility" class="se.inera.intyg.webcert.logging.HashUtility"/>
 
 </beans>
