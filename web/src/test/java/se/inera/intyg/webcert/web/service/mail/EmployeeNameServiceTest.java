@@ -49,6 +49,28 @@ class EmployeeNameServiceTest {
     }
 
     @Test
+    void shallReturnHsaIdAsNameIfEmployeeDoesNotHaveMiddleAndSurname() {
+        final var personInformation = new PersonInformation();
+        personInformation.setGivenName("givenName");
+        doReturn(Collections.singletonList(personInformation)).when(hsaEmployeeService).getEmployee(any(), any(), any());
+
+        final var actualName = employeeNameService.getEmployeeHsaName("employeeId");
+
+        assertEquals("employeeId", actualName);
+    }
+
+    @Test
+    void shallReturnMiddleAndSurnameIfEmployeeDoesNotHaveGivenName() {
+        final var personInformation = new PersonInformation();
+        personInformation.setMiddleAndSurName("middleAnd surName");
+        doReturn(Collections.singletonList(personInformation)).when(hsaEmployeeService).getEmployee(any(), any(), any());
+
+        final var actualName = employeeNameService.getEmployeeHsaName("employeeId");
+
+        assertEquals("middleAnd surName", actualName);
+    }
+
+    @Test
     void shallReturnHsaIdAsNameIfExceptionIsThrown() {
         doThrow(new WebServiceException("Something went wrong")).when(hsaEmployeeService).getEmployee(any(), any(), any());
 
