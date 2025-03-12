@@ -52,6 +52,7 @@ import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsSe
 import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.service.employee.EmployeeNameService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
@@ -82,7 +83,7 @@ public class MailNotificationServiceImplTest {
     private UtkastRepository utkastRepository;
 
     @Mock
-    private MailNotificationNameService mailNotificationNameService;
+    private EmployeeNameService employeeNameService;
 
     @Before
     public void setUp() throws Exception {
@@ -352,7 +353,7 @@ public class MailNotificationServiceImplTest {
         hoSPersonType.setEnhet(unit);
 
         doReturn(hoSPersonType).when(ppService).getPrivatePractitioner(anyString(), eq(SIGNED_BY_HSA_ID), isNull());
-        doReturn(EXPECTED_NAME).when(mailNotificationNameService).getEmployeeHsaName(SIGNED_BY_HSA_ID);
+        doReturn(EXPECTED_NAME).when(employeeNameService).getEmployeeHsaName(SIGNED_BY_HSA_ID);
 
         mailNotificationService.sendMailForIncomingQuestion(mailNotification);
 
@@ -378,7 +379,7 @@ public class MailNotificationServiceImplTest {
         unit.setEnhetsnamn(EXPECTED_UNIT);
         hoSPersonType.setEnhet(unit);
 
-        doReturn(EXPECTED_NAME).when(mailNotificationNameService).getEmployeeHsaName(SIGNED_BY_HSA_ID);
+        doReturn(EXPECTED_NAME).when(employeeNameService).getEmployeeHsaName(SIGNED_BY_HSA_ID);
 
         mailNotificationService.sendMailForIncomingQuestion(mailNotification);
 
@@ -406,7 +407,7 @@ public class MailNotificationServiceImplTest {
         hoSPersonType.setEnhet(unit);
 
         doReturn(hoSPersonType).when(ppService).getPrivatePractitioner(anyString(), eq(SIGNED_BY_HSA_ID), isNull());
-        doReturn(EXPECTED_NAME).when(mailNotificationNameService).getEmployeeHsaName(SIGNED_BY_HSA_ID);
+        doReturn(EXPECTED_NAME).when(employeeNameService).getEmployeeHsaName(SIGNED_BY_HSA_ID);
 
         mailNotificationService.sendMailForIncomingAnswer(mailNotification);
 
@@ -433,7 +434,7 @@ public class MailNotificationServiceImplTest {
         unit.setEnhetsnamn(EXPECTED_UNIT);
         hoSPersonType.setEnhet(unit);
 
-        doReturn(EXPECTED_NAME).when(mailNotificationNameService).getEmployeeHsaName(SIGNED_BY_HSA_ID);
+        doReturn(EXPECTED_NAME).when(employeeNameService).getEmployeeHsaName(SIGNED_BY_HSA_ID);
 
         mailNotificationService.sendMailForIncomingAnswer(mailNotification);
 

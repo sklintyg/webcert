@@ -15,15 +15,16 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.infra.integration.hsatk.model.PersonInformation;
 import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaEmployeeService;
+import se.inera.intyg.webcert.web.service.employee.EmployeeNameService;
 
 @ExtendWith(MockitoExtension.class)
-class MailNotificationNameServiceTest {
+class EmployeeNameServiceTest {
 
     @Mock
     private HsaEmployeeService hsaEmployeeService;
 
     @InjectMocks
-    private MailNotificationNameService employeeNameService;
+    private EmployeeNameService employeeNameService;
 
     @Test
     void shallReturnNameIfEmployeeExists() {

@@ -40,6 +40,7 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.service.employee.EmployeeNameService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
@@ -89,7 +90,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     private HsaOrganizationsService hsaOrganizationsService;
 
     @Autowired
-    private MailNotificationNameService mailNotificationNameService;
+    private EmployeeNameService employeeNameService;
 
     private void logError(String type, MailNotification mailNotification, Exception ex) {
         LOG.error(String.format(
@@ -116,7 +117,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     public void sendMailForIncomingQuestion(MailNotification mailNotification) {
         String type = "question";
         MailNotificationEnhet recipient = getUnit(mailNotification);
-        final var employeeHsaName = mailNotificationNameService.getEmployeeHsaName(
+        final var employeeHsaName = employeeNameService.getEmployeeHsaName(
             mailNotification.getSignedByHsaId()
         );
 
@@ -138,7 +139,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     public void sendMailForIncomingAnswer(MailNotification mailNotification) {
         String type = "answer";
         MailNotificationEnhet recipient = getUnit(mailNotification);
-        final var employeeHsaName = mailNotificationNameService.getEmployeeHsaName(
+        final var employeeHsaName = employeeNameService.getEmployeeHsaName(
             mailNotification.getSignedByHsaId()
         );
 
