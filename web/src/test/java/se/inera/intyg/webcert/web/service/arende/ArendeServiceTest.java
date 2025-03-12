@@ -34,6 +34,7 @@ import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.only;
@@ -114,6 +115,7 @@ import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderException;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
+import se.inera.intyg.webcert.web.service.employee.EmployeeNameService;
 import se.inera.intyg.webcert.web.service.facade.list.PaginationAndLoggingService;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
@@ -160,7 +162,8 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     private static final Personnummer PNR = Personnummer.createPersonnummer(PERSON_ID).orElseThrow();
     private static final String CARE_PROVIDER_ID = "CARE_PROVIDER_ID";
     private static final LocalDateTime ISSUING_DATE = LocalDateTime.now();
-
+    @Mock
+    private EmployeeNameService employeeNameService;
     @Mock
     private IntegratedUnitNotificationEvaluator integratedUnitNotificationEvaluator;
     @Mock
@@ -558,12 +561,12 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         when(webcertUserService.getUser()).thenReturn(new WebCertUser());
         when(intygService.getIntygTypeInfo(anyString(), any())).thenReturn(mock(IntygTypeInfo.class));
         when(intygService.fetchIntygData(anyString(), any(), anyBoolean())).thenReturn(intygContentHolder);
+        doThrow(WebCertServiceException.class).when(employeeNameService).getEmployeeHsaName(any());
 
         try {
             service.createMessage(INTYG_ID, ArendeAmne.KONTKT, "rubrik", "meddelande");
             fail("should throw exception");
         } catch (WebCertServiceException e) {
-            assertEquals(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, e.getErrorCode());
             verifyNoInteractions(arendeRepository);
             verifyNoInteractions(notificationService);
             verifyNoInteractions(arendeDraftService);

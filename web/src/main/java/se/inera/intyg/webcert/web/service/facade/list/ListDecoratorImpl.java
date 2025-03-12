@@ -18,26 +18,20 @@
  */
 package se.inera.intyg.webcert.web.service.facade.list;
 
-import com.google.common.base.Strings;
-import jakarta.xml.ws.WebServiceException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.infra.integration.hsatk.model.PersonInformation;
-import se.inera.intyg.infra.integration.hsatk.services.HsatkEmployeeService;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.converter.util.IntygDraftDecorator;
 import se.inera.intyg.webcert.web.service.access.AccessEvaluationParameters;
 import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
+import se.inera.intyg.webcert.web.service.employee.EmployeeNameService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolverResponse;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -52,7 +46,7 @@ import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
 public class ListDecoratorImpl implements ListDecorator {
 
     private final IntygDraftDecorator intygDraftDecorator;
-    private final HsatkEmployeeService hsaEmployeeService;
+    private final EmployeeNameService employeeNameService;
     private final PatientDetailsResolver patientDetailsResolver;
     private final AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
     private final WebCertUserService webCertUserService;
@@ -60,11 +54,11 @@ public class ListDecoratorImpl implements ListDecorator {
     private final DraftAccessServiceHelper draftAccessServiceHelper;
 
 
-    public ListDecoratorImpl(IntygDraftDecorator intygDraftDecorator, HsatkEmployeeService hsaEmployeeService,
+    public ListDecoratorImpl(IntygDraftDecorator intygDraftDecorator, EmployeeNameService employeeNameService,
         PatientDetailsResolver patientDetailsResolver, WebCertUserService webCertUserService,
         ResourceLinkHelper resourceLinkHelper, DraftAccessServiceHelper draftAccessServiceHelper) {
         this.intygDraftDecorator = intygDraftDecorator;
-        this.hsaEmployeeService = hsaEmployeeService;
+        this.employeeNameService = employeeNameService;
         this.patientDetailsResolver = patientDetailsResolver;
         this.webCertUserService = webCertUserService;
         this.resourceLinkHelper = resourceLinkHelper;
@@ -115,51 +109,9 @@ public class ListDecoratorImpl implements ListDecorator {
     private Map<String, String> getNamesByHsaIds(Collection<String> hsaIds) {
         Map<String, String> hsaIdNameMap = new HashMap<>();
 
-        hsaIds.forEach(hsaId -> {
-            Optional<String> name = getNameByHsaIdNullIfNotFound(hsaId);
-            name.ifPresent(s -> hsaIdNameMap.put(hsaId, s));
-        });
+        hsaIds.forEach(hsaId -> hsaIdNameMap.put(hsaId, employeeNameService.getEmployeeHsaName(hsaId)));
 
         return hsaIdNameMap;
-    }
-
-    private Optional<String> getNameByHsaIdNullIfNotFound(String hsaId) {
-        try {
-            return Optional.of(getNameByHsaId(hsaId));
-        } catch (Exception e) {
-            return Optional.empty();
-        }
-    }
-
-    private String getNameByHsaId(String hsaId) {
-        try {
-            return hsaEmployeeService.getEmployee(null, hsaId)
-                .stream()
-                .filter(this::isMiddleAndLastNameDefined)
-                .map(this::getName)
-                .findFirst()
-                .orElseThrow(
-                    () -> new WebCertServiceException(
-                        WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "No name was found in HSA")
-                );
-        } catch (WebServiceException e) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM,
-                "Could not communicate with HSA. Cause: " + e.getMessage());
-        }
-    }
-
-    private boolean isMiddleAndLastNameDefined(PersonInformation personInformation) {
-        return !Strings.isNullOrEmpty(personInformation.getMiddleAndSurName());
-    }
-
-    private boolean isFirstNameDefined(PersonInformation personInformation) {
-        return !Strings.isNullOrEmpty(personInformation.getGivenName());
-    }
-
-    private String getName(PersonInformation personInformation) {
-        return !isFirstNameDefined(personInformation) ? personInformation.getMiddleAndSurName()
-            : personInformation.getGivenName() + " " + personInformation.getMiddleAndSurName();
-
     }
 
     @Override
@@ -183,7 +135,7 @@ public class ListDecoratorImpl implements ListDecorator {
 
     private List<ListIntygEntry> filterEntriesForProtectedPatients(
         WebCertUser user, List<ListIntygEntry> listIntygEntries, Map<Personnummer,
-        PatientDetailsResolverResponse> patientStatusMap) {
+            PatientDetailsResolverResponse> patientStatusMap) {
         listIntygEntries = listIntygEntries.stream()
             .filter(
                 entry -> this.isStaffAllowedToViewProtectedPatients(

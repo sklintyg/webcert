@@ -47,7 +47,6 @@ import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.ts_bas.support.TsBasEntryPoint;
 import se.inera.intyg.common.ts_diabetes.support.TsDiabetesEntryPoint;
-import se.inera.intyg.infra.integration.hsatk.services.HsatkEmployeeService;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -77,6 +76,7 @@ import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderException;
 import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderService;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
+import se.inera.intyg.webcert.web.service.employee.EmployeeNameService;
 import se.inera.intyg.webcert.web.service.facade.list.PaginationAndLoggingService;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
@@ -147,7 +147,7 @@ public class ArendeServiceImpl implements ArendeService {
     @Autowired
     private ArendeViewConverter arendeViewConverter;
     @Autowired
-    private HsatkEmployeeService hsaEmployeeService;
+    private EmployeeNameService employeeNameService;
     @Autowired
     private FragaSvarService fragaSvarService;
     @Autowired
@@ -213,7 +213,7 @@ public class ArendeServiceImpl implements ArendeService {
         if (utkast != null) {
             validateArende(certificateId, utkast);
 
-            ArendeConverter.decorateArendeFromUtkast(arende, utkast, LocalDateTime.now(systemClock), hsaEmployeeService);
+            ArendeConverter.decorateArendeFromUtkast(arende, utkast, LocalDateTime.now(systemClock), employeeNameService);
 
             updateSenasteHandelseAndStatusForRelatedArende(arende);
 
@@ -267,7 +267,7 @@ public class ArendeServiceImpl implements ArendeService {
             validateArende(intygId, utkast);
 
             arende = ArendeConverter.createArendeFromUtkast(amne, rubrik, meddelande, utkast, LocalDateTime.now(systemClock),
-                webcertUserService.getUser().getNamn(), hsaEmployeeService);
+                webcertUserService.getUser().getNamn(), employeeNameService);
         } else {
             final var certificateTypeInformation = intygService.getIntygTypeInfo(intygId, null);
             final var certificate = intygService.fetchIntygData(intygId, certificateTypeInformation.getIntygType(), false);
@@ -275,7 +275,7 @@ public class ArendeServiceImpl implements ArendeService {
             validateArende(certificate);
 
             arende = ArendeConverter.createMessageFromCertificate(amne, rubrik, meddelande, certificate.getUtlatande(),
-                LocalDateTime.now(systemClock), webcertUserService.getUser().getNamn(), hsaEmployeeService);
+                LocalDateTime.now(systemClock), webcertUserService.getUser().getNamn(), employeeNameService);
         }
 
         Arende saved = processOutgoingMessage(arende, NotificationEvent.NEW_QUESTION_FROM_CARE, true);
@@ -472,7 +472,7 @@ public class ArendeServiceImpl implements ArendeService {
 
         lakareFragaSvarList.putAll(lakareArendeList);
 
-        Map<String, String> hsaToNameMap = ArendeConverter.getNamesByHsaIds(lakareFragaSvarList.keySet(), hsaEmployeeService);
+        Map<String, String> hsaToNameMap = ArendeConverter.getNamesByHsaIds(lakareFragaSvarList.keySet(), employeeNameService);
 
         return lakareFragaSvarList.entrySet().stream()
             .map(lakare -> {
@@ -582,7 +582,7 @@ public class ArendeServiceImpl implements ArendeService {
     }
 
     Map<String, String> getNamesByHsaIds(Set<String> hsaIds) {
-        return ArendeConverter.getNamesByHsaIds(hsaIds, hsaEmployeeService);
+        return ArendeConverter.getNamesByHsaIds(hsaIds, employeeNameService);
     }
 
     private void markStatuses(ArendeListItem ali, PatientDetailsResolverResponse status) {
