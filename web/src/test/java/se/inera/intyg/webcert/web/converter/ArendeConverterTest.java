@@ -24,9 +24,6 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -47,17 +44,14 @@ import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
-import se.inera.intyg.infra.integration.hsatk.model.PersonInformation;
-import se.inera.intyg.infra.integration.hsatk.services.HsatkEmployeeService;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
-import se.inera.intyg.webcert.web.service.certificatesender.CertificateSenderException;
+import se.inera.intyg.webcert.web.service.employee.EmployeeNameService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareType;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareType.Komplettering;
@@ -75,7 +69,7 @@ public class ArendeConverterTest {
     private static final String PARTKOD_FKASSA = "FKASSA";
 
     @Mock
-    HsatkEmployeeService hsaEmployeeService;
+    EmployeeNameService employeeNameService;
 
     @Test
     public void testConvertArende() {
@@ -138,10 +132,10 @@ public class ArendeConverterTest {
         utkast.setVardgivarNamn(vardgivareName);
         utkast.setSignatur(mock(Signatur.class));
         when(utkast.getSignatur().getSigneradAv()).thenReturn(signeratAv);
-        when(hsaEmployeeService.getEmployee(eq(null), eq(signeratAv))).thenReturn(createHsaResponse(givenName, surname));
+        when(employeeNameService.getEmployeeHsaName(signeratAv)).thenReturn(createName(givenName, surname));
 
         Arende res = new Arende();
-        ArendeConverter.decorateArendeFromUtkast(res, utkast, now, hsaEmployeeService);
+        ArendeConverter.decorateArendeFromUtkast(res, utkast, now, employeeNameService);
 
         assertNotNull(res);
         assertEquals(now, res.getTimestamp());
@@ -154,62 +148,6 @@ public class ArendeConverterTest {
         assertEquals(enhetName, res.getEnhetName());
         assertEquals(vardgivareName, res.getVardgivareName());
         assertEquals("Test Testorsson Svensson", res.getSigneratAvName());
-    }
-
-    @Test
-    public void testDecorateArendeFromUtkastNoGivenName() throws WebCertServiceException {
-        final String intygId = "intygsid";
-        final String intygTyp = "intygTyp";
-        final String signeratAv = "signeratAv";
-        final String givenName = null;
-        final String surname = "Testorsson Svensson";
-
-        Arende arende = new Arende();
-        arende.setIntygsId(intygId);
-
-        Utkast utkast = new Utkast();
-        utkast.setIntygsTyp(intygTyp);
-        utkast.setSignatur(mock(Signatur.class));
-        when(utkast.getSignatur().getSigneradAv()).thenReturn(signeratAv);
-        when(hsaEmployeeService.getEmployee(eq(null), eq(signeratAv))).thenReturn(createHsaResponse(givenName, surname));
-
-        Arende res = new Arende();
-        ArendeConverter.decorateArendeFromUtkast(res, utkast, LocalDateTime.now(), hsaEmployeeService);
-
-        assertNotNull(res);
-        assertEquals("Testorsson Svensson", res.getSigneratAvName());
-    }
-
-    @Test
-    public void testDecorateArendeFromUtkastHsaNotResponding() {
-        Utkast utkast = new Utkast();
-        utkast.setIntygsTyp("intygstyp");
-        utkast.setEnhetsId("enhetsid");
-        utkast.setSignatur(mock(Signatur.class));
-        when(utkast.getSignatur().getSigneradAv()).thenReturn("signeratav");
-        when(hsaEmployeeService.getEmployee(eq(null), anyString())).thenThrow(new WebServiceException());
-        try {
-            ArendeConverter.decorateArendeFromUtkast(new Arende(), utkast, LocalDateTime.now(), hsaEmployeeService);
-            fail("Should throw");
-        } catch (WebCertServiceException e) {
-            assertEquals(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM, e.getErrorCode());
-        }
-    }
-
-    @Test
-    public void testDecorateArendeFromUtkastHsaNotGivingName() {
-        Utkast utkast = new Utkast();
-        utkast.setIntygsTyp("intygstyp");
-        utkast.setEnhetsId("enhetsid");
-        utkast.setSignatur(mock(Signatur.class));
-        when(utkast.getSignatur().getSigneradAv()).thenReturn("signeratav");
-        when(hsaEmployeeService.getEmployee(eq(null), anyString())).thenReturn(createHsaResponse(null, null));
-        try {
-            ArendeConverter.decorateArendeFromUtkast(new Arende(), utkast, LocalDateTime.now(), hsaEmployeeService);
-            fail("Should throw");
-        } catch (WebCertServiceException e) {
-            assertEquals(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, e.getErrorCode());
-        }
     }
 
     @Test
@@ -255,7 +193,7 @@ public class ArendeConverterTest {
     }
 
     @Test
-    public void testCreateArendeQuestionFromUtkast() throws CertificateSenderException {
+    public void testCreateArendeQuestionFromUtkast() {
         final ArendeAmne amne = ArendeAmne.OVRIGT;
         final String enhetsId = "enhetsId";
         final String intygsId = "intygsId";
@@ -279,9 +217,9 @@ public class ArendeConverterTest {
         utkast.setPatientPersonnummer(Personnummer.createPersonnummer(patientPersonId).get());
         utkast.setSignatur(mock(Signatur.class));
         when(utkast.getSignatur().getSigneradAv()).thenReturn(signeratAv);
-        when(hsaEmployeeService.getEmployee(null, signeratAv)).thenReturn(createHsaResponse(givenName, surname));
+        when(employeeNameService.getEmployeeHsaName(signeratAv)).thenReturn(createName(givenName, surname));
 
-        Arende res = ArendeConverter.createArendeFromUtkast(amne, rubrik, meddelande, utkast, now, vardaktorName, hsaEmployeeService);
+        Arende res = ArendeConverter.createArendeFromUtkast(amne, rubrik, meddelande, utkast, now, vardaktorName, employeeNameService);
 
         assertNotNull(res);
         assertEquals(amne, res.getAmne());
@@ -311,7 +249,7 @@ public class ArendeConverterTest {
     }
 
     @Test
-    public void testCreateMessageFromCertificate() throws CertificateSenderException {
+    public void testCreateMessageFromCertificate() {
         final var subject = ArendeAmne.OVRIGT;
         final var unitId = "unitId";
         final var certificateId = "certificateId";
@@ -349,10 +287,10 @@ public class ArendeConverterTest {
         doReturn(careProvider).when(unit).getVardgivare();
         doReturn(careProviderName).when(careProvider).getVardgivarnamn();
 
-        when(hsaEmployeeService.getEmployee(null, signedBy)).thenReturn(createHsaResponse(givenName, surname));
+        when(employeeNameService.getEmployeeHsaName(signedBy)).thenReturn(createName(givenName, surname));
 
         Arende res = ArendeConverter.createMessageFromCertificate(subject, header, messageText, certificate, now, careGiverName,
-            hsaEmployeeService);
+            employeeNameService);
 
         assertNotNull(res);
         assertEquals(subject, res.getAmne());
@@ -382,7 +320,7 @@ public class ArendeConverterTest {
     }
 
     @Test
-    public void testCreateArendeAnswerFromQuestion() throws CertificateSenderException {
+    public void testCreateArendeAnswerFromQuestion() {
         final String nyttMeddelande = "nytt meddelande";
         final String meddelandeId = "meddelandeId";
         final ArendeAmne amne = ArendeAmne.KONTKT;
@@ -454,11 +392,11 @@ public class ArendeConverterTest {
 
         List<String> hsaIds = Arrays.asList(id1, id2);
 
-        when(hsaEmployeeService.getEmployee(eq(null), eq(id1))).thenThrow(WebServiceException.class);
+        when(employeeNameService.getEmployeeHsaName(id1)).thenThrow(WebServiceException.class);
 
-        when(hsaEmployeeService.getEmployee(eq(null), eq(id2))).thenReturn(createHsaResponse(givenName, surname));
+        when(employeeNameService.getEmployeeHsaName(id2)).thenReturn(createName(givenName, surname));
 
-        Map<String, String> map = ArendeConverter.getNamesByHsaIds(hsaIds, hsaEmployeeService);
+        Map<String, String> map = ArendeConverter.getNamesByHsaIds(hsaIds, employeeNameService);
 
         assertNotNull(map);
         assertEquals(1, map.size());
@@ -514,10 +452,7 @@ public class ArendeConverterTest {
         return res;
     }
 
-    private List<PersonInformation> createHsaResponse(String givenName, String middleAndSurname) {
-        PersonInformation pit = new PersonInformation();
-        pit.setGivenName(givenName);
-        pit.setMiddleAndSurName(middleAndSurname);
-        return Arrays.asList(new PersonInformation(), pit, new PersonInformation(), new PersonInformation());
+    private String createName(String givenName, String middleAndSurname) {
+        return "%s %s".formatted(givenName, middleAndSurname);
     }
 }

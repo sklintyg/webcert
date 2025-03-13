@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.service.mail;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -29,7 +30,9 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import jakarta.mail.Address;
+import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import java.io.IOException;
 import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,6 +52,7 @@ import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsSe
 import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.service.employee.EmployeeNameService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
@@ -56,6 +60,10 @@ import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 @RunWith(MockitoJUnitRunner.class)
 public class MailNotificationServiceImplTest {
 
+    private static final String SIGNED_BY_HSA_ID = "SIGNED_BY_HSA_ID";
+    private static final String EXPECTED_NAME = "ExpectedName";
+    private static final String EXPECTED_UNIT = "ExpectedUnit";
+    private static final String UNIT_ID = "unitId";
     @InjectMocks
     private MailNotificationServiceImpl mailNotificationService;
 
@@ -74,6 +82,9 @@ public class MailNotificationServiceImplTest {
     @Mock
     private UtkastRepository utkastRepository;
 
+    @Mock
+    private EmployeeNameService employeeNameService;
+
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.openMocks(this);
@@ -83,7 +94,7 @@ public class MailNotificationServiceImplTest {
         ReflectionTestUtils.setField(mailNotificationService, "ppLogicalAddress", "PpLogicalAddress");
         MimeMessage mimeMessage = new MimeMessage(mock(MimeMessage.class));
         doReturn(mimeMessage).when(mailSender).createMimeMessage();
-        Vardenhet vardenhet = new Vardenhet("aflkjdsalkjjlk", "dsaflkj", null, null, "adsflkjasdflkjadfsjlk");
+        Vardenhet vardenhet = new Vardenhet("aflkjdsalkjjlk", "ExpectedUnit", null, null, "adsflkjasdflkjadfsjlk");
         vardenhet.setEpost("epost@mockadress.net");
         doReturn(vardenhet).when(hsaOrganizationUnitService).getVardenhet(anyString());
     }
@@ -116,7 +127,7 @@ public class MailNotificationServiceImplTest {
         enhet.setEpost("test@test.se");
         enhet.setEnhetsnamn("TestEnhet");
         hoSPersonType.setEnhet(enhet);
-        doReturn(hoSPersonType).when(ppService).getPrivatePractitioner(anyString(), isNull(), isNull());
+        doReturn(hoSPersonType).when(ppService).getPrivatePractitioner(anyString(), eq(SIGNED_BY_HSA_ID), isNull());
 
         MailNotification mailNotification = mailNotification("intygsId",
             MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "1234");
@@ -137,7 +148,7 @@ public class MailNotificationServiceImplTest {
         enhet.setEpost(epost);
         enhet.setEnhetsnamn("TestEnhet");
         hoSPersonType.setEnhet(enhet);
-        doReturn(hoSPersonType).when(ppService).getPrivatePractitioner(anyString(), isNull(), isNull());
+        doReturn(hoSPersonType).when(ppService).getPrivatePractitioner(anyString(), eq(SIGNED_BY_HSA_ID), isNull());
 
         MailNotification mailNotification = mailNotification("intygsId",
             MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "1234");
@@ -178,7 +189,7 @@ public class MailNotificationServiceImplTest {
         enhet.setEpost("test@test.se");
         enhet.setEnhetsnamn("TestEnhet");
         hoSPersonType.setEnhet(enhet);
-        doReturn(hoSPersonType).when(ppService).getPrivatePractitioner(anyString(), isNull(), isNull());
+        doReturn(hoSPersonType).when(ppService).getPrivatePractitioner(anyString(), eq(SIGNED_BY_HSA_ID), isNull());
 
         MailNotification mailNotification = mailNotification("intygsId",
             MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "1234");
@@ -199,7 +210,7 @@ public class MailNotificationServiceImplTest {
         enhet.setEpost(epost);
         enhet.setEnhetsnamn("TestEnhet");
         hoSPersonType.setEnhet(enhet);
-        doReturn(hoSPersonType).when(ppService).getPrivatePractitioner(anyString(), isNull(), isNull());
+        doReturn(hoSPersonType).when(ppService).getPrivatePractitioner(anyString(), eq(SIGNED_BY_HSA_ID), isNull());
 
         MailNotification mailNotification = mailNotification("intygsId",
             MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "1234");
@@ -318,6 +329,116 @@ public class MailNotificationServiceImplTest {
     }
 
     private MailNotification mailNotification(String intygsId, String enhetsId, String intygsTyp) {
-        return new MailNotification(null, intygsId, intygsTyp, enhetsId, null, null);
+        return new MailNotification(null, intygsId, intygsTyp, enhetsId, null, SIGNED_BY_HSA_ID);
+    }
+
+
+    @Test
+    public void bodyShallContainEmployeeNameAndUnitNameForIncomingQuestionsForPrivatePractitioner()
+        throws MessagingException, IOException {
+        final var expectedContent = "<p>Försäkringskassan har ställt en fråga på ett intyg utfärdat av "
+            + "<b>ExpectedName</b> på <b>ExpectedUnit</b>."
+            + "<br><a href=\"WebCertHostUrl/webcert/web/user/pp-certificate/intygsId/questions?enhet=SE165565594230-WEBCERT1234\">"
+            + "Läs och besvara frågan i Webcert</a></p><p>OBS! Sätt i ditt SITHS-kort innan du klickar på länken.</p>";
+
+        final var mailNotification = mailNotification(
+            "intygsId",
+            MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "1234"
+        );
+        final var hoSPersonType = new HoSPersonType();
+        final var unit = new EnhetType();
+        final var epost = "test@test.se";
+        unit.setEpost(epost);
+        unit.setEnhetsnamn(EXPECTED_UNIT);
+        hoSPersonType.setEnhet(unit);
+
+        doReturn(hoSPersonType).when(ppService).getPrivatePractitioner(anyString(), eq(SIGNED_BY_HSA_ID), isNull());
+        doReturn(EXPECTED_NAME).when(employeeNameService).getEmployeeHsaName(SIGNED_BY_HSA_ID);
+
+        mailNotificationService.sendMailForIncomingQuestion(mailNotification);
+
+        verify(mailSender, times(1)).send(mimeCaptor.capture());
+        assertEquals(expectedContent, mimeCaptor.getValue().getContent());
+    }
+
+    @Test
+    public void bodyShallContainEmployeeNameAndUnitNameForIncomingQuestions()
+        throws MessagingException, IOException {
+        final var expectedContent = "<p>Försäkringskassan har ställt en fråga på ett intyg utfärdat av <b>ExpectedName</b> på "
+            + "<b>ExpectedUnit</b>.<br><a href=\"WebCertHostUrl/webcert/web/user/certificate/intygsId/questions?enhet=unitId\">"
+            + "Läs och besvara frågan i Webcert</a></p><p>OBS! Sätt i ditt SITHS-kort innan du klickar på länken.</p>";
+
+        final var mailNotification = mailNotification(
+            "intygsId",
+            UNIT_ID
+        );
+        final var hoSPersonType = new HoSPersonType();
+        final var unit = new EnhetType();
+        final var epost = "test@test.se";
+        unit.setEpost(epost);
+        unit.setEnhetsnamn(EXPECTED_UNIT);
+        hoSPersonType.setEnhet(unit);
+
+        doReturn(EXPECTED_NAME).when(employeeNameService).getEmployeeHsaName(SIGNED_BY_HSA_ID);
+
+        mailNotificationService.sendMailForIncomingQuestion(mailNotification);
+
+        verify(mailSender, times(1)).send(mimeCaptor.capture());
+        assertEquals(expectedContent, mimeCaptor.getValue().getContent());
+    }
+
+    @Test
+    public void bodyShallContainEmployeeNameAndUnitNameForIncomingAnswerForPrivatePractitioner()
+        throws MessagingException, IOException {
+        final var expectedContent = "<p>Det har kommit ett svar från Försäkringskassan på en fråga som <b>ExpectedName</b> "
+            + "på <b>ExpectedUnit</b> har ställt. har ställt."
+            + "<br><a href=\"WebCertHostUrl/webcert/web/user/pp-certificate/intygsId/questions?enhet=SE165565594230-WEBCERT1234\">"
+            + "Läs svaret i Webcert</a></p><p>OBS! Sätt i ditt SITHS-kort innan du klickar på länken.</p>";
+
+        final var mailNotification = mailNotification(
+            "intygsId",
+            MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "1234"
+        );
+        final var hoSPersonType = new HoSPersonType();
+        final var unit = new EnhetType();
+        final var epost = "test@test.se";
+        unit.setEpost(epost);
+        unit.setEnhetsnamn(EXPECTED_UNIT);
+        hoSPersonType.setEnhet(unit);
+
+        doReturn(hoSPersonType).when(ppService).getPrivatePractitioner(anyString(), eq(SIGNED_BY_HSA_ID), isNull());
+        doReturn(EXPECTED_NAME).when(employeeNameService).getEmployeeHsaName(SIGNED_BY_HSA_ID);
+
+        mailNotificationService.sendMailForIncomingAnswer(mailNotification);
+
+        verify(mailSender, times(1)).send(mimeCaptor.capture());
+        assertEquals(expectedContent, mimeCaptor.getValue().getContent());
+    }
+
+    @Test
+    public void bodyShallContainEmployeeNameAndUnitNameForIncomingAnswer()
+        throws MessagingException, IOException {
+        final var expectedContent = "<p>Det har kommit ett svar från Försäkringskassan på en fråga som <b>ExpectedName</b> på "
+            + "<b>ExpectedUnit</b> har ställt. har ställt."
+            + "<br><a href=\"WebCertHostUrl/webcert/web/user/certificate/intygsId/questions?enhet=unitId\">"
+            + "Läs svaret i Webcert</a></p><p>OBS! Sätt i ditt SITHS-kort innan du klickar på länken.</p>";
+
+        final var mailNotification = mailNotification(
+            "intygsId",
+            UNIT_ID
+        );
+        final var hoSPersonType = new HoSPersonType();
+        final var unit = new EnhetType();
+        final var epost = "test@test.se";
+        unit.setEpost(epost);
+        unit.setEnhetsnamn(EXPECTED_UNIT);
+        hoSPersonType.setEnhet(unit);
+
+        doReturn(EXPECTED_NAME).when(employeeNameService).getEmployeeHsaName(SIGNED_BY_HSA_ID);
+
+        mailNotificationService.sendMailForIncomingAnswer(mailNotification);
+
+        verify(mailSender, times(1)).send(mimeCaptor.capture());
+        assertEquals(expectedContent, mimeCaptor.getValue().getContent());
     }
 }

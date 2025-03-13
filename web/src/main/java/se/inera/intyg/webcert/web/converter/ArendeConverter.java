@@ -18,8 +18,6 @@
  */
 package se.inera.intyg.webcert.web.converter;
 
-import com.google.common.base.Strings;
-import jakarta.xml.ws.WebServiceException;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashMap;
@@ -31,14 +29,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.infra.integration.hsatk.services.HsatkEmployeeService;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.arende.model.MedicinsktArende;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.converter.util.FragestallareConverterUtil;
+import se.inera.intyg.webcert.web.service.employee.EmployeeNameService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareType;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareType.Komplettering;
@@ -72,7 +69,7 @@ public final class ArendeConverter {
         return res;
     }
 
-    public static void decorateArendeFromUtkast(Arende arende, Utkast utkast, LocalDateTime now, HsatkEmployeeService hsaEmployeeService) {
+    public static void decorateArendeFromUtkast(Arende arende, Utkast utkast, LocalDateTime now, EmployeeNameService employeeNameService) {
         arende.setTimestamp(now);
         arende.setSenasteHandelse(now);
         arende.setStatus(arende.getSvarPaId() == null ? Status.PENDING_INTERNAL_ACTION : Status.ANSWERED);
@@ -80,7 +77,7 @@ public final class ArendeConverter {
 
         arende.setIntygTyp(utkast.getIntygsTyp());
         arende.setSigneratAv(utkast.getSignatur().getSigneradAv());
-        arende.setSigneratAvName(getSignedByName(utkast, hsaEmployeeService));
+        arende.setSigneratAvName(getSignedByName(utkast, employeeNameService));
         arende.setEnhetId(utkast.getEnhetsId());
         arende.setEnhetName(utkast.getEnhetsNamn());
         arende.setVardgivareName(utkast.getVardgivarNamn());
@@ -109,7 +106,7 @@ public final class ArendeConverter {
     }
 
     public static Arende createArendeFromUtkast(ArendeAmne amne, String rubrik, String meddelande, Utkast utkast, LocalDateTime now,
-        String vardaktorNamn, HsatkEmployeeService hsaEmployeeService) {
+        String vardaktorNamn, EmployeeNameService employeeNameService) {
         Arende arende = new Arende();
         arende.setStatus(Status.PENDING_EXTERNAL_ACTION);
         arende.setAmne(amne);
@@ -122,7 +119,7 @@ public final class ArendeConverter {
         arende.setPatientPersonId(utkast.getPatientPersonnummer().getPersonnummer());
         arende.setRubrik(rubrik);
         arende.setSigneratAv(utkast.getSignatur().getSigneradAv());
-        arende.setSigneratAvName(getSignedByName(utkast, hsaEmployeeService));
+        arende.setSigneratAvName(getSignedByName(utkast, employeeNameService));
         decorateOutgoingArende(arende, now, vardaktorNamn);
         return arende;
     }
@@ -137,12 +134,12 @@ public final class ArendeConverter {
      * @param certificate Certificate that the message is related to
      * @param timestamp Timestamp of the message
      * @param nameOfCareGiver Name of the care giver
-     * @param hsaEmployeeService {@link HsatkEmployeeService} implementation to use
+     * @param employeeNameService {@link HsatkEmployeeService} implementation to use
      * @return The created message
      */
     public static Arende createMessageFromCertificate(ArendeAmne subject, String header, String messageText, Utlatande certificate,
         LocalDateTime timestamp, String nameOfCareGiver,
-        HsatkEmployeeService hsaEmployeeService) {
+        EmployeeNameService employeeNameService) {
         final var message = new Arende();
         message.setStatus(Status.PENDING_EXTERNAL_ACTION);
         message.setAmne(subject);
@@ -155,7 +152,7 @@ public final class ArendeConverter {
         message.setPatientPersonId(certificate.getGrundData().getPatient().getPersonId().getPersonnummer());
         message.setRubrik(header);
         message.setSigneratAv(certificate.getGrundData().getSkapadAv().getPersonId());
-        message.setSigneratAvName(getNameByHsaId(message.getSigneratAv(), hsaEmployeeService));
+        message.setSigneratAvName(employeeNameService.getEmployeeHsaName(message.getSigneratAv()));
         decorateOutgoingArende(message, timestamp, nameOfCareGiver);
         return message;
     }
@@ -200,39 +197,22 @@ public final class ArendeConverter {
 
     // If we already have the signer's name in the information in the certificate we use this. This information could be
     // either in skapadAv or senastSparadAv. If neither of those matches the signer of the certificate we ask HSA.
-    private static String getSignedByName(Utkast utkast, HsatkEmployeeService hsaEmployeeService) {
+    private static String getSignedByName(Utkast utkast, EmployeeNameService employeeNameService) {
         if (utkast.getSkapadAv() != null && utkast.getSkapadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
             return utkast.getSkapadAv().getNamn();
         } else if (utkast.getSenastSparadAv() != null
             && utkast.getSenastSparadAv().getHsaId().equals(utkast.getSignatur().getSigneradAv())) {
             return utkast.getSenastSparadAv().getNamn();
         } else {
-            return getNameByHsaId(utkast.getSignatur().getSigneradAv(), hsaEmployeeService);
+            return employeeNameService.getEmployeeHsaName(utkast.getSignatur().getSigneradAv());
         }
     }
 
-    private static String getNameByHsaId(String hsaId, HsatkEmployeeService hsaEmployeeService) {
-        try {
-            return hsaEmployeeService.getEmployee(null, hsaId)
-                .stream()
-                .filter(pit -> !Strings.isNullOrEmpty(pit.getMiddleAndSurName()))
-                .map(pit -> !Strings.isNullOrEmpty(pit.getGivenName())
-                    ? pit.getGivenName() + " " + pit.getMiddleAndSurName()
-                    : pit.getMiddleAndSurName())
-                .findFirst()
-                .orElseThrow(
-                    () -> new WebCertServiceException(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, "No name was found in HSA"));
-        } catch (WebServiceException e) {
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.EXTERNAL_SYSTEM_PROBLEM,
-                "Could not communicate with HSA. Cause: " + e.getMessage());
-        }
-    }
-
-    public static Map<String, String> getNamesByHsaIds(Collection<String> hsaIds, HsatkEmployeeService hsaEmployeeService) {
+    public static Map<String, String> getNamesByHsaIds(Collection<String> hsaIds, EmployeeNameService employeeNameService) {
         Map<String, String> hsaIdNameMap = new HashMap<>();
 
         hsaIds.forEach(hsaId -> {
-            Optional<String> name = getNameByHsaIdNullIfNotFound(hsaId, hsaEmployeeService);
+            Optional<String> name = getNameByHsaIdNullIfNotFound(hsaId, employeeNameService);
 
             name.ifPresent(s -> hsaIdNameMap.put(hsaId, s));
         });
@@ -240,9 +220,9 @@ public final class ArendeConverter {
         return hsaIdNameMap;
     }
 
-    private static Optional<String> getNameByHsaIdNullIfNotFound(String hsaId, HsatkEmployeeService hsaEmployeeService) {
+    private static Optional<String> getNameByHsaIdNullIfNotFound(String hsaId, EmployeeNameService employeeNameService) {
         try {
-            return Optional.of(getNameByHsaId(hsaId, hsaEmployeeService));
+            return Optional.of(employeeNameService.getEmployeeHsaName(hsaId));
         } catch (Exception e) {
             LOG.debug("Name not found for hsaId " + hsaId, e);
             return Optional.empty();

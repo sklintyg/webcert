@@ -40,6 +40,7 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.service.employee.EmployeeNameService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
@@ -88,9 +89,14 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     @Autowired
     private HsaOrganizationsService hsaOrganizationsService;
 
+    @Autowired
+    private EmployeeNameService employeeNameService;
+
     private void logError(String type, MailNotification mailNotification, Exception ex) {
-        LOG.error(String.format("Notification mail for %s '%s' concerning certificate '%s' couldn't be sent to %s (%s) due to reason '%s'",
-                type, mailNotification.getQaId(), mailNotification.getCertificateId(), mailNotification.getCareUnitId(),
+        LOG.error(String.format(
+                "Notification mail for %s '%s' concerning certificate '%s' couldn't be sent to %s (%s) due to reason '%s'",
+                type, mailNotification.getQaId(), mailNotification.getCertificateId(),
+                mailNotification.getCareUnitId(),
                 mailNotification.getCareUnitName(), ex.getMessage()
             ),
             ex
@@ -98,8 +104,10 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     }
 
     private void logError(String type, MailNotification mailNotification, String reason) {
-        LOG.error("Notification mail for {} '{}' concerning certificate '{}' couldn't be sent to {} ({}) due to reason '{}'",
-            type, mailNotification.getQaId(), mailNotification.getCertificateId(), mailNotification.getCareUnitId(),
+        LOG.error(
+            "Notification mail for {} '{}' concerning certificate '{}' couldn't be sent to {} ({}) due to reason '{}'",
+            type, mailNotification.getQaId(), mailNotification.getCertificateId(),
+            mailNotification.getCareUnitId(),
             mailNotification.getCareUnitName(), reason
         );
     }
@@ -109,6 +117,9 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     public void sendMailForIncomingQuestion(MailNotification mailNotification) {
         String type = "question";
         MailNotificationEnhet recipient = getUnit(mailNotification);
+        final var employeeHsaName = employeeNameService.getEmployeeHsaName(
+            mailNotification.getSignedByHsaId()
+        );
 
         if (recipient == null) {
             logError(type, mailNotification, "Missing recipient");
@@ -116,7 +127,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
             try {
                 String reason = "incoming question '" + mailNotification.getQaId() + "'";
                 sendNotificationMailToEnhet(type, mailNotification, INCOMING_QUESTION_SUBJECT,
-                    mailBodyForFraga(recipient, mailNotification), recipient, reason);
+                    mailBodyForFraga(recipient, mailNotification, employeeHsaName), recipient, reason);
             } catch (MailSendException | MessagingException e) {
                 logError(type, mailNotification, e);
             }
@@ -128,13 +139,17 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     public void sendMailForIncomingAnswer(MailNotification mailNotification) {
         String type = "answer";
         MailNotificationEnhet recipient = getUnit(mailNotification);
+        final var employeeHsaName = employeeNameService.getEmployeeHsaName(
+            mailNotification.getSignedByHsaId()
+        );
 
         if (recipient == null) {
             logError(type, mailNotification, "Missing recipient");
         } else {
             try {
                 String reason = "incoming answer on question '" + mailNotification.getQaId() + "'";
-                sendNotificationMailToEnhet(type, mailNotification, INCOMING_ANSWER_SUBJECT, mailBodyForSvar(recipient, mailNotification),
+                sendNotificationMailToEnhet(type, mailNotification, INCOMING_ANSWER_SUBJECT,
+                    mailBodyForSvar(recipient, mailNotification, employeeHsaName),
                     recipient, reason);
             } catch (MailSendException | MessagingException e) {
                 logError(type, mailNotification, e);
@@ -142,7 +157,8 @@ public class MailNotificationServiceImpl implements MailNotificationService {
         }
     }
 
-    private void sendNotificationMailToEnhet(String type, MailNotification mailNotification, String subject, String body,
+    private void sendNotificationMailToEnhet(String type, MailNotification mailNotification,
+        String subject, String body,
         MailNotificationEnhet receivingEnhet,
         String reason) throws MessagingException {
 
@@ -172,26 +188,35 @@ public class MailNotificationServiceImpl implements MailNotificationService {
         try {
             parent = hsaOrganizationsService.getParentUnit(mottagningsId);
         } catch (HsaServiceCallException ex) {
-            LOG.warn(String.format("Could not call HSA for '%s', cause: '%s'", mottagningsId, ex.getMessage()), ex);
+            LOG.warn(
+                String.format("Could not call HSA for '%s', cause: '%s'", mottagningsId, ex.getMessage()),
+                ex);
             return null;
         }
         MailNotificationEnhet parentEnhet = retrieveDataFromHsa(parent);
         return (parentEnhet != null) ? parentEnhet.getEmail() : null;
     }
 
-    private String mailBodyForFraga(MailNotificationEnhet unit, MailNotification mailNotification) {
-        return "<p>" + unit.getName() + " har fått en fråga från Försäkringskassan angående ett intyg."
+    private String mailBodyForFraga(MailNotificationEnhet unit, MailNotification mailNotification,
+        String employeeName) {
+        return "<p>" + "Försäkringskassan har ställt en fråga på ett intyg utfärdat av <b>%s</b> på <b>%s</b>.".formatted(employeeName,
+            unit.getName())
             + "<br><a href=\"" + intygsUrl(mailNotification)
             + "\">Läs och besvara frågan i Webcert</a></p><p>OBS! Sätt i ditt SITHS-kort innan du klickar på länken.</p>";
     }
 
-    private String mailBodyForSvar(MailNotificationEnhet unit, MailNotification mailNotification) {
-        return "<p>Det har kommit ett svar från Försäkringskassan på en fråga som " + unit.getName() + " har ställt"
+    private String mailBodyForSvar(MailNotificationEnhet unit, MailNotification mailNotification,
+        String employeeName) {
+        return "<p>" + "Det har kommit ett svar från Försäkringskassan på en fråga som <b>%s</b> på <b>%s</b> har ställt.".formatted(
+            employeeName,
+            unit.getName())
+            + " har ställt"
             + ".<br><a href=\"" + intygsUrl(mailNotification)
             + "\">Läs svaret i Webcert</a></p><p>OBS! Sätt i ditt SITHS-kort innan du klickar på länken.</p>";
     }
 
-    private void sendNotificationToUnit(String mailAddress, String subject, String body) throws MessagingException {
+    private void sendNotificationToUnit(String mailAddress, String subject, String body)
+        throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         message.setFrom(new InternetAddress(fromAddress));
         message.addRecipient(Message.RecipientType.TO, new InternetAddress(mailAddress));
@@ -201,7 +226,8 @@ public class MailNotificationServiceImpl implements MailNotificationService {
         mailSender.send(message);
     }
 
-    private void sendAdminMailAboutMissingEmailAddress(MailNotificationEnhet unit, MailNotification mailNotification)
+    private void sendAdminMailAboutMissingEmailAddress(MailNotificationEnhet unit,
+        MailNotification mailNotification)
         throws MessagingException {
 
         MimeMessage message = mailSender.createMimeMessage();
@@ -212,10 +238,9 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
         StringBuilder body = new StringBuilder();
         body.append("<p>En fråga eller ett svar är mottaget av Webcert. ");
-        body.append("Detta för en enhet som ej har en mailadress satt eller så är enheten ej kopplad till en överliggande vårdenhet.</p>");
-        body.append("<p>Vårdenhetens id är <b>");
-        body.append(unit.getHsaId()).append("</b> och namn är <b>");
-        body.append(unit.getName()).append("</b>.");
+        body.append(
+            "Detta för en enhet som antingen saknar mailadress i HSA eller så är enheten inte kopplad till en överliggande vårdenhet.</p>");
+        body.append("<p> Enhetens id och namn är <b>%s %s</b>.".formatted(unit.getHsaId(), unit.getName()));
 
         body.append("<br>");
         body.append("<a href=\"").append(intygsUrl(mailNotification)).append("\">Länk till frågan</a>");
@@ -237,22 +262,26 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     }
 
     private boolean isPrivatePractitionerEnhet(String careUnitId) {
-        return careUnitId != null && careUnitId.toUpperCase(Locale.ENGLISH).startsWith(PRIVATE_PRACTITIONER_HSAID_PREFIX);
+        return careUnitId != null && careUnitId.toUpperCase(Locale.ENGLISH)
+            .startsWith(PRIVATE_PRACTITIONER_HSAID_PREFIX);
     }
 
     private MailNotificationEnhet retrieveDataFromHsa(String careUnitId) {
         try {
             Vardenhet enhetData = hsaOrganizationsService.getVardenhet(careUnitId);
-            return new MailNotificationEnhet(enhetData.getId(), enhetData.getNamn(), enhetData.getEpost());
+            return new MailNotificationEnhet(enhetData.getId(), enhetData.getNamn(),
+                enhetData.getEpost());
         } catch (WebServiceException ex) {
-            LOG.error(String.format("Failed to contact HSA to get HSA Id '%s' : '%s'", careUnitId, ex.getMessage()), ex);
+            LOG.error(String.format("Failed to contact HSA to get HSA Id '%s' : '%s'", careUnitId,
+                ex.getMessage()), ex);
             return null;
         }
     }
 
     private MailNotificationEnhet getPrivatePractitionerEnhet(String hsaId) {
         try {
-            HoSPersonType privatePractitioner = ppService.getPrivatePractitioner(ppLogicalAddress, hsaId, null);
+            HoSPersonType privatePractitioner = ppService.getPrivatePractitioner(ppLogicalAddress, hsaId,
+                null);
             if (privatePractitioner != null) {
                 EnhetType enhet = privatePractitioner.getEnhet();
                 if (enhet != null) {
@@ -270,7 +299,8 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     @Transactional(readOnly = true)
     public String intygsUrl(MailNotification mailNotification) {
         String url = webCertHostUrl + "/webcert/web/user/"
-            + resolvePathSegment(mailNotification.getCareUnitId(), mailNotification.getCertificateId()) + "/";
+            + resolvePathSegment(mailNotification.getCareUnitId(), mailNotification.getCertificateId())
+            + "/";
         if (!Fk7263EntryPoint.MODULE_ID.equalsIgnoreCase(mailNotification.getCertificateType())) {
             url += mailNotification.getCertificateType() + "/";
         }

@@ -18,6 +18,17 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl.list;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,26 +37,16 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.luse.support.LuseEntryPoint;
-import se.inera.intyg.infra.integration.hsatk.model.PersonInformation;
-import se.inera.intyg.infra.integration.hsatk.services.HsatkEmployeeService;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.web.converter.util.IntygDraftDecorator;
+import se.inera.intyg.webcert.web.service.employee.EmployeeNameService;
 import se.inera.intyg.webcert.web.service.facade.list.ListDecoratorImpl;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolverResponse;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ListDecoratorImplTest {
@@ -53,7 +54,7 @@ class ListDecoratorImplTest {
     @Mock
     private IntygDraftDecorator intygDraftDecorator;
     @Mock
-    private HsatkEmployeeService hsaEmployeeService;
+    private EmployeeNameService employeeNameService;
     @Mock
     private PatientDetailsResolver patientDetailsResolver;
     @Mock
@@ -80,46 +81,18 @@ class ListDecoratorImplTest {
     class StaffName {
 
         public void setupStaffWithOnlyLastName() {
-            when(hsaEmployeeService.getEmployee(any(), anyString()))
-                .thenAnswer(
-                    invocation -> {
-                        PersonInformation personInformation = new PersonInformation();
-                        personInformation.setMiddleAndSurName("EXAMPLE_NAME");
-                        personInformation.setPersonHsaId(invocation.getArgument(1));
-                        List<PersonInformation> personInformationList = new ArrayList<>();
-                        personInformationList.add(personInformation);
-                        return personInformationList;
-                    }
-                );
+            when(employeeNameService.getEmployeeHsaName(any()))
+                .thenReturn("EXAMPLE_NAME");
         }
 
         public void setupStaffWithCompleteName() {
-            when(hsaEmployeeService.getEmployee(any(), anyString()))
-                .thenAnswer(
-                    invocation -> {
-                        PersonInformation personInformation = new PersonInformation();
-                        personInformation.setGivenName("FIRST");
-                        personInformation.setMiddleAndSurName("MIDDLE LAST");
-                        personInformation.setPersonHsaId(invocation.getArgument(1));
-                        List<PersonInformation> personInformationList = new ArrayList<>();
-                        personInformationList.add(personInformation);
-                        return personInformationList;
-                    }
-                );
+            when(employeeNameService.getEmployeeHsaName(any()))
+                .thenReturn("FIRST MIDDLE LAST");
         }
 
         public void setupStaffWithNoLastName() {
-            when(hsaEmployeeService.getEmployee(any(), anyString()))
-                .thenAnswer(
-                    invocation -> {
-                        PersonInformation personInformation = new PersonInformation();
-                        personInformation.setGivenName("FIRST");
-                        personInformation.setPersonHsaId(invocation.getArgument(1));
-                        List<PersonInformation> personInformationList = new ArrayList<>();
-                        personInformationList.add(personInformation);
-                        return personInformationList;
-                    }
-                );
+            when(employeeNameService.getEmployeeHsaName(any()))
+                .thenReturn(null);
         }
 
         @Test

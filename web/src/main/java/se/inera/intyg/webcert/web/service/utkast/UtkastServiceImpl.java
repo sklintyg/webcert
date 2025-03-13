@@ -62,7 +62,6 @@ import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.common.support.peristence.dao.util.DaoUtil;
 import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
-import se.inera.intyg.infra.integration.hsatk.services.HsatkEmployeeService;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -84,6 +83,7 @@ import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.integration.util.HoSPersonHelper;
 import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
+import se.inera.intyg.webcert.web.service.employee.EmployeeNameService;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.dto.LogUser;
@@ -171,7 +171,7 @@ public class UtkastServiceImpl implements UtkastService {
     private DraftAccessServiceHelper draftAccessServiceHelper;
 
     @Autowired
-    private HsatkEmployeeService hsaEmployeeService;
+    private EmployeeNameService employeeNameService;
 
     @Autowired
     private UtkastServiceHelper utkastServiceHelper;
@@ -562,7 +562,7 @@ public class UtkastServiceImpl implements UtkastService {
 
         Set<String> hsaIDs = result.stream().map(arr -> (String) arr[0]).collect(Collectors.toSet());
 
-        Map<String, String> hsaToNameMap = ArendeConverter.getNamesByHsaIds(hsaIDs, hsaEmployeeService);
+        Map<String, String> hsaToNameMap = ArendeConverter.getNamesByHsaIds(hsaIDs, employeeNameService);
 
         return result.stream()
             .map(lakareArr -> {
