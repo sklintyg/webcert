@@ -379,10 +379,18 @@ class EraseServiceImplTest {
             () -> verifyNoInteractions(migreratMedcertIntygRepository),
             () -> verifyNoInteractions(fragaSvarRepository),
             () -> verifyNoInteractions(arendeRepository),
-            () -> verifyNoInteractions(handelseRepository),
             () -> verifyNoInteractions(certificateEventRepository),
             () -> verifyNoMoreInteractions(utkastRepository)
         );
+    }
+
+    @Test
+    void shouldDeleteHandelseByVardgivarId() {
+        setupEraseByCareProviderIdMocks();
+        setupPageMock(false);
+
+        eraseService.eraseCertificates(CARE_PROVIDER_ID, ERASE_PAGEABLE.getPageSize());
+        verify(handelseRepository).deleteHandelseByVardgivarId(CARE_PROVIDER_ID);
     }
 
     private void setupEraseByCertificateIdMocks(boolean withException) {

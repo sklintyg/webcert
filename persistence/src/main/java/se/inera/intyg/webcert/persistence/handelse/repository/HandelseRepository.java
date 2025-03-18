@@ -123,4 +123,6 @@ public interface HandelseRepository extends JpaRepository<Handelse, Long> {
         deleteAll(handelseList);
         return handelseList.size();
     }
+
+    int deleteHandelseByVardgivarId(String vardgivarId);
 }

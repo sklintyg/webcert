@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.erase;
 
+import jakarta.transaction.Transactional;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,6 +88,7 @@ public class EraseServiceImpl implements EraseService {
     } //CHECKSTYLE:ON ParameterNumber
 
     @Override
+    @Transactional
     public void eraseCertificates(String careProviderId, int erasePageSize) {
         Page<String> certificateIdPage = Page.empty();
         final var erasePageable = PageRequest.of(0, erasePageSize, Sort.by(Direction.ASC, "skapad", "intygsId"));
@@ -127,6 +129,8 @@ public class EraseServiceImpl implements EraseService {
                     certificateIds.size(), careProviderId, certificateIdPage.getTotalElements() - erasedCertificates);
 
             } while (certificateIdPage.hasNext());
+
+            erasedHandelseTotal += handelseRepository.deleteHandelseByVardgivarId(careProviderId);
 
             LOG.info("Successfully completed erasure of certificates for care provider {}. Total number of erased Utkast: {}, "
                     + "Arende: {}, FragaSvar: {}, Handelse: {}, CertificateEvent: {}.", careProviderId, erasedCertificatesTotal,
