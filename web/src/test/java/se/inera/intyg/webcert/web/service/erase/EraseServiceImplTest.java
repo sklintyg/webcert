@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -53,6 +54,7 @@ import se.inera.intyg.webcert.persistence.event.repository.CertificateEventFaile
 import se.inera.intyg.webcert.persistence.event.repository.CertificateEventProcessedRepository;
 import se.inera.intyg.webcert.persistence.event.repository.CertificateEventRepository;
 import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarRepository;
+import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.integreradenhet.repository.IntegreradEnhetRepository;
 import se.inera.intyg.webcert.persistence.legacy.repository.MigreratMedcertIntygRepository;
@@ -225,7 +227,7 @@ class EraseServiceImplTest {
 
         assertAll(
             () -> verify(handelseRepository, times(3)).findHandelseIdsByCertificateIds(certIdCaptor.capture()),
-            () -> verify(notificationRedeliveryRepository, times(3)).eraseRedeliveriesForEventIds(eventIdCaptor.capture()),
+            () -> verify(notificationRedeliveryRepository, times(4)).eraseRedeliveriesForEventIds(eventIdCaptor.capture()),
             () -> assertIterableEquals(certIds.get(0), certIdCaptor.getAllValues().get(0)),
             () -> assertIterableEquals(certIds.get(1), certIdCaptor.getAllValues().get(1)),
             () -> assertIterableEquals(certIds.get(2), certIdCaptor.getAllValues().get(2)),
@@ -374,15 +376,36 @@ class EraseServiceImplTest {
             () -> verifyNoInteractions(certificateEventFailedLoadRepository),
             () -> verifyNoInteractions(certificateEventProcessedRepository),
             () -> verifyNoInteractions(pagaendeSigneringRepository),
-            () -> verifyNoInteractions(notificationRedeliveryRepository),
             () -> verifyNoInteractions(referensRepository),
             () -> verifyNoInteractions(migreratMedcertIntygRepository),
             () -> verifyNoInteractions(fragaSvarRepository),
             () -> verifyNoInteractions(arendeRepository),
-            () -> verifyNoInteractions(handelseRepository),
             () -> verifyNoInteractions(certificateEventRepository),
             () -> verifyNoMoreInteractions(utkastRepository)
         );
+    }
+
+    @Test
+    void shouldDeleteHandelseByVardgivarId() {
+        setupEraseByCareProviderIdMocks();
+        setupPageMock(false);
+
+        eraseService.eraseCertificates(CARE_PROVIDER_ID, ERASE_PAGEABLE.getPageSize());
+        verify(handelseRepository).deleteHandelseByVardgivarId(CARE_PROVIDER_ID);
+    }
+
+    @Test
+    void shouldDeleteRedeliveriesForEventIds() {
+        setupEraseByCareProviderIdMocks();
+        setupPageMock(false);
+
+        final var handelse = mock(Handelse.class);
+
+        doReturn(List.of(handelse)).when(handelseRepository).findByVardgivarId(CARE_PROVIDER_ID);
+        doReturn(1L).when(handelse).getId();
+
+        eraseService.eraseCertificates(CARE_PROVIDER_ID, ERASE_PAGEABLE.getPageSize());
+        verify(notificationRedeliveryRepository).eraseRedeliveriesForEventIds(List.of(1L));
     }
 
     private void setupEraseByCertificateIdMocks(boolean withException) {

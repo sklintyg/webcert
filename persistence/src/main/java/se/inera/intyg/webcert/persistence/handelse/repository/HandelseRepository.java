@@ -49,6 +49,8 @@ public interface HandelseRepository extends JpaRepository<Handelse, Long> {
 
     List<Handelse> findByPersonnummerAndVardgivarIdAndTimestampBefore(String personId, String careProviderId, LocalDateTime to);
 
+    List<Handelse> findByVardgivarId(String careProviderId);
+
     @Query("select h.id from Handelse h where h.intygsId in :certificateIds")
     List<Long> findHandelseIdsByCertificateIds(@Param("certificateIds") List<String> certificateIds);
 
@@ -123,4 +125,6 @@ public interface HandelseRepository extends JpaRepository<Handelse, Long> {
         deleteAll(handelseList);
         return handelseList.size();
     }
+
+    int deleteHandelseByVardgivarId(String vardgivarId);
 }

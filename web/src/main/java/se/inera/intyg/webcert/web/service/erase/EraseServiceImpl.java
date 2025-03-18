@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.erase;
 
+import jakarta.transaction.Transactional;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +33,7 @@ import se.inera.intyg.webcert.persistence.event.repository.CertificateEventFaile
 import se.inera.intyg.webcert.persistence.event.repository.CertificateEventProcessedRepository;
 import se.inera.intyg.webcert.persistence.event.repository.CertificateEventRepository;
 import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarRepository;
+import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.integreradenhet.repository.IntegreradEnhetRepository;
 import se.inera.intyg.webcert.persistence.legacy.repository.MigreratMedcertIntygRepository;
@@ -87,6 +89,7 @@ public class EraseServiceImpl implements EraseService {
     } //CHECKSTYLE:ON ParameterNumber
 
     @Override
+    @Transactional
     public void eraseCertificates(String careProviderId, int erasePageSize) {
         Page<String> certificateIdPage = Page.empty();
         final var erasePageable = PageRequest.of(0, erasePageSize, Sort.by(Direction.ASC, "skapad", "intygsId"));
@@ -127,6 +130,13 @@ public class EraseServiceImpl implements EraseService {
                     certificateIds.size(), careProviderId, certificateIdPage.getTotalElements() - erasedCertificates);
 
             } while (certificateIdPage.hasNext());
+
+            final var eventIds = handelseRepository.findByVardgivarId(careProviderId).stream()
+                .map(Handelse::getId)
+                .toList();
+
+            notificationRedeliveryRepository.eraseRedeliveriesForEventIds(eventIds);
+            erasedHandelseTotal += handelseRepository.deleteHandelseByVardgivarId(careProviderId);
 
             LOG.info("Successfully completed erasure of certificates for care provider {}. Total number of erased Utkast: {}, "
                     + "Arende: {}, FragaSvar: {}, Handelse: {}, CertificateEvent: {}.", careProviderId, erasedCertificatesTotal,
