@@ -33,6 +33,7 @@ import se.inera.intyg.webcert.persistence.event.repository.CertificateEventFaile
 import se.inera.intyg.webcert.persistence.event.repository.CertificateEventProcessedRepository;
 import se.inera.intyg.webcert.persistence.event.repository.CertificateEventRepository;
 import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarRepository;
+import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.integreradenhet.repository.IntegreradEnhetRepository;
 import se.inera.intyg.webcert.persistence.legacy.repository.MigreratMedcertIntygRepository;
@@ -130,6 +131,11 @@ public class EraseServiceImpl implements EraseService {
 
             } while (certificateIdPage.hasNext());
 
+            final var eventIds = handelseRepository.findByVardgivarId(careProviderId).stream()
+                .map(Handelse::getId)
+                .toList();
+
+            notificationRedeliveryRepository.eraseRedeliveriesForEventIds(eventIds);
             erasedHandelseTotal += handelseRepository.deleteHandelseByVardgivarId(careProviderId);
 
             LOG.info("Successfully completed erasure of certificates for care provider {}. Total number of erased Utkast: {}, "
