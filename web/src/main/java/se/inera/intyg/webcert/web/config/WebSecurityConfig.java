@@ -376,18 +376,20 @@ public class WebSecurityConfig {
     }
 
     private RequestedAuthnContext buildRequestedAuthnContext(RelyingPartyRegistration registration) {
+        final var requestedAuthnContext = new RequestedAuthnContextBuilder().buildObject();
+        requestedAuthnContext.setComparison(AuthnContextComparisonTypeEnumeration.EXACT);
+
         if (registration.getRegistrationId().equals(REGISTRATION_ID_ELEG)) {
-            return new RequestedAuthnContextBuilder().buildObject();
+            final var authnContextClassRefEleg = getAuthnContextClassRef();
+            authnContextClassRefEleg.setURI("http://id.elegnamnden.se/loa/1.0/loa3");
+            requestedAuthnContext.getAuthnContextClassRefs().add(authnContextClassRefEleg);
+            return requestedAuthnContext;
         }
 
         final var authnContextClassRefLoa2 = getAuthnContextClassRef();
         final var authnContextClassRefLoa3 = getAuthnContextClassRef();
         authnContextClassRefLoa2.setURI("http://id.sambi.se/loa/loa2");
         authnContextClassRefLoa3.setURI("http://id.sambi.se/loa/loa3");
-
-        final var requestedAuthnContextBuilder = new RequestedAuthnContextBuilder();
-        final var requestedAuthnContext = requestedAuthnContextBuilder.buildObject();
-        requestedAuthnContext.setComparison(AuthnContextComparisonTypeEnumeration.EXACT);
         requestedAuthnContext.getAuthnContextClassRefs().add(authnContextClassRefLoa2);
         requestedAuthnContext.getAuthnContextClassRefs().add(authnContextClassRefLoa3);
         return requestedAuthnContext;
