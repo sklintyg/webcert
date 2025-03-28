@@ -24,10 +24,19 @@ import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 @Service
 public class ElegAuthenticationMethodResolver {
 
+    private static final String AUTO_START = "bankid.auto-start-token";
+    private static final String QR_START = "bankid.qr-start-token";
+
     public AuthenticationMethod resolveAuthenticationMethod(String loginMethod) {
 
         if (loginMethod == null) {
             throw new IllegalArgumentException("Authentication method must not be null");
+        }
+        if (loginMethod.equals(AUTO_START)) {
+            return AuthenticationMethod.BANK_ID;
+        }
+        if (loginMethod.equals(QR_START)) {
+            return AuthenticationMethod.MOBILT_BANK_ID;
         }
 
         ElegLoginMethod loginMethodEnum;

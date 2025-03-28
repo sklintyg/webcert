@@ -37,10 +37,24 @@ class ElegAuthenticationMethodResolverTest  {
     private static final String NET_ID_LOGIN_METHOD = "ccp8";
     private static final String INDETERMINATE_LOGIN_METHOD = "";
     private static final String UNKNOWN_LOGIN_METHOD = "ccp7";
+    private static final String AUTO_START = "bankid.auto-start-token";
+    private static final String QR_START = "bankid.qr-start-token";
 
     @InjectMocks
     private ElegAuthenticationMethodResolver elegAuthenticationMethodResolver;
 
+
+    @Test
+    void testBankIdStartToken() {
+        AuthenticationMethod authMetod = elegAuthenticationMethodResolver.resolveAuthenticationMethod(AUTO_START);
+        assertEquals(AuthenticationMethod.BANK_ID, authMetod);
+    }
+
+    @Test
+    void testQrStartToken() {
+        AuthenticationMethod authMetod = elegAuthenticationMethodResolver.resolveAuthenticationMethod(QR_START);
+        assertEquals(AuthenticationMethod.MOBILT_BANK_ID, authMetod);
+    }
 
    @Test
     void testBankID() {
