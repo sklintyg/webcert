@@ -69,7 +69,7 @@ class CertificateServiceUserHelperTest {
     private static final List<String> LEGITIMATE_PROFEESIONAL_ROLES = List.of(DOCTOR);
     private static final String RESPONSIBLE_HOSP_NAME = "RESPONSIBLE_HOSP_NAME";
     private static final IntegrationParameters INTEGRATION_PARAMETERS = IntegrationParameters.of(
-        "", RESPONSIBLE_HOSP_NAME, "", "", "", "", "", "", "", true, false, false, true, "");
+        "", RESPONSIBLE_HOSP_NAME, "", "", "", "", "", "", "", true, false, false, true, "", null);
 
     private static WebCertUser webCertUser;
     private static SubscriptionInfo subscription;

@@ -266,7 +266,7 @@ public class IntygServiceTest {
         when(webcertUser.getOrigin()).thenReturn(UserOriginType.NORMAL.name());
         when(webcertUser.getHsaId()).thenReturn((HSA_ID));
         when(webcertUser.getParameters())
-            .thenReturn(new IntegrationParameters(USER_REFERENCE, "", "", "", "", "", "", "", "", false, false, false, true, null));
+            .thenReturn(new IntegrationParameters(USER_REFERENCE, "", "", "", "", "", "", "", "", false, false, false, true, null, null));
         when(webCertUserService.isAuthorizedForUnit(any(String.class), any(String.class), eq(true))).thenReturn(true);
         when(authoritiesHelper.getIntygstyperForPrivilege(any(WebCertUser.class), anyString())).thenReturn(set);
     }
@@ -991,7 +991,7 @@ public class IntygServiceTest {
         setupUserAndVardgivare();
         // Set up user
         IntegrationParameters parameters = new IntegrationParameters(null, null, null, null, null, null, null, null, null, true, false,
-            false, false, null);
+            false, false, null, null);
         when(webcertUser.getOrigin()).thenReturn(UserOriginType.DJUPINTEGRATION.name());
         when(webcertUser.getParameters()).thenReturn(parameters);
 
@@ -1406,7 +1406,7 @@ public class IntygServiceTest {
     public void testDeceasedIsNotSetForAlivePatientDjupintegration() {
         when(webcertUser.getOrigin()).thenReturn(UserOriginType.DJUPINTEGRATION.name());
         when(webcertUser.getParameters())
-            .thenReturn(new IntegrationParameters("", "", "", "", "", "", "", "", "", false, false, false, true, null));
+            .thenReturn(new IntegrationParameters("", "", "", "", "", "", "", "", "", false, false, false, true, null, null));
         IntygContentHolder intygData = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
         assertFalse(intygData.isDeceased());
     }
@@ -1415,7 +1415,7 @@ public class IntygServiceTest {
     public void testDeceasedIsNotSetForDeadPatientDjupintegration() {
         when(webcertUser.getOrigin()).thenReturn(UserOriginType.DJUPINTEGRATION.name());
         when(webcertUser.getParameters())
-            .thenReturn(new IntegrationParameters("", "", "", "", "", "", "", "", "", false, true, false, true, null));
+            .thenReturn(new IntegrationParameters("", "", "", "", "", "", "", "", "", false, true, false, true, null, null));
         when(patientDetailsResolver.resolvePatient(any(Personnummer.class), anyString(), anyString()))
             .thenReturn(buildPatient(false, true));
         IntygContentHolder intygData = intygService.fetchIntygData(CERTIFICATE_ID, CERTIFICATE_TYPE, false);

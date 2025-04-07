@@ -99,6 +99,8 @@ class IntygIntegrationControllerTest {
 
     @Mock
     private Cache redisCacheLaunchId;
+    @Mock
+    private CertificateAIPrefillService certificateAIPrefillService;
     @InjectMocks
     private IntygIntegrationController intygIntegrationController;
 
@@ -187,14 +189,14 @@ class IntygIntegrationControllerTest {
     private WebCertUser createDefaultUserWithIntegrationParameters() {
         final var user = createDefaultUser();
         user.setParameters(new IntegrationParameters(null, null, ALTERNATE_SSN, null, null, null, null,
-            null, null, false, false, false, false, null));
+            null, null, false, false, false, false, null, null));
         return user;
     }
 
     private WebCertUser createDefaultUserWithIntegrationParametersAndLaunchId1() {
         final var user = createDefaultUser();
         user.setParameters(IntegrationParameters.of(null, null, ALTERNATE_SSN, null, null, null, null,
-            null, null, false, false, false, false, LAUNCHID));
+            null, null, false, false, false, false, LAUNCHID, null));
 
         return user;
     }
@@ -227,7 +229,7 @@ class IntygIntegrationControllerTest {
             void launchIdShouldAppearOnUserIfProvidedInPostWhenJumpIsExecuted() {
                 intygIntegrationController.postRedirectToIntyg(uriInfo, httpServletRequest, INTYGSID_POST, "", "", "",
                     "", "", "", "", "", "", true, "", false,
-                    false, true, LAUNCHID);
+                    false, true, LAUNCHID, null);
 
                 assertEquals(LAUNCHID, user.getParameters().getLaunchId());
             }
@@ -236,7 +238,7 @@ class IntygIntegrationControllerTest {
             void assertThatRedisAddsLaunchIdToCache() {
                 intygIntegrationController.postRedirectToIntyg(uriInfo, httpServletRequest, INTYGSID_POST, "", "", "",
                     "", "", "", "", "", "", true, "", false,
-                    false, true, LAUNCHID);
+                    false, true, LAUNCHID, null);
 
                 verify(redisCacheLaunchId).put(anyString(), anyString());
             }
@@ -253,14 +255,14 @@ class IntygIntegrationControllerTest {
                     () -> {
                         intygIntegrationController.postRedirectToIntyg(uriInfo, httpServletRequest, INTYGSID_POST, "", "", "",
                             "", "", "", "", "", "", true, "", false,
-                            false, true, "LAUNCH_ID_1");
+                            false, true, "LAUNCH_ID_1", null);
                     },
                     "Provided launchId is not guid: LAUNCH_ID_1"
                 );
                 assertDoesNotThrow(() ->
                     intygIntegrationController.postRedirectToIntyg(uriInfo, httpServletRequest, INTYGSID_POST, "", "", "",
                         "", "", "", "", "", "", true, "", false,
-                        false, true, "")
+                        false, true, "", null)
                 );
             }
 
@@ -269,7 +271,7 @@ class IntygIntegrationControllerTest {
                 assertDoesNotThrow(() ->
                     intygIntegrationController.postRedirectToIntyg(uriInfo, httpServletRequest, INTYGSID_POST, "", "", "",
                         "", "", "", "", "", "", true, "", false,
-                        false, true, null)
+                        false, true, null, null)
                 );
             }
 
@@ -277,7 +279,7 @@ class IntygIntegrationControllerTest {
             void launchIdShouldBeAddedEvenIfNotProvided() {
                 intygIntegrationController.postRedirectToIntyg(uriInfo, httpServletRequest, INTYGSID_POST, "", "", "",
                     "", "", "", "", "", "", true, "", false,
-                    false, true, "");
+                    false, true, "", null);
 
                 assertNull(user.getParameters().getLaunchId());
             }

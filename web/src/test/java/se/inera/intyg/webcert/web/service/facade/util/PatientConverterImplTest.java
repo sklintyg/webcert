@@ -538,7 +538,7 @@ class PatientConverterImplTest {
 
     private IntegrationParameters getIntegrationParameters(String alternateSsn, String firstname, String lastname) {
         return new IntegrationParameters("reference", "responsible", alternateSsn, firstname, "mellannamn", lastname,
-            "address", "zipcode", "city", true, false, false, true, null);
+            "address", "zipcode", "city", true, false, false, true, null, null);
     }
 
     private Utkast createDraftWithUpdatedPersonId() {

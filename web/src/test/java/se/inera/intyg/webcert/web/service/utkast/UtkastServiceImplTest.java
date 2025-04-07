@@ -1305,7 +1305,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         vardgivare.setVardenheter(Collections.singletonList(vardenhet));
         user.setVardgivare(Collections.singletonList(vardgivare));
 
-        user.setParameters(new IntegrationParameters(USER_REFERENCE, "", "", "", "", "", "", "", "", sjf, false, false, true, null));
+        user.setParameters(new IntegrationParameters(USER_REFERENCE, "", "", "", "", "", "", "", "", sjf, false, false, true, null, null));
 
         return user;
     }

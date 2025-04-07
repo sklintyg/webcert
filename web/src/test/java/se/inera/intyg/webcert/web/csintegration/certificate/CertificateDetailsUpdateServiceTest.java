@@ -140,7 +140,7 @@ class CertificateDetailsUpdateServiceTest {
             final var webCertUser = new WebCertUser();
             webCertUser.setParameters(new IntegrationParameters("", "", ALTERNATE_SSN,
                 "", "", "", "", "", "", false,
-                false, false, true, null));
+                false, false, true, null, null));
 
             doReturn(true).when(alternateSsnEvaluator).shouldUpdate(certificate, webCertUser);
             doReturn(SAVE_CERTIFICATE_REQUEST_DTO).when(csIntegrationRequestFactory)
@@ -156,7 +156,7 @@ class CertificateDetailsUpdateServiceTest {
             final var webCertUser = new WebCertUser();
             webCertUser.setParameters(new IntegrationParameters("", "", ALTERNATE_SSN,
                 "", "", "", "", "", "", false,
-                false, false, true, null));
+                false, false, true, null, null));
 
             doReturn(true).when(alternateSsnEvaluator).shouldUpdate(certificate, webCertUser);
             doReturn(SAVE_CERTIFICATE_REQUEST_DTO).when(csIntegrationRequestFactory)

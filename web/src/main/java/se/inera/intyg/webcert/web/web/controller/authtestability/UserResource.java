@@ -137,7 +137,7 @@ public class UserResource {
     public Response setSjf() {
         webCertUserService.getUser()
             .setParameters(
-                new IntegrationParameters(null, null, null, null, null, null, null, null, null, true, false, false, true, null));
+                new IntegrationParameters(null, null, null, null, null, null, null, null, null, true, false, false, true, null, null));
         return Response.ok().build();
     }
 
@@ -153,7 +153,7 @@ public class UserResource {
     public Response setRef(@PathParam("refValue") String refValue) {
         webCertUserService.getUser()
             .setParameters(
-                new IntegrationParameters(refValue, null, null, null, null, null, null, null, null, true, false, false, true, null));
+                new IntegrationParameters(refValue, null, null, null, null, null, null, null, null, true, false, false, true, null, null));
         return Response.ok().build();
     }
 
@@ -164,7 +164,7 @@ public class UserResource {
         webCertUserService.getUser()
             .setParameters(
                 new IntegrationParameters(null, null, null, null, null, null, null, null, null, true, false, false, true,
-                    launchId));
+                    launchId, null));
         return Response.ok().build();
     }
 

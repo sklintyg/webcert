@@ -94,7 +94,8 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 fromSavedReqBoolean(savedRequest, IntygIntegrationController.PARAM_PATIENT_DECEASED),
                 fromSavedReqBoolean(savedRequest, IntygIntegrationController.PARAM_INACTIVE_UNIT),
                 fromSavedReqBoolean(savedRequest, IntygIntegrationController.PARAM_FORNYA_OK, true),
-                fromSavedReq(savedRequest, IntygIntegrationController.PARAM_LAUNCH_ID)
+                fromSavedReq(savedRequest, IntygIntegrationController.PARAM_LAUNCH_ID),
+                fromSavedReq(savedRequest, IntygIntegrationController.PARAM_PREFILL_DATA)
             );
 
             webCertUser.setParameters(integrationParameters);

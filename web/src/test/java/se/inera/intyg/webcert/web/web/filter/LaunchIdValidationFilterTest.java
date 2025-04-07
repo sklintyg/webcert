@@ -141,7 +141,7 @@ public class LaunchIdValidationFilterTest {
     private WebCertUser createUserWithIntegrationsParameters() {
         WebCertUser user = new WebCertUser();
         user.setParameters(new IntegrationParameters("", "", "", "", "",
-            "", "", "", "", true, false, false, true, LAUNCH_ID));
+            "", "", "", "", true, false, false, true, LAUNCH_ID, null));
         return user;
     }
 

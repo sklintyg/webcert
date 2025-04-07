@@ -117,14 +117,14 @@ public class PatientDetailsResolverTest {
     private IntegrationParameters buildIntegrationParameters() {
         IntegrationParameters params = new IntegrationParameters("ref", "hospname", "20121212-1212", INTEGR_FNAMN, INTEGR_MNAMN,
             INTEGR_LNAMN,
-            INTEGR_POST_ADDR, INTEGR_POST_NR, INTEGR_POST_ORT, false, INTEGR_AVLIDEN, false, true, null);
+            INTEGR_POST_ADDR, INTEGR_POST_NR, INTEGR_POST_ORT, false, INTEGR_AVLIDEN, false, true, null, null);
         return params;
     }
 
     private IntegrationParameters buildIntegrationParametersWithNullAddress() {
         IntegrationParameters params = new IntegrationParameters("ref", "hospname", "20121212-1212", INTEGR_FNAMN, INTEGR_MNAMN,
             INTEGR_LNAMN,
-            null, null, null, false, INTEGR_AVLIDEN, false, true, null);
+            null, null, null, false, INTEGR_AVLIDEN, false, true, null, null);
         return params;
     }
 

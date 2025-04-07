@@ -86,6 +86,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
     public static final String PARAM_REFERENCE = "ref";
     public static final String PARAM_RESPONSIBLE_HOSP_NAME = "responsibleHospName";
     public static final String PARAM_LAUNCH_ID = "launchId";
+    public static final String PARAM_PREFILL_DATA = "prefillData";
 
     private static final Logger LOG = LoggerFactory.getLogger(IntygIntegrationController.class);
 
@@ -108,6 +109,8 @@ public class IntygIntegrationController extends BaseIntegrationController {
     private IntegrationService integrationService;
     @Autowired
     private Cache redisCacheLaunchId;
+    @Autowired
+    private CertificateAIPrefillService certificateAIPrefillService;
 
     @Override
     protected String[] getGrantedRoles() {
@@ -185,7 +188,8 @@ public class IntygIntegrationController extends BaseIntegrationController {
         @DefaultValue("false") @FormParam(PARAM_INACTIVE_UNIT) boolean inactiveUnit,
         @DefaultValue("false") @FormParam(PARAM_PATIENT_DECEASED) boolean deceased,
         @DefaultValue("true") @FormParam(PARAM_FORNYA_OK) boolean fornyaOk,
-        @DefaultValue("") @FormParam(PARAM_LAUNCH_ID) String launchId) {
+        @DefaultValue("") @FormParam(PARAM_LAUNCH_ID) String launchId,
+        @DefaultValue("") @FormParam("prefillData") String prefillData) {
 
         final var params = Map.of(PARAM_CERT_ID, intygId);
         validateRequest(params);
@@ -193,7 +197,8 @@ public class IntygIntegrationController extends BaseIntegrationController {
         final var integrationParameters = IntegrationParameters.of(
             reference, responsibleHospName, alternatePatientSSn, fornamn, mellannamn, efternamn,
             postadress, postnummer, postort, coherentJournaling, deceased, inactiveUnit, fornyaOk,
-            launchIdShouldBeAdded(launchId) ? launchId : null
+            launchIdShouldBeAdded(launchId) ? launchId : null,
+            prefillData
         );
 
         final var user = getWebCertUser(request.getSession());
@@ -278,7 +283,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
                     changeValdVardenhet(user.getVardgivare().getFirst().getVardenheter().getFirst().getId(), user);
                     final var prepareRedirectInfo = prepareRedirectToIntyg(intygId, user);
                     LOG.debug("Redirecting to view intyg {} of type {}", intygId, prepareRedirectInfo.getIntygTyp());
-                    return buildViewCertificateResponse(uriInfo, prepareRedirectInfo);
+                    return buildViewCertificateResponse(uriInfo, prepareRedirectInfo, user.getParameters());
                 }
 
                 LOG.info("Deep integration request does not contain an 'enhet', redirecting to enhet selection page!");
@@ -289,7 +294,7 @@ public class IntygIntegrationController extends BaseIntegrationController {
             if (changeValdVardenhet(enhetId, user)) {
                 final var prepareRedirectInfo = prepareRedirectToIntyg(intygId, user);
                 LOG.debug("Redirecting to view intyg {} of type {}", intygId, prepareRedirectInfo.getIntygTyp());
-                return buildViewCertificateResponse(uriInfo, prepareRedirectInfo);
+                return buildViewCertificateResponse(uriInfo, prepareRedirectInfo, user.getParameters());
             }
 
             LOG.warn("Validation failed for deep-integration request because user {} is not authorized for enhet {}", user.getHsaId(),
@@ -340,7 +345,9 @@ public class IntygIntegrationController extends BaseIntegrationController {
         return Response.seeOther(location).build();
     }
 
-    private Response buildViewCertificateResponse(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg) {
+    private Response buildViewCertificateResponse(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg,
+        IntegrationParameters parameters) {
+        certificateAIPrefillService.prefill(prepareRedirectToIntyg.getIntygId(), parameters);
         final var location = reactUriFactory.uriForCertificate(uriInfo, prepareRedirectToIntyg.getIntygId());
         return Response.seeOther(location).build();
     }

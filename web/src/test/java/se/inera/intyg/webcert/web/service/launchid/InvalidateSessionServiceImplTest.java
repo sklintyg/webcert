@@ -125,7 +125,7 @@ class InvalidateSessionServiceImplTest {
     private WebCertUser createUserWithMatchingLaunchIdAndHsaId() {
         WebCertUser user = new WebCertUser();
         user.setParameters(new IntegrationParameters(null, null, "", null, null, null, null,
-            null, null, false, false, false, false, LAUNCH_ID));
+            null, null, false, false, false, false, LAUNCH_ID, null));
         user.setHsaId(USER_HSA_ID);
         return user;
     }
@@ -133,7 +133,7 @@ class InvalidateSessionServiceImplTest {
     private WebCertUser createUserWithMatchingHsaIdButWrongLaunchId() {
         WebCertUser user = new WebCertUser();
         user.setParameters(new IntegrationParameters(null, null, "", null, null, null, null,
-            null, null, false, false, false, false, LAUNCH_ID_WRONG));
+            null, null, false, false, false, false, LAUNCH_ID_WRONG, null));
         user.setHsaId(USER_HSA_ID);
         return user;
     }
@@ -141,7 +141,7 @@ class InvalidateSessionServiceImplTest {
     private WebCertUser createUserWithMatchingLaunchIdButWrongHsaId() {
         WebCertUser user = new WebCertUser();
         user.setParameters(new IntegrationParameters(null, null, "", null, null, null, null,
-            null, null, false, false, false, false, LAUNCH_ID));
+            null, null, false, false, false, false, LAUNCH_ID, null));
         user.setHsaId(USER_HSA_ID_WRONG);
         return user;
     }

@@ -41,6 +41,7 @@ public final class IntegrationParameters implements Serializable {
     private final boolean inactiveUnit;
     private final boolean fornyaOk;
     private final String launchId;
+    private final String prefillData;
 
     private String beforeAlternateSsn = ""; // Sätts när alternateSsn skiljer från intygets patientId för att kunna visa det i utkastet.
 
@@ -51,7 +52,7 @@ public final class IntegrationParameters implements Serializable {
     // CHECKSTYLE:OFF ParameterNumber
     public IntegrationParameters(String reference, String responsibleHospName, String alternateSsn, String fornamn,
         String mellannamn, String efternamn, String postadress, String postnummer, String postort,
-        boolean sjf, boolean patientDeceased, boolean inactiveUnit, boolean fornyaOk, String launchId) {
+        boolean sjf, boolean patientDeceased, boolean inactiveUnit, boolean fornyaOk, String launchId, String prefillData) {
 
         this.reference = reference;
         this.responsibleHospName = responsibleHospName;
@@ -67,6 +68,7 @@ public final class IntegrationParameters implements Serializable {
         this.inactiveUnit = inactiveUnit;
         this.fornyaOk = fornyaOk;
         this.launchId = launchId;
+        this.prefillData = prefillData;
     }
 
     public static IntegrationParameters of(
@@ -98,7 +100,9 @@ public final class IntegrationParameters implements Serializable {
             patientDeceased,
             inactiveUnit,
             fornyaOk,
-            null);
+            null,
+            null
+        );
     }
 
     public static IntegrationParameters of(
@@ -115,7 +119,8 @@ public final class IntegrationParameters implements Serializable {
         final boolean patientDeceased,
         final boolean inactiveUnit,
         final boolean fornyaOk,
-        final String launchId) {
+        final String launchId,
+        final String prefillData) {
 
         return new IntegrationParameters(
             StringUtils.trimToNull(reference),
@@ -131,7 +136,9 @@ public final class IntegrationParameters implements Serializable {
             patientDeceased,
             inactiveUnit,
             fornyaOk,
-            launchId);
+            launchId,
+            prefillData
+        );
     }
 
     // CHECKSTYLE:ON ParameterNumber
@@ -210,6 +217,10 @@ public final class IntegrationParameters implements Serializable {
 
     public String getLaunchId() {
         return launchId;
+    }
+
+    public String getPrefillData() {
+        return prefillData;
     }
 
     @Override

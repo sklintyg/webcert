@@ -457,7 +457,7 @@ class DecorateCertificateFromCSWithInformationFromWCTest {
 
     private IntegrationParameters createIntegrationParameters(String alternateSsn, String firstName, String lastName) {
         return new IntegrationParameters("reference", "responsible", alternateSsn, firstName, "mellannamn", lastName,
-            "address", "zipcode", "city", true, false, false, true, null);
+            "address", "zipcode", "city", true, false, false, true, null, null);
     }
 
     private Certificate createCertificate() {

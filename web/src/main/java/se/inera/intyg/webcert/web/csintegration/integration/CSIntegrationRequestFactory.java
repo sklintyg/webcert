@@ -33,6 +33,7 @@ import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.AnswerComplementRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateAIPrefillRequest;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateComplementRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoRequestDTO;
@@ -563,6 +564,16 @@ public class CSIntegrationRequestFactory {
             .careUnit(certificateServiceUnitHelper.getCareUnit())
             .careProvider(certificateServiceUnitHelper.getCareProvider())
             .user(certificateServiceUserHelper.get())
+            .build();
+    }
+
+    public CertificateAIPrefillRequest certificateAIPrefillRequest(String prefillData) {
+        return CertificateAIPrefillRequest.builder()
+            .unit(certificateServiceUnitHelper.getUnit())
+            .careUnit(certificateServiceUnitHelper.getCareUnit())
+            .careProvider(certificateServiceUnitHelper.getCareProvider())
+            .user(certificateServiceUserHelper.get())
+            .preFillData(prefillData)
             .build();
     }
 }

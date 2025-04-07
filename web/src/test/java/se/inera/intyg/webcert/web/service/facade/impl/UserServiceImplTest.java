@@ -502,7 +502,7 @@ class UserServiceImplTest {
             final var loggedInUser = userService.getLoggedInUser();
             assertFalse(loggedInUser.getCareProviders().get(0).isMissingSubscription());
         }
-        
+
         @Test
         void careProviderIsNotConsideredAsMissingSubscriptionIfActionIsNone() {
             final var subscriptionInfo = new SubscriptionInfo();
@@ -601,7 +601,7 @@ class UserServiceImplTest {
     private IntegrationParameters getParameters(String launchId) {
         return new IntegrationParameters(null, null, null, null,
             null, null, null, null, null,
-            false, false, false, false, launchId);
+            false, false, false, false, launchId, null);
     }
 
     private List<Vardgivare> getNavigableCareProvider() {
@@ -651,7 +651,7 @@ class UserServiceImplTest {
     private IntegrationParameters getParameters(Boolean inactiveUnit) {
         return new IntegrationParameters(null, null, null, null,
             null, null, null, null, null,
-            false, false, inactiveUnit, false, null);
+            false, false, inactiveUnit, false, null, null);
     }
 
     private List<Vardgivare> getUnsortedCareProviders() {
