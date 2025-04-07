@@ -31,7 +31,16 @@ public class AIPrefillController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PerformanceLogging(eventAction = "prefill-get-prefill-status", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public Response getPrefillStatus() {
+        if (getWebCertUserService().getUser().getParameters() == null) {
+            return Response.ok(Map.of("status", "complete")).build();
+        }
+
         final var launchId = getWebCertUserService().getUser().getParameters().getLaunchId();
+
+        if (launchId == null || launchId.isBlank()) {
+            return Response.ok(Map.of("status", "complete")).build();
+        }
+
         final var redisCacheKey = "prefillInProgress:" + launchId;
         final var prefillInProgress = redisCacheLaunchId.get(redisCacheKey);
 
@@ -39,10 +48,10 @@ public class AIPrefillController extends AbstractApiController {
         if (prefillInProgress == null) {
             status = "complete";
         } else {
-            if (Objects.equals(prefillInProgress.get(), "prefillCompleted")) {
-                status = "complete";
-            } else {
+            if (Objects.equals(prefillInProgress.get(), "prefillInProgress")) {
                 status = "loading";
+            } else {
+                status = "complete";
             }
         }
         return Response.ok(Map.of("status", status)).build();
