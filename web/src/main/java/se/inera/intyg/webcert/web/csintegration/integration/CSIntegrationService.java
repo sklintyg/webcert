@@ -44,6 +44,8 @@ import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorD
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.AnswerComplementRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.AnswerComplementResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateAIPrefillRequest;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateAIPrefillResponse;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateComplementRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateComplementResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateExistsResponseDTO;
@@ -813,6 +815,19 @@ public class CSIntegrationService {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/readyForSign";
 
         final var response = restTemplate.postForObject(url, request, ReadyForSignResponseDTO.class);
+
+        if (response == null || response.getCertificate() == null) {
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
+        }
+
+        return response.getCertificate();
+    }
+
+    @PerformanceLogging(eventAction = "ai-prefill", eventType = EVENT_TYPE_CHANGE)
+    public Certificate certificateAIPrefill(String certificateId, CertificateAIPrefillRequest request) {
+        final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/aiPrefill";
+
+        final var response = restTemplate.postForObject(url, request, CertificateAIPrefillResponse.class);
 
         if (response == null || response.getCertificate() == null) {
             throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
