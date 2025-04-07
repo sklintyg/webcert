@@ -54,6 +54,7 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.auth.CustomAuthenticationSuccessHandler;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.facade.util.ReactUriFactory;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
@@ -111,6 +112,8 @@ public class IntygIntegrationController extends BaseIntegrationController {
     private Cache redisCacheLaunchId;
     @Autowired
     private CertificateAIPrefillService certificateAIPrefillService;
+    @Autowired
+    private CSIntegrationRequestFactory csIntegrationRequestFactory;
 
     @Override
     protected String[] getGrantedRoles() {
@@ -347,7 +350,10 @@ public class IntygIntegrationController extends BaseIntegrationController {
 
     private Response buildViewCertificateResponse(UriInfo uriInfo, PrepareRedirectToIntyg prepareRedirectToIntyg,
         IntegrationParameters parameters) {
-        certificateAIPrefillService.prefill(prepareRedirectToIntyg.getIntygId(), parameters);
+        if (parameters.getPrefillData() != null && !parameters.getPrefillData().isBlank()) {
+            final var aiPrefillRequest = csIntegrationRequestFactory.certificateAIPrefillRequest(parameters.getPrefillData());
+            certificateAIPrefillService.prefill(prepareRedirectToIntyg.getIntygId(), parameters, aiPrefillRequest);
+        }
         final var location = reactUriFactory.uriForCertificate(uriInfo, prepareRedirectToIntyg.getIntygId());
         return Response.seeOther(location).build();
     }

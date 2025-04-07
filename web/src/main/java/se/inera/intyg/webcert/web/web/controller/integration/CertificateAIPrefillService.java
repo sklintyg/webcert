@@ -7,6 +7,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateAIPrefillRequest;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 @Service
@@ -19,11 +20,7 @@ public class CertificateAIPrefillService {
     private final Cache redisCacheLaunchId;
 
     @Async("threadPoolTaskExecutor")
-    public void prefill(String certificateId, IntegrationParameters parameters) {
-
-        if (parameters.getPrefillData() == null || parameters.getPrefillData().isBlank()) {
-            return;
-        }
+    public void prefill(String certificateId, IntegrationParameters parameters, CertificateAIPrefillRequest aiPrefillRequest) {
 
         final var launchId = parameters.getLaunchId();
         final var redisCacheKey = "prefillInProgress:" + launchId;
@@ -34,10 +31,10 @@ public class CertificateAIPrefillService {
 
         csIntegrationService.certificateAIPrefill(
             certificateId,
-            csIntegrationRequestFactory.certificateAIPrefillRequest(parameters.getPrefillData())
+            aiPrefillRequest
         );
 
-        redisCacheLaunchId.put(redisCacheKey, null);
+        redisCacheLaunchId.put(redisCacheKey, "prefillCompleted");
         log.info("Prefill completed for launchId: {}", launchId);
     }
 }
