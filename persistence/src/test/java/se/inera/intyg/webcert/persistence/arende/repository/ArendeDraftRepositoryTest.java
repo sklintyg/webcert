@@ -52,13 +52,13 @@ public class ArendeDraftRepositoryTest {
     public void testFindByIntygId() {
         repo.save(buildArendeDraft("0"));
         repo.save(buildArendeDraft("1"));
-        repo.save(buildArendeDraft("1"));
+        repo.save(buildArendeDraft("11"));
         repo.save(buildArendeDraft("2"));
 
         List<ArendeDraft> res = repo.findByIntygId("1");
 
         assertNotNull(res);
-        assertEquals(2, res.size());
+        assertEquals(1, res.size());
 
         res = repo.findByIntygId("-1");
 
@@ -71,12 +71,12 @@ public class ArendeDraftRepositoryTest {
         ArendeDraft res = repo.findByIntygIdAndQuestionId("-1", "-1");
         assertNull(res);
 
-        repo.save(buildArendeDraft("i1", "q1"));
+        repo.save(buildArendeDraft("i11", "q1"));
 
-        res = repo.findByIntygIdAndQuestionId("i1", "q1");
+        res = repo.findByIntygIdAndQuestionId("i11", "q1");
 
         assertNotNull(res);
-        assertEquals("i1", res.getIntygId());
+        assertEquals("i11", res.getIntygId());
         assertEquals("q1", res.getQuestionId());
 
         repo.save(buildArendeDraft("i1"));
