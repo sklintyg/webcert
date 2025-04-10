@@ -18,12 +18,8 @@
  */
 package se.inera.intyg.webcert.web.service.arende;
 
-import static java.util.Comparator.comparing;
-
 import java.util.List;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,8 +29,6 @@ import se.inera.intyg.webcert.persistence.arende.repository.ArendeDraftRepositor
 @Service
 @Transactional
 public class ArendeDraftServiceImpl implements ArendeDraftService {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ArendeDraftServiceImpl.class);
 
     @Autowired
     private ArendeDraftRepository arendeDraftRepository;
@@ -63,16 +57,7 @@ public class ArendeDraftServiceImpl implements ArendeDraftService {
 
     @Override
     public ArendeDraft getQuestionDraft(String intygId) {
-        final var drafts = arendeDraftRepository.findByIntygId(intygId);
-
-        if (drafts.size() > 1) {
-            LOG.error("Found more than one ArendeDraft for certificateId: '{}'. Returning the latest.", intygId);
-        }
-
-        return drafts.stream()
-            .filter(draft -> draft.getId() != null)
-            .max(comparing(ArendeDraft::getId))
-            .orElse(null);
+        return arendeDraftRepository.findByIntygIdAndQuestionId(intygId, null);
     }
 
     @Override
