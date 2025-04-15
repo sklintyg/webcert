@@ -31,7 +31,7 @@
   },
   {
     "key": "socialstyrelsenFmbAnvandas",
-    "url": "https://roi.socialstyrelsen.se/fmb",
+    "url": "https://forsakringsmedicin.socialstyrelsen.se/",
     "text": "Socialstyrelsens hemsida",
     "target": "_blank"
   },
@@ -121,14 +121,14 @@
   },
   {
     "key": "fmbSoc",
-    "url": "https://roi.socialstyrelsen.se/fmb",
+    "url": "https://forsakringsmedicin.socialstyrelsen.se/",
     "text": "Läs mer om FMB hos Socialstyrelsen",
     "target": "_blank",
     "tooltip": "Öppnar Socialstyrelsens beslutstöd för angiven huvuddiagnos."
   },
   {
     "key": "fmbSocWithIcon",
-    "url": "https://roi.socialstyrelsen.se/fmb",
+    "url": "https://forsakringsmedicin.socialstyrelsen.se/",
     "text": "Socialstyrelsens försäkringsmedicinska beslutsstöd <img src='/img/link_icon.png'/>",
     "target": "_blank",
     "tooltip": "Öppnar Socialstyrelsens beslutstöd för angiven huvuddiagnos"
