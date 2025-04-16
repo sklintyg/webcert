@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -36,6 +37,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.question.Question;
@@ -149,28 +151,36 @@ public class CSIntegrationService {
     private final ListIntygEntryConverter listIntygEntryConverter;
     private final RestTemplate restTemplate;
     private final ListQuestionConverter listQuestionConverter;
+    private final RestClient restClient;
 
     @Value("${certificateservice.base.url}")
     private String baseUrl;
 
     public CSIntegrationService(CertificateTypeInfoConverter certificateTypeInfoConverter, ListIntygEntryConverter listIntygEntryConverter,
-        @Qualifier("csRestTemplate") RestTemplate restTemplate, ListQuestionConverter listQuestionConverter) {
+                                @Qualifier("csRestTemplate") RestTemplate restTemplate, ListQuestionConverter listQuestionConverter, @Qualifier("csRestClient") RestClient restClient) {
         this.certificateTypeInfoConverter = certificateTypeInfoConverter;
         this.listIntygEntryConverter = listIntygEntryConverter;
         this.restTemplate = restTemplate;
         this.listQuestionConverter = listQuestionConverter;
+        this.restClient = restClient;
     }
 
     @PerformanceLogging(eventAction = "list-certificates-unit", eventType = EVENT_TYPE_ACCESS)
     public List<ListIntygEntry> listCertificatesForUnit(GetUnitCertificatesRequestDTO request) {
         final var url = baseUrl + UNIT_ENDPOINT_URL + "/certificates";
-        final var response = restTemplate.postForObject(url, request, GetListCertificatesResponseDTO.class);
+
+        final var response = restClient.post()
+                .uri(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(request)
+                .retrieve()
+                .toEntity(GetListCertificatesResponseDTO.class);
 
         if (response == null) {
             throw new IllegalStateException("Response from certificate service was null when getting unit certificate list");
         }
 
-        return response.getCertificates()
+        return response.getBody().getCertificates()
             .stream()
             .map(listIntygEntryConverter::convert)
             .toList();

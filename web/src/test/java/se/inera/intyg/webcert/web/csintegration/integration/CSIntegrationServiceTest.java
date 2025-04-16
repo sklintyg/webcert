@@ -27,6 +27,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
@@ -46,7 +48,9 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateText;
@@ -344,6 +348,8 @@ class CSIntegrationServiceTest {
     private static final UnitStatisticsRequestDTO STATISTICS_REQUEST_DTO = UnitStatisticsRequestDTO.builder().build();
     private static final ReadyForSignRequestDTO READY_FOR_SIGN_REQUEST_DTO = ReadyForSignRequestDTO.builder().build();
 
+    @Mock
+    private RestClient restClient;
 
     @Mock
     private RestTemplate restTemplate;
@@ -359,6 +365,9 @@ class CSIntegrationServiceTest {
 
     @InjectMocks
     private CSIntegrationService csIntegrationService;
+
+    RestClient.RequestBodyUriSpec requestBodyUriSpec;
+    RestClient.ResponseSpec responseSpec;
 
     static {
         CERTIFICATE.setMetadata(
@@ -1042,20 +1051,36 @@ class CSIntegrationServiceTest {
 
         @BeforeEach
         void setup() {
-            when(listIntygEntryConverter.convert(CERTIFICATE))
-                .thenReturn(CONVERTED_CERTIFICATE);
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(LIST_RESPONSE);
+
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/unit/certificates";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(GetUnitCertificatesRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+
+            when(listIntygEntryConverter.convert(CERTIFICATE)).thenReturn(CONVERTED_CERTIFICATE);
         }
 
         @Test
         void shouldPreformPostUsingRequest() {
-            final var captor = ArgumentCaptor.forClass(GetUnitCertificatesRequestDTO.class);
 
-            csIntegrationService.listCertificatesForUnit(UNIT_LIST_REQUEST);
-            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+            final var response = GetListCertificatesResponseDTO.builder()
+                    .certificates(List.of(CERTIFICATE))
+                    .build();
 
-            assertEquals(UNIT_LIST_REQUEST, captor.getValue());
+            final var expectedResponse = List.of(new ListIntygEntry());
+
+            doReturn(ResponseEntity.ok(response)).when(responseSpec).toEntity(GetListCertificatesResponseDTO.class);
+
+            final var actualResponse = csIntegrationService.listCertificatesForUnit(UNIT_LIST_REQUEST);
+
+            assertEquals(expectedResponse, actualResponse);
         }
 
         @Test
