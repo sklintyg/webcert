@@ -71,6 +71,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ComplementCertificat
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CopyCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateCertificateFromCandidateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateCertificateFromTemplateResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ForwardCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.GetRelatedCertificateDTO;
@@ -431,16 +432,19 @@ public class CertificateController {
     }
 
     @POST
-    @Path("/{certificateType}/{patientId}")
+    @Path("/")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
     @PerformanceLogging(eventAction = "certificate-create-certificate", eventType = MdcLogConstants.EVENT_TYPE_CREATION)
-    public Response createCertificate(@PathParam("certificateType") String certificateType, @PathParam("patientId") String patientId) {
+    public Response createCertificate(@RequestBody @NotNull CreateCertificateRequestDTO createCertificateRequest) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Creating certificate with type: '{}'", certificateType);
+            LOG.debug("Creating certificate with type: '{}'", createCertificateRequest.certificateType());
         }
         try {
-            final var certificateId = createCertificateFacadeService.create(certificateType, patientId);
+            final var certificateId = createCertificateFacadeService.create(
+                createCertificateRequest.certificateType(),
+                createCertificateRequest.patientId()
+            );
             return Response.ok().entity(new CreateCertificateResponseDTO(certificateId)).build();
         } catch (CreateCertificateException e) {
             return Response.status(Status.BAD_REQUEST).build();
