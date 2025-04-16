@@ -18,6 +18,6 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
-public record CreateCertificateResponseDTO(String certificateId) {
+public record CreateCertificateRequestDTO(String certificateType, String patientId) {
 
 }

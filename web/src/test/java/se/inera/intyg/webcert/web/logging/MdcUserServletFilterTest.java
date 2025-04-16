@@ -23,64 +23,63 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 @ExtendWith(MockitoExtension.class)
 class MdcUserServletFilterTest {
 
+    @InjectMocks
+    private MdcUserServletFilter filter;
 
-  @InjectMocks
-  private MdcUserServletFilter filter;
+    @Mock
+    private WebCertUserService webCertUserService;
 
-  @Mock
-  private WebCertUserService webCertUserService;
+    @Mock
+    private ServletRequest request;
 
-  @Mock
-  private ServletRequest request;
+    @Mock
+    private ServletResponse response;
 
-  @Mock
-  private ServletResponse response;
+    @Mock
+    private FilterChain filterChain;
 
-  @Mock
-  private FilterChain filterChain;
+    public static final SelectableVardenhet selectedVardgivare = mock(SelectableVardenhet.class);
+    public static final SelectableVardenhet selectedVardenhet = mock(SelectableVardenhet.class);
 
-  public static final SelectableVardenhet selectedVardgivare = mock(SelectableVardenhet.class);
-  public static final SelectableVardenhet selectedVardenhet = mock(SelectableVardenhet.class);
+    @Test
+    void shouldGetUserDataIfAuthContextExists() throws IOException, ServletException {
+        when(webCertUserService.hasAuthenticationContext()).thenReturn(Boolean.TRUE);
+        when(webCertUserService.getUser()).thenReturn(new WebCertUser());
 
-  @Test
-  void shouldGetUserDataIfAuthContextExists() throws IOException, ServletException {
-    when(webCertUserService.hasAuthenticationContext()).thenReturn(Boolean.TRUE);
-    when(webCertUserService.getUser()).thenReturn(new WebCertUser());
+        filter.doFilter(request, response, filterChain);
 
-    filter.doFilter(request, response, filterChain);
+        verify(webCertUserService).getUser();
+        verify(webCertUserService).hasAuthenticationContext();
+    }
 
-    verify(webCertUserService).getUser();
-    verify(webCertUserService).hasAuthenticationContext();
-  }
+    @Test
+    void shouldNotGetUserDataIfAuthContextNull() throws IOException, ServletException {
+        when(webCertUserService.hasAuthenticationContext()).thenReturn(Boolean.FALSE);
 
-  @Test
-  void shouldNotGetUserDataIfAuthContextNull() throws IOException, ServletException {
-    when(webCertUserService.hasAuthenticationContext()).thenReturn(Boolean.FALSE);
+        filter.doFilter(request, response, filterChain);
 
-    filter.doFilter(request, response, filterChain);
+        verify(webCertUserService).hasAuthenticationContext();
+        verify(webCertUserService, never()).getUser();
+    }
 
-    verify(webCertUserService).hasAuthenticationContext();
-    verify(webCertUserService, never()).getUser();
-  }
+    @Test
+    void shouldNotThrowWhenUserDataIsMissing() {
+        when(webCertUserService.hasAuthenticationContext()).thenReturn(Boolean.TRUE);
+        when(webCertUserService.getUser()).thenReturn(new WebCertUser());
 
-  @Test
-  void shouldNotThrowWhenUserDataIsMissing() {
-    when(webCertUserService.hasAuthenticationContext()).thenReturn(Boolean.TRUE);
-    when(webCertUserService.getUser()).thenReturn(new WebCertUser());
+        assertDoesNotThrow(() -> filter.doFilter(request, response, filterChain));
+    }
 
-    assertDoesNotThrow(() -> filter.doFilter(request, response, filterChain));
-  }
+    @Test
+    void shouldNotThrowWhenIdsAreMissing() {
+        var user = new WebCertUser();
+        user.setHsaId(null);
+        user.setValdVardenhet(selectedVardenhet);
+        user.setValdVardgivare(selectedVardgivare);
+        when(webCertUserService.hasAuthenticationContext()).thenReturn(Boolean.TRUE);
+        when(webCertUserService.getUser()).thenReturn(user);
 
-  @Test
-  void shouldNotThrowWhenIdsAreMissing() {
-    var user = new WebCertUser();
-    user.setHsaId(null);
-    user.setValdVardenhet(selectedVardenhet);
-    user.setValdVardgivare(selectedVardgivare);
-    when(webCertUserService.hasAuthenticationContext()).thenReturn(Boolean.TRUE);
-    when(webCertUserService.getUser()).thenReturn(user);
-
-    assertDoesNotThrow(() -> filter.doFilter(request, response, filterChain));
-  }
+        assertDoesNotThrow(() -> filter.doFilter(request, response, filterChain));
+    }
 
 }

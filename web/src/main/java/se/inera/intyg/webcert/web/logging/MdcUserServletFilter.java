@@ -19,10 +19,6 @@
 
 package se.inera.intyg.webcert.web.logging;
 
-import static se.inera.intyg.webcert.logging.MdcLogConstants.ORGANIZATION_CARE_PROVIDER_ID;
-import static se.inera.intyg.webcert.logging.MdcLogConstants.ORGANIZATION_ID;
-import static se.inera.intyg.webcert.logging.MdcLogConstants.USER_ID;
-
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.FilterConfig;
@@ -31,44 +27,44 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import java.io.IOException;
 import lombok.Setter;
-import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+import se.inera.intyg.webcert.logging.MdcCloseableMap;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 @Setter
 @Component
 public class MdcUserServletFilter implements Filter {
 
-  @Autowired
-  private  WebCertUserService webCertUserService;
+    @Autowired
+    private WebCertUserService webCertUserService;
 
-  @Override
-  public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-      throws IOException, ServletException {
-    try {
-      if (webCertUserService.hasAuthenticationContext()) {
-        addUserContextToMdc();
-      }
-      chain.doFilter(request, response);
-    } finally {
-      MDC.clear();
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+        throws IOException, ServletException {
+        if (webCertUserService.hasAuthenticationContext()) {
+            final var user = webCertUserService.getUser();
+            final var selectedUnit = user.getValdVardenhet();
+            final var selectedCareProvider = user.getValdVardgivare();
+            try (final var mdcLogConstants =
+                MdcCloseableMap.builder()
+                    .put(MdcLogConstants.USER_ID, user.getHsaId())
+                    .put(MdcLogConstants.ORGANIZATION_ID, selectedUnit != null ? selectedUnit.getId() : "-")
+                    .put(MdcLogConstants.ORGANIZATION_CARE_PROVIDER_ID, selectedCareProvider != null ? selectedCareProvider.getId() : "-")
+                    .build()
+            ) {
+                chain.doFilter(request, response);
+            }
+        } else {
+            chain.doFilter(request, response);
+        }
     }
-  }
 
-  private void addUserContextToMdc() {
-    final var user = webCertUserService.getUser();
-    MDC.put(USER_ID, user.getHsaId());
-    MDC.put(ORGANIZATION_ID,
-        user.getValdVardenhet() != null ? user.getValdVardenhet().getId() : "-");
-    MDC.put(ORGANIZATION_CARE_PROVIDER_ID,
-        user.getValdVardgivare() != null ? user.getValdVardgivare().getId() : "-");
-  }
-
-  @Override
-  public void init(FilterConfig filterConfig) {
-    SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this,
-        filterConfig.getServletContext());
-  }
+    @Override
+    public void init(FilterConfig filterConfig) {
+        SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this,
+            filterConfig.getServletContext());
+    }
 }
