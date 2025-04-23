@@ -534,19 +534,6 @@ public class CSIntegrationService {
     public Certificate saveCertificate(SaveCertificateRequestDTO request) {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + request.getCertificate().getMetadata().getId();
 
-        /*
-        final var headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        final var response1 = restTemplate.<SaveCertificateResponseDTO>exchange(
-            url,
-            HttpMethod.PUT,
-            new HttpEntity<>(request, headers),
-            new ParameterizedTypeReference<>() {
-            },
-            Collections.emptyMap()
-        );
-        */
-
         final var response = restClient.put()
                 .uri(url)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -570,14 +557,30 @@ public class CSIntegrationService {
     public GetCertificateXmlResponseDTO getCertificateXml(GetCertificateXmlRequestDTO request, String certificateId) {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/xml";
 
-        return restTemplate.postForObject(url, request, GetCertificateXmlResponseDTO.class);
+        return restClient.post()
+                .uri(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
+                .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
+                .body(request)
+                .retrieve()
+                .body(GetCertificateXmlResponseDTO.class);
     }
 
     @PerformanceLogging(eventAction = "sign-certificate", eventType = EVENT_TYPE_CHANGE)
     public Certificate signCertificate(SignCertificateRequestDTO request, String certificateId, long version) {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/sign/" + version;
 
-        final var response = restTemplate.postForObject(url, request, SignCertificateResponseDTO.class);
+        //final var response = restTemplate.postForObject(url, request, SignCertificateResponseDTO.class);
+
+        final var response = restClient.post()
+                .uri(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
+                .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
+                .body(request)
+                .retrieve()
+                .body(SignCertificateResponseDTO.class);
 
         if (response == null) {
             throw new IllegalStateException(
