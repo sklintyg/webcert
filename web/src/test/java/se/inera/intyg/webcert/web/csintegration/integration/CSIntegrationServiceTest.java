@@ -1668,7 +1668,7 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldSetUrlCorrect() {
-            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            //ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
             final var captor = ArgumentCaptor.forClass(String.class);
 
             doReturn(SIGN_CERTIFICATE_RESPONSE_DTO).when(responseSpec).body(SignCertificateResponseDTO.class);
