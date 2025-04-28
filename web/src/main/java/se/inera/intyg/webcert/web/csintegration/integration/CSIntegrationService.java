@@ -812,7 +812,14 @@ public class CSIntegrationService {
     public List<Question> getQuestions(String certificateId) {
         final var url = baseUrl + INTERNAL_MESSAGE_ENDPOINT_URL + "/" + certificateId;
 
-        final var response = restTemplate.postForObject(url, null, GetCertificateMessageInternalResponseDTO.class);
+        final var response = restClient.post()
+            .uri(url)
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
+            .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
+            .body(null)
+            .retrieve()
+            .body(GetCertificateMessageInternalResponseDTO.class);
 
         if (response == null) {
             throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
@@ -825,7 +832,14 @@ public class CSIntegrationService {
     public Certificate getInternalCertificate(String certificateId) {
         final var url = baseUrl + INTERNAL_CERTIFICATE_ENDPOINT_URL + "/" + certificateId;
 
-        final var response = restTemplate.postForObject(url, null, CertificateServiceGetCertificateResponseDTO.class);
+        final var response = restClient.post()
+            .uri(url)
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
+            .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
+            .body(null)
+            .retrieve()
+            .body(CertificateServiceGetCertificateResponseDTO.class);
 
         if (response == null) {
             throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
