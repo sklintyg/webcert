@@ -13,9 +13,6 @@ import static se.inera.intyg.webcert.logging.MdcLogConstants.TRACE_ID_KEY;
 public class CertificateServiceRestClientConfiguration {
     @Bean("csRestClient")
     public RestClient csRestClient() {
-        return RestClient.builder()
-                .defaultHeader(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
-                .defaultHeader(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
-                .build();
+        return RestClient.builder().build();
     }
 }

@@ -26,14 +26,10 @@ import java.util.Optional;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestTemplate;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.modules.support.facade.dto.CertificateEventDTO;
@@ -147,7 +143,6 @@ public class CSIntegrationService {
 
     private final CertificateTypeInfoConverter certificateTypeInfoConverter;
     private final ListIntygEntryConverter listIntygEntryConverter;
-    private final RestTemplate restTemplate;
     private final ListQuestionConverter listQuestionConverter;
     private final RestClient restClient;
 
@@ -155,10 +150,9 @@ public class CSIntegrationService {
     private String baseUrl;
 
     public CSIntegrationService(CertificateTypeInfoConverter certificateTypeInfoConverter, ListIntygEntryConverter listIntygEntryConverter,
-                                @Qualifier("csRestTemplate") RestTemplate restTemplate, ListQuestionConverter listQuestionConverter, @Qualifier("csRestClient") RestClient restClient) {
+                                ListQuestionConverter listQuestionConverter, @Qualifier("csRestClient") RestClient restClient) {
         this.certificateTypeInfoConverter = certificateTypeInfoConverter;
         this.listIntygEntryConverter = listIntygEntryConverter;
-        this.restTemplate = restTemplate;
         this.listQuestionConverter = listQuestionConverter;
         this.restClient = restClient;
     }
