@@ -923,7 +923,14 @@ public class CSIntegrationService {
     public Question saveMessage(SaveMessageRequestDTO request, String messageId) {
         final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + "/save";
 
-        final var response = restTemplate.postForObject(url, request, SaveMessageResponseDTO.class);
+        final var response = restClient.post()
+            .uri(url)
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
+            .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
+            .body(request)
+            .retrieve()
+            .body(SaveMessageResponseDTO.class);
 
         if (response == null) {
             throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);

@@ -2707,25 +2707,42 @@ class CSIntegrationServiceTest {
     @Nested
     class SaveMessageTest {
 
-
         private static final String MESSAGE_ID = "messageId";
+
+        @BeforeEach
+        void setUp() {
+
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/message/messageId/save";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(SaveMessageRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+
+        }
 
         @Test
         void shouldPreformPostUsingRequest() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(SAVE_MESSAGE_RESPONSE_DTO);
+
+            doReturn(SAVE_MESSAGE_RESPONSE_DTO).when(responseSpec).body(SaveMessageResponseDTO.class);
             final var captor = ArgumentCaptor.forClass(SaveMessageRequestDTO.class);
 
             csIntegrationService.saveMessage(SAVE_MESSAGE_REQUEST_DTO, MESSAGE_ID);
-            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+            verify(requestBodyUriSpec).body(captor.capture());
 
             assertEquals(SAVE_MESSAGE_REQUEST_DTO, captor.getValue());
         }
 
         @Test
         void shouldReturnQuestion() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(SAVE_MESSAGE_RESPONSE_DTO);
+
+            doReturn(SAVE_MESSAGE_RESPONSE_DTO).when(responseSpec).body(SaveMessageResponseDTO.class);
             final var response = csIntegrationService.saveMessage(SAVE_MESSAGE_REQUEST_DTO, MESSAGE_ID);
 
             assertEquals(QUESTION, response);
@@ -2733,8 +2750,6 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldThrowIfResponseIsNull() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(null);
             assertThrows(IllegalStateException.class,
                 () -> csIntegrationService.saveMessage(SAVE_MESSAGE_REQUEST_DTO, MESSAGE_ID));
         }
@@ -2742,14 +2757,13 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldSetUrlCorrect() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(SAVE_MESSAGE_RESPONSE_DTO);
-            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            doReturn(SAVE_MESSAGE_RESPONSE_DTO).when(responseSpec).body(SaveMessageResponseDTO.class);
             final var captor = ArgumentCaptor.forClass(String.class);
 
             csIntegrationService.saveMessage(SAVE_MESSAGE_REQUEST_DTO, MESSAGE_ID);
 
-            verify(restTemplate).postForObject(captor.capture(), any(), any());
+            verify(requestBodyUriSpec).uri(captor.capture());
 
             assertEquals("baseUrl/api/message/" + MESSAGE_ID + "/save", captor.getValue());
         }
