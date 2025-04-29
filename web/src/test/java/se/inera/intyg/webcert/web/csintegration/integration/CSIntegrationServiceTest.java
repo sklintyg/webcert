@@ -2466,10 +2466,26 @@ class CSIntegrationServiceTest {
     @Nested
     class GetCertificateXmlInternal {
 
+        @BeforeEach
+        void setUp() {
+
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/internalapi/certificate/ID/xml";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+
+        }
+
         @Test
         void shouldReturnXml() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(INTERAL_CERTIFICATE_XML_RESPONSE_DTO);
+            doReturn(INTERAL_CERTIFICATE_XML_RESPONSE_DTO).when(responseSpec).body(InternalCertificateXmlResponseDTO.class);
             final var response = csIntegrationService.getInternalCertificateXml(ID);
 
             assertEquals(XML_DATA, response);
@@ -2477,8 +2493,6 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldThrowIfResponseIsNull() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(null);
             assertThrows(IllegalStateException.class,
                 () -> csIntegrationService.getInternalCertificateXml(ID)
             );
@@ -2486,43 +2500,54 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldSetUrlCorrect() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(INTERAL_CERTIFICATE_XML_RESPONSE_DTO);
-            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            doReturn(INTERAL_CERTIFICATE_XML_RESPONSE_DTO).when(responseSpec).body(InternalCertificateXmlResponseDTO.class);
             final var captor = ArgumentCaptor.forClass(String.class);
 
-            csIntegrationService.getInternalCertificateXml("id");
-            verify(restTemplate).postForObject(captor.capture(), any(), any());
+            csIntegrationService.getInternalCertificateXml(ID);
+            verify(requestBodyUriSpec).uri(captor.capture());
 
-            assertEquals("baseUrl/internalapi/certificate/id/xml", captor.getValue());
+            assertEquals("baseUrl/internalapi/certificate/ID/xml", captor.getValue());
         }
     }
 
     @Nested
     class DeleteMessage {
 
+        @BeforeEach
+        void setUp() {
+
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/message/messageId/delete";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.method(HttpMethod.DELETE)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(DeleteMessageRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+
+        }
+
         @Test
         void shouldSetHttpMethod() {
-            when(restTemplate.exchange(
-                    anyString(),
-                    any(HttpMethod.class),
-                    any(HttpEntity.class),
-                    any(ParameterizedTypeReference.class)
-                )
-            ).thenReturn(new ResponseEntity<>(HttpStatus.OK));
-            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            doReturn(new ResponseEntity<>(HttpStatus.OK)).when(responseSpec).body(Void.class);
+
             final var captor = ArgumentCaptor.forClass(HttpMethod.class);
 
             csIntegrationService.deleteMessage(MESSAGE_ID, DELETE_MESSAGE_REQUEST_DTO);
 
-            verify(restTemplate).exchange(anyString(), captor.capture(), any(HttpEntity.class), any(ParameterizedTypeReference.class));
+            verify(restClient).method(captor.capture());
 
             assertEquals(HttpMethod.DELETE, captor.getValue());
         }
 
         @Test
         void shouldSetUrlCorrect() {
-            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
             final var captor = ArgumentCaptor.forClass(String.class);
 
             csIntegrationService.deleteMessage(
@@ -2530,12 +2555,7 @@ class CSIntegrationServiceTest {
                 DELETE_MESSAGE_REQUEST_DTO
             );
 
-            verify(restTemplate).exchange(
-                captor.capture(),
-                any(HttpMethod.class),
-                any(HttpEntity.class),
-                any(ParameterizedTypeReference.class)
-            );
+            verify(requestBodyUriSpec).uri(captor.capture());
 
             assertEquals("baseUrl/api/message/messageId/delete", captor.getValue());
         }
@@ -2544,23 +2564,41 @@ class CSIntegrationServiceTest {
     @Nested
     class CreateMessageTest {
 
+        @BeforeEach
+        void setUp() {
+
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/message/certificateId/create";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(CreateMessageRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+
+        }
 
         @Test
         void shouldPreformPostUsingRequest() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(CREATE_MESSAGE_RESPONSE_DTO);
+
+            doReturn(CREATE_MESSAGE_RESPONSE_DTO).when(responseSpec).body(CreateMessageResponseDTO.class);
+
             final var captor = ArgumentCaptor.forClass(CreateMessageRequestDTO.class);
 
             csIntegrationService.createMessage(CREATE_MESSAGE_REQUEST_DTO, CERTIFICATE_ID);
-            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+            verify(requestBodyUriSpec).body(captor.capture());
 
             assertEquals(CREATE_MESSAGE_REQUEST_DTO, captor.getValue());
         }
 
         @Test
         void shouldReturnQuestion() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(CREATE_MESSAGE_RESPONSE_DTO);
+
+            doReturn(CREATE_MESSAGE_RESPONSE_DTO).when(responseSpec).body(CreateMessageResponseDTO.class);
             final var response = csIntegrationService.createMessage(CREATE_MESSAGE_REQUEST_DTO, CERTIFICATE_ID);
 
             assertEquals(QUESTION, response);
@@ -2568,22 +2606,18 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldThrowIfResponseIsNull() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(null);
             assertThrows(IllegalStateException.class,
                 () -> csIntegrationService.createMessage(CREATE_MESSAGE_REQUEST_DTO, CERTIFICATE_ID));
         }
 
-
         @Test
         void shouldSetUrlCorrect() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(CREATE_MESSAGE_RESPONSE_DTO);
-            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            doReturn(CREATE_MESSAGE_RESPONSE_DTO).when(responseSpec).body(CreateMessageResponseDTO.class);
             final var captor = ArgumentCaptor.forClass(String.class);
 
             csIntegrationService.createMessage(CREATE_MESSAGE_REQUEST_DTO, CERTIFICATE_ID);
-            verify(restTemplate).postForObject(captor.capture(), any(), any());
+            verify(requestBodyUriSpec).uri(captor.capture());
 
             assertEquals("baseUrl/api/message/" + CERTIFICATE_ID + "/create", captor.getValue());
         }
@@ -2592,36 +2626,44 @@ class CSIntegrationServiceTest {
     @Nested
     class DeleteAnswerTest {
 
-
         private static final String MESSAGE_ID = "messageId";
+
+        @BeforeEach
+        void setUp() {
+
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/message/messageId/deleteanswer";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.method(HttpMethod.DELETE)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(DeleteAnswerRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+
+        }
 
         @Test
         void shouldPreformDeleteUsingRequest() {
-            when(restTemplate.exchange(
-                    anyString(),
-                    any(HttpMethod.class),
-                    any(HttpEntity.class),
-                    any(ParameterizedTypeReference.class)
-                )
-            ).thenReturn(new ResponseEntity<>(DELETE_ANSWER_RESPONSE_DTO, HttpStatus.OK));
-            final var captor = ArgumentCaptor.forClass(HttpEntity.class);
+
+            doReturn(DELETE_ANSWER_RESPONSE_DTO).when(responseSpec).body(DeleteAnswerResponseDTO.class);
+
+            final var captor = ArgumentCaptor.forClass(DeleteAnswerRequestDTO.class);
 
             csIntegrationService.deleteAnswer(MESSAGE_ID, DELETE_ANSWER_REQUEST_DTO);
 
-            verify(restTemplate).exchange(anyString(), any(HttpMethod.class), captor.capture(), any(ParameterizedTypeReference.class));
+            verify(requestBodyUriSpec).body(captor.capture());
 
-            assertEquals(DELETE_ANSWER_REQUEST_DTO, captor.getValue().getBody());
+            assertEquals(DELETE_ANSWER_REQUEST_DTO, captor.getValue());
         }
 
         @Test
         void shouldReturnQuestion() {
-            when(restTemplate.exchange(
-                    anyString(),
-                    any(HttpMethod.class),
-                    any(HttpEntity.class),
-                    any(ParameterizedTypeReference.class)
-                )
-            ).thenReturn(new ResponseEntity<>(DELETE_ANSWER_RESPONSE_DTO, HttpStatus.OK));
+
+            doReturn(DELETE_ANSWER_RESPONSE_DTO).when(responseSpec).body(DeleteAnswerResponseDTO.class);
             final var response = csIntegrationService.deleteAnswer(MESSAGE_ID, DELETE_ANSWER_REQUEST_DTO);
 
             assertEquals(QUESTION, response);
@@ -2629,32 +2671,20 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldSetHttpMethod() {
-            when(restTemplate.exchange(
-                    anyString(),
-                    any(HttpMethod.class),
-                    any(HttpEntity.class),
-                    any(ParameterizedTypeReference.class)
-                )
-            ).thenReturn(new ResponseEntity<>(DELETE_ANSWER_RESPONSE_DTO, HttpStatus.OK));
-            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            doReturn(DELETE_ANSWER_RESPONSE_DTO).when(responseSpec).body(DeleteAnswerResponseDTO.class);
+
             final var captor = ArgumentCaptor.forClass(HttpMethod.class);
 
             csIntegrationService.deleteAnswer(MESSAGE_ID, DELETE_ANSWER_REQUEST_DTO);
 
-            verify(restTemplate).exchange(anyString(), captor.capture(), any(HttpEntity.class), any(ParameterizedTypeReference.class));
+            verify(restClient).method(captor.capture());
 
             assertEquals(HttpMethod.DELETE, captor.getValue());
         }
 
         @Test
         void shouldThrowIfResponseIsNull() {
-            when(restTemplate.exchange(
-                    anyString(),
-                    any(HttpMethod.class),
-                    any(HttpEntity.class),
-                    any(ParameterizedTypeReference.class)
-                )
-            ).thenReturn(new ResponseEntity<>(null, HttpStatus.OK));
             assertThrows(IllegalStateException.class,
                 () -> csIntegrationService.deleteAnswer(MESSAGE_ID, DELETE_ANSWER_REQUEST_DTO));
         }
@@ -2662,19 +2692,13 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldSetUrlCorrect() {
-            when(restTemplate.exchange(
-                anyString(),
-                any(HttpMethod.class),
-                any(HttpEntity.class),
-                any(ParameterizedTypeReference.class)))
-                .thenReturn(new ResponseEntity<>(DELETE_ANSWER_RESPONSE_DTO, HttpStatus.OK));
 
-            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            doReturn(DELETE_ANSWER_RESPONSE_DTO).when(responseSpec).body(DeleteAnswerResponseDTO.class);
+
             final var captor = ArgumentCaptor.forClass(String.class);
 
             csIntegrationService.deleteAnswer(MESSAGE_ID, DELETE_ANSWER_REQUEST_DTO);
-            verify(restTemplate).exchange(captor.capture(), any(HttpMethod.class), any(HttpEntity.class),
-                any(ParameterizedTypeReference.class));
+            verify(requestBodyUriSpec).uri(captor.capture());
 
             assertEquals("baseUrl/api/message/" + MESSAGE_ID + "/deleteanswer", captor.getValue());
         }

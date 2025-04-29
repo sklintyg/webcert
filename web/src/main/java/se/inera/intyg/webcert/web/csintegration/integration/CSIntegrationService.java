@@ -817,7 +817,6 @@ public class CSIntegrationService {
             .contentType(MediaType.APPLICATION_JSON)
             .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
             .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
-            .body(null)
             .retrieve()
             .body(GetCertificateMessageInternalResponseDTO.class);
 
@@ -837,7 +836,6 @@ public class CSIntegrationService {
             .contentType(MediaType.APPLICATION_JSON)
             .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
             .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
-            .body(null)
             .retrieve()
             .body(CertificateServiceGetCertificateResponseDTO.class);
 
@@ -852,7 +850,13 @@ public class CSIntegrationService {
     public String getInternalCertificateXml(String certificateId) {
         final var url = baseUrl + INTERNAL_CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/xml";
 
-        final var response = restTemplate.postForObject(url, null, InternalCertificateXmlResponseDTO.class);
+        final var response = restClient.post()
+            .uri(url)
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
+            .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
+            .retrieve()
+            .body(InternalCertificateXmlResponseDTO.class);
 
         if (response == null) {
             throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
@@ -865,45 +869,48 @@ public class CSIntegrationService {
     public void deleteMessage(String messageId, DeleteMessageRequestDTO request) {
         final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + "/delete";
 
-        final var headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        restTemplate.<Void>exchange(
-            url,
-            HttpMethod.DELETE,
-            new HttpEntity<>(request, headers),
-            new ParameterizedTypeReference<>() {
-            }
-        );
+        restClient.method(HttpMethod.DELETE)
+            .uri(url)
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
+            .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
+            .body(request)
+            .retrieve()
+            .body(Void.class);
     }
 
     @PerformanceLogging(eventAction = "delete-answer", eventType = EVENT_TYPE_DELETION)
     public Question deleteAnswer(String messageId, DeleteAnswerRequestDTO request) {
         final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + messageId + "/deleteanswer";
 
-        final var headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
+        final var response = restClient.method(HttpMethod.DELETE)
+            .uri(url)
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
+            .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
+            .body(request)
+            .retrieve()
+            .body(DeleteAnswerResponseDTO.class);
 
-        final var response = restTemplate.<DeleteAnswerResponseDTO>exchange(
-            url,
-            HttpMethod.DELETE,
-            new HttpEntity<>(request, headers),
-            new ParameterizedTypeReference<>() {
-            }
-        );
-
-        if (response.getBody() == null) {
+        if (response == null) {
             throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
         }
 
-        return response.getBody().getQuestion();
+        return response.getQuestion();
     }
 
     @PerformanceLogging(eventAction = "create-message", eventType = EVENT_TYPE_CREATION)
     public Question createMessage(CreateMessageRequestDTO request, String certificateId) {
         final var url = baseUrl + MESSAGE_ENDPOINT_URL + "/" + certificateId + "/create";
 
-        final var response = restTemplate.postForObject(url, request, CreateMessageResponseDTO.class);
+        final var response = restClient.post()
+            .uri(url)
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
+            .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
+            .body(request)
+            .retrieve()
+            .body(CreateMessageResponseDTO.class);
 
         if (response == null) {
             throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
