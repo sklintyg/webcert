@@ -176,7 +176,7 @@ public class CSIntegrationService {
                 .retrieve()
                 .body(GetListCertificatesResponseDTO.class);
 
-        if (response == null) {
+        if (response.getCertificates() == null) {
             throw new IllegalStateException("Response from certificate service was null when getting unit certificate list");
         }
 
@@ -254,7 +254,7 @@ public class CSIntegrationService {
                 .retrieve()
                 .body(GetListCertificatesResponseDTO.class);
 
-        if (response == null) {
+        if (response.getCertificates() == null) {
             throw new IllegalStateException("Response from certificate service was null when getting patient certificate list");
         }
 
