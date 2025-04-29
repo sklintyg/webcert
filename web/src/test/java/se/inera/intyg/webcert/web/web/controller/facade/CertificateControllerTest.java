@@ -50,6 +50,7 @@ import se.inera.intyg.common.support.modules.support.facade.dto.CertificateEvent
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
 import se.inera.intyg.webcert.web.service.facade.ComplementCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.CopyCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.facade.CreateCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.CreateCertificateFromCandidateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.CreateCertificateFromTemplateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.DeleteCertificateFacadeService;
@@ -67,6 +68,7 @@ import se.inera.intyg.webcert.web.service.facade.SaveCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.SendCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.SignCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.ValidateCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.facade.impl.CreateCertificateException;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateEventResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateResponseDTO;
@@ -74,6 +76,8 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ComplementCertificat
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CopyCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateCertificateFromCandidateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateCertificateFromTemplateResponseDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateCertificateRequestDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.CreateCertificateResponseDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ForwardCertificateRequestDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.GetCandidateMessageForCertificateDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.GetRelatedCertificateDTO;
@@ -130,6 +134,8 @@ public class CertificateControllerTest {
     private GetRelatedCertificateFacadeService getRelatedCertificateFacadeService;
     @Mock
     private GetCandidateMesssageForCertificateFacadeService getCandidateMesssageForCertificateFacadeService;
+    @Mock
+    private CreateCertificateFacadeService createCertificateFacadeService;
 
     @InjectMocks
     private CertificateController certificateController;
@@ -723,6 +729,23 @@ public class CertificateControllerTest {
                     CERTIFICATE_ID)
                 .getEntity();
             assertEquals(expectedDto.getTitle(), actualDto.getTitle());
+        }
+    }
+
+    @Nested
+    class CreateCertificateTest {
+
+        @Test
+        void shallReturnResponse() throws CreateCertificateException {
+            final var expectedDto = new CreateCertificateResponseDTO("certificateId");
+            doReturn("certificateId")
+                .when(createCertificateFacadeService)
+                .create("certificateType", "patientId");
+            final var actualDto = (CreateCertificateResponseDTO) certificateController.createCertificate(
+                    new CreateCertificateRequestDTO("certificateType", "patientId")
+                )
+                .getEntity();
+            assertEquals(expectedDto, actualDto);
         }
     }
 }
