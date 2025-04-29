@@ -18,6 +18,12 @@
  */
 package se.inera.intyg.webcert.web.csintegration.integration;
 
+import static se.inera.intyg.webcert.logging.MdcLogConstants.EVENT_TYPE_ACCESS;
+import static se.inera.intyg.webcert.logging.MdcLogConstants.EVENT_TYPE_CHANGE;
+import static se.inera.intyg.webcert.logging.MdcLogConstants.EVENT_TYPE_CREATION;
+import static se.inera.intyg.webcert.logging.MdcLogConstants.EVENT_TYPE_DELETION;
+import static se.inera.intyg.webcert.logging.MdcLogConstants.EVENT_TYPE_INFO;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -124,8 +130,6 @@ import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
-
-import static se.inera.intyg.webcert.logging.MdcLogConstants.*;
 
 @Service
 public class CSIntegrationService {
