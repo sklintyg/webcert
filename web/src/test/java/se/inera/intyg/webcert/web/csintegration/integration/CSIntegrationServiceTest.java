@@ -27,6 +27,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
@@ -46,7 +48,9 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateText;
@@ -55,86 +59,8 @@ import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.modules.support.facade.dto.CertificateEventDTO;
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.AnswerComplementRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.AnswerComplementResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateComplementRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateComplementResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateExistsResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateExternalTypeExistsResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceCreateCertificateResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceGetCertificateResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateTypeExistsResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesWithQARequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesWithQAResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateMessageRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateMessageResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteAnswerRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteAnswerResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteMessageRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.ForwardCertificateRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.ForwardCertificateResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateEventsRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateEventsResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFromMessageRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFromMessageResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageInternalResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificatePdfRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificatePdfResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetListCertificatesResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitQuestionsRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitQuestionsResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.InternalCertificateXmlResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.LockDraftsRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.LockDraftsResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageExistsResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.ReadyForSignRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.ReadyForSignResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.RenewCertificateRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.RenewCertificateResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.ReplaceCertificateRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.ReplaceCertificateResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.RevokeCertificateRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.RevokeCertificateResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveAnswerRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveAnswerResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveMessageRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveMessageResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.SendAnswerRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.SendAnswerResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.SendCertificateRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.SendCertificateResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.SendMessageRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.SendMessageResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateWithoutSignatureRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.StatisticsForUnitDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.UnitStatisticsRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.UnitStatisticsResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.*;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetListCertificatesResponseDTO.GetListCertificatesResponseDTOBuilder;
 import se.inera.intyg.webcert.web.csintegration.message.dto.IncomingMessageRequestDTO;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
@@ -343,7 +269,12 @@ class CSIntegrationServiceTest {
         .build();
     private static final UnitStatisticsRequestDTO STATISTICS_REQUEST_DTO = UnitStatisticsRequestDTO.builder().build();
     private static final ReadyForSignRequestDTO READY_FOR_SIGN_REQUEST_DTO = ReadyForSignRequestDTO.builder().build();
+    private static final SaveCertificateRequestDTO SAVE_CERTIFICATE_REQUEST_DTO = SaveCertificateRequestDTO.builder().certificate(CERTIFICATE).build();
+    private static final SaveCertificateResponseDTO SAVE_CERTIFICATE_RESPONSE_DTO = SaveCertificateResponseDTO.builder().certificate(CERTIFICATE).build();
+    private static final SaveCertificateResponseDTO SAVE_CERTIFICATE_NULL_RESPONSE_DTO = SaveCertificateResponseDTO.builder().certificate(null).build();
 
+    @Mock
+    private RestClient restClient;
 
     @Mock
     private RestTemplate restTemplate;
@@ -360,6 +291,11 @@ class CSIntegrationServiceTest {
     @InjectMocks
     private CSIntegrationService csIntegrationService;
 
+    RestClient.RequestBodyUriSpec requestBodyUriSpec;
+    RestClient.ResponseSpec responseSpec;
+    RestClient.RequestHeadersUriSpec requestHeadersUriSpec;
+    RestClient.RequestHeadersSpec requestHeadersSpec;
+
     static {
         CERTIFICATE.setMetadata(
             CertificateMetadata.builder()
@@ -370,8 +306,28 @@ class CSIntegrationServiceTest {
 
     @Test
     void shouldReturnEmptyListIfTypeInfoResponseIsNull() {
-        final var response = csIntegrationService.getTypeInfo(TYPE_INFO_REQUEST);
-        assertEquals(Collections.emptyList(), response);
+
+        requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+        responseSpec = mock(RestClient.ResponseSpec.class);
+
+        final String uri = "baseUrl/api/certificatetypeinfo";
+        ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+        when(restClient.post()).thenReturn(requestBodyUriSpec);
+        when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+        when(requestBodyUriSpec.body(any(CertificateServiceTypeInfoRequestDTO.class))).thenReturn(requestBodyUriSpec);
+        when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+        when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+        when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+
+        final var response = CertificateServiceTypeInfoResponseDTO.builder()
+                .list(List.of())
+                .build();
+
+        doReturn(response).when(responseSpec).body(CertificateServiceTypeInfoResponseDTO.class);
+
+        final var actualResponse = csIntegrationService.getTypeInfo(TYPE_INFO_REQUEST);
+        assertEquals(Collections.emptyList(), actualResponse);
     }
 
     @Nested
@@ -379,24 +335,47 @@ class CSIntegrationServiceTest {
 
         @BeforeEach
         void setUp() {
-            when(certificateTypeInfoConverter.convert(any()))
-                .thenReturn(CONVERTED_TYPE_INFO);
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(TYPE_INFO_RESPONSE);
+
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/certificatetypeinfo";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(CertificateServiceTypeInfoRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+
         }
 
         @Test
         void shouldPreformPostUsingRequest() {
             final var captor = ArgumentCaptor.forClass(CertificateServiceTypeInfoRequestDTO.class);
+
+            final var response = CertificateServiceTypeInfoResponseDTO.builder()
+                    .list(List.of())
+                    .build();
+
+            doReturn(response).when(responseSpec).body(CertificateServiceTypeInfoResponseDTO.class);
+
             csIntegrationService.getTypeInfo(TYPE_INFO_REQUEST);
-            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+            verify(requestBodyUriSpec).body(captor.capture());
             assertEquals(TYPE_INFO_REQUEST, captor.getValue());
         }
 
         @Test
         void shouldReturnResponse() {
-            final var response = csIntegrationService.getTypeInfo(TYPE_INFO_REQUEST);
-            assertTrue(response.contains(CONVERTED_TYPE_INFO));
+
+            when(certificateTypeInfoConverter.convert(TYPE_INFO)).thenReturn(CONVERTED_TYPE_INFO);
+
+            doReturn(TYPE_INFO_RESPONSE).when(responseSpec).body(CertificateServiceTypeInfoResponseDTO.class);
+
+            final var actualResponse = csIntegrationService.getTypeInfo(TYPE_INFO_REQUEST);
+
+            assertTrue(actualResponse.contains(CONVERTED_TYPE_INFO));
         }
 
         @Test
@@ -404,8 +383,14 @@ class CSIntegrationServiceTest {
             ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
             final var captor = ArgumentCaptor.forClass(String.class);
 
+            final var response = CertificateServiceTypeInfoResponseDTO.builder()
+                    .list(List.of())
+                    .build();
+
+            doReturn(response).when(responseSpec).body(CertificateServiceTypeInfoResponseDTO.class);
+
             csIntegrationService.getTypeInfo(TYPE_INFO_REQUEST);
-            verify(restTemplate).postForObject(captor.capture(), any(), any());
+            verify(requestBodyUriSpec).uri(captor.capture());
 
             assertEquals("baseUrl/api/certificatetypeinfo", captor.getValue());
         }
@@ -414,10 +399,27 @@ class CSIntegrationServiceTest {
     @Nested
     class CreateCertificate {
 
+        @BeforeEach
+        void setUp() {
+
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/certificate";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(CreateCertificateRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+            }
+
         @Test
         void shouldThrowExceptionIfResponseIsNull() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(null);
+
+            doReturn(null).when(responseSpec).body(CertificateServiceCreateCertificateResponseDTO.class);
 
             assertThrows(IllegalStateException.class,
                 () -> csIntegrationService.createCertificate(CREATE_CERTIFICATE_REQUEST)
@@ -426,20 +428,24 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldPreformPostUsingRequest() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(CREATE_RESPONSE);
+
             final var captor = ArgumentCaptor.forClass(CreateCertificateRequestDTO.class);
 
+            final var response = CertificateServiceCreateCertificateResponseDTO.builder()
+                    .build();
+
+            doReturn(response).when(responseSpec).body(CertificateServiceCreateCertificateResponseDTO.class);
+
             csIntegrationService.createCertificate(CREATE_CERTIFICATE_REQUEST);
-            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+            verify(requestBodyUriSpec).body(captor.capture());
 
             assertEquals(CREATE_CERTIFICATE_REQUEST, captor.getValue());
         }
 
         @Test
         void shouldReturnCertificate() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(CREATE_RESPONSE);
+
+            doReturn(CREATE_RESPONSE).when(responseSpec).body(CertificateServiceCreateCertificateResponseDTO.class);
             final var response = csIntegrationService.createCertificate(CREATE_CERTIFICATE_REQUEST);
 
             assertEquals(CERTIFICATE, response);
@@ -449,11 +455,11 @@ class CSIntegrationServiceTest {
         void shouldSetUrlCorrect() {
             ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
             final var captor = ArgumentCaptor.forClass(String.class);
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(CREATE_RESPONSE);
+
+            doReturn(CREATE_RESPONSE).when(responseSpec).body(CertificateServiceCreateCertificateResponseDTO.class);
 
             csIntegrationService.createCertificate(CREATE_CERTIFICATE_REQUEST);
-            verify(restTemplate).postForObject(captor.capture(), any(), any());
+            verify(requestBodyUriSpec).uri(captor.capture());
 
             assertEquals("baseUrl/api/certificate", captor.getValue());
         }
@@ -462,10 +468,27 @@ class CSIntegrationServiceTest {
     @Nested
     class ReplaceCertificate {
 
+        @BeforeEach
+        void setUp() {
+
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/certificate/certificateId/replace";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(ReplaceCertificateRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+        }
+
         @Test
         void shouldThrowExceptionIfResponseIsNull() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(null);
+
+            doReturn(null).when(responseSpec).body(ReplaceCertificateResponseDTO.class);
 
             assertThrows(IllegalStateException.class,
                 () -> csIntegrationService.replaceCertificate(CERTIFICATE_ID, REPLACE_CERTIFICATE_REQUEST)
@@ -477,8 +500,7 @@ class CSIntegrationServiceTest {
 
             @BeforeEach
             void setUp() {
-                when(restTemplate.postForObject(anyString(), any(), any()))
-                    .thenReturn(REPLACE_CERTIFICATE_RESPONSE);
+                doReturn(REPLACE_CERTIFICATE_RESPONSE).when(responseSpec).body(ReplaceCertificateResponseDTO.class);
             }
 
             @Test
@@ -486,7 +508,7 @@ class CSIntegrationServiceTest {
                 final var captor = ArgumentCaptor.forClass(ReplaceCertificateRequestDTO.class);
 
                 csIntegrationService.replaceCertificate(CERTIFICATE_ID, REPLACE_CERTIFICATE_REQUEST);
-                verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+                verify(requestBodyUriSpec).body(captor.capture());
 
                 assertEquals(REPLACE_CERTIFICATE_REQUEST, captor.getValue());
             }
@@ -504,7 +526,7 @@ class CSIntegrationServiceTest {
                 final var captor = ArgumentCaptor.forClass(String.class);
 
                 csIntegrationService.replaceCertificate(CERTIFICATE_ID, REPLACE_CERTIFICATE_REQUEST);
-                verify(restTemplate).postForObject(captor.capture(), any(), any());
+                verify(requestBodyUriSpec).uri(captor.capture());
 
                 assertEquals("baseUrl/api/certificate/certificateId/replace", captor.getValue());
             }
@@ -514,10 +536,27 @@ class CSIntegrationServiceTest {
     @Nested
     class RenewCertificate {
 
+        @BeforeEach
+        void setUp() {
+
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/certificate/certificateId/renew";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(RenewCertificateRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+        }
+
         @Test
         void shouldThrowExceptionIfResponseIsNull() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(null);
+
+            doReturn(null).when(responseSpec).body(RenewCertificateResponseDTO.class);
 
             assertThrows(IllegalStateException.class,
                 () -> csIntegrationService.renewCertificate(CERTIFICATE_ID, RENEW_CERTIFICATE_REQUEST)
@@ -529,8 +568,7 @@ class CSIntegrationServiceTest {
 
             @BeforeEach
             void setUp() {
-                when(restTemplate.postForObject(anyString(), any(), any()))
-                    .thenReturn(RENEW_CERTIFICATE_RESPONSE);
+                doReturn(RENEW_CERTIFICATE_RESPONSE).when(responseSpec).body(RenewCertificateResponseDTO.class);
             }
 
             @Test
@@ -538,7 +576,7 @@ class CSIntegrationServiceTest {
                 final var captor = ArgumentCaptor.forClass(RenewCertificateRequestDTO.class);
 
                 csIntegrationService.renewCertificate(CERTIFICATE_ID, RENEW_CERTIFICATE_REQUEST);
-                verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+                verify(requestBodyUriSpec).body(captor.capture());
 
                 assertEquals(RENEW_CERTIFICATE_REQUEST, captor.getValue());
             }
@@ -556,7 +594,7 @@ class CSIntegrationServiceTest {
                 final var captor = ArgumentCaptor.forClass(String.class);
 
                 csIntegrationService.renewCertificate(CERTIFICATE_ID, RENEW_CERTIFICATE_REQUEST);
-                verify(restTemplate).postForObject(captor.capture(), any(), any());
+                verify(requestBodyUriSpec).uri(captor.capture());
 
                 assertEquals("baseUrl/api/certificate/certificateId/renew", captor.getValue());
             }
@@ -566,10 +604,27 @@ class CSIntegrationServiceTest {
     @Nested
     class ComplementCertificate {
 
+        @BeforeEach
+        void setUp() {
+
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/certificate/certificateId/complement";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(CertificateComplementRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+        }
+
         @Test
         void shouldThrowExceptionIfResponseIsNull() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(null);
+
+            doReturn(null).when(responseSpec).body(CertificateComplementResponseDTO.class);
 
             assertThrows(IllegalStateException.class,
                 () -> csIntegrationService.complementCertificate(CERTIFICATE_ID, COMPLEMENT_CERTIFICATE_REQUEST)
@@ -581,8 +636,7 @@ class CSIntegrationServiceTest {
 
             @BeforeEach
             void setUp() {
-                when(restTemplate.postForObject(anyString(), any(), any()))
-                    .thenReturn(COMPLEMENT_CERTIFICATE_RESPONSE);
+                doReturn(COMPLEMENT_CERTIFICATE_RESPONSE).when(responseSpec).body(CertificateComplementResponseDTO.class);
             }
 
             @Test
@@ -590,7 +644,7 @@ class CSIntegrationServiceTest {
                 final var captor = ArgumentCaptor.forClass(CertificateComplementRequestDTO.class);
 
                 csIntegrationService.complementCertificate(CERTIFICATE_ID, COMPLEMENT_CERTIFICATE_REQUEST);
-                verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+                verify(requestBodyUriSpec).body(captor.capture());
 
                 assertEquals(COMPLEMENT_CERTIFICATE_REQUEST, captor.getValue());
             }
@@ -608,7 +662,7 @@ class CSIntegrationServiceTest {
                 final var captor = ArgumentCaptor.forClass(String.class);
 
                 csIntegrationService.complementCertificate(CERTIFICATE_ID, COMPLEMENT_CERTIFICATE_REQUEST);
-                verify(restTemplate).postForObject(captor.capture(), any(), any());
+                verify(requestBodyUriSpec).uri(captor.capture());
 
                 assertEquals("baseUrl/api/certificate/certificateId/complement", captor.getValue());
             }
@@ -617,6 +671,23 @@ class CSIntegrationServiceTest {
 
     @Nested
     class CertificateTypeExists {
+
+        @BeforeEach
+        void setUp() {
+
+            responseSpec = mock(RestClient.ResponseSpec.class);
+            requestHeadersUriSpec = mock(RestClient.RequestHeadersUriSpec.class);
+            requestHeadersSpec = mock(RestClient.RequestHeadersSpec.class);
+
+            final String uri = "baseUrl/api/certificatetypeinfo/type/exists";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.get()).thenReturn(requestHeadersUriSpec);
+            when(requestHeadersUriSpec.uri(uri)).thenReturn(requestHeadersSpec);
+            when(requestHeadersSpec.accept(MediaType.APPLICATION_JSON)).thenReturn(requestHeadersSpec);
+            when(requestHeadersSpec.header(any(), any())).thenReturn(requestHeadersSpec);
+            when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
+        }
 
         @Test
         void shouldReturnModelIdFromResponse() {
@@ -629,8 +700,7 @@ class CSIntegrationServiceTest {
                 )
                 .build();
 
-            when(restTemplate.getForObject(anyString(), any()))
-                .thenReturn(expectedResponse);
+            doReturn(expectedResponse).when(responseSpec).body(CertificateTypeExistsResponseDTO.class);
 
             final var response = csIntegrationService.certificateTypeExists("type");
 
@@ -647,8 +717,7 @@ class CSIntegrationServiceTest {
                 )
                 .build();
 
-            when(restTemplate.getForObject(anyString(), any()))
-                .thenReturn(expectedResponse);
+            doReturn(expectedResponse).when(responseSpec).body(CertificateTypeExistsResponseDTO.class);
 
             final var response = csIntegrationService.certificateTypeExists("type");
 
@@ -665,8 +734,7 @@ class CSIntegrationServiceTest {
                 )
                 .build();
 
-            when(restTemplate.getForObject(anyString(), any()))
-                .thenReturn(expectedResponse);
+            doReturn(expectedResponse).when(responseSpec).body(CertificateTypeExistsResponseDTO.class);
 
             final var response = csIntegrationService.certificateTypeExists("type");
 
@@ -681,8 +749,7 @@ class CSIntegrationServiceTest {
                 )
                 .build();
 
-            when(restTemplate.getForObject(anyString(), any()))
-                .thenReturn(expectedResponse);
+            doReturn(expectedResponse).when(responseSpec).body(CertificateTypeExistsResponseDTO.class);
 
             final var response = csIntegrationService.certificateTypeExists("type");
 
@@ -694,10 +761,10 @@ class CSIntegrationServiceTest {
             ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
             final var captor = ArgumentCaptor.forClass(String.class);
 
-            csIntegrationService.certificateTypeExists("fk7211");
-            verify(restTemplate).getForObject(captor.capture(), any());
+            csIntegrationService.certificateTypeExists("type");
+            verify(requestHeadersUriSpec).uri(captor.capture());
 
-            assertEquals("baseUrl/api/certificatetypeinfo/fk7211/exists", captor.getValue());
+            assertEquals("baseUrl/api/certificatetypeinfo/type/exists", captor.getValue());
         }
     }
 
@@ -707,6 +774,23 @@ class CSIntegrationServiceTest {
 
         private static final String CODE_SYSTEM = "codeSystem";
         private static final String CODE = "code";
+
+        @BeforeEach
+        void setUp() {
+
+            responseSpec = mock(RestClient.ResponseSpec.class);
+            requestHeadersUriSpec = mock(RestClient.RequestHeadersUriSpec.class);
+            requestHeadersSpec = mock(RestClient.RequestHeadersSpec.class);
+
+            final String uri = "baseUrl/api/certificatetypeinfo/codeSystem/code/exists";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.get()).thenReturn(requestHeadersUriSpec);
+            when(requestHeadersUriSpec.uri(uri)).thenReturn(requestHeadersSpec);
+            when(requestHeadersSpec.accept(MediaType.APPLICATION_JSON)).thenReturn(requestHeadersSpec);
+            when(requestHeadersSpec.header(any(), any())).thenReturn(requestHeadersSpec);
+            when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
+        }
 
         @Test
         void shouldReturnModelIdFromResponse() {
@@ -719,8 +803,7 @@ class CSIntegrationServiceTest {
                 )
                 .build();
 
-            when(restTemplate.getForObject(anyString(), any()))
-                .thenReturn(expectedResponse);
+            doReturn(expectedResponse).when(responseSpec).body(CertificateExternalTypeExistsResponseDTO.class);
 
             final var response = csIntegrationService.certificateExternalTypeExists(CODE_SYSTEM, CODE);
 
@@ -737,8 +820,7 @@ class CSIntegrationServiceTest {
                 )
                 .build();
 
-            when(restTemplate.getForObject(anyString(), any()))
-                .thenReturn(expectedResponse);
+            doReturn(expectedResponse).when(responseSpec).body(CertificateExternalTypeExistsResponseDTO.class);
 
             final var response = csIntegrationService.certificateExternalTypeExists(CODE_SYSTEM, CODE);
 
@@ -755,8 +837,7 @@ class CSIntegrationServiceTest {
                 )
                 .build();
 
-            when(restTemplate.getForObject(anyString(), any()))
-                .thenReturn(expectedResponse);
+            doReturn(expectedResponse).when(responseSpec).body(CertificateExternalTypeExistsResponseDTO.class);
 
             final var response = csIntegrationService.certificateExternalTypeExists(CODE_SYSTEM, CODE);
 
@@ -771,8 +852,7 @@ class CSIntegrationServiceTest {
                 )
                 .build();
 
-            when(restTemplate.getForObject(anyString(), any()))
-                .thenReturn(expectedResponse);
+            doReturn(expectedResponse).when(responseSpec).body(CertificateExternalTypeExistsResponseDTO.class);
 
             final var response = csIntegrationService.certificateExternalTypeExists(CODE_SYSTEM, CODE);
 
@@ -785,7 +865,7 @@ class CSIntegrationServiceTest {
             final var captor = ArgumentCaptor.forClass(String.class);
 
             csIntegrationService.certificateExternalTypeExists(CODE_SYSTEM, CODE);
-            verify(restTemplate).getForObject(captor.capture(), any());
+            verify(requestHeadersUriSpec).uri(captor.capture());
 
             assertEquals("baseUrl/api/certificatetypeinfo/" + CODE_SYSTEM + "/" + CODE + "/exists", captor.getValue());
         }
@@ -794,22 +874,39 @@ class CSIntegrationServiceTest {
     @Nested
     class GetCertificate {
 
+        @BeforeEach
+        void setUp() {
+
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/certificate/ID";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(GetCertificateRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+        }
+
         @Test
         void shouldPreformPostUsingRequest() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(GET_RESPONSE);
             final var captor = ArgumentCaptor.forClass(GetCertificateRequestDTO.class);
 
+            doReturn(GET_RESPONSE).when(responseSpec).body(CertificateServiceGetCertificateResponseDTO.class);
+
             csIntegrationService.getCertificate(ID, GET_CERTIFICATE_REQUEST);
-            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+            verify(requestBodyUriSpec).body(captor.capture());
 
             assertEquals(GET_CERTIFICATE_REQUEST, captor.getValue());
         }
 
         @Test
         void shouldReturnCertificate() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(GET_RESPONSE);
+            doReturn(GET_RESPONSE).when(responseSpec).body(CertificateServiceGetCertificateResponseDTO.class);
+
             final var response = csIntegrationService.getCertificate(ID, GET_CERTIFICATE_REQUEST);
 
             assertEquals(CERTIFICATE, response);
@@ -820,15 +917,34 @@ class CSIntegrationServiceTest {
             ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
             final var captor = ArgumentCaptor.forClass(String.class);
 
-            csIntegrationService.getCertificate("id", GET_CERTIFICATE_REQUEST);
-            verify(restTemplate).postForObject(captor.capture(), any(), any());
+            doReturn(GET_RESPONSE).when(responseSpec).body(CertificateServiceGetCertificateResponseDTO.class);
 
-            assertEquals("baseUrl/api/certificate/id", captor.getValue());
+            csIntegrationService.getCertificate(ID, GET_CERTIFICATE_REQUEST);
+            verify(requestBodyUriSpec).uri(captor.capture());
+
+            assertEquals("baseUrl/api/certificate/" + ID, captor.getValue());
         }
     }
 
     @Nested
     class CertificateExists {
+
+        @BeforeEach
+        void setUp() {
+
+            responseSpec = mock(RestClient.ResponseSpec.class);
+            requestHeadersUriSpec = mock(RestClient.RequestHeadersUriSpec.class);
+            requestHeadersSpec = mock(RestClient.RequestHeadersSpec.class);
+
+            final String uri = "baseUrl/api/certificate/ID/exists";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.get()).thenReturn(requestHeadersUriSpec);
+            when(requestHeadersUriSpec.uri(uri)).thenReturn(requestHeadersSpec);
+            when(requestHeadersSpec.accept(MediaType.APPLICATION_JSON)).thenReturn(requestHeadersSpec);
+            when(requestHeadersSpec.header(any(), any())).thenReturn(requestHeadersSpec);
+            when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
+        }
 
         @Test
         void shouldThrowExceptionIfNullResponse() {
@@ -846,14 +962,13 @@ class CSIntegrationServiceTest {
 
             @BeforeEach
             void setup() {
-                when(restTemplate.getForObject(anyString(), any()))
-                    .thenReturn(expectedResponse);
+                doReturn(expectedResponse).when(responseSpec).body(CertificateExistsResponseDTO.class);
             }
 
 
             @Test
             void shouldReturnBooleanFromResponse() {
-                final var response = csIntegrationService.certificateExists("id");
+                final var response = csIntegrationService.certificateExists("ID");
 
                 assertEquals(expectedResponse.getExists(), response);
             }
@@ -863,10 +978,10 @@ class CSIntegrationServiceTest {
                 ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
                 final var captor = ArgumentCaptor.forClass(String.class);
 
-                csIntegrationService.certificateExists("id");
-                verify(restTemplate).getForObject(captor.capture(), any());
+                csIntegrationService.certificateExists("ID");
+                verify(requestHeadersUriSpec).uri(captor.capture());
 
-                assertEquals("baseUrl/api/certificate/id/exists", captor.getValue());
+                assertEquals("baseUrl/api/certificate/ID/exists", captor.getValue());
             }
         }
     }
@@ -874,6 +989,23 @@ class CSIntegrationServiceTest {
 
     @Nested
     class MessageExists {
+
+        @BeforeEach
+        void setUp() {
+
+            responseSpec = mock(RestClient.ResponseSpec.class);
+            requestHeadersUriSpec = mock(RestClient.RequestHeadersUriSpec.class);
+            requestHeadersSpec = mock(RestClient.RequestHeadersSpec.class);
+
+            final String uri = "baseUrl/api/message/ID/exists";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.get()).thenReturn(requestHeadersUriSpec);
+            when(requestHeadersUriSpec.uri(uri)).thenReturn(requestHeadersSpec);
+            when(requestHeadersSpec.accept(MediaType.APPLICATION_JSON)).thenReturn(requestHeadersSpec);
+            when(requestHeadersSpec.header(any(), any())).thenReturn(requestHeadersSpec);
+            when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
+        }
 
         @Test
         void shouldThrowExceptionIfNullResponse() {
@@ -891,14 +1023,13 @@ class CSIntegrationServiceTest {
 
             @BeforeEach
             void setup() {
-                when(restTemplate.getForObject(anyString(), any()))
-                    .thenReturn(expectedResponse);
+                doReturn(expectedResponse).when(responseSpec).body(MessageExistsResponseDTO.class);
             }
 
 
             @Test
             void shouldReturnBooleanFromResponse() {
-                final var response = csIntegrationService.messageExists("id");
+                final var response = csIntegrationService.messageExists("ID");
 
                 assertEquals(expectedResponse.getExists(), response);
             }
@@ -908,10 +1039,137 @@ class CSIntegrationServiceTest {
                 ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
                 final var captor = ArgumentCaptor.forClass(String.class);
 
-                csIntegrationService.messageExists("id");
-                verify(restTemplate).getForObject(captor.capture(), any());
+                csIntegrationService.messageExists("ID");
+                verify(requestHeadersUriSpec).uri(captor.capture());
 
-                assertEquals("baseUrl/api/message/id/exists", captor.getValue());
+                assertEquals("baseUrl/api/message/ID/exists", captor.getValue());
+            }
+        }
+    }
+
+    @Nested
+    class CitizenCertificateExists {
+
+        @BeforeEach
+        void setUp() {
+
+            responseSpec = mock(RestClient.ResponseSpec.class);
+            requestHeadersUriSpec = mock(RestClient.RequestHeadersUriSpec.class);
+            requestHeadersSpec = mock(RestClient.RequestHeadersSpec.class);
+
+            final String uri = "baseUrl/api/citizen/certificate/ID/exists";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.get()).thenReturn(requestHeadersUriSpec);
+            when(requestHeadersUriSpec.uri(uri)).thenReturn(requestHeadersSpec);
+            when(requestHeadersSpec.accept(MediaType.APPLICATION_JSON)).thenReturn(requestHeadersSpec);
+            when(requestHeadersSpec.header(any(), any())).thenReturn(requestHeadersSpec);
+            when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
+        }
+
+        @Test
+        void shouldThrowExceptionIfNullResponse() {
+            assertThrows(
+                    IllegalStateException.class, () -> csIntegrationService.citizenCertificateExists(ID)
+            );
+        }
+
+        @Nested
+        class HasResponse {
+            private final CitizenCertificateExistsResponseDTO expectedResponse = CitizenCertificateExistsResponseDTO.builder()
+                    .exists(true)
+                    .build();
+
+            @BeforeEach
+            void setup() {
+                doReturn(expectedResponse).when(responseSpec).body(CitizenCertificateExistsResponseDTO.class);
+            }
+
+            @Test
+            void shouldReturnBooleanFromResponse() {
+                final var response = csIntegrationService.citizenCertificateExists("ID");
+
+                assertEquals(expectedResponse.getExists(), response);
+            }
+
+            @Test
+            void shouldSetUrlCorrect() {
+                ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+                final var captor = ArgumentCaptor.forClass(String.class);
+
+                csIntegrationService.citizenCertificateExists("ID");
+                verify(requestHeadersUriSpec).uri(captor.capture());
+
+                assertEquals("baseUrl/api/citizen/certificate/ID/exists", captor.getValue());
+            }
+        }
+    }
+
+    @Nested
+    class SaveCertificate {
+        @BeforeEach
+        void setUp() {
+
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/certificate/ID";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.put()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(SaveCertificateRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+
+        }
+
+        @Nested
+        class WithResponse {
+
+            @Test
+            void shouldPreformPostUsingRequest() {
+                doReturn(SAVE_CERTIFICATE_RESPONSE_DTO).when(responseSpec).body(SaveCertificateResponseDTO.class);
+
+                final var captor = ArgumentCaptor.forClass(SaveCertificateRequestDTO.class);
+
+                csIntegrationService.saveCertificate(SAVE_CERTIFICATE_REQUEST_DTO);
+                verify(requestBodyUriSpec).body(captor.capture());
+
+                assertEquals(SAVE_CERTIFICATE_REQUEST_DTO, captor.getValue());
+            }
+
+            @Test
+            void shouldReturnCertificate() {
+                doReturn(SAVE_CERTIFICATE_RESPONSE_DTO).when(responseSpec).body(SaveCertificateResponseDTO.class);
+
+                final var response = csIntegrationService.saveCertificate(SAVE_CERTIFICATE_REQUEST_DTO);
+
+                assertEquals(CERTIFICATE, response);
+            }
+
+            @Test
+            void shouldThrowExceptionIfResponseIsNull() {
+
+                doReturn(SAVE_CERTIFICATE_NULL_RESPONSE_DTO).when(responseSpec).body(SaveCertificateResponseDTO.class);
+
+                assertThrows(IllegalStateException.class,
+                    () -> csIntegrationService.saveCertificate(SAVE_CERTIFICATE_REQUEST_DTO)
+                );
+            }
+
+            @Test
+            void shouldSetUrlCorrect() {
+                doReturn(SAVE_CERTIFICATE_RESPONSE_DTO).when(responseSpec).body(SaveCertificateResponseDTO.class);
+
+                ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+                final var captor = ArgumentCaptor.forClass(String.class);
+
+                csIntegrationService.saveCertificate(SAVE_CERTIFICATE_REQUEST_DTO);
+                verify(requestBodyUriSpec).uri(captor.capture());
+
+                assertEquals("baseUrl/api/certificate/ID", captor.getValue());
             }
         }
     }
@@ -920,15 +1178,19 @@ class CSIntegrationServiceTest {
     class Delete {
 
         void setupResponse(boolean isNull) {
-            final var certificateResponse = DeleteCertificateResponseDTO.builder().certificate(CERTIFICATE).build();
 
-            when(restTemplate.exchange(
-                    anyString(),
-                    any(HttpMethod.class),
-                    any(HttpEntity.class),
-                    eq(DELETE_RESPONSE)
-                )
-            ).thenReturn(new ResponseEntity<>(isNull ? null : certificateResponse, HttpStatus.OK));
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/certificate/ID/10";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.method(HttpMethod.DELETE)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(DeleteCertificateRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
         }
 
         @Test
@@ -945,9 +1207,15 @@ class CSIntegrationServiceTest {
             ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
             final var captor = ArgumentCaptor.forClass(String.class);
 
+            final var response = DeleteCertificateResponseDTO.builder()
+                    .certificate(CERTIFICATE)
+                    .build();
+
+            doReturn(response).when(responseSpec).body(DeleteCertificateResponseDTO.class);
+
             csIntegrationService.deleteCertificate("ID", 10, DELETE_CERTIFICATE_REQUEST);
 
-            verify(restTemplate).exchange(captor.capture(), any(HttpMethod.class), any(HttpEntity.class), eq(DELETE_RESPONSE));
+            verify(requestBodyUriSpec).uri(captor.capture());
 
             assertEquals("baseUrl/api/certificate/ID/10", captor.getValue());
         }
@@ -958,9 +1226,15 @@ class CSIntegrationServiceTest {
             ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
             final var captor = ArgumentCaptor.forClass(HttpMethod.class);
 
+            final var response = DeleteCertificateResponseDTO.builder()
+                    .certificate(CERTIFICATE)
+                    .build();
+
+            doReturn(response).when(responseSpec).body(DeleteCertificateResponseDTO.class);
+
             csIntegrationService.deleteCertificate("ID", 10, DELETE_CERTIFICATE_REQUEST);
 
-            verify(restTemplate).exchange(anyString(), captor.capture(), any(HttpEntity.class), eq(DELETE_RESPONSE));
+            verify(restClient).method(captor.capture());
 
             assertEquals(HttpMethod.DELETE, captor.getValue());
         }
@@ -968,12 +1242,18 @@ class CSIntegrationServiceTest {
         @Test
         void shouldSetRequestAsBody() {
             setupResponse(false);
-            final var captor = ArgumentCaptor.forClass(HttpEntity.class);
+            final var captor = ArgumentCaptor.forClass(DeleteCertificateRequestDTO.class);
+
+            final var response = DeleteCertificateResponseDTO.builder()
+                    .certificate(CERTIFICATE)
+                    .build();
+
+            doReturn(response).when(responseSpec).body(DeleteCertificateResponseDTO.class);
 
             csIntegrationService.deleteCertificate("ID", 10, DELETE_CERTIFICATE_REQUEST);
 
-            verify(restTemplate).exchange(anyString(), any(HttpMethod.class), captor.capture(), eq(DELETE_RESPONSE));
-            assertEquals(DELETE_CERTIFICATE_REQUEST, captor.getValue().getBody());
+            verify(requestBodyUriSpec).body(captor.capture());
+            assertEquals(DELETE_CERTIFICATE_REQUEST, captor.getValue());
         }
 
         @Test
@@ -981,20 +1261,16 @@ class CSIntegrationServiceTest {
             setupResponse(false);
             ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
 
-            final var response = csIntegrationService.deleteCertificate("ID", 10, DELETE_CERTIFICATE_REQUEST);
+            final var response = DeleteCertificateResponseDTO.builder()
+                    .certificate(CERTIFICATE)
+                    .build();
 
-            assertEquals(CERTIFICATE, response);
+            doReturn(response).when(responseSpec).body(DeleteCertificateResponseDTO.class);
+
+            final var actualResponse = csIntegrationService.deleteCertificate("ID", 10, DELETE_CERTIFICATE_REQUEST);
+
+            assertEquals(CERTIFICATE, actualResponse);
         }
-    }
-
-    @Test
-    void shouldThrowExceptionIfCertificatesForPatientResponseIsNull() {
-        assertThrows(IllegalStateException.class, () -> csIntegrationService.listCertificatesForPatient(PATIENT_LIST_REQUEST));
-    }
-
-    @Test
-    void shouldThrowExceptionIfCertificatesForUnitResponseIsNull() {
-        assertThrows(IllegalStateException.class, () -> csIntegrationService.listCertificatesForUnit(UNIT_LIST_REQUEST));
     }
 
     @Nested
@@ -1002,27 +1278,59 @@ class CSIntegrationServiceTest {
 
         @BeforeEach
         void setup() {
-            when(listIntygEntryConverter.convert(CERTIFICATE))
-                .thenReturn(CONVERTED_CERTIFICATE);
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(LIST_RESPONSE);
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/patient/certificates";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(GetPatientCertificatesRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
         }
 
         @Test
         void shouldPreformPostUsingRequest() {
             final var captor = ArgumentCaptor.forClass(GetPatientCertificatesRequestDTO.class);
 
+            final var response = GetListCertificatesResponseDTO.builder()
+                    .certificates(List.of(CERTIFICATE))
+                    .build();
+
+            doReturn(response).when(responseSpec).body(GetListCertificatesResponseDTO.class);
+
             csIntegrationService.listCertificatesForPatient(PATIENT_LIST_REQUEST);
-            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+            verify(requestBodyUriSpec).body(captor.capture());
 
             assertEquals(PATIENT_LIST_REQUEST, captor.getValue());
         }
 
         @Test
         void shouldReturnConvertedCertificates() {
-            final var response = csIntegrationService.listCertificatesForPatient(PATIENT_LIST_REQUEST);
+            when(listIntygEntryConverter.convert(CERTIFICATE)).thenReturn(CONVERTED_CERTIFICATE);
 
-            assertEquals(List.of(CONVERTED_CERTIFICATE), response);
+            final var response = GetListCertificatesResponseDTO.builder()
+                    .certificates(List.of(CERTIFICATE))
+                    .build();
+
+            doReturn(response).when(responseSpec).body(GetListCertificatesResponseDTO.class);
+
+            final var actualResponse = csIntegrationService.listCertificatesForPatient(PATIENT_LIST_REQUEST);
+
+            assertEquals(List.of(CONVERTED_CERTIFICATE), actualResponse);
+        }
+
+        @Test
+        void shouldThrowExceptionIfCertificatesForPatientResponseIsNull() {
+            final var response = GetListCertificatesResponseDTO.builder()
+                .certificates(null)
+                .build();
+
+            doReturn(response).when(responseSpec).body(GetListCertificatesResponseDTO.class);
+            assertThrows(IllegalStateException.class, () -> csIntegrationService.listCertificatesForPatient(PATIENT_LIST_REQUEST));
         }
 
         @Test
@@ -1030,8 +1338,14 @@ class CSIntegrationServiceTest {
             ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
             final var captor = ArgumentCaptor.forClass(String.class);
 
+            final var response = GetListCertificatesResponseDTO.builder()
+                    .certificates(List.of(CERTIFICATE))
+                    .build();
+
+            doReturn(response).when(responseSpec).body(GetListCertificatesResponseDTO.class);
+
             csIntegrationService.listCertificatesForPatient(PATIENT_LIST_REQUEST);
-            verify(restTemplate).postForObject(captor.capture(), any(), any());
+            verify(requestBodyUriSpec).uri(captor.capture());
 
             assertEquals("baseUrl/api/patient/certificates", captor.getValue());
         }
@@ -1042,27 +1356,62 @@ class CSIntegrationServiceTest {
 
         @BeforeEach
         void setup() {
-            when(listIntygEntryConverter.convert(CERTIFICATE))
-                .thenReturn(CONVERTED_CERTIFICATE);
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(LIST_RESPONSE);
+
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/unit/certificates";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(GetUnitCertificatesRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
         }
 
         @Test
         void shouldPreformPostUsingRequest() {
-            final var captor = ArgumentCaptor.forClass(GetUnitCertificatesRequestDTO.class);
 
-            csIntegrationService.listCertificatesForUnit(UNIT_LIST_REQUEST);
-            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+            when(listIntygEntryConverter.convert(CERTIFICATE)).thenReturn(CONVERTED_CERTIFICATE);
 
-            assertEquals(UNIT_LIST_REQUEST, captor.getValue());
+            final var response = GetListCertificatesResponseDTO.builder()
+                    .certificates(List.of(CERTIFICATE))
+                    .build();
+
+            final var expectedResponse = List.of(new ListIntygEntry());
+
+            doReturn(response).when(responseSpec).body(GetListCertificatesResponseDTO.class);
+
+            final var actualResponse = csIntegrationService.listCertificatesForUnit(UNIT_LIST_REQUEST);
+
+            assertEquals(expectedResponse, actualResponse);
         }
 
         @Test
         void shouldReturnConvertedCertificates() {
-            final var response = csIntegrationService.listCertificatesForUnit(UNIT_LIST_REQUEST);
+            when(listIntygEntryConverter.convert(CERTIFICATE)).thenReturn(CONVERTED_CERTIFICATE);
 
-            assertEquals(List.of(CONVERTED_CERTIFICATE), response);
+            final var response = GetListCertificatesResponseDTO.builder()
+                    .certificates(List.of(CERTIFICATE))
+                    .build();
+
+            doReturn(response).when(responseSpec).body(GetListCertificatesResponseDTO.class);
+
+            final var actualResponse = csIntegrationService.listCertificatesForUnit(UNIT_LIST_REQUEST);
+
+            assertEquals(List.of(CONVERTED_CERTIFICATE), actualResponse);
+        }
+
+        @Test
+        void shouldThrowExceptionIfCertificatesForUnitResponseIsNull() {
+            final var response = GetListCertificatesResponseDTO.builder()
+                .certificates(null)
+                .build();
+
+            doReturn(response).when(responseSpec).body(GetListCertificatesResponseDTO.class);
+            assertThrows(IllegalStateException.class, () -> csIntegrationService.listCertificatesForUnit(UNIT_LIST_REQUEST));
         }
 
         @Test
@@ -1070,8 +1419,15 @@ class CSIntegrationServiceTest {
             ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
             final var captor = ArgumentCaptor.forClass(String.class);
 
+            final var response = GetListCertificatesResponseDTO.builder()
+                    .certificates(List.of(CERTIFICATE))
+                    .build();
+
+            doReturn(response).when(responseSpec).body(GetListCertificatesResponseDTO.class);
+
             csIntegrationService.listCertificatesForUnit(UNIT_LIST_REQUEST);
-            verify(restTemplate).postForObject(captor.capture(), any(), any());
+
+            verify(requestBodyUriSpec).uri(captor.capture());
 
             assertEquals("baseUrl/api/unit/certificates", captor.getValue());
         }
@@ -1096,24 +1452,47 @@ class CSIntegrationServiceTest {
 
         @BeforeEach
         void setup() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(listInfoResponse);
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/unit/certificates/info";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(GetUnitCertificatesInfoRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+
         }
 
         @Test
         void shouldPreformPostUsingRequest() {
+
+            final var response = GetUnitCertificatesInfoResponseDTO.builder()
+                    .staffs(List.of())
+                    .build();
+
+            doReturn(response).when(responseSpec).body(GetUnitCertificatesInfoResponseDTO.class);
+
             final var captor = ArgumentCaptor.forClass(GetUnitCertificatesInfoRequestDTO.class);
 
             csIntegrationService.listCertificatesInfoForUnit(listInfoRequest);
-            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+            verify(requestBodyUriSpec).body(captor.capture());
 
             assertEquals(listInfoRequest, captor.getValue());
         }
 
         @Test
         void shouldReturnConvertedStaffs() {
-            final var response = csIntegrationService.listCertificatesInfoForUnit(listInfoRequest);
-            assertEquals(List.of(new StaffListInfo(STAFF_ID, STAFF_FULL_NAME)), response);
+            final var response = GetUnitCertificatesInfoResponseDTO.builder()
+                    .staffs(List.of(Staff.builder().personId(STAFF_ID).fullName(STAFF_FULL_NAME).build()))
+                    .build();
+
+            doReturn(response).when(responseSpec).body(GetUnitCertificatesInfoResponseDTO.class);
+            final var actualResponse = csIntegrationService.listCertificatesInfoForUnit(listInfoRequest);
+            assertEquals(List.of(new StaffListInfo(STAFF_ID, STAFF_FULL_NAME)), actualResponse);
         }
 
         @Test
@@ -1121,8 +1500,14 @@ class CSIntegrationServiceTest {
             ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
             final var captor = ArgumentCaptor.forClass(String.class);
 
+            final var response = GetUnitCertificatesInfoResponseDTO.builder()
+                    .staffs(List.of(Staff.builder().personId(STAFF_ID).fullName(STAFF_FULL_NAME).build()))
+                    .build();
+
+            doReturn(response).when(responseSpec).body(GetUnitCertificatesInfoResponseDTO.class);
+
             csIntegrationService.listCertificatesInfoForUnit(listInfoRequest);
-            verify(restTemplate).postForObject(captor.capture(), any(), any());
+            verify(requestBodyUriSpec).uri(captor.capture());
 
             assertEquals("baseUrl/api/unit/certificates/info", captor.getValue());
         }
@@ -1133,11 +1518,24 @@ class CSIntegrationServiceTest {
 
         @BeforeEach
         void setup() {
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/certificate/ID/validate";
             ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(ValidateCertificateRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
         }
 
         @Test
         void shouldThrowExceptionIfNullResponse() {
+            doReturn(null).when(responseSpec).body(ValidateCertificateResponseDTO.class);
+
             assertThrows(
                 IllegalStateException.class, () -> csIntegrationService.validateCertificate(VALIDATE_REQUEST)
             );
@@ -1148,8 +1546,7 @@ class CSIntegrationServiceTest {
 
             @BeforeEach
             void setup() {
-                when(restTemplate.postForObject(anyString(), any(), any()))
-                    .thenReturn(VALIDATE_RESPONSE);
+                doReturn(VALIDATE_RESPONSE).when(responseSpec).body(ValidateCertificateResponseDTO.class);
             }
 
             @Test
@@ -1157,7 +1554,7 @@ class CSIntegrationServiceTest {
                 final var captor = ArgumentCaptor.forClass(ValidateCertificateRequestDTO.class);
 
                 csIntegrationService.validateCertificate(VALIDATE_REQUEST);
-                verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+                verify(requestBodyUriSpec).body(captor.capture());
 
                 assertEquals(VALIDATE_REQUEST, captor.getValue());
             }
@@ -1171,11 +1568,10 @@ class CSIntegrationServiceTest {
 
             @Test
             void shouldSetUrlCorrect() {
-                ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
                 final var captor = ArgumentCaptor.forClass(String.class);
 
                 csIntegrationService.validateCertificate(VALIDATE_REQUEST);
-                verify(restTemplate).postForObject(captor.capture(), any(), any());
+                verify(requestBodyUriSpec).uri(captor.capture());
 
                 assertEquals("baseUrl/api/certificate/ID/validate", captor.getValue());
             }
@@ -1187,25 +1583,38 @@ class CSIntegrationServiceTest {
 
         @BeforeEach
         void setup() {
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/certificate/certificateId/xml";
             ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(GetCertificateXmlRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
         }
 
         @Test
         void shouldPreformPostUsingRequest() {
-            when(restTemplate.postForObject(anyString(), eq(GET_CERTIFICIATE_XML_REQUEST), eq(GetCertificateXmlResponseDTO.class)))
-                .thenReturn(GET_CERTIFICIATE_XML_RESPONSE);
+
+            doReturn(GET_CERTIFICIATE_XML_RESPONSE).when(responseSpec).body(GetCertificateXmlResponseDTO.class);
+
             final var captor = ArgumentCaptor.forClass(GetCertificateXmlRequestDTO.class);
 
             csIntegrationService.getCertificateXml(GET_CERTIFICIATE_XML_REQUEST, CERTIFICATE_ID);
-            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+            verify(requestBodyUriSpec).body(captor.capture());
 
             assertEquals(GET_CERTIFICIATE_XML_REQUEST, captor.getValue());
         }
 
         @Test
         void shouldReturnGetCertificateXmlResponseDTO() {
-            when(restTemplate.postForObject(anyString(), eq(GET_CERTIFICIATE_XML_REQUEST), eq(GetCertificateXmlResponseDTO.class)))
-                .thenReturn(GET_CERTIFICIATE_XML_RESPONSE);
+
+            doReturn(GET_CERTIFICIATE_XML_RESPONSE).when(responseSpec).body(GetCertificateXmlResponseDTO.class);
+
             final var response = csIntegrationService.getCertificateXml(GET_CERTIFICIATE_XML_REQUEST, CERTIFICATE_ID);
 
             assertEquals(GET_CERTIFICIATE_XML_RESPONSE, response);
@@ -1217,15 +1626,14 @@ class CSIntegrationServiceTest {
             final var captor = ArgumentCaptor.forClass(String.class);
 
             csIntegrationService.getCertificateXml(GET_CERTIFICIATE_XML_REQUEST, CERTIFICATE_ID);
-            verify(restTemplate).postForObject(captor.capture(), eq(GET_CERTIFICIATE_XML_REQUEST), eq(GetCertificateXmlResponseDTO.class));
+            verify(requestBodyUriSpec).uri(captor.capture());
 
             assertEquals("baseUrl/api/certificate/" + CERTIFICATE_ID + "/xml", captor.getValue());
         }
 
         @Test
         void shouldReturnNullIfResponseIsNull() {
-            when(restTemplate.postForObject(anyString(), eq(GET_CERTIFICIATE_XML_REQUEST), eq(GetCertificateXmlResponseDTO.class)))
-                .thenReturn(null);
+            doReturn(null).when(responseSpec).body(GetCertificateXmlResponseDTO.class);
             assertNull(csIntegrationService.getCertificateXml(GET_CERTIFICIATE_XML_REQUEST, CERTIFICATE_ID));
         }
     }
@@ -1235,25 +1643,36 @@ class CSIntegrationServiceTest {
 
         @BeforeEach
         void setup() {
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/certificate/certificateId/sign/0";
             ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(SignCertificateRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
         }
 
         @Test
         void shouldPreformPostUsingRequest() {
-            when(restTemplate.postForObject(anyString(), eq(SIGN_CERTIFICATE_REQUEST_DTO), eq(SignCertificateResponseDTO.class)))
-                .thenReturn(SIGN_CERTIFICATE_RESPONSE_DTO);
+
+            doReturn(SIGN_CERTIFICATE_RESPONSE_DTO).when(responseSpec).body(SignCertificateResponseDTO.class);
             final var captor = ArgumentCaptor.forClass(SignCertificateRequestDTO.class);
 
             csIntegrationService.signCertificate(SIGN_CERTIFICATE_REQUEST_DTO, CERTIFICATE_ID, VERSION);
-            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+            verify(requestBodyUriSpec).body(captor.capture());
 
             assertEquals(SIGN_CERTIFICATE_REQUEST_DTO, captor.getValue());
         }
 
         @Test
         void shouldReturnCertificateFromSignCertificateResponseDTO() {
-            when(restTemplate.postForObject(anyString(), eq(SIGN_CERTIFICATE_REQUEST_DTO), eq(SignCertificateResponseDTO.class)))
-                .thenReturn(SIGN_CERTIFICATE_RESPONSE_DTO);
+
+            doReturn(SIGN_CERTIFICATE_RESPONSE_DTO).when(responseSpec).body(SignCertificateResponseDTO.class);
             final var response = csIntegrationService.signCertificate(SIGN_CERTIFICATE_REQUEST_DTO, CERTIFICATE_ID, VERSION);
 
             assertEquals(CERTIFICATE, response);
@@ -1261,21 +1680,19 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldSetUrlCorrect() {
-            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
             final var captor = ArgumentCaptor.forClass(String.class);
-            when(restTemplate.postForObject(anyString(), eq(SIGN_CERTIFICATE_REQUEST_DTO), eq(SignCertificateResponseDTO.class)))
-                .thenReturn(SIGN_CERTIFICATE_RESPONSE_DTO);
+
+            doReturn(SIGN_CERTIFICATE_RESPONSE_DTO).when(responseSpec).body(SignCertificateResponseDTO.class);
 
             csIntegrationService.signCertificate(SIGN_CERTIFICATE_REQUEST_DTO, CERTIFICATE_ID, VERSION);
-            verify(restTemplate).postForObject(captor.capture(), eq(SIGN_CERTIFICATE_REQUEST_DTO), eq(SignCertificateResponseDTO.class));
+            verify(requestBodyUriSpec).uri(captor.capture());
 
             assertEquals("baseUrl/api/certificate/" + CERTIFICATE_ID + "/sign/" + VERSION, captor.getValue());
         }
 
         @Test
         void shouldReturnNullIfResponseIsNull() {
-            when(restTemplate.postForObject(anyString(), eq(SIGN_CERTIFICATE_REQUEST_DTO), eq(SignCertificateResponseDTO.class)))
-                .thenReturn(null);
+            doReturn(null).when(responseSpec).body(SignCertificateResponseDTO.class);
             assertThrows(IllegalStateException.class,
                 () -> csIntegrationService.signCertificate(SIGN_CERTIFICATE_REQUEST_DTO, CERTIFICATE_ID, VERSION));
         }
@@ -1286,27 +1703,38 @@ class CSIntegrationServiceTest {
 
         @BeforeEach
         void setup() {
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/certificate/certificateId/signwithoutsignature/0";
             ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(SignCertificateWithoutSignatureRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
         }
 
         @Test
         void shouldPreformPostUsingRequest() {
-            when(restTemplate.postForObject(anyString(), eq(SIGN_CERTIFICATE_WITHOUT_SIGNATURE_REQUEST_DTO),
-                eq(SignCertificateResponseDTO.class)))
-                .thenReturn(SIGN_CERTIFICATE_RESPONSE_DTO);
+
+            doReturn(SIGN_CERTIFICATE_RESPONSE_DTO).when(responseSpec).body(SignCertificateResponseDTO.class);
+
             final var captor = ArgumentCaptor.forClass(SignCertificateWithoutSignatureRequestDTO.class);
 
             csIntegrationService.signCertificateWithoutSignature(SIGN_CERTIFICATE_WITHOUT_SIGNATURE_REQUEST_DTO, CERTIFICATE_ID, VERSION);
-            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+            verify(requestBodyUriSpec).body(captor.capture());
 
             assertEquals(SIGN_CERTIFICATE_WITHOUT_SIGNATURE_REQUEST_DTO, captor.getValue());
         }
 
         @Test
         void shouldReturnCertificateFromSignCertificateResponseDTO() {
-            when(restTemplate.postForObject(anyString(), eq(SIGN_CERTIFICATE_WITHOUT_SIGNATURE_REQUEST_DTO),
-                eq(SignCertificateResponseDTO.class)))
-                .thenReturn(SIGN_CERTIFICATE_RESPONSE_DTO);
+
+            doReturn(SIGN_CERTIFICATE_RESPONSE_DTO).when(responseSpec).body(SignCertificateResponseDTO.class);
+
             final var response = csIntegrationService.signCertificateWithoutSignature(SIGN_CERTIFICATE_WITHOUT_SIGNATURE_REQUEST_DTO,
                 CERTIFICATE_ID, VERSION);
 
@@ -1315,24 +1743,20 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldSetUrlCorrect() {
-            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
             final var captor = ArgumentCaptor.forClass(String.class);
-            when(restTemplate.postForObject(anyString(), eq(SIGN_CERTIFICATE_WITHOUT_SIGNATURE_REQUEST_DTO),
-                eq(SignCertificateResponseDTO.class)))
-                .thenReturn(SIGN_CERTIFICATE_RESPONSE_DTO);
+
+            doReturn(SIGN_CERTIFICATE_RESPONSE_DTO).when(responseSpec).body(SignCertificateResponseDTO.class);
 
             csIntegrationService.signCertificateWithoutSignature(SIGN_CERTIFICATE_WITHOUT_SIGNATURE_REQUEST_DTO, CERTIFICATE_ID, VERSION);
-            verify(restTemplate).postForObject(captor.capture(), eq(SIGN_CERTIFICATE_WITHOUT_SIGNATURE_REQUEST_DTO),
-                eq(SignCertificateResponseDTO.class));
+            verify(requestBodyUriSpec).uri(captor.capture());
 
             assertEquals("baseUrl/api/certificate/" + CERTIFICATE_ID + "/signwithoutsignature/" + VERSION, captor.getValue());
         }
 
         @Test
         void shouldReturnNullIfResponseIsNull() {
-            when(restTemplate.postForObject(anyString(), eq(SIGN_CERTIFICATE_WITHOUT_SIGNATURE_REQUEST_DTO),
-                eq(SignCertificateResponseDTO.class)))
-                .thenReturn(null);
+            doReturn(null).when(responseSpec).body(SignCertificateResponseDTO.class);
             assertThrows(IllegalStateException.class,
                 () -> csIntegrationService.signCertificateWithoutSignature(SIGN_CERTIFICATE_WITHOUT_SIGNATURE_REQUEST_DTO, CERTIFICATE_ID,
                     VERSION));
@@ -1344,7 +1768,18 @@ class CSIntegrationServiceTest {
 
         @BeforeEach
         void setup() {
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/certificate/ID/pdf";
             ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(PrintCertificateRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
         }
 
         @Test
@@ -1359,8 +1794,7 @@ class CSIntegrationServiceTest {
 
             @BeforeEach
             void setup() {
-                when(restTemplate.postForObject(anyString(), any(), any()))
-                    .thenReturn(PRINT_RESPONSE);
+                doReturn(PRINT_RESPONSE).when(responseSpec).body(PrintCertificateResponseDTO.class);
             }
 
             @Test
@@ -1368,7 +1802,7 @@ class CSIntegrationServiceTest {
                 final var captor = ArgumentCaptor.forClass(PrintCertificateRequestDTO.class);
 
                 csIntegrationService.printCertificate(ID, PRINT_REQUEST);
-                verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+                verify(requestBodyUriSpec).body(captor.capture());
 
                 assertEquals(PRINT_REQUEST, captor.getValue());
             }
@@ -1389,11 +1823,10 @@ class CSIntegrationServiceTest {
 
             @Test
             void shouldSetUrlCorrect() {
-                ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
                 final var captor = ArgumentCaptor.forClass(String.class);
 
                 csIntegrationService.printCertificate(ID, PRINT_REQUEST);
-                verify(restTemplate).postForObject(captor.capture(), any(), any());
+                verify(requestBodyUriSpec).uri(captor.capture());
 
                 assertEquals("baseUrl/api/certificate/ID/pdf", captor.getValue());
             }
@@ -1405,7 +1838,18 @@ class CSIntegrationServiceTest {
 
         @BeforeEach
         void setup() {
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/certificate/ID/send";
             ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(SendCertificateRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
         }
 
         @Test
@@ -1420,8 +1864,7 @@ class CSIntegrationServiceTest {
 
             @BeforeEach
             void setup() {
-                when(restTemplate.postForObject(anyString(), any(), any()))
-                    .thenReturn(SEND_RESPONSE);
+                doReturn(SEND_RESPONSE).when(responseSpec).body(SendCertificateResponseDTO.class);
             }
 
             @Test
@@ -1429,7 +1872,7 @@ class CSIntegrationServiceTest {
                 final var captor = ArgumentCaptor.forClass(SendCertificateRequestDTO.class);
 
                 csIntegrationService.sendCertificate(ID, SEND_REQUEST);
-                verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+                verify(requestBodyUriSpec).body(captor.capture());
 
                 assertEquals(SEND_REQUEST, captor.getValue());
             }
@@ -1443,11 +1886,10 @@ class CSIntegrationServiceTest {
 
             @Test
             void shouldSetUrlCorrect() {
-                ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
                 final var captor = ArgumentCaptor.forClass(String.class);
 
                 csIntegrationService.sendCertificate(ID, SEND_REQUEST);
-                verify(restTemplate).postForObject(captor.capture(), any(), any());
+                verify(requestBodyUriSpec).uri(captor.capture());
 
                 assertEquals("baseUrl/api/certificate/ID/send", captor.getValue());
             }
@@ -1459,7 +1901,18 @@ class CSIntegrationServiceTest {
 
         @BeforeEach
         void setup() {
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/certificate/ID/revoke";
             ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(RevokeCertificateRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
         }
 
         @Test
@@ -1474,8 +1927,7 @@ class CSIntegrationServiceTest {
 
             @BeforeEach
             void setup() {
-                when(restTemplate.postForObject(anyString(), any(), any()))
-                    .thenReturn(REVOKE_RESPONSE);
+                doReturn(REVOKE_RESPONSE).when(responseSpec).body(RevokeCertificateResponseDTO.class);
             }
 
             @Test
@@ -1483,7 +1935,7 @@ class CSIntegrationServiceTest {
                 final var captor = ArgumentCaptor.forClass(RevokeCertificateRequestDTO.class);
 
                 csIntegrationService.revokeCertificate(ID, REVOKE_REQUEST);
-                verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+                verify(requestBodyUriSpec).body(captor.capture());
 
                 assertEquals(REVOKE_REQUEST, captor.getValue());
             }
@@ -1497,11 +1949,11 @@ class CSIntegrationServiceTest {
 
             @Test
             void shouldSetUrlCorrect() {
-                ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
                 final var captor = ArgumentCaptor.forClass(String.class);
 
                 csIntegrationService.revokeCertificate(ID, REVOKE_REQUEST);
-                verify(restTemplate).postForObject(captor.capture(), any(), any());
+                verify(requestBodyUriSpec).uri(captor.capture());
 
                 assertEquals("baseUrl/api/certificate/ID/revoke", captor.getValue());
             }
@@ -1511,22 +1963,39 @@ class CSIntegrationServiceTest {
     @Nested
     class GetCitizenCertificate {
 
+        @BeforeEach
+        void setUp() {
+
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/citizen/certificate/ID";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(GetCitizenCertificateRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+        }
+
         @Test
         void shouldPreformPostUsingRequest() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(GET_CITIZEN_CERTIFICATE_RESPONSE_DTO);
+
+            doReturn(GET_CITIZEN_CERTIFICATE_RESPONSE_DTO).when(responseSpec).body(GetCitizenCertificateResponseDTO.class);
             final var captor = ArgumentCaptor.forClass(GetCitizenCertificateRequestDTO.class);
 
             csIntegrationService.getCitizenCertificate(GET_CITIZEN_CERTIFICATE_REQUEST_DTO, ID);
-            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+            verify(requestBodyUriSpec).body(captor.capture());
 
             assertEquals(GET_CITIZEN_CERTIFICATE_REQUEST_DTO, captor.getValue());
         }
 
         @Test
         void shouldReturnGetCitizenCertificateResponseDTO() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(GET_CITIZEN_CERTIFICATE_RESPONSE_DTO);
+
+            doReturn(GET_CITIZEN_CERTIFICATE_RESPONSE_DTO).when(responseSpec).body(GetCitizenCertificateResponseDTO.class);
             final var response = csIntegrationService.getCitizenCertificate(GET_CITIZEN_CERTIFICATE_REQUEST_DTO, ID);
 
             assertEquals(GET_CITIZEN_CERTIFICATE_RESPONSE_DTO, response);
@@ -1535,37 +2004,54 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldSetUrlCorrect() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(GET_CITIZEN_CERTIFICATE_RESPONSE_DTO);
-            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            doReturn(GET_CITIZEN_CERTIFICATE_RESPONSE_DTO).when(responseSpec).body(GetCitizenCertificateResponseDTO.class);
             final var captor = ArgumentCaptor.forClass(String.class);
 
-            csIntegrationService.getCitizenCertificate(GET_CITIZEN_CERTIFICATE_REQUEST_DTO, CERTIFICATE_ID);
-            verify(restTemplate).postForObject(captor.capture(), any(), any());
+            csIntegrationService.getCitizenCertificate(GET_CITIZEN_CERTIFICATE_REQUEST_DTO, ID);
+            verify(requestBodyUriSpec).uri(captor.capture());
 
-            assertEquals("baseUrl/api/citizen/certificate/" + CERTIFICATE_ID, captor.getValue());
+            assertEquals("baseUrl/api/citizen/certificate/" + ID, captor.getValue());
         }
     }
 
     @Nested
     class GetCitizenCertificatePdf {
 
+        @BeforeEach
+        void setUp() {
+
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/citizen/certificate/ID/print";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(GetCitizenCertificatePdfRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+        }
+
         @Test
         void shouldPreformPostUsingRequest() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(GET_CITIZEN_CERTIFICATE_PDF_RESPONSE_DTO);
+
+            doReturn(GET_CITIZEN_CERTIFICATE_PDF_RESPONSE_DTO).when(responseSpec).body(GetCitizenCertificatePdfResponseDTO.class);
             final var captor = ArgumentCaptor.forClass(GetCitizenCertificatePdfRequestDTO.class);
 
             csIntegrationService.getCitizenCertificatePdf(GET_CITIZEN_CERTIFICATE_PDF_REQUEST_DTO, ID);
-            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+            verify(requestBodyUriSpec).body(captor.capture());
 
             assertEquals(GET_CITIZEN_CERTIFICATE_PDF_REQUEST_DTO, captor.getValue());
         }
 
         @Test
         void shouldReturnGetCitizenCertificatePdfResponseDTO() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(GET_CITIZEN_CERTIFICATE_PDF_RESPONSE_DTO);
+
+            doReturn(GET_CITIZEN_CERTIFICATE_PDF_RESPONSE_DTO).when(responseSpec).body(GetCitizenCertificatePdfResponseDTO.class);
+
             final var response = csIntegrationService.getCitizenCertificatePdf(GET_CITIZEN_CERTIFICATE_PDF_REQUEST_DTO, ID);
 
             assertEquals(GET_CITIZEN_CERTIFICATE_PDF_RESPONSE_DTO, response);
@@ -1574,25 +2060,42 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldSetUrlCorrect() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(GET_CITIZEN_CERTIFICATE_PDF_RESPONSE_DTO);
-            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            doReturn(GET_CITIZEN_CERTIFICATE_PDF_RESPONSE_DTO).when(responseSpec).body(GetCitizenCertificatePdfResponseDTO.class);
+
             final var captor = ArgumentCaptor.forClass(String.class);
 
-            csIntegrationService.getCitizenCertificatePdf(GET_CITIZEN_CERTIFICATE_PDF_REQUEST_DTO, CERTIFICATE_ID);
-            verify(restTemplate).postForObject(captor.capture(), any(), any());
+            csIntegrationService.getCitizenCertificatePdf(GET_CITIZEN_CERTIFICATE_PDF_REQUEST_DTO, ID);
+            verify(requestBodyUriSpec).uri(captor.capture());
 
-            assertEquals("baseUrl/api/citizen/certificate/" + CERTIFICATE_ID + "/print", captor.getValue());
+            assertEquals("baseUrl/api/citizen/certificate/" + ID + "/print", captor.getValue());
         }
     }
 
     @Nested
     class AnswerComplementCertificate {
 
+        @BeforeEach
+        void setUp() {
+
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/certificate/certificateId/answerComplement";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(AnswerComplementRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+        }
+
         @Test
         void shouldThrowExceptionIfResponseIsNull() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(null);
+
+            doReturn(null).when(responseSpec).body(AnswerComplementResponseDTO.class);
 
             assertThrows(IllegalStateException.class,
                 () -> csIntegrationService.answerComplementOnCertificate(CERTIFICATE_ID, ANSWER_COMPLEMENT_REQUEST)
@@ -1604,8 +2107,7 @@ class CSIntegrationServiceTest {
 
             @BeforeEach
             void setUp() {
-                when(restTemplate.postForObject(anyString(), any(), any()))
-                    .thenReturn(ANSWER_COMPLEMENT_RESPONSE);
+                doReturn(ANSWER_COMPLEMENT_RESPONSE).when(responseSpec).body(AnswerComplementResponseDTO.class);
             }
 
             @Test
@@ -1613,7 +2115,7 @@ class CSIntegrationServiceTest {
                 final var captor = ArgumentCaptor.forClass(AnswerComplementRequestDTO.class);
 
                 csIntegrationService.answerComplementOnCertificate(CERTIFICATE_ID, ANSWER_COMPLEMENT_REQUEST);
-                verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+                verify(requestBodyUriSpec).body(captor.capture());
 
                 assertEquals(ANSWER_COMPLEMENT_REQUEST, captor.getValue());
             }
@@ -1631,7 +2133,7 @@ class CSIntegrationServiceTest {
                 final var captor = ArgumentCaptor.forClass(String.class);
 
                 csIntegrationService.answerComplementOnCertificate(CERTIFICATE_ID, ANSWER_COMPLEMENT_REQUEST);
-                verify(restTemplate).postForObject(captor.capture(), any(), any());
+                verify(requestBodyUriSpec).uri(captor.capture());
 
                 assertEquals("baseUrl/api/certificate/certificateId/answerComplement", captor.getValue());
             }
@@ -1641,23 +2143,40 @@ class CSIntegrationServiceTest {
     @Nested
     class PostMessage {
 
+        @BeforeEach
+        void setUp() {
+
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/message";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(IncomingMessageRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+        }
+
         @Test
         void shouldPreformPostUsingRequest() {
             final var captor = ArgumentCaptor.forClass(IncomingMessageRequestDTO.class);
 
             csIntegrationService.postMessage(INCOMING_MESSAGE_REQUEST_DTO);
-            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+            verify(requestBodyUriSpec).body(captor.capture());
 
             assertEquals(INCOMING_MESSAGE_REQUEST_DTO, captor.getValue());
         }
 
         @Test
         void shouldSetUrlCorrect() {
-            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
             final var captor = ArgumentCaptor.forClass(String.class);
 
             csIntegrationService.postMessage(INCOMING_MESSAGE_REQUEST_DTO);
-            verify(restTemplate).postForObject(captor.capture(), any(), any());
+            verify(requestBodyUriSpec).uri(captor.capture());
 
             assertEquals("baseUrl/api/message", captor.getValue());
         }
@@ -1666,22 +2185,40 @@ class CSIntegrationServiceTest {
     @Nested
     class GetCertificateQuestions {
 
+        @BeforeEach
+        void setUp() {
+
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/message/certificateId";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(GetCertificateMessageRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+        }
+
         @Test
         void shouldPreformPostUsingRequest() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(GET_CERTIFICATE_MESSAGE_RESPONSE_DTO);
+
+            doReturn(GET_CERTIFICATE_MESSAGE_RESPONSE_DTO).when(responseSpec).body(GetCertificateMessageResponseDTO.class);
             final var captor = ArgumentCaptor.forClass(GetCertificateMessageRequestDTO.class);
 
             csIntegrationService.getQuestions(GET_CERTIFICATE_MESSAGE_REQUEST_DTO, CERTIFICATE_ID);
-            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+            verify(requestBodyUriSpec).body(captor.capture());
 
             assertEquals(GET_CERTIFICATE_MESSAGE_REQUEST_DTO, captor.getValue());
         }
 
         @Test
         void shouldReturnQuestions() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(GET_CERTIFICATE_MESSAGE_RESPONSE_DTO);
+
+            doReturn(GET_CERTIFICATE_MESSAGE_RESPONSE_DTO).when(responseSpec).body(
+                GetCertificateMessageResponseDTO.class);
             final var response = csIntegrationService.getQuestions(GET_CERTIFICATE_MESSAGE_REQUEST_DTO, CERTIFICATE_ID);
 
             assertEquals(QUESTIONS, response);
@@ -1689,8 +2226,8 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldThrowIfResponseIsNull() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(null);
+
+            doReturn(null).when(responseSpec).body(GetCertificateMessageResponseDTO.class);
             assertThrows(IllegalStateException.class,
                 () -> csIntegrationService.getQuestions(GET_CERTIFICATE_MESSAGE_REQUEST_DTO, CERTIFICATE_ID));
         }
@@ -1698,13 +2235,13 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldSetUrlCorrect() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(GET_CERTIFICATE_MESSAGE_RESPONSE_DTO);
-            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            doReturn(GET_CERTIFICATE_MESSAGE_RESPONSE_DTO).when(responseSpec).body(GetCertificateMessageResponseDTO.class);
+
             final var captor = ArgumentCaptor.forClass(String.class);
 
             csIntegrationService.getQuestions(GET_CERTIFICATE_MESSAGE_REQUEST_DTO, CERTIFICATE_ID);
-            verify(restTemplate).postForObject(captor.capture(), any(), any());
+            verify(requestBodyUriSpec).uri(captor.capture());
 
             assertEquals("baseUrl/api/message/" + CERTIFICATE_ID, captor.getValue());
         }
@@ -1715,22 +2252,39 @@ class CSIntegrationServiceTest {
 
         private static final String MESSAGE_ID = "messageId";
 
+        @BeforeEach
+        void setUp() {
+
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/message/messageId/handle";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(HandleMessageRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+        }
+
         @Test
         void shouldPreformPostUsingRequest() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(HANDLE_MESSAGE_RESPONSE_DTO);
+
+            doReturn(HANDLE_MESSAGE_RESPONSE_DTO).when(responseSpec).body(HandleMessageResponseDTO.class);
             final var captor = ArgumentCaptor.forClass(HandleMessageRequestDTO.class);
 
             csIntegrationService.handleMessage(HANDLE_MESSAGE_REQUEST_DTO, MESSAGE_ID);
-            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+            verify(requestBodyUriSpec).body(captor.capture());
 
             assertEquals(HANDLE_MESSAGE_REQUEST_DTO, captor.getValue());
         }
 
         @Test
         void shouldReturnQuestions() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(HANDLE_MESSAGE_RESPONSE_DTO);
+
+            doReturn(HANDLE_MESSAGE_RESPONSE_DTO).when(responseSpec).body(HandleMessageResponseDTO.class);
             final var response = csIntegrationService.handleMessage(HANDLE_MESSAGE_REQUEST_DTO, MESSAGE_ID);
 
             assertEquals(QUESTION, response);
@@ -1738,8 +2292,8 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldThrowIfResponseIsNull() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(null);
+
+            doReturn(null).when(responseSpec).body(HandleMessageResponseDTO.class);
             assertThrows(IllegalStateException.class,
                 () -> csIntegrationService.handleMessage(HANDLE_MESSAGE_REQUEST_DTO, MESSAGE_ID));
         }
@@ -1747,13 +2301,13 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldSetUrlCorrect() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(HANDLE_MESSAGE_RESPONSE_DTO);
-            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            doReturn(HANDLE_MESSAGE_RESPONSE_DTO).when(responseSpec).body(HandleMessageResponseDTO.class);
+
             final var captor = ArgumentCaptor.forClass(String.class);
 
             csIntegrationService.handleMessage(HANDLE_MESSAGE_REQUEST_DTO, MESSAGE_ID);
-            verify(restTemplate).postForObject(captor.capture(), any(), any());
+            verify(requestBodyUriSpec).uri(captor.capture());
 
             assertEquals("baseUrl/api/message/" + MESSAGE_ID + "/handle", captor.getValue());
         }
@@ -1764,22 +2318,38 @@ class CSIntegrationServiceTest {
 
         private static final String MESSAGE_ID = "messageId";
 
+        @BeforeEach
+        void setUp() {
+
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/message/messageId/certificate";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(GetCertificateFromMessageRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+        }
+
         @Test
         void shouldPreformPostUsingRequest() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(GET_CERTIFICTE_FROM_MESSAGE_RESPONSE_DTO);
+
+            doReturn(GET_CERTIFICTE_FROM_MESSAGE_RESPONSE_DTO).when(responseSpec).body(GetCertificateFromMessageResponseDTO.class);
             final var captor = ArgumentCaptor.forClass(GetCertificateFromMessageRequestDTO.class);
 
             csIntegrationService.getCertificate(GET_CERTIFICTE_FROM_MESSAGE_REQUEST_DTO, MESSAGE_ID);
-            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+            verify(requestBodyUriSpec).body(captor.capture());
 
             assertEquals(GET_CERTIFICTE_FROM_MESSAGE_REQUEST_DTO, captor.getValue());
         }
 
         @Test
         void shouldReturnCertificate() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(GET_CERTIFICTE_FROM_MESSAGE_RESPONSE_DTO);
+            doReturn(GET_CERTIFICTE_FROM_MESSAGE_RESPONSE_DTO).when(responseSpec).body(GetCertificateFromMessageResponseDTO.class);
             final var response = csIntegrationService.getCertificate(GET_CERTIFICTE_FROM_MESSAGE_REQUEST_DTO, MESSAGE_ID);
 
             assertEquals(CERTIFICATE, response);
@@ -1787,8 +2357,7 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldThrowIfResponseIsNull() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(null);
+            doReturn(null).when(responseSpec).body(GetCertificateFromMessageResponseDTO.class);
             assertThrows(IllegalStateException.class,
                 () -> csIntegrationService.getCertificate(GET_CERTIFICTE_FROM_MESSAGE_REQUEST_DTO, MESSAGE_ID));
         }
@@ -1796,13 +2365,11 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldSetUrlCorrect() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(GET_CERTIFICTE_FROM_MESSAGE_RESPONSE_DTO);
-            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            doReturn(GET_CERTIFICTE_FROM_MESSAGE_RESPONSE_DTO).when(responseSpec).body(GetCertificateFromMessageResponseDTO.class);
             final var captor = ArgumentCaptor.forClass(String.class);
 
             csIntegrationService.getCertificate(GET_CERTIFICTE_FROM_MESSAGE_REQUEST_DTO, MESSAGE_ID);
-            verify(restTemplate).postForObject(captor.capture(), any(), any());
+            verify(requestBodyUriSpec).uri(captor.capture());
 
             assertEquals("baseUrl/api/message/" + MESSAGE_ID + "/certificate", captor.getValue());
         }
@@ -1811,10 +2378,26 @@ class CSIntegrationServiceTest {
     @Nested
     class GetCertificateQuestionsInternal {
 
+        @BeforeEach
+        void setUp() {
+
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/internalapi/message/certificateId";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+        }
+
         @Test
         void shouldReturnQuestions() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(GET_CERTIFICATE_MESSAGE_INTERNAL_RESPONSE_DTO);
+
+            doReturn(GET_CERTIFICATE_MESSAGE_INTERNAL_RESPONSE_DTO).when(responseSpec).body(GetCertificateMessageInternalResponseDTO.class);
             final var response = csIntegrationService.getQuestions(CERTIFICATE_ID);
 
             assertEquals(QUESTIONS, response);
@@ -1822,21 +2405,19 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldThrowIfResponseIsNull() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(null);
+
             assertThrows(IllegalStateException.class,
                 () -> csIntegrationService.getQuestions(CERTIFICATE_ID));
         }
 
         @Test
         void shouldSetUrlCorrect() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(GET_CERTIFICATE_MESSAGE_INTERNAL_RESPONSE_DTO);
-            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            doReturn(GET_CERTIFICATE_MESSAGE_INTERNAL_RESPONSE_DTO).when(responseSpec).body(GetCertificateMessageInternalResponseDTO.class);
             final var captor = ArgumentCaptor.forClass(String.class);
 
             csIntegrationService.getQuestions(CERTIFICATE_ID);
-            verify(restTemplate).postForObject(captor.capture(), any(), any());
+            verify(requestBodyUriSpec).uri(captor.capture());
 
             assertEquals("baseUrl/internalapi/message/" + CERTIFICATE_ID, captor.getValue());
         }
@@ -1845,10 +2426,25 @@ class CSIntegrationServiceTest {
     @Nested
     class GetCertificateInternal {
 
+        @BeforeEach
+        void setUp() {
+
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/internalapi/certificate/ID";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+        }
+
         @Test
         void shouldReturnCertificate() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(GET_RESPONSE);
+            doReturn(GET_RESPONSE).when(responseSpec).body(CertificateServiceGetCertificateResponseDTO.class);
             final var response = csIntegrationService.getInternalCertificate(ID);
 
             assertEquals(CERTIFICATE, response);
@@ -1856,8 +2452,6 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldThrowIfResponseIsNull() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(null);
             assertThrows(IllegalStateException.class,
                 () -> csIntegrationService.getInternalCertificate(ID)
             );
@@ -1865,25 +2459,41 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldSetUrlCorrect() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(GET_RESPONSE);
+            doReturn(GET_RESPONSE).when(responseSpec).body(CertificateServiceGetCertificateResponseDTO.class);
+
             ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
             final var captor = ArgumentCaptor.forClass(String.class);
 
-            csIntegrationService.getInternalCertificate("id");
-            verify(restTemplate).postForObject(captor.capture(), any(), any());
+            csIntegrationService.getInternalCertificate(ID);
+            verify(requestBodyUriSpec).uri(captor.capture());
 
-            assertEquals("baseUrl/internalapi/certificate/id", captor.getValue());
+            assertEquals("baseUrl/internalapi/certificate/" + ID, captor.getValue());
         }
     }
 
     @Nested
     class GetCertificateXmlInternal {
 
+        @BeforeEach
+        void setUp() {
+
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/internalapi/certificate/ID/xml";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+
+        }
+
         @Test
         void shouldReturnXml() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(INTERAL_CERTIFICATE_XML_RESPONSE_DTO);
+            doReturn(INTERAL_CERTIFICATE_XML_RESPONSE_DTO).when(responseSpec).body(InternalCertificateXmlResponseDTO.class);
             final var response = csIntegrationService.getInternalCertificateXml(ID);
 
             assertEquals(XML_DATA, response);
@@ -1891,8 +2501,6 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldThrowIfResponseIsNull() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(null);
             assertThrows(IllegalStateException.class,
                 () -> csIntegrationService.getInternalCertificateXml(ID)
             );
@@ -1900,43 +2508,54 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldSetUrlCorrect() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(INTERAL_CERTIFICATE_XML_RESPONSE_DTO);
-            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            doReturn(INTERAL_CERTIFICATE_XML_RESPONSE_DTO).when(responseSpec).body(InternalCertificateXmlResponseDTO.class);
             final var captor = ArgumentCaptor.forClass(String.class);
 
-            csIntegrationService.getInternalCertificateXml("id");
-            verify(restTemplate).postForObject(captor.capture(), any(), any());
+            csIntegrationService.getInternalCertificateXml(ID);
+            verify(requestBodyUriSpec).uri(captor.capture());
 
-            assertEquals("baseUrl/internalapi/certificate/id/xml", captor.getValue());
+            assertEquals("baseUrl/internalapi/certificate/ID/xml", captor.getValue());
         }
     }
 
     @Nested
     class DeleteMessage {
 
+        @BeforeEach
+        void setUp() {
+
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/message/messageId/delete";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.method(HttpMethod.DELETE)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(DeleteMessageRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+
+        }
+
         @Test
         void shouldSetHttpMethod() {
-            when(restTemplate.exchange(
-                    anyString(),
-                    any(HttpMethod.class),
-                    any(HttpEntity.class),
-                    any(ParameterizedTypeReference.class)
-                )
-            ).thenReturn(new ResponseEntity<>(HttpStatus.OK));
-            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            doReturn(new ResponseEntity<>(HttpStatus.OK)).when(responseSpec).body(Void.class);
+
             final var captor = ArgumentCaptor.forClass(HttpMethod.class);
 
             csIntegrationService.deleteMessage(MESSAGE_ID, DELETE_MESSAGE_REQUEST_DTO);
 
-            verify(restTemplate).exchange(anyString(), captor.capture(), any(HttpEntity.class), any(ParameterizedTypeReference.class));
+            verify(restClient).method(captor.capture());
 
             assertEquals(HttpMethod.DELETE, captor.getValue());
         }
 
         @Test
         void shouldSetUrlCorrect() {
-            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
             final var captor = ArgumentCaptor.forClass(String.class);
 
             csIntegrationService.deleteMessage(
@@ -1944,12 +2563,7 @@ class CSIntegrationServiceTest {
                 DELETE_MESSAGE_REQUEST_DTO
             );
 
-            verify(restTemplate).exchange(
-                captor.capture(),
-                any(HttpMethod.class),
-                any(HttpEntity.class),
-                any(ParameterizedTypeReference.class)
-            );
+            verify(requestBodyUriSpec).uri(captor.capture());
 
             assertEquals("baseUrl/api/message/messageId/delete", captor.getValue());
         }
@@ -1958,23 +2572,41 @@ class CSIntegrationServiceTest {
     @Nested
     class CreateMessageTest {
 
+        @BeforeEach
+        void setUp() {
+
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/message/certificateId/create";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(CreateMessageRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+
+        }
 
         @Test
         void shouldPreformPostUsingRequest() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(CREATE_MESSAGE_RESPONSE_DTO);
+
+            doReturn(CREATE_MESSAGE_RESPONSE_DTO).when(responseSpec).body(CreateMessageResponseDTO.class);
+
             final var captor = ArgumentCaptor.forClass(CreateMessageRequestDTO.class);
 
             csIntegrationService.createMessage(CREATE_MESSAGE_REQUEST_DTO, CERTIFICATE_ID);
-            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+            verify(requestBodyUriSpec).body(captor.capture());
 
             assertEquals(CREATE_MESSAGE_REQUEST_DTO, captor.getValue());
         }
 
         @Test
         void shouldReturnQuestion() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(CREATE_MESSAGE_RESPONSE_DTO);
+
+            doReturn(CREATE_MESSAGE_RESPONSE_DTO).when(responseSpec).body(CreateMessageResponseDTO.class);
             final var response = csIntegrationService.createMessage(CREATE_MESSAGE_REQUEST_DTO, CERTIFICATE_ID);
 
             assertEquals(QUESTION, response);
@@ -1982,22 +2614,18 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldThrowIfResponseIsNull() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(null);
             assertThrows(IllegalStateException.class,
                 () -> csIntegrationService.createMessage(CREATE_MESSAGE_REQUEST_DTO, CERTIFICATE_ID));
         }
 
-
         @Test
         void shouldSetUrlCorrect() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(CREATE_MESSAGE_RESPONSE_DTO);
-            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            doReturn(CREATE_MESSAGE_RESPONSE_DTO).when(responseSpec).body(CreateMessageResponseDTO.class);
             final var captor = ArgumentCaptor.forClass(String.class);
 
             csIntegrationService.createMessage(CREATE_MESSAGE_REQUEST_DTO, CERTIFICATE_ID);
-            verify(restTemplate).postForObject(captor.capture(), any(), any());
+            verify(requestBodyUriSpec).uri(captor.capture());
 
             assertEquals("baseUrl/api/message/" + CERTIFICATE_ID + "/create", captor.getValue());
         }
@@ -2006,36 +2634,44 @@ class CSIntegrationServiceTest {
     @Nested
     class DeleteAnswerTest {
 
-
         private static final String MESSAGE_ID = "messageId";
+
+        @BeforeEach
+        void setUp() {
+
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/message/messageId/deleteanswer";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.method(HttpMethod.DELETE)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(DeleteAnswerRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+
+        }
 
         @Test
         void shouldPreformDeleteUsingRequest() {
-            when(restTemplate.exchange(
-                    anyString(),
-                    any(HttpMethod.class),
-                    any(HttpEntity.class),
-                    any(ParameterizedTypeReference.class)
-                )
-            ).thenReturn(new ResponseEntity<>(DELETE_ANSWER_RESPONSE_DTO, HttpStatus.OK));
-            final var captor = ArgumentCaptor.forClass(HttpEntity.class);
+
+            doReturn(DELETE_ANSWER_RESPONSE_DTO).when(responseSpec).body(DeleteAnswerResponseDTO.class);
+
+            final var captor = ArgumentCaptor.forClass(DeleteAnswerRequestDTO.class);
 
             csIntegrationService.deleteAnswer(MESSAGE_ID, DELETE_ANSWER_REQUEST_DTO);
 
-            verify(restTemplate).exchange(anyString(), any(HttpMethod.class), captor.capture(), any(ParameterizedTypeReference.class));
+            verify(requestBodyUriSpec).body(captor.capture());
 
-            assertEquals(DELETE_ANSWER_REQUEST_DTO, captor.getValue().getBody());
+            assertEquals(DELETE_ANSWER_REQUEST_DTO, captor.getValue());
         }
 
         @Test
         void shouldReturnQuestion() {
-            when(restTemplate.exchange(
-                    anyString(),
-                    any(HttpMethod.class),
-                    any(HttpEntity.class),
-                    any(ParameterizedTypeReference.class)
-                )
-            ).thenReturn(new ResponseEntity<>(DELETE_ANSWER_RESPONSE_DTO, HttpStatus.OK));
+
+            doReturn(DELETE_ANSWER_RESPONSE_DTO).when(responseSpec).body(DeleteAnswerResponseDTO.class);
             final var response = csIntegrationService.deleteAnswer(MESSAGE_ID, DELETE_ANSWER_REQUEST_DTO);
 
             assertEquals(QUESTION, response);
@@ -2043,32 +2679,20 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldSetHttpMethod() {
-            when(restTemplate.exchange(
-                    anyString(),
-                    any(HttpMethod.class),
-                    any(HttpEntity.class),
-                    any(ParameterizedTypeReference.class)
-                )
-            ).thenReturn(new ResponseEntity<>(DELETE_ANSWER_RESPONSE_DTO, HttpStatus.OK));
-            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            doReturn(DELETE_ANSWER_RESPONSE_DTO).when(responseSpec).body(DeleteAnswerResponseDTO.class);
+
             final var captor = ArgumentCaptor.forClass(HttpMethod.class);
 
             csIntegrationService.deleteAnswer(MESSAGE_ID, DELETE_ANSWER_REQUEST_DTO);
 
-            verify(restTemplate).exchange(anyString(), captor.capture(), any(HttpEntity.class), any(ParameterizedTypeReference.class));
+            verify(restClient).method(captor.capture());
 
             assertEquals(HttpMethod.DELETE, captor.getValue());
         }
 
         @Test
         void shouldThrowIfResponseIsNull() {
-            when(restTemplate.exchange(
-                    anyString(),
-                    any(HttpMethod.class),
-                    any(HttpEntity.class),
-                    any(ParameterizedTypeReference.class)
-                )
-            ).thenReturn(new ResponseEntity<>(null, HttpStatus.OK));
             assertThrows(IllegalStateException.class,
                 () -> csIntegrationService.deleteAnswer(MESSAGE_ID, DELETE_ANSWER_REQUEST_DTO));
         }
@@ -2076,19 +2700,13 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldSetUrlCorrect() {
-            when(restTemplate.exchange(
-                anyString(),
-                any(HttpMethod.class),
-                any(HttpEntity.class),
-                any(ParameterizedTypeReference.class)))
-                .thenReturn(new ResponseEntity<>(DELETE_ANSWER_RESPONSE_DTO, HttpStatus.OK));
 
-            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            doReturn(DELETE_ANSWER_RESPONSE_DTO).when(responseSpec).body(DeleteAnswerResponseDTO.class);
+
             final var captor = ArgumentCaptor.forClass(String.class);
 
             csIntegrationService.deleteAnswer(MESSAGE_ID, DELETE_ANSWER_REQUEST_DTO);
-            verify(restTemplate).exchange(captor.capture(), any(HttpMethod.class), any(HttpEntity.class),
-                any(ParameterizedTypeReference.class));
+            verify(requestBodyUriSpec).uri(captor.capture());
 
             assertEquals("baseUrl/api/message/" + MESSAGE_ID + "/deleteanswer", captor.getValue());
         }
@@ -2097,25 +2715,42 @@ class CSIntegrationServiceTest {
     @Nested
     class SaveMessageTest {
 
-
         private static final String MESSAGE_ID = "messageId";
+
+        @BeforeEach
+        void setUp() {
+
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/message/messageId/save";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(SaveMessageRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+
+        }
 
         @Test
         void shouldPreformPostUsingRequest() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(SAVE_MESSAGE_RESPONSE_DTO);
+
+            doReturn(SAVE_MESSAGE_RESPONSE_DTO).when(responseSpec).body(SaveMessageResponseDTO.class);
             final var captor = ArgumentCaptor.forClass(SaveMessageRequestDTO.class);
 
             csIntegrationService.saveMessage(SAVE_MESSAGE_REQUEST_DTO, MESSAGE_ID);
-            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+            verify(requestBodyUriSpec).body(captor.capture());
 
             assertEquals(SAVE_MESSAGE_REQUEST_DTO, captor.getValue());
         }
 
         @Test
         void shouldReturnQuestion() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(SAVE_MESSAGE_RESPONSE_DTO);
+
+            doReturn(SAVE_MESSAGE_RESPONSE_DTO).when(responseSpec).body(SaveMessageResponseDTO.class);
             final var response = csIntegrationService.saveMessage(SAVE_MESSAGE_REQUEST_DTO, MESSAGE_ID);
 
             assertEquals(QUESTION, response);
@@ -2123,8 +2758,6 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldThrowIfResponseIsNull() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(null);
             assertThrows(IllegalStateException.class,
                 () -> csIntegrationService.saveMessage(SAVE_MESSAGE_REQUEST_DTO, MESSAGE_ID));
         }
@@ -2132,14 +2765,13 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldSetUrlCorrect() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(SAVE_MESSAGE_RESPONSE_DTO);
-            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            doReturn(SAVE_MESSAGE_RESPONSE_DTO).when(responseSpec).body(SaveMessageResponseDTO.class);
             final var captor = ArgumentCaptor.forClass(String.class);
 
             csIntegrationService.saveMessage(SAVE_MESSAGE_REQUEST_DTO, MESSAGE_ID);
 
-            verify(restTemplate).postForObject(captor.capture(), any(), any());
+            verify(requestBodyUriSpec).uri(captor.capture());
 
             assertEquals("baseUrl/api/message/" + MESSAGE_ID + "/save", captor.getValue());
         }
@@ -2151,22 +2783,40 @@ class CSIntegrationServiceTest {
 
         private static final String MESSAGE_ID = "messageId";
 
+        @BeforeEach
+        void setUp() {
+
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/message/messageId/saveanswer";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(SaveAnswerRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+
+        }
+
         @Test
         void shouldPreformPostUsingRequest() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(SAVE_ANSWER_RESPONSE_DTO);
+
+            doReturn(SAVE_ANSWER_RESPONSE_DTO).when(responseSpec).body(SaveAnswerResponseDTO.class);
             final var captor = ArgumentCaptor.forClass(SaveAnswerRequestDTO.class);
 
             csIntegrationService.saveAnswer(SAVE_ANSWER_REQUEST_DTO, MESSAGE_ID);
-            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+            verify(requestBodyUriSpec).body(captor.capture());
 
             assertEquals(SAVE_ANSWER_REQUEST_DTO, captor.getValue());
         }
 
         @Test
         void shouldReturnQuestion() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(SAVE_ANSWER_RESPONSE_DTO);
+
+            doReturn(SAVE_ANSWER_RESPONSE_DTO).when(responseSpec).body(SaveAnswerResponseDTO.class);
             final var response = csIntegrationService.saveAnswer(SAVE_ANSWER_REQUEST_DTO, MESSAGE_ID);
 
             assertEquals(QUESTION, response);
@@ -2174,8 +2824,6 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldThrowIfResponseIsNull() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(null);
             assertThrows(IllegalStateException.class,
                 () -> csIntegrationService.saveAnswer(SAVE_ANSWER_REQUEST_DTO, MESSAGE_ID));
         }
@@ -2183,14 +2831,14 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldSetUrlCorrect() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(SAVE_ANSWER_RESPONSE_DTO);
-            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            doReturn(SAVE_ANSWER_RESPONSE_DTO).when(responseSpec).body(SaveAnswerResponseDTO.class);
+
             final var captor = ArgumentCaptor.forClass(String.class);
 
             csIntegrationService.saveAnswer(SAVE_ANSWER_REQUEST_DTO, MESSAGE_ID);
 
-            verify(restTemplate).postForObject(captor.capture(), any(), any());
+            verify(requestBodyUriSpec).uri(captor.capture());
 
             assertEquals("baseUrl/api/message/" + MESSAGE_ID + "/saveanswer", captor.getValue());
         }
@@ -2199,25 +2847,42 @@ class CSIntegrationServiceTest {
     @Nested
     class SendMessageTest {
 
-
         private static final String MESSAGE_ID = "messageId";
+
+        @BeforeEach
+        void setUp() {
+
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/message/messageId/send";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(SendMessageRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+
+        }
 
         @Test
         void shouldPreformPostUsingRequest() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(SEND_MESSAGE_RESPONSE_DTO);
+
+            doReturn(SEND_MESSAGE_RESPONSE_DTO).when(responseSpec).body(SendMessageResponseDTO.class);
             final var captor = ArgumentCaptor.forClass(SendMessageRequestDTO.class);
 
             csIntegrationService.sendMessage(SEND_MESSAGE_REQUEST_DTO, MESSAGE_ID);
-            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+            verify(requestBodyUriSpec).body(captor.capture());
 
             assertEquals(SEND_MESSAGE_REQUEST_DTO, captor.getValue());
         }
 
         @Test
         void shouldReturnQuestion() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(SEND_MESSAGE_RESPONSE_DTO);
+
+            doReturn(SEND_MESSAGE_RESPONSE_DTO).when(responseSpec).body(SendMessageResponseDTO.class);
             final var response = csIntegrationService.sendMessage(SEND_MESSAGE_REQUEST_DTO, MESSAGE_ID);
 
             assertEquals(QUESTION, response);
@@ -2225,8 +2890,6 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldThrowIfResponseIsNull() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(null);
             assertThrows(IllegalStateException.class,
                 () -> csIntegrationService.sendMessage(SEND_MESSAGE_REQUEST_DTO, MESSAGE_ID));
         }
@@ -2234,14 +2897,12 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldSetUrlCorrect() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(SEND_MESSAGE_RESPONSE_DTO);
-            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            doReturn(SEND_MESSAGE_RESPONSE_DTO).when(responseSpec).body(SendMessageResponseDTO.class);
             final var captor = ArgumentCaptor.forClass(String.class);
 
             csIntegrationService.sendMessage(SEND_MESSAGE_REQUEST_DTO, MESSAGE_ID);
 
-            verify(restTemplate).postForObject(captor.capture(), any(), any());
+            verify(requestBodyUriSpec).uri(captor.capture());
 
             assertEquals("baseUrl/api/message/" + MESSAGE_ID + "/send", captor.getValue());
         }
@@ -2255,12 +2916,25 @@ class CSIntegrationServiceTest {
             CERTIFICATE_DTO.setMetadata(CertificateMetadata.builder()
                 .id(ID)
                 .build());
+
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/unit/messages";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(GetUnitQuestionsRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+
         }
 
         @Test
         void shouldThrowIfResponseIsNull() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(null);
+            doReturn(null).when(responseSpec).body(GetUnitQuestionsResponseDTO.class);
             assertThrows(IllegalStateException.class,
                 () -> csIntegrationService.listQuestionsForUnit(GET_QUESTIONS_REQUEST)
             );
@@ -2268,43 +2942,54 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldPreformPostUsingRequest() {
-            when(listQuestionConverter.convert(Optional.of(CERTIFICATE_DTO), QUESTION_DTO))
-                .thenReturn(ARENDE_LIST_ITEM);
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(GET_QUESTIONS_RESPONSE);
+
+            final var response = GetUnitQuestionsResponseDTO.builder()
+                    .questions(List.of())
+                    .build();
+
+            doReturn(response).when(responseSpec).body(GetUnitQuestionsResponseDTO.class);
 
             final var captor = ArgumentCaptor.forClass(GetUnitQuestionsRequestDTO.class);
 
             csIntegrationService.listQuestionsForUnit(GET_QUESTIONS_REQUEST);
-            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+            verify(requestBodyUriSpec).body(captor.capture());
 
             assertEquals(GET_QUESTIONS_REQUEST, captor.getValue());
         }
 
         @Test
         void shouldReturnConvertedListItems() {
-            when(listQuestionConverter.convert(Optional.of(CERTIFICATE_DTO), QUESTION_DTO))
-                .thenReturn(ARENDE_LIST_ITEM);
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(GET_QUESTIONS_RESPONSE);
+            when(listQuestionConverter.convert(Optional.of(CERTIFICATE_DTO), QUESTION_DTO)).thenReturn(ARENDE_LIST_ITEM);
 
-            final var response = csIntegrationService.listQuestionsForUnit(GET_QUESTIONS_REQUEST);
+            final var response = GetUnitQuestionsResponseDTO.builder()
+                    .questions(List.of(QUESTION_DTO))
+                    .certificates(List.of(CERTIFICATE_DTO))
+                    .build();
 
-            assertEquals(List.of(ARENDE_LIST_ITEM), response);
+            doReturn(response).when(responseSpec).body(GetUnitQuestionsResponseDTO.class);
+
+            final var actualResponse = csIntegrationService.listQuestionsForUnit(GET_QUESTIONS_REQUEST);
+
+            assertEquals(List.of(ARENDE_LIST_ITEM), actualResponse);
         }
 
         @Test
         void shouldSetUrlCorrect() {
-            when(listQuestionConverter.convert(Optional.of(CERTIFICATE_DTO), QUESTION_DTO))
-                .thenReturn(ARENDE_LIST_ITEM);
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(GET_QUESTIONS_RESPONSE);
+            when(listQuestionConverter.convert(Optional.of(CERTIFICATE_DTO), QUESTION_DTO)).thenReturn(ARENDE_LIST_ITEM);
+            //when(restTemplate.postForObject(anyString(), any(), any())).thenReturn(GET_QUESTIONS_RESPONSE);
 
             ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
             final var captor = ArgumentCaptor.forClass(String.class);
 
+            final var response = GetUnitQuestionsResponseDTO.builder()
+                    .questions(List.of(QUESTION_DTO))
+                    .certificates(List.of(CERTIFICATE_DTO))
+                    .build();
+
+            doReturn(response).when(responseSpec).body(GetUnitQuestionsResponseDTO.class);
+
             csIntegrationService.listQuestionsForUnit(GET_QUESTIONS_REQUEST);
-            verify(restTemplate).postForObject(captor.capture(), any(), any());
+            verify(requestBodyUriSpec).uri(captor.capture());
 
             assertEquals("baseUrl/api/unit/messages", captor.getValue());
 
@@ -2317,22 +3002,39 @@ class CSIntegrationServiceTest {
 
         private static final String MESSAGE_ID = "messageId";
 
+        @BeforeEach
+        void setUp() {
+
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/message/messageId/sendanswer";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(SendAnswerRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+
+        }
+
         @Test
         void shouldPreformPostUsingRequest() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(SEND_ANSWER_RESPONSE_DTO);
+
+            doReturn(SEND_ANSWER_RESPONSE_DTO).when(responseSpec).body(SendAnswerResponseDTO.class);
             final var captor = ArgumentCaptor.forClass(SendAnswerRequestDTO.class);
 
             csIntegrationService.sendAnswer(SEND_ANSWER_REQUEST_DTO, MESSAGE_ID);
-            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+            verify(requestBodyUriSpec).body(captor.capture());
 
             assertEquals(SEND_ANSWER_REQUEST_DTO, captor.getValue());
         }
 
         @Test
         void shouldReturnQuestion() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(SEND_ANSWER_RESPONSE_DTO);
+            doReturn(SEND_ANSWER_RESPONSE_DTO).when(responseSpec).body(SendAnswerResponseDTO.class);
             final var response = csIntegrationService.sendAnswer(SEND_ANSWER_REQUEST_DTO, MESSAGE_ID);
 
             assertEquals(QUESTION, response);
@@ -2340,8 +3042,6 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldThrowIfResponseIsNull() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(null);
             assertThrows(IllegalStateException.class,
                 () -> csIntegrationService.sendAnswer(SEND_ANSWER_REQUEST_DTO, MESSAGE_ID));
         }
@@ -2349,14 +3049,12 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldSetUrlCorrect() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(SEND_ANSWER_RESPONSE_DTO);
-            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            doReturn(SEND_ANSWER_RESPONSE_DTO).when(responseSpec).body(SendAnswerResponseDTO.class);
             final var captor = ArgumentCaptor.forClass(String.class);
 
             csIntegrationService.sendAnswer(SEND_ANSWER_REQUEST_DTO, MESSAGE_ID);
 
-            verify(restTemplate).postForObject(captor.capture(), any(), any());
+            verify(requestBodyUriSpec).uri(captor.capture());
 
             assertEquals("baseUrl/api/message/" + MESSAGE_ID + "/sendanswer", captor.getValue());
         }
@@ -2365,22 +3063,40 @@ class CSIntegrationServiceTest {
     @Nested
     class ForwardCertificateTest {
 
+        @BeforeEach
+        void setUp() {
+
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/certificate/ID/forward";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(ForwardCertificateRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+
+        }
+
         @Test
         void shouldPreformPostUsingRequest() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(FORWARD_CERTIFICATE_RESPONSE_DTO);
+
+            doReturn(FORWARD_CERTIFICATE_RESPONSE_DTO).when(responseSpec).body(ForwardCertificateResponseDTO.class);
             final var captor = ArgumentCaptor.forClass(ForwardCertificateRequestDTO.class);
 
             csIntegrationService.forwardCertificate(ID, FORWARD_CERTIFICATE_REQUEST_DTO);
-            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+            verify(requestBodyUriSpec).body(captor.capture());
 
             assertEquals(FORWARD_CERTIFICATE_REQUEST_DTO, captor.getValue());
         }
 
         @Test
         void shouldReturnCertificate() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(FORWARD_CERTIFICATE_RESPONSE_DTO);
+            doReturn(FORWARD_CERTIFICATE_RESPONSE_DTO).when(responseSpec).body(ForwardCertificateResponseDTO.class);
+
             final var response = csIntegrationService.forwardCertificate(ID, FORWARD_CERTIFICATE_REQUEST_DTO);
 
             assertEquals(CERTIFICATE, response);
@@ -2388,22 +3104,19 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldThrowIfResponseIsNull() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(null);
             assertThrows(IllegalStateException.class,
                 () -> csIntegrationService.forwardCertificate(ID, FORWARD_CERTIFICATE_REQUEST_DTO));
         }
 
         @Test
         void shouldSetUrlCorrect() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(FORWARD_CERTIFICATE_RESPONSE_DTO);
-            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            doReturn(FORWARD_CERTIFICATE_RESPONSE_DTO).when(responseSpec).body(ForwardCertificateResponseDTO.class);
+
             final var captor = ArgumentCaptor.forClass(String.class);
 
             csIntegrationService.forwardCertificate(ID, FORWARD_CERTIFICATE_REQUEST_DTO);
 
-            verify(restTemplate).postForObject(captor.capture(), any(), any());
+            verify(requestBodyUriSpec).uri(captor.capture());
 
             assertEquals("baseUrl/api/certificate/" + ID + "/forward", captor.getValue());
         }
@@ -2412,22 +3125,39 @@ class CSIntegrationServiceTest {
     @Nested
     class GetCertificateEventsTest {
 
+        @BeforeEach
+        void setUp() {
+
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/certificate/ID/events";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(GetCertificateEventsRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+
+        }
+
         @Test
         void shouldPreformPostUsingRequest() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(GET_CERTIFICATE_EVENTS_RESPONSE_DTO);
+
+            doReturn(GET_CERTIFICATE_EVENTS_RESPONSE_DTO).when(responseSpec).body(GetCertificateEventsResponseDTO.class);
             final var captor = ArgumentCaptor.forClass(GetCertificateEventsRequestDTO.class);
 
             csIntegrationService.getCertificateEvents(ID, GET_CERTIFICATE_EVENTS_REQUEST_DTO);
-            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+            verify(requestBodyUriSpec).body(captor.capture());
 
             assertEquals(GET_CERTIFICATE_EVENTS_REQUEST_DTO, captor.getValue());
         }
 
         @Test
         void shouldReturnCertificate() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(GET_CERTIFICATE_EVENTS_RESPONSE_DTO);
+            doReturn(GET_CERTIFICATE_EVENTS_RESPONSE_DTO).when(responseSpec).body(GetCertificateEventsResponseDTO.class);
             final var response = csIntegrationService.getCertificateEvents(ID, GET_CERTIFICATE_EVENTS_REQUEST_DTO);
 
             assertEquals(EVENTS.size(), response.length);
@@ -2436,22 +3166,18 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldThrowIfResponseIsNull() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(null);
             assertThrows(IllegalStateException.class,
                 () -> csIntegrationService.getCertificateEvents(ID, GET_CERTIFICATE_EVENTS_REQUEST_DTO));
         }
 
         @Test
         void shouldSetUrlCorrect() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(GET_CERTIFICATE_EVENTS_RESPONSE_DTO);
-            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            doReturn(GET_CERTIFICATE_EVENTS_RESPONSE_DTO).when(responseSpec).body(GetCertificateEventsResponseDTO.class);
             final var captor = ArgumentCaptor.forClass(String.class);
 
             csIntegrationService.getCertificateEvents(ID, GET_CERTIFICATE_EVENTS_REQUEST_DTO);
 
-            verify(restTemplate).postForObject(captor.capture(), any(), any());
+            verify(requestBodyUriSpec).uri(captor.capture());
 
             assertEquals("baseUrl/api/certificate/" + ID + "/events", captor.getValue());
         }
@@ -2460,22 +3186,40 @@ class CSIntegrationServiceTest {
     @Nested
     class GetPatientCertificatesWithQATest {
 
+        @BeforeEach
+        void setUp() {
+
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/internalapi/certificate/qa";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(CertificatesWithQARequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+
+        }
+
         @Test
         void shouldPreformPostUsingRequest() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(GET_PATIENT_CERTIFICATES_WITH_QA_RESPONSE_DTO);
+
+            doReturn(GET_PATIENT_CERTIFICATES_WITH_QA_RESPONSE_DTO).when(responseSpec).body(CertificatesWithQAResponseDTO.class);
             final var captor = ArgumentCaptor.forClass(CertificatesWithQARequestDTO.class);
 
             csIntegrationService.getCertificatesWithQA(GET_PATIENT_CERTIFICATES_WITH_QA_REQUEST_DTO);
-            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+            verify(requestBodyUriSpec).body(captor.capture());
 
             assertEquals(GET_PATIENT_CERTIFICATES_WITH_QA_REQUEST_DTO, captor.getValue());
         }
 
         @Test
         void shouldReturnString() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(GET_PATIENT_CERTIFICATES_WITH_QA_RESPONSE_DTO);
+
+            doReturn(GET_PATIENT_CERTIFICATES_WITH_QA_RESPONSE_DTO).when(responseSpec).body(CertificatesWithQAResponseDTO.class);
             final var response = csIntegrationService.getCertificatesWithQA(GET_PATIENT_CERTIFICATES_WITH_QA_REQUEST_DTO);
 
             assertEquals(LIST, response);
@@ -2483,22 +3227,18 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldThrowIfResponseIsNull() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(null);
             assertThrows(IllegalStateException.class,
                 () -> csIntegrationService.getCertificatesWithQA(GET_PATIENT_CERTIFICATES_WITH_QA_REQUEST_DTO));
         }
 
         @Test
         void shouldSetUrlCorrect() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(GET_PATIENT_CERTIFICATES_WITH_QA_RESPONSE_DTO);
-            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            doReturn(GET_PATIENT_CERTIFICATES_WITH_QA_RESPONSE_DTO).when(responseSpec).body(CertificatesWithQAResponseDTO.class);
             final var captor = ArgumentCaptor.forClass(String.class);
 
             csIntegrationService.getCertificatesWithQA(GET_PATIENT_CERTIFICATES_WITH_QA_REQUEST_DTO);
 
-            verify(restTemplate).postForObject(captor.capture(), any(), any());
+            verify(requestBodyUriSpec).uri(captor.capture());
 
             assertEquals("baseUrl/internalapi/certificate/qa", captor.getValue());
         }
@@ -2507,22 +3247,40 @@ class CSIntegrationServiceTest {
     @Nested
     class LockDraftsTest {
 
+        @BeforeEach
+        void setUp() {
+
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/internalapi/certificate/lock";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(LockDraftsRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+
+        }
+
         @Test
         void shouldPreformPostUsingRequest() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(LOCK_OLD_DRAFTS_RESPONSE_DTO);
+
+            doReturn(LOCK_OLD_DRAFTS_RESPONSE_DTO).when(responseSpec).body(LockDraftsResponseDTO.class);
             final var captor = ArgumentCaptor.forClass(LockDraftsRequestDTO.class);
 
             csIntegrationService.lockDrafts(LOCK_OLD_DRAFTS_REQUEST_DTO);
-            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+            verify(requestBodyUriSpec).body(captor.capture());
 
             assertEquals(LOCK_OLD_DRAFTS_REQUEST_DTO, captor.getValue());
         }
 
         @Test
         void shouldReturnCertificates() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(LOCK_OLD_DRAFTS_RESPONSE_DTO);
+
+            doReturn(LOCK_OLD_DRAFTS_RESPONSE_DTO).when(responseSpec).body(LockDraftsResponseDTO.class);
             final var response = csIntegrationService.lockDrafts(LOCK_OLD_DRAFTS_REQUEST_DTO);
 
             assertEquals(List.of(CERTIFICATE), response);
@@ -2530,22 +3288,18 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldThrowIfResponseIsNull() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(null);
             assertThrows(IllegalStateException.class,
                 () -> csIntegrationService.lockDrafts(LOCK_OLD_DRAFTS_REQUEST_DTO));
         }
 
         @Test
         void shouldSetUrlCorrect() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(LOCK_OLD_DRAFTS_RESPONSE_DTO);
-            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            doReturn(LOCK_OLD_DRAFTS_RESPONSE_DTO).when(responseSpec).body(LockDraftsResponseDTO.class);
             final var captor = ArgumentCaptor.forClass(String.class);
 
             csIntegrationService.lockDrafts(LOCK_OLD_DRAFTS_REQUEST_DTO);
 
-            verify(restTemplate).postForObject(captor.capture(), any(), any());
+            verify(requestBodyUriSpec).uri(captor.capture());
 
             assertEquals("baseUrl/internalapi/certificate/lock", captor.getValue());
         }
@@ -2554,22 +3308,39 @@ class CSIntegrationServiceTest {
     @Nested
     class GetStatisticsTest {
 
+        @BeforeEach
+        void setUp() {
+
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/unit/certificates/statistics";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(UnitStatisticsRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+
+        }
+
         @Test
         void shouldPreformPostUsingRequest() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(STATISTICS_RESPONSE_DTO);
+
+            doReturn(STATISTICS_RESPONSE_DTO).when(responseSpec).body(UnitStatisticsResponseDTO.class);
             final var captor = ArgumentCaptor.forClass(UnitStatisticsRequestDTO.class);
 
             csIntegrationService.getStatistics(STATISTICS_REQUEST_DTO);
-            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+            verify(requestBodyUriSpec).body(captor.capture());
 
             assertEquals(STATISTICS_REQUEST_DTO, captor.getValue());
         }
 
         @Test
         void shouldReturnUserStatistics() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(STATISTICS_RESPONSE_DTO);
+            doReturn(STATISTICS_RESPONSE_DTO).when(responseSpec).body(UnitStatisticsResponseDTO.class);
             final var response = csIntegrationService.getStatistics(STATISTICS_REQUEST_DTO);
 
             assertEquals(USER_STATISTICS, response);
@@ -2577,22 +3348,19 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldThrowIfResponseIsNull() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(null);
             assertThrows(IllegalStateException.class,
                 () -> csIntegrationService.getStatistics(STATISTICS_REQUEST_DTO));
         }
 
         @Test
         void shouldSetUrlCorrect() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(STATISTICS_RESPONSE_DTO);
-            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            doReturn(STATISTICS_RESPONSE_DTO).when(responseSpec).body(UnitStatisticsResponseDTO.class);
+
             final var captor = ArgumentCaptor.forClass(String.class);
 
             csIntegrationService.getStatistics(STATISTICS_REQUEST_DTO);
 
-            verify(restTemplate).postForObject(captor.capture(), any(), any());
+            verify(requestBodyUriSpec).uri(captor.capture());
 
             assertEquals("baseUrl/api/unit/certificates/statistics", captor.getValue());
         }
@@ -2601,22 +3369,39 @@ class CSIntegrationServiceTest {
     @Nested
     class MarkCertificateReadyForSignTest {
 
+        @BeforeEach
+        void setUp() {
+
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/certificate/ID/readyForSign";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(ReadyForSignRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+
+        }
+
         @Test
         void shouldPreformPostUsingRequest() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(READY_FOR_SIGN_RESPONSE_DTO);
+
+            doReturn(READY_FOR_SIGN_RESPONSE_DTO).when(responseSpec).body(ReadyForSignResponseDTO.class);
             final var captor = ArgumentCaptor.forClass(ReadyForSignRequestDTO.class);
 
             csIntegrationService.markCertificateReadyForSign(ID, READY_FOR_SIGN_REQUEST_DTO);
-            verify(restTemplate).postForObject(anyString(), captor.capture(), any());
+            verify(requestBodyUriSpec).body(captor.capture());
 
             assertEquals(READY_FOR_SIGN_REQUEST_DTO, captor.getValue());
         }
 
         @Test
         void shouldReturnCertificate() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(READY_FOR_SIGN_RESPONSE_DTO);
+            doReturn(READY_FOR_SIGN_RESPONSE_DTO).when(responseSpec).body(ReadyForSignResponseDTO.class);
             final var response = csIntegrationService.markCertificateReadyForSign(ID, READY_FOR_SIGN_REQUEST_DTO);
 
             assertEquals(CERTIFICATE, response);
@@ -2624,22 +3409,19 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldThrowIfResponseIsNull() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(null);
             assertThrows(IllegalStateException.class,
                 () -> csIntegrationService.markCertificateReadyForSign(ID, READY_FOR_SIGN_REQUEST_DTO));
         }
 
         @Test
         void shouldSetUrlCorrect() {
-            when(restTemplate.postForObject(anyString(), any(), any()))
-                .thenReturn(READY_FOR_SIGN_RESPONSE_DTO);
-            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            doReturn(READY_FOR_SIGN_RESPONSE_DTO).when(responseSpec).body(ReadyForSignResponseDTO.class);
             final var captor = ArgumentCaptor.forClass(String.class);
 
             csIntegrationService.markCertificateReadyForSign(ID, READY_FOR_SIGN_REQUEST_DTO);
 
-            verify(restTemplate).postForObject(captor.capture(), any(), any());
+            verify(requestBodyUriSpec).uri(captor.capture());
 
             assertEquals("baseUrl/api/certificate/" + ID + "/readyForSign", captor.getValue());
         }
