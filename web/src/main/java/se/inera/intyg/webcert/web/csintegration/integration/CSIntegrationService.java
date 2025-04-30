@@ -23,6 +23,8 @@ import static se.inera.intyg.webcert.logging.MdcLogConstants.EVENT_TYPE_CHANGE;
 import static se.inera.intyg.webcert.logging.MdcLogConstants.EVENT_TYPE_CREATION;
 import static se.inera.intyg.webcert.logging.MdcLogConstants.EVENT_TYPE_DELETION;
 import static se.inera.intyg.webcert.logging.MdcLogConstants.EVENT_TYPE_INFO;
+import static se.inera.intyg.webcert.logging.MdcLogConstants.TRACE_ID_KEY;
+import static se.inera.intyg.webcert.logging.MdcLogConstants.SESSION_ID_KEY;
 
 import java.util.Collections;
 import java.util.List;
