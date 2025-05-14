@@ -84,6 +84,18 @@
     <bean id="authoritiesHelper" class="se.inera.intyg.infra.security.authorities.AuthoritiesHelper"/>
     <bean id="befattningService" class="se.inera.intyg.common.support.services.BefattningService"/>
     <bean id="summaryConverter" class="se.inera.intyg.common.support.modules.converter.SummaryConverter"/>
+    <bean id="careProviderMappingConfigLoader" class="se.inera.intyg.common.support.modules.converter.config.CareProviderMappingConfigLoader"/>
+    <bean id="careProviderMapperUtil" class="se.inera.intyg.common.support.modules.converter.CareProviderMapperUtil">
+      <constructor-arg ref="careProviderMappingConfigLoader"/>
+    </bean>
+
+    <bean id="internalConverterUtil" class="se.inera.intyg.common.support.modules.converter.InternalConverterUtil">
+      <constructor-arg ref="careProviderMapperUtil"/>
+    </bean>
+
+    <bean id="transportToInternal" class="se.inera.intyg.common.fk7263.model.converter.TransportToInternal">
+      <constructor-arg ref="careProviderMapperUtil"/>
+    </bean>
 
   </beans>
 
