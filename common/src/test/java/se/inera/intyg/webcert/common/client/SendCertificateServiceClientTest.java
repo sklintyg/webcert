@@ -18,11 +18,12 @@
  */
 package se.inera.intyg.webcert.common.client;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -30,15 +31,20 @@ import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.xml.ws.WebServiceException;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
+import se.inera.intyg.common.support.modules.converter.InternalConverterUtil;
+import se.inera.intyg.common.support.modules.converter.mapping.CareProviderMapperUtil;
+import se.inera.intyg.common.support.modules.converter.mapping.CareProviderMappingConfigLoader;
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v2.SendCertificateToRecipientResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v2.SendCertificateToRecipientResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v2.SendCertificateToRecipientType;
@@ -48,8 +54,9 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 /**
  * Created by eriklupander on 2015-06-04.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class SendCertificateServiceClientTest {
+@ExtendWith({MockitoExtension.class, SpringExtension.class})
+@ContextConfiguration(classes = {CareProviderMappingConfigLoader.class, CareProviderMapperUtil.class, InternalConverterUtil.class})
+ class SendCertificateServiceClientTest {
 
     private static final String INTYGS_ID = "intyg-1";
     private static final String PERSON_ID = "20121212-1212";
@@ -79,9 +86,9 @@ public class SendCertificateServiceClientTest {
         return sb.toString();
     }
 
-    @Before
-    public void setup() throws Exception {
-        when(objectMapper.readValue(anyString(), eq(HoSPersonal.class))).then(new Answer<HoSPersonal>() {
+    @BeforeEach
+     void setup() throws Exception {
+        lenient().when(objectMapper.readValue(anyString(), eq(HoSPersonal.class))).then(new Answer<HoSPersonal>() {
 
             @Override
             public HoSPersonal answer(InvocationOnMock invocation) throws Throwable {
@@ -91,7 +98,7 @@ public class SendCertificateServiceClientTest {
     }
 
     @Test
-    public void testSendCertificateOk() {
+     void testSendCertificateOk() {
 
         when(response.getResult()).thenReturn(buildResultOfCall(ResultCodeType.OK));
 
@@ -103,63 +110,40 @@ public class SendCertificateServiceClientTest {
         assertEquals(ResultCodeType.OK, resp.getResult().getResultCode());
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testSendCertificateNoIntygsId() {
-
-        try {
-            testee.sendCertificate(null, PERSON_ID, SKICKAT_AV_JSON, RECIPIENT, LOGICAL_ADDRESS);
-        } catch (Exception e) {
-            verifyNoInteractions(sendService);
-            throw e;
-        }
-        fail();
+    @Test
+     void testSendCertificateNoIntygsId() {
+        assertThrows(IllegalArgumentException.class,()->testee.sendCertificate(null, PERSON_ID, SKICKAT_AV_JSON, RECIPIENT, LOGICAL_ADDRESS));
+        verifyNoInteractions(sendService);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testSendCertificateNoPersonId() {
+    @Test
+     void testSendCertificateNoPersonId() {
 
-        try {
-            testee.sendCertificate(INTYGS_ID, null, SKICKAT_AV_JSON, RECIPIENT, LOGICAL_ADDRESS);
-        } catch (Exception e) {
+            assertThrows(IllegalArgumentException.class,()->testee.sendCertificate(INTYGS_ID, null, SKICKAT_AV_JSON, RECIPIENT, LOGICAL_ADDRESS));
             verifyNoInteractions(sendService);
-            throw e;
-        }
-        fail();
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testSendCertificateNoRecipient() {
-
-        try {
-            testee.sendCertificate(INTYGS_ID, PERSON_ID, SKICKAT_AV_JSON, null, LOGICAL_ADDRESS);
-        } catch (Exception e) {
+    @Test
+     void testSendCertificateNoRecipient() {
+        assertThrows(IllegalArgumentException.class,()->testee.sendCertificate(INTYGS_ID, PERSON_ID, SKICKAT_AV_JSON, null, LOGICAL_ADDRESS));
             verifyNoInteractions(sendService);
-            throw e;
-        }
-        fail();
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testSendCertificateNoLogicalAddress() {
-
-        try {
-            testee.sendCertificate(INTYGS_ID, SKICKAT_AV_JSON, PERSON_ID, RECIPIENT, null);
-        } catch (Exception e) {
+    @Test
+     void testSendCertificateNoLogicalAddress() {
+            assertThrows(IllegalArgumentException.class,()->testee.sendCertificate(INTYGS_ID, SKICKAT_AV_JSON, PERSON_ID, RECIPIENT, null));
             verifyNoInteractions(sendService);
-            throw e;
-        }
-        fail();
     }
 
     /**
      * It's important that the testee is not catching exceptions emitted by the WebService client code. It's up to the
      * caller of the testee to handle exceptions.
      */
-    @Test(expected = WebServiceException.class)
-    public void testExceptionsAreForwardedAsIs() {
+    @Test
+     void testExceptionsAreForwardedAsIs() {
         when(sendService.sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class)))
             .thenThrow(new WebServiceException("FOO BAR"));
-        testee.sendCertificate(INTYGS_ID, PERSON_ID, SKICKAT_AV_JSON, RECIPIENT, LOGICAL_ADDRESS);
+        assertThrows(WebServiceException.class,()->testee.sendCertificate(INTYGS_ID, PERSON_ID, SKICKAT_AV_JSON, RECIPIENT, LOGICAL_ADDRESS));
 
         verify(sendService, times(1)).sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class));
     }
