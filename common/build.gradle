@@ -5,4 +5,6 @@ dependencies {
     implementation "se.inera.intyg.infra:log-messages:${infraVersion}"
     implementation "se.inera.intyg.schemas:schemas-contract:${schemasContractVersion}"
     implementation "se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:${rivtaClinicalprocessSchemasVersion}"
+
+    testImplementation "org.springframework.boot:spring-boot-test"
 }
