@@ -18,6 +18,9 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift.grp;
 
+import static se.inera.intyg.webcert.logging.MdcLogConstants.SESSION_ID_KEY;
+import static se.inera.intyg.webcert.logging.MdcLogConstants.TRACE_ID_KEY;
+
 import com.mobilityguard.grp.service.v2.AuthenticateRequestType;
 import com.mobilityguard.grp.service.v2.FaultStatusType;
 import com.mobilityguard.grp.service.v2.GrpFaultType;
@@ -31,23 +34,28 @@ import java.util.UUID;
 import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import se.funktionstjanster.grp.v2.AuthenticateRequestTypeV23;
 import se.funktionstjanster.grp.v2.GrpException;
 import se.funktionstjanster.grp.v2.GrpServicePortType;
 import se.funktionstjanster.grp.v2.OrderResponseTypeV23;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.logging.MdcHelper;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.csintegration.certificate.FinalizedCertificateSignature;
 import se.inera.intyg.webcert.web.csintegration.certificate.SignCertificateService;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetListCertificatesResponseDTO;
 import se.inera.intyg.webcert.web.service.underskrift.BaseSignatureService;
 import se.inera.intyg.webcert.web.service.underskrift.CommonUnderskriftService;
+import se.inera.intyg.webcert.web.service.underskrift.grp.dto.GrpOrderRequest;
+import se.inera.intyg.webcert.web.service.underskrift.grp.dto.GrpSubjectIdentifier;
 import se.inera.intyg.webcert.web.service.underskrift.grp.dto.IntygGRPSignature;
 import se.inera.intyg.webcert.web.service.underskrift.grp.factory.GrpCollectPollerFactory;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
@@ -74,10 +82,14 @@ public class GrpUnderskriftServiceImpl extends BaseSignatureService implements C
     @Value("${cgi.grp.displayName}")
     private String displayName;
 
+    @Value("${cgi.grp.accessToken}")
+    private String accessToken;
+
     private final GrpServicePortType grpService;
     private final ThreadPoolTaskExecutor taskExecutor;
     private final GrpCollectPollerFactory grpCollectPollerFactory;
     private final SignCertificateService signCertificateService;
+
 
     public GrpUnderskriftServiceImpl(GrpServicePortType grpService, ThreadPoolTaskExecutor taskExecutor,
         GrpCollectPollerFactory grpCollectPollerFactory, SignCertificateService signCertificateService) {
@@ -109,7 +121,16 @@ public class GrpUnderskriftServiceImpl extends BaseSignatureService implements C
 
     @Override
     public void startGrpCollectPoller(String personId, SignaturBiljett signaturBiljett) {
-        final var authRequest = buildAuthRequest(personId, signaturBiljett);
+        final var authRequest = buildAuthRequest(personId);
+
+        final var response = restClient.post()
+            .uri(url)
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
+            .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
+            .body(request)
+            .retrieve()
+            .body(GetListCertificatesResponseDTO.class);
 
         OrderResponseTypeV23 orderResponse;
         try {
@@ -188,14 +209,14 @@ public class GrpUnderskriftServiceImpl extends BaseSignatureService implements C
         return biljett;
     }
 
-    private AuthenticateRequestTypeV23 buildAuthRequest(String personId, SignaturBiljett signaturBiljett) {
-        final var authRequest = new AuthenticateRequestTypeV23();
-        authRequest.setSubjectIdentifier(personId);
-        authRequest.setTransactionId(signaturBiljett.getTicketId());
-        authRequest.setPolicy(serviceId);
-        authRequest.setProvider(BANK_ID_PROVIDER);
-        authRequest.setRpDisplayName(displayName);
-        return authRequest;
+    private GrpOrderRequest buildAuthRequest(String personId) {
+        final var subjectIdentifier = GrpSubjectIdentifier.builder()
+            .value(personId)
+            .type("TIN")
+            .build();
+        return GrpOrderRequest.builder()
+            .subjectIdentifier(subjectIdentifier)
+            .build();
     }
 
     private void startAsyncCollectPoller(String orderRef, String ticketId) {
