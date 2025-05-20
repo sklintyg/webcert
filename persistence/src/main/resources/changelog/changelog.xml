@@ -1390,11 +1390,4 @@
       <column name="TIMESTAMP"/>
     </createIndex>
   </changeSet>
-
-  <changeSet id="74" author="mgr">
-    <addUniqueConstraint
-        columnNames="INTYGS_ID"
-        constraintName="ARENDE_UTKAST_INTYGS_ID_UNIQUE"
-        tableName="ARENDE_UTKAST"/>
-  </changeSet>
 </databaseChangeLog>
