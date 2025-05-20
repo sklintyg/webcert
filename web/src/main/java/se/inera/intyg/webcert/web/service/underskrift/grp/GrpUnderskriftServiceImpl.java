@@ -40,6 +40,7 @@ import org.springframework.http.MediaType;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClient;
 import se.funktionstjanster.grp.v2.GrpException;
 import se.funktionstjanster.grp.v2.GrpServicePortType;
 import se.funktionstjanster.grp.v2.OrderResponseTypeV23;
@@ -89,14 +90,15 @@ public class GrpUnderskriftServiceImpl extends BaseSignatureService implements C
     private final ThreadPoolTaskExecutor taskExecutor;
     private final GrpCollectPollerFactory grpCollectPollerFactory;
     private final SignCertificateService signCertificateService;
-
+    private final RestClient restClient;
 
     public GrpUnderskriftServiceImpl(GrpServicePortType grpService, ThreadPoolTaskExecutor taskExecutor,
-        GrpCollectPollerFactory grpCollectPollerFactory, SignCertificateService signCertificateService) {
+        GrpCollectPollerFactory grpCollectPollerFactory, SignCertificateService signCertificateService, RestClient restClient) {
         this.grpService = grpService;
         this.taskExecutor = taskExecutor;
         this.grpCollectPollerFactory = grpCollectPollerFactory;
         this.signCertificateService = signCertificateService;
+        this.restClient = restClient;
     }
 
     @Override
