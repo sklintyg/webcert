@@ -1,69 +1,37 @@
-<?xml version='1.0' encoding='utf-8'?>
-<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" ID="_048c23ebe9ddbaec585ba753dc96edcd42" cacheDuration="P0Y0M0DT0H59M59.000S" entityID="https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/metadata/0/30"><ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#"><ds:SignedInfo><ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/><ds:SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/><ds:Reference URI="#_048c23ebe9ddbaec585ba753dc96edcd42"><ds:Transforms><ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/><ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/></ds:Transforms><ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/><ds:DigestValue>3oRNFyWR6otZfELIa8tvMSdPTyLgJQW1M+DpJM/RlJY=</ds:DigestValue></ds:Reference></ds:SignedInfo><ds:SignatureValue>JFkjvrPHYn3u1+ym6ns2McuYHrthJ8tqv3fsCF1W0fm6UlouWSQedLg9cA2P9fklTlP/CPdL8CfiNzk9TTh95rb99MKLk9Wc23hGfMnVFjNP1wR8JaHWKr/zeoYNfv+r22QGap3h+Z1RygzerTxFZpCuSoq2CACQOPPiv3gAd+nBaCx26mO1ONmMIJa2QptDRs5M2DvfXcFioUB1y7c8yiCjELEx4hlwJEstaWvAKP1g+2jzURz6+MQXK+PtlxUU+qubtIh0Qycz575+8viRZKcIhN2vBKqTB15j/FgWq1j9E6H0jJzNGrhy2BH18b23AfnWYuVqPD6PLrVPenvPDw==</ds:SignatureValue><ds:KeyInfo><ds:X509Data><ds:X509Certificate>MIIG3zCCBcegAwIBAgIQDvhKofRuwrADycZpIeerYTANBgkqhkiG9w0BAQsFADBZ
-  MQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMTMwMQYDVQQDEypE
-  aWdpQ2VydCBHbG9iYWwgRzIgVExTIFJTQSBTSEEyNTYgMjAyMCBDQTEwHhcNMjUw
-  NDI4MDAwMDAwWhcNMjYwNDI3MjM1OTU5WjBhMQswCQYDVQQGEwJTRTESMBAGA1UE
-  BxMJU3RvY2tob2xtMRcwFQYDVQQKEw5DR0kgU3ZlcmlnZSBBQjElMCMGA1UEAxMc
-  dGVzdGlkcC5mdW5rdGlvbnN0amFuc3Rlci5zZTCCASIwDQYJKoZIhvcNAQEBBQAD
-  ggEPADCCAQoCggEBAM9rs0+ckXbIn75RZUyvNpy5Xa29kh0O/xCd30z80ru64eqd
-  u/M2MDME/tlvYSjryrPXg8aTaAW29e66E9TibHeChANKmEIWiHYJzkT30PoaLMDj
-  qP4ab+0mk2z8i1KsA1k3h6imW7FHtouC/1KmBVEIiO9P5d5qGV0i+Azn1SOZmHd9
-  TFBn5KyjbKged0uy3EzDtEIsR02Zi2ah0J6wjOfhXnPXg7lCpieySgKDDJQFAnbx
-  YAlibiE1R6/Se1Sth5rNYR6KUGrrL4RzzNLaMroJsKMgNYVpn1TL2NitzttbhaEX
-  K1i4IF8TSiRtT+Veh77JxM1GTUOd1topCLHDnr0CAwEAAaOCA5kwggOVMB8GA1Ud
-  IwQYMBaAFHSFgMBmx9833s+9KTeqAx2+7c0XMB0GA1UdDgQWBBRzcZw+5Fx9sano
-  C+ccnjsOTESKszAnBgNVHREEIDAeghx0ZXN0aWRwLmZ1bmt0aW9uc3RqYW5zdGVy
-  LnNlMD4GA1UdIAQ3MDUwMwYGZ4EMAQICMCkwJwYIKwYBBQUHAgEWG2h0dHA6Ly93
-  d3cuZGlnaWNlcnQuY29tL0NQUzAOBgNVHQ8BAf8EBAMCBaAwHQYDVR0lBBYwFAYI
-  KwYBBQUHAwEGCCsGAQUFBwMCMIGfBgNVHR8EgZcwgZQwSKBGoESGQmh0dHA6Ly9j
-  cmwzLmRpZ2ljZXJ0LmNvbS9EaWdpQ2VydEdsb2JhbEcyVExTUlNBU0hBMjU2MjAy
-  MENBMS0xLmNybDBIoEagRIZCaHR0cDovL2NybDQuZGlnaWNlcnQuY29tL0RpZ2lD
-  ZXJ0R2xvYmFsRzJUTFNSU0FTSEEyNTYyMDIwQ0ExLTEuY3JsMIGHBggrBgEFBQcB
-  AQR7MHkwJAYIKwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmRpZ2ljZXJ0LmNvbTBRBggr
-  BgEFBQcwAoZFaHR0cDovL2NhY2VydHMuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0R2xv
-  YmFsRzJUTFNSU0FTSEEyNTYyMDIwQ0ExLTEuY3J0MAwGA1UdEwEB/wQCMAAwggF/
-  BgorBgEEAdZ5AgQCBIIBbwSCAWsBaQB2AJaXZL9VWJet90OHaDcIQnfp8DrV9qTz
-  Nm5GpD8PyqnGAAABlnzlp6kAAAQDAEcwRQIgZs8WH/27elrDYL2ylHzgTQBUkEuK
-  7zjpPPkZYNW4ki0CIQDjSjQyLieQwnxQBlPRWRksmF5H8I/nsvQFI3YMcH5+NAB2
-  AGQRxGykEuyniRyiAi4AvKtPKAfUHjUnq+r+1QPJfc3wAAABlnzlp6sAAAQDAEcw
-  RQIgOEmqNwKjKoqT1mkFBw5/mRAhXYmxbUBTv+DhyFeEzS4CIQC2o0o/K5FWGi/P
-  VLuuMZK3yI83csoUzyc8caYNLW82nQB3AEmcm2neHXzs/DbezYdkprhbrwqHgBnR
-  VVL76esp3fjDAAABlnzlp8AAAAQDAEgwRgIhAOWwhqS1GtkksPXRI+9uE34Lubms
-  LhNKtc3DxB8s+3ZUAiEAhLOnBWWz/g+cd82Oi72gg79ZeSSsKcWx13+K0TzBGAQw
-  DQYJKoZIhvcNAQELBQADggEBAJ7vh2g1nNbt642A0jl3Q+t4xeYM1G1DFdFPgV+P
-  XmqXhHSyhTQG2vMBaHZNwSlft5yESQcGxqMLSY/JrHYIPXngMgZigusXj8TLqoqN
-  4mFnddXAFWx898WMXDpmesTMw9SqzB+m9l9xwcw1Hb1ET1QxB8YNXGyMNMvgntKA
-  KZAT51hX/H4SeNTCAx8/aZx15C05sdRVEttf+xu82yHDgptNlaWzujkdYFCHijQu
-  0yJJCu4YEX+j7Sx1pL5HxdI0DUgn4mQ6YDKRnJ6W6/sh70S1RqfVrpfj53RtTByP
-  LhNKTXmaTEXwiRgS9i5iKFDCQL2BhvM16HM1tNRtJZBUt/c=
-</ds:X509Certificate></ds:X509Data></ds:KeyInfo></ds:Signature><md:IDPSSODescriptor WantAuthnRequestsSigned="false" errorURL="https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/error/0/30?mgvhostparam=0&amp;error=ERRORURL_CODE" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol"><md:KeyDescriptor xmlns:ds="http://www.w3.org/2000/09/xmldsig#" use="signing"><ds:KeyInfo><ds:X509Data><ds:X509Certificate>MIIG3zCCBcegAwIBAgIQDvhKofRuwrADycZpIeerYTANBgkqhkiG9w0BAQsFADBZMQswCQYDVQQG
-  EwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMTMwMQYDVQQDEypEaWdpQ2VydCBHbG9iYWwgRzIg
-  VExTIFJTQSBTSEEyNTYgMjAyMCBDQTEwHhcNMjUwNDI4MDAwMDAwWhcNMjYwNDI3MjM1OTU5WjBh
-  MQswCQYDVQQGEwJTRTESMBAGA1UEBxMJU3RvY2tob2xtMRcwFQYDVQQKEw5DR0kgU3ZlcmlnZSBB
-  QjElMCMGA1UEAxMcdGVzdGlkcC5mdW5rdGlvbnN0amFuc3Rlci5zZTCCASIwDQYJKoZIhvcNAQEB
-  BQADggEPADCCAQoCggEBAM9rs0+ckXbIn75RZUyvNpy5Xa29kh0O/xCd30z80ru64eqdu/M2MDME
-  /tlvYSjryrPXg8aTaAW29e66E9TibHeChANKmEIWiHYJzkT30PoaLMDjqP4ab+0mk2z8i1KsA1k3
-  h6imW7FHtouC/1KmBVEIiO9P5d5qGV0i+Azn1SOZmHd9TFBn5KyjbKged0uy3EzDtEIsR02Zi2ah
-  0J6wjOfhXnPXg7lCpieySgKDDJQFAnbxYAlibiE1R6/Se1Sth5rNYR6KUGrrL4RzzNLaMroJsKMg
-  NYVpn1TL2NitzttbhaEXK1i4IF8TSiRtT+Veh77JxM1GTUOd1topCLHDnr0CAwEAAaOCA5kwggOV
-  MB8GA1UdIwQYMBaAFHSFgMBmx9833s+9KTeqAx2+7c0XMB0GA1UdDgQWBBRzcZw+5Fx9sanoC+cc
-  njsOTESKszAnBgNVHREEIDAeghx0ZXN0aWRwLmZ1bmt0aW9uc3RqYW5zdGVyLnNlMD4GA1UdIAQ3
-  MDUwMwYGZ4EMAQICMCkwJwYIKwYBBQUHAgEWG2h0dHA6Ly93d3cuZGlnaWNlcnQuY29tL0NQUzAO
-  BgNVHQ8BAf8EBAMCBaAwHQYDVR0lBBYwFAYIKwYBBQUHAwEGCCsGAQUFBwMCMIGfBgNVHR8EgZcw
-  gZQwSKBGoESGQmh0dHA6Ly9jcmwzLmRpZ2ljZXJ0LmNvbS9EaWdpQ2VydEdsb2JhbEcyVExTUlNB
-  U0hBMjU2MjAyMENBMS0xLmNybDBIoEagRIZCaHR0cDovL2NybDQuZGlnaWNlcnQuY29tL0RpZ2lD
-  ZXJ0R2xvYmFsRzJUTFNSU0FTSEEyNTYyMDIwQ0ExLTEuY3JsMIGHBggrBgEFBQcBAQR7MHkwJAYI
-  KwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmRpZ2ljZXJ0LmNvbTBRBggrBgEFBQcwAoZFaHR0cDovL2Nh
-  Y2VydHMuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0R2xvYmFsRzJUTFNSU0FTSEEyNTYyMDIwQ0ExLTEu
-  Y3J0MAwGA1UdEwEB/wQCMAAwggF/BgorBgEEAdZ5AgQCBIIBbwSCAWsBaQB2AJaXZL9VWJet90OH
-  aDcIQnfp8DrV9qTzNm5GpD8PyqnGAAABlnzlp6kAAAQDAEcwRQIgZs8WH/27elrDYL2ylHzgTQBU
-  kEuK7zjpPPkZYNW4ki0CIQDjSjQyLieQwnxQBlPRWRksmF5H8I/nsvQFI3YMcH5+NAB2AGQRxGyk
-  EuyniRyiAi4AvKtPKAfUHjUnq+r+1QPJfc3wAAABlnzlp6sAAAQDAEcwRQIgOEmqNwKjKoqT1mkF
-  Bw5/mRAhXYmxbUBTv+DhyFeEzS4CIQC2o0o/K5FWGi/PVLuuMZK3yI83csoUzyc8caYNLW82nQB3
-  AEmcm2neHXzs/DbezYdkprhbrwqHgBnRVVL76esp3fjDAAABlnzlp8AAAAQDAEgwRgIhAOWwhqS1
-  GtkksPXRI+9uE34LubmsLhNKtc3DxB8s+3ZUAiEAhLOnBWWz/g+cd82Oi72gg79ZeSSsKcWx13+K
-  0TzBGAQwDQYJKoZIhvcNAQELBQADggEBAJ7vh2g1nNbt642A0jl3Q+t4xeYM1G1DFdFPgV+PXmqX
-  hHSyhTQG2vMBaHZNwSlft5yESQcGxqMLSY/JrHYIPXngMgZigusXj8TLqoqN4mFnddXAFWx898WM
-  XDpmesTMw9SqzB+m9l9xwcw1Hb1ET1QxB8YNXGyMNMvgntKAKZAT51hX/H4SeNTCAx8/aZx15C05
-  sdRVEttf+xu82yHDgptNlaWzujkdYFCHijQu0yJJCu4YEX+j7Sx1pL5HxdI0DUgn4mQ6YDKRnJ6W
-  6/sh70S1RqfVrpfj53RtTByPLhNKTXmaTEXwiRgS9i5iKFDCQL2BhvM16HM1tNRtJZBUt/c=</ds:X509Certificate></ds:X509Data></ds:KeyInfo></md:KeyDescriptor><md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/sloreq/0/30?mgvhostparam=0" ResponseLocation="https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/sloresp/0/30?mgvhostparam=0"/><md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/sloreq/0/30?mgvhostparam=0" ResponseLocation="https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/sloresp/0/30?mgvhostparam=0"/><md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</md:NameIDFormat><md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</md:NameIDFormat><md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/req/0/30?mgvhostparam=0"/><md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/req/0/30?mgvhostparam=0"/></md:IDPSSODescriptor><md:Organization><md:OrganizationName xml:lang="sv">CGI Sverige</md:OrganizationName><md:OrganizationDisplayName xml:lang="sv">CGI Funktionstjänster Test - Autentiseringstjänst</md:OrganizationDisplayName><md:OrganizationURL xml:lang="sv">https://www.cgi.com</md:OrganizationURL></md:Organization></md:EntityDescriptor>
+<?xml version="1.0" encoding="UTF-8"?>
+<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:mdattr="urn:oasis:names:tc:SAML:metadata:attribute" xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui" xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion" ID="_7247b5d4ffb8e9d70f18637bf307df7a" cacheDuration="P0Y0M0DT12H0M0.000S" entityID="https://eid-connect.test.funktionstjanster.se/saml2/62b41ad31dbc33e6bb963f44">
+  <md:IDPSSODescriptor WantAuthnRequestsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+    <md:Extensions>
+      <mdui:UIInfo>
+        <mdui:DisplayName xml:lang="sv">CGI Funktionstjänster - Privata e-legitimationer (Test)</mdui:DisplayName>
+        <mdui:DisplayName xml:lang="en">CGI Funktionstjänster - Personal eID (Test)</mdui:DisplayName>
+        <mdui:Description xml:lang="sv">Autentiseringstjänster via SAML</mdui:Description>
+        <mdui:Description xml:lang="en">SAML authentication services</mdui:Description>
+      </mdui:UIInfo>
+    </md:Extensions>
+    <md:KeyDescriptor use="signing">
+      <ds:KeyInfo>
+        <ds:X509Data>
+          <ds:X509Certificate>MIIEejCCAmKgAwIBAgIURCL8DMtCZIWzue3wu3XLu8+bJicwDQYJKoZIhvcNAQELBQAwSDELMAkGA1UEBhMCU0UxFzAVBgNVBAoTDkNHSSBTdmVyaWdlIEFCMSAwHgYDVQQDExdjYS5mdW5rdGlvbnN0amFuc3Rlci5zZTAeFw0yNDAyMTUwMDAwMDBaFw0yNjAyMTQyMzU5NTlaMFAxFDASBgNVBAMTC2RlZmF1bHQtaWRwMRcwFQYDVQQKEw5DR0kgU3ZlcmlnZSBBQjELMAkGA1UEBhMCU0UxEjAQBgNVBAgTCVN0b2NraG9sbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMBEUHzloQ0hFFQfkjBBulMYmj1pFEgvB1RT+/YTT0jAkKs2j3fgy6kit0+S+X33YFPHL/TUdIwOYw1TzpSiAoU3QhLbmOSMF0RiVvSzD18oLm7A3M3TuVlwa4LlZuQSBvAiJWv2Gj5eSiIovYyUiSc2o6xJ4U9L+FDfrvzDDA/+p7AspQUPM724sv9MgjnUm8nUvZ4AyuNk5oaNaXpFg7EqwYmV5En3wATHUW2FlZg9tuN/cv5CYI0cckzrMrFnY0ch0DZRSvnFGHsAqH1+sz0HFO7LaIsyYCqd6vcZmkuJ3vDrbkwgHf0iepVg7nr5sEHTW35g3+1A7eIxPe7cfs0CAwEAAaNUMFIwDAYDVR0TAQH/BAIwADAdBgNVHQ4EFgQU6LFe4ujFshcwv9kqTMAWIhruPdkwCwYDVR0PBAQDAgPoMBYGA1UdEQQPMA2CC2RlZmF1bHQtaWRwMA0GCSqGSIb3DQEBCwUAA4ICAQCo5aqLCF+CsG5IhRdw7tHTUnmEk2wt+JbISJHoZTd6MRGnSLJBJRywOCqklzrHO/wEk9YCtecKmqckg81O/W6LFzNA5C70VsMZC7yct6dQTFq4rbzcKY9mmrp3pu4M91RyInyS54eLI4zuLNrLDtyJg5JOaf9zR2qspjgnNc3rR6JR1HgB5hw5dMYXKpRM+qlzBqVCBaDiwD8q0txbb/QsNglAyLM9+fgAL6goaIf6QBhsFuI/SXd86T5Sbqb7KzZLDeLQ65gtARWcjKPBgY1Va99eE2gUPMAa5OPhsiZnJLZ5TNEuK68o+Ww8jPLMVLCavPAxjD3tr1JErD2V+XMQlsQcdMMFAjn2QNdYj//DmRZWUaQ7erkDl3leRmcojWqe0DNEvVcLhw3lVBbLqfWGiz7UF2ikpsJwIJx5lwnPm+ihG4wVKSgt5hmnxBu9RchsU4KcV5oKswX2oFKvDQ2xYdRByVuO6rjMEQ0+wYnpneNJbD5/OSTJEervqhBCeK/TcD3+AgCoSGeZWH3UpsG45XoW3QAGPzowrijoVoIjpgp/9fY+QOK8pIdP4oU6x/WcZdoM76hiT1t/ZQHqdeLbq+K1QuZZYLf/i6HcznH20rWWmO+BhNVJvTGeJ16f91jPqY4ict30lgfmzkIfTysaktRtOy2h0MpkD9JxP2ZOiw==</ds:X509Certificate>
+        </ds:X509Data>
+      </ds:KeyInfo>
+    </md:KeyDescriptor>
+    <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://eid-connect.test.funktionstjanster.se/saml2/62b41ad31dbc33e6bb963f44/slo/get"/>
+    <md:SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://eid-connect.test.funktionstjanster.se/saml2/62b41ad31dbc33e6bb963f44/slo/post"/>
+    <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</md:NameIDFormat>
+    <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</md:NameIDFormat>
+    <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://eid-connect.test.funktionstjanster.se/saml2/62b41ad31dbc33e6bb963f44/sso/get"/>
+    <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://eid-connect.test.funktionstjanster.se/saml2/62b41ad31dbc33e6bb963f44/sso/post"/>
+  </md:IDPSSODescriptor>
+  <md:Organization>
+    <md:OrganizationName xml:lang="sv">CGI Sverige AB</md:OrganizationName>
+    <md:OrganizationDisplayName xml:lang="sv">CGI Sverige AB</md:OrganizationDisplayName>
+    <md:OrganizationURL xml:lang="sv">https://www.cgi.se</md:OrganizationURL>
+  </md:Organization>
+  <md:ContactPerson contactType="technical">
+    <md:EmailAddress>funktionstjanster@cgi.com</md:EmailAddress>
+  </md:ContactPerson>
+  <md:ContactPerson contactType="support">
+    <md:EmailAddress>funktionstjanster@cgi.com</md:EmailAddress>
+  </md:ContactPerson>
+</md:EntityDescriptor>
