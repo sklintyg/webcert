@@ -32,19 +32,23 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 import org.apache.commons.codec.binary.Hex;
+import org.apache.http.HttpHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+import se.funktionstjanster.grp.v2.AuthenticateRequestTypeV23;
 import se.funktionstjanster.grp.v2.GrpException;
 import se.funktionstjanster.grp.v2.GrpServicePortType;
 import se.funktionstjanster.grp.v2.OrderResponseTypeV23;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
+import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.logging.MdcHelper;
@@ -56,12 +60,14 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetListCertifica
 import se.inera.intyg.webcert.web.service.underskrift.BaseSignatureService;
 import se.inera.intyg.webcert.web.service.underskrift.CommonUnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.grp.dto.GrpOrderRequest;
+import se.inera.intyg.webcert.web.service.underskrift.grp.dto.GrpOrderResponse;
 import se.inera.intyg.webcert.web.service.underskrift.grp.dto.GrpSubjectIdentifier;
 import se.inera.intyg.webcert.web.service.underskrift.grp.dto.IntygGRPSignature;
 import se.inera.intyg.webcert.web.service.underskrift.grp.factory.GrpCollectPollerFactory;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @Service
@@ -86,11 +92,17 @@ public class GrpUnderskriftServiceImpl extends BaseSignatureService implements C
     @Value("${cgi.grp.accessToken}")
     private String accessToken;
 
+    @Value("${cgi.grp.url}")
+    private String baseUrl;
+
     private final GrpServicePortType grpService;
     private final ThreadPoolTaskExecutor taskExecutor;
     private final GrpCollectPollerFactory grpCollectPollerFactory;
     private final SignCertificateService signCertificateService;
     private final RestClient restClient;
+
+    @Autowired
+    private WebCertUserService webCertUserService;
 
     public GrpUnderskriftServiceImpl(GrpServicePortType grpService, ThreadPoolTaskExecutor taskExecutor,
         GrpCollectPollerFactory grpCollectPollerFactory, SignCertificateService signCertificateService, RestClient restClient) {
@@ -124,19 +136,31 @@ public class GrpUnderskriftServiceImpl extends BaseSignatureService implements C
     @Override
     public void startGrpCollectPoller(String personId, SignaturBiljett signaturBiljett) {
         final var authRequest = buildAuthRequest(personId);
+        //WebCertUser user = webCertUserService.getUser();
 
         final var response = restClient.post()
-            .uri(url)
+            .uri(uriBuild -> uriBuild.path(baseUrl + "/init")
+                .queryParam("serviceId", serviceId)
+                .queryParam("displayName", displayName)
+                .queryParam("provider", "bankid")
+                .queryParam("requestType", "AUTH")
+                .queryParam("transactionId", UUID.randomUUID().toString())
+                .queryParam("endUserInfo", "127.0.0.1")
+                .build())
             .contentType(MediaType.APPLICATION_JSON)
             .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
             .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
-            .body(request)
+            //.header(HttpHeaders.HOST, "eid-connect.test.funktionstjanster.se")
+            .header(HttpHeaders.ACCEPT_ENCODING, "gzip", "deflate")
+            .header(HttpHeaders.ACCEPT, "*/*")
+            .header("accessToken", accessToken)
+            .body(authRequest)
             .retrieve()
-            .body(GetListCertificatesResponseDTO.class);
+            .body(GrpOrderResponse.class);
 
         OrderResponseTypeV23 orderResponse;
         try {
-            orderResponse = grpService.authenticate(authRequest);
+            orderResponse = grpService.authenticate(new AuthenticateRequestTypeV23());
             updateTicketProperties(signaturBiljett, orderResponse);
             updateTicketTracker(signaturBiljett, orderResponse);
         } catch (GrpException grpException) {
@@ -153,7 +177,7 @@ public class GrpUnderskriftServiceImpl extends BaseSignatureService implements C
         }
 
         final var orderRef = orderResponse.getOrderRef();
-        final var ticketId = validateOrderResponseTxId(authRequest, orderResponse);
+        final var ticketId = validateOrderResponseTxId(new AuthenticateRequestType(), orderResponse);
         startAsyncCollectPoller(orderRef, ticketId);
     }
 
