@@ -20,12 +20,13 @@ package se.inera.intyg.webcert.web.service.underskrift.grp.factory;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.webcert.web.service.underskrift.grp.GrpCollectPoller;
 
 /**
  * Created by eriklupander on 2015-08-25.
- *
+ * <p>
  * Uses applicationContext in singleton bean to produce instances of the prototype-scoped GrpCollectPoller.
  */
 @Component
@@ -39,7 +40,7 @@ public class GrpCollectPollerFactoryImpl implements GrpCollectPollerFactory, App
     }
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) {
+    public void setApplicationContext(@NonNull ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
 }

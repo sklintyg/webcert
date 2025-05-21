@@ -18,212 +18,129 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift.grp;
 
-import com.mobilityguard.grp.service.v2.CollectRequestType;
-import com.mobilityguard.grp.service.v2.CollectResponseType;
-import com.mobilityguard.grp.service.v2.Property;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.concurrent.TimeUnit;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import se.funktionstjanster.grp.v2.GrpException;
-import se.funktionstjanster.grp.v2.GrpServicePortType;
 import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
+import se.inera.intyg.webcert.web.service.underskrift.grp.dto.GrpCollectResponse;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-/**
- * Runnable implementation / spring prototype bean responsible for performing once GRP collect lifecycle for a single
- * signerings attempt over CGI's GRP API.
- * Will for up to {@link GrpCollectPollerImpl#TIMEOUT} milliseconds issue a GRP "collect" every 3 seconds and act on the
- * response.
- * The typical flow of a GRP authentication/collect is that a parent thread issues an AuthenticationRequest to the
- * GRP API and stores the AuthenticationResponse orderRef. An instance of this class then goes into a loop and
- * issues a "collect" request until either the may loop times out, a GrpFault is thrown from the API or a terminating
- * ProgressStatusType is returned. On {@link com.mobilityguard.grp.service.v2.ProgressStatusType#COMPLETE} the operation has
- * successfully finished (e.g. the user has used BankID or Mobilt BankID and successfully authenticated themselves) and
- * we can notify waiting parties about the success.
- * Note that we set the copied {@link SecurityContext} onto the ThreadLocal since the "skickaIntyg" requires the
- * Principal to be
- * available on the {@link SecurityContextHolder}.
- */
+@Slf4j
 @Component(value = "grpCollectPoller")
 @Scope(value = "prototype")
 public class GrpCollectPollerImpl implements GrpCollectPoller {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GrpCollectPollerImpl.class);
-
-    private static final long TIMEOUT = 240000L; // 4 minutes, normally an EXPIRED_TRANSACTION will be returned after 3.
-
-    @Value("${cgi.grp.serviceId}")
-    private String serviceId;
-
-    @Value("${cgi.grp.displayName}")
-    private String displayName;
-
-    @Value("${cgi.grp.polling.interval:3000}")
+    @Value("${cgi.grp.polling.interval:2000}")
     private long pollingInterval;
-
-    private String orderRef;
-    private String ticketId;
-    private SecurityContext securityContext;
+    @Value("${cgi.grp.polling.timeout:240000}")
+    private long grpPollingTimeout;
 
     private final RedisTicketTracker redisTicketTracker;
     private final UnderskriftService underskriftService;
-    private final GrpServicePortType grpService;
+    private final GrpRestClient grpRestClient;
+
+    private String refId;
+    private String transactionId;
+    private SecurityContext securityContext;
 
     public GrpCollectPollerImpl(RedisTicketTracker redisTicketTracker, @Qualifier("signAggregator") UnderskriftService underskriftService,
-        GrpServicePortType grpService) {
+        GrpRestClient grpRestClient) {
         this.redisTicketTracker = redisTicketTracker;
         this.underskriftService = underskriftService;
-        this.grpService = grpService;
+        this.grpRestClient = grpRestClient;
     }
 
     @Override
     public void run() {
         try {
             applySecurityContextToThreadLocal();
-            WebCertUser webCertUser = (WebCertUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            long startTimeMs = System.currentTimeMillis();
+            final var webCertUser = (WebCertUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            final var pollingTimeout = Instant.now().plus(Duration.ofMillis(grpPollingTimeout));
+            sleepMilliseconds(pollingInterval);
 
-            while ((startTimeMs + TIMEOUT) > System.currentTimeMillis()) {
+            while (Instant.now().isBefore(pollingTimeout)) {
+                final var collectResponse = grpRestClient.collect(refId, transactionId);
 
-                CollectRequestType req = buildCollectRequest();
-                try {
-
-                    CollectResponseType resp = grpService.collect(req);
-                    LOG.info("GRP collect returned ProgressStatusType: {}", resp.getProgressStatus());
-                    switch (resp.getProgressStatus()) {
-                        case COMPLETE:
-                            String subjectSerialNumber = getCollectResponseAttribute(resp.getAttributes());
-                            if (!subjectSerialNumber.replace("-", "").equals(webCertUser.getPersonId().replace("-", ""))) {
-                                throw new IllegalStateException(
-                                    "Could not process GRP Collect COMPLETE response, subject serialNumber did not match "
-                                        + "issuing WebCertUser.");
-                            }
-
-                            String signature = resp.getValidationInfo().getSignature();
-                            underskriftService.grpSignature(ticketId, signature.getBytes(StandardCharsets.UTF_8));
-                            LOG.info("Signature was successfully persisted and ticket updated.");
-                            return;
-                        case USER_SIGN:
-                            redisTicketTracker.updateStatus(ticketId, SignaturStatus.VANTA_SIGN);
-                            break;
-                        case OUTSTANDING_TRANSACTION:
-                        case STARTED:
-                        case USER_REQ:
-                            break;
-                        case NO_CLIENT:
-                            redisTicketTracker.updateStatus(ticketId, SignaturStatus.NO_CLIENT);
-                            LOG.info("GRP collect returned ProgressStatusType: {}, "
-                                    + "has the user started their BankID or Mobilt BankID application?",
-                                resp.getProgressStatus());
-                            break;
-                    }
-
-                } catch (GrpException grpException) {
-                    handleGrpException(grpException);
-                    // Always terminate loop after a GrpFault has been encountered
-                    return;
+                if (collectResponse == null) {
+                    sleepMilliseconds(pollingInterval);
+                    continue;
                 }
 
-                sleepMs(pollingInterval);
+                final var progressStatus = collectResponse.getProgressStatus();
+                log.info("Grp collect response received for transactionId '{}' with progressStatus '{}', subStatus '{}' and message '{}'.",
+                    transactionId, progressStatus.getStatus(), progressStatus.getSubstatus(), progressStatus.getMessage());
+
+                switch (progressStatus.getStatus()) {
+                    case "COMPLETE":
+                        handleStatusComplete(collectResponse, webCertUser);
+                        return;
+                    case "PENDING":
+                        redisTicketTracker.updateStatus(transactionId, SignaturStatus.VANTA_SIGN);
+                        break;
+                    case "FAILED":
+                        redisTicketTracker.updateStatus(transactionId, SignaturStatus.OKAND);
+                        break;
+                    case "CANCELLED":
+                        redisTicketTracker.updateStatus(transactionId, SignaturStatus.AVBRUTEN);
+                        break;
+                }
+
+                sleepMilliseconds(pollingInterval);
             }
+
         } finally {
-            // Since this poller thread will be returned to its thread pool, we make sure we clean up the security
-            // context we bound to this runnable's threadlocal.
             SecurityContextHolder.clearContext();
         }
     }
 
-    /**
-     * Since Spring doesn't (and shouldn't!) copy the threadlocal context from the thread that issued this worker
-     * thread,
-     * we manually set the {@link SecurityContext} set on this instance on the currently executing thread using the
-     * Spring static {@link SecurityContextHolder} mechanism.
-     * Make sure we clean up when the Runnable exits.
-     */
+    private void handleStatusComplete(GrpCollectResponse collectResponse, WebCertUser webCertUser) {
+        final var personId = collectResponse.getUserInfo().getTin().replace("-", "");
+        final var userId = webCertUser.getPersonId().replace("-", "");
+
+        if (!personId.equals(userId)) {
+            throw new IllegalStateException(
+                "Grp sign processing aborted. PersonId from collect COMPLETE response does not match userId from the security context.");
+        }
+
+        final var signature = collectResponse.getValidationInfo().getSignature();
+        underskriftService.grpSignature(transactionId, signature.getBytes(StandardCharsets.UTF_8));
+        log.info("Signature was successfully persisted and ticket updated.");
+    }
+
     private void applySecurityContextToThreadLocal() {
         if (securityContext == null) {
-            throw new IllegalStateException(
-                "Cannot start GRP poller thread, no securityContext was bound to the GrpCollectPollerImpl instance.");
+            throw new IllegalStateException("SecurityContext is not set. GRP poller thread cannot be started.");
         }
         SecurityContextHolder.setContext(securityContext);
     }
 
-    private String getCollectResponseAttribute(List<Property> attributes) {
-        for (Property p : attributes) {
-            if ("Subject.SerialNumber".equals(p.getName())) {
-                return p.getValue();
-            }
-        }
-        throw new IllegalStateException(
-            "Cannot use GRP collect to sign certificate, the signing identity is not the same as the user who initiated "
-                + "the GRP authentication request");
-    }
-
-    private void handleGrpException(GrpException grpException) {
-        redisTicketTracker.updateStatus(ticketId, SignaturStatus.OKAND);
-        switch (grpException.getFaultInfo().getFaultStatus()) {
-            case CLIENT_ERR:
-                LOG.error("GRP collect failed with CLIENT_ERR, message: {}", grpException.getFaultInfo().getDetailedDescription());
-                break;
-            case USER_CANCEL:
-                LOG.info("User cancelled BankID signing.");
-                break;
-            case ALREADY_COLLECTED:
-            case EXPIRED_TRANSACTION:
-                LOG.info("GRP collect failed with status {}, this is expected "
-                        + "when the user doesn't start their BankID client and transaction times out after ~3 minutes.",
-                    grpException.getFaultInfo().getFaultStatus());
-                break;
-            default:
-                LOG.error("Unexpected GrpFault thrown when performing GRP collect: {}. Message: {}",
-                    grpException.getFaultInfo().getFaultStatus(),
-                    grpException.getFaultInfo().getDetailedDescription());
-                break;
-        }
-    }
-
-    private CollectRequestType buildCollectRequest() {
-        CollectRequestType req = new CollectRequestType();
-        req.setOrderRef(orderRef);
-        req.setTransactionId(ticketId);
-        req.setPolicy(serviceId);
-        req.setRpDisplayName(displayName);
-        req.setProvider(GrpUnderskriftServiceImpl.BANK_ID_PROVIDER);
-        return req;
-    }
-
-    private void sleepMs(long ms) {
+    private void sleepMilliseconds(long ms) {
         try {
-            Thread.sleep(ms);
+            TimeUnit.MILLISECONDS.sleep(ms);
         } catch (InterruptedException e) {
-            LOG.warn("Sleep was interrupted: {}", e.getMessage());
+            Thread.currentThread().interrupt();
+            log.warn("Sleep was interrupted during while polling Grp.", e);
         }
     }
 
-    /**
-     * Use this for unit-testing purposes only.
-     */
-    void setMs(long ms) {
-        this.pollingInterval = ms;
+    @Override
+    public void setRefId(String refId) {
+        this.refId = refId;
     }
 
     @Override
-    public void setOrderRef(String orderRef) {
-        this.orderRef = orderRef;
-    }
-
-    @Override
-    public void setTicketId(String ticketId) {
-        this.ticketId = ticketId;
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
     }
 
     @Override
