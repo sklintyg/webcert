@@ -33,16 +33,20 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.ResponseBuilder;
 import jakarta.ws.rs.core.UriInfo;
+import java.lang.reflect.Field;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpHeaders;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
@@ -50,13 +54,18 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEn
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
+import se.inera.intyg.webcert.web.config.AppConfig;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.dss.DssMetadataService;
 import se.inera.intyg.webcert.web.service.underskrift.dss.DssSignMessageService;
 import se.inera.intyg.webcert.web.service.underskrift.dss.DssSignRequestDTO;
 import se.inera.intyg.webcert.web.service.underskrift.dss.DssSignatureService;
+import se.inera.intyg.webcert.web.service.underskrift.grp.GrpRestClient;
+import se.inera.intyg.webcert.web.service.underskrift.grp.GrpUnderskriftServiceImpl;
 import se.inera.intyg.webcert.web.service.underskrift.grp.QRCodeService;
+import se.inera.intyg.webcert.web.service.underskrift.grp.dto.GrpOrderResponse;
+import se.inera.intyg.webcert.web.service.underskrift.grp.factory.GrpCollectPollerFactory;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
@@ -96,6 +105,9 @@ public class SignatureApiController extends AbstractApiController {
 
     @Autowired
     private QRCodeService qrCodeService;
+
+    @Autowired
+    private GrpRestClient grpRestClient;
 
     @POST
     @Path("/{intygsTyp}/{intygsId}/{version}/signeringshash/{signMethod}")
@@ -264,5 +276,14 @@ public class SignatureApiController extends AbstractApiController {
         request.getSession(true).removeAttribute(LAST_SAVED_DRAFT);
 
         return convertToSignatureStateDTO(sb);
+    }
+
+    @GET
+    @Path("/{ticketId}/abort")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PerformanceLogging(eventAction = "signature-abort", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+    public void abort(@PathParam("ticketId") String ticketId) {
+        final var sb = underskriftService.signeringsStatus(ticketId);
+        grpRestClient.cancel(sb.getRefId(), sb.getTicketId());
     }
 }

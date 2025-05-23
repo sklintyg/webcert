@@ -33,7 +33,8 @@ import se.inera.intyg.infra.xmldsig.model.IntygSignature;
 @Getter
 public class SignaturBiljett implements Serializable {
 
-    private String ticketId;
+    private String refId;
+    private String ticketId; // transId
     private String intygsId;
     private long version;
     private SignaturStatus status;
