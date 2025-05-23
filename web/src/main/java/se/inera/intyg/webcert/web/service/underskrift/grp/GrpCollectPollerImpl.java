@@ -53,6 +53,11 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
     private String transactionId;
     private SecurityContext securityContext;
 
+    public static final String STATUS_FAILED = "FAILED";
+    public static final String STATUS_PENDING = "PENDING";
+    public static final String STATUS_COMPLETE = "COMPLETE";
+    public static final String STATUS_CANCELLED = "CANCELLED";
+
     public GrpCollectPollerImpl(RedisTicketTracker redisTicketTracker, @Qualifier("signAggregator") UnderskriftService underskriftService,
         GrpRestClient grpRestClient) {
         this.redisTicketTracker = redisTicketTracker;
@@ -72,8 +77,7 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
                 final var collectResponse = grpRestClient.collect(refId, transactionId);
 
                 if (collectResponse == null) {
-                    sleepMilliseconds(pollingInterval);
-                    continue;
+                    return;
                 }
 
                 final var progressStatus = collectResponse.getProgressStatus();
@@ -81,18 +85,18 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
                     transactionId, progressStatus.getStatus(), progressStatus.getSubstatus(), progressStatus.getMessage());
 
                 switch (progressStatus.getStatus()) {
-                    case "COMPLETE":
+                    case STATUS_COMPLETE:
                         handleStatusComplete(collectResponse, webCertUser);
                         return;
-                    case "PENDING":
+                    case STATUS_PENDING:
                         redisTicketTracker.updateStatus(transactionId, SignaturStatus.VANTA_SIGN);
                         break;
-                    case "FAILED":
+                    case STATUS_FAILED:
                         redisTicketTracker.updateStatus(transactionId, SignaturStatus.OKAND);
-                        break;
-                    case "CANCELLED":
+                        return;
+                    case STATUS_CANCELLED:
                         redisTicketTracker.updateStatus(transactionId, SignaturStatus.AVBRUTEN);
-                        break;
+                        return;
                 }
 
                 sleepMilliseconds(pollingInterval);

@@ -19,9 +19,8 @@
 package se.inera.intyg.webcert.web.service.underskrift.grp;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -35,47 +34,47 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.test.util.ReflectionTestUtils;
-import se.funktionstjanster.grp.v2.AuthenticateRequestTypeV23;
-import se.funktionstjanster.grp.v2.GrpException;
-import se.funktionstjanster.grp.v2.GrpServicePortType;
-import se.funktionstjanster.grp.v2.OrderResponseTypeV23;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
 import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationJunit5TestSetup;
 import se.inera.intyg.webcert.web.csintegration.certificate.FinalizedCertificateSignature;
 import se.inera.intyg.webcert.web.csintegration.certificate.SignCertificateService;
+import se.inera.intyg.webcert.web.service.underskrift.grp.dto.GrpOrderResponse;
 import se.inera.intyg.webcert.web.service.underskrift.grp.factory.GrpCollectPollerFactory;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
 
-/**
- * Created by eriklupander on 2015-08-25.
- */
 @ExtendWith(MockitoExtension.class)
-class GrpUnderskriftServiceTest extends AuthoritiesConfigurationTestSetup {
-
-    private static final String INTYG_ID = "intyg-1";
-    private static final long VERSION = 1L;
-    private static final String PERSON_ID = "19121212-1212";
-    private static final String TX_ID = "webcert-tx-1";
-    private static final String ORDER_REF = "order-ref-1";
-    private static final String CERTIFICATE_ID = "certificateId";
+class GrpUnderskriftServiceTest extends AuthoritiesConfigurationJunit5TestSetup {
 
     @Mock
     RedisTicketTracker redisTicketTracker;
     @Mock
-    GrpServicePortType grpService;
+    GrpRestClient grpRestClient;
     @Mock
     ThreadPoolTaskExecutor taskExecutor;
     @Mock
     GrpCollectPollerFactory grpCollectPollerFactory;
     @Mock
     SignCertificateService signCertificateService;
+    @Mock
+    GrpCollectPoller grpCollectPoller;
 
     @InjectMocks
     GrpUnderskriftServiceImpl grpSignaturService;
+
+    private static final String INTYG_ID = "intyg-1";
+    private static final long VERSION = 1L;
+    private static final String PERSON_ID = "19121212-1212";
+    private static final String TRANSACTION_ID = "transactionId";
+    private static final String REF_ID = "refId";
+    private static final String CERTIFICATE_ID = "certificateId";
+    private static final String AUTO_START_TOKEN = "autoStartToken";
+    private static final String QR_START_TOKEN = "qrStartToken";
+    private static final String QR_START_SECRET = "qrStartSecret";
 
     @BeforeEach
     void init() {
@@ -83,12 +82,32 @@ class GrpUnderskriftServiceTest extends AuthoritiesConfigurationTestSetup {
     }
 
     @Test
-    void testSuccessfulAuthenticationRequest() throws GrpException {
-        when(grpCollectPollerFactory.getInstance()).thenReturn(mock(GrpCollectPoller.class));
-        when(grpService.authenticate(any(AuthenticateRequestTypeV23.class))).thenReturn(buildOrderResponse());
+    void shouldHandleSuccessfulGrpSignatureInitialization() {
+        final var ticket = buildSignaturBiljett();
+        when(grpCollectPollerFactory.getInstance()).thenReturn(grpCollectPoller);
+        when(grpRestClient.init(PERSON_ID, ticket)).thenReturn(grpOrderResponse());
 
-        grpSignaturService.startGrpCollectPoller(PERSON_ID, buildSignaturBiljett());
-        verify(taskExecutor, times(1)).execute(any(GrpCollectPoller.class));
+        grpSignaturService.startGrpCollectPoller(PERSON_ID, ticket);
+        verify(redisTicketTracker).updateAutoStartToken(TRANSACTION_ID, AUTO_START_TOKEN);
+        verify(redisTicketTracker).updateQrCodeProperties(TRANSACTION_ID, QR_START_TOKEN, QR_START_SECRET);
+        verify(taskExecutor, times(1)).execute(grpCollectPoller);
+    }
+
+    @Test
+    void shouldThrowIllegalStateIfTicketIdAndOrderResponseTxIdDoNotMatch() {
+        final var ticket = buildSignaturBiljett();
+        ticket.setTicketId("wrongTicketId");
+        when(grpRestClient.init(PERSON_ID, ticket)).thenReturn(grpOrderResponse());
+
+        assertThrows(IllegalStateException.class, () -> grpSignaturService.startGrpCollectPoller(PERSON_ID, ticket));
+    }
+
+    @Test
+    void shouldThrowWebcertServiceExceptionIfGrpSignInitFaiure() {
+        final var ticket = buildSignaturBiljett();
+        when(grpRestClient.init(PERSON_ID, ticket)).thenThrow(WebCertServiceException.class);
+
+        assertThrows(WebCertServiceException.class, () -> grpSignaturService.startGrpCollectPoller(PERSON_ID, ticket));
     }
 
     @Test
@@ -110,16 +129,19 @@ class GrpUnderskriftServiceTest extends AuthoritiesConfigurationTestSetup {
         assertEquals(SignaturStatus.SIGNERAD, signaturBiljett.getStatus());
     }
 
-    private OrderResponseTypeV23 buildOrderResponse() {
-        OrderResponseTypeV23 resp = new OrderResponseTypeV23();
-        resp.setTransactionId(TX_ID);
-        resp.setOrderRef(ORDER_REF);
-        return resp;
+    private GrpOrderResponse grpOrderResponse() {
+        return GrpOrderResponse.builder()
+            .refId(REF_ID)
+            .transactionId(TRANSACTION_ID)
+            .autoStartToken(AUTO_START_TOKEN)
+            .qrStartToken(QR_START_TOKEN)
+            .qrStartSecret(QR_START_SECRET)
+            .build();
     }
 
     private SignaturBiljett buildSignaturBiljett() {
         return SignaturBiljett.SignaturBiljettBuilder
-            .aSignaturBiljett(TX_ID, SignaturTyp.PKCS7, SignMethod.GRP)
+            .aSignaturBiljett(TRANSACTION_ID, SignaturTyp.PKCS7, SignMethod.GRP)
             .withHash("hash")
             .withSkapad(LocalDateTime.now())
             .withStatus(SignaturStatus.OKAND)
