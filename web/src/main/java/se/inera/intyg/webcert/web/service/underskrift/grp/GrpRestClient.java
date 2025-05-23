@@ -47,8 +47,6 @@ import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker
 @RequiredArgsConstructor
 public class GrpRestClient {
 
-    private static final String REF_ID = "refId";
-    private static final String CANCEL_PATH = "/cancel";
     @Value("${cgi.grp.serviceId}")
     private String serviceId;
     @Value("${cgi.grp.displayName}")
@@ -59,22 +57,23 @@ public class GrpRestClient {
     private String baseUrl;
 
     private final RestClient restClient;
-    private final ObjectMapper objectMapper;
     private final RedisTicketTracker redisTicketTracker;
 
-    private static final String PERSONID_TYPE = "TIN";
+    private static final String INIT_PATH = "/init";
+    private static final String COLLECT_PATH = "/collect";
+    private static final String CANCEL_PATH = "/cancel";
     private static final String SERVICE_ID = "serviceId";
+    private static final String ACCESS_TOKEN = "accessToken";
+    private static final String REF_ID = "refId";
+    private static final String TRANSACTION_ID = "transactionId";
     private static final String DISPLAY_NAME = "displayName";
     private static final String PROVIDER = "provider";
+    private static final String PERSONID_TYPE = "TIN";
     private static final String REQUEST_TYPE = "requestType";
-    private static final String TRANSACTION_ID = "transactionId";
     private static final String END_USER_INFO = "endUserInfo";
     private static final String PROVIDER_BANKID = "bankid";
     private static final String REQUEST_TYPE_AUTH = "AUTH";
     private static final String LOCALHOST_IP = "127.0.0.1";
-    private static final String ACCESS_TOKEN = "accessToken";
-    private static final String INIT_PATH = "/init";
-    private static final String COLLECT_PATH = "/collect";
 
     public GrpOrderResponse init(String personId, SignaturBiljett ticket) {
         try {
@@ -96,7 +95,7 @@ public class GrpRestClient {
 
         } catch (HttpClientErrorException | HttpServerErrorException e) {
             final var httpErrorResponse = handleError(e, ticket.getTicketId(), ticket.getIntygsId(), INIT_PATH.substring(1));
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.GRP_PROBLEM, httpErrorResponse);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.GRP_PROBLEM, httpErrorResponse, e);
         }
     }
 
@@ -112,11 +111,12 @@ public class GrpRestClient {
 
     public GrpCancelResponse cancel(String refId, String transactionId) {
         try {
-            return grpGet(CANCEL_PATH, refId, transactionId)
-                .body(GrpCancelResponse.class);
+            final var cancelResponse = grpGet(CANCEL_PATH, refId, transactionId).body(GrpCancelResponse.class);
+            redisTicketTracker.updateStatus(transactionId, SignaturStatus.AVBRUTEN);
+            return cancelResponse;
         } catch (HttpClientErrorException | HttpServerErrorException e) {
-            handleError(e, transactionId, certificateId(transactionId), CANCEL_PATH.substring(1));
-            return null;
+            final var httpErrorResponse = handleError(e, transactionId, certificateId(transactionId), CANCEL_PATH.substring(1));
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.GRP_PROBLEM, httpErrorResponse, e);
         }
     }
 
@@ -148,9 +148,9 @@ public class GrpRestClient {
         return httpErrorResponse;
     }
 
-
     private GrpErrorResponse parseErrorResponse(HttpStatusCodeException e) {
         try {
+            final var objectMapper = new ObjectMapper();
             final var errorBody = e.getResponseBodyAsString();
             return !errorBody.isEmpty()
                 ? objectMapper.readValue(errorBody, GrpErrorResponse.class)

@@ -18,136 +18,163 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift.grp;
 
-import static com.mobilityguard.grp.service.v2.ProgressStatusType.COMPLETE;
-import static com.mobilityguard.grp.service.v2.ProgressStatusType.OUTSTANDING_TRANSACTION;
-import static com.mobilityguard.grp.service.v2.ProgressStatusType.STARTED;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static se.inera.intyg.webcert.web.service.underskrift.grp.GrpCollectPollerImpl.STATUS_CANCELLED;
+import static se.inera.intyg.webcert.web.service.underskrift.grp.GrpCollectPollerImpl.STATUS_COMPLETE;
+import static se.inera.intyg.webcert.web.service.underskrift.grp.GrpCollectPollerImpl.STATUS_FAILED;
+import static se.inera.intyg.webcert.web.service.underskrift.grp.GrpCollectPollerImpl.STATUS_PENDING;
 
-import com.mobilityguard.grp.service.v2.CollectRequestType;
-import com.mobilityguard.grp.service.v2.CollectResponseType;
-import com.mobilityguard.grp.service.v2.FaultStatusType;
-import com.mobilityguard.grp.service.v2.GrpFaultType;
-import com.mobilityguard.grp.service.v2.ProgressStatusType;
-import com.mobilityguard.grp.service.v2.Property;
-import com.mobilityguard.grp.service.v2.ValidationInfoType;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import java.nio.charset.StandardCharsets;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextImpl;
-import se.funktionstjanster.grp.v2.GrpException;
-import se.funktionstjanster.grp.v2.GrpServicePortType;
+import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Privilege;
-import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
+import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationJunit5TestSetup;
 import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
+import se.inera.intyg.webcert.web.service.underskrift.grp.dto.GrpCollectResponse;
+import se.inera.intyg.webcert.web.service.underskrift.grp.dto.GrpProgressStatus;
+import se.inera.intyg.webcert.web.service.underskrift.grp.dto.GrpUserInfo;
+import se.inera.intyg.webcert.web.service.underskrift.grp.dto.GrpValidationInfo;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-@RunWith(MockitoJUnitRunner.class)
-public class GrpCollectPollerTest extends AuthoritiesConfigurationTestSetup {
+@ExtendWith(MockitoExtension.class)
+class GrpCollectPollerTest extends AuthoritiesConfigurationJunit5TestSetup {
 
-    private static final String PERSON_ID = "19121212-1212";
-    private static final String TX_ID = "webcert-tx-1";
-    private static final String ORDER_REF = "order-ref-1";
-
-    @Mock
-    private UnderskriftService underskriftService;
     @Mock
     private RedisTicketTracker redisTicketTracker;
     @Mock
-    private GrpServicePortType grpService;
+    private UnderskriftService underskriftService;
+    @Mock
+    private GrpRestClient grpRestClient;
 
     @InjectMocks
     private GrpCollectPollerImpl grpCollectPoller;
 
-    @Test
-    public void testSingleSuccessfulCollect() throws GrpException {
+    private static final int ONE = 1;
+    private static final int THREE = 3;
+    private static final int FOUR = 4;
+    private static final String REF_ID = "refId";
+    private static final String SIGNATURE = "signature";
+    private static final String PERSON_ID = "191212121212";
+    private static final String TRANSACTION_ID = "transactionId";
 
-        when(grpService.collect(any(CollectRequestType.class))).thenReturn(buildResp(COMPLETE));
+    private static final GrpCollectResponse RESPONSE_COMPLETED = GrpCollectResponse.builder()
+        .progressStatus(GrpProgressStatus.builder().status(STATUS_COMPLETE).build())
+        .userInfo(GrpUserInfo.builder().tin(PERSON_ID).build())
+        .validationInfo(GrpValidationInfo.builder().signature(SIGNATURE).build())
+        .build();
 
-        grpCollectPoller.setOrderRef(ORDER_REF);
-        grpCollectPoller.setTicketId(TX_ID);
+    private static final GrpCollectResponse RESPONSE_PENDING = GrpCollectResponse.builder()
+        .progressStatus(GrpProgressStatus.builder()
+            .status(STATUS_PENDING)
+            .build())
+        .build();
+
+    @BeforeEach
+    void setUp() {
+        ReflectionTestUtils.setField(grpCollectPoller, "grpPollingTimeout", 24000L);
+        ReflectionTestUtils.setField(grpCollectPoller, "pollingInterval", 50L);
+        grpCollectPoller.setRefId(REF_ID);
+        grpCollectPoller.setTransactionId(TRANSACTION_ID);
         grpCollectPoller.setSecurityContext(buildAuthentication());
-        grpCollectPoller.setMs(50L);
-        grpCollectPoller.run();
-
-        verify(underskriftService, times(1)).grpSignature(anyString(), any(byte[].class));
-        verify(redisTicketTracker, times(0)).updateStatus(TX_ID, SignaturStatus.OKAND);
-    }
-
-    @Test
-    public void testSuccessfulCollectAfterTwoOngoingPlusOneComplete() throws GrpException {
-
-        when(grpService.collect(any(CollectRequestType.class))).thenReturn(
-            buildResp(STARTED),
-            buildResp(OUTSTANDING_TRANSACTION),
-            buildResp(COMPLETE));
-        grpCollectPoller.setOrderRef(ORDER_REF);
-        grpCollectPoller.setTicketId(TX_ID);
-        grpCollectPoller.setSecurityContext(buildAuthentication());
-        grpCollectPoller.setMs(50L);
-        grpCollectPoller.run();
-
-        verify(underskriftService, times(1)).grpSignature(anyString(), any(byte[].class));
-        verify(redisTicketTracker, times(0)).updateStatus(TX_ID, SignaturStatus.OKAND);
     }
 
     @Test
-    public void testCollectFailsOnGrpFaultWhenUserCancelled() throws GrpException {
+    void shouldSignWhenProgressStatusComplete() {
+        when(grpRestClient.collect(REF_ID, TRANSACTION_ID)).thenReturn(RESPONSE_COMPLETED);
 
-        when(grpService.collect(any(CollectRequestType.class))).thenThrow(buildException(FaultStatusType.USER_CANCEL));
-        grpCollectPoller.setOrderRef(ORDER_REF);
-        grpCollectPoller.setTicketId(TX_ID);
-        grpCollectPoller.setSecurityContext(buildAuthentication());
-        grpCollectPoller.setMs(50L);
         grpCollectPoller.run();
-
-        verify(underskriftService, times(0)).grpSignature(anyString(), any(byte[].class));
-        verify(redisTicketTracker, times(1)).updateStatus(TX_ID, SignaturStatus.OKAND);
+        verifyNoInteractions(redisTicketTracker);
+        verify(grpRestClient, times(ONE)).collect(REF_ID, TRANSACTION_ID);
+        verify(underskriftService, times(ONE)).grpSignature(TRANSACTION_ID, SIGNATURE.getBytes(StandardCharsets.UTF_8));
     }
 
     @Test
-    public void testCollectFailsOnGrpFaultWhenGrpTxExpires() throws GrpException {
+    void shouldUpdateRedisTrackerWhenProgressStatusFailed() {
+        final var collectResponse = GrpCollectResponse.builder()
+            .progressStatus(GrpProgressStatus.builder().status(STATUS_FAILED).build()).build();
 
-        when(grpService.collect(any(CollectRequestType.class))).thenThrow(buildException(FaultStatusType.EXPIRED_TRANSACTION));
-        grpCollectPoller.setOrderRef(ORDER_REF);
-        grpCollectPoller.setTicketId(TX_ID);
-        grpCollectPoller.setSecurityContext(buildAuthentication());
-        grpCollectPoller.setMs(50L);
+        when(grpRestClient.collect(REF_ID, TRANSACTION_ID)).thenReturn(collectResponse);
+
         grpCollectPoller.run();
-
-        verify(underskriftService, times(0)).grpSignature(anyString(), any(byte[].class));
-        verify(redisTicketTracker, times(1)).updateStatus(TX_ID, SignaturStatus.OKAND);
+        verifyNoInteractions(underskriftService);
+        verify(grpRestClient, times(ONE)).collect(REF_ID, TRANSACTION_ID);
+        verify(redisTicketTracker, times(ONE)).updateStatus(TRANSACTION_ID, SignaturStatus.OKAND);
     }
 
-    private GrpException buildException(FaultStatusType faultStatusType) {
-        final var grpFaultType = new GrpFaultType();
-        grpFaultType.setFaultStatus(faultStatusType);
-        grpFaultType.setDetailedDescription("detailed-desc");
-        return new GrpException("", grpFaultType);
+    @Test
+    void shouldUpdateRedisTrackerWhenProgressStatusCanceled() {
+        final var collectResponse = GrpCollectResponse.builder()
+            .progressStatus(GrpProgressStatus.builder().status(STATUS_CANCELLED).build()).build();
+
+        when(grpRestClient.collect(REF_ID, TRANSACTION_ID)).thenReturn(collectResponse);
+
+        grpCollectPoller.run();
+        verifyNoInteractions(underskriftService);
+        verify(grpRestClient, times(ONE)).collect(REF_ID, TRANSACTION_ID);
+        verify(redisTicketTracker, times(ONE)).updateStatus(TRANSACTION_ID, SignaturStatus.AVBRUTEN);
     }
 
-    private CollectResponseType buildResp(ProgressStatusType progressStatusType) {
-        final var resp = new CollectResponseType();
-        resp.setProgressStatus(progressStatusType);
-        Property p = new Property();
-        p.setName("Subject.SerialNumber");
-        p.setValue(PERSON_ID);
-        resp.getAttributes().add(p);
-        final var validationInfoType = new ValidationInfoType();
-        validationInfoType.setSignature("signature");
-        resp.setValidationInfo(validationInfoType);
-        return resp;
+    @Test
+    void shouldUpdateRedisTrackerWhenProgressStatusPending() {
+        ReflectionTestUtils.setField(grpCollectPoller, "grpPollingTimeout", 200);
+        when(grpRestClient.collect(REF_ID, TRANSACTION_ID)).thenReturn(RESPONSE_PENDING);
+
+        grpCollectPoller.run();
+        verifyNoInteractions(underskriftService);
+        verify(grpRestClient, atLeastOnce()).collect(REF_ID, TRANSACTION_ID);
+        verify(redisTicketTracker, atLeastOnce()).updateStatus(TRANSACTION_ID, SignaturStatus.VANTA_SIGN);
+    }
+
+    @Test
+    void shouldThrowIllegalStateWhenPersonIdsDontMatch() {
+        final var collectResponse = GrpCollectResponse.builder()
+            .progressStatus(GrpProgressStatus.builder().status(STATUS_COMPLETE).build())
+            .userInfo(GrpUserInfo.builder().tin("201212121212").build())
+            .validationInfo(GrpValidationInfo.builder().signature(SIGNATURE).build())
+            .build();
+
+        when(grpRestClient.collect(anyString(), anyString())).thenReturn(collectResponse);
+
+        assertThrows(IllegalStateException.class, () -> grpCollectPoller.run());
+    }
+
+    @Test
+    void shuoldExitWithoutInteractionsWhenGrpClientRequestReturnsNull() {
+        when(grpRestClient.collect(REF_ID, TRANSACTION_ID)).thenReturn(null);
+
+        grpCollectPoller.run();
+        verify(grpRestClient, times(ONE)).collect(REF_ID, TRANSACTION_ID);
+        verifyNoInteractions(redisTicketTracker);
+        verifyNoInteractions(underskriftService);
+    }
+
+    @Test
+    void shuoldHandleExpectedSequenceOfCollectResponses() {
+        when(grpRestClient.collect(REF_ID, TRANSACTION_ID)).thenReturn(RESPONSE_PENDING, RESPONSE_PENDING, RESPONSE_PENDING,
+            RESPONSE_COMPLETED);
+
+        grpCollectPoller.run();
+        verify(grpRestClient, times(FOUR)).collect(REF_ID, TRANSACTION_ID);
+        verify(redisTicketTracker, times(THREE)).updateStatus(TRANSACTION_ID, SignaturStatus.VANTA_SIGN);
+        verify(underskriftService, times(ONE)).grpSignature(TRANSACTION_ID, SIGNATURE.getBytes(StandardCharsets.UTF_8));
     }
 
     private SecurityContext buildAuthentication() {
@@ -156,7 +183,7 @@ public class GrpCollectPollerTest extends AuthoritiesConfigurationTestSetup {
         final var user = new WebCertUser();
         user.setRoles(AuthoritiesResolverUtil.toMap(role));
         user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
-        user.setPersonId(PERSON_ID);
+        user.setPersonId("19121212-1212");
 
         final var authentication = new TestingAuthenticationToken(user, null);
         final var securityContext = new SecurityContextImpl();
