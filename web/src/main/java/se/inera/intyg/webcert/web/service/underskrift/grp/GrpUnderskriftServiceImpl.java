@@ -119,7 +119,6 @@ public class GrpUnderskriftServiceImpl extends BaseSignatureService implements C
         ticket.setAutoStartToken(response.getAutoStartToken());
         ticket.setQrStartToken(response.getQrStartToken());
         ticket.setQrStartSecret(response.getQrStartSecret());
-        ticket.setRefId(response.getRefId());
     }
 
     private void updateTicketTracker(SignaturBiljett ticket, GrpOrderResponse response) {
