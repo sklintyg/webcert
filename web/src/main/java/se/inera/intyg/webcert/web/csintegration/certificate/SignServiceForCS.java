@@ -55,7 +55,7 @@ public class SignServiceForCS implements UnderskriftService {
 
     @Override
     public SignaturBiljett startSigningProcess(String certificateId, String certificateType, long version, SignMethod signMethod,
-        String ticketID) {
+        String ticketID, String userIpAddress) {
         final var exists = csIntegrationService.certificateExists(certificateId);
         if (Boolean.FALSE.equals(exists)) {
             log.debug(CERTIFICATE_WITH_ID_DOES_NOT_EXIST_IN_CERTIFICATE_SERVICE, certificateId);
@@ -79,6 +79,7 @@ public class SignServiceForCS implements UnderskriftService {
             version,
             signMethod,
             ticketID,
+            userIpAddress,
             getDecodedXmlData(certificateXml)
         );
     }

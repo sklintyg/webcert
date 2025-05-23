@@ -84,6 +84,7 @@ public class SignatureApiControllerTest {
     private static final String TICKET_ID = "ticketId";
     private static final String WC_URI = "https://wc.localtest.me";
     private static final String WC_URI_ERROR = "https://wc.localtest.me/sign";
+    private static final String USER_IP_ADDRESS = "127.0.0.1";
 
     private static final long VERSION = 3L;
 
@@ -143,7 +144,7 @@ public class SignatureApiControllerTest {
         final var signatureTicket = getSignatureTicket(SignaturStatus.SIGNERAD);
         when(dssSignatureService.createTransactionID()).thenReturn(TICKET_ID);
         when(dssSignatureService.createSignatureRequestDTO(signatureTicket)).thenReturn(getSignRequestDto());
-        when(underskriftService.startSigningProcess(CERT_ID, CERT_TYPE, VERSION, SIGN_SERVICE, TICKET_ID))
+        when(underskriftService.startSigningProcess(CERT_ID, CERT_TYPE, VERSION, SIGN_SERVICE, TICKET_ID, USER_IP_ADDRESS))
             .thenReturn(signatureTicket);
     }
 

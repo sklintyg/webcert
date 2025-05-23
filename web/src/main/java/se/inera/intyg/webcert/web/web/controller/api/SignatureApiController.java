@@ -125,7 +125,7 @@ public class SignatureApiController extends AbstractApiController {
                 ticketId = UUID.randomUUID().toString();
             }
 
-            SignaturBiljett sb = underskriftService.startSigningProcess(intygsId, intygsTyp, version, signMethod, ticketId);
+            SignaturBiljett sb = underskriftService.startSigningProcess(intygsId, intygsTyp, version, signMethod, ticketId, request.getRemoteAddr());
 
             if (SignMethod.SIGN_SERVICE.equals(signMethod)) {
                 DssSignRequestDTO signRequestDTO = dssSignatureService.createSignatureRequestDTO(sb);

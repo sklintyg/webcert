@@ -38,10 +38,10 @@ public class CreateSignatureTicketService {
     private final WebCertUserService webCertUserService;
 
     public SignaturBiljett create(String certificateId, String certificateType, long version, SignMethod signMethod,
-        String ticketID, String certificateXml) {
+        String ticketID, String userIpAddress, String certificateXml) {
         final var user = webCertUserService.getUser();
         final var ticket = getTicket(user.getAuthenticationMethod(), certificateId, certificateType, version,
-            signMethod, ticketID, certificateXml);
+            signMethod, ticketID, userIpAddress, certificateXml);
 
         if (ticket == null) {
             throw new IllegalStateException("Unhandled authentication method, could not create SignaturBiljett");
@@ -55,17 +55,17 @@ public class CreateSignatureTicketService {
     }
 
     private SignaturBiljett getTicket(AuthenticationMethod authenticationMethod, String certificateId, String certificateType, long version,
-        SignMethod signMethod, String ticketID, String certificateXml) {
+        SignMethod signMethod, String ticketID, String userIpAddress, String certificateXml) {
         switch (authenticationMethod) {
             case FAKE:
             case SITHS:
             case NET_ID:
                 return xmlUnderskriftService.skapaSigneringsBiljettMedDigest(
-                    certificateId, certificateType, version, Optional.empty(), signMethod, ticketID, certificateXml);
+                    certificateId, certificateType, version, Optional.empty(), signMethod, ticketID, userIpAddress, certificateXml);
             case BANK_ID:
             case MOBILT_BANK_ID: {
                 return grpUnderskriftService.skapaSigneringsBiljettMedDigest(certificateId, certificateType, version,
-                    Optional.empty(), signMethod, ticketID, null);
+                    Optional.empty(), signMethod, ticketID, userIpAddress, null);
             }
             default:
                 throw new IllegalStateException(

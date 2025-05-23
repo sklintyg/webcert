@@ -45,6 +45,7 @@ class SignAggregatorTest {
     private static final String TICKED_ID = "tickedId";
     private static final byte[] SIGN_BYTE = "signature".getBytes(StandardCharsets.UTF_8);
     private static final String SIGN_CERTIFICATE = "sign-certificate";
+    private static final String USER_IP_ADDRESS = "user-ip-address";
     @Mock
     private CertificateServiceProfile certificateServiceProfile;
     @Mock
@@ -70,22 +71,22 @@ class SignAggregatorTest {
         void shallUseWebcertImplementationIfProfileNotActive() {
             doReturn(false).when(certificateServiceProfile).active();
 
-            signCertificateAggregator.startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, SignMethod.SIGN_SERVICE, TICKED_ID);
+            signCertificateAggregator.startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, SignMethod.SIGN_SERVICE, TICKED_ID, USER_IP_ADDRESS);
 
             verify(signatureServiceForWC, times(1)).startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, SignMethod.SIGN_SERVICE,
-                TICKED_ID);
+                TICKED_ID, USER_IP_ADDRESS);
         }
 
         @Test
         void shallUseWebcertImplementationIfCSReturnsNull() {
             doReturn(true).when(certificateServiceProfile).active();
             doReturn(null).when(signatureServiceForCS).startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, SignMethod.SIGN_SERVICE,
-                TICKED_ID);
+                TICKED_ID, USER_IP_ADDRESS);
 
-            signCertificateAggregator.startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, SignMethod.SIGN_SERVICE, TICKED_ID);
+            signCertificateAggregator.startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, SignMethod.SIGN_SERVICE, TICKED_ID, USER_IP_ADDRESS);
 
             verify(signatureServiceForWC, times(1)).startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, SignMethod.SIGN_SERVICE,
-                TICKED_ID);
+                TICKED_ID, USER_IP_ADDRESS);
         }
 
 
@@ -95,15 +96,15 @@ class SignAggregatorTest {
             doReturn(true).when(certificateServiceProfile).active();
             doReturn(expectedResult).when(signatureServiceForCS)
                 .startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, SignMethod.SIGN_SERVICE,
-                    TICKED_ID);
+                    TICKED_ID, USER_IP_ADDRESS);
 
             final var actualResult = signCertificateAggregator.startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L,
-                SignMethod.SIGN_SERVICE, TICKED_ID);
+                SignMethod.SIGN_SERVICE, TICKED_ID, USER_IP_ADDRESS);
 
             verify(signatureServiceForWC, times(0)).startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, SignMethod.SIGN_SERVICE,
-                TICKED_ID);
+                TICKED_ID, USER_IP_ADDRESS);
             verify(signatureServiceForCS, times(1)).startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, SignMethod.SIGN_SERVICE,
-                TICKED_ID);
+                TICKED_ID, USER_IP_ADDRESS);
             assertEquals(expectedResult, actualResult);
         }
     }

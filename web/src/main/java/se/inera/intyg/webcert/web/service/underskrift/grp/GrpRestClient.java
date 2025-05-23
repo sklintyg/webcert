@@ -70,7 +70,6 @@ public class GrpRestClient {
     private static final String END_USER_INFO = "endUserInfo";
     private static final String PROVIDER_BANKID = "bankid";
     private static final String REQUEST_TYPE_AUTH = "AUTH";
-    private static final String LOCALHOST_IP = "127.0.0.1";
 
     public GrpOrderResponse init(String personId, SignaturBiljett ticket) {
         try {
@@ -82,7 +81,7 @@ public class GrpRestClient {
                     .queryParam(PROVIDER, PROVIDER_BANKID)
                     .queryParam(REQUEST_TYPE, REQUEST_TYPE_AUTH)
                     .queryParam(TRANSACTION_ID, ticket.getTicketId())
-                    .queryParam(END_USER_INFO, LOCALHOST_IP)
+                    .queryParam(END_USER_INFO, ticket.getUserIpAddress())
                     .build()
                     .toUri())
                 .header(ACCESS_TOKEN, accessToken)
