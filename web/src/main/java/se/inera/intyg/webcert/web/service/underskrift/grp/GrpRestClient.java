@@ -31,7 +31,6 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.web.service.underskrift.grp.dto.GrpCancelResponse;
 import se.inera.intyg.webcert.web.service.underskrift.grp.dto.GrpCollectResponse;
 import se.inera.intyg.webcert.web.service.underskrift.grp.dto.GrpErrorResponse;
 import se.inera.intyg.webcert.web.service.underskrift.grp.dto.GrpOrderRequest;
@@ -52,7 +51,7 @@ public class GrpRestClient {
     private String displayName;
     @Value("${cgi.grp.accessToken}")
     private String accessToken;
-    @Value("${cgi.grp.url}")
+    @Value("${cgi.funktionstjanster.grp.url}")
     private String baseUrl;
 
     private final RestClient restClient;
@@ -60,7 +59,6 @@ public class GrpRestClient {
 
     private static final String INIT_PATH = "/init";
     private static final String COLLECT_PATH = "/collect";
-    private static final String CANCEL_PATH = "/cancel";
     private static final String SERVICE_ID = "serviceId";
     private static final String ACCESS_TOKEN = "accessToken";
     private static final String REF_ID = "refId";
@@ -93,70 +91,49 @@ public class GrpRestClient {
                 .body(GrpOrderResponse.class);
 
         } catch (HttpClientErrorException | HttpServerErrorException e) {
-            final var httpErrorResponse = handleError(e, ticket.getTicketId(), ticket.getIntygsId(), INIT_PATH.substring(1));
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.GRP_PROBLEM, httpErrorResponse, e);
+            final var errorMessage = handleError(e, ticket.getTicketId(), ticket.getIntygsId(), INIT_PATH.substring(1));
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.GRP_PROBLEM, errorMessage, e);
         }
     }
 
     public GrpCollectResponse collect(String refId, String transactionId) {
         try {
-            return grpGet(COLLECT_PATH, refId, transactionId).body(GrpCollectResponse.class);
+            return restClient.get()
+                .uri(UriComponentsBuilder.fromHttpUrl(baseUrl)
+                    .path(COLLECT_PATH)
+                    .queryParam(SERVICE_ID, serviceId)
+                    .queryParam(REF_ID, refId)
+                    .queryParam(TRANSACTION_ID, transactionId)
+                    .build()
+                    .toUri())
+                .header(ACCESS_TOKEN, accessToken)
+                .retrieve()
+                .body(GrpCollectResponse.class);
 
         } catch (HttpClientErrorException | HttpServerErrorException e) {
-            handleError(e, transactionId, certificateId(transactionId), COLLECT_PATH.substring(1));
+            log.error(handleError(e, transactionId, certificateId(transactionId), COLLECT_PATH.substring(1)), e);
             return null;
         }
     }
 
-    public GrpCancelResponse cancel(String refId, String transactionId) {
-        try {
-            final var cancelResponse = grpGet(CANCEL_PATH, refId, transactionId).body(GrpCancelResponse.class);
-            redisTicketTracker.updateStatus(transactionId, SignaturStatus.AVBRUTEN);
-            return cancelResponse;
-        } catch (HttpClientErrorException | HttpServerErrorException e) {
-            final var httpErrorResponse = handleError(e, transactionId, certificateId(transactionId), CANCEL_PATH.substring(1));
-            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.GRP_PROBLEM, httpErrorResponse, e);
-        }
-    }
-
-    private RestClient.ResponseSpec grpGet(String path, String refId, String transactionId) {
-        return restClient.get()
-            .uri(UriComponentsBuilder.fromHttpUrl(baseUrl)
-                .path(path)
-                .queryParam(SERVICE_ID, serviceId)
-                .queryParam(REF_ID, refId)
-                .queryParam(TRANSACTION_ID, transactionId)
-                .build()
-                .toUri())
-            .header(ACCESS_TOKEN, accessToken)
-            .retrieve();
-    }
-
     private String handleError(HttpStatusCodeException e, String transactionId, String certificateId, String requestType) {
-        redisTicketTracker.updateStatus(transactionId, SignaturStatus.OKAND);
+        redisTicketTracker.updateStatus(transactionId, SignaturStatus.ERROR);
 
         final var grpErrorResponse = parseErrorResponse(e);
         final var httpErrorResponse = String.join(" ", e.getStatusCode().toString(), e.getStatusText());
-        if (grpErrorResponse != null) {
-            log.error("Grp {} request failure for transactionId '{}' and certificateId '{}' with error code '{}' and message '{}'",
-                requestType, transactionId, certificateId, grpErrorResponse.getErrorCode(), grpErrorResponse.getMessage(), e);
-        } else {
-            log.error("Grp {} request failure for transactionId '{}' and certificateId '{}' with http status '{}'",
-                requestType, transactionId, certificateId, httpErrorResponse);
-        }
-        return httpErrorResponse;
+        return "Grp %s failure for transactionId '%s' and certificateId: '%s' with Grp error code '%s', Grp message '%s' and http status %s."
+            .formatted(requestType, transactionId, certificateId, grpErrorResponse.getErrorCode(), grpErrorResponse.getMessage(),
+                httpErrorResponse);
     }
 
     private GrpErrorResponse parseErrorResponse(HttpStatusCodeException e) {
         try {
             final var objectMapper = new ObjectMapper();
-            final var errorBody = e.getResponseBodyAsString();
-            return !errorBody.isEmpty()
-                ? objectMapper.readValue(errorBody, GrpErrorResponse.class)
-                : null;
+            return objectMapper.readValue(e.getResponseBodyAsString(), GrpErrorResponse.class);
+
         } catch (Exception ex) {
             log.error("Failed to parse GRP error response", e);
-            return null;
+            return GrpErrorResponse.builder().build();
         }
     }
 
