@@ -120,7 +120,7 @@ public class GrpRestClient {
 
         final var grpErrorResponse = parseErrorResponse(e);
         final var httpErrorResponse = String.join(" ", e.getStatusCode().toString(), e.getStatusText());
-        return "Grp %s failure for transactionId '%s' and certificateId: '%s' with Grp error code '%s', Grp message '%s' and http status %s."
+        return "Grp %s failure for transactionId '%s' and certificateId: '%s' with Grp error code '%s', Grp message '%s' and http status %s"
             .formatted(requestType, transactionId, certificateId, grpErrorResponse.getErrorCode(), grpErrorResponse.getMessage(),
                 httpErrorResponse);
     }

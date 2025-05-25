@@ -22,5 +22,5 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 
 public interface SignCertificateFacadeService {
 
-    Certificate signCertificate(Certificate certificate);
+    Certificate signCertificate(Certificate certificate, String userIpAddress);
 }

@@ -204,11 +204,12 @@ public class CertificateController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
     @PerformanceLogging(eventAction = "certificate-sign-certificate", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
-    public Response signCertificate(@PathParam("certificateId") String certificateId, @RequestBody @NotNull Certificate certificate) {
+    public Response signCertificate(@PathParam("certificateId") String certificateId, @RequestBody @NotNull Certificate certificate,
+        @Context HttpServletRequest request) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Signing certificate with id: '{}'", certificateId);
         }
-        final var signedCertificate = signCertificateFacadeService.signCertificate(certificate);
+        final var signedCertificate = signCertificateFacadeService.signCertificate(certificate, request.getRemoteAddr());
         final var resourceLinks = getCertificateResourceLinks.get(signedCertificate);
         final var certificateDTO = CertificateDTO.create(signedCertificate, resourceLinks);
         return Response.ok(CertificateResponseDTO.create(certificateDTO)).build();
