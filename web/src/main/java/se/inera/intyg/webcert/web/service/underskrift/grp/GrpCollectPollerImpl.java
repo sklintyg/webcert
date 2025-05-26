@@ -142,6 +142,8 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
                 sleepMs(pollingInterval);
             }
         } finally {
+            MDC.clear();
+
             // Since this poller thread will be returned to its thread pool, we make sure we clean up the security
             // context we bound to this runnable's threadlocal.
             SecurityContextHolder.clearContext();
