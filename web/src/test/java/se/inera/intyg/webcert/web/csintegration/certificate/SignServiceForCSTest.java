@@ -40,7 +40,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequest
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlResponseDTO;
-import se.inera.intyg.webcert.web.service.underskrift.grp.GrpUnderskriftServiceImpl;
+import se.inera.intyg.webcert.web.service.underskrift.grp.GrpSignatureServiceImpl;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
@@ -70,7 +70,7 @@ class SignServiceForCSTest {
     @Mock
     private XmlUnderskriftServiceImpl xmlUnderskriftService;
     @Mock
-    private GrpUnderskriftServiceImpl grpUnderskriftService;
+    private GrpSignatureServiceImpl grpUnderskriftService;
     @Mock
     private RedisTicketTracker redisTicketTracker;
 

@@ -23,7 +23,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
-import se.inera.intyg.webcert.web.service.underskrift.grp.GrpUnderskriftServiceImpl;
+import se.inera.intyg.webcert.web.service.underskrift.grp.GrpSignatureService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.xmldsig.XmlUnderskriftServiceImpl;
@@ -34,7 +34,7 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 public class CreateSignatureTicketService {
 
     private final XmlUnderskriftServiceImpl xmlUnderskriftService;
-    private final GrpUnderskriftServiceImpl grpUnderskriftService;
+    private final GrpSignatureService grpUnderskriftService;
     private final WebCertUserService webCertUserService;
 
     public SignaturBiljett create(String certificateId, String certificateType, long version, SignMethod signMethod,

@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -43,15 +44,16 @@ import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Profile("grp-rest-api")
 public class GrpRestClient {
 
-    @Value("${cgi.grp.serviceId}")
+    @Value("${cgi.grp.rest.serviceId}")
     private String serviceId;
-    @Value("${cgi.grp.displayName}")
+    @Value("${cgi.grp.rest.displayName}")
     private String displayName;
-    @Value("${cgi.grp.accessToken}")
+    @Value("${cgi.grp.rest.accessToken}")
     private String accessToken;
-    @Value("${cgi.funktionstjanster.grp.url}")
+    @Value("${cgi.grp.rest.url}")
     private String baseUrl;
 
     private final RestClient restClient;
@@ -116,7 +118,7 @@ public class GrpRestClient {
     }
 
     private String handleError(HttpStatusCodeException e, String transactionId, String certificateId, String requestType) {
-        redisTicketTracker.updateStatus(transactionId, SignaturStatus.ERROR);
+        redisTicketTracker.updateStatus(transactionId, SignaturStatus.OKAND);
 
         final var grpErrorResponse = parseErrorResponse(e);
         final var httpErrorResponse = String.join(" ", e.getStatusCode().toString(), e.getStatusText());

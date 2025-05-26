@@ -87,7 +87,7 @@ import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.underskrift.fake.FakeUnderskriftService;
-import se.inera.intyg.webcert.web.service.underskrift.grp.GrpUnderskriftServiceImpl;
+import se.inera.intyg.webcert.web.service.underskrift.grp.GrpSignatureServiceImpl;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
@@ -109,7 +109,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
     private WebCertUserService webCertUserService;
 
     @Mock
-    private GrpUnderskriftServiceImpl grpUnderskriftService;
+    private GrpSignatureServiceImpl grpUnderskriftService;
 
     @Mock
     private XmlUnderskriftServiceImpl xmlUnderskriftService;

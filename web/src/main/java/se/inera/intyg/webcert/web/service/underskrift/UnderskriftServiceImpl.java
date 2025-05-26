@@ -48,7 +48,7 @@ import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.underskrift.fake.FakeUnderskriftService;
-import se.inera.intyg.webcert.web.service.underskrift.grp.GrpUnderskriftServiceImpl;
+import se.inera.intyg.webcert.web.service.underskrift.grp.GrpSignatureService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
@@ -68,7 +68,7 @@ public class UnderskriftServiceImpl implements UnderskriftService {
     private WebCertUserService webCertUserService;
 
     @Autowired
-    private GrpUnderskriftServiceImpl grpUnderskriftService;
+    private GrpSignatureService grpUnderskriftService;
 
     @Autowired
     private XmlUnderskriftServiceImpl xmlUnderskriftService;
@@ -139,7 +139,8 @@ public class UnderskriftServiceImpl implements UnderskriftService {
             case BANK_ID:
             case MOBILT_BANK_ID:
                 signaturBiljett = grpUnderskriftService
-                    .skapaSigneringsBiljettMedDigest(intygsId, intygsTyp, version, Optional.of(updatedJson), signMethod, ticketId, userIpAddress,null);
+                    .skapaSigneringsBiljettMedDigest(intygsId, intygsTyp, version, Optional.of(updatedJson), signMethod, ticketId,
+                        userIpAddress, null);
                 break;
         }
 

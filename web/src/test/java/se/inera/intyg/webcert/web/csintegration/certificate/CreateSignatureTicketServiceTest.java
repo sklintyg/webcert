@@ -33,7 +33,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
-import se.inera.intyg.webcert.web.service.underskrift.grp.GrpUnderskriftServiceImpl;
+import se.inera.intyg.webcert.web.service.underskrift.grp.GrpSignatureServiceImpl;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.xmldsig.XmlUnderskriftServiceImpl;
@@ -52,7 +52,7 @@ class CreateSignatureTicketServiceTest {
     @Mock
     private XmlUnderskriftServiceImpl xmlUnderskriftService;
     @Mock
-    private GrpUnderskriftServiceImpl grpUnderskriftService;
+    private GrpSignatureServiceImpl grpUnderskriftService;
     @Mock
     private WebCertUserService webCertUserService;
 

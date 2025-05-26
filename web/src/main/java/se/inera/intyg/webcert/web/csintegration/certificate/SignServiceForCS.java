@@ -31,7 +31,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequest
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlResponseDTO;
 import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
-import se.inera.intyg.webcert.web.service.underskrift.grp.GrpUnderskriftServiceImpl;
+import se.inera.intyg.webcert.web.service.underskrift.grp.GrpSignatureService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
@@ -47,7 +47,7 @@ public class SignServiceForCS implements UnderskriftService {
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
     private final XmlUnderskriftServiceImpl xmlUnderskriftService;
-    private final GrpUnderskriftServiceImpl grpUnderskriftService;
+    private final GrpSignatureService grpUnderskriftService;
     private final RedisTicketTracker redisTicketTracker;
     private final FakeSignatureServiceCS fakeSignatureServiceCS;
     private final CreateSignatureTicketService createSignatureTicketService;
