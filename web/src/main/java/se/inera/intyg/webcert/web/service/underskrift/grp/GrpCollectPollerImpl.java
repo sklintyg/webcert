@@ -23,8 +23,10 @@ import com.mobilityguard.grp.service.v2.CollectResponseType;
 import com.mobilityguard.grp.service.v2.Property;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
@@ -74,6 +76,7 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
 
     private String refId;
     private String transactionId;
+    private Map<String, String> mdcContextMap;
     private SecurityContext securityContext;
 
     private final RedisTicketTracker redisTicketTracker;
@@ -91,6 +94,7 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
     public void run() {
         try {
             applySecurityContextToThreadLocal();
+            MDC.setContextMap(mdcContextMap);
             WebCertUser webCertUser = (WebCertUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             long startTimeMs = System.currentTimeMillis();
 
@@ -226,6 +230,11 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
     @Override
     public void setTransactionId(String transactionId) {
         this.transactionId = transactionId;
+    }
+
+    @Override
+    public void setMdcContextMap(Map<String, String> mdcContextMap) {
+        this.mdcContextMap = mdcContextMap;
     }
 
     @Override

@@ -31,6 +31,7 @@ import java.util.UUID;
 import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -203,6 +204,7 @@ public class GrpUnderskriftServiceImpl extends BaseSignatureService implements G
         final var collectTask = grpCollectPollerFactory.getInstance();
         collectTask.setRefId(orderRef);
         collectTask.setTransactionId(ticketId);
+        collectTask.setMdcContextMap(MDC.getCopyOfContextMap());
         collectTask.setSecurityContext(SecurityContextHolder.getContext());
         taskExecutor.execute(collectTask);
     }

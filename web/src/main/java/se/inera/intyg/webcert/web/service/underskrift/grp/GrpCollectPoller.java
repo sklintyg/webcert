@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift.grp;
 
+import java.util.Map;
 import org.springframework.security.core.context.SecurityContext;
 
 public interface GrpCollectPoller extends Runnable {
@@ -25,6 +26,8 @@ public interface GrpCollectPoller extends Runnable {
     void setRefId(String refId);
 
     void setTransactionId(String transactionId);
+
+    void setMdcContextMap(Map<String, String> mdcContextMap);
 
     void setSecurityContext(SecurityContext securityContext);
 }

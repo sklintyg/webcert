@@ -21,8 +21,10 @@ package se.inera.intyg.webcert.web.service.underskrift.grp;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
@@ -53,6 +55,7 @@ public class GrpRestCollectPollerImpl implements GrpCollectPoller {
 
     private String refId;
     private String transactionId;
+    private Map<String, String> mdcContextMap;
     private SecurityContext securityContext;
 
     public static final String STATUS_FAILED = "FAILED";
@@ -71,6 +74,7 @@ public class GrpRestCollectPollerImpl implements GrpCollectPoller {
     public void run() {
         try {
             applySecurityContextToThreadLocal();
+            MDC.setContextMap(mdcContextMap);
             final var webCertUser = (WebCertUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             final var pollingTimeout = Instant.now().plus(Duration.ofMillis(grpPollingTimeout));
             sleepMilliseconds(pollingInterval);
@@ -105,6 +109,7 @@ public class GrpRestCollectPollerImpl implements GrpCollectPoller {
             }
 
         } finally {
+            MDC.clear();
             SecurityContextHolder.clearContext();
         }
     }
@@ -147,6 +152,11 @@ public class GrpRestCollectPollerImpl implements GrpCollectPoller {
     @Override
     public void setTransactionId(String transactionId) {
         this.transactionId = transactionId;
+    }
+
+    @Override
+    public void setMdcContextMap(Map<String, String> mdcContextMap) {
+        this.mdcContextMap = mdcContextMap;
     }
 
     @Override

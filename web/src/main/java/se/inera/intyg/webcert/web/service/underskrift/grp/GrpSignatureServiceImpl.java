@@ -27,6 +27,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
+import org.slf4j.MDC;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -152,11 +153,10 @@ public class GrpSignatureServiceImpl extends BaseSignatureService implements Grp
         final var collectTask = grpCollectPollerFactory.getInstance();
         collectTask.setRefId(refId);
         collectTask.setTransactionId(transactionId);
+        collectTask.setMdcContextMap(MDC.getCopyOfContextMap());
         collectTask.setSecurityContext(SecurityContextHolder.getContext());
         taskExecutor.execute(collectTask);
     }
-
-
 
     private String createHash(String payload) {
         try {
