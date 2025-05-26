@@ -26,13 +26,18 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import java.io.IOException;
+import java.util.Map;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
+import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.logging.MdcCloseableMap;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @Setter
 @Component
@@ -46,13 +51,19 @@ public class MdcUserServletFilter implements Filter {
         throws IOException, ServletException {
         if (webCertUserService.hasAuthenticationContext()) {
             final var user = webCertUserService.getUser();
-            final var selectedUnit = user.getValdVardenhet();
-            final var selectedCareProvider = user.getValdVardgivare();
+            final var unitId = selectedUnitId(user.getValdVardenhet());
+            final var careUnitId = selectedCareUnitId(user.getValdVardenhet());
+            final var careProviderId = selectedUnitId(user.getValdVardgivare());
+            final var userRole = userRole(user.getRoles());
+            final var userOrigin = userOrigin(user);
             try (final var mdcLogConstants =
                 MdcCloseableMap.builder()
                     .put(MdcLogConstants.USER_ID, user.getHsaId())
-                    .put(MdcLogConstants.ORGANIZATION_ID, selectedUnit != null ? selectedUnit.getId() : "-")
-                    .put(MdcLogConstants.ORGANIZATION_CARE_PROVIDER_ID, selectedCareProvider != null ? selectedCareProvider.getId() : "-")
+                    .put(MdcLogConstants.ORGANIZATION_ID, unitId)
+                    .put(MdcLogConstants.ORGANIZATION_CARE_UNIT_ID, careUnitId)
+                    .put(MdcLogConstants.ORGANIZATION_CARE_PROVIDER_ID, careProviderId)
+                    .put(MdcLogConstants.USER_ORIGIN, userOrigin)
+                    .put(MdcLogConstants.USER_ROLE, userRole)
                     .build()
             ) {
                 chain.doFilter(request, response);
@@ -66,5 +77,27 @@ public class MdcUserServletFilter implements Filter {
     public void init(FilterConfig filterConfig) {
         SpringBeanAutowiringSupport.processInjectionBasedOnServletContext(this,
             filterConfig.getServletContext());
+    }
+
+    private String selectedUnitId(SelectableVardenhet selectableVardenhet) {
+        if (selectableVardenhet == null) {
+            return "-";
+        }
+        return selectableVardenhet.getId();
+    }
+
+    private String selectedCareUnitId(SelectableVardenhet selectedVardenhet) {
+        if (selectedVardenhet instanceof Mottagning mottagning) {
+            return mottagning.getParentHsaId();
+        }
+        return selectedUnitId(selectedVardenhet);
+    }
+
+    private static String userRole(Map<String, Role> roles) {
+        return roles != null && roles.size() == 1 ? roles.keySet().iterator().next() : MdcLogConstants.NO_ROLE;
+    }
+
+    private static String userOrigin(WebCertUser user) {
+        return user.getOrigin() != null ? user.getOrigin() : MdcLogConstants.NO_ORIGIN;
     }
 }
