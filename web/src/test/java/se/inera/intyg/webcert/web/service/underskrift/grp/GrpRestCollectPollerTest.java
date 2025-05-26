@@ -62,7 +62,7 @@ class GrpRestCollectPollerTest extends AuthoritiesConfigurationJunit5TestSetup {
     @Mock
     private UnderskriftService underskriftService;
     @Mock
-    private GrpRestClient grpRestClient;
+    private GrpRestService grpRestService;
 
     @InjectMocks
     private GrpRestCollectPollerImpl grpCollectPoller;
@@ -98,11 +98,11 @@ class GrpRestCollectPollerTest extends AuthoritiesConfigurationJunit5TestSetup {
 
     @Test
     void shouldSignWhenProgressStatusComplete() {
-        when(grpRestClient.collect(REF_ID, TRANSACTION_ID)).thenReturn(RESPONSE_COMPLETED);
+        when(grpRestService.collect(REF_ID, TRANSACTION_ID)).thenReturn(RESPONSE_COMPLETED);
 
         grpCollectPoller.run();
         verifyNoInteractions(redisTicketTracker);
-        verify(grpRestClient, times(ONE)).collect(REF_ID, TRANSACTION_ID);
+        verify(grpRestService, times(ONE)).collect(REF_ID, TRANSACTION_ID);
         verify(underskriftService, times(ONE)).grpSignature(TRANSACTION_ID, SIGNATURE.getBytes(StandardCharsets.UTF_8));
     }
 
@@ -111,11 +111,11 @@ class GrpRestCollectPollerTest extends AuthoritiesConfigurationJunit5TestSetup {
         final var collectResponse = GrpCollectResponse.builder()
             .progressStatus(GrpProgressStatus.builder().status(STATUS_FAILED).build()).build();
 
-        when(grpRestClient.collect(REF_ID, TRANSACTION_ID)).thenReturn(collectResponse);
+        when(grpRestService.collect(REF_ID, TRANSACTION_ID)).thenReturn(collectResponse);
 
         grpCollectPoller.run();
         verifyNoInteractions(underskriftService);
-        verify(grpRestClient, times(ONE)).collect(REF_ID, TRANSACTION_ID);
+        verify(grpRestService, times(ONE)).collect(REF_ID, TRANSACTION_ID);
         verify(redisTicketTracker, times(ONE)).updateStatus(TRANSACTION_ID, SignaturStatus.OKAND);
     }
 
@@ -124,22 +124,22 @@ class GrpRestCollectPollerTest extends AuthoritiesConfigurationJunit5TestSetup {
         final var collectResponse = GrpCollectResponse.builder()
             .progressStatus(GrpProgressStatus.builder().status(STATUS_CANCELLED).build()).build();
 
-        when(grpRestClient.collect(REF_ID, TRANSACTION_ID)).thenReturn(collectResponse);
+        when(grpRestService.collect(REF_ID, TRANSACTION_ID)).thenReturn(collectResponse);
 
         grpCollectPoller.run();
         verifyNoInteractions(underskriftService);
-        verify(grpRestClient, times(ONE)).collect(REF_ID, TRANSACTION_ID);
+        verify(grpRestService, times(ONE)).collect(REF_ID, TRANSACTION_ID);
         verify(redisTicketTracker, times(ONE)).updateStatus(TRANSACTION_ID, SignaturStatus.AVBRUTEN);
     }
 
     @Test
     void shouldUpdateRedisTrackerWhenProgressStatusPending() {
         ReflectionTestUtils.setField(grpCollectPoller, "grpPollingTimeout", 200);
-        when(grpRestClient.collect(REF_ID, TRANSACTION_ID)).thenReturn(RESPONSE_PENDING);
+        when(grpRestService.collect(REF_ID, TRANSACTION_ID)).thenReturn(RESPONSE_PENDING);
 
         grpCollectPoller.run();
         verifyNoInteractions(underskriftService);
-        verify(grpRestClient, atLeastOnce()).collect(REF_ID, TRANSACTION_ID);
+        verify(grpRestService, atLeastOnce()).collect(REF_ID, TRANSACTION_ID);
         verify(redisTicketTracker, atLeastOnce()).updateStatus(TRANSACTION_ID, SignaturStatus.VANTA_SIGN);
     }
 
@@ -151,28 +151,28 @@ class GrpRestCollectPollerTest extends AuthoritiesConfigurationJunit5TestSetup {
             .validationInfo(GrpValidationInfo.builder().signature(SIGNATURE).build())
             .build();
 
-        when(grpRestClient.collect(anyString(), anyString())).thenReturn(collectResponse);
+        when(grpRestService.collect(anyString(), anyString())).thenReturn(collectResponse);
 
         assertThrows(IllegalStateException.class, () -> grpCollectPoller.run());
     }
 
     @Test
     void shuoldExitWithoutInteractionsWhenGrpClientRequestReturnsNull() {
-        when(grpRestClient.collect(REF_ID, TRANSACTION_ID)).thenReturn(null);
+        when(grpRestService.collect(REF_ID, TRANSACTION_ID)).thenReturn(null);
 
         grpCollectPoller.run();
-        verify(grpRestClient, times(ONE)).collect(REF_ID, TRANSACTION_ID);
+        verify(grpRestService, times(ONE)).collect(REF_ID, TRANSACTION_ID);
         verifyNoInteractions(redisTicketTracker);
         verifyNoInteractions(underskriftService);
     }
 
     @Test
     void shuoldHandleExpectedSequenceOfCollectResponses() {
-        when(grpRestClient.collect(REF_ID, TRANSACTION_ID)).thenReturn(RESPONSE_PENDING, RESPONSE_PENDING, RESPONSE_PENDING,
+        when(grpRestService.collect(REF_ID, TRANSACTION_ID)).thenReturn(RESPONSE_PENDING, RESPONSE_PENDING, RESPONSE_PENDING,
             RESPONSE_COMPLETED);
 
         grpCollectPoller.run();
-        verify(grpRestClient, times(FOUR)).collect(REF_ID, TRANSACTION_ID);
+        verify(grpRestService, times(FOUR)).collect(REF_ID, TRANSACTION_ID);
         verify(redisTicketTracker, times(THREE)).updateStatus(TRANSACTION_ID, SignaturStatus.VANTA_SIGN);
         verify(underskriftService, times(ONE)).grpSignature(TRANSACTION_ID, SIGNATURE.getBytes(StandardCharsets.UTF_8));
     }

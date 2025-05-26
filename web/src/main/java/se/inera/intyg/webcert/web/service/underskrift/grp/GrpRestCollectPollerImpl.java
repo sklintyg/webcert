@@ -51,7 +51,7 @@ public class GrpRestCollectPollerImpl implements GrpCollectPoller {
 
     private final RedisTicketTracker redisTicketTracker;
     private final UnderskriftService underskriftService;
-    private final GrpRestClient grpRestClient;
+    private final GrpRestService grpRestService;
 
     private String refId;
     private String transactionId;
@@ -64,10 +64,10 @@ public class GrpRestCollectPollerImpl implements GrpCollectPoller {
     public static final String STATUS_CANCELLED = "CANCELLED";
 
     public GrpRestCollectPollerImpl(RedisTicketTracker redisTicketTracker, @Qualifier("signAggregator") UnderskriftService underskriftService,
-        GrpRestClient grpRestClient) {
+        GrpRestService grpRestService) {
         this.redisTicketTracker = redisTicketTracker;
         this.underskriftService = underskriftService;
-        this.grpRestClient = grpRestClient;
+        this.grpRestService = grpRestService;
     }
 
     @Override
@@ -80,7 +80,7 @@ public class GrpRestCollectPollerImpl implements GrpCollectPoller {
             sleepMilliseconds(pollingInterval);
 
             while (Instant.now().isBefore(pollingTimeout)) {
-                final var collectResponse = grpRestClient.collect(refId, transactionId);
+                final var collectResponse = grpRestService.collect(refId, transactionId);
 
                 if (collectResponse == null) {
                     return;

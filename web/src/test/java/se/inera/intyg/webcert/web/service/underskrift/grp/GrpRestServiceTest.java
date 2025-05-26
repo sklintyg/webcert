@@ -50,10 +50,10 @@ import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
 
 @ExtendWith(MockitoExtension.class)
-class GrpRestClientTest {
+class GrpRestServiceTest {
 
     @Mock
-    private RestClient restClient;
+    private RestClient grpRestClient;
     @Mock
     private SignaturBiljett ticket;
     @Mock
@@ -62,7 +62,7 @@ class GrpRestClientTest {
     private ArgumentCaptor<URI> uriCaptor;
 
     @InjectMocks
-    private GrpRestClient grpRestClient;
+    private GrpRestService grpRestService;
 
     private static final String INIT_PATH = "/init";
     private static final String COLLECT_PATH = "/collect";
@@ -79,18 +79,18 @@ class GrpRestClientTest {
     private static final String REQUEST_TYPE_AUTH = "AUTH";
     private static final String USER_IP_ADDRESS = "userIpAddress";
     private static final String PERSON_ID = "personId";
-    private static final String BASE_URL = "baseUrl";
+    private static final String BASE_URL = "grpBaseUrl";
 
     @BeforeEach
     void setUp() {
-        ReflectionTestUtils.setField(grpRestClient, SERVICE_ID, SERVICE_ID);
-        ReflectionTestUtils.setField(grpRestClient, DISPLAY_NAME, DISPLAY_NAME);
-        ReflectionTestUtils.setField(grpRestClient, ACCESS_TOKEN, ACCESS_TOKEN);
-        ReflectionTestUtils.setField(grpRestClient, BASE_URL, "https://baseUrl.test");
+        ReflectionTestUtils.setField(grpRestService, SERVICE_ID, SERVICE_ID);
+        ReflectionTestUtils.setField(grpRestService, DISPLAY_NAME, DISPLAY_NAME);
+        ReflectionTestUtils.setField(grpRestService, ACCESS_TOKEN, ACCESS_TOKEN);
+        ReflectionTestUtils.setField(grpRestService, BASE_URL, "https://baseUrl.test");
     }
 
     @Nested
-    class GrpRestClientInit {
+    class GrpRestServiceInit {
 
         private RestClient.RequestBodyUriSpec uriSpec;
 
@@ -98,7 +98,7 @@ class GrpRestClientTest {
         void setUp() {
             final var responseSpec = mock(RestClient.ResponseSpec.class);
             uriSpec = mock(RestClient.RequestBodyUriSpec.class);
-            when(restClient.post()).thenReturn(uriSpec);
+            when(grpRestClient.post()).thenReturn(uriSpec);
             when(uriSpec.uri(any(URI.class))).thenReturn(uriSpec);
             when(uriSpec.header(any(), any())).thenReturn(uriSpec);
             when(uriSpec.retrieve()).thenReturn(responseSpec);
@@ -109,7 +109,7 @@ class GrpRestClientTest {
 
         @Test
         void shouldCallGrpInitWithExpectedQueryParameters() {
-            grpRestClient.init(PERSON_ID, ticket);
+            grpRestService.init(PERSON_ID, ticket);
             verify(uriSpec).uri(uriCaptor.capture());
 
             final var query = uriCaptor.getValue().getQuery();
@@ -125,7 +125,7 @@ class GrpRestClientTest {
 
         @Test
         void shouldCallGrpInitWithExpectedUrl() {
-            grpRestClient.init(PERSON_ID, ticket);
+            grpRestService.init(PERSON_ID, ticket);
             verify(uriSpec).uri(uriCaptor.capture());
             assertAll(
                 () -> assertEquals("https", uriCaptor.getValue().getScheme()),
@@ -136,7 +136,7 @@ class GrpRestClientTest {
 
         @Test
         void shouldCallGrpInitWithExpectedHeader() {
-            grpRestClient.init(PERSON_ID, ticket);
+            grpRestService.init(PERSON_ID, ticket);
             verify(uriSpec).header(ACCESS_TOKEN, ACCESS_TOKEN);
         }
 
@@ -148,7 +148,7 @@ class GrpRestClientTest {
                     .type(PERSONID_TYPE)
                     .build())
                 .build();
-            grpRestClient.init(PERSON_ID, ticket);
+            grpRestService.init(PERSON_ID, ticket);
             verify(uriSpec).body(expectedBody);
         }
 
@@ -156,12 +156,12 @@ class GrpRestClientTest {
         void shouldThrowWebcertServiceExceptionWhenGrpRequestFailure() {
             when(ticket.getIntygsId()).thenReturn("certificatId");
             when(uriSpec.retrieve()).thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Bad Request"));
-            assertThrows(WebCertServiceException.class, () -> grpRestClient.init(PERSON_ID, ticket));
+            assertThrows(WebCertServiceException.class, () -> grpRestService.init(PERSON_ID, ticket));
         }
     }
 
     @Nested
-    class GrpRestClientCollect {
+    class GrpRestServiceCollect {
 
         @SuppressWarnings("rawtypes")
         private RestClient.RequestHeadersUriSpec uriSpec;
@@ -171,7 +171,7 @@ class GrpRestClientTest {
         void setUp() {
             final var responseSpec = mock(RestClient.ResponseSpec.class);
             uriSpec = mock(RestClient.RequestHeadersUriSpec.class);
-            when(restClient.get()).thenReturn(uriSpec);
+            when(grpRestClient.get()).thenReturn(uriSpec);
             when(uriSpec.uri(any(URI.class))).thenReturn(uriSpec);
             when(uriSpec.header(any(), any())).thenReturn(uriSpec);
             when(uriSpec.retrieve()).thenReturn(responseSpec);
@@ -179,7 +179,7 @@ class GrpRestClientTest {
 
         @Test
         void shouldCallGrpCollectWithExpectedQueryParameters() {
-            grpRestClient.collect(REF_ID, TRANSACTION_ID);
+            grpRestService.collect(REF_ID, TRANSACTION_ID);
             verify(uriSpec).uri(uriCaptor.capture());
 
             final var query = uriCaptor.getValue().getQuery();
@@ -192,7 +192,7 @@ class GrpRestClientTest {
 
         @Test
         void shouldCallGrpCollectWithExpectedUrl() {
-            grpRestClient.collect(REF_ID, TRANSACTION_ID);
+            grpRestService.collect(REF_ID, TRANSACTION_ID);
             verify(uriSpec).uri(uriCaptor.capture());
             assertAll(
                 () -> assertEquals("https", uriCaptor.getValue().getScheme()),
@@ -203,7 +203,7 @@ class GrpRestClientTest {
 
         @Test
         void shouldCallGrpInitWithExpectedHeader() {
-            grpRestClient.collect(REF_ID, TRANSACTION_ID);
+            grpRestService.collect(REF_ID, TRANSACTION_ID);
             verify(uriSpec).header(ACCESS_TOKEN, ACCESS_TOKEN);
         }
 
@@ -212,7 +212,7 @@ class GrpRestClientTest {
             when(redisTicketTracker.findBiljett(TRANSACTION_ID)).thenReturn(ticket);
             when(ticket.getIntygsId()).thenReturn("certificatId");
             when(uriSpec.retrieve()).thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Bad Request"));
-            assertNull(grpRestClient.collect(REF_ID, TRANSACTION_ID));
+            assertNull(grpRestService.collect(REF_ID, TRANSACTION_ID));
         }
     }
 }

@@ -29,7 +29,6 @@ import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.TransactionManagementConfigurer;
-import org.springframework.web.client.RestClient;
 import se.inera.intyg.infra.security.common.cookie.IneraCookieSerializer;
 
 @Configuration
@@ -62,11 +61,4 @@ public class AppConfig implements TransactionManagementConfigurer {
         }
         return ineraCookieSerializer;
     }
-
-    @Bean
-    public RestClient restClient() {
-        return RestClient.builder()
-                .build();
-    }
-
 }

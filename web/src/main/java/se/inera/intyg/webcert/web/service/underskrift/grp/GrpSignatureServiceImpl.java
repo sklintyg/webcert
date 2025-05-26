@@ -55,7 +55,7 @@ public class GrpSignatureServiceImpl extends BaseSignatureService implements Grp
     private final ThreadPoolTaskExecutor taskExecutor;
     private final GrpCollectPollerFactory grpCollectPollerFactory;
     private final SignCertificateService signCertificateService;
-    private final GrpRestClient grpRestClient;
+    private final GrpRestService grpRestService;
 
     @Override
     public SignaturBiljett skapaSigneringsBiljettMedDigest(String intygsId, String intygsTyp, long version, Optional<String> intygJson,
@@ -80,7 +80,7 @@ public class GrpSignatureServiceImpl extends BaseSignatureService implements Grp
 
     @Override
     public void startGrpCollectPoller(String personId, SignaturBiljett signaturBiljett) {
-        final var orderResponse = grpRestClient.init(personId, signaturBiljett);
+        final var orderResponse = grpRestService.init(personId, signaturBiljett);
         log.info("Grp sign initiated for certificateId '{}' with transactionId: '{}'.", signaturBiljett.getIntygsId(),
             orderResponse.getTransactionId());
         updateTicketProperties(signaturBiljett, orderResponse);

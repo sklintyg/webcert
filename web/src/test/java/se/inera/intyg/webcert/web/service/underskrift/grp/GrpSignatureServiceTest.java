@@ -53,7 +53,7 @@ class GrpSignatureServiceTest extends AuthoritiesConfigurationJunit5TestSetup {
     @Mock
     RedisTicketTracker redisTicketTracker;
     @Mock
-    GrpRestClient grpRestClient;
+    GrpRestService grpRestService;
     @Mock
     ThreadPoolTaskExecutor taskExecutor;
     @Mock
@@ -85,7 +85,7 @@ class GrpSignatureServiceTest extends AuthoritiesConfigurationJunit5TestSetup {
     void shouldHandleSuccessfulGrpSignatureInitialization() {
         final var ticket = buildSignaturBiljett();
         when(grpCollectPollerFactory.getInstance()).thenReturn(grpCollectPoller);
-        when(grpRestClient.init(PERSON_ID, ticket)).thenReturn(grpOrderResponse());
+        when(grpRestService.init(PERSON_ID, ticket)).thenReturn(grpOrderResponse());
 
         grpSignaturService.startGrpCollectPoller(PERSON_ID, ticket);
         verify(redisTicketTracker).updateAutoStartToken(TRANSACTION_ID, AUTO_START_TOKEN);
@@ -97,7 +97,7 @@ class GrpSignatureServiceTest extends AuthoritiesConfigurationJunit5TestSetup {
     void shouldThrowIllegalStateIfTicketIdAndOrderResponseTxIdDoNotMatch() {
         final var ticket = buildSignaturBiljett();
         ticket.setTicketId("wrongTicketId");
-        when(grpRestClient.init(PERSON_ID, ticket)).thenReturn(grpOrderResponse());
+        when(grpRestService.init(PERSON_ID, ticket)).thenReturn(grpOrderResponse());
 
         assertThrows(IllegalStateException.class, () -> grpSignaturService.startGrpCollectPoller(PERSON_ID, ticket));
     }
@@ -105,7 +105,7 @@ class GrpSignatureServiceTest extends AuthoritiesConfigurationJunit5TestSetup {
     @Test
     void shouldThrowWebcertServiceExceptionIfGrpSignInitFaiure() {
         final var ticket = buildSignaturBiljett();
-        when(grpRestClient.init(PERSON_ID, ticket)).thenThrow(WebCertServiceException.class);
+        when(grpRestService.init(PERSON_ID, ticket)).thenThrow(WebCertServiceException.class);
 
         assertThrows(WebCertServiceException.class, () -> grpSignaturService.startGrpCollectPoller(PERSON_ID, ticket));
     }

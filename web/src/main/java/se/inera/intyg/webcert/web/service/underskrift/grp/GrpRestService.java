@@ -20,8 +20,8 @@
 package se.inera.intyg.webcert.web.service.underskrift.grp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -43,26 +43,30 @@ import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 @Profile("grp-rest-api")
-public class GrpRestClient {
+public class GrpRestService {
 
+    @Value("${cgi.grp.rest.url}")
+    private String grpBaseUrl;
+    @Value("${cgi.grp.rest.accessToken}")
+    private String accessToken;
     @Value("${cgi.grp.rest.serviceId}")
     private String serviceId;
     @Value("${cgi.grp.rest.displayName}")
     private String displayName;
-    @Value("${cgi.grp.rest.accessToken}")
-    private String accessToken;
-    @Value("${cgi.grp.rest.url}")
-    private String baseUrl;
 
-    private final RestClient restClient;
+    private final RestClient grpRestClient;
     private final RedisTicketTracker redisTicketTracker;
+
+    public GrpRestService(@Qualifier("grpRestClient") RestClient grpRestClient, RedisTicketTracker redisTicketTracker) {
+        this.grpRestClient = grpRestClient;
+        this.redisTicketTracker = redisTicketTracker;
+    }
 
     private static final String INIT_PATH = "/init";
     private static final String COLLECT_PATH = "/collect";
-    private static final String SERVICE_ID = "serviceId";
     private static final String ACCESS_TOKEN = "accessToken";
+    private static final String SERVICE_ID = "serviceId";
     private static final String REF_ID = "refId";
     private static final String TRANSACTION_ID = "transactionId";
     private static final String DISPLAY_NAME = "displayName";
@@ -75,8 +79,8 @@ public class GrpRestClient {
 
     public GrpOrderResponse init(String personId, SignaturBiljett ticket) {
         try {
-            return restClient.post()
-                .uri(UriComponentsBuilder.fromHttpUrl(baseUrl)
+            return grpRestClient.post()
+                .uri(UriComponentsBuilder.fromHttpUrl(grpBaseUrl)
                     .path(INIT_PATH)
                     .queryParam(SERVICE_ID, serviceId)
                     .queryParam(DISPLAY_NAME, displayName)
@@ -84,8 +88,7 @@ public class GrpRestClient {
                     .queryParam(REQUEST_TYPE, REQUEST_TYPE_AUTH)
                     .queryParam(TRANSACTION_ID, ticket.getTicketId())
                     .queryParam(END_USER_INFO, ticket.getUserIpAddress())
-                    .build()
-                    .toUri())
+                    .build().toUri())
                 .header(ACCESS_TOKEN, accessToken)
                 .body(orderRequest(personId))
                 .retrieve()
@@ -99,8 +102,8 @@ public class GrpRestClient {
 
     public GrpCollectResponse collect(String refId, String transactionId) {
         try {
-            return restClient.get()
-                .uri(UriComponentsBuilder.fromHttpUrl(baseUrl)
+            return grpRestClient.get()
+                .uri(UriComponentsBuilder.fromHttpUrl(grpBaseUrl)
                     .path(COLLECT_PATH)
                     .queryParam(SERVICE_ID, serviceId)
                     .queryParam(REF_ID, refId)
