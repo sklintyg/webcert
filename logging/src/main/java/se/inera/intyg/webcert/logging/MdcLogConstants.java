@@ -86,10 +86,13 @@ public class MdcLogConstants {
     public static final String EVENT_STATUS_UPDATE_SEND_ATTEMPT = "event.status_update.send_attempt";
     public static final String EVENT_STATUS_UPDATE_TYPE = "event.status_update.type";
 
-    public static final String ORGANIZATION_CARE_PROVIDER_ID = "organization.care_provider.id";
     public static final String ORGANIZATION_ID = "organization.id";
+    public static final String ORGANIZATION_CARE_UNIT_ID = "organization.care_unit.id";
+    public static final String ORGANIZATION_CARE_PROVIDER_ID = "organization.care_provider.id";
 
     public static final String USER_ID = "user.id";
     public static final String USER_ORIGIN = "user.origin";
+    public static final String NO_ORIGIN = "NO ORIGIN";
     public static final String USER_ROLE = "user.role";
+    public static final String NO_ROLE = "NO ROLE";
 }
