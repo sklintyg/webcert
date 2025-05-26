@@ -74,6 +74,8 @@ class MdcUserServletFilterTest {
     void shouldNotThrowWhenIdsAreMissing() {
         var user = new WebCertUser();
         user.setHsaId(null);
+        user.setRoles(null);
+        user.setOrigin(null);
         user.setValdVardenhet(selectedVardenhet);
         user.setValdVardgivare(selectedVardgivare);
         when(webCertUserService.hasAuthenticationContext()).thenReturn(Boolean.TRUE);

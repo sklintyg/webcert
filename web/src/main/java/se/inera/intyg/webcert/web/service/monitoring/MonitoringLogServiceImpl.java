@@ -996,7 +996,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
             .put(MdcLogConstants.EVENT_AUTHENTICATION_METHOD, authMethod)
             .build()
         ) {
-        logEvent(MonitoringEvent.MISSING_SUBSCRIPTION_WARNING, userId, authMethod, organizations);
+            logEvent(MonitoringEvent.MISSING_SUBSCRIPTION_WARNING, userId, authMethod, organizations);
         }
     }
 
@@ -1047,12 +1047,12 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
 
     @Override
     public void logSignResponseSuccess(String transactionId, String certificateId) {
-    try (MdcCloseableMap ignored = MdcCloseableMap.builder()
-        .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.DSS_SIGNATURE_RESPONSE_SUCCESS))
-        .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_INFO)
-        .put(MdcLogConstants.TRANSACTION_ID, transactionId)
-        .put(MdcLogConstants.EVENT_CERTIFICATE_ID, certificateId)
-        .build()
+        try (MdcCloseableMap ignored = MdcCloseableMap.builder()
+            .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.DSS_SIGNATURE_RESPONSE_SUCCESS))
+            .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_INFO)
+            .put(MdcLogConstants.TRANSACTION_ID, transactionId)
+            .put(MdcLogConstants.EVENT_CERTIFICATE_ID, certificateId)
+            .build()
         ) {
             logEvent(MonitoringEvent.DSS_SIGNATURE_RESPONSE_SUCCESS, certificateId, transactionId);
         }
@@ -1105,7 +1105,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
             .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_ERROR)
             .put(MdcLogConstants.TRANSACTION_ID, transactionId)
             .put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId)
-            .put(MdcLogConstants.ERROR_MESSAGE, Joiner.on(" - ").join(resultMajor, resultMinor, resultMessage))
+            .put(MdcLogConstants.ERROR_MESSAGE, Joiner.on(" - ").useForNull("null").join(resultMajor, resultMinor, resultMessage))
             .build()
         ) {
             logEvent(MonitoringEvent.DSS_SIGNATURE_RESPONSE_ERROR_RECEIVED, transactionId, intygsId, resultMajor, resultMinor,
