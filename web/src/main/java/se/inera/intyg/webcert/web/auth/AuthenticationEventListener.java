@@ -50,7 +50,8 @@ public class AuthenticationEventListener {
         webcertUser.ifPresent(user ->
             monitoringLogService.logUserLogin(
                 user.getHsaId(),
-                user.getRoles() != null && user.getRoles().size() == 1 ? user.getRoles().keySet().iterator().next() : "noRole?",
+                user.getRoles() != null && user.getRoles().size() == 1 ? user.getRoles().keySet().iterator().next()
+                    : MdcLogConstants.NO_ROLE,
                 user.getRoleTypeName(),
                 user.getAuthenticationScheme(),
                 user.getOrigin()
