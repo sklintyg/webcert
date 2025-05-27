@@ -57,6 +57,7 @@ public class GrpRestService {
 
     private final RestClient grpRestClient;
     private final RedisTicketTracker redisTicketTracker;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public GrpRestService(@Qualifier("grpRestClient") RestClient grpRestClient, RedisTicketTracker redisTicketTracker) {
         this.grpRestClient = grpRestClient;
@@ -132,7 +133,6 @@ public class GrpRestService {
 
     private GrpErrorResponse parseErrorResponse(HttpStatusCodeException e) {
         try {
-            final var objectMapper = new ObjectMapper();
             return objectMapper.readValue(e.getResponseBodyAsString(), GrpErrorResponse.class);
 
         } catch (Exception ex) {
