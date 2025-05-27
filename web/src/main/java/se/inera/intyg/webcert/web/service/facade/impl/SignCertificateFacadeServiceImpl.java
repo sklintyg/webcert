@@ -44,7 +44,7 @@ public class SignCertificateFacadeServiceImpl implements SignCertificateFacadeSe
     }
 
     @Override
-    public Certificate signCertificate(Certificate certificate) {
+    public Certificate signCertificate(Certificate certificate, String userIpAddress) {
         final var certificateId = certificate.getMetadata().getId();
         final var certificateType = certificate.getMetadata().getType();
         final var version = certificate.getMetadata().getVersion();
@@ -52,7 +52,7 @@ public class SignCertificateFacadeServiceImpl implements SignCertificateFacadeSe
         final var ticketId = UUID.randomUUID().toString();
 
         LOG.debug("Start fake signing process for certificate '{}'", certificateId);
-        underskriftService.startSigningProcess(certificateId, certificateType, version, signMethod, ticketId);
+        underskriftService.startSigningProcess(certificateId, certificateType, version, signMethod, ticketId, userIpAddress);
 
         LOG.debug("Make fake signature for certificate '{}'", certificateId);
         underskriftService.fakeSignature(certificateId, certificateType, version, ticketId);

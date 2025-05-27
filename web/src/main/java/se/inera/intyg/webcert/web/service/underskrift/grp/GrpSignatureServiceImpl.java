@@ -18,37 +18,27 @@
  */
 package se.inera.intyg.webcert.web.service.underskrift.grp;
 
-import com.mobilityguard.grp.service.v2.AuthenticateRequestType;
-import com.mobilityguard.grp.service.v2.FaultStatusType;
-import com.mobilityguard.grp.service.v2.GrpFaultType;
-import com.mobilityguard.grp.service.v2.OrderResponseType;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import se.funktionstjanster.grp.v2.AuthenticateRequestTypeV23;
-import se.funktionstjanster.grp.v2.GrpException;
-import se.funktionstjanster.grp.v2.GrpServicePortType;
-import se.funktionstjanster.grp.v2.OrderResponseTypeV23;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
-import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.csintegration.certificate.FinalizedCertificateSignature;
 import se.inera.intyg.webcert.web.csintegration.certificate.SignCertificateService;
 import se.inera.intyg.webcert.web.service.underskrift.BaseSignatureService;
+import se.inera.intyg.webcert.web.service.underskrift.grp.dto.GrpOrderResponse;
 import se.inera.intyg.webcert.web.service.underskrift.grp.dto.IntygGRPSignature;
 import se.inera.intyg.webcert.web.service.underskrift.grp.factory.GrpCollectPollerFactory;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
@@ -56,38 +46,16 @@ import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
+@Slf4j
 @Service
-@Profile("!grp-rest-api")
-public class GrpUnderskriftServiceImpl extends BaseSignatureService implements GrpSignatureService {
+@RequiredArgsConstructor
+@Profile("grp-rest-api")
+public class GrpSignatureServiceImpl extends BaseSignatureService implements GrpSignatureService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GrpUnderskriftServiceImpl.class);
-
-    static final String BANK_ID_PROVIDER = "bankid"; // As specified in CGI GRP docs
-
-    /**
-     * Assigned to us by the GRP provider (e.g. CGI). Used in the 'policy' attribute of auth and collect requests.
-     */
-    @Value("${cgi.grp.serviceId}")
-    private String serviceId;
-
-    /**
-     * Note that this value must be fetched from a props file encoded in ISO-8859-1 if it contains non ascii-7 chars.
-     */
-    @Value("${cgi.grp.displayName}")
-    private String displayName;
-
-    private final GrpServicePortType grpService;
     private final ThreadPoolTaskExecutor taskExecutor;
     private final GrpCollectPollerFactory grpCollectPollerFactory;
     private final SignCertificateService signCertificateService;
-
-    public GrpUnderskriftServiceImpl(GrpServicePortType grpService, ThreadPoolTaskExecutor taskExecutor,
-        GrpCollectPollerFactory grpCollectPollerFactory, SignCertificateService signCertificateService) {
-        this.grpService = grpService;
-        this.taskExecutor = taskExecutor;
-        this.grpCollectPollerFactory = grpCollectPollerFactory;
-        this.signCertificateService = signCertificateService;
-    }
+    private final GrpRestService grpRestService;
 
     @Override
     public SignaturBiljett skapaSigneringsBiljettMedDigest(String intygsId, String intygsTyp, long version, Optional<String> intygJson,
@@ -103,6 +71,7 @@ public class GrpUnderskriftServiceImpl extends BaseSignatureService implements G
             .withStatus(SignaturStatus.BEARBETAR)
             .withSkapad(LocalDateTime.now())
             .withHash(intygGRPSignature.getSigningData())
+            .withUserIpAddress(userIpAddress)
             .build();
 
         redisTicketTracker.trackBiljett(biljett);
@@ -111,29 +80,19 @@ public class GrpUnderskriftServiceImpl extends BaseSignatureService implements G
 
     @Override
     public void startGrpCollectPoller(String personId, SignaturBiljett signaturBiljett) {
-        final var authRequest = buildAuthRequest(personId, signaturBiljett);
+        final var orderResponse = grpRestService.init(personId, signaturBiljett);
+        log.info("Grp sign initiated for certificateId '{}' with transactionId: '{}'.", signaturBiljett.getIntygsId(),
+            orderResponse.getTransactionId());
+        updateTicketProperties(signaturBiljett, orderResponse);
+        updateTicketTracker(signaturBiljett, orderResponse);
+        validateOrderResponseId(signaturBiljett.getTicketId(), orderResponse.getTransactionId());
+        startAsyncCollectPoller(orderResponse.getRefId(), orderResponse.getTransactionId());
+    }
 
-        OrderResponseTypeV23 orderResponse;
-        try {
-            orderResponse = grpService.authenticate(authRequest);
-            updateTicketProperties(signaturBiljett, orderResponse);
-            updateTicketTracker(signaturBiljett, orderResponse);
-        } catch (GrpException grpException) {
-            redisTicketTracker.updateStatus(signaturBiljett.getTicketId(), SignaturStatus.OKAND);
-
-            Optional<FaultStatusType> status = Optional.ofNullable(grpException.getFaultInfo()).map(GrpFaultType::getFaultStatus);
-            if (status.isPresent()) {
-                LOG.warn("Fault signing utkast with id {} with GRP. FaultStatus: {}", signaturBiljett.getIntygsId(), status.get().name());
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.GRP_PROBLEM, status.get().name());
-            } else {
-                throw new WebCertServiceException(WebCertServiceErrorCodeEnum.UNKNOWN_INTERNAL_PROBLEM,
-                    grpException.getFaultInfo().getDetailedDescription());
-            }
+    private void validateOrderResponseId(String requestId, String responseId) {
+        if (!requestId.equals(responseId)) {
+            throw new IllegalStateException("GrpOrderResponse transactionId did not match GrpOrderRequest transactionId.");
         }
-
-        final var orderRef = orderResponse.getOrderRef();
-        final var ticketId = validateOrderResponseTxId(authRequest, orderResponse);
-        startAsyncCollectPoller(orderRef, ticketId);
     }
 
     @Override
@@ -152,20 +111,20 @@ public class GrpUnderskriftServiceImpl extends BaseSignatureService implements G
             ticket.getTicketId(),
             ticket.getStatus()
         );
-
+        
         return FinalizedCertificateSignature.builder()
             .certificate(certificate)
             .signaturBiljett(ticket)
             .build();
     }
 
-    private void updateTicketProperties(SignaturBiljett ticket, OrderResponseTypeV23 response) {
+    private void updateTicketProperties(SignaturBiljett ticket, GrpOrderResponse response) {
         ticket.setAutoStartToken(response.getAutoStartToken());
         ticket.setQrStartToken(response.getQrStartToken());
         ticket.setQrStartSecret(response.getQrStartSecret());
     }
 
-    private void updateTicketTracker(SignaturBiljett ticket, OrderResponseTypeV23 response) {
+    private void updateTicketTracker(SignaturBiljett ticket, GrpOrderResponse response) {
         final var ticketId = ticket.getTicketId();
         redisTicketTracker.updateAutoStartToken(ticketId, response.getAutoStartToken());
         redisTicketTracker.updateQrCodeProperties(ticketId, response.getQrStartToken(), response.getQrStartSecret());
@@ -190,31 +149,13 @@ public class GrpUnderskriftServiceImpl extends BaseSignatureService implements G
         return biljett;
     }
 
-    private AuthenticateRequestTypeV23 buildAuthRequest(String personId, SignaturBiljett signaturBiljett) {
-        final var authRequest = new AuthenticateRequestTypeV23();
-        authRequest.setSubjectIdentifier(personId);
-        authRequest.setTransactionId(signaturBiljett.getTicketId());
-        authRequest.setPolicy(serviceId);
-        authRequest.setProvider(BANK_ID_PROVIDER);
-        authRequest.setRpDisplayName(displayName);
-        return authRequest;
-    }
-
-    private void startAsyncCollectPoller(String orderRef, String ticketId) {
+    private void startAsyncCollectPoller(String refId, String transactionId) {
         final var collectTask = grpCollectPollerFactory.getInstance();
-        collectTask.setRefId(orderRef);
-        collectTask.setTransactionId(ticketId);
+        collectTask.setRefId(refId);
+        collectTask.setTransactionId(transactionId);
         collectTask.setMdcContextMap(MDC.getCopyOfContextMap());
         collectTask.setSecurityContext(SecurityContextHolder.getContext());
         taskExecutor.execute(collectTask);
-    }
-
-    private String validateOrderResponseTxId(AuthenticateRequestType authRequest, OrderResponseType orderResponse) {
-        final var transactionId = orderResponse.getTransactionId();
-        if (!authRequest.getTransactionId().equals(transactionId)) {
-            throw new IllegalStateException("OrderResponse transactionId did not match AuthenticateRequest one.");
-        }
-        return transactionId;
     }
 
     private String createHash(String payload) {

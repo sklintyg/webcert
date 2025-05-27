@@ -75,8 +75,8 @@ public class GrpCollectPollerTest extends AuthoritiesConfigurationTestSetup {
 
         when(grpService.collect(any(CollectRequestType.class))).thenReturn(buildResp(COMPLETE));
 
-        grpCollectPoller.setOrderRef(ORDER_REF);
-        grpCollectPoller.setTicketId(TX_ID);
+        grpCollectPoller.setRefId(ORDER_REF);
+        grpCollectPoller.setTransactionId(TX_ID);
         grpCollectPoller.setSecurityContext(buildAuthentication());
         grpCollectPoller.setMs(50L);
         grpCollectPoller.run();
@@ -92,8 +92,8 @@ public class GrpCollectPollerTest extends AuthoritiesConfigurationTestSetup {
             buildResp(STARTED),
             buildResp(OUTSTANDING_TRANSACTION),
             buildResp(COMPLETE));
-        grpCollectPoller.setOrderRef(ORDER_REF);
-        grpCollectPoller.setTicketId(TX_ID);
+        grpCollectPoller.setRefId(ORDER_REF);
+        grpCollectPoller.setTransactionId(TX_ID);
         grpCollectPoller.setSecurityContext(buildAuthentication());
         grpCollectPoller.setMs(50L);
         grpCollectPoller.run();
@@ -106,8 +106,8 @@ public class GrpCollectPollerTest extends AuthoritiesConfigurationTestSetup {
     public void testCollectFailsOnGrpFaultWhenUserCancelled() throws GrpException {
 
         when(grpService.collect(any(CollectRequestType.class))).thenThrow(buildException(FaultStatusType.USER_CANCEL));
-        grpCollectPoller.setOrderRef(ORDER_REF);
-        grpCollectPoller.setTicketId(TX_ID);
+        grpCollectPoller.setRefId(ORDER_REF);
+        grpCollectPoller.setTransactionId(TX_ID);
         grpCollectPoller.setSecurityContext(buildAuthentication());
         grpCollectPoller.setMs(50L);
         grpCollectPoller.run();
@@ -120,8 +120,8 @@ public class GrpCollectPollerTest extends AuthoritiesConfigurationTestSetup {
     public void testCollectFailsOnGrpFaultWhenGrpTxExpires() throws GrpException {
 
         when(grpService.collect(any(CollectRequestType.class))).thenThrow(buildException(FaultStatusType.EXPIRED_TRANSACTION));
-        grpCollectPoller.setOrderRef(ORDER_REF);
-        grpCollectPoller.setTicketId(TX_ID);
+        grpCollectPoller.setRefId(ORDER_REF);
+        grpCollectPoller.setTransactionId(TX_ID);
         grpCollectPoller.setSecurityContext(buildAuthentication());
         grpCollectPoller.setMs(50L);
         grpCollectPoller.run();

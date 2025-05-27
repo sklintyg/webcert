@@ -136,6 +136,8 @@ public class CertificateControllerTest {
     private GetCandidateMesssageForCertificateFacadeService getCandidateMesssageForCertificateFacadeService;
     @Mock
     private CreateCertificateFacadeService createCertificateFacadeService;
+    @Mock
+    private HttpServletRequest httpServletRequest;
 
     @InjectMocks
     private CertificateController certificateController;
@@ -314,7 +316,7 @@ public class CertificateControllerTest {
 
             doReturn(certificate)
                 .when(signCertificateFacadeService)
-                .signCertificate(certificate);
+                .signCertificate(certificate, "userIpAddress");
 
             resourceLinks = new ResourceLinkDTO[0];
 
@@ -325,8 +327,11 @@ public class CertificateControllerTest {
 
         @Test
         void shallIncludeResourceLinks() {
-            final var response = (CertificateResponseDTO) certificateController.signCertificate(CERTIFICATE_ID, certificate).getEntity();
-            assertEquals(resourceLinks, response.getCertificate().getLinks());
+            when(httpServletRequest.getRemoteAddr()).thenReturn("userIpAddress");
+            try (final var response = certificateController.signCertificate(CERTIFICATE_ID, certificate, httpServletRequest)) {
+                final var entity = (CertificateResponseDTO) response.getEntity();
+                assertEquals(resourceLinks, entity.getCertificate().getLinks());
+            }
         }
     }
 

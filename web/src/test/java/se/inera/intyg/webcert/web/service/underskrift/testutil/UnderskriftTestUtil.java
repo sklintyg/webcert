@@ -42,6 +42,7 @@ public class UnderskriftTestUtil {
     public static final String ENHET_ID = "enhet-1";
     public static final String PERSON_ID = "19121212-1212";
     public static final String TICKET_ID = "ticket-1";
+    public static final String USER_IP_ADDRESS = "127.0.0.1";
 
     public static final String ORDER_REF = "order-ref";
 

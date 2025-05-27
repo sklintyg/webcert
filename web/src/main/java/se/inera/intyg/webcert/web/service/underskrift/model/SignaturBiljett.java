@@ -33,6 +33,7 @@ import se.inera.intyg.infra.xmldsig.model.IntygSignature;
 @Getter
 public class SignaturBiljett implements Serializable {
 
+    private String userIpAddress;
     private String ticketId;
     private String intygsId;
     private long version;
@@ -68,6 +69,7 @@ public class SignaturBiljett implements Serializable {
 
     public static final class SignaturBiljettBuilder {
 
+        private String userIpAddress;
         private final String ticketId;
         private String intygsId;
         private long version;
@@ -141,6 +143,11 @@ public class SignaturBiljett implements Serializable {
             return this;
         }
 
+        public SignaturBiljettBuilder withUserIpAddress(String userIpAddress) {
+            this.userIpAddress = userIpAddress;
+            return this;
+        }
+
         public SignaturBiljett build() {
             checkArgument(nonNull(ticketId));
             checkArgument(nonNull(signaturTyp));
@@ -159,6 +166,7 @@ public class SignaturBiljett implements Serializable {
             signaturBiljett.setAutoStartToken(autoStartToken);
             signaturBiljett.setQrStartToken(qrStartToken);
             signaturBiljett.setQrStartSecret(qrStartSecret);
+            signaturBiljett.setUserIpAddress(userIpAddress);
             return signaturBiljett;
         }
     }

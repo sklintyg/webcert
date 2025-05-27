@@ -40,7 +40,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequest
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlResponseDTO;
-import se.inera.intyg.webcert.web.service.underskrift.grp.GrpUnderskriftServiceImpl;
+import se.inera.intyg.webcert.web.service.underskrift.grp.GrpSignatureServiceImpl;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker;
@@ -55,6 +55,7 @@ class SignServiceForCSTest {
     private static final String CERTIFICATE_XML_DATA = "certificateXmlData";
     private static final byte[] SIGNATURE_IN_BYTE = "signature".getBytes(StandardCharsets.UTF_8);
     private static final String SIGN_CERTIFICATE = "certificate";
+    private static final String USER_IP_ADDRESS = "userIpAddress";
     @Mock
     private CSIntegrationService csIntegrationService;
     @Mock
@@ -69,7 +70,7 @@ class SignServiceForCSTest {
     @Mock
     private XmlUnderskriftServiceImpl xmlUnderskriftService;
     @Mock
-    private GrpUnderskriftServiceImpl grpUnderskriftService;
+    private GrpSignatureServiceImpl grpUnderskriftService;
     @Mock
     private RedisTicketTracker redisTicketTracker;
 
@@ -83,7 +84,7 @@ class SignServiceForCSTest {
         @Test
         void shallReturnNullIfCertificateDontExistsInCertificateService() {
             doReturn(false).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
-            assertNull(signServiceForCS.startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE, TICKET_ID));
+            assertNull(signServiceForCS.startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE, TICKET_ID, USER_IP_ADDRESS));
         }
 
         @Test
@@ -98,7 +99,7 @@ class SignServiceForCSTest {
             ).when(csIntegrationService).getCertificateXml(certificateXmlRequestDTO, CERTIFICATE_ID);
             assertThrows(ConcurrentModificationException.class,
                 () -> signServiceForCS.startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE,
-                    TICKET_ID));
+                    TICKET_ID, USER_IP_ADDRESS));
         }
 
         @Test
@@ -113,11 +114,11 @@ class SignServiceForCSTest {
                     .build()
             ).when(csIntegrationService).getCertificateXml(certificateXmlRequestDTO, CERTIFICATE_ID);
             doReturn(expectedTicket).when(createSignatureTicketService)
-                .create(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE, TICKET_ID,
+                .create(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE, TICKET_ID, USER_IP_ADDRESS,
                     new String(Base64.getDecoder().decode(CERTIFICATE_XML_DATA), StandardCharsets.UTF_8));
 
             final var actualTicket = signServiceForCS.startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 0L, SignMethod.FAKE,
-                TICKET_ID);
+                TICKET_ID, USER_IP_ADDRESS);
             assertEquals(expectedTicket, actualTicket);
         }
     }

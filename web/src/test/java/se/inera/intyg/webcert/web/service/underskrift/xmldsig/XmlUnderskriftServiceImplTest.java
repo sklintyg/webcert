@@ -79,6 +79,7 @@ public class XmlUnderskriftServiceImplTest {
     private static final String PERSON_ID = "19121212-1212";
     private static final String TICKET_ID = "ticket-1";
     private static final Long VERSION = 1L;
+    private static final String USER_IP_ADDRESS = "127.0.0.1";
 
     private static final ValidationResponse okValidationResult = ValidationResponse.ValidationResponseBuilder.aValidationResponse()
         .withSignatureValid(ValidationResult.OK).withReferencesValid(ValidationResult.OK).build();
@@ -130,7 +131,7 @@ public class XmlUnderskriftServiceImplTest {
 
         SignaturBiljett signaturBiljett = testee.skapaSigneringsBiljettMedDigest(INTYG_ID, INTYG_TYP, VERSION, Optional.of("json"),
             SignMethod.FAKE,
-            TICKET_ID, "<xml/>");
+            TICKET_ID, USER_IP_ADDRESS, "<xml/>");
         assertNotNull(signaturBiljett);
         verify(redisTicketTracker, times(1)).trackBiljett(any(SignaturBiljett.class));
     }

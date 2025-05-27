@@ -35,6 +35,7 @@ import static se.inera.intyg.webcert.web.service.underskrift.testutil.Underskrif
 import static se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil.INTYG_TYP;
 import static se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil.PERSON_ID;
 import static se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil.TICKET_ID;
+import static se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil.USER_IP_ADDRESS;
 import static se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil.createSignaturBiljett;
 import static se.inera.intyg.webcert.web.service.underskrift.testutil.UnderskriftTestUtil.createUtkast;
 
@@ -86,7 +87,7 @@ import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.underskrift.fake.FakeUnderskriftService;
-import se.inera.intyg.webcert.web.service.underskrift.grp.GrpUnderskriftServiceImpl;
+import se.inera.intyg.webcert.web.service.underskrift.grp.GrpSignatureServiceImpl;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturStatus;
@@ -108,7 +109,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
     private WebCertUserService webCertUserService;
 
     @Mock
-    private GrpUnderskriftServiceImpl grpUnderskriftService;
+    private GrpSignatureServiceImpl grpUnderskriftService;
 
     @Mock
     private XmlUnderskriftServiceImpl xmlUnderskriftService;
@@ -201,12 +202,12 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
 
         when(xmlUnderskriftService.skapaSigneringsBiljettMedDigest(anyString(), anyString(), anyLong(), any(),
             any(SignMethod.class),
-            anyString(), any()))
+            anyString(), any(), any()))
             .thenReturn(createSignaturBiljett(SignaturStatus.BEARBETAR));
 
         when(draftModelToXMLValidator.validateDraftModelAsXml(any())).thenReturn(ValidateXmlResponse.createValidResponse());
 
-        SignaturBiljett sb = testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.NETID_PLUGIN, TICKET_ID);
+        SignaturBiljett sb = testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.NETID_PLUGIN, TICKET_ID, USER_IP_ADDRESS);
         assertNotNull(sb.getIntygSignature());
         assertNotNull(sb.getHash());
     }
@@ -214,7 +215,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
     @Test(expected = WebCertServiceException.class)
     public void testStartSignNoUtkastFound() {
         when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.empty());
-        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID);
+        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, USER_IP_ADDRESS);
     }
 
     @Test(expected = OptimisticLockException.class)
@@ -222,7 +223,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
         when(utkastRepository.findById(INTYG_ID))
             .thenReturn(Optional.of(createUtkast(INTYG_ID, 2L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", vardperson,
                 ENHET_ID, PERSON_ID)));
-        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID);
+        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, USER_IP_ADDRESS);
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -230,7 +231,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
         when(utkastRepository.findById(INTYG_ID))
             .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_INCOMPLETE, "model", vardperson,
                 ENHET_ID, PERSON_ID)));
-        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID);
+        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, USER_IP_ADDRESS);
     }
 
     @Test
@@ -244,7 +245,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
                 ENHET_ID, PERSON_ID, ersattandeIntygSkapad)));
 
         when(xmlUnderskriftService.skapaSigneringsBiljettMedDigest(anyString(), anyString(), anyLong(), any(), any(SignMethod.class),
-            anyString(), any()))
+            anyString(), any(), any()))
             .thenReturn(createSignaturBiljett(SignaturStatus.BEARBETAR));
 
         when(utkastService.checkIfPersonHasExistingIntyg(any(), any(), any())).thenReturn(ImmutableMap.of(
@@ -258,7 +259,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
 
         user.setFeatures(ImmutableMap.of(feature.getName(), feature));
 
-        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID);
+        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, USER_IP_ADDRESS);
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -266,7 +267,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
         when(utkastRepository.findById(INTYG_ID))
             .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.SIGNED, "model", vardperson,
                 ENHET_ID, PERSON_ID)));
-        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID);
+        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, USER_IP_ADDRESS);
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -278,7 +279,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
         when(draftModelToXMLValidator.validateDraftModelAsXml(any()))
             .thenReturn(new ValidateXmlResponse(ValidationStatus.INVALID, Collections.singletonList("Error")));
 
-        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID);
+        testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, USER_IP_ADDRESS);
     }
 
     @Test

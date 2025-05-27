@@ -16,18 +16,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.underskrift.grp;
 
-import java.util.Map;
-import org.springframework.security.core.context.SecurityContext;
+package se.inera.intyg.webcert.web.service.underskrift.grp.dto;
 
-public interface GrpCollectPoller extends Runnable {
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import lombok.Builder;
+import lombok.Value;
+import se.inera.intyg.webcert.web.service.underskrift.grp.dto.GrpSubjectIdentifier.GrpSubjectIdentifierBuilder;
 
-    void setRefId(String refId);
+@JsonDeserialize(builder = GrpSubjectIdentifierBuilder.class)
+@Value
+@Builder
+public class GrpSubjectIdentifier {
 
-    void setTransactionId(String transactionId);
+    String value;
+    String type;
 
-    void setMdcContextMap(Map<String, String> mdcContextMap);
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class GrpSubjectIdentifierBuilder {
 
-    void setSecurityContext(SecurityContext securityContext);
+    }
 }

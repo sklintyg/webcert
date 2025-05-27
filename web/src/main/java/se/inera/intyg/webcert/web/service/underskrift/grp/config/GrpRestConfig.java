@@ -16,18 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.underskrift.grp;
 
-import java.util.Map;
-import org.springframework.security.core.context.SecurityContext;
+package se.inera.intyg.webcert.web.service.underskrift.grp.config;
 
-public interface GrpCollectPoller extends Runnable {
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.springframework.web.client.RestClient;
 
-    void setRefId(String refId);
+@Configuration
+@Profile("grp-rest-api")
+public class GrpRestConfig {
 
-    void setTransactionId(String transactionId);
-
-    void setMdcContextMap(Map<String, String> mdcContextMap);
-
-    void setSecurityContext(SecurityContext securityContext);
+    @Bean(name = "grpRestClient")
+    public RestClient grpRestClient() {
+        return RestClient.builder().build();
+    }
 }

@@ -23,10 +23,13 @@ import com.mobilityguard.grp.service.v2.CollectResponseType;
 import com.mobilityguard.grp.service.v2.Property;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -55,6 +58,7 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
  */
 @Component(value = "grpCollectPoller")
 @Scope(value = "prototype")
+@Profile("!grp-rest-api")
 public class GrpCollectPollerImpl implements GrpCollectPoller {
 
     private static final Logger LOG = LoggerFactory.getLogger(GrpCollectPollerImpl.class);
@@ -70,8 +74,9 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
     @Value("${cgi.grp.polling.interval:3000}")
     private long pollingInterval;
 
-    private String orderRef;
-    private String ticketId;
+    private String refId;
+    private String transactionId;
+    private Map<String, String> mdcContextMap;
     private SecurityContext securityContext;
 
     private final RedisTicketTracker redisTicketTracker;
@@ -89,6 +94,7 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
     public void run() {
         try {
             applySecurityContextToThreadLocal();
+            MDC.setContextMap(mdcContextMap);
             WebCertUser webCertUser = (WebCertUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             long startTimeMs = System.currentTimeMillis();
 
@@ -109,18 +115,18 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
                             }
 
                             String signature = resp.getValidationInfo().getSignature();
-                            underskriftService.grpSignature(ticketId, signature.getBytes(StandardCharsets.UTF_8));
+                            underskriftService.grpSignature(transactionId, signature.getBytes(StandardCharsets.UTF_8));
                             LOG.info("Signature was successfully persisted and ticket updated.");
                             return;
                         case USER_SIGN:
-                            redisTicketTracker.updateStatus(ticketId, SignaturStatus.VANTA_SIGN);
+                            redisTicketTracker.updateStatus(transactionId, SignaturStatus.VANTA_SIGN);
                             break;
                         case OUTSTANDING_TRANSACTION:
                         case STARTED:
                         case USER_REQ:
                             break;
                         case NO_CLIENT:
-                            redisTicketTracker.updateStatus(ticketId, SignaturStatus.NO_CLIENT);
+                            redisTicketTracker.updateStatus(transactionId, SignaturStatus.NO_CLIENT);
                             LOG.info("GRP collect returned ProgressStatusType: {}, "
                                     + "has the user started their BankID or Mobilt BankID application?",
                                 resp.getProgressStatus());
@@ -136,6 +142,8 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
                 sleepMs(pollingInterval);
             }
         } finally {
+            MDC.clear();
+
             // Since this poller thread will be returned to its thread pool, we make sure we clean up the security
             // context we bound to this runnable's threadlocal.
             SecurityContextHolder.clearContext();
@@ -169,7 +177,7 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
     }
 
     private void handleGrpException(GrpException grpException) {
-        redisTicketTracker.updateStatus(ticketId, SignaturStatus.OKAND);
+        redisTicketTracker.updateStatus(transactionId, SignaturStatus.OKAND);
         switch (grpException.getFaultInfo().getFaultStatus()) {
             case CLIENT_ERR:
                 LOG.error("GRP collect failed with CLIENT_ERR, message: {}", grpException.getFaultInfo().getDetailedDescription());
@@ -193,8 +201,8 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
 
     private CollectRequestType buildCollectRequest() {
         CollectRequestType req = new CollectRequestType();
-        req.setOrderRef(orderRef);
-        req.setTransactionId(ticketId);
+        req.setOrderRef(refId);
+        req.setTransactionId(transactionId);
         req.setPolicy(serviceId);
         req.setRpDisplayName(displayName);
         req.setProvider(GrpUnderskriftServiceImpl.BANK_ID_PROVIDER);
@@ -217,13 +225,18 @@ public class GrpCollectPollerImpl implements GrpCollectPoller {
     }
 
     @Override
-    public void setOrderRef(String orderRef) {
-        this.orderRef = orderRef;
+    public void setRefId(String refId) {
+        this.refId = refId;
     }
 
     @Override
-    public void setTicketId(String ticketId) {
-        this.ticketId = ticketId;
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
+    }
+
+    @Override
+    public void setMdcContextMap(Map<String, String> mdcContextMap) {
+        this.mdcContextMap = mdcContextMap;
     }
 
     @Override
