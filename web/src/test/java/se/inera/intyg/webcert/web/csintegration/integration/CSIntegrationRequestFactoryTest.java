@@ -51,6 +51,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesQuer
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificatePdfRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageQueryCriteriaDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.PrefillXmlDTO;
 import se.inera.intyg.webcert.web.csintegration.message.MessageRequestConverter;
 import se.inera.intyg.webcert.web.csintegration.message.dto.IncomingMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientDTO;
@@ -68,6 +69,8 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareType;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Svar;
+import se.riv.clinicalprocess.healthcond.certificate.v33.Forifyllnad;
 
 @ExtendWith(MockitoExtension.class)
 class CSIntegrationRequestFactoryTest {
@@ -319,6 +322,17 @@ class CSIntegrationRequestFactoryTest {
         void shouldSetExternalReference() {
             final var actualRequest = csIntegrationRequestFactory.createDraftCertificateRequest(CERTIFICATE_MODEL_ID, intyg, intygUser);
             assertEquals(EXPECTED_REF, actualRequest.getExternalReference());
+        }
+
+        @Test
+        void shouldSetPrefillXml() {
+             Forifyllnad prefill = new Forifyllnad();
+            final var svar = new Svar();
+            svar.setId("testSvarId");
+            prefill.getSvar().add(svar);
+            intyg.setForifyllnad(prefill);
+            final var actualRequest = csIntegrationRequestFactory.createDraftCertificateRequest(CERTIFICATE_MODEL_ID, intyg, intygUser);
+            assertEquals( PrefillXmlDTO.marshall(prefill), actualRequest.getPrefillXml());
         }
     }
 

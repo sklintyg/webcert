@@ -58,6 +58,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitQuestions
 import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.LockDraftsRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageQueryCriteriaDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.PrefillXmlDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ReadyForSignRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.RenewCertificateRequestDTO;
@@ -127,6 +128,7 @@ public class CSIntegrationRequestFactory {
     }
 
     public CreateCertificateRequestDTO createDraftCertificateRequest(CertificateModelIdDTO modelId, Intyg certificate, IntygUser user) {
+
         return CreateCertificateRequestDTO.builder()
             .unit(certificateServiceIntegrationUnitHelper.getUnit(user))
             .careUnit(certificateServiceIntegrationUnitHelper.getCareUnit(user))
@@ -139,6 +141,7 @@ public class CSIntegrationRequestFactory {
             )
             .externalReference(certificate.getRef())
             .certificateModelId(modelId)
+            .prefillXml(PrefillXmlDTO.marshall(certificate.getForifyllnad()))
             .build();
     }
 
