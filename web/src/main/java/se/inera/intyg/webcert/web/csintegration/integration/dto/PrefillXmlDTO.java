@@ -35,26 +35,26 @@ import se.riv.clinicalprocess.healthcond.certificate.v33.ObjectFactory;
 @AllArgsConstructor
 public class PrefillXmlDTO {
 
-   String value;
+  String value;
 
-   public static PrefillXmlDTO marshall(Forifyllnad forifyllnad) {
-      try {
-         final var element=new ObjectFactory().createForifyllnad(forifyllnad);
+  public static PrefillXmlDTO marshall(Forifyllnad forifyllnad) {
+    try {
+      final var element = new ObjectFactory().createForifyllnad(forifyllnad);
 
-         final var stringWriter = new StringWriter();
-         final var jaxbContext = JAXBContext.newInstance(Forifyllnad.class);
-         final var marshaller = jaxbContext.createMarshaller();
+      final var stringWriter = new StringWriter();
+      final var jaxbContext = JAXBContext.newInstance(Forifyllnad.class);
+      final var marshaller = jaxbContext.createMarshaller();
 
-         marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
-         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.FALSE);
-         marshaller.marshal(element, stringWriter);
+      marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+      marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.FALSE);
+      marshaller.marshal(element, stringWriter);
 
-         final var xml = Base64.getEncoder()
-             .encodeToString(stringWriter.toString().getBytes(StandardCharsets.UTF_8));
-         return new PrefillXmlDTO(xml);
-      } catch (Exception e) {
-         log.error("Failed to marshal Forifyllnad to XML", e);
-         return null;
-      }
-   }
+      final var xml = Base64.getEncoder()
+          .encodeToString(stringWriter.toString().getBytes(StandardCharsets.UTF_8));
+      return new PrefillXmlDTO(xml);
+    } catch (Exception e) {
+      log.error("Failed to marshal Forifyllnad to XML", e);
+      return null;
+    }
+  }
 }

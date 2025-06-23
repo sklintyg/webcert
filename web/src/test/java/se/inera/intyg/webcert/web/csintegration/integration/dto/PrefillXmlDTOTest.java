@@ -19,27 +19,31 @@
 
 package se.inera.intyg.webcert.web.csintegration.integration.dto;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import org.junit.jupiter.api.Test;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Svar;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Svar.Delsvar;
 import se.riv.clinicalprocess.healthcond.certificate.v33.Forifyllnad;
 
 class PrefillXmlDTOTest {
 
   @Test
-  void shouldMarshallForifyllnadToXml() {
-    // Given
+  void shouldMarshallPrefillToXml() {
     Forifyllnad forifyllnad = new Forifyllnad();
-    // Set properties on forifyllnad as needed for the test
+    final var svar = new Svar();
+    svar.setId("testSvarId");
+    final var delsvar = new Delsvar();
+    svar.getDelsvar().add(delsvar);
 
-    // When
+    forifyllnad.getSvar().add(svar);
     PrefillXmlDTO prefillXmlDTO = PrefillXmlDTO.marshall(forifyllnad);
+    String xml = new String(Base64.getDecoder().decode(prefillXmlDTO.getValue()),
+        StandardCharsets.UTF_8);
 
-    // Then
-    assertNotNull(prefillXmlDTO);
-    assertNotNull(prefillXmlDTO.getValue());
-    assertFalse(prefillXmlDTO.getValue().isEmpty());
+    assertTrue(xml.contains("testSvarId"));
   }
 
 }
