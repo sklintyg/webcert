@@ -38,6 +38,9 @@ public class PrefillXmlDTO {
   String value;
 
   public static PrefillXmlDTO marshall(Forifyllnad forifyllnad) {
+    if (forifyllnad == null) {
+      return null;
+    }
     try {
       final var element = new ObjectFactory().createForifyllnad(forifyllnad);
 
