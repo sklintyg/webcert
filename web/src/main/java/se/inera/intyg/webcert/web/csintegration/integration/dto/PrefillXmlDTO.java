@@ -45,7 +45,9 @@ public class PrefillXmlDTO {
       final var element = new ObjectFactory().createForifyllnad(forifyllnad);
 
       final var stringWriter = new StringWriter();
-      final var jaxbContext = JAXBContext.newInstance(Forifyllnad.class);
+      final var jaxbContext = JAXBContext.newInstance(
+          Forifyllnad.class,
+          se.riv.clinicalprocess.healthcond.certificate.types.v3.ObjectFactory.class);
       final var marshaller = jaxbContext.createMarshaller();
 
       marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
