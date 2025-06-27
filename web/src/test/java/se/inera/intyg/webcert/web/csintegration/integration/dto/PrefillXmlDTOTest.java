@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.csintegration.integration.dto;
 
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.charset.StandardCharsets;
@@ -44,6 +45,11 @@ class PrefillXmlDTOTest {
         StandardCharsets.UTF_8);
 
     assertTrue(xml.contains("testSvarId"));
+  }
+
+  @Test
+  void ShouldReturnNullIfPrefillIsNull(){
+    assertNull(PrefillXmlDTO.marshall(null));
   }
 
 }
