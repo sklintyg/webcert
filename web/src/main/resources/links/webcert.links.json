@@ -102,6 +102,12 @@
     "target": "_blank"
   },
   {
+    "key": "forsakringskassanLink",
+    "url": "https://forsakringskassan.se/",
+    "text": "Försäkringskassans hemsida",
+    "target": "_blank"
+  },
+  {
     "key": "transportstyrelsen",
     "url": "https://www.transportstyrelsen.se",
     "text": "www.transportstyrelsen.se",
