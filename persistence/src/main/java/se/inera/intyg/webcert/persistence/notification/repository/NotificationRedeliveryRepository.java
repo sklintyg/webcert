@@ -79,6 +79,9 @@ public interface NotificationRedeliveryRepository extends
         SELECT h.ID, 'STANDARD', now() FROM HANDELSE h
         INNER JOIN HANDELSE_METADATA hm ON h.ID = hm.HANDELSE_ID
         WHERE h.INTYGS_ID IN :certificateIds AND hm.DELIVERY_STATUS IN :statuses
+        AND NOT EXISTS (
+            SELECT 1 FROM NOTIFICATION_REDELIVERY nr WHERE nr.HANDELSE_ID = h.ID
+        )
         ORDER BY h.TIMESTAMP""", nativeQuery = true)
     int sendNotificationsForCertificates(@Param("certificateIds") List<String> certificateIds,
         @Param("statuses") List<String> statuses);
@@ -89,7 +92,11 @@ public interface NotificationRedeliveryRepository extends
         SELECT h.ID, 'STANDARD', :activationTime FROM HANDELSE h
         INNER JOIN HANDELSE_METADATA hm ON h.ID = hm.HANDELSE_ID
         WHERE h.ENHETS_ID IN :unitIds AND hm.DELIVERY_STATUS IN :statuses
-        AND h.TIMESTAMP BETWEEN :start AND :end ORDER BY h.TIMESTAMP""", nativeQuery = true)
+        AND h.TIMESTAMP BETWEEN :start AND :end
+        AND NOT EXISTS (
+            SELECT 1 FROM NOTIFICATION_REDELIVERY nr WHERE nr.HANDELSE_ID = h.ID
+        )
+        ORDER BY h.TIMESTAMP""", nativeQuery = true)
     int sendNotificationsForUnits(@Param("unitIds") List<String> unitIds,
         @Param("statuses") List<String> statuses,
         @Param("start") LocalDateTime start,
@@ -102,7 +109,11 @@ public interface NotificationRedeliveryRepository extends
         SELECT h.ID, 'STANDARD', :activationTime FROM HANDELSE h
         INNER JOIN HANDELSE_METADATA hm ON h.ID = hm.HANDELSE_ID
         WHERE h.VARDGIVAR_ID = :careGiverId AND hm.DELIVERY_STATUS IN :statuses
-        AND h.TIMESTAMP BETWEEN :start AND :end ORDER BY h.TIMESTAMP""", nativeQuery = true)
+        AND h.TIMESTAMP BETWEEN :start AND :end
+        AND NOT EXISTS (
+            SELECT 1 FROM NOTIFICATION_REDELIVERY nr WHERE nr.HANDELSE_ID = h.ID
+        )
+        ORDER BY h.TIMESTAMP""", nativeQuery = true)
     int sendNotificationsForCareGiver(@Param("careGiverId") String careGiverId,
         @Param("statuses") List<String> statuses,
         @Param("start") LocalDateTime start,
@@ -111,8 +122,12 @@ public interface NotificationRedeliveryRepository extends
 
     @Modifying
     @Query(value = """
-        INSERT INTO NOTIFICATION_REDELIVERY (HANDELSE_ID, REDELIVERY_STRATEGY, REDELIVERY_TIME) \
-        SELECT h.ID, 'STANDARD', now() FROM HANDELSE h WHERE h.ID = :notificationId""", nativeQuery = true)
+        INSERT INTO NOTIFICATION_REDELIVERY (HANDELSE_ID, REDELIVERY_STRATEGY, REDELIVERY_TIME)
+        SELECT h.ID, 'STANDARD', now() FROM HANDELSE h
+        WHERE h.ID = :notificationId
+        AND NOT EXISTS (
+            SELECT 1 FROM NOTIFICATION_REDELIVERY nr WHERE nr.HANDELSE_ID = h.ID
+        )""", nativeQuery = true)
     int sendNotification(@Param("notificationId") String notificationId);
 
 }
