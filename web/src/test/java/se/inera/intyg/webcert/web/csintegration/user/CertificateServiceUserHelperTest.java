@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -127,6 +128,51 @@ class CertificateServiceUserHelperTest {
                 final var response = certificateServiceUserHelper.get();
 
                 assertEquals(ID, response.getId());
+            }
+
+            @Test
+            void shallReturnUserWithFirstName() {
+                final var expectedName = "expectedName";
+                doReturn(expectedName).when(webCertUser).getFornamn();
+
+                final var response = certificateServiceUserHelper.get();
+                assertEquals(expectedName, response.getFirstName());
+            }
+
+            @Test
+            void shallReturnUserWithLastName() {
+                final var expectedName = "expectedName";
+                doReturn(expectedName).when(webCertUser).getEfternamn();
+
+                final var response = certificateServiceUserHelper.get();
+                assertEquals(expectedName, response.getLastName());
+            }
+
+            @Test
+            void shallReturnUserWithFullName() {
+                final var expectedName = "expectedName";
+                doReturn(expectedName).when(webCertUser).getNamn();
+
+                final var response = certificateServiceUserHelper.get();
+                assertEquals(expectedName, response.getFullName());
+            }
+
+            @Test
+            void shallReturnUserWithSrsActiveTrue() {
+                final var features = Map.of(AuthoritiesConstants.FEATURE_SRS, new Feature());
+                doReturn(features).when(webCertUser).getFeatures();
+
+                final var response = certificateServiceUserHelper.get();
+                assertTrue(response.getSrsActive());
+            }
+
+            @Test
+            void shallReturnUserWithSrsActiveFalse() {
+                final var features = Collections.emptyMap();
+                doReturn(features).when(webCertUser).getFeatures();
+
+                final var response = certificateServiceUserHelper.get();
+                assertFalse(response.getSrsActive());
             }
 
             @Test

@@ -23,7 +23,6 @@ import static java.util.Optional.ofNullable;
 import static se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserUtil.convertRole;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.services.BefattningService;
@@ -56,6 +55,7 @@ public class CertificateServiceUserHelper {
             .healthCareProfessionalLicence(user.getLegitimeradeYrkesgrupper())
             .role(getRole(user))
             .responsibleHospName(user.getParameters() == null ? null : user.getParameters().getResponsibleHospName())
+            .srsActive(user.getFeatures().containsKey(AuthoritiesConstants.FEATURE_SRS))
             .build();
     }
 
@@ -78,7 +78,7 @@ public class CertificateServiceUserHelper {
                     .description(BefattningService.getDescriptionFromCode(befattning).orElse(befattning))
                     .build()
             )
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private boolean isBlocked(WebCertUser webCertUser) {
@@ -114,7 +114,7 @@ public class CertificateServiceUserHelper {
 
     private CertificateServiceUserRole getRole(WebCertUser webCertUser) {
         final var roles = webCertUser.getRoles();
-        if (roles == null || roles.values().isEmpty()) {
+        if (roles == null || roles.isEmpty()) {
             throw new IllegalStateException("User has no roles");
         }
 
