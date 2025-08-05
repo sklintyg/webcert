@@ -22,10 +22,10 @@ package se.inera.intyg.webcert.web.csintegration.user;
 import static se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserUtil.convertRole;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.services.BefattningService;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 
 @Component
@@ -46,6 +46,7 @@ public class CertificateServiceIntegrationUserHelper {
             .accessScope(AccessScopeType.WITHIN_CARE_UNIT)
             .healthCareProfessionalLicence(user.getLegitimeradeYrkesgrupper())
             .allowCopy(true)
+            .srsActive(user.getFeatures().containsKey(AuthoritiesConstants.FEATURE_SRS))
             .build();
     }
 
@@ -57,12 +58,12 @@ public class CertificateServiceIntegrationUserHelper {
                     .description(BefattningService.getDescriptionFromCode(befattning).orElse(befattning))
                     .build()
             )
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private CertificateServiceUserRole getRole(IntygUser user) {
         final var roles = user.getRoles();
-        if (roles == null || roles.values().isEmpty()) {
+        if (roles == null || roles.isEmpty()) {
             throw new IllegalStateException("User has no roles");
         }
 

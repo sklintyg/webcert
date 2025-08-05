@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -41,6 +42,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.services.BefattningService;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.infra.security.common.model.Role;
 
@@ -90,6 +92,51 @@ class CertificateServiceIntegrationUserHelperTest {
             final var response = certificateServiceIntegrationUserHelper.get(intygUser);
 
             assertEquals(ID, response.getId());
+        }
+
+        @Test
+        void shallReturnUserWithFirstName() {
+            final var expectedName = "expectedName";
+            doReturn(expectedName).when(intygUser).getFornamn();
+
+            final var response = certificateServiceIntegrationUserHelper.get(intygUser);
+            assertEquals(expectedName, response.getFirstName());
+        }
+
+        @Test
+        void shallReturnUserWithLastName() {
+            final var expectedName = "expectedName";
+            doReturn(expectedName).when(intygUser).getEfternamn();
+
+            final var response = certificateServiceIntegrationUserHelper.get(intygUser);
+            assertEquals(expectedName, response.getLastName());
+        }
+
+        @Test
+        void shallReturnUserWithFullName() {
+            final var expectedName = "expectedName";
+            doReturn(expectedName).when(intygUser).getNamn();
+
+            final var response = certificateServiceIntegrationUserHelper.get(intygUser);
+            assertEquals(expectedName, response.getFullName());
+        }
+
+        @Test
+        void shallReturnUserWithSrsActiveTrue() {
+            final var features = Map.of(AuthoritiesConstants.FEATURE_SRS, new Feature());
+            doReturn(features).when(intygUser).getFeatures();
+
+            final var response = certificateServiceIntegrationUserHelper.get(intygUser);
+            assertTrue(response.getSrsActive());
+        }
+
+        @Test
+        void shallReturnUserWithSrsActiveFalse() {
+            final var features = Collections.emptyMap();
+            doReturn(features).when(intygUser).getFeatures();
+
+            final var response = certificateServiceIntegrationUserHelper.get(intygUser);
+            assertFalse(response.getSrsActive());
         }
 
         @Test
