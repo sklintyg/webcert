@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -51,7 +52,9 @@ class CertificateTypeInfoAggregatorTest {
     @BeforeEach
     void setup() {
         infoFromCS.setLabel("infoFromCS");
+        infoFromCS.setIssuerTypeId("CS_ID");
         infoFromWC.setLabel("infoFromWC");
+        infoFromWC.setIssuerTypeId("WC_ID");
         getCertificateTypeInfoFromCertificateService = mock(GetCertificateTypesFacadeService.class);
         getCertificateTypeInfoFromWebcert = mock(GetCertificateTypesFacadeService.class);
         certificateServiceProfile = mock(CertificateServiceProfile.class);
@@ -85,10 +88,13 @@ class CertificateTypeInfoAggregatorTest {
         when(certificateServiceProfile.active())
             .thenReturn(true);
         final var infoA = new CertificateTypeInfoDTO();
+        infoA.setIssuerTypeId("A");
         infoA.setLabel("A");
         final var infoB = new CertificateTypeInfoDTO();
+        infoB.setIssuerTypeId("B");
         infoB.setLabel("BBB");
         final var infoC = new CertificateTypeInfoDTO();
+        infoC.setIssuerTypeId("C");
         infoC.setLabel("CC");
         when(getCertificateTypeInfoFromCertificateService.get(PATIENT_ID))
             .thenReturn(List.of(infoA, infoC));
@@ -97,7 +103,7 @@ class CertificateTypeInfoAggregatorTest {
 
         final var response = certificateTypeInfoAggregator.get(PATIENT_ID);
 
-        assertEquals(infoA, response.get(0));
+        assertEquals(infoA, response.getFirst());
         assertEquals(infoB, response.get(1));
         assertEquals(infoC, response.get(2));
     }
@@ -109,5 +115,58 @@ class CertificateTypeInfoAggregatorTest {
         assertEquals(1, response.size());
         assertFalse(response.contains(infoFromCS));
         assertTrue(response.contains(infoFromWC));
+    }
+
+    @Test
+    void shouldKeepCertificateServiceTypeIfIdIsDuplicate() {
+        final var duplicateId = "DUPLICATE_ID";
+        final var csDto = new CertificateTypeInfoDTO();
+        csDto.setIssuerTypeId(duplicateId);
+        csDto.setLabel("CS Label");
+        final var wcDto = new CertificateTypeInfoDTO();
+        wcDto.setIssuerTypeId(duplicateId);
+        wcDto.setLabel("WC Label");
+
+        when(getCertificateTypeInfoFromCertificateService.get(PATIENT_ID))
+            .thenReturn(List.of(csDto));
+        when(getCertificateTypeInfoFromWebcert.get(PATIENT_ID))
+            .thenReturn(List.of(wcDto));
+        when(certificateServiceProfile.active())
+            .thenReturn(true);
+
+        final var response = certificateTypeInfoAggregator.get(PATIENT_ID);
+
+        assertAll(
+            () -> assertEquals(1, response.size()),
+            () -> assertEquals(csDto, response.getFirst()),
+            () -> assertEquals("CS Label", response.getFirst().getLabel())
+        );
+    }
+
+    @Test
+    void shouldKeepCSCertificateIfDuplicateCaseAndSpaceInsensitive() {
+        final var duplicateId = "DUPLICATEID";
+        final var duplicateIdSpace = "DUPLICATE id";
+        final var csDto = new CertificateTypeInfoDTO();
+        csDto.setIssuerTypeId(duplicateId);
+        csDto.setLabel("CS Label");
+        final var wcDto = new CertificateTypeInfoDTO();
+        wcDto.setIssuerTypeId(duplicateIdSpace);
+        wcDto.setLabel("WC Label");
+
+        when(getCertificateTypeInfoFromCertificateService.get(PATIENT_ID))
+            .thenReturn(List.of(csDto));
+        when(getCertificateTypeInfoFromWebcert.get(PATIENT_ID))
+            .thenReturn(List.of(wcDto));
+        when(certificateServiceProfile.active())
+            .thenReturn(true);
+
+        final var response = certificateTypeInfoAggregator.get(PATIENT_ID);
+
+        assertAll(
+            () -> assertEquals(1, response.size()),
+            () -> assertEquals(csDto, response.getFirst()),
+            () -> assertEquals("CS Label", response.getFirst().getLabel())
+        );
     }
 }
