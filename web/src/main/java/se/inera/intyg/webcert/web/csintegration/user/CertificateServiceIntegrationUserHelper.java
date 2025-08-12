@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.csintegration.user;
 
+import static java.util.Optional.ofNullable;
 import static se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserUtil.convertRole;
 
 import java.util.List;
@@ -26,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.services.BefattningService;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 
 @Component
@@ -46,8 +48,14 @@ public class CertificateServiceIntegrationUserHelper {
             .accessScope(AccessScopeType.WITHIN_CARE_UNIT)
             .healthCareProfessionalLicence(user.getLegitimeradeYrkesgrupper())
             .allowCopy(true)
-            .srsActive(user.getFeatures().containsKey(AuthoritiesConstants.FEATURE_SRS))
+            .srsActive(isSrsActive(user))
             .build();
+    }
+
+    private Boolean isSrsActive(IntygUser user) {
+        return ofNullable(user.getFeatures().get(AuthoritiesConstants.FEATURE_SRS))
+            .filter(Feature::getGlobal)
+            .isPresent();
     }
 
     private List<PaTitleDTO> paTitles(List<String> befattningar) {
@@ -55,7 +63,8 @@ public class CertificateServiceIntegrationUserHelper {
             .map(befattning ->
                 PaTitleDTO.builder()
                     .code(befattning)
-                    .description(BefattningService.getDescriptionFromCode(befattning).orElse(befattning))
+                    .description(
+                        BefattningService.getDescriptionFromCode(befattning).orElse(befattning))
                     .build()
             )
             .toList();

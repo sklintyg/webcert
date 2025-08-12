@@ -54,9 +54,16 @@ public class CertificateServiceUserHelper {
             .allowCopy(user.getParameters() == null || user.getParameters().isFornyaOk())
             .healthCareProfessionalLicence(user.getLegitimeradeYrkesgrupper())
             .role(getRole(user))
-            .responsibleHospName(user.getParameters() == null ? null : user.getParameters().getResponsibleHospName())
-            .srsActive(user.getFeatures().containsKey(AuthoritiesConstants.FEATURE_SRS))
+            .responsibleHospName(
+                user.getParameters() == null ? null : user.getParameters().getResponsibleHospName())
+            .srsActive(isSrsActive(user))
             .build();
+    }
+
+    private Boolean isSrsActive(WebCertUser user) {
+        return ofNullable(user.getFeatures().get(AuthoritiesConstants.FEATURE_SRS))
+            .filter(Feature::getGlobal)
+            .isPresent();
     }
 
     private AccessScopeType getAccessScope(WebCertUser user) {
@@ -75,7 +82,8 @@ public class CertificateServiceUserHelper {
             .map(befattning ->
                 PaTitleDTO.builder()
                     .code(befattning)
-                    .description(BefattningService.getDescriptionFromCode(befattning).orElse(befattning))
+                    .description(
+                        BefattningService.getDescriptionFromCode(befattning).orElse(befattning))
                     .build()
             )
             .toList();
@@ -86,7 +94,8 @@ public class CertificateServiceUserHelper {
             return false;
         }
 
-        return ofNullable(webCertUser.getFeatures().get(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL))
+        return ofNullable(
+            webCertUser.getFeatures().get(AuthoritiesConstants.FEATURE_ENABLE_BLOCK_ORIGIN_NORMAL))
             .filter(Feature::getGlobal)
             .isPresent();
     }
@@ -105,7 +114,8 @@ public class CertificateServiceUserHelper {
         }
         final var careProviderId = webCertUser.getValdVardgivare().getId();
 
-        return !webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscription().contains(careProviderId);
+        return !webCertUser.getSubscriptionInfo().getCareProvidersMissingSubscription()
+            .contains(careProviderId);
     }
 
     private static boolean ifUserHasntSelectedLoggedInUnitYet(WebCertUser webCertUser) {
