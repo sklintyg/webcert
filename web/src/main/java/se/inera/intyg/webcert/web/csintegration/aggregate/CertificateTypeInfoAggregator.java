@@ -56,11 +56,19 @@ public class CertificateTypeInfoAggregator implements GetCertificateTypesFacadeS
         }
 
         final var typesFromCertificateService = getCertificateTypeInfoFromCertificateService.get(patientId);
+        final var csIds = typesFromCertificateService.stream()
+            .map(CertificateTypeInfoDTO::getIssuerTypeId)
+            .map(id -> id.replace(" ", "").toLowerCase())
+            .collect(Collectors.toSet());
+
+        final var filteredTypesFromWebcert = typesFromWebcert.stream()
+            .filter(dto -> !csIds.contains(dto.getIssuerTypeId().replace(" ", "").toLowerCase()))
+            .toList();
 
         return Stream
             .concat(
-                typesFromWebcert.stream(),
-                typesFromCertificateService.stream()
+                typesFromCertificateService.stream(),
+                filteredTypesFromWebcert.stream()
             )
             .sorted(Comparator.comparing(CertificateTypeInfoDTO::getLabel))
             .collect(Collectors.toList());
