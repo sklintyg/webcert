@@ -123,7 +123,9 @@ class CertificateServiceIntegrationUserHelperTest {
 
         @Test
         void shallReturnUserWithSrsActiveTrue() {
-            final var features = Map.of(AuthoritiesConstants.FEATURE_SRS, new Feature());
+            final var feature = new Feature();
+            feature.setGlobal(true);
+            final var features = Map.of(AuthoritiesConstants.FEATURE_SRS, feature);
             doReturn(features).when(intygUser).getFeatures();
 
             final var response = certificateServiceIntegrationUserHelper.get(intygUser);
