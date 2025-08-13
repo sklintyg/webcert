@@ -173,7 +173,7 @@ class SendCertificateFunctionImplTest {
 
         @Test
         void shallIncludeSendWithWarningIfSickleavePeriodIsShorterThan15Days() {
-            final var certificate = CertificateFacadeTestHelper.createCertificateWithSickleavePeriod(14);
+            final var certificate = CertificateFacadeTestHelper.createCertificateWithSickleavePeriod(13);
             final var actualAvailableFunctions = sendCertificateFunction.get(certificate);
             assertInclude(List.of(actualAvailableFunctions.get()), ResourceLinkTypeDTO.SEND_CERTIFICATE);
             assertTrue(actualAvailableFunctions
@@ -184,7 +184,7 @@ class SendCertificateFunctionImplTest {
 
         @Test
         void shallNotIncludeSendWithWarningIfSickleavePeriodIs15Days() {
-            final var certificate = CertificateFacadeTestHelper.createCertificateWithSickleavePeriod(15);
+            final var certificate = CertificateFacadeTestHelper.createCertificateWithSickleavePeriod(14);
             final var actualAvailableFunctions = sendCertificateFunction.get(certificate);
             assertInclude(List.of(actualAvailableFunctions.get()), ResourceLinkTypeDTO.SEND_CERTIFICATE);
             assertFalse(actualAvailableFunctions
@@ -195,7 +195,7 @@ class SendCertificateFunctionImplTest {
 
         @Test
         void shallNotIncludeSendWithWarningIfSickleavePeriodIsLongerThan15Days() {
-            final var certificate = CertificateFacadeTestHelper.createCertificateWithSickleavePeriod(100);
+            final var certificate = CertificateFacadeTestHelper.createCertificateWithSickleavePeriod(15);
             final var actualAvailableFunctions = sendCertificateFunction.get(certificate);
             assertInclude(List.of(actualAvailableFunctions.get()), ResourceLinkTypeDTO.SEND_CERTIFICATE);
             assertFalse(actualAvailableFunctions
