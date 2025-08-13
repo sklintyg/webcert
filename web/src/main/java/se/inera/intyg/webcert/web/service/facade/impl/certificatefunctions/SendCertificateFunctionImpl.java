@@ -19,7 +19,9 @@
 package se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions;
 
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Component;
@@ -169,12 +171,39 @@ public class SendCertificateFunctionImpl implements SendCertificateFunction {
             .filter(dataElement -> dataElement.getConfig().getType() == CertificateDataConfigType.UE_CHECKBOX_DATE_RANGE_LIST).findFirst();
         if (optionalSickLeavePeriod.isPresent()) {
             final var sickLeavePeriod = (CertificateDataValueDateRangeList) optionalSickLeavePeriod.get().getValue();
+            final var certificateDataValueDateRanges = mergeConnectedDates(sickLeavePeriod.getList());
+
             long sickLeaveLength = 0;
-            for (CertificateDataValueDateRange sickLeave : sickLeavePeriod.getList()) {
-                sickLeaveLength += ChronoUnit.DAYS.between(sickLeave.getFrom(), sickLeave.getTo());
+            for (CertificateDataValueDateRange sickLeave : certificateDataValueDateRanges) {
+                sickLeaveLength += ChronoUnit.DAYS.between(sickLeave.getFrom(), sickLeave.getTo()) + 1;
             }
             return sickLeaveLength < SICKLEAVE_DAYS_LIMIT;
         }
         return false;
+    }
+
+    private static ArrayList<CertificateDataValueDateRange> mergeConnectedDates(List<CertificateDataValueDateRange> dateRanges) {
+        final var sortedRanges = new ArrayList<>(dateRanges);
+        sortedRanges.sort(Comparator.comparing(CertificateDataValueDateRange::getTo));
+
+        final var ranges = new ArrayList<CertificateDataValueDateRange>();
+        sortedRanges.forEach(date -> {
+                final var dateRange = ranges.isEmpty() ? null : ranges.getLast();
+
+                if (dateRange != null && hasOverlappingDates(date, dateRange)) {
+                    final var dateRangeWithAddedDays = dateRange.withTo(date.getTo());
+                    ranges.remove(dateRange);
+                    ranges.add(dateRangeWithAddedDays);
+                } else {
+                    ranges.add(date);
+                }
+            }
+        );
+
+        return ranges;
+    }
+
+    private static boolean hasOverlappingDates(CertificateDataValueDateRange date, CertificateDataValueDateRange dateRange) {
+        return dateRange.getTo().plusDays(1).equals(date.getFrom());
     }
 }
