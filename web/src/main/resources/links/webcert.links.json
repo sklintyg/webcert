@@ -130,14 +130,14 @@
     "url": "https://forsakringsmedicin.socialstyrelsen.se/",
     "text": "Läs mer om FMB hos Socialstyrelsen",
     "target": "_blank",
-    "tooltip": "Öppnar Socialstyrelsens beslutstöd för angiven huvuddiagnos."
+    "tooltip": "Öppnar Socialstyrelsens beslutstöd inom försäkringsmedicin."
   },
   {
     "key": "fmbSocWithIcon",
     "url": "https://forsakringsmedicin.socialstyrelsen.se/",
     "text": "Socialstyrelsens försäkringsmedicinska beslutsstöd <img src='/img/link_icon.png'/>",
     "target": "_blank",
-    "tooltip": "Öppnar Socialstyrelsens beslutstöd för angiven huvuddiagnos"
+    "tooltip": "Öppnar Socialstyrelsens beslutstöd inom försäkringsmedicin"
   },
   {
     "key": "srsSkl",
