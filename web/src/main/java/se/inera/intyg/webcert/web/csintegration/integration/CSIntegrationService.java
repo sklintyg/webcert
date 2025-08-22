@@ -18,19 +18,6 @@
  */
 package se.inera.intyg.webcert.web.csintegration.integration;
 
-import static se.inera.intyg.webcert.logging.MdcLogConstants.EVENT_TYPE_ACCESS;
-import static se.inera.intyg.webcert.logging.MdcLogConstants.EVENT_TYPE_CHANGE;
-import static se.inera.intyg.webcert.logging.MdcLogConstants.EVENT_TYPE_CREATION;
-import static se.inera.intyg.webcert.logging.MdcLogConstants.EVENT_TYPE_DELETION;
-import static se.inera.intyg.webcert.logging.MdcLogConstants.EVENT_TYPE_INFO;
-import static se.inera.intyg.webcert.logging.MdcLogConstants.TRACE_ID_KEY;
-import static se.inera.intyg.webcert.logging.MdcLogConstants.SESSION_ID_KEY;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,94 +31,20 @@ import se.inera.intyg.common.support.modules.support.facade.dto.CertificateEvent
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
 import se.inera.intyg.webcert.logging.MdcHelper;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.AnswerComplementRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.AnswerComplementResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateComplementRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateComplementResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateExistsResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateExternalTypeExistsResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceCreateCertificateResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceGetCertificateResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateTypeExistsResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesWithQARequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesWithQAResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CitizenCertificateExistsResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateMessageRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateMessageResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteAnswerRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteAnswerResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteMessageRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.ForwardCertificateRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.ForwardCertificateResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateEventsRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateEventsResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFromMessageRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFromMessageResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageInternalResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificatePdfRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificatePdfResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetListCertificatesResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitQuestionsRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitQuestionsResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.InternalCertificateXmlResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.LockDraftsRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.LockDraftsResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageExistsResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.ReadyForSignRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.ReadyForSignResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.RenewCertificateRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.RenewCertificateResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.ReplaceCertificateRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.ReplaceCertificateResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.RevokeCertificateRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.RevokeCertificateResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveAnswerRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveAnswerResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveMessageRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveMessageResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.SendAnswerRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.SendAnswerResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.SendCertificateRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.SendCertificateResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.SendMessageRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.SendMessageResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateWithoutSignatureRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.StatisticsForUnitDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.UnitStatisticsRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.UnitStatisticsResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.*;
 import se.inera.intyg.webcert.web.csintegration.message.dto.IncomingMessageRequestDTO;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import static se.inera.intyg.webcert.logging.MdcLogConstants.*;
 
 @Service
 public class CSIntegrationService {
@@ -372,6 +285,26 @@ public class CSIntegrationService {
     @PerformanceLogging(eventAction = "renew-certificate", eventType = EVENT_TYPE_CREATION)
     public Certificate renewCertificate(String certificateId, RenewCertificateRequestDTO request) {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/renew";
+
+        final var response = restClient.post()
+                .uri(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
+                .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
+                .body(request)
+                .retrieve()
+                .body(RenewCertificateResponseDTO.class);
+
+        if (response == null) {
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
+        }
+
+        return response.getCertificate();
+    }
+
+    @PerformanceLogging(eventAction = "renew-legacy-certificate", eventType = EVENT_TYPE_CREATION)
+    public Certificate renewLegacyCertificate(String certificateId, RenewLegacyCertificateRequestDTO request) {
+        final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/renewexternal";
 
         final var response = restClient.post()
                 .uri(url)

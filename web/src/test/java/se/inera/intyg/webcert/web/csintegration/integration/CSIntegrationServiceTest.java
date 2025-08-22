@@ -18,23 +18,6 @@
  */
 package se.inera.intyg.webcert.web.csintegration.integration;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -44,11 +27,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
@@ -60,7 +42,6 @@ import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.modules.support.facade.dto.CertificateEventDTO;
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.*;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetListCertificatesResponseDTO.GetListCertificatesResponseDTOBuilder;
 import se.inera.intyg.webcert.web.csintegration.message.dto.IncomingMessageRequestDTO;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
@@ -68,6 +49,16 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionDTO;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CSIntegrationServiceTest {
@@ -168,6 +159,7 @@ class CSIntegrationServiceTest {
     private static final RenewCertificateResponseDTO RENEW_CERTIFICATE_RESPONSE = RenewCertificateResponseDTO.builder()
         .certificate(CERTIFICATE)
         .build();
+    private static final RenewLegacyCertificateRequestDTO RENEWLEGACY_CERTIFICATE_REQUEST = RenewLegacyCertificateRequestDTO.builder().build();
     private static final IncomingMessageRequestDTO INCOMING_MESSAGE_REQUEST_DTO = IncomingMessageRequestDTO.builder()
         .build();
 
@@ -3424,6 +3416,74 @@ class CSIntegrationServiceTest {
             verify(requestBodyUriSpec).uri(captor.capture());
 
             assertEquals("baseUrl/api/certificate/" + ID + "/readyForSign", captor.getValue());
+        }
+    }
+
+    @Nested
+    class RenewLegacyCertificate {
+
+        @BeforeEach
+        void setUp() {
+
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/certificate/certificateId/renewexternal";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(RenewLegacyCertificateRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+        }
+
+        @Test
+        void shouldThrowExceptionIfResponseIsNull() {
+
+            doReturn(null).when(responseSpec).body(RenewCertificateResponseDTO.class);
+
+            assertThrows(IllegalStateException.class,
+                    () -> csIntegrationService.renewLegacyCertificate(CERTIFICATE_ID, RENEWLEGACY_CERTIFICATE_REQUEST)
+            );
+        }
+
+        @Nested
+        class WithResponse {
+
+            @BeforeEach
+            void setUp() {
+                doReturn(RENEW_CERTIFICATE_RESPONSE).when(responseSpec).body(RenewCertificateResponseDTO.class);
+            }
+
+            @Test
+            void shouldPreformPostUsingRequest() {
+                final var captor = ArgumentCaptor.forClass(RenewLegacyCertificateRequestDTO.class);
+
+                csIntegrationService.renewLegacyCertificate(CERTIFICATE_ID, RENEWLEGACY_CERTIFICATE_REQUEST);
+                verify(requestBodyUriSpec).body(captor.capture());
+
+                assertEquals(RENEWLEGACY_CERTIFICATE_REQUEST, captor.getValue());
+            }
+
+            @Test
+            void shouldReturnCertificate() {
+                final var response = csIntegrationService.renewLegacyCertificate(CERTIFICATE_ID, RENEWLEGACY_CERTIFICATE_REQUEST);
+
+                assertEquals(CERTIFICATE, response);
+            }
+
+            @Test
+            void shouldSetUrlCorrect() {
+                ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+                final var captor = ArgumentCaptor.forClass(String.class);
+
+                csIntegrationService.renewLegacyCertificate(CERTIFICATE_ID, RENEWLEGACY_CERTIFICATE_REQUEST);
+                verify(requestBodyUriSpec).uri(captor.capture());
+
+                assertEquals("baseUrl/api/certificate/certificateId/renewexternal", captor.getValue());
+            }
         }
     }
 }

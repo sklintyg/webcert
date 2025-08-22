@@ -18,19 +18,6 @@
  */
 package se.inera.intyg.webcert.web.csintegration.integration;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -46,12 +33,7 @@ import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesQueryCriteriaDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificatePdfRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageQueryCriteriaDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.PrefillXmlDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.*;
 import se.inera.intyg.webcert.web.csintegration.message.MessageRequestConverter;
 import se.inera.intyg.webcert.web.csintegration.message.dto.IncomingMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientDTO;
@@ -71,6 +53,16 @@ import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificaterespo
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Svar;
 import se.riv.clinicalprocess.healthcond.certificate.v33.Forifyllnad;
+
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CSIntegrationRequestFactoryTest {
@@ -1196,6 +1188,67 @@ class CSIntegrationRequestFactoryTest {
         @Test
         void shouldSetExternalReference() {
             final var actualRequest = csIntegrationRequestFactory.renewCertificateRequest(PATIENT_WITH_ID, integrationParameters);
+            assertEquals(EXTERNAL_REFERENCE, actualRequest.getExternalReference());
+        }
+    }
+
+    @Nested
+    class RenewLegacyCertificateRequest {
+
+        @Mock
+        private IntegrationParameters integrationParameters;
+
+        @BeforeEach
+        void setup() {
+            when(certificateServiceUserHelper.get())
+                .thenReturn(USER);
+            when(certificateServicePatientHelper.get(any()))
+                .thenReturn(PATIENT);
+            when(certificateServiceUnitHelper.getUnit())
+                .thenReturn(UNIT);
+            when(certificateServiceUnitHelper.getCareUnit())
+                .thenReturn(CARE_UNIT);
+            when(certificateServiceUnitHelper.getCareProvider())
+                .thenReturn(CARE_PROVIDER);
+            when(integrationParameters.getReference())
+                .thenReturn(EXTERNAL_REFERENCE);
+        }
+
+        @Test
+        void shouldSetUser() {
+            final var actualRequest = csIntegrationRequestFactory.renewLegacyCertificateRequest(PATIENT_WITH_ID, integrationParameters);
+            assertEquals(USER, actualRequest.getUser());
+        }
+
+        @Test
+        void shouldSetUnit() {
+            final var actualRequest = csIntegrationRequestFactory.renewLegacyCertificateRequest(PATIENT_WITH_ID, integrationParameters);
+            assertEquals(UNIT, actualRequest.getUnit());
+        }
+
+        @Test
+        void shouldSetCareUnit() {
+            final var actualRequest = csIntegrationRequestFactory.renewLegacyCertificateRequest(PATIENT_WITH_ID, integrationParameters);
+            assertEquals(CARE_UNIT, actualRequest.getCareUnit());
+        }
+
+        @Test
+        void shouldSetCareProvider() {
+            final var actualRequest = csIntegrationRequestFactory.renewLegacyCertificateRequest(PATIENT_WITH_ID, integrationParameters);
+            assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
+        }
+
+        @Test
+        void shouldSetPatientUsingPatientIdIfAlternateSSNIsNotSet() {
+            final var actualRequest = csIntegrationRequestFactory.renewLegacyCertificateRequest(PATIENT_WITH_ID, integrationParameters);
+
+            verify(certificateServicePatientHelper).get(PERSONNUMMER);
+            assertEquals(PATIENT, actualRequest.getPatient());
+        }
+
+        @Test
+        void shouldSetExternalReference() {
+            final var actualRequest = csIntegrationRequestFactory.renewLegacyCertificateRequest(PATIENT_WITH_ID, integrationParameters);
             assertEquals(EXTERNAL_REFERENCE, actualRequest.getExternalReference());
         }
     }
