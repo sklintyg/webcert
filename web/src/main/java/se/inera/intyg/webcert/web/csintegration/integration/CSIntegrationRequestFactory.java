@@ -334,14 +334,12 @@ public class CSIntegrationRequestFactory {
     }
 
     private String convertReason(String reason) {
-        switch (reason) {
-            case "FEL_PATIENT":
-                return "INCORRECT_PATIENT";
-            case "ANNAT_ALLVARLIGT_FEL":
-                return "OTHER_SERIOUS_ERROR";
-            default:
-                throw new IllegalArgumentException("Invalid revoke reason. Reason must be either 'FEL_PATIENT' or 'ANNAT_ALLVARLIGT_FEL'");
-        }
+        return switch (reason) {
+            case "FEL_PATIENT" -> "INCORRECT_PATIENT";
+            case "ANNAT_ALLVARLIGT_FEL" -> "OTHER_SERIOUS_ERROR";
+            default ->
+                    throw new IllegalArgumentException("Invalid revoke reason. Reason must be either 'FEL_PATIENT' or 'ANNAT_ALLVARLIGT_FEL'");
+        };
     }
 
     private Personnummer createPatientId(String patientId) {
