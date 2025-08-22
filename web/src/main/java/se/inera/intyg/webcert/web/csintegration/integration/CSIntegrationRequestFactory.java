@@ -18,6 +18,11 @@
  */
 package se.inera.intyg.webcert.web.csintegration.integration;
 
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.util.Base64;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.Certificate;
@@ -27,7 +32,50 @@ import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.*;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.AnswerComplementRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateComplementRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesQueryCriteriaDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesWithQARequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteAnswerRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ForwardCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateEventsRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFromMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificatePdfRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitQuestionsRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.LockDraftsRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageQueryCriteriaDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.PrefillXmlDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ReadyForSignRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.RenewCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.RenewLegacyCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ReplaceCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.RevokeCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.RevokeInformationDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveAnswerRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SendAnswerRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SendCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SendMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateWithoutSignatureRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.UnitStatisticsRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.message.MessageRequestConverter;
 import se.inera.intyg.webcert.web.csintegration.message.dto.IncomingMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientHelper;
@@ -42,12 +90,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareType;
-
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
-import java.util.Base64;
-import java.util.List;
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -293,7 +335,8 @@ public class CSIntegrationRequestFactory {
             .build();
     }
 
-    public RenewLegacyCertificateRequestDTO renewLegacyCertificateRequest(Patient patient, IntegrationParameters integrationParameters) {
+    public RenewLegacyCertificateRequestDTO renewLegacyCertificateRequest(Patient patient, IntegrationParameters integrationParameters,
+        CertificateModelIdDTO certificateModelId) {
         return RenewLegacyCertificateRequestDTO.builder()
             .unit(certificateServiceUnitHelper.getUnit())
             .careUnit(certificateServiceUnitHelper.getCareUnit())
@@ -301,6 +344,7 @@ public class CSIntegrationRequestFactory {
             .user(certificateServiceUserHelper.get())
             .patient(certificateServicePatientHelper.get(createPatientId(patient.getActualPersonId().getId())))
             .externalReference(getExternalReference(integrationParameters))
+            .certificateModelId(certificateModelId)
             .build();
     }
 
@@ -338,7 +382,7 @@ public class CSIntegrationRequestFactory {
             case "FEL_PATIENT" -> "INCORRECT_PATIENT";
             case "ANNAT_ALLVARLIGT_FEL" -> "OTHER_SERIOUS_ERROR";
             default ->
-                    throw new IllegalArgumentException("Invalid revoke reason. Reason must be either 'FEL_PATIENT' or 'ANNAT_ALLVARLIGT_FEL'");
+                throw new IllegalArgumentException("Invalid revoke reason. Reason must be either 'FEL_PATIENT' or 'ANNAT_ALLVARLIGT_FEL'");
         };
     }
 

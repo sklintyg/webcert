@@ -26,12 +26,13 @@ import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 @Slf4j
-@Service("renewCertificateFromCertificateService")
+@Service
 @RequiredArgsConstructor
 public class RenewLegacyCertificateFromCertificateService {
 
@@ -43,7 +44,7 @@ public class RenewLegacyCertificateFromCertificateService {
     private final IntegratedUnitRegistryHelper integratedUnitRegistryHelper;
     private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
 
-    public String renewCertificate(Certificate certificate) {
+    public String renewCertificate(Certificate certificate, CertificateModelIdDTO certificateModelId) {
         final var certificateId = certificate.getMetadata().getId();
         log.debug("Attempting to renew legacy certificate '{}' from Certificate Service", certificateId);
 
@@ -51,7 +52,8 @@ public class RenewLegacyCertificateFromCertificateService {
             certificateId,
             csIntegrationRequestFactory.renewLegacyCertificateRequest(
                 certificate.getMetadata().getPatient(),
-                webCertUserService.getUser().getParameters()
+                webCertUserService.getUser().getParameters(),
+                certificateModelId
             )
         );
 

@@ -37,13 +37,14 @@ public class RenewCertificateAggregator implements RenewCertificateFacadeService
     private final RenewLegacyCertificateFromCertificateService renewLegacyCertificateFromCertificateService;
 
     public RenewCertificateAggregator(
-            @Qualifier("renewCertificateFromWebcert")
+        @Qualifier("renewCertificateFromWebcert")
         RenewCertificateFacadeService renewCertificateFromWebcert,
-            @Qualifier("renewCertificateFromCertificateService")
+        @Qualifier("renewCertificateFromCertificateService")
         RenewCertificateFacadeService renewCertificateFromCertificateService,
-            CertificateServiceProfile certificateServiceProfile,
-            CSIntegrationService csIntegrationService,
-            GetCertificateAggregator getCertificateAggregator, RenewLegacyCertificateFromCertificateService renewLegacyCertificateFromCertificateService) {
+        CertificateServiceProfile certificateServiceProfile,
+        CSIntegrationService csIntegrationService,
+        GetCertificateAggregator getCertificateAggregator,
+        RenewLegacyCertificateFromCertificateService renewLegacyCertificateFromCertificateService) {
         this.renewCertificateFromWebcert = renewCertificateFromWebcert;
         this.renewCertificateFromCertificateService = renewCertificateFromCertificateService;
         this.certificateServiceProfile = certificateServiceProfile;
@@ -68,7 +69,7 @@ public class RenewCertificateAggregator implements RenewCertificateFacadeService
         final var certificateTypeExistsInCS = csIntegrationService.certificateTypeExists(certificate.getMetadata().getType());
 
         return certificateTypeExistsInCS
-            .map(exists -> renewLegacyCertificateFromCertificateService.renewCertificate(certificate))
+            .map(certificateModelId -> renewLegacyCertificateFromCertificateService.renewCertificate(certificate, certificateModelId))
             .orElseGet(() -> renewCertificateFromWebcert.renewCertificate(certificateId));
     }
 }
