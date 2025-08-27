@@ -63,6 +63,7 @@ class CertificateServiceVardenhetConverterTest {
             .phoneNumber(EXPECTED_PHONE_NUMBER)
             .email(EXPECTED_MAIL)
             .isInactive(true)
+            .workplaceCode(EXPECTED_WORKPLACE_CODE)
             .build();
     }
 
@@ -166,5 +167,11 @@ class CertificateServiceVardenhetConverterTest {
     void shallConvertInactiveFromMetadataUnit() {
         final var result = certificateServiceVardenhetConverter.convert(metadataUnit);
         assertTrue(result.getInactive());
+    }
+
+    @Test
+    void shallConvertWorkplaceCodeFromMetadataUnit() {
+        final var result = certificateServiceVardenhetConverter.convert(metadataUnit);
+        assertEquals(EXPECTED_WORKPLACE_CODE, result.getWorkplaceCode());
     }
 }
