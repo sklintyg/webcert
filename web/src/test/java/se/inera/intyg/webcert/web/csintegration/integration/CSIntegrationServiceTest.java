@@ -18,6 +18,21 @@
  */
 package se.inera.intyg.webcert.web.csintegration.integration;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -41,7 +56,90 @@ import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.modules.support.facade.dto.CertificateEventDTO;
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.*;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.AnswerComplementRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.AnswerComplementResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateComplementRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateComplementResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateExistsResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateExternalTypeExistsResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceCreateCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceGetCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateTypeExistsResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesWithQARequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesWithQAResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CitizenCertificateExistsResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateMessageResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteAnswerRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteAnswerResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ForwardCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ForwardCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateEventsRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateEventsResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFromMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFromMessageResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageInternalResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateMessageResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateXmlResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificatePdfRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificatePdfResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetListCertificatesResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitQuestionsRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitQuestionsResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.InternalCertificateXmlResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.LockDraftsRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.LockDraftsResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageExistsResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ReadyForSignRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ReadyForSignResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.RenewCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.RenewCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.RenewLegacyCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ReplaceCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ReplaceCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.RevokeCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.RevokeCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveAnswerRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveAnswerResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveMessageResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SendAnswerRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SendAnswerResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SendCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SendCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SendMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SendMessageResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateWithoutSignatureRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.StatisticsForUnitDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.UnitStatisticsRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.UnitStatisticsResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.message.dto.IncomingMessageRequestDTO;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
@@ -49,16 +147,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionDTO;
-
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CSIntegrationServiceTest {
@@ -159,7 +247,8 @@ class CSIntegrationServiceTest {
     private static final RenewCertificateResponseDTO RENEW_CERTIFICATE_RESPONSE = RenewCertificateResponseDTO.builder()
         .certificate(CERTIFICATE)
         .build();
-    private static final RenewLegacyCertificateRequestDTO RENEWLEGACY_CERTIFICATE_REQUEST = RenewLegacyCertificateRequestDTO.builder().build();
+    private static final RenewLegacyCertificateRequestDTO RENEWLEGACY_CERTIFICATE_REQUEST = RenewLegacyCertificateRequestDTO.builder()
+        .build();
     private static final IncomingMessageRequestDTO INCOMING_MESSAGE_REQUEST_DTO = IncomingMessageRequestDTO.builder()
         .build();
 
@@ -261,9 +350,12 @@ class CSIntegrationServiceTest {
         .build();
     private static final UnitStatisticsRequestDTO STATISTICS_REQUEST_DTO = UnitStatisticsRequestDTO.builder().build();
     private static final ReadyForSignRequestDTO READY_FOR_SIGN_REQUEST_DTO = ReadyForSignRequestDTO.builder().build();
-    private static final SaveCertificateRequestDTO SAVE_CERTIFICATE_REQUEST_DTO = SaveCertificateRequestDTO.builder().certificate(CERTIFICATE).build();
-    private static final SaveCertificateResponseDTO SAVE_CERTIFICATE_RESPONSE_DTO = SaveCertificateResponseDTO.builder().certificate(CERTIFICATE).build();
-    private static final SaveCertificateResponseDTO SAVE_CERTIFICATE_NULL_RESPONSE_DTO = SaveCertificateResponseDTO.builder().certificate(null).build();
+    private static final SaveCertificateRequestDTO SAVE_CERTIFICATE_REQUEST_DTO = SaveCertificateRequestDTO.builder()
+        .certificate(CERTIFICATE).build();
+    private static final SaveCertificateResponseDTO SAVE_CERTIFICATE_RESPONSE_DTO = SaveCertificateResponseDTO.builder()
+        .certificate(CERTIFICATE).build();
+    private static final SaveCertificateResponseDTO SAVE_CERTIFICATE_NULL_RESPONSE_DTO = SaveCertificateResponseDTO.builder()
+        .certificate(null).build();
 
     @Mock
     private RestClient restClient;
@@ -313,8 +405,8 @@ class CSIntegrationServiceTest {
         when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
 
         final var response = CertificateServiceTypeInfoResponseDTO.builder()
-                .list(List.of())
-                .build();
+            .list(List.of())
+            .build();
 
         doReturn(response).when(responseSpec).body(CertificateServiceTypeInfoResponseDTO.class);
 
@@ -348,8 +440,8 @@ class CSIntegrationServiceTest {
             final var captor = ArgumentCaptor.forClass(CertificateServiceTypeInfoRequestDTO.class);
 
             final var response = CertificateServiceTypeInfoResponseDTO.builder()
-                    .list(List.of())
-                    .build();
+                .list(List.of())
+                .build();
 
             doReturn(response).when(responseSpec).body(CertificateServiceTypeInfoResponseDTO.class);
 
@@ -376,8 +468,8 @@ class CSIntegrationServiceTest {
             final var captor = ArgumentCaptor.forClass(String.class);
 
             final var response = CertificateServiceTypeInfoResponseDTO.builder()
-                    .list(List.of())
-                    .build();
+                .list(List.of())
+                .build();
 
             doReturn(response).when(responseSpec).body(CertificateServiceTypeInfoResponseDTO.class);
 
@@ -406,7 +498,7 @@ class CSIntegrationServiceTest {
             when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
             when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
             when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
-            }
+        }
 
         @Test
         void shouldThrowExceptionIfResponseIsNull() {
@@ -424,7 +516,7 @@ class CSIntegrationServiceTest {
             final var captor = ArgumentCaptor.forClass(CreateCertificateRequestDTO.class);
 
             final var response = CertificateServiceCreateCertificateResponseDTO.builder()
-                    .build();
+                .build();
 
             doReturn(response).when(responseSpec).body(CertificateServiceCreateCertificateResponseDTO.class);
 
@@ -1062,15 +1154,16 @@ class CSIntegrationServiceTest {
         @Test
         void shouldThrowExceptionIfNullResponse() {
             assertThrows(
-                    IllegalStateException.class, () -> csIntegrationService.citizenCertificateExists(ID)
+                IllegalStateException.class, () -> csIntegrationService.citizenCertificateExists(ID)
             );
         }
 
         @Nested
         class HasResponse {
+
             private final CitizenCertificateExistsResponseDTO expectedResponse = CitizenCertificateExistsResponseDTO.builder()
-                    .exists(true)
-                    .build();
+                .exists(true)
+                .build();
 
             @BeforeEach
             void setup() {
@@ -1099,6 +1192,7 @@ class CSIntegrationServiceTest {
 
     @Nested
     class SaveCertificate {
+
         @BeforeEach
         void setUp() {
 
@@ -1200,8 +1294,8 @@ class CSIntegrationServiceTest {
             final var captor = ArgumentCaptor.forClass(String.class);
 
             final var response = DeleteCertificateResponseDTO.builder()
-                    .certificate(CERTIFICATE)
-                    .build();
+                .certificate(CERTIFICATE)
+                .build();
 
             doReturn(response).when(responseSpec).body(DeleteCertificateResponseDTO.class);
 
@@ -1219,8 +1313,8 @@ class CSIntegrationServiceTest {
             final var captor = ArgumentCaptor.forClass(HttpMethod.class);
 
             final var response = DeleteCertificateResponseDTO.builder()
-                    .certificate(CERTIFICATE)
-                    .build();
+                .certificate(CERTIFICATE)
+                .build();
 
             doReturn(response).when(responseSpec).body(DeleteCertificateResponseDTO.class);
 
@@ -1237,8 +1331,8 @@ class CSIntegrationServiceTest {
             final var captor = ArgumentCaptor.forClass(DeleteCertificateRequestDTO.class);
 
             final var response = DeleteCertificateResponseDTO.builder()
-                    .certificate(CERTIFICATE)
-                    .build();
+                .certificate(CERTIFICATE)
+                .build();
 
             doReturn(response).when(responseSpec).body(DeleteCertificateResponseDTO.class);
 
@@ -1254,8 +1348,8 @@ class CSIntegrationServiceTest {
             ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
 
             final var response = DeleteCertificateResponseDTO.builder()
-                    .certificate(CERTIFICATE)
-                    .build();
+                .certificate(CERTIFICATE)
+                .build();
 
             doReturn(response).when(responseSpec).body(DeleteCertificateResponseDTO.class);
 
@@ -1289,8 +1383,8 @@ class CSIntegrationServiceTest {
             final var captor = ArgumentCaptor.forClass(GetPatientCertificatesRequestDTO.class);
 
             final var response = GetListCertificatesResponseDTO.builder()
-                    .certificates(List.of(CERTIFICATE))
-                    .build();
+                .certificates(List.of(CERTIFICATE))
+                .build();
 
             doReturn(response).when(responseSpec).body(GetListCertificatesResponseDTO.class);
 
@@ -1305,8 +1399,8 @@ class CSIntegrationServiceTest {
             when(listIntygEntryConverter.convert(CERTIFICATE)).thenReturn(CONVERTED_CERTIFICATE);
 
             final var response = GetListCertificatesResponseDTO.builder()
-                    .certificates(List.of(CERTIFICATE))
-                    .build();
+                .certificates(List.of(CERTIFICATE))
+                .build();
 
             doReturn(response).when(responseSpec).body(GetListCertificatesResponseDTO.class);
 
@@ -1331,8 +1425,8 @@ class CSIntegrationServiceTest {
             final var captor = ArgumentCaptor.forClass(String.class);
 
             final var response = GetListCertificatesResponseDTO.builder()
-                    .certificates(List.of(CERTIFICATE))
-                    .build();
+                .certificates(List.of(CERTIFICATE))
+                .build();
 
             doReturn(response).when(responseSpec).body(GetListCertificatesResponseDTO.class);
 
@@ -1369,8 +1463,8 @@ class CSIntegrationServiceTest {
             when(listIntygEntryConverter.convert(CERTIFICATE)).thenReturn(CONVERTED_CERTIFICATE);
 
             final var response = GetListCertificatesResponseDTO.builder()
-                    .certificates(List.of(CERTIFICATE))
-                    .build();
+                .certificates(List.of(CERTIFICATE))
+                .build();
 
             final var expectedResponse = List.of(new ListIntygEntry());
 
@@ -1386,8 +1480,8 @@ class CSIntegrationServiceTest {
             when(listIntygEntryConverter.convert(CERTIFICATE)).thenReturn(CONVERTED_CERTIFICATE);
 
             final var response = GetListCertificatesResponseDTO.builder()
-                    .certificates(List.of(CERTIFICATE))
-                    .build();
+                .certificates(List.of(CERTIFICATE))
+                .build();
 
             doReturn(response).when(responseSpec).body(GetListCertificatesResponseDTO.class);
 
@@ -1412,8 +1506,8 @@ class CSIntegrationServiceTest {
             final var captor = ArgumentCaptor.forClass(String.class);
 
             final var response = GetListCertificatesResponseDTO.builder()
-                    .certificates(List.of(CERTIFICATE))
-                    .build();
+                .certificates(List.of(CERTIFICATE))
+                .build();
 
             doReturn(response).when(responseSpec).body(GetListCertificatesResponseDTO.class);
 
@@ -1463,8 +1557,8 @@ class CSIntegrationServiceTest {
         void shouldPreformPostUsingRequest() {
 
             final var response = GetUnitCertificatesInfoResponseDTO.builder()
-                    .staffs(List.of())
-                    .build();
+                .staffs(List.of())
+                .build();
 
             doReturn(response).when(responseSpec).body(GetUnitCertificatesInfoResponseDTO.class);
 
@@ -1479,8 +1573,8 @@ class CSIntegrationServiceTest {
         @Test
         void shouldReturnConvertedStaffs() {
             final var response = GetUnitCertificatesInfoResponseDTO.builder()
-                    .staffs(List.of(Staff.builder().personId(STAFF_ID).fullName(STAFF_FULL_NAME).build()))
-                    .build();
+                .staffs(List.of(Staff.builder().personId(STAFF_ID).fullName(STAFF_FULL_NAME).build()))
+                .build();
 
             doReturn(response).when(responseSpec).body(GetUnitCertificatesInfoResponseDTO.class);
             final var actualResponse = csIntegrationService.listCertificatesInfoForUnit(listInfoRequest);
@@ -1493,8 +1587,8 @@ class CSIntegrationServiceTest {
             final var captor = ArgumentCaptor.forClass(String.class);
 
             final var response = GetUnitCertificatesInfoResponseDTO.builder()
-                    .staffs(List.of(Staff.builder().personId(STAFF_ID).fullName(STAFF_FULL_NAME).build()))
-                    .build();
+                .staffs(List.of(Staff.builder().personId(STAFF_ID).fullName(STAFF_FULL_NAME).build()))
+                .build();
 
             doReturn(response).when(responseSpec).body(GetUnitCertificatesInfoResponseDTO.class);
 
@@ -2936,8 +3030,8 @@ class CSIntegrationServiceTest {
         void shouldPreformPostUsingRequest() {
 
             final var response = GetUnitQuestionsResponseDTO.builder()
-                    .questions(List.of())
-                    .build();
+                .questions(List.of())
+                .build();
 
             doReturn(response).when(responseSpec).body(GetUnitQuestionsResponseDTO.class);
 
@@ -2954,9 +3048,9 @@ class CSIntegrationServiceTest {
             when(listQuestionConverter.convert(Optional.of(CERTIFICATE_DTO), QUESTION_DTO)).thenReturn(ARENDE_LIST_ITEM);
 
             final var response = GetUnitQuestionsResponseDTO.builder()
-                    .questions(List.of(QUESTION_DTO))
-                    .certificates(List.of(CERTIFICATE_DTO))
-                    .build();
+                .questions(List.of(QUESTION_DTO))
+                .certificates(List.of(CERTIFICATE_DTO))
+                .build();
 
             doReturn(response).when(responseSpec).body(GetUnitQuestionsResponseDTO.class);
 
@@ -2974,9 +3068,9 @@ class CSIntegrationServiceTest {
             final var captor = ArgumentCaptor.forClass(String.class);
 
             final var response = GetUnitQuestionsResponseDTO.builder()
-                    .questions(List.of(QUESTION_DTO))
-                    .certificates(List.of(CERTIFICATE_DTO))
-                    .build();
+                .questions(List.of(QUESTION_DTO))
+                .certificates(List.of(CERTIFICATE_DTO))
+                .build();
 
             doReturn(response).when(responseSpec).body(GetUnitQuestionsResponseDTO.class);
 
@@ -3428,7 +3522,7 @@ class CSIntegrationServiceTest {
             requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
             responseSpec = mock(RestClient.ResponseSpec.class);
 
-            final String uri = "baseUrl/api/certificate/certificateId/renewexternal";
+            final String uri = "baseUrl/api/certificate/certificateId/renew/external";
             ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
 
             when(restClient.post()).thenReturn(requestBodyUriSpec);
@@ -3445,7 +3539,7 @@ class CSIntegrationServiceTest {
             doReturn(null).when(responseSpec).body(RenewCertificateResponseDTO.class);
 
             assertThrows(IllegalStateException.class,
-                    () -> csIntegrationService.renewLegacyCertificate(CERTIFICATE_ID, RENEWLEGACY_CERTIFICATE_REQUEST)
+                () -> csIntegrationService.renewLegacyCertificate(CERTIFICATE_ID, RENEWLEGACY_CERTIFICATE_REQUEST)
             );
         }
 
@@ -3482,7 +3576,7 @@ class CSIntegrationServiceTest {
                 csIntegrationService.renewLegacyCertificate(CERTIFICATE_ID, RENEWLEGACY_CERTIFICATE_REQUEST);
                 verify(requestBodyUriSpec).uri(captor.capture());
 
-                assertEquals("baseUrl/api/certificate/certificateId/renewexternal", captor.getValue());
+                assertEquals("baseUrl/api/certificate/certificateId/renew/external", captor.getValue());
             }
         }
     }
