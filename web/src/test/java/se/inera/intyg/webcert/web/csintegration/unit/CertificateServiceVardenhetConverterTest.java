@@ -29,142 +29,142 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 
 class CertificateServiceVardenhetConverterTest {
 
-  private static final String EXPECTED_UNIT_ID = "expectedUnitId";
-  private static final String EXPECTED_UNIT_NAME = "expectedUnitName";
-  private static final String EXPECTED_ADDRESS = "expectedAddress";
-  private static final String EXPECTED_ZIP_CODE = "expectedZipCode";
-  private static final String EXPECTED_CITY = "expectedCity";
-  private static final String EXPECTED_PHONE_NUMBER = "expectedPhoneNumber";
-  private static final String EXPECTED_MAIL = "expectedMail";
-  private static final String EXPECTED_WORKPLACE_CODE = "expectedWorkplaceCode";
-  private CertificateServiceVardenhetConverter certificateServiceVardenhetConverter;
-  private Vardenhet unit;
-  private Unit metadataUnit;
+    private static final String EXPECTED_UNIT_ID = "expectedUnitId";
+    private static final String EXPECTED_UNIT_NAME = "expectedUnitName";
+    private static final String EXPECTED_ADDRESS = "expectedAddress";
+    private static final String EXPECTED_ZIP_CODE = "expectedZipCode";
+    private static final String EXPECTED_CITY = "expectedCity";
+    private static final String EXPECTED_PHONE_NUMBER = "expectedPhoneNumber";
+    private static final String EXPECTED_MAIL = "expectedMail";
+    private static final String EXPECTED_WORKPLACE_CODE = "expectedWorkplaceCode";
+    private CertificateServiceVardenhetConverter certificateServiceVardenhetConverter;
+    private Vardenhet unit;
+    private Unit metadataUnit;
 
-  @BeforeEach
-  void setUp() {
-    certificateServiceVardenhetConverter = new CertificateServiceVardenhetConverter();
-    unit = new Vardenhet();
-    unit.setId(EXPECTED_UNIT_ID);
-    unit.setNamn(EXPECTED_UNIT_NAME);
-    unit.setPostadress(EXPECTED_ADDRESS);
-    unit.setPostnummer(EXPECTED_ZIP_CODE);
-    unit.setEpost(EXPECTED_MAIL);
-    unit.setPostort(EXPECTED_CITY);
-    unit.setTelefonnummer(EXPECTED_PHONE_NUMBER);
-    unit.setArbetsplatskod(EXPECTED_WORKPLACE_CODE);
+    @BeforeEach
+    void setUp() {
+        certificateServiceVardenhetConverter = new CertificateServiceVardenhetConverter();
+        unit = new Vardenhet();
+        unit.setId(EXPECTED_UNIT_ID);
+        unit.setNamn(EXPECTED_UNIT_NAME);
+        unit.setPostadress(EXPECTED_ADDRESS);
+        unit.setPostnummer(EXPECTED_ZIP_CODE);
+        unit.setEpost(EXPECTED_MAIL);
+        unit.setPostort(EXPECTED_CITY);
+        unit.setTelefonnummer(EXPECTED_PHONE_NUMBER);
+        unit.setArbetsplatskod(EXPECTED_WORKPLACE_CODE);
 
-    metadataUnit = Unit.builder()
-        .unitId(EXPECTED_UNIT_ID)
-        .unitName(EXPECTED_UNIT_NAME)
-        .address(EXPECTED_ADDRESS)
-        .zipCode(EXPECTED_ZIP_CODE)
-        .city(EXPECTED_CITY)
-        .phoneNumber(EXPECTED_PHONE_NUMBER)
-        .email(EXPECTED_MAIL)
-        .isInactive(true)
-        .build();
-  }
+        metadataUnit = Unit.builder()
+            .unitId(EXPECTED_UNIT_ID)
+            .unitName(EXPECTED_UNIT_NAME)
+            .address(EXPECTED_ADDRESS)
+            .zipCode(EXPECTED_ZIP_CODE)
+            .city(EXPECTED_CITY)
+            .phoneNumber(EXPECTED_PHONE_NUMBER)
+            .email(EXPECTED_MAIL)
+            .isInactive(true)
+            .build();
+    }
 
-  @Test
-  void shallConvertUnitId() {
-    final var unit = certificateServiceVardenhetConverter.convert(this.unit, false);
-    assertEquals(EXPECTED_UNIT_ID, unit.getId());
-  }
+    @Test
+    void shallConvertUnitId() {
+        final var unit = certificateServiceVardenhetConverter.convert(this.unit, false);
+        assertEquals(EXPECTED_UNIT_ID, unit.getId());
+    }
 
-  @Test
-  void shallConvertUnitName() {
-    final var unit = certificateServiceVardenhetConverter.convert(this.unit, false);
-    assertEquals(EXPECTED_UNIT_NAME, unit.getName());
-  }
+    @Test
+    void shallConvertUnitName() {
+        final var unit = certificateServiceVardenhetConverter.convert(this.unit, false);
+        assertEquals(EXPECTED_UNIT_NAME, unit.getName());
+    }
 
-  @Test
-  void shallConvertPostalAddress() {
-    final var unit = certificateServiceVardenhetConverter.convert(this.unit, false);
-    assertEquals(EXPECTED_ADDRESS, unit.getAddress());
-  }
+    @Test
+    void shallConvertPostalAddress() {
+        final var unit = certificateServiceVardenhetConverter.convert(this.unit, false);
+        assertEquals(EXPECTED_ADDRESS, unit.getAddress());
+    }
 
-  @Test
-  void shallConvertPostalCode() {
-    final var unit = certificateServiceVardenhetConverter.convert(this.unit, false);
-    assertEquals(EXPECTED_ZIP_CODE, unit.getZipCode());
-  }
+    @Test
+    void shallConvertPostalCode() {
+        final var unit = certificateServiceVardenhetConverter.convert(this.unit, false);
+        assertEquals(EXPECTED_ZIP_CODE, unit.getZipCode());
+    }
 
-  @Test
-  void shallConvertPostalCity() {
-    final var unit = certificateServiceVardenhetConverter.convert(this.unit, false);
-    assertEquals(EXPECTED_CITY, unit.getCity());
-  }
+    @Test
+    void shallConvertPostalCity() {
+        final var unit = certificateServiceVardenhetConverter.convert(this.unit, false);
+        assertEquals(EXPECTED_CITY, unit.getCity());
+    }
 
-  @Test
-  void shallConvertTelephoneNumber() {
-    final var unit = certificateServiceVardenhetConverter.convert(this.unit, false);
-    assertEquals(EXPECTED_PHONE_NUMBER, unit.getPhoneNumber());
-  }
+    @Test
+    void shallConvertTelephoneNumber() {
+        final var unit = certificateServiceVardenhetConverter.convert(this.unit, false);
+        assertEquals(EXPECTED_PHONE_NUMBER, unit.getPhoneNumber());
+    }
 
-  @Test
-  void shallConvertEmail() {
-    final var unit = certificateServiceVardenhetConverter.convert(this.unit, false);
-    assertEquals(EXPECTED_MAIL, unit.getEmail());
-  }
+    @Test
+    void shallConvertEmail() {
+        final var unit = certificateServiceVardenhetConverter.convert(this.unit, false);
+        assertEquals(EXPECTED_MAIL, unit.getEmail());
+    }
 
-  @Test
-  void shallConvertWorkplaceCode() {
-    final var unit = certificateServiceVardenhetConverter.convert(this.unit, false);
-    assertEquals(EXPECTED_WORKPLACE_CODE, unit.getWorkplaceCode());
-  }
+    @Test
+    void shallConvertWorkplaceCode() {
+        final var unit = certificateServiceVardenhetConverter.convert(this.unit, false);
+        assertEquals(EXPECTED_WORKPLACE_CODE, unit.getWorkplaceCode());
+    }
 
-  @Test
-  void shallConvertInactiveUnit() {
-    final var unit = certificateServiceVardenhetConverter.convert(this.unit, true);
-    assertTrue(unit.getInactive());
-  }
+    @Test
+    void shallConvertInactiveUnit() {
+        final var unit = certificateServiceVardenhetConverter.convert(this.unit, true);
+        assertTrue(unit.getInactive());
+    }
 
-  @Test
-  void shallConvertUnitIdFromMetadataUnit() {
-    final var result = certificateServiceVardenhetConverter.convert(metadataUnit);
-    assertEquals(EXPECTED_UNIT_ID, result.getId());
-  }
+    @Test
+    void shallConvertUnitIdFromMetadataUnit() {
+        final var result = certificateServiceVardenhetConverter.convert(metadataUnit);
+        assertEquals(EXPECTED_UNIT_ID, result.getId());
+    }
 
-  @Test
-  void shallConvertUnitNameFromMetadataUnit() {
-    final var result = certificateServiceVardenhetConverter.convert(metadataUnit);
-    assertEquals(EXPECTED_UNIT_NAME, result.getName());
-  }
+    @Test
+    void shallConvertUnitNameFromMetadataUnit() {
+        final var result = certificateServiceVardenhetConverter.convert(metadataUnit);
+        assertEquals(EXPECTED_UNIT_NAME, result.getName());
+    }
 
-  @Test
-  void shallConvertAddressFromMetadataUnit() {
-    final var result = certificateServiceVardenhetConverter.convert(metadataUnit);
-    assertEquals(EXPECTED_ADDRESS, result.getAddress());
-  }
+    @Test
+    void shallConvertAddressFromMetadataUnit() {
+        final var result = certificateServiceVardenhetConverter.convert(metadataUnit);
+        assertEquals(EXPECTED_ADDRESS, result.getAddress());
+    }
 
-  @Test
-  void shallConvertZipCodeFromMetadataUnit() {
-    final var result = certificateServiceVardenhetConverter.convert(metadataUnit);
-    assertEquals(EXPECTED_ZIP_CODE, result.getZipCode());
-  }
+    @Test
+    void shallConvertZipCodeFromMetadataUnit() {
+        final var result = certificateServiceVardenhetConverter.convert(metadataUnit);
+        assertEquals(EXPECTED_ZIP_CODE, result.getZipCode());
+    }
 
-  @Test
-  void shallConvertCityFromMetadataUnit() {
-    final var result = certificateServiceVardenhetConverter.convert(metadataUnit);
-    assertEquals(EXPECTED_CITY, result.getCity());
-  }
+    @Test
+    void shallConvertCityFromMetadataUnit() {
+        final var result = certificateServiceVardenhetConverter.convert(metadataUnit);
+        assertEquals(EXPECTED_CITY, result.getCity());
+    }
 
-  @Test
-  void shallConvertPhoneNumberFromMetadataUnit() {
-    final var result = certificateServiceVardenhetConverter.convert(metadataUnit);
-    assertEquals(EXPECTED_PHONE_NUMBER, result.getPhoneNumber());
-  }
+    @Test
+    void shallConvertPhoneNumberFromMetadataUnit() {
+        final var result = certificateServiceVardenhetConverter.convert(metadataUnit);
+        assertEquals(EXPECTED_PHONE_NUMBER, result.getPhoneNumber());
+    }
 
-  @Test
-  void shallConvertEmailFromMetadataUnit() {
-    final var result = certificateServiceVardenhetConverter.convert(metadataUnit);
-    assertEquals(EXPECTED_MAIL, result.getEmail());
-  }
+    @Test
+    void shallConvertEmailFromMetadataUnit() {
+        final var result = certificateServiceVardenhetConverter.convert(metadataUnit);
+        assertEquals(EXPECTED_MAIL, result.getEmail());
+    }
 
-  @Test
-  void shallConvertInactiveFromMetadataUnit() {
-    final var result = certificateServiceVardenhetConverter.convert(metadataUnit);
-    assertTrue(result.getInactive());
-  }
+    @Test
+    void shallConvertInactiveFromMetadataUnit() {
+        final var result = certificateServiceVardenhetConverter.convert(metadataUnit);
+        assertTrue(result.getInactive());
+    }
 }

@@ -36,39 +36,39 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 @RequiredArgsConstructor
 public class RenewLegacyCertificateFromCertificateService {
 
-  private final CSIntegrationService csIntegrationService;
-  private final CSIntegrationRequestFactory csIntegrationRequestFactory;
-  private final PDLLogService pdlLogService;
-  private final MonitoringLogService monitoringLogService;
-  private final WebCertUserService webCertUserService;
-  private final IntegratedUnitRegistryHelper integratedUnitRegistryHelper;
-  private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+    private final CSIntegrationService csIntegrationService;
+    private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+    private final PDLLogService pdlLogService;
+    private final MonitoringLogService monitoringLogService;
+    private final WebCertUserService webCertUserService;
+    private final IntegratedUnitRegistryHelper integratedUnitRegistryHelper;
+    private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
 
-  public String renewCertificate(Certificate certificate,
-      CertificateModelIdDTO certificateModelId) {
-    final var certificateId = certificate.getMetadata().getId();
-    log.debug("Attempting to renew legacy certificate '{}' from Certificate Service",
-        certificateId);
+    public String renewCertificate(Certificate certificate,
+        CertificateModelIdDTO certificateModelId) {
+        final var certificateId = certificate.getMetadata().getId();
+        log.debug("Attempting to renew legacy certificate '{}' from Certificate Service",
+            certificateId);
 
-    final var renewalCertificate = csIntegrationService.renewLegacyCertificate(
-        certificateId,
-        csIntegrationRequestFactory.renewLegacyCertificateRequest(
-            certificate.getMetadata().getPatient(),
-            webCertUserService.getUser().getParameters(),
-            certificateModelId,
-            certificate.getMetadata().getStatus(),
-            certificate.getMetadata().getUnit()
-        )
-    );
+        final var renewalCertificate = csIntegrationService.renewLegacyCertificate(
+            certificateId,
+            csIntegrationRequestFactory.renewLegacyCertificateRequest(
+                certificate.getMetadata().getPatient(),
+                webCertUserService.getUser().getParameters(),
+                certificateModelId,
+                certificate.getMetadata().getStatus(),
+                certificate.getMetadata().getUnit()
+            )
+        );
 
-    integratedUnitRegistryHelper.addUnitForCopy(certificate, renewalCertificate);
+        integratedUnitRegistryHelper.addUnitForCopy(certificate, renewalCertificate);
 
-    log.debug("Renewed certificate '{}' from Certificate Service", certificateId);
-    monitoringLogService.logIntygCopiedRenewal(renewalCertificate.getMetadata().getId(),
-        certificateId);
-    pdlLogService.logCreated(renewalCertificate);
-    publishCertificateStatusUpdateService.publish(renewalCertificate, HandelsekodEnum.SKAPAT);
+        log.debug("Renewed certificate '{}' from Certificate Service", certificateId);
+        monitoringLogService.logIntygCopiedRenewal(renewalCertificate.getMetadata().getId(),
+            certificateId);
+        pdlLogService.logCreated(renewalCertificate);
+        publishCertificateStatusUpdateService.publish(renewalCertificate, HandelsekodEnum.SKAPAT);
 
-    return renewalCertificate.getMetadata().getId();
-  }
+        return renewalCertificate.getMetadata().getId();
+    }
 }
