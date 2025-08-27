@@ -26,6 +26,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -36,6 +37,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
@@ -52,142 +54,159 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
 @ExtendWith(MockitoExtension.class)
 class RenewLegacyCertificateFromCertificateServiceTest {
 
-    private static final RenewLegacyCertificateRequestDTO REQUEST = RenewLegacyCertificateRequestDTO.builder().build();
-    private static final String PATIENT_ID = "PATIENT_ID";
-    private static final Patient PATIENT = Patient.builder()
-        .personId(
-            PersonId.builder()
-                .id(PATIENT_ID)
-                .build()
-        ).build();
-    private static final String ID = "ID";
-    private static final String NEW_ID = "NEW_ID";
-    private static final Certificate CERTIFICATE = new Certificate();
-    private static final CertificateModelIdDTO CERTIFICATE_MODEL_ID = CertificateModelIdDTO.builder().build();
-    private static final Certificate RENEWD_CERTIFICATE = new Certificate();
-    private static final String TYPE = "TYPE";
+  private static final RenewLegacyCertificateRequestDTO REQUEST = RenewLegacyCertificateRequestDTO.builder()
+      .build();
+  private static final String PATIENT_ID = "PATIENT_ID";
+  private static final Patient PATIENT = Patient.builder()
+      .personId(
+          PersonId.builder()
+              .id(PATIENT_ID)
+              .build()
+      ).build();
+  private static final String ID = "ID";
+  private static final String NEW_ID = "NEW_ID";
+  private static final Certificate CERTIFICATE = new Certificate();
+  private static final CertificateModelIdDTO CERTIFICATE_MODEL_ID = CertificateModelIdDTO.builder()
+      .build();
+  private static final Certificate RENEWD_CERTIFICATE = new Certificate();
+  private static final String TYPE = "TYPE";
 
-    @Mock
-    CSIntegrationService csIntegrationService;
+  @Mock
+  CSIntegrationService csIntegrationService;
 
-    @Mock
-    CSIntegrationRequestFactory csIntegrationRequestFactory;
+  @Mock
+  CSIntegrationRequestFactory csIntegrationRequestFactory;
 
-    @Mock
-    PDLLogService pdlLogService;
+  @Mock
+  PDLLogService pdlLogService;
 
-    @Mock
-    IntegratedUnitRegistryHelper integratedUnitRegistryHelper;
+  @Mock
+  IntegratedUnitRegistryHelper integratedUnitRegistryHelper;
 
-    @Mock
-    MonitoringLogService monitoringLogService;
+  @Mock
+  MonitoringLogService monitoringLogService;
 
-    @Mock
-    WebCertUserService webCertUserService;
+  @Mock
+  WebCertUserService webCertUserService;
 
-    @Mock
-    IntegrationParameters parameters;
+  @Mock
+  IntegrationParameters parameters;
 
-    @Mock
-    WebCertUser user;
+  @Mock
+  WebCertUser user;
 
-    @Mock
-    PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+  @Mock
+  PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
 
-    @InjectMocks
-    RenewLegacyCertificateFromCertificateService renewLegacyCertificateFromCertificateService;
+  @InjectMocks
+  RenewLegacyCertificateFromCertificateService renewLegacyCertificateFromCertificateService;
+
+  @Nested
+  class CertificateExistsInCS {
+
+    @BeforeEach
+    void setup() {
+      CERTIFICATE.setMetadata(CertificateMetadata.builder()
+          .id(ID)
+          .type(TYPE)
+          .patient(PATIENT)
+          .created(LocalDateTime.now())
+          .status(CertificateStatus.SIGNED)
+          .version(0L)
+          .build());
+
+      RENEWD_CERTIFICATE.setMetadata(CertificateMetadata.builder()
+          .id(NEW_ID)
+          .type(TYPE)
+          .patient(PATIENT)
+          .build());
+
+      when(csIntegrationRequestFactory.renewLegacyCertificateRequest(any(), any(),
+          eq(CERTIFICATE_MODEL_ID), any()))
+          .thenReturn(REQUEST);
+    }
 
     @Nested
-    class CertificateExistsInCS {
+    class CertificateIsRenewedFromCS {
 
-        @BeforeEach
-        void setup() {
-            CERTIFICATE.setMetadata(CertificateMetadata.builder()
-                .id(ID)
-                .type(TYPE)
-                .patient(PATIENT)
-                .build());
+      @BeforeEach
+      void setup() {
+        when(csIntegrationService.renewLegacyCertificate(ID, REQUEST))
+            .thenReturn(RENEWD_CERTIFICATE);
 
-            RENEWD_CERTIFICATE.setMetadata(CertificateMetadata.builder()
-                .id(NEW_ID)
-                .type(TYPE)
-                .patient(PATIENT)
-                .build());
+        when(user.getParameters())
+            .thenReturn(parameters);
 
-            when(csIntegrationRequestFactory.renewLegacyCertificateRequest(any(), any(), eq(CERTIFICATE_MODEL_ID)))
-                .thenReturn(REQUEST);
-        }
+        when(webCertUserService.getUser())
+            .thenReturn(user);
+      }
 
-        @Nested
-        class CertificateIsRenewedFromCS {
+      @Test
+      void shouldCallRequestFactory() {
+        renewLegacyCertificateFromCertificateService.renewCertificate(CERTIFICATE,
+            CERTIFICATE_MODEL_ID);
+        verify(csIntegrationRequestFactory).renewLegacyCertificateRequest(PATIENT, parameters,
+            CERTIFICATE_MODEL_ID, CERTIFICATE.getMetadata().getStatus());
+      }
 
-            @BeforeEach
-            void setup() {
-                when(csIntegrationService.renewLegacyCertificate(ID, REQUEST))
-                    .thenReturn(RENEWD_CERTIFICATE);
+      @Test
+      void shouldReturnNullIfCertificateIdIfExistInCS() {
+        final var response = renewLegacyCertificateFromCertificateService.renewCertificate(
+            CERTIFICATE, CERTIFICATE_MODEL_ID);
 
-                when(user.getParameters())
-                    .thenReturn(parameters);
+        assertEquals(NEW_ID, response);
+      }
 
-                when(webCertUserService.getUser())
-                    .thenReturn(user);
-            }
+      @Test
+      void shouldCallRenewWithId() {
+        final var captor = ArgumentCaptor.forClass(String.class);
+        renewLegacyCertificateFromCertificateService.renewCertificate(CERTIFICATE,
+            CERTIFICATE_MODEL_ID);
 
-            @Test
-            void shouldCallRequestFactory() {
-                renewLegacyCertificateFromCertificateService.renewCertificate(CERTIFICATE, CERTIFICATE_MODEL_ID);
-                verify(csIntegrationRequestFactory).renewLegacyCertificateRequest(PATIENT, parameters, CERTIFICATE_MODEL_ID);
-            }
+        verify(csIntegrationService).renewLegacyCertificate(captor.capture(),
+            any(RenewLegacyCertificateRequestDTO.class));
+        assertEquals(ID, captor.getValue());
+      }
 
-            @Test
-            void shouldReturnNullIfCertificateIdIfExistInCS() {
-                final var response = renewLegacyCertificateFromCertificateService.renewCertificate(CERTIFICATE, CERTIFICATE_MODEL_ID);
+      @Test
+      void shouldCallRenewLegacyWithRequest() {
+        final var captor = ArgumentCaptor.forClass(RenewLegacyCertificateRequestDTO.class);
+        renewLegacyCertificateFromCertificateService.renewCertificate(CERTIFICATE,
+            CERTIFICATE_MODEL_ID);
 
-                assertEquals(NEW_ID, response);
-            }
+        verify(csIntegrationService).renewLegacyCertificate(anyString(), captor.capture());
+        assertEquals(REQUEST, captor.getValue());
+      }
 
-            @Test
-            void shouldCallRenewWithId() {
-                final var captor = ArgumentCaptor.forClass(String.class);
-                renewLegacyCertificateFromCertificateService.renewCertificate(CERTIFICATE, CERTIFICATE_MODEL_ID);
+      @Test
+      void shouldPdlLogCreated() {
+        renewLegacyCertificateFromCertificateService.renewCertificate(CERTIFICATE,
+            CERTIFICATE_MODEL_ID);
+        verify(pdlLogService).logCreated(RENEWD_CERTIFICATE);
 
-                verify(csIntegrationService).renewLegacyCertificate(captor.capture(), any(RenewLegacyCertificateRequestDTO.class));
-                assertEquals(ID, captor.getValue());
-            }
+      }
 
-            @Test
-            void shouldCallRenewLegacyWithRequest() {
-                final var captor = ArgumentCaptor.forClass(RenewLegacyCertificateRequestDTO.class);
-                renewLegacyCertificateFromCertificateService.renewCertificate(CERTIFICATE, CERTIFICATE_MODEL_ID);
+      @Test
+      void shouldPublishCreated() {
+        renewLegacyCertificateFromCertificateService.renewCertificate(CERTIFICATE,
+            CERTIFICATE_MODEL_ID);
+        verify(publishCertificateStatusUpdateService).publish(RENEWD_CERTIFICATE,
+            HandelsekodEnum.SKAPAT);
+      }
 
-                verify(csIntegrationService).renewLegacyCertificate(anyString(), captor.capture());
-                assertEquals(REQUEST, captor.getValue());
-            }
+      @Test
+      void shouldMonitorLogRenewLegacy() {
+        renewLegacyCertificateFromCertificateService.renewCertificate(CERTIFICATE,
+            CERTIFICATE_MODEL_ID);
+        verify(monitoringLogService).logIntygCopiedRenewal(NEW_ID, ID);
+      }
 
-            @Test
-            void shouldPdlLogCreated() {
-                renewLegacyCertificateFromCertificateService.renewCertificate(CERTIFICATE, CERTIFICATE_MODEL_ID);
-                verify(pdlLogService).logCreated(RENEWD_CERTIFICATE);
-
-            }
-
-            @Test
-            void shouldPublishCreated() {
-                renewLegacyCertificateFromCertificateService.renewCertificate(CERTIFICATE, CERTIFICATE_MODEL_ID);
-                verify(publishCertificateStatusUpdateService).publish(RENEWD_CERTIFICATE, HandelsekodEnum.SKAPAT);
-            }
-
-            @Test
-            void shouldMonitorLogRenewLegacy() {
-                renewLegacyCertificateFromCertificateService.renewCertificate(CERTIFICATE, CERTIFICATE_MODEL_ID);
-                verify(monitoringLogService).logIntygCopiedRenewal(NEW_ID, ID);
-            }
-
-            @Test
-            void shouldRegisterUnit() {
-                renewLegacyCertificateFromCertificateService.renewCertificate(CERTIFICATE, CERTIFICATE_MODEL_ID);
-                verify(integratedUnitRegistryHelper).addUnitForCopy(CERTIFICATE, RENEWD_CERTIFICATE);
-            }
-        }
+      @Test
+      void shouldRegisterUnit() {
+        renewLegacyCertificateFromCertificateService.renewCertificate(CERTIFICATE,
+            CERTIFICATE_MODEL_ID);
+        verify(integratedUnitRegistryHelper).addUnitForCopy(CERTIFICATE, RENEWD_CERTIFICATE);
+      }
     }
+  }
 }

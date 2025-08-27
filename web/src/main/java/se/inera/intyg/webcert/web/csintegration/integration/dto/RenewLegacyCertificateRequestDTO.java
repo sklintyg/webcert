@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Value;
+import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientDTO;
 import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitDTO;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserDTO;
@@ -32,16 +33,17 @@ import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserDTO;
 @Builder
 public class RenewLegacyCertificateRequestDTO {
 
-    CertificateServiceUserDTO user;
-    CertificateServicePatientDTO patient;
-    CertificateServiceUnitDTO unit;
-    CertificateServiceUnitDTO careUnit;
-    CertificateServiceUnitDTO careProvider;
-    String externalReference;
-    CertificateModelIdDTO certificateModelId;
+  CertificateServiceUserDTO user;
+  CertificateServicePatientDTO patient;
+  CertificateServiceUnitDTO unit;
+  CertificateServiceUnitDTO careUnit;
+  CertificateServiceUnitDTO careProvider;
+  String externalReference;
+  CertificateModelIdDTO certificateModelId;
+  CertificateStatus status;
 
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class RenewLegacyCertificateRequestDTOBuilder {
+  @JsonPOJOBuilder(withPrefix = "")
+  public static class RenewLegacyCertificateRequestDTOBuilder {
 
-    }
+  }
 }
