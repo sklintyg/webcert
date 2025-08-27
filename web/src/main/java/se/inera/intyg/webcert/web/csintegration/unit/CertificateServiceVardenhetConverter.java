@@ -50,6 +50,7 @@ public class CertificateServiceVardenhetConverter {
             .phoneNumber(unit.getPhoneNumber())
             .email(unit.getEmail())
             .inactive(unit.getIsInactive())
+            .workplaceCode(unit.getWorkplaceCode())
             .build();
     }
 }
