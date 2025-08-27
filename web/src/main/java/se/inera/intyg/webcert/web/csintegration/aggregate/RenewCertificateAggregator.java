@@ -21,6 +21,8 @@ package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.webcert.web.csintegration.certificate.RenewLegacyCertificateFromCertificateService;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.RenewCertificateFacadeService;
 
@@ -30,16 +32,25 @@ public class RenewCertificateAggregator implements RenewCertificateFacadeService
     private final RenewCertificateFacadeService renewCertificateFromWebcert;
     private final RenewCertificateFacadeService renewCertificateFromCertificateService;
     private final CertificateServiceProfile certificateServiceProfile;
+    private final CSIntegrationService csIntegrationService;
+    private final GetCertificateAggregator getCertificateAggregator;
+    private final RenewLegacyCertificateFromCertificateService renewLegacyCertificateFromCertificateService;
 
     public RenewCertificateAggregator(
         @Qualifier("renewCertificateFromWebcert")
         RenewCertificateFacadeService renewCertificateFromWebcert,
         @Qualifier("renewCertificateFromCertificateService")
         RenewCertificateFacadeService renewCertificateFromCertificateService,
-        CertificateServiceProfile certificateServiceProfile) {
+        CertificateServiceProfile certificateServiceProfile,
+        CSIntegrationService csIntegrationService,
+        GetCertificateAggregator getCertificateAggregator,
+        RenewLegacyCertificateFromCertificateService renewLegacyCertificateFromCertificateService) {
         this.renewCertificateFromWebcert = renewCertificateFromWebcert;
         this.renewCertificateFromCertificateService = renewCertificateFromCertificateService;
         this.certificateServiceProfile = certificateServiceProfile;
+        this.getCertificateAggregator = getCertificateAggregator;
+        this.csIntegrationService = csIntegrationService;
+        this.renewLegacyCertificateFromCertificateService = renewLegacyCertificateFromCertificateService;
     }
 
     @Override
@@ -48,8 +59,20 @@ public class RenewCertificateAggregator implements RenewCertificateFacadeService
             return renewCertificateFromWebcert.renewCertificate(certificateId);
         }
 
-        final var responseFromCS = renewCertificateFromCertificateService.renewCertificate(certificateId);
+        final var responseFromCS = renewCertificateFromCertificateService.renewCertificate(
+            certificateId);
 
-        return responseFromCS != null ? responseFromCS : renewCertificateFromWebcert.renewCertificate(certificateId);
+        if (responseFromCS != null) {
+            return responseFromCS;
+        }
+
+        final var certificate = getCertificateAggregator.getCertificate(certificateId, false, true);
+        final var certificateTypeExistsInCS = csIntegrationService.certificateTypeExists(
+            certificate.getMetadata().getType());
+
+        return certificateTypeExistsInCS
+            .map(certificateModelId -> renewLegacyCertificateFromCertificateService.renewCertificate(
+                certificate, certificateModelId))
+            .orElseGet(() -> renewCertificateFromWebcert.renewCertificate(certificateId));
     }
 }

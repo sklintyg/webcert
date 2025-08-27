@@ -26,7 +26,9 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.Patient;
+import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
@@ -62,6 +64,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.PrefillXmlDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrintCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ReadyForSignRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.RenewCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.RenewLegacyCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ReplaceCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.RevokeCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.RevokeInformationDTO;
@@ -82,6 +85,7 @@ import se.inera.intyg.webcert.web.csintegration.patient.PersonIdDTO;
 import se.inera.intyg.webcert.web.csintegration.patient.PersonIdType;
 import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceIntegrationUnitHelper;
 import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitHelper;
+import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceVardenhetConverter;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceIntegrationUserHelper;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserHelper;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
@@ -98,6 +102,7 @@ public class CSIntegrationRequestFactory {
     private final CertificateServiceIntegrationUserHelper certificateServiceIntegrationUserHelper;
     private final CertificateServiceUnitHelper certificateServiceUnitHelper;
     private final CertificateServiceIntegrationUnitHelper certificateServiceIntegrationUnitHelper;
+    private final CertificateServiceVardenhetConverter certificateServiceVardenhetConverter;
     private final CertificateServicePatientHelper certificateServicePatientHelper;
     private final CertificatesQueryCriteriaFactory certificatesQueryCriteriaFactory;
     private final MessageRequestConverter messageRequestConverter;
@@ -112,7 +117,8 @@ public class CSIntegrationRequestFactory {
             .build();
     }
 
-    public CreateCertificateRequestDTO createCertificateRequest(CertificateModelIdDTO modelId, String patientId) {
+    public CreateCertificateRequestDTO createCertificateRequest(CertificateModelIdDTO modelId,
+        String patientId) {
         return CreateCertificateRequestDTO.builder()
             .unit(certificateServiceUnitHelper.getUnit())
             .careUnit(certificateServiceUnitHelper.getCareUnit())
@@ -127,7 +133,8 @@ public class CSIntegrationRequestFactory {
             .build();
     }
 
-    public CreateCertificateRequestDTO createDraftCertificateRequest(CertificateModelIdDTO modelId, Intyg certificate, IntygUser user) {
+    public CreateCertificateRequestDTO createDraftCertificateRequest(CertificateModelIdDTO modelId,
+        Intyg certificate, IntygUser user) {
 
         return CreateCertificateRequestDTO.builder()
             .unit(certificateServiceIntegrationUnitHelper.getUnit(user))
@@ -158,7 +165,8 @@ public class CSIntegrationRequestFactory {
         return saveRequest(certificate, personId, null);
     }
 
-    public SaveCertificateRequestDTO saveRequest(Certificate certificate, String personId, String externalReference) {
+    public SaveCertificateRequestDTO saveRequest(Certificate certificate, String personId,
+        String externalReference) {
         return SaveCertificateRequestDTO.builder()
             .unit(certificateServiceUnitHelper.getUnit())
             .careUnit(certificateServiceUnitHelper.getCareUnit())
@@ -217,7 +225,8 @@ public class CSIntegrationRequestFactory {
         return ValidateCertificateRequestDTO.builder()
             .user(certificateServiceUserHelper.get())
             .patient(
-                certificateServicePatientHelper.get(createPatientId(certificate.getMetadata().getPatient().getActualPersonId().getId()))
+                certificateServicePatientHelper.get(
+                    createPatientId(certificate.getMetadata().getPatient().getActualPersonId().getId()))
             )
             .unit(certificateServiceUnitHelper.getUnit())
             .careUnit(certificateServiceUnitHelper.getCareUnit())
@@ -250,11 +259,13 @@ public class CSIntegrationRequestFactory {
             .careUnit(certificateServiceUnitHelper.getCareUnit())
             .careProvider(certificateServiceUnitHelper.getCareProvider())
             .user(certificateServiceUserHelper.get())
-            .signatureXml(Base64.getEncoder().encodeToString(signatureXml.getBytes(StandardCharsets.UTF_8)))
+            .signatureXml(
+                Base64.getEncoder().encodeToString(signatureXml.getBytes(StandardCharsets.UTF_8)))
             .build();
     }
 
-    private GetUnitCertificatesRequestDTO getUnitCertificatesRequestDTO(CertificatesQueryCriteriaDTO queryCriteria) {
+    private GetUnitCertificatesRequestDTO getUnitCertificatesRequestDTO(
+        CertificatesQueryCriteriaDTO queryCriteria) {
         final var patient = queryCriteria.getPersonId() == null ? null
             : certificateServicePatientHelper.get(createPatientId(queryCriteria.getPersonId().getId()));
 
@@ -268,7 +279,8 @@ public class CSIntegrationRequestFactory {
             .build();
     }
 
-    public PrintCertificateRequestDTO getPrintCertificateRequest(String additionalInfoText, String patientId) {
+    public PrintCertificateRequestDTO getPrintCertificateRequest(String additionalInfoText,
+        String patientId) {
         return PrintCertificateRequestDTO.builder()
             .user(certificateServiceUserHelper.get())
             .unit(certificateServiceUnitHelper.getUnit())
@@ -312,35 +324,58 @@ public class CSIntegrationRequestFactory {
             .build();
     }
 
-    public ReplaceCertificateRequestDTO replaceCertificateRequest(Patient patient, IntegrationParameters integrationParameters) {
+    public ReplaceCertificateRequestDTO replaceCertificateRequest(Patient patient,
+        IntegrationParameters integrationParameters) {
         return ReplaceCertificateRequestDTO.builder()
             .unit(certificateServiceUnitHelper.getUnit())
             .careUnit(certificateServiceUnitHelper.getCareUnit())
             .careProvider(certificateServiceUnitHelper.getCareProvider())
             .user(certificateServiceUserHelper.get())
-            .patient(certificateServicePatientHelper.get(createPatientId(patient.getActualPersonId().getId())))
+            .patient(certificateServicePatientHelper.get(
+                createPatientId(patient.getActualPersonId().getId())))
             .externalReference(getExternalReference(integrationParameters))
             .build();
     }
 
-    public RenewCertificateRequestDTO renewCertificateRequest(Patient patient, IntegrationParameters integrationParameters) {
+    public RenewCertificateRequestDTO renewCertificateRequest(Patient patient,
+        IntegrationParameters integrationParameters) {
         return RenewCertificateRequestDTO.builder()
             .unit(certificateServiceUnitHelper.getUnit())
             .careUnit(certificateServiceUnitHelper.getCareUnit())
             .careProvider(certificateServiceUnitHelper.getCareProvider())
             .user(certificateServiceUserHelper.get())
-            .patient(certificateServicePatientHelper.get(createPatientId(patient.getActualPersonId().getId())))
+            .patient(certificateServicePatientHelper.get(
+                createPatientId(patient.getActualPersonId().getId())))
             .externalReference(getExternalReference(integrationParameters))
             .build();
     }
 
-    public CertificateComplementRequestDTO complementCertificateRequest(Patient patient, IntegrationParameters integrationParameters) {
+    public RenewLegacyCertificateRequestDTO renewLegacyCertificateRequest(Patient patient,
+        IntegrationParameters integrationParameters, CertificateModelIdDTO certificateModelId,
+        CertificateStatus status, Unit unit) {
+        return RenewLegacyCertificateRequestDTO.builder()
+            .unit(certificateServiceUnitHelper.getUnit())
+            .careUnit(certificateServiceUnitHelper.getCareUnit())
+            .careProvider(certificateServiceUnitHelper.getCareProvider())
+            .user(certificateServiceUserHelper.get())
+            .patient(certificateServicePatientHelper.get(
+                createPatientId(patient.getActualPersonId().getId())))
+            .externalReference(getExternalReference(integrationParameters))
+            .certificateModelId(certificateModelId)
+            .status(status)
+            .issuingUnit(certificateServiceVardenhetConverter.convert(unit))
+            .build();
+    }
+
+    public CertificateComplementRequestDTO complementCertificateRequest(Patient patient,
+        IntegrationParameters integrationParameters) {
         return CertificateComplementRequestDTO.builder()
             .unit(certificateServiceUnitHelper.getUnit())
             .careUnit(certificateServiceUnitHelper.getCareUnit())
             .careProvider(certificateServiceUnitHelper.getCareProvider())
             .user(certificateServiceUserHelper.get())
-            .patient(certificateServicePatientHelper.get(createPatientId(patient.getActualPersonId().getId())))
+            .patient(certificateServicePatientHelper.get(
+                createPatientId(patient.getActualPersonId().getId())))
             .externalReference(getExternalReference(integrationParameters))
             .build();
     }
@@ -364,14 +399,12 @@ public class CSIntegrationRequestFactory {
     }
 
     private String convertReason(String reason) {
-        switch (reason) {
-            case "FEL_PATIENT":
-                return "INCORRECT_PATIENT";
-            case "ANNAT_ALLVARLIGT_FEL":
-                return "OTHER_SERIOUS_ERROR";
-            default:
-                throw new IllegalArgumentException("Invalid revoke reason. Reason must be either 'FEL_PATIENT' or 'ANNAT_ALLVARLIGT_FEL'");
-        }
+        return switch (reason) {
+            case "FEL_PATIENT" -> "INCORRECT_PATIENT";
+            case "ANNAT_ALLVARLIGT_FEL" -> "OTHER_SERIOUS_ERROR";
+            default -> throw new IllegalArgumentException(
+                "Invalid revoke reason. Reason must be either 'FEL_PATIENT' or 'ANNAT_ALLVARLIGT_FEL'");
+        };
     }
 
     private Personnummer createPatientId(String patientId) {
@@ -393,7 +426,8 @@ public class CSIntegrationRequestFactory {
             .personId(
                 PersonIdDTO.builder()
                     .id(patientId.getOriginalPnr())
-                    .type(isCoordinationNumber(patientId) ? PersonIdType.COORDINATION_NUMBER : PersonIdType.PERSONAL_IDENTITY_NUMBER)
+                    .type(isCoordinationNumber(patientId) ? PersonIdType.COORDINATION_NUMBER
+                        : PersonIdType.PERSONAL_IDENTITY_NUMBER)
                     .build()
             )
             .build();
@@ -409,7 +443,8 @@ public class CSIntegrationRequestFactory {
             .personId(
                 PersonIdDTO.builder()
                     .id(citizenPersonId.getOriginalPnr())
-                    .type(isCoordinationNumber(citizenPersonId) ? PersonIdType.COORDINATION_NUMBER : PersonIdType.PERSONAL_IDENTITY_NUMBER)
+                    .type(isCoordinationNumber(citizenPersonId) ? PersonIdType.COORDINATION_NUMBER
+                        : PersonIdType.PERSONAL_IDENTITY_NUMBER)
                     .build()
             )
             .additionalInfo("Utskriven från 1177 intyg")
@@ -426,7 +461,8 @@ public class CSIntegrationRequestFactory {
             .build();
     }
 
-    public IncomingMessageRequestDTO getIncomingMessageRequest(SendMessageToCareType sendMessageToCare) {
+    public IncomingMessageRequestDTO getIncomingMessageRequest(
+        SendMessageToCareType sendMessageToCare) {
         return messageRequestConverter.convert(sendMessageToCare);
     }
 
@@ -477,7 +513,8 @@ public class CSIntegrationRequestFactory {
             .build();
     }
 
-    public CreateMessageRequestDTO createMessageRequest(QuestionType type, String message, String personId) {
+    public CreateMessageRequestDTO createMessageRequest(QuestionType type, String message,
+        String personId) {
         return CreateMessageRequestDTO.builder()
             .unit(certificateServiceUnitHelper.getUnit())
             .careUnit(certificateServiceUnitHelper.getCareUnit())
@@ -530,7 +567,8 @@ public class CSIntegrationRequestFactory {
             .build();
     }
 
-    public GetUnitQuestionsRequestDTO getUnitQuestionsRequestDTO(MessageQueryCriteriaDTO messageQueryCriteriaDTO) {
+    public GetUnitQuestionsRequestDTO getUnitQuestionsRequestDTO(
+        MessageQueryCriteriaDTO messageQueryCriteriaDTO) {
         return GetUnitQuestionsRequestDTO.builder()
             .unit(certificateServiceUnitHelper.getUnit())
             .careUnit(certificateServiceUnitHelper.getCareUnit())

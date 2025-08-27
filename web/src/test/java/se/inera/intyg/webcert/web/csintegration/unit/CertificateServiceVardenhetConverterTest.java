@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 
 class CertificateServiceVardenhetConverterTest {
@@ -38,6 +39,7 @@ class CertificateServiceVardenhetConverterTest {
     private static final String EXPECTED_WORKPLACE_CODE = "expectedWorkplaceCode";
     private CertificateServiceVardenhetConverter certificateServiceVardenhetConverter;
     private Vardenhet unit;
+    private Unit metadataUnit;
 
     @BeforeEach
     void setUp() {
@@ -51,6 +53,17 @@ class CertificateServiceVardenhetConverterTest {
         unit.setPostort(EXPECTED_CITY);
         unit.setTelefonnummer(EXPECTED_PHONE_NUMBER);
         unit.setArbetsplatskod(EXPECTED_WORKPLACE_CODE);
+
+        metadataUnit = Unit.builder()
+            .unitId(EXPECTED_UNIT_ID)
+            .unitName(EXPECTED_UNIT_NAME)
+            .address(EXPECTED_ADDRESS)
+            .zipCode(EXPECTED_ZIP_CODE)
+            .city(EXPECTED_CITY)
+            .phoneNumber(EXPECTED_PHONE_NUMBER)
+            .email(EXPECTED_MAIL)
+            .isInactive(true)
+            .build();
     }
 
     @Test
@@ -105,5 +118,53 @@ class CertificateServiceVardenhetConverterTest {
     void shallConvertInactiveUnit() {
         final var unit = certificateServiceVardenhetConverter.convert(this.unit, true);
         assertTrue(unit.getInactive());
+    }
+
+    @Test
+    void shallConvertUnitIdFromMetadataUnit() {
+        final var result = certificateServiceVardenhetConverter.convert(metadataUnit);
+        assertEquals(EXPECTED_UNIT_ID, result.getId());
+    }
+
+    @Test
+    void shallConvertUnitNameFromMetadataUnit() {
+        final var result = certificateServiceVardenhetConverter.convert(metadataUnit);
+        assertEquals(EXPECTED_UNIT_NAME, result.getName());
+    }
+
+    @Test
+    void shallConvertAddressFromMetadataUnit() {
+        final var result = certificateServiceVardenhetConverter.convert(metadataUnit);
+        assertEquals(EXPECTED_ADDRESS, result.getAddress());
+    }
+
+    @Test
+    void shallConvertZipCodeFromMetadataUnit() {
+        final var result = certificateServiceVardenhetConverter.convert(metadataUnit);
+        assertEquals(EXPECTED_ZIP_CODE, result.getZipCode());
+    }
+
+    @Test
+    void shallConvertCityFromMetadataUnit() {
+        final var result = certificateServiceVardenhetConverter.convert(metadataUnit);
+        assertEquals(EXPECTED_CITY, result.getCity());
+    }
+
+    @Test
+    void shallConvertPhoneNumberFromMetadataUnit() {
+        final var result = certificateServiceVardenhetConverter.convert(metadataUnit);
+        assertEquals(EXPECTED_PHONE_NUMBER, result.getPhoneNumber());
+    }
+
+    @Test
+    void shallConvertEmailFromMetadataUnit() {
+        final var result = certificateServiceVardenhetConverter.convert(metadataUnit);
+        assertEquals(EXPECTED_MAIL, result.getEmail());
+    }
+
+    @Test
+    void shallConvertInactiveFromMetadataUnit() {
+        final var result = certificateServiceVardenhetConverter.convert(metadataUnit);
+        assertTrue(result.getInactive());
     }
 }

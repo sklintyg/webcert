@@ -53,6 +53,7 @@ public class RenewCertificateFacadeServiceImpl implements RenewCertificateFacade
         LOG.debug("Get certificate '{}' that will be renewed", certificateId);
         final var certificate = getCertificateFacadeService.getCertificate(certificateId, false, true);
         final var certificateType = certificate.getMetadata().getType();
+
         final var copyRequest = new CopyIntygRequest();
         copyRequest.setPatientPersonnummer(
             getPersonId(certificate.getMetadata().getPatient())
