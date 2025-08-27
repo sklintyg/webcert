@@ -28,6 +28,7 @@ import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.Patient;
+import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
@@ -84,6 +85,7 @@ import se.inera.intyg.webcert.web.csintegration.patient.PersonIdDTO;
 import se.inera.intyg.webcert.web.csintegration.patient.PersonIdType;
 import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceIntegrationUnitHelper;
 import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitHelper;
+import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceVardenhetConverter;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceIntegrationUserHelper;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserHelper;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
@@ -100,6 +102,7 @@ public class CSIntegrationRequestFactory {
   private final CertificateServiceIntegrationUserHelper certificateServiceIntegrationUserHelper;
   private final CertificateServiceUnitHelper certificateServiceUnitHelper;
   private final CertificateServiceIntegrationUnitHelper certificateServiceIntegrationUnitHelper;
+  private final CertificateServiceVardenhetConverter certificateServiceVardenhetConverter;
   private final CertificateServicePatientHelper certificateServicePatientHelper;
   private final CertificatesQueryCriteriaFactory certificatesQueryCriteriaFactory;
   private final MessageRequestConverter messageRequestConverter;
@@ -349,7 +352,7 @@ public class CSIntegrationRequestFactory {
 
   public RenewLegacyCertificateRequestDTO renewLegacyCertificateRequest(Patient patient,
       IntegrationParameters integrationParameters, CertificateModelIdDTO certificateModelId,
-      CertificateStatus status) {
+      CertificateStatus status, Unit unit) {
     return RenewLegacyCertificateRequestDTO.builder()
         .unit(certificateServiceUnitHelper.getUnit())
         .careUnit(certificateServiceUnitHelper.getCareUnit())
@@ -360,6 +363,7 @@ public class CSIntegrationRequestFactory {
         .externalReference(getExternalReference(integrationParameters))
         .certificateModelId(certificateModelId)
         .status(status)
+        .issuingUnit(certificateServiceVardenhetConverter.convert(unit))
         .build();
   }
 

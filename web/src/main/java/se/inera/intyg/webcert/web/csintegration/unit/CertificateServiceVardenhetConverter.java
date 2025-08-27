@@ -20,22 +20,36 @@
 package se.inera.intyg.webcert.web.csintegration.unit;
 
 import org.springframework.stereotype.Component;
+import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.AbstractVardenhet;
 
 @Component
 public class CertificateServiceVardenhetConverter {
 
-    public CertificateServiceUnitDTO convert(AbstractVardenhet unit, boolean isUnitInactive) {
-        return CertificateServiceUnitDTO.builder()
-            .id(unit.getId())
-            .name(unit.getNamn())
-            .address(unit.getPostadress())
-            .zipCode(unit.getPostnummer())
-            .city(unit.getPostort())
-            .phoneNumber(unit.getTelefonnummer())
-            .email(unit.getEpost())
-            .inactive(isUnitInactive)
-            .workplaceCode(unit.getArbetsplatskod())
-            .build();
-    }
+  public CertificateServiceUnitDTO convert(AbstractVardenhet unit, boolean isUnitInactive) {
+    return CertificateServiceUnitDTO.builder()
+        .id(unit.getId())
+        .name(unit.getNamn())
+        .address(unit.getPostadress())
+        .zipCode(unit.getPostnummer())
+        .city(unit.getPostort())
+        .phoneNumber(unit.getTelefonnummer())
+        .email(unit.getEpost())
+        .inactive(isUnitInactive)
+        .workplaceCode(unit.getArbetsplatskod())
+        .build();
+  }
+
+  public CertificateServiceUnitDTO convert(Unit unit) {
+    return CertificateServiceUnitDTO.builder()
+        .id(unit.getUnitId())
+        .name(unit.getUnitName())
+        .address(unit.getAddress())
+        .zipCode(unit.getZipCode())
+        .city(unit.getCity())
+        .phoneNumber(unit.getPhoneNumber())
+        .email(unit.getEmail())
+        .inactive(unit.getIsInactive())
+        .build();
+  }
 }

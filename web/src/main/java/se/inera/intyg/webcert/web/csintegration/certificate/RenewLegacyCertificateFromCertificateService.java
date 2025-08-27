@@ -56,7 +56,8 @@ public class RenewLegacyCertificateFromCertificateService {
             certificate.getMetadata().getPatient(),
             webCertUserService.getUser().getParameters(),
             certificateModelId,
-            certificate.getMetadata().getStatus()
+            certificate.getMetadata().getStatus(),
+            certificate.getMetadata().getUnit()
         )
     );
 

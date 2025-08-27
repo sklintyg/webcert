@@ -43,6 +43,7 @@ import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.infra.security.common.model.IntygUser;
@@ -62,6 +63,7 @@ import se.inera.intyg.webcert.web.csintegration.patient.PersonIdType;
 import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceIntegrationUnitHelper;
 import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitDTO;
 import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitHelper;
+import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceVardenhetConverter;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceIntegrationUserHelper;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserDTO;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserHelper;
@@ -79,6 +81,8 @@ class CSIntegrationRequestFactoryTest {
   private static final String MESSAGE = "message";
   private static final Question QUESTION = Question.builder().build();
   private static final List<String> UNIT_IDS = List.of("unitId");
+  @Mock
+  CertificateServiceVardenhetConverter certificateServiceVardenhetConverter;
   @Mock
   MessageRequestConverter messageRequestConverter;
   @Mock
@@ -1279,6 +1283,7 @@ class CSIntegrationRequestFactoryTest {
 
     private static final CertificateModelIdDTO CERTIFICATE_MODEL_ID = CertificateModelIdDTO.builder()
         .build();
+    private static final Unit UNIT = Unit.builder().build();
     @Mock
     private IntegrationParameters integrationParameters;
 
@@ -1289,7 +1294,7 @@ class CSIntegrationRequestFactoryTest {
       when(certificateServicePatientHelper.get(any()))
           .thenReturn(PATIENT);
       when(certificateServiceUnitHelper.getUnit())
-          .thenReturn(UNIT);
+          .thenReturn(CSIntegrationRequestFactoryTest.UNIT);
       when(certificateServiceUnitHelper.getCareUnit())
           .thenReturn(CARE_UNIT);
       when(certificateServiceUnitHelper.getCareProvider())
@@ -1301,35 +1306,40 @@ class CSIntegrationRequestFactoryTest {
     @Test
     void shouldSetUser() {
       final var actualRequest = csIntegrationRequestFactory.renewLegacyCertificateRequest(
-          PATIENT_WITH_ID, integrationParameters, CERTIFICATE_MODEL_ID, CertificateStatus.SIGNED);
+          PATIENT_WITH_ID, integrationParameters, CERTIFICATE_MODEL_ID, CertificateStatus.SIGNED,
+          UNIT);
       assertEquals(USER, actualRequest.getUser());
     }
 
     @Test
     void shouldSetUnit() {
       final var actualRequest = csIntegrationRequestFactory.renewLegacyCertificateRequest(
-          PATIENT_WITH_ID, integrationParameters, CERTIFICATE_MODEL_ID, CertificateStatus.SIGNED);
-      assertEquals(UNIT, actualRequest.getUnit());
+          PATIENT_WITH_ID, integrationParameters, CERTIFICATE_MODEL_ID, CertificateStatus.SIGNED,
+          UNIT);
+      assertEquals(CSIntegrationRequestFactoryTest.UNIT, actualRequest.getUnit());
     }
 
     @Test
     void shouldSetCareUnit() {
       final var actualRequest = csIntegrationRequestFactory.renewLegacyCertificateRequest(
-          PATIENT_WITH_ID, integrationParameters, CERTIFICATE_MODEL_ID, CertificateStatus.SIGNED);
+          PATIENT_WITH_ID, integrationParameters, CERTIFICATE_MODEL_ID, CertificateStatus.SIGNED,
+          UNIT);
       assertEquals(CARE_UNIT, actualRequest.getCareUnit());
     }
 
     @Test
     void shouldSetCareProvider() {
       final var actualRequest = csIntegrationRequestFactory.renewLegacyCertificateRequest(
-          PATIENT_WITH_ID, integrationParameters, CERTIFICATE_MODEL_ID, CertificateStatus.SIGNED);
+          PATIENT_WITH_ID, integrationParameters, CERTIFICATE_MODEL_ID, CertificateStatus.SIGNED,
+          UNIT);
       assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
     }
 
     @Test
     void shouldSetPatientUsingPatientIdIfAlternateSSNIsNotSet() {
       final var actualRequest = csIntegrationRequestFactory.renewLegacyCertificateRequest(
-          PATIENT_WITH_ID, integrationParameters, CERTIFICATE_MODEL_ID, CertificateStatus.SIGNED);
+          PATIENT_WITH_ID, integrationParameters, CERTIFICATE_MODEL_ID, CertificateStatus.SIGNED,
+          UNIT);
 
       verify(certificateServicePatientHelper).get(PERSONNUMMER);
       assertEquals(PATIENT, actualRequest.getPatient());
@@ -1338,22 +1348,38 @@ class CSIntegrationRequestFactoryTest {
     @Test
     void shouldSetExternalReference() {
       final var actualRequest = csIntegrationRequestFactory.renewLegacyCertificateRequest(
-          PATIENT_WITH_ID, integrationParameters, CERTIFICATE_MODEL_ID, CertificateStatus.SIGNED);
+          PATIENT_WITH_ID, integrationParameters, CERTIFICATE_MODEL_ID, CertificateStatus.SIGNED,
+          UNIT);
       assertEquals(EXTERNAL_REFERENCE, actualRequest.getExternalReference());
     }
 
     @Test
     void shouldSetCertificateModelId() {
       final var actualRequest = csIntegrationRequestFactory.renewLegacyCertificateRequest(
-          PATIENT_WITH_ID, integrationParameters, CERTIFICATE_MODEL_ID, CertificateStatus.SIGNED);
+          PATIENT_WITH_ID, integrationParameters, CERTIFICATE_MODEL_ID, CertificateStatus.SIGNED,
+          UNIT);
       assertEquals(CERTIFICATE_MODEL_ID, actualRequest.getCertificateModelId());
     }
 
     @Test
     void shouldSetStatus() {
       final var actualRequest = csIntegrationRequestFactory.renewLegacyCertificateRequest(
-          PATIENT_WITH_ID, integrationParameters, CERTIFICATE_MODEL_ID, CertificateStatus.SIGNED);
+          PATIENT_WITH_ID, integrationParameters, CERTIFICATE_MODEL_ID, CertificateStatus.SIGNED,
+          UNIT);
       assertEquals(CertificateStatus.SIGNED, actualRequest.getStatus());
+    }
+
+    @Test
+    void shouldSetIssuingUnit() {
+      final var expectedUnit = CertificateServiceUnitDTO.builder().build();
+
+      when(certificateServiceVardenhetConverter.convert(UNIT)).thenReturn(expectedUnit);
+
+      final var actualRequest = csIntegrationRequestFactory.renewLegacyCertificateRequest(
+          PATIENT_WITH_ID, integrationParameters, CERTIFICATE_MODEL_ID, CertificateStatus.SIGNED,
+          UNIT);
+      
+      assertEquals(expectedUnit, actualRequest.getIssuingUnit());
     }
   }
 

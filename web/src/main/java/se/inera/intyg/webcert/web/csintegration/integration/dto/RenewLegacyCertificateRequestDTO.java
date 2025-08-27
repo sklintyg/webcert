@@ -41,6 +41,7 @@ public class RenewLegacyCertificateRequestDTO {
   String externalReference;
   CertificateModelIdDTO certificateModelId;
   CertificateStatus status;
+  CertificateServiceUnitDTO issuingUnit;
 
   @JsonPOJOBuilder(withPrefix = "")
   public static class RenewLegacyCertificateRequestDTOBuilder {

@@ -122,7 +122,7 @@ class RenewLegacyCertificateFromCertificateServiceTest {
           .build());
 
       when(csIntegrationRequestFactory.renewLegacyCertificateRequest(any(), any(),
-          eq(CERTIFICATE_MODEL_ID), any()))
+          eq(CERTIFICATE_MODEL_ID), any(), any()))
           .thenReturn(REQUEST);
     }
 
@@ -146,7 +146,7 @@ class RenewLegacyCertificateFromCertificateServiceTest {
         renewLegacyCertificateFromCertificateService.renewCertificate(CERTIFICATE,
             CERTIFICATE_MODEL_ID);
         verify(csIntegrationRequestFactory).renewLegacyCertificateRequest(PATIENT, parameters,
-            CERTIFICATE_MODEL_ID, CERTIFICATE.getMetadata().getStatus());
+            CERTIFICATE_MODEL_ID, CERTIFICATE.getMetadata().getStatus(), null);
       }
 
       @Test
