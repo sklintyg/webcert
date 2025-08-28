@@ -27,9 +27,13 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.PrefillXmlDTO;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
+import se.inera.intyg.webcert.web.service.certificate.GetCertificateService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
+import se.riv.clinicalprocess.healthcond.certificate.v33.Forifyllnad;
 
 @Slf4j
 @Service
@@ -43,12 +47,15 @@ public class RenewLegacyCertificateFromCertificateService {
     private final WebCertUserService webCertUserService;
     private final IntegratedUnitRegistryHelper integratedUnitRegistryHelper;
     private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+    private final GetCertificateService getCertificateService;
 
     public String renewCertificate(Certificate certificate,
         CertificateModelIdDTO certificateModelId) {
         final var certificateId = certificate.getMetadata().getId();
         log.debug("Attempting to renew legacy certificate '{}' from Certificate Service",
             certificateId);
+
+        final var intyg = getCertificateService.getCertificateAsIntyg(certificateId, certificate.getMetadata().getType());
 
         final var renewalCertificate = csIntegrationService.renewLegacyCertificate(
             certificateId,
@@ -57,7 +64,8 @@ public class RenewLegacyCertificateFromCertificateService {
                 webCertUserService.getUser().getParameters(),
                 certificateModelId,
                 certificate.getMetadata().getStatus(),
-                certificate.getMetadata().getUnit()
+                certificate.getMetadata().getUnit(),
+                PrefillXmlDTO.marshall(getForifyllnad(intyg))
             )
         );
 
@@ -70,5 +78,11 @@ public class RenewLegacyCertificateFromCertificateService {
         publishCertificateStatusUpdateService.publish(renewalCertificate, HandelsekodEnum.SKAPAT);
 
         return renewalCertificate.getMetadata().getId();
+    }
+
+    private Forifyllnad getForifyllnad(Intyg intyg) {
+        final var prefill = new Forifyllnad();
+        prefill.getSvar().addAll(intyg.getSvar());
+        return prefill;
     }
 }

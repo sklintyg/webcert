@@ -19,14 +19,6 @@
 
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -44,12 +36,24 @@ import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.PrefillXmlDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.RenewLegacyCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
+import se.inera.intyg.webcert.web.service.certificate.GetCertificateService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Intyg;
+import se.riv.clinicalprocess.healthcond.certificate.v3.Svar;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class RenewLegacyCertificateFromCertificateServiceTest {
@@ -70,6 +74,7 @@ class RenewLegacyCertificateFromCertificateServiceTest {
       .build();
   private static final Certificate RENEWD_CERTIFICATE = new Certificate();
   private static final String TYPE = "TYPE";
+  private static final List<Svar> ANSWERS = List.of(new Svar());
 
   @Mock
   CSIntegrationService csIntegrationService;
@@ -94,6 +99,12 @@ class RenewLegacyCertificateFromCertificateServiceTest {
 
   @Mock
   WebCertUser user;
+
+  @Mock
+  GetCertificateService getCertificateService;
+
+  @Mock
+  Intyg intyg;
 
   @Mock
   PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
@@ -122,8 +133,13 @@ class RenewLegacyCertificateFromCertificateServiceTest {
           .build());
 
       when(csIntegrationRequestFactory.renewLegacyCertificateRequest(any(), any(),
-          eq(CERTIFICATE_MODEL_ID), any(), any()))
+          eq(CERTIFICATE_MODEL_ID), any(), any(), any()))
           .thenReturn(REQUEST);
+
+      when(getCertificateService.getCertificateAsIntyg(ID, TYPE))
+              .thenReturn(intyg);
+      when(intyg.getSvar())
+              .thenReturn(ANSWERS);
     }
 
     @Nested
@@ -145,8 +161,8 @@ class RenewLegacyCertificateFromCertificateServiceTest {
       void shouldCallRequestFactory() {
         renewLegacyCertificateFromCertificateService.renewCertificate(CERTIFICATE,
             CERTIFICATE_MODEL_ID);
-        verify(csIntegrationRequestFactory).renewLegacyCertificateRequest(PATIENT, parameters,
-            CERTIFICATE_MODEL_ID, CERTIFICATE.getMetadata().getStatus(), null);
+        verify(csIntegrationRequestFactory).renewLegacyCertificateRequest(eq(PATIENT), eq(parameters),
+            eq(CERTIFICATE_MODEL_ID), eq(CERTIFICATE.getMetadata().getStatus()), eq(null), any(PrefillXmlDTO.class));
       }
 
       @Test
