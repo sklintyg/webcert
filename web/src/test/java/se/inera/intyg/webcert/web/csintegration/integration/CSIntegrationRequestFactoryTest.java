@@ -18,19 +18,6 @@
  */
 package se.inera.intyg.webcert.web.csintegration.integration;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -48,12 +35,7 @@ import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesQueryCriteriaDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificatePdfRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageQueryCriteriaDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.PrefillXmlDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.*;
 import se.inera.intyg.webcert.web.csintegration.message.MessageRequestConverter;
 import se.inera.intyg.webcert.web.csintegration.message.dto.IncomingMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientDTO;
@@ -74,6 +56,16 @@ import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificaterespo
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Svar;
 import se.riv.clinicalprocess.healthcond.certificate.v33.Forifyllnad;
+
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CSIntegrationRequestFactoryTest {
@@ -1286,6 +1278,7 @@ class CSIntegrationRequestFactoryTest {
         private static final Unit UNIT = Unit.builder().build();
         @Mock
         private IntegrationParameters integrationParameters;
+        private final PrefillXmlDTO prefillXmlDTO = new PrefillXmlDTO("xml");
 
         @BeforeEach
         void setup() {
@@ -1307,7 +1300,7 @@ class CSIntegrationRequestFactoryTest {
         void shouldSetUser() {
             final var actualRequest = csIntegrationRequestFactory.renewLegacyCertificateRequest(
                 PATIENT_WITH_ID, integrationParameters, CERTIFICATE_MODEL_ID, CertificateStatus.SIGNED,
-                UNIT);
+                UNIT, prefillXmlDTO);
             assertEquals(USER, actualRequest.getUser());
         }
 
@@ -1315,7 +1308,7 @@ class CSIntegrationRequestFactoryTest {
         void shouldSetUnit() {
             final var actualRequest = csIntegrationRequestFactory.renewLegacyCertificateRequest(
                 PATIENT_WITH_ID, integrationParameters, CERTIFICATE_MODEL_ID, CertificateStatus.SIGNED,
-                UNIT);
+                UNIT, prefillXmlDTO);
             assertEquals(CSIntegrationRequestFactoryTest.UNIT, actualRequest.getUnit());
         }
 
@@ -1323,7 +1316,7 @@ class CSIntegrationRequestFactoryTest {
         void shouldSetCareUnit() {
             final var actualRequest = csIntegrationRequestFactory.renewLegacyCertificateRequest(
                 PATIENT_WITH_ID, integrationParameters, CERTIFICATE_MODEL_ID, CertificateStatus.SIGNED,
-                UNIT);
+                UNIT, prefillXmlDTO);
             assertEquals(CARE_UNIT, actualRequest.getCareUnit());
         }
 
@@ -1331,7 +1324,7 @@ class CSIntegrationRequestFactoryTest {
         void shouldSetCareProvider() {
             final var actualRequest = csIntegrationRequestFactory.renewLegacyCertificateRequest(
                 PATIENT_WITH_ID, integrationParameters, CERTIFICATE_MODEL_ID, CertificateStatus.SIGNED,
-                UNIT);
+                UNIT, prefillXmlDTO);
             assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
         }
 
@@ -1339,7 +1332,7 @@ class CSIntegrationRequestFactoryTest {
         void shouldSetPatientUsingPatientIdIfAlternateSSNIsNotSet() {
             final var actualRequest = csIntegrationRequestFactory.renewLegacyCertificateRequest(
                 PATIENT_WITH_ID, integrationParameters, CERTIFICATE_MODEL_ID, CertificateStatus.SIGNED,
-                UNIT);
+                UNIT, prefillXmlDTO);
 
             verify(certificateServicePatientHelper).get(PERSONNUMMER);
             assertEquals(PATIENT, actualRequest.getPatient());
@@ -1349,7 +1342,7 @@ class CSIntegrationRequestFactoryTest {
         void shouldSetExternalReference() {
             final var actualRequest = csIntegrationRequestFactory.renewLegacyCertificateRequest(
                 PATIENT_WITH_ID, integrationParameters, CERTIFICATE_MODEL_ID, CertificateStatus.SIGNED,
-                UNIT);
+                UNIT, prefillXmlDTO);
             assertEquals(EXTERNAL_REFERENCE, actualRequest.getExternalReference());
         }
 
@@ -1357,7 +1350,7 @@ class CSIntegrationRequestFactoryTest {
         void shouldSetCertificateModelId() {
             final var actualRequest = csIntegrationRequestFactory.renewLegacyCertificateRequest(
                 PATIENT_WITH_ID, integrationParameters, CERTIFICATE_MODEL_ID, CertificateStatus.SIGNED,
-                UNIT);
+                UNIT, prefillXmlDTO);
             assertEquals(CERTIFICATE_MODEL_ID, actualRequest.getCertificateModelId());
         }
 
@@ -1365,7 +1358,7 @@ class CSIntegrationRequestFactoryTest {
         void shouldSetStatus() {
             final var actualRequest = csIntegrationRequestFactory.renewLegacyCertificateRequest(
                 PATIENT_WITH_ID, integrationParameters, CERTIFICATE_MODEL_ID, CertificateStatus.SIGNED,
-                UNIT);
+                UNIT, prefillXmlDTO);
             assertEquals(CertificateStatus.SIGNED, actualRequest.getStatus());
         }
 
@@ -1377,9 +1370,17 @@ class CSIntegrationRequestFactoryTest {
 
             final var actualRequest = csIntegrationRequestFactory.renewLegacyCertificateRequest(
                 PATIENT_WITH_ID, integrationParameters, CERTIFICATE_MODEL_ID, CertificateStatus.SIGNED,
-                UNIT);
+                UNIT, prefillXmlDTO);
 
             assertEquals(expectedUnit, actualRequest.getIssuingUnit());
+        }
+
+        @Test
+        void shouldSetPrefillXml() {
+            final var actualRequest = csIntegrationRequestFactory.renewLegacyCertificateRequest(
+                PATIENT_WITH_ID, integrationParameters, CERTIFICATE_MODEL_ID, CertificateStatus.SIGNED,
+                UNIT, prefillXmlDTO);
+            assertEquals(prefillXmlDTO, actualRequest.getPrefillXml());
         }
     }
 

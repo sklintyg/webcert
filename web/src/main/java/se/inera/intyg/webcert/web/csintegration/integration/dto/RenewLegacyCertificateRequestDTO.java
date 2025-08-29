@@ -42,6 +42,7 @@ public class RenewLegacyCertificateRequestDTO {
   CertificateModelIdDTO certificateModelId;
   CertificateStatus status;
   CertificateServiceUnitDTO issuingUnit;
+  PrefillXmlDTO prefillXml;
 
   @JsonPOJOBuilder(withPrefix = "")
   public static class RenewLegacyCertificateRequestDTOBuilder {
