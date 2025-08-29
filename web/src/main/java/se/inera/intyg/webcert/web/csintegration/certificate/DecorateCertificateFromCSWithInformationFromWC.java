@@ -24,6 +24,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.CertificateRelationType;
+import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -37,8 +39,22 @@ public class DecorateCertificateFromCSWithInformationFromWC {
 
     private static final String PERSON_ID_TYPE = "PERSON_NUMMER";
     private final WebCertUserService webCertUserService;
+    private final DecorateCertificateDataService decorateCertificateDataService;
 
     public void decorate(Certificate certificate) {
+        decoratePatient(certificate);
+        decorateRenewedCertificateFromParent(certificate);
+    }
+
+    private void decorateRenewedCertificateFromParent(Certificate certificate) {
+        if (isNotDraft(certificate) || isNotRenewalRelation(certificate)) {
+            return;
+        }
+
+        decorateCertificateDataService.decorateFromParent(certificate);
+    }
+
+    private void decoratePatient(Certificate certificate) {
         final var user = webCertUserService.getUser();
 
         if (user == null || user.getParameters() == null) {
@@ -144,5 +160,18 @@ public class DecorateCertificateFromCSWithInformationFromWC {
     private boolean hasReserveId(IntegrationParameters parameters) {
         return isAlternateSSNSet(parameters)
             && !isValidPersonIdOrCoordinationId(parameters.getAlternateSsn());
+    }
+
+    private boolean isNotRenewalRelation(Certificate certificate) {
+        if (certificate.getMetadata().getRelations() == null) {
+            return true;
+        }
+
+        final var parent = certificate.getMetadata().getRelations().getParent();
+        return parent == null || !parent.getType().equals(CertificateRelationType.EXTENDED);
+    }
+
+    private static boolean isNotDraft(Certificate certificate) {
+        return !certificate.getMetadata().getStatus().equals(CertificateStatus.UNSIGNED);
     }
 }

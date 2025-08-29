@@ -23,6 +23,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -33,9 +35,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.CertificateRelationType;
+import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -54,6 +60,8 @@ class DecorateCertificateFromCSWithInformationFromWCTest {
     private static final String ALTERNATE_LAST_NAME = "alternateLastName";
     private static final WebCertUser user = new WebCertUser();
 
+    @Mock
+    DecorateCertificateDataService decorateCertificateDataService;
     @Mock
     WebCertUserService webCertUserService;
     @Mock
@@ -111,19 +119,22 @@ class DecorateCertificateFromCSWithInformationFromWCTest {
             .build();
 
         final var certificate = createCertificate();
-        certificate.setMetadata(CertificateMetadata.builder()
-            .description(description)
-            .patient(Patient.builder()
-                .personId(PersonId.builder()
-                    .id(PATIENT_ID)
-                    .type(ID_TYPE)
-                    .build())
-                .firstName(FIRST_NAME)
-                .lastName(LAST_NAME)
+        certificate.setMetadata(
+            CertificateMetadata.builder()
+                .status(CertificateStatus.SIGNED)
+                .description(description)
+                .patient(Patient.builder()
+                    .personId(PersonId.builder()
+                        .id(PATIENT_ID)
+                        .type(ID_TYPE)
+                        .build())
+                    .firstName(FIRST_NAME)
+                    .lastName(LAST_NAME)
+                    .build()
+                )
+                .unit(unit)
                 .build()
-            )
-            .unit(unit)
-            .build());
+        );
 
         decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
 
@@ -455,6 +466,79 @@ class DecorateCertificateFromCSWithInformationFromWCTest {
         }
     }
 
+    @Nested
+    class DecorateRenewedCertificateFromParentTests {
+
+        @Test
+        void shouldNotDecorateIfCertificateIsNotDraft() {
+            final var certificate = createCertificate();
+            decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+            verifyNoInteractions(decorateCertificateDataService);
+        }
+
+        @Test
+        void shouldNotDecorateIfCertificateIsDraftButHasNoParentRelation() {
+            final var certificate = createCertificate();
+            certificate.setMetadata(
+                CertificateMetadata.builder()
+                    .status(CertificateStatus.UNSIGNED)
+                    .relations(
+                        CertificateRelations.builder()
+                            .parent(null)
+                            .build()
+                    )
+                    .build()
+            );
+
+            decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+            verifyNoInteractions(decorateCertificateDataService);
+        }
+
+        @Test
+        void shouldNotDecorateIfCertificateIsDraftButHasNoParentRelationOfTypeExtended() {
+            final var certificate = createCertificate();
+            certificate.setMetadata(
+                CertificateMetadata.builder()
+                    .status(CertificateStatus.UNSIGNED)
+                    .relations(
+                        CertificateRelations.builder()
+                            .parent(
+                                CertificateRelation.builder()
+                                    .type(CertificateRelationType.COMPLEMENTED)
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .build()
+            );
+
+            decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+            verifyNoInteractions(decorateCertificateDataService);
+        }
+
+        @Test
+        void shouldDecorateIfCertificateIsDraftAndHasParentRelationOfTypeExtended() {
+            final var certificate = createCertificate();
+            certificate.setMetadata(
+                CertificateMetadata.builder()
+                    .status(CertificateStatus.UNSIGNED)
+                    .relations(
+                        CertificateRelations.builder()
+                            .parent(
+                                CertificateRelation.builder()
+                                    .type(CertificateRelationType.EXTENDED)
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .build()
+            );
+
+            decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
+            verify(decorateCertificateDataService).decorateFromParent(certificate);
+        }
+    }
+
     private IntegrationParameters createIntegrationParameters(String alternateSsn, String firstName, String lastName) {
         return new IntegrationParameters("reference", "responsible", alternateSsn, firstName, "mellannamn", lastName,
             "address", "zipcode", "city", true, false, false, true, null);
@@ -462,16 +546,19 @@ class DecorateCertificateFromCSWithInformationFromWCTest {
 
     private Certificate createCertificate() {
         final var certificate = new Certificate();
-        certificate.setMetadata(CertificateMetadata.builder()
-            .patient(Patient.builder()
-                .personId(PersonId.builder()
-                    .id(PATIENT_ID)
-                    .type(ID_TYPE)
+        certificate.setMetadata(
+            CertificateMetadata.builder()
+                .status(CertificateStatus.SIGNED)
+                .patient(Patient.builder()
+                    .personId(PersonId.builder()
+                        .id(PATIENT_ID)
+                        .type(ID_TYPE)
+                        .build())
+                    .firstName(FIRST_NAME)
+                    .lastName(LAST_NAME)
                     .build())
-                .firstName(FIRST_NAME)
-                .lastName(LAST_NAME)
-                .build())
-            .build());
+                .build()
+        );
 
         return certificate;
     }
