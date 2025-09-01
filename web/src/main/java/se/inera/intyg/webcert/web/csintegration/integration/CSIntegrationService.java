@@ -531,6 +531,41 @@ public class CSIntegrationService {
         return Boolean.TRUE.equals(response.getExists());
     }
 
+
+    @PerformanceLogging(eventAction = "placeholder-certificate-exists", eventType = EVENT_TYPE_INFO)
+    public Boolean placeholderCertificateExists(String certificateId) {
+        final var url =
+            baseUrl + INTERNAL_CERTIFICATE_ENDPOINT_URL + "/placeholder/" + certificateId + EXISTS;
+
+        final var response = restClient.get()
+            .uri(url)
+            .accept(MediaType.APPLICATION_JSON)
+            .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
+            .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
+            .retrieve()
+            .body(CertificateExistsResponseDTO.class);
+
+        if (response == null) {
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
+        }
+
+        return Boolean.TRUE.equals(response.getExists());
+    }
+
+    @PerformanceLogging(eventAction = "revoke-placeholder-certificate", eventType = EVENT_TYPE_INFO)
+    public void revokePlaceholderCertificate(String certificateId) {
+        final var url =
+            baseUrl + INTERNAL_CERTIFICATE_ENDPOINT_URL + "/placeholder/" + certificateId + "/revoke";
+
+        restClient.post()
+            .uri(url)
+            .accept(MediaType.APPLICATION_JSON)
+            .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
+            .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
+            .retrieve()
+            .body(Void.class);
+    }
+
     @PerformanceLogging(eventAction = "citizen-certificate-exists", eventType = EVENT_TYPE_INFO)
     public Boolean citizenCertificateExists(String certificateId) {
         final var url = baseUrl + CITIZEN_ENDPOINT_URL + "/" + certificateId + EXISTS;
