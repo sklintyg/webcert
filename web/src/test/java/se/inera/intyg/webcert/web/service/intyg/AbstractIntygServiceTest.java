@@ -48,6 +48,7 @@ import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
@@ -70,6 +71,9 @@ public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationT
     protected static final String INTYG_ID = "intyg-1";
 
     protected static final String INTYG_TYP_FK = "fk7263";
+
+    @Mock
+    protected CSIntegrationService csIntegrationService;
 
     @Mock
     protected IntygModuleFacade moduleFacade;
