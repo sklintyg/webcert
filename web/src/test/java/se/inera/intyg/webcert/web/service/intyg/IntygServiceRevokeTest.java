@@ -158,6 +158,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         when(intygRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(signedUtkast));
         when(intygRelationHelper.getRelationsForIntyg(INTYG_ID)).thenReturn(childRelations);
         when(intygRelationHelper.getRelationsForIntyg(PARENT_INTYG_ID)).thenReturn(parentRelations);
+        when(csIntegrationService.placeholderCertificateExists(INTYG_ID)).thenReturn(true);
 
         IntygServiceResult res = intygService.revokeIntyg(INTYG_ID, INTYG_TYP_FK, REVOKE_MSG, REVOKE_REASON);
 
@@ -169,6 +170,8 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         verify(certificateSenderService, times(1)).revokeCertificate(eq(INTYG_ID), any(), eq(INTYG_TYP_FK), eq(INTYG_TYPE_VERSION));
         verify(moduleFacade, times(1)).getRevokeCertificateRequest(eq(INTYG_TYP_FK), any(), any(), eq(REVOKE_MSG));
         verify(monitoringService).logIntygRevoked(INTYG_ID, INTYG_TYP_FK, HSA_ID, REVOKE_REASON);
+        verify(csIntegrationService).placeholderCertificateExists(INTYG_ID);
+        verify(csIntegrationService).revokePlaceholderCertificate(INTYG_ID);
 
         assertEquals(IntygServiceResult.OK, res);
     }

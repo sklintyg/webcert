@@ -1070,7 +1070,66 @@ class CSIntegrationServiceTest {
         }
     }
 
+    @Nested
+    class PlaceholderCertificateExistsTests {
 
+        @BeforeEach
+        void setUp() {
+
+            responseSpec = mock(RestClient.ResponseSpec.class);
+            requestHeadersUriSpec = mock(RestClient.RequestHeadersUriSpec.class);
+            requestHeadersSpec = mock(RestClient.RequestHeadersSpec.class);
+
+            final String uri = "baseUrl/internalapi/certificate/placeholder/ID/exists";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.get()).thenReturn(requestHeadersUriSpec);
+            when(requestHeadersUriSpec.uri(uri)).thenReturn(requestHeadersSpec);
+            when(requestHeadersSpec.accept(MediaType.APPLICATION_JSON)).thenReturn(requestHeadersSpec);
+            when(requestHeadersSpec.header(any(), any())).thenReturn(requestHeadersSpec);
+            when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
+        }
+
+        @Test
+        void shouldThrowExceptionIfNullResponse() {
+            assertThrows(
+                IllegalStateException.class, () -> csIntegrationService.placeholderCertificateExists(ID)
+            );
+        }
+
+        @Nested
+        class HasResponse {
+
+            private final CertificateExistsResponseDTO expectedResponse = CertificateExistsResponseDTO.builder()
+                .exists(true)
+                .build();
+
+            @BeforeEach
+            void setup() {
+                doReturn(expectedResponse).when(responseSpec).body(CertificateExistsResponseDTO.class);
+            }
+
+
+            @Test
+            void shouldReturnBooleanFromResponse() {
+                final var response = csIntegrationService.placeholderCertificateExists("ID");
+
+                assertEquals(expectedResponse.getExists(), response);
+            }
+
+            @Test
+            void shouldSetUrlCorrect() {
+                ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+                final var captor = ArgumentCaptor.forClass(String.class);
+
+                csIntegrationService.placeholderCertificateExists("ID");
+                verify(requestHeadersUriSpec).uri(captor.capture());
+
+                assertEquals("baseUrl/internalapi/certificate/placeholder/ID/exists", captor.getValue());
+            }
+        }
+    }
+    
     @Nested
     class MessageExists {
 

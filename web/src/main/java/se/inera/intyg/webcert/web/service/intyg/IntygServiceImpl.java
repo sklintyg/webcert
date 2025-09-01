@@ -83,6 +83,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.IntygDraftsConverter;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
+import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.service.access.CertificateAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
@@ -130,6 +131,9 @@ public class IntygServiceImpl implements IntygService {
 
     @Value("${sekretessmarkering.prod.date}")
     private String sekretessmarkeringProdDate;
+
+    @Autowired
+    private CSIntegrationService csIntegrationService;
 
     @Autowired
     private GetCertificateTypeInfoResponderInterface getCertificateTypeInfoService;
@@ -1051,6 +1055,10 @@ public class IntygServiceImpl implements IntygService {
         // Fourth: mark the originating Utkast as REVOKED
         markUtkastWithRevokedDate(intygsId);
 
+        if (Boolean.TRUE.equals(csIntegrationService.placeholderCertificateExists(intygsId))) {
+            csIntegrationService.revokePlaceholderCertificate(intygsId);
+        }
+        
         return IntygServiceResult.OK;
     }
 
