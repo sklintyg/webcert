@@ -134,7 +134,7 @@ public class CertificateToIntygInfoConverter {
     private static List<Question> getComplementsAnswered(List<Question> questions) {
         return questions.stream()
             .filter(question -> question.getType() == QuestionType.COMPLEMENT
-                && question.getAnswer() != null && question.getAnswer().getSent() != null)
+                && question.isHandled())
             .toList();
     }
 
