@@ -39,7 +39,9 @@ public class CertificateServiceProfileActive implements CertificateServiceProfil
     }
 
     @Override
-    public boolean activeAndSupportsType(String type) {
-        return csIntegrationService.certificateTypeExists(type).isPresent();
+    public boolean activeAndSupportsType(String type, String certificateTypeVersion) {
+        return csIntegrationService.certificateTypeExists(type)
+            .filter(model -> model.getVersion().equals(certificateTypeVersion))
+            .isPresent();
     }
 }

@@ -36,6 +36,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModel
 class CertificateServiceProfileActiveTest {
 
     private static final String SUPPORTED_TYPE = "supportedType";
+    private static final String SUPPORTED_VERSION = "supportedVersion";
+    private static final String NOT_SUPPORTED_VERSION = "notSupportedVersion";
     private static final String NOT_SUPPORTED_TYPE = "notSupportedType";
     @Mock
     private CSIntegrationService csIntegrationService;
@@ -48,16 +50,29 @@ class CertificateServiceProfileActiveTest {
     }
 
     @Test
-    void shouldReturnTrueIfProfileIsActiveAndTypeIsSupported() {
-        final var modelIdDTO = Optional.of(CertificateModelIdDTO.builder().build());
+    void shouldReturnTrueIfProfileIsActiveAndTypeIsSupportedWithCorrectVersion() {
+        final var certificateModelId = CertificateModelIdDTO.builder()
+            .version(SUPPORTED_VERSION)
+            .build();
+        final var modelIdDTO = Optional.of(certificateModelId);
         doReturn(modelIdDTO).when(csIntegrationService).certificateTypeExists(SUPPORTED_TYPE);
-        assertTrue(certificateServiceProfileActive.activeAndSupportsType(SUPPORTED_TYPE));
+        assertTrue(certificateServiceProfileActive.activeAndSupportsType(SUPPORTED_TYPE, SUPPORTED_VERSION));
+    }
+
+    @Test
+    void shouldReturnFalseIfProfileIsActiveAndTypeIsSupportedWithIncorrectVersion() {
+        final var certificateModelId = CertificateModelIdDTO.builder()
+            .version(NOT_SUPPORTED_VERSION)
+            .build();
+        final var modelIdDTO = Optional.of(certificateModelId);
+        doReturn(modelIdDTO).when(csIntegrationService).certificateTypeExists(SUPPORTED_TYPE);
+        assertFalse(certificateServiceProfileActive.activeAndSupportsType(SUPPORTED_TYPE, SUPPORTED_VERSION));
     }
 
     @Test
     void shouldReturnFalseIfProfileIsActiveAndTypeIsNotSupported() {
         final var modelIdDTO = Optional.empty();
         doReturn(modelIdDTO).when(csIntegrationService).certificateTypeExists(NOT_SUPPORTED_TYPE);
-        assertFalse(certificateServiceProfileActive.activeAndSupportsType(NOT_SUPPORTED_TYPE));
+        assertFalse(certificateServiceProfileActive.activeAndSupportsType(NOT_SUPPORTED_TYPE, SUPPORTED_VERSION));
     }
 }

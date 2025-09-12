@@ -123,7 +123,8 @@ public class CreateCertificateTestabilityUtil {
             createCertificateRequest.getCertificateTypeVersion()
         );
 
-        if (certificateServiceProfile.activeAndSupportsType(createCertificateRequest.getCertificateType())) {
+        if (certificateServiceProfile.activeAndSupportsType(createCertificateRequest.getCertificateType(),
+            createCertificateRequest.getCertificateTypeVersion())) {
             final var modelIdDTO = csIntegrationService.certificateTypeExists(createCertificateRequest.getCertificateType());
             return certificateServiceTestabilityUtil.create(
                 CertificateServiceCreateRequest.builder()

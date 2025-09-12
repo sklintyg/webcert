@@ -25,7 +25,7 @@ public interface CertificateServiceProfile {
         return false;
     }
 
-    default boolean activeAndSupportsType(String type) {
+    default boolean activeAndSupportsType(String type, String certificateTypeVersion) {
         return false;
     }
 }
