@@ -35,6 +35,6 @@ class CertificateServiceProfileInactiveTest {
 
     @Test
     void shallReturnFalseForType() {
-        assertFalse(certificateServiceProfileInactive.activeAndSupportsType(CERTIFICATE_TYPE));
+        assertFalse(certificateServiceProfileInactive.activeAndSupportsType(CERTIFICATE_TYPE, CERTIFICATE_TYPE));
     }
 }
