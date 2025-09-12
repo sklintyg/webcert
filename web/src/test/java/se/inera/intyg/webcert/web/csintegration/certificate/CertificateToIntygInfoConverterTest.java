@@ -183,14 +183,10 @@ class CertificateToIntygInfoConverterTest {
             }
 
             @Test
-            void shouldSetComplementsAnswered() {
+            void shouldSetComplementsAnsweredIfQuestionIsHandled() {
                 final var question = Question.builder()
                     .type(QuestionType.COMPLEMENT)
-                    .answer(
-                        Answer.builder()
-                            .sent(LocalDateTime.now())
-                            .build()
-                    )
+                    .isHandled(true)
                     .build();
                 final var questions = Collections.singletonList(question);
 
