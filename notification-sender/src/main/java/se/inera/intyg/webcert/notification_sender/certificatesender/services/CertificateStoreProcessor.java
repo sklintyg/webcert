@@ -56,7 +56,10 @@ public class CertificateStoreProcessor {
             moduleApi.registerCertificate(utkastAsJson, logicalAddress);
 
         } catch (Exception e) {
-            throw new TemporaryException(e);
+            throw new TemporaryException(
+                "Error occurred when trying to store certificate of type '%s' in intygstjansten.".formatted(intygsTyp),
+                e
+            );
         } finally {
             MDC.clear();
         }

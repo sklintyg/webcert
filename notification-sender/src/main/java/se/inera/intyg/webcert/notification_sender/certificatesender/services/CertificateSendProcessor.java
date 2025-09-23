@@ -41,7 +41,7 @@ public class CertificateSendProcessor {
     @Autowired
     private SendCertificateServiceClient sendServiceClient;
     @Autowired
-    private  MdcHelper mdcHelper;
+    private MdcHelper mdcHelper;
 
     public void process(@Body String skickatAv,
         @Header(Constants.INTYGS_ID) String intygsId,
@@ -69,10 +69,11 @@ public class CertificateSendProcessor {
                     LOG.warn("Warning occured when trying to send intyg '{}'; {}. Will not requeue.", intygsId, resultText);
                 }
             }
-
         } catch (WebServiceException e) {
-            LOG.warn("Call to send intyg {} caused an error: {}. Will retry", intygsId, e.getMessage());
-            throw new TemporaryException(e.getMessage());
+            throw new TemporaryException(
+                "Call to send intyg '%s' caused an error: '%s'. Will retry".formatted(intygsId, e.getMessage()),
+                e
+            );
         } finally {
             MDC.clear();
         }
