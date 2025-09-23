@@ -1,0 +1,10 @@
+dependencies {
+    implementation project(':webcert-common')
+
+    implementation 'jakarta.annotation:jakarta.annotation-api'
+    implementation 'org.springframework:spring-context'
+    implementation "org.springframework:spring-jms"
+    
+    compileOnly "org.projectlombok:lombok"
+    annotationProcessor "org.projectlombok:lombok"
+}
