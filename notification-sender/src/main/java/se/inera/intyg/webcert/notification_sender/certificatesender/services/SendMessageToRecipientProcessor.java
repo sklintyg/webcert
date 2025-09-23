@@ -61,23 +61,20 @@ public class SendMessageToRecipientProcessor {
             ResultType result = response.getResult();
 
             switch (result.getResultCode()) {
-                case OK:
-                case INFO:
+                case OK, INFO:
                     return;
                 case ERROR:
-                    LOG.error(
-                        "Call to sendMessageToRecipient for intyg {} caused an error: {}, ErrorId: {}."
-                            + " Rethrowing as PermanentException", intygsId, result.getResultText(), result.getErrorId());
-                    throw new TemporaryException(result.getResultText());
+                    throw new TemporaryException(
+                        "Call to sendMessageToRecipient for intyg '%s' caused an error: '%s', ErrorId: '%s'.  Will retry"
+                            .formatted(intygsId, result.getResultText(), result.getErrorId())
+                    );
             }
-        } catch (UnmarshallingFailureException e) {
-            LOG.error("Call to sendMessageToRecipient for intyg {} caused an error: {}. Rethrowing as PermanentException",
-                intygsId, e.getMessage());
-            throw new TemporaryException(e.getMessage());
-        } catch (WebServiceException e) {
-            LOG.error("Call to sendMessageToRecipient for intyg {} caused an error: {}. Will retry",
-                intygsId, e.getMessage());
-            throw new TemporaryException(e.getMessage());
+        } catch (UnmarshallingFailureException | WebServiceException e) {
+            throw new TemporaryException(
+                "Call to sendMessageToRecipient for intyg '%s' caused an error: '%s'. Will retry"
+                    .formatted(intygsId, e.getMessage()),
+                e
+            );
         } finally {
             MDC.clear();
         }

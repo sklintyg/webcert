@@ -35,9 +35,9 @@ import se.inera.intyg.webcert.logging.MdcLogConstants;
 public class CertificateRevokeProcessor {
 
     @Autowired
-    private  IntygModuleRegistry registry;
+    private IntygModuleRegistry registry;
     @Autowired
-    private  MdcHelper mdcHelper;
+    private MdcHelper mdcHelper;
 
     public void process(@Body String xmlBody,
         @Header(Constants.INTYGS_ID) String intygsId,
@@ -46,14 +46,11 @@ public class CertificateRevokeProcessor {
         @Header(Constants.INTYGS_TYP_VERSION) String intygsTypVersion)
         throws TemporaryException {
 
-        checkArgument(!Strings.isNullOrEmpty(intygsId), "Message of type %s does not have a %s header.", Constants.REVOKE_MESSAGE,
-            Constants.INTYGS_ID);
-        checkArgument(!Strings.isNullOrEmpty(logicalAddress), "Message of type %s does not have a %s header.", Constants.REVOKE_MESSAGE,
-            Constants.LOGICAL_ADDRESS);
-        checkArgument(!Strings.isNullOrEmpty(intygsTyp), "Message of type %s does not have a %s header.", Constants.REVOKE_MESSAGE,
-            Constants.INTYGS_TYP);
-        checkArgument(!Strings.isNullOrEmpty(intygsTypVersion), "Message of type %s does not have a %s header.", Constants.REVOKE_MESSAGE,
-            Constants.INTYGS_TYP_VERSION);
+        final var errorTemplate = "Message of type %s does not have a %s header.";
+        checkArgument(!Strings.isNullOrEmpty(intygsId), errorTemplate, Constants.REVOKE_MESSAGE, Constants.INTYGS_ID);
+        checkArgument(!Strings.isNullOrEmpty(logicalAddress), errorTemplate, Constants.REVOKE_MESSAGE, Constants.LOGICAL_ADDRESS);
+        checkArgument(!Strings.isNullOrEmpty(intygsTyp), errorTemplate, Constants.REVOKE_MESSAGE, Constants.INTYGS_TYP);
+        checkArgument(!Strings.isNullOrEmpty(intygsTypVersion), errorTemplate, Constants.REVOKE_MESSAGE, Constants.INTYGS_TYP_VERSION);
 
         try {
             MDC.put(MdcLogConstants.TRACE_ID_KEY, mdcHelper.traceId());
@@ -65,7 +62,11 @@ public class CertificateRevokeProcessor {
             ModuleApi moduleApi = registry.getModuleApi(intygsTyp, intygsTypVersion);
             moduleApi.revokeCertificate(xmlBody, logicalAddress);
         } catch (Exception e) {
-            throw new TemporaryException(e.getMessage());
+            throw new TemporaryException(
+                "Failed to revoke certificate with id '%s' of type '%s' at logical address '%s'"
+                    .formatted(intygsId, intygsTyp, logicalAddress),
+                e
+            );
         } finally {
             MDC.clear();
         }
