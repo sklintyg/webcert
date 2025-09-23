@@ -23,8 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
-import se.inera.intyg.webcert.integration.analytics.model.CertificateEventMessage;
-import se.inera.intyg.webcert.integration.analytics.model.CertificateEventMessageType;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateEventMessageFactory;
 import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateEventMessage;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
@@ -46,6 +45,7 @@ public class CreateCertificateFromCertificateService implements CreateCertificat
     private final MonitoringLogService monitoringLogService;
     private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
     private final PublishCertificateEventMessage publishCertificateEventMessage;
+    private final CertificateEventMessageFactory certificateEventMessageFactory;
 
     @Override
     public String create(String certificateType, String patientId) throws CreateCertificateException {
@@ -82,10 +82,7 @@ public class CreateCertificateFromCertificateService implements CreateCertificat
         publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKAPAT);
 
         publishCertificateEventMessage.publishEvent(
-            CertificateEventMessage.builder()
-                .certificateId(certificate.getMetadata().getId())
-                .type(CertificateEventMessageType.DRAFT_CREATED)
-                .build()
+            certificateEventMessageFactory.draftCreated(certificate)
         );
 
         log.debug("Created certificate using certificate service of type '{}' and version '{}'",

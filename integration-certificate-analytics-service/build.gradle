@@ -1,10 +1,12 @@
 dependencies {
-    implementation project(':webcert-common')
+    implementation project(':webcert-logging')
 
     implementation 'jakarta.annotation:jakarta.annotation-api'
+    implementation 'jakarta.jms:jakarta.jms-api'
     implementation 'org.springframework:spring-context'
     implementation "org.springframework:spring-jms"
-    
+    implementation "se.inera.intyg.common:common-support:${commonVersion}"
+
     compileOnly "org.projectlombok:lombok"
     annotationProcessor "org.projectlombok:lombok"
 }
