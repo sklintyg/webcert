@@ -35,13 +35,13 @@ public class PublishCertificateAnalyticsMessage {
 
     public void publishEvent(CertificateAnalyticsMessage message) {
         jmsTemplateForCertificateAnalyticsMessages.convertAndSend(message, msg -> {
-                msg.setStringProperty("eventId", message.getMessageId());
+                msg.setStringProperty("messageId", message.getMessageId());
                 msg.setStringProperty("sessionId", MDC.get(MdcLogConstants.SESSION_ID_KEY));
                 msg.setStringProperty("traceId", MDC.get(MdcLogConstants.TRACE_ID_KEY));
                 msg.setStringProperty("_type", message.getType());
                 msg.setStringProperty("schemaVersion", message.getSchemaVersion());
                 msg.setStringProperty("contentType", "application/json");
-                msg.setStringProperty("eventType", message.getMessageType().toString());
+                msg.setStringProperty("messageType", message.getMessageType().toString());
                 return msg;
             }
         );

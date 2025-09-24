@@ -26,6 +26,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 import java.util.List;
@@ -48,6 +49,9 @@ import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
+import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
@@ -73,6 +77,10 @@ class FinalizeCertificateSignServiceTest {
     private MonitoringLogService monitoringLogService;
     @Mock
     private CSIntegrationService csIntegrationService;
+    @Mock
+    private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+    @Mock
+    private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
     @InjectMocks
     private FinalizeCertificateSignService finalizeCertificateSignService;
 
@@ -164,6 +172,19 @@ class FinalizeCertificateSignServiceTest {
         void shouldPublishCertificateStatusUpdate() {
             finalizeCertificateSignService.finalizeSign(certificate);
             verify(publishCertificateStatusUpdateService).publish(certificate, HandelsekodEnum.SIGNAT);
+        }
+    }
+
+
+    @Nested
+    class PublishCertificateAnalyticsMessageTests {
+
+        @Test
+        void shouldPublishAnalyticsMessageWhenCertificateIsSigned() {
+            final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+            when(certificateAnalyticsMessageFactory.certificateSigned(certificate)).thenReturn(analyticsMessage);
+            finalizeCertificateSignService.finalizeSign(certificate);
+            verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
         }
     }
 

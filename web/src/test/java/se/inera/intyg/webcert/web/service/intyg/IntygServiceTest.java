@@ -105,6 +105,8 @@ import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -219,6 +221,10 @@ public class IntygServiceTest {
     private CertificateAccessServiceHelper certificateAccessServiceHelper;
     @Mock
     private IntygTextsService intygTextsService;
+    @Mock
+    private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+    @Mock
+    private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
     @InjectMocks
     private IntygDraftsConverter intygConverter = new IntygDraftsConverter();

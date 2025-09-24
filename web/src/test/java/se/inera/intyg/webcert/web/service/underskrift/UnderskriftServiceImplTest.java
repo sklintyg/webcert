@@ -75,6 +75,9 @@ import se.inera.intyg.infra.security.common.model.Feature;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
@@ -155,6 +158,12 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
 
     @Mock
     private UtkastModelToXMLConverter utkastModelToXMLConverter;
+
+    @Mock
+    private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+
+    @Mock
+    private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
     @InjectMocks
     private UnderskriftServiceImpl testee;
@@ -332,6 +341,23 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
         assertEquals(SIGNERAD, sb.getStatus());
         verify(certificateEventService)
             .createCertificateEvent(anyString(), anyString(), eq(EventCode.SIGNAT), anyString());
+    }
+
+    @Test
+    public void shallPublishAnalyticsMessageWhenSigningIsFinalized() {
+        final var utkast = createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", vardperson, ENHET_ID, PERSON_ID);
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(utkast));
+        final var signaturBiljett = createSignaturBiljett(SignaturStatus.BEARBETAR);
+        when(redisTicketTracker.findBiljett(TICKET_ID)).thenReturn(signaturBiljett);
+        when(xmlUnderskriftService.finalizeSignature(any(SignaturBiljett.class), any(byte[].class), anyString(), any(Utkast.class),
+            any(WebCertUser.class)))
+            .thenReturn(createSignaturBiljett(SIGNERAD));
+        final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+        when(certificateAnalyticsMessageFactory.certificateSigned(utkast)).thenReturn(analyticsMessage);
+
+        testee.netidSignature(TICKET_ID, "signatur".getBytes(StandardCharsets.UTF_8), "certifikat");
+        verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
+        verify(certificateAnalyticsMessageFactory).certificateSigned(utkast);
     }
 
     private WebCertUser createWebCertUser(boolean doctor) {

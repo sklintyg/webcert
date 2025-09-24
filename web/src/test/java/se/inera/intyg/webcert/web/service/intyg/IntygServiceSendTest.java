@@ -61,6 +61,7 @@ import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
@@ -74,13 +75,16 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
     private static final String INTYG_TYPE_VERSION_1_0 = "1.0";
 
+    private Utkast utkast;
+
     @Before
     public void setupIntyg() throws Exception {
         json = Files.readString(Path.of(ClassLoader.getSystemResource("IntygServiceTest/utlatande.json").toURI()));
         utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
+        utkast = getUtkast(INTYG_ID);
 
         ReflectionTestUtils.setField(intygService, "sekretessmarkeringStartDatum", LocalDateTime.of(2016, 11, 30, 23, 0, 0, 0));
-        when(intygRepository.findById(eq(INTYG_ID))).thenReturn(Optional.of(getUtkast(INTYG_ID)));
+        when(intygRepository.findById(eq(INTYG_ID))).thenReturn(Optional.of(utkast));
     }
 
     @Test
@@ -108,6 +112,30 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
 
         verify(intygRepository, times(2)).findById(INTYG_ID);
         verify(intygRepository).save(any(Utkast.class));
+    }
+
+    @Test
+    public void shallPublishAnalyticsMessageWhenCertificateIsSent() throws Exception {
+        final String completionMeddelandeId = "meddelandeId";
+
+        WebCertUser webCertUser = createUser();
+
+        Utlatande completionUtlatande = utlatande;
+        completionUtlatande.getGrundData().setRelation(new Relation());
+        completionUtlatande.getGrundData().getRelation().setRelationKod(RelationKod.KOMPLT);
+        completionUtlatande.getGrundData().getRelation().setMeddelandeId(completionMeddelandeId);
+
+        when(webCertUserService.isAuthorizedForUnit(anyString(), anyString(), anyBoolean())).thenReturn(true);
+        when(patientDetailsResolver.getSekretessStatus(any(Personnummer.class))).thenReturn(SekretessStatus.FALSE);
+        when(webCertUserService.getUser()).thenReturn(webCertUser);
+        when(intygRepository.findById(INTYG_ID)).thenReturn(Optional.of(utkast));
+        final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+        when(certificateAnalyticsMessageFactory.certificateSent(utkast)).thenReturn(analyticsMessage);
+
+        intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false);
+
+        verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
+        verify(certificateAnalyticsMessageFactory).certificateSent(utkast);
     }
 
     @Test

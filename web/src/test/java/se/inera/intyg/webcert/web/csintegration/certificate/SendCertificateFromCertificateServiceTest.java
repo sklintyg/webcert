@@ -39,6 +39,9 @@ import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRecipient;
+import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SendCertificateRequestDTO;
@@ -68,6 +71,12 @@ class SendCertificateFromCertificateServiceTest {
 
     @Mock
     MonitoringLogService monitoringLogService;
+
+    @Mock
+    PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+
+    @Mock
+    CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
     @InjectMocks
     SendCertificateFromCertificateService sendCertificateFromCertificateService;
@@ -146,6 +155,14 @@ class SendCertificateFromCertificateServiceTest {
             void shouldPublishCertificateStatusUpdate() {
                 sendCertificateFromCertificateService.sendCertificate(ID);
                 verify(publishCertificateStatusUpdateService).publish(CERTIFICATE, HandelsekodEnum.SKICKA);
+            }
+
+            @Test
+            void shouldPublishCertificateAnalyticsMessage() {
+                final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+                when(certificateAnalyticsMessageFactory.certificateSent(CERTIFICATE)).thenReturn(analyticsMessage);
+                sendCertificateFromCertificateService.sendCertificate(ID);
+                verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
             }
 
             @Test
