@@ -31,9 +31,15 @@ import se.inera.intyg.webcert.logging.MdcLogConstants;
 @RequiredArgsConstructor
 public class PublishCertificateAnalyticsMessage {
 
+    private final CertificateAnalyticsServiceProfile certificateAnalyticsServiceProfile;
     private final JmsTemplate jmsTemplateForCertificateAnalyticsMessages;
 
     public void publishEvent(CertificateAnalyticsMessage message) {
+        if (!certificateAnalyticsServiceProfile.isEnabled()) {
+            log.debug("Certificate analytics service is not enabled - not publishing message");
+            return;
+        }
+
         jmsTemplateForCertificateAnalyticsMessages.convertAndSend(message, msg -> {
                 msg.setStringProperty("messageId", message.getMessageId());
                 msg.setStringProperty("sessionId", MDC.get(MdcLogConstants.SESSION_ID_KEY));

@@ -27,7 +27,7 @@ gretty {
     serverConfigFile = "tomcat-gretty.xml"
 
     jvmArgs = ["-Dcatalina.base=${buildDirectory}/catalina.base",
-               "-Dspring.profiles.active=dev,caching-enabled,wc-security-test,ia-stub,certificate-service-active,servicenow-integration-v2,pu-integration-intyg-proxy-service,grp-rest-api",
+               "-Dspring.profiles.active=dev,caching-enabled,wc-security-test,ia-stub,certificate-service-active,servicenow-integration-v2,pu-integration-intyg-proxy-service,grp-rest-api,certificate-analytics-service-active",
                "-Dlogback.file=${applicationDir}/config/logback-spring.xml",
                "-Djava.awt.headless=true",
                "-Dfile.encoding=UTF-8",
