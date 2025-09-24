@@ -31,8 +31,8 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;
 import se.inera.intyg.common.support.facade.model.link.ResourceLinkTypeEnum;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
-import se.inera.intyg.webcert.integration.analytics.service.CertificateEventMessageFactory;
-import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateEventMessage;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
@@ -48,8 +48,8 @@ public class FinalizeCertificateSignService {
     private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
     private final SendCertificateFromCertificateService sendCertificateFromCertificateService;
     private final CSIntegrationService csIntegrationService;
-    private final PublishCertificateEventMessage publishCertificateEventMessage;
-    private final CertificateEventMessageFactory certificateEventMessageFactory;
+    private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+    private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
     public void finalizeSign(Certificate certificate) {
         final var user = webCertUserService.getUser();
@@ -68,8 +68,8 @@ public class FinalizeCertificateSignService {
 
         publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SIGNAT);
 
-        publishCertificateEventMessage.publishEvent(
-            certificateEventMessageFactory.certificateSigned(certificate)
+        publishCertificateAnalyticsMessage.publishEvent(
+            certificateAnalyticsMessageFactory.certificateSigned(certificate)
         );
 
         if (shouldPublishHandledEventForParent(certificate)) {

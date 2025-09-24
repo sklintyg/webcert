@@ -25,8 +25,8 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.integration.analytics.service.CertificateEventMessageFactory;
-import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateEventMessage;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.access.AccessResultCode;
 import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
@@ -50,8 +50,8 @@ public class CreateCertificateFacadeServiceImpl implements CreateCertificateFaca
     private final IntygTextsService intygTextsService;
     private final WebCertUserService webCertUserService;
     private final PatientDetailsResolver patientDetailsResolver;
-    private final PublishCertificateEventMessage publishCertificateEventMessage;
-    private final CertificateEventMessageFactory certificateEventMessageFactory;
+    private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+    private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
     @Override
     public String create(String certificateType, String patientId) throws CreateCertificateException {
@@ -73,8 +73,8 @@ public class CreateCertificateFacadeServiceImpl implements CreateCertificateFaca
         final var draft = utkastService.createNewDraft(request);
         LOG.debug("Created new certificate of type '{}' with id '{}'", certificateType, draft.getIntygsId());
 
-        publishCertificateEventMessage.publishEvent(
-            certificateEventMessageFactory.draftCreated(draft)
+        publishCertificateAnalyticsMessage.publishEvent(
+            certificateAnalyticsMessageFactory.draftCreated(draft)
         );
 
         return draft.getIntygsId();

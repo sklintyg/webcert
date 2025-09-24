@@ -36,8 +36,8 @@ import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.integration.analytics.service.CertificateEventMessageFactory;
-import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateEventMessage;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
@@ -115,10 +115,10 @@ public class UnderskriftServiceImpl implements UnderskriftService {
     private UtkastModelToXMLConverter utkastModelToXMLConverter;
 
     @Autowired
-    private PublishCertificateEventMessage publishCertificateEventMessage;
+    private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
 
     @Autowired
-    private CertificateEventMessageFactory certificateEventMessageFactory;
+    private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
     @Override
     public SignaturBiljett startSigningProcess(String intygsId, String intygsTyp, long version, SignMethod signMethod,
@@ -239,8 +239,8 @@ public class UnderskriftServiceImpl implements UnderskriftService {
         // Notify stakeholders when certificate has been signed
         notificationService.sendNotificationForDraftSigned(utkast);
 
-        publishCertificateEventMessage.publishEvent(
-            certificateEventMessageFactory.certificateSigned(utkast)
+        publishCertificateAnalyticsMessage.publishEvent(
+            certificateAnalyticsMessageFactory.certificateSigned(utkast)
         );
 
         certificateEventService.createCertificateEvent(utkast.getIntygsId(), user.getHsaId(), EventCode.SIGNAT,

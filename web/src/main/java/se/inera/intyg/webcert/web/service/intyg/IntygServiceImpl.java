@@ -78,8 +78,8 @@ import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.integration.analytics.service.CertificateEventMessageFactory;
-import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateEventMessage;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
@@ -210,10 +210,10 @@ public class IntygServiceImpl implements IntygService {
     private IntygTextsService intygTextsService;
 
     @Autowired
-    private PublishCertificateEventMessage publishCertificateEventMessage;
+    private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
 
     @Autowired
-    private CertificateEventMessageFactory certificateEventMessageFactory;
+    private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
     private ChronoLocalDateTime sekretessmarkeringStartDatum;
 
@@ -559,8 +559,8 @@ public class IntygServiceImpl implements IntygService {
         markUtkastWithSendDateAndRecipient(optionalUtkast.orElse(null), intygsId, recipient);
 
         optionalUtkast.ifPresent(
-            utkast -> publishCertificateEventMessage.publishEvent(
-                certificateEventMessageFactory.certificateSent(utkast)
+            utkast -> publishCertificateAnalyticsMessage.publishEvent(
+                certificateAnalyticsMessageFactory.certificateSent(utkast)
             )
         );
 
