@@ -78,6 +78,8 @@ import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateEventMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateEventMessage;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
@@ -206,6 +208,12 @@ public class IntygServiceImpl implements IntygService {
 
     @Autowired
     private IntygTextsService intygTextsService;
+
+    @Autowired
+    private PublishCertificateEventMessage publishCertificateEventMessage;
+
+    @Autowired
+    private CertificateEventMessageFactory certificateEventMessageFactory;
 
     private ChronoLocalDateTime sekretessmarkeringStartDatum;
 
@@ -549,6 +557,12 @@ public class IntygServiceImpl implements IntygService {
         logService.logSendIntygToRecipient(logRequest);
 
         markUtkastWithSendDateAndRecipient(optionalUtkast.orElse(null), intygsId, recipient);
+
+        optionalUtkast.ifPresent(
+            utkast -> publishCertificateEventMessage.publishEvent(
+                certificateEventMessageFactory.certificateSent(utkast)
+            )
+        );
 
         return sendIntygToCertificateSender(sendConfig, utlatande, delay);
     }
@@ -1058,7 +1072,7 @@ public class IntygServiceImpl implements IntygService {
         if (Boolean.TRUE.equals(csIntegrationService.placeholderCertificateExists(intygsId))) {
             csIntegrationService.revokePlaceholderCertificate(intygsId);
         }
-        
+
         return IntygServiceResult.OK;
     }
 

@@ -17,12 +17,13 @@ public class PublishCertificateEventMessage {
 
     public void publishEvent(CertificateEventMessage message) {
         jmsTemplateForCertificateEvent.convertAndSend(message, msg -> {
+                msg.setStringProperty("eventId", message.getEventId());
                 msg.setStringProperty("sessionId", MDC.get(MdcLogConstants.SESSION_ID_KEY));
                 msg.setStringProperty("traceId", MDC.get(MdcLogConstants.TRACE_ID_KEY));
-                msg.setStringProperty("spanId", MDC.get(MdcLogConstants.SPAN_ID_KEY));
-                msg.setStringProperty("schemaVersion", "v1");
+                msg.setStringProperty("_type", message.getType());
+                msg.setStringProperty("schemaVersion", message.getSchemaVersion());
                 msg.setStringProperty("contentType", "application/json");
-                msg.setStringProperty("eventType", message.getType().toString());
+                msg.setStringProperty("eventType", message.getMessageType().toString());
                 return msg;
             }
         );

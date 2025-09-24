@@ -1,7 +1,6 @@
 package se.inera.intyg.webcert.integration.analytics.config;
 
 import jakarta.jms.ConnectionFactory;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -11,7 +10,6 @@ import org.springframework.jms.support.converter.MappingJackson2MessageConverter
 import org.springframework.jms.support.converter.MessageType;
 
 @Configuration
-@Slf4j
 @ComponentScan(basePackages = {
     "se.inera.intyg.webcert.integration.analytics"
 })
@@ -23,8 +21,8 @@ public class CertificateAnalyticsServiceIntegrationConfig {
     @Bean
     public MappingJackson2MessageConverter messageConverter() {
         final var converter = new MappingJackson2MessageConverter();
-        converter.setTargetType(MessageType.TEXT); // JSON -> TextMessage
-        converter.setTypeIdPropertyName("_type");  // metadata header
+        converter.setTargetType(MessageType.TEXT);
+        converter.setTypeIdPropertyName("_type");
         return converter;
     }
 

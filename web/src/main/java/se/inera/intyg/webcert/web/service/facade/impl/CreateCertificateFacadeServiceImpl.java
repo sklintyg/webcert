@@ -18,15 +18,15 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
-import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
-import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateEventMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateEventMessage;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
 import se.inera.intyg.webcert.web.service.access.AccessResultCode;
 import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
@@ -39,31 +39,19 @@ import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.inera.intyg.webcert.web.web.util.access.AccessResultExceptionHelper;
 
 @Service("createCertificateFromWC")
+@RequiredArgsConstructor
 public class CreateCertificateFacadeServiceImpl implements CreateCertificateFacadeService {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateCertificateFacadeServiceImpl.class);
 
     private final DraftAccessServiceHelper draftAccessServiceHelper;
-    private final IntygModuleRegistry intygModuleRegistry;
     private final AccessResultExceptionHelper accessResultExceptionHelper;
     private final UtkastService utkastService;
     private final IntygTextsService intygTextsService;
     private final WebCertUserService webCertUserService;
     private final PatientDetailsResolver patientDetailsResolver;
-
-    @Autowired
-    public CreateCertificateFacadeServiceImpl(DraftAccessServiceHelper draftAccessServiceHelper,
-        IntygModuleRegistry intygModuleRegistry, AccessResultExceptionHelper accessResultExceptionHelper,
-        UtkastService utkastService, IntygTextsService intygTextsService, WebCertUserService webCertUserService,
-        PatientDetailsResolver patientDetailsResolver) {
-        this.draftAccessServiceHelper = draftAccessServiceHelper;
-        this.intygModuleRegistry = intygModuleRegistry;
-        this.accessResultExceptionHelper = accessResultExceptionHelper;
-        this.utkastService = utkastService;
-        this.intygTextsService = intygTextsService;
-        this.webCertUserService = webCertUserService;
-        this.patientDetailsResolver = patientDetailsResolver;
-    }
+    private final PublishCertificateEventMessage publishCertificateEventMessage;
+    private final CertificateEventMessageFactory certificateEventMessageFactory;
 
     @Override
     public String create(String certificateType, String patientId) throws CreateCertificateException {
@@ -84,6 +72,10 @@ public class CreateCertificateFacadeServiceImpl implements CreateCertificateFaca
 
         final var draft = utkastService.createNewDraft(request);
         LOG.debug("Created new certificate of type '{}' with id '{}'", certificateType, draft.getIntygsId());
+
+        publishCertificateEventMessage.publishEvent(
+            certificateEventMessageFactory.draftCreated(draft)
+        );
 
         return draft.getIntygsId();
     }
