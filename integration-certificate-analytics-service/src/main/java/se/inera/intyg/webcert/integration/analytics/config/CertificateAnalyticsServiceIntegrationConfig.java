@@ -33,7 +33,7 @@ import org.springframework.jms.support.converter.MessageType;
 })
 public class CertificateAnalyticsServiceIntegrationConfig {
 
-    @Value("${certificate.analytics.event.queueName}")
+    @Value("${certificate.analytics.message.queueName}")
     private String queueName;
 
     @Bean
