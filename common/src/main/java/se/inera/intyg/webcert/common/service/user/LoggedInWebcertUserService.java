@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,31 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.integration.analytics.model;
 
-import java.io.Serializable;
-import java.util.UUID;
-import lombok.Builder;
-import lombok.Value;
+package se.inera.intyg.webcert.common.service.user;
 
-@Value
-@Builder
-public class CertificateAnalyticsMessage implements Serializable {
+public interface LoggedInWebcertUserService {
 
-    /**
-     * Unique identifier for the message.
-     */
-    String messageId = UUID.randomUUID().toString();
-    /**
-     * Type of the message, used for routing and processing.
-     */
-    String type = "certificate.analytics.event";
-    /**
-     * Version of the message schema.
-     */
-    String schemaVersion = "v1";
-
-    AnalyticsCertificate certificate;
-    AnalyticsEvent event;
-
+    LoggedInWebcertUser getLoggedInWebcertUser();
 }

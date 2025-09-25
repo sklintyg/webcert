@@ -18,6 +18,9 @@
  */
 package se.inera.intyg.webcert.integration.analytics.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.jms.ConnectionFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -37,10 +40,14 @@ public class CertificateAnalyticsServiceIntegrationConfig {
     private String queueName;
 
     @Bean
-    public MappingJackson2MessageConverter messageConverter() {
+    public MappingJackson2MessageConverter messageConverter(ObjectMapper mapper) {
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
         final var converter = new MappingJackson2MessageConverter();
         converter.setTargetType(MessageType.TEXT);
         converter.setTypeIdPropertyName("_type");
+        converter.setObjectMapper(mapper);
         return converter;
     }
 

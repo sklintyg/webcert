@@ -18,14 +18,22 @@
  */
 package se.inera.intyg.webcert.integration.analytics.service;
 
+import java.time.LocalDateTime;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.webcert.common.service.user.LoggedInWebcertUserService;
+import se.inera.intyg.webcert.integration.analytics.model.AnalyticsCertificate;
+import se.inera.intyg.webcert.integration.analytics.model.AnalyticsEvent;
 import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage;
 import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
 @Component
+@RequiredArgsConstructor
 public class CertificateAnalyticsMessageFactory {
+
+    private final LoggedInWebcertUserService loggedInWebcertUserService;
 
     public CertificateAnalyticsMessage draftCreated(Certificate certificate) {
         return create(certificate, CertificateAnalyticsMessageType.DRAFT_CREATED);
@@ -53,15 +61,50 @@ public class CertificateAnalyticsMessageFactory {
 
     private CertificateAnalyticsMessage create(Certificate certificate, CertificateAnalyticsMessageType type) {
         return CertificateAnalyticsMessage.builder()
-            .certificateId(certificate.getMetadata().getId())
-            .messageType(type)
+            .event(
+                createAnalyticsEvent(type)
+            )
+            .certificate(
+                AnalyticsCertificate.builder()
+                    .id(certificate.getMetadata().getId())
+                    .type(certificate.getMetadata().getType())
+                    .typeVersion(certificate.getMetadata().getTypeVersion())
+                    .patientId(certificate.getMetadata().getPatient().getPersonId().getId())
+                    .unitId(certificate.getMetadata().getUnit().getUnitId())
+                    .careProviderId(certificate.getMetadata().getCareProvider().getUnitId())
+                    .build()
+            )
             .build();
     }
 
     private CertificateAnalyticsMessage create(Utkast utkast, CertificateAnalyticsMessageType type) {
         return CertificateAnalyticsMessage.builder()
-            .certificateId(utkast.getIntygsId())
+            .event(
+                createAnalyticsEvent(type)
+            )
+            .certificate(
+                AnalyticsCertificate.builder()
+                    .id(utkast.getIntygsId())
+                    .type(utkast.getIntygsTyp())
+                    .typeVersion(utkast.getIntygTypeVersion())
+                    .patientId(utkast.getPatientPersonnummer().getPersonnummerWithDash())
+                    .unitId(utkast.getEnhetsId())
+                    .careProviderId(utkast.getVardgivarId())
+                    .build()
+            )
+            .build();
+    }
+
+    private AnalyticsEvent createAnalyticsEvent(CertificateAnalyticsMessageType type) {
+        final var loggedInWebcertUser = loggedInWebcertUserService.getLoggedInWebcertUser();
+        return AnalyticsEvent.builder()
+            .timestamp(LocalDateTime.now())
             .messageType(type)
+            .staffId(loggedInWebcertUser.getStaffId())
+            .role(loggedInWebcertUser.getRole())
+            .unitId(loggedInWebcertUser.getUnitId())
+            .careProviderId(loggedInWebcertUser.getCareProviderId())
+            .origin(loggedInWebcertUser.getOrigin())
             .build();
     }
 }

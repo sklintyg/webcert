@@ -42,6 +42,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.MDC;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessagePostProcessor;
+import se.inera.intyg.webcert.integration.analytics.model.AnalyticsCertificate;
+import se.inera.intyg.webcert.integration.analytics.model.AnalyticsEvent;
 import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage;
 import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
@@ -61,7 +63,11 @@ class PublishCertificateAnalyticsMessageTest {
     @Test
     void shallPublishMessageToJmsQueue() {
         final var expected = CertificateAnalyticsMessage.builder()
-            .certificateId("test")
+            .certificate(
+                AnalyticsCertificate.builder()
+                    .id("test")
+                    .build()
+            )
             .build();
 
         when(certificateAnalyticsServiceProfile.isEnabled()).thenReturn(true);
@@ -80,7 +86,11 @@ class PublishCertificateAnalyticsMessageTest {
         when(certificateAnalyticsServiceProfile.isEnabled()).thenReturn(false);
 
         final var message = CertificateAnalyticsMessage.builder()
-            .certificateId("test")
+            .certificate(
+                AnalyticsCertificate.builder()
+                    .id("test")
+                    .build()
+            )
             .build();
 
         publishCertificateAnalyticsMessage.publishEvent(message);
@@ -96,9 +106,17 @@ class PublishCertificateAnalyticsMessageTest {
 
         private final String sessionId = "sess-456";
         private final String traceId = "trace-789";
-        private final CertificateAnalyticsMessage payload = CertificateAnalyticsMessage.builder()
-            .certificateId("test")
-            .messageType(CertificateAnalyticsMessageType.DRAFT_CREATED)
+        private final CertificateAnalyticsMessage message = CertificateAnalyticsMessage.builder()
+            .certificate(
+                AnalyticsCertificate.builder()
+                    .id("test")
+                    .build()
+            )
+            .event(
+                AnalyticsEvent.builder()
+                    .messageType(CertificateAnalyticsMessageType.DRAFT_CREATED)
+                    .build()
+            )
             .build();
 
         @BeforeEach
@@ -116,22 +134,22 @@ class PublishCertificateAnalyticsMessageTest {
 
         @Test
         void shallSetMessageIdPropertyWhenPublishing() throws Exception {
-            publishCertificateAnalyticsMessage.publishEvent(payload);
+            publishCertificateAnalyticsMessage.publishEvent(message);
 
-            verify(jmsTemplateForCertificateAnalyticsMessages).convertAndSend(eq(payload), mppCaptor.capture());
+            verify(jmsTemplateForCertificateAnalyticsMessages).convertAndSend(eq(message), mppCaptor.capture());
 
             final var mpp = mppCaptor.getValue();
             final var jmsMsg = mock(Message.class);
             mpp.postProcessMessage(jmsMsg);
 
-            verify(jmsMsg).setStringProperty("messageId", payload.getMessageId());
+            verify(jmsMsg).setStringProperty("messageId", message.getMessageId());
         }
 
         @Test
         void shallSetSessionIdPropertyWhenPublishing() throws Exception {
-            publishCertificateAnalyticsMessage.publishEvent(payload);
+            publishCertificateAnalyticsMessage.publishEvent(message);
 
-            verify(jmsTemplateForCertificateAnalyticsMessages).convertAndSend(eq(payload), mppCaptor.capture());
+            verify(jmsTemplateForCertificateAnalyticsMessages).convertAndSend(eq(message), mppCaptor.capture());
 
             final var mpp = mppCaptor.getValue();
             final var jmsMsg = mock(Message.class);
@@ -142,9 +160,9 @@ class PublishCertificateAnalyticsMessageTest {
 
         @Test
         void shallSetTraceIdPropertyWhenPublishing() throws Exception {
-            publishCertificateAnalyticsMessage.publishEvent(payload);
+            publishCertificateAnalyticsMessage.publishEvent(message);
 
-            verify(jmsTemplateForCertificateAnalyticsMessages).convertAndSend(eq(payload), mppCaptor.capture());
+            verify(jmsTemplateForCertificateAnalyticsMessages).convertAndSend(eq(message), mppCaptor.capture());
 
             final var mpp = mppCaptor.getValue();
             final var jmsMsg = mock(Message.class);
@@ -155,35 +173,35 @@ class PublishCertificateAnalyticsMessageTest {
 
         @Test
         void shallSetTypePropertyWhenPublishing() throws Exception {
-            publishCertificateAnalyticsMessage.publishEvent(payload);
+            publishCertificateAnalyticsMessage.publishEvent(message);
 
-            verify(jmsTemplateForCertificateAnalyticsMessages).convertAndSend(eq(payload), mppCaptor.capture());
+            verify(jmsTemplateForCertificateAnalyticsMessages).convertAndSend(eq(message), mppCaptor.capture());
 
             final var mpp = mppCaptor.getValue();
             final var jmsMsg = mock(Message.class);
             mpp.postProcessMessage(jmsMsg);
 
-            verify(jmsMsg).setStringProperty("_type", payload.getType());
+            verify(jmsMsg).setStringProperty("_type", message.getType());
         }
 
         @Test
         void shallSetSchemaVersionPropertyWhenPublishing() throws Exception {
-            publishCertificateAnalyticsMessage.publishEvent(payload);
+            publishCertificateAnalyticsMessage.publishEvent(message);
 
-            verify(jmsTemplateForCertificateAnalyticsMessages).convertAndSend(eq(payload), mppCaptor.capture());
+            verify(jmsTemplateForCertificateAnalyticsMessages).convertAndSend(eq(message), mppCaptor.capture());
 
             final var mpp = mppCaptor.getValue();
             final var jmsMsg = mock(Message.class);
             mpp.postProcessMessage(jmsMsg);
 
-            verify(jmsMsg).setStringProperty("schemaVersion", payload.getSchemaVersion());
+            verify(jmsMsg).setStringProperty("schemaVersion", message.getSchemaVersion());
         }
 
         @Test
         void shallSetContentTypePropertyWhenPublishing() throws Exception {
-            publishCertificateAnalyticsMessage.publishEvent(payload);
+            publishCertificateAnalyticsMessage.publishEvent(message);
 
-            verify(jmsTemplateForCertificateAnalyticsMessages).convertAndSend(eq(payload), mppCaptor.capture());
+            verify(jmsTemplateForCertificateAnalyticsMessages).convertAndSend(eq(message), mppCaptor.capture());
 
             final var mpp = mppCaptor.getValue();
             final var jmsMsg = mock(Message.class);
@@ -194,15 +212,15 @@ class PublishCertificateAnalyticsMessageTest {
 
         @Test
         void shallSetMessageTypePropertyWhenPublishing() throws Exception {
-            publishCertificateAnalyticsMessage.publishEvent(payload);
+            publishCertificateAnalyticsMessage.publishEvent(message);
 
-            verify(jmsTemplateForCertificateAnalyticsMessages).convertAndSend(eq(payload), mppCaptor.capture());
+            verify(jmsTemplateForCertificateAnalyticsMessages).convertAndSend(eq(message), mppCaptor.capture());
 
             final var mpp = mppCaptor.getValue();
             final var jmsMsg = mock(Message.class);
             mpp.postProcessMessage(jmsMsg);
 
-            verify(jmsMsg).setStringProperty("messageType", payload.getMessageType().toString());
+            verify(jmsMsg).setStringProperty("messageType", message.getEvent().getMessageType().toString());
         }
     }
 }

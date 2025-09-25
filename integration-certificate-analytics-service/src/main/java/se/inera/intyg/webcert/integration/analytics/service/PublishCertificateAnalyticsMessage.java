@@ -47,7 +47,7 @@ public class PublishCertificateAnalyticsMessage {
                 msg.setStringProperty("_type", message.getType());
                 msg.setStringProperty("schemaVersion", message.getSchemaVersion());
                 msg.setStringProperty("contentType", "application/json");
-                msg.setStringProperty("messageType", message.getMessageType().toString());
+                msg.setStringProperty("messageType", message.getEvent().getMessageType().toString());
                 return msg;
             }
         );
