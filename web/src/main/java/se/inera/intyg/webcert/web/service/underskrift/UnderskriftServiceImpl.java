@@ -36,6 +36,8 @@ import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
@@ -111,6 +113,12 @@ public class UnderskriftServiceImpl implements UnderskriftService {
 
     @Autowired
     private UtkastModelToXMLConverter utkastModelToXMLConverter;
+
+    @Autowired
+    private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+
+    @Autowired
+    private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
     @Override
     public SignaturBiljett startSigningProcess(String intygsId, String intygsTyp, long version, SignMethod signMethod,
@@ -230,6 +238,10 @@ public class UnderskriftServiceImpl implements UnderskriftService {
     private void finalizeSignature(Utkast utkast, WebCertUser user) {
         // Notify stakeholders when certificate has been signed
         notificationService.sendNotificationForDraftSigned(utkast);
+
+        publishCertificateAnalyticsMessage.publishEvent(
+            certificateAnalyticsMessageFactory.certificateSigned(utkast)
+        );
 
         certificateEventService.createCertificateEvent(utkast.getIntygsId(), user.getHsaId(), EventCode.SIGNAT,
             String.format("Certificate type: %s", utkast.getIntygsTyp()));

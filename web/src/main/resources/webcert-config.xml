@@ -19,152 +19,153 @@
   -->
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
-    xmlns:http="http://cxf.apache.org/transports/http/configuration"
-    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+		xmlns:http="http://cxf.apache.org/transports/http/configuration"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
         http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
         http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd">
 
-  <context:annotation-config/>
-  <import resource="classpath:webcert-common-config.xml"/>
-  <import resource="classpath:repository-context.xml"/>
-  <import resource="classpath:fmb-services-config.xml"/>
-  <import resource="classpath:tak-services-config.xml"/>
-  <import resource="classpath:servicenow-services-config.xml"/>
-  <import resource="classpath:basic-cache-config.xml"/>
-  <import resource="classpath:pu-services-config.xml"/>
-  <import resource="classpath:ia-services-config.xml"/>
-  <import resource="classpath:srs-services-config.xml"/>
-  <import resource="classpath:pu-ignite-config.xml"/>
-  <import resource="classpath:pp-services-config.xml"/>
-  <import resource="classpath:xmldsig-config.xml"/>
-  <import resource="ws-config.xml"/>
-  <import resource="mail-config.xml"/>
-  <import resource="classpath:mail-stub-context.xml"/>
-  <import resource="classpath*:module-config.xml"/>
-  <import resource="classpath*:wc-module-cxf-servlet.xml"/>
-  <import resource="classpath:notification-sender-config.xml"/>
-  <import resource="classpath:/hsa-integration-intyg-proxy-service-config.xml"/>
+	<context:annotation-config/>
+	<import resource="classpath:webcert-common-config.xml"/>
+	<import resource="classpath:repository-context.xml"/>
+	<import resource="classpath:fmb-services-config.xml"/>
+	<import resource="classpath:tak-services-config.xml"/>
+	<import resource="classpath:servicenow-services-config.xml"/>
+	<import resource="classpath:integration-certificate-analytics-service-config.xml"/>
+	<import resource="classpath:basic-cache-config.xml"/>
+	<import resource="classpath:pu-services-config.xml"/>
+	<import resource="classpath:ia-services-config.xml"/>
+	<import resource="classpath:srs-services-config.xml"/>
+	<import resource="classpath:pu-ignite-config.xml"/>
+	<import resource="classpath:pp-services-config.xml"/>
+	<import resource="classpath:xmldsig-config.xml"/>
+	<import resource="ws-config.xml"/>
+	<import resource="mail-config.xml"/>
+	<import resource="classpath:mail-stub-context.xml"/>
+	<import resource="classpath*:module-config.xml"/>
+	<import resource="classpath*:wc-module-cxf-servlet.xml"/>
+	<import resource="classpath:notification-sender-config.xml"/>
+	<import resource="classpath:/hsa-integration-intyg-proxy-service-config.xml"/>
 
-  <context:component-scan base-package="se.inera.intyg.webcert.web"/>
+	<context:component-scan base-package="se.inera.intyg.webcert.web"/>
 
-  <context:component-scan base-package="se.inera.intyg.infra.dynamiclink"/>
-  <context:component-scan base-package="se.inera.intyg.infra.integration.postnummer"/>
-  <context:component-scan base-package="se.inera.intyg.infra.sjukfall.services"/>
+	<context:component-scan base-package="se.inera.intyg.infra.dynamiclink"/>
+	<context:component-scan base-package="se.inera.intyg.infra.integration.postnummer"/>
+	<context:component-scan base-package="se.inera.intyg.infra.sjukfall.services"/>
 
-  <beans>
-    <bean id="userAgentParser" class="se.inera.intyg.infra.monitoring.logging.UserAgentParser"/>
+	<beans>
+		<bean id="userAgentParser" class="se.inera.intyg.infra.monitoring.logging.UserAgentParser"/>
 
-    <bean id="parserPool" class="net.shibboleth.utilities.java.support.xml.BasicParserPool" scope="singleton"
-        init-method="initialize"/>
+		<bean id="parserPool" class="net.shibboleth.utilities.java.support.xml.BasicParserPool" scope="singleton"
+				init-method="initialize"/>
 
-    <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
-      <property name="ignoreUnresolvablePlaceholders" value="true"/>
-      <property name="ignoreResourceNotFound" value="true"/>
-      <property name="locations">
-        <list>
-          <!-- Order matters - last value wins -->
-          <value>classpath:application.properties</value>
-          <value>classpath:version.properties</value>
-          <value>classpath:webcert-notification-route-params.properties</value>
-          <value>file:${dev.config.file:-}</value>
-        </list>
-      </property>
-    </bean>
+		<bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+			<property name="ignoreUnresolvablePlaceholders" value="true"/>
+			<property name="ignoreResourceNotFound" value="true"/>
+			<property name="locations">
+				<list>
+					<!-- Order matters - last value wins -->
+					<value>classpath:application.properties</value>
+					<value>classpath:version.properties</value>
+					<value>classpath:webcert-notification-route-params.properties</value>
+					<value>file:${dev.config.file:-}</value>
+				</list>
+			</property>
+		</bean>
 
-    <!-- Read authorites configuration to setup user roles and privileges -->
-    <bean id="securityConfigurationLoader" class="se.inera.intyg.infra.security.authorities.bootstrap.SecurityConfigurationLoader">
-      <constructor-arg name="authoritiesConfigurationFile" value="${authorities.configuration.file}"/>
-      <constructor-arg name="featuresConfigurationFile" value="${features.configuration.file}"/>
-      <constructor-arg name="maxAliasesForCollections" value="${max.aliases.for.collections:300}"/>
-    </bean>
+		<!-- Read authorites configuration to setup user roles and privileges -->
+		<bean id="securityConfigurationLoader" class="se.inera.intyg.infra.security.authorities.bootstrap.SecurityConfigurationLoader">
+			<constructor-arg name="authoritiesConfigurationFile" value="${authorities.configuration.file}"/>
+			<constructor-arg name="featuresConfigurationFile" value="${features.configuration.file}"/>
+			<constructor-arg name="maxAliasesForCollections" value="${max.aliases.for.collections:300}"/>
+		</bean>
 
-    <bean id="commonAuthoritiesResolver" class="se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver"/>
-    <bean id="authoritiesHelper" class="se.inera.intyg.infra.security.authorities.AuthoritiesHelper"/>
-    <bean id="befattningService" class="se.inera.intyg.common.support.services.BefattningService"/>
-    <bean id="summaryConverter" class="se.inera.intyg.common.support.modules.converter.SummaryConverter"/>
+		<bean id="commonAuthoritiesResolver" class="se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver"/>
+		<bean id="authoritiesHelper" class="se.inera.intyg.infra.security.authorities.AuthoritiesHelper"/>
+		<bean id="befattningService" class="se.inera.intyg.common.support.services.BefattningService"/>
+		<bean id="summaryConverter" class="se.inera.intyg.common.support.modules.converter.SummaryConverter"/>
 
-  </beans>
+	</beans>
 
-  <beans profile="dev,wc-init-data">
-    <!-- In dev mode we bootstrap data -->
-    <bean id="FragaSvarBootstrapBean" class="se.inera.intyg.webcert.web.service.util.FragaSvarBootstrapBean"/>
-    <bean id="IntegreradeEnheterBootstrapBean" class="se.inera.intyg.webcert.web.service.util.IntegreradeEnheterBootstrapBean"/>
-  </beans>
+	<beans profile="dev,wc-init-data">
+		<!-- In dev mode we bootstrap data -->
+		<bean id="FragaSvarBootstrapBean" class="se.inera.intyg.webcert.web.service.util.FragaSvarBootstrapBean"/>
+		<bean id="IntegreradeEnheterBootstrapBean" class="se.inera.intyg.webcert.web.service.util.IntegreradeEnheterBootstrapBean"/>
+	</beans>
 
-  <beans profile="!skip-init-data">
-    <beans profile="dev,wc-init-data,test,demo">
-      <bean id="UtkastBootstrapBean" class="se.inera.intyg.webcert.web.bootstrap.UtkastBootstrapBean"/>
-    </beans>
-  </beans>
+	<beans profile="!skip-init-data">
+		<beans profile="dev,wc-init-data,test,demo">
+			<bean id="UtkastBootstrapBean" class="se.inera.intyg.webcert.web.bootstrap.UtkastBootstrapBean"/>
+		</beans>
+	</beans>
 
-  <beans>
+	<beans>
 
-    <bean id="moduleRegistry" class="se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl">
-      <property name="origin" value="WEBCERT"/>
-    </bean>
+		<bean id="moduleRegistry" class="se.inera.intyg.common.support.modules.registry.IntygModuleRegistryImpl">
+			<property name="origin" value="WEBCERT"/>
+		</bean>
 
-    <bean id="intygTextsService" class="se.inera.intyg.common.services.texts.IntygTextsServiceImpl"/>
-    <bean id="intygTextsRepository" class="se.inera.intyg.common.services.texts.repo.IntygTextsRepositoryImpl"/>
+		<bean id="intygTextsService" class="se.inera.intyg.common.services.texts.IntygTextsServiceImpl"/>
+		<bean id="intygTextsRepository" class="se.inera.intyg.common.services.texts.repo.IntygTextsRepositoryImpl"/>
 
-    <bean id="messageSource"
-        class="org.springframework.context.support.ResourceBundleMessageSource">
-      <property name="defaultEncoding" value="UTF-8"/>
-      <property name="basenames">
-        <list>
-          <value>ui</value>
-          <value>version</value>
-        </list>
-      </property>
-    </bean>
+		<bean id="messageSource"
+				class="org.springframework.context.support.ResourceBundleMessageSource">
+			<property name="defaultEncoding" value="UTF-8"/>
+			<property name="basenames">
+				<list>
+					<value>ui</value>
+					<value>version</value>
+				</list>
+			</property>
+		</bean>
 
-    <bean id="avtalService" class="se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalServiceImpl"/>
+		<bean id="avtalService" class="se.inera.intyg.webcert.web.service.privatlakaravtal.AvtalServiceImpl"/>
 
-    <bean id="copyCompletionUtkastBuilder" class="se.inera.intyg.webcert.web.service.utkast.CopyCompletionUtkastBuilder"/>
-    <bean id="createRenewalUtkastBuilder" class="se.inera.intyg.webcert.web.service.utkast.CreateRenewalCopyUtkastBuilder"/>
-    <bean id="createReplacementUtkastBuilder" class="se.inera.intyg.webcert.web.service.utkast.CreateReplacementUtkastBuilder"/>
-    <bean id="createUtkastFromTemplateBuilder" class="se.inera.intyg.webcert.web.service.utkast.CreateUtkastFromTemplateBuilder"/>
-    <bean id="createUtkastCopyBuilder" class="se.inera.intyg.webcert.web.service.utkast.CreateUtkastCopyBuilder"/>
+		<bean id="copyCompletionUtkastBuilder" class="se.inera.intyg.webcert.web.service.utkast.CopyCompletionUtkastBuilder"/>
+		<bean id="createRenewalUtkastBuilder" class="se.inera.intyg.webcert.web.service.utkast.CreateRenewalCopyUtkastBuilder"/>
+		<bean id="createReplacementUtkastBuilder" class="se.inera.intyg.webcert.web.service.utkast.CreateReplacementUtkastBuilder"/>
+		<bean id="createUtkastFromTemplateBuilder" class="se.inera.intyg.webcert.web.service.utkast.CreateUtkastFromTemplateBuilder"/>
+		<bean id="createUtkastCopyBuilder" class="se.inera.intyg.webcert.web.service.utkast.CreateUtkastCopyBuilder"/>
 
-    <bean id="patientDetailsResolver" class="se.inera.intyg.webcert.web.service.patient.PatientDetailsResolverImpl"/>
-    <bean id="defaultCharacterEncodingFilter" class="se.inera.intyg.webcert.web.web.filter.DefaultCharacterEncodingFilter"/>
-    <bean id="internalApiFilter" class="se.inera.intyg.infra.security.filter.InternalApiFilter"/>
+		<bean id="patientDetailsResolver" class="se.inera.intyg.webcert.web.service.patient.PatientDetailsResolverImpl"/>
+		<bean id="defaultCharacterEncodingFilter" class="se.inera.intyg.webcert.web.web.filter.DefaultCharacterEncodingFilter"/>
+		<bean id="internalApiFilter" class="se.inera.intyg.infra.security.filter.InternalApiFilter"/>
 
-    <!-- JSON mappers and providers -->
-    <bean id="objectMapper"
-        class="se.inera.intyg.common.util.integration.json.CustomObjectMapper"/>
+		<!-- JSON mappers and providers -->
+		<bean id="objectMapper"
+				class="se.inera.intyg.common.util.integration.json.CustomObjectMapper"/>
 
-    <bean id="jacksonJsonProvider"
-        class="com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider">
-      <property name="mapper">
-        <bean class="se.inera.intyg.common.util.integration.json.CustomObjectMapper"/>
-      </property>
-    </bean>
+		<bean id="jacksonJsonProvider"
+				class="com.fasterxml.jackson.jakarta.rs.json.JacksonJsonProvider">
+			<property name="mapper">
+				<bean class="se.inera.intyg.common.util.integration.json.CustomObjectMapper"/>
+			</property>
+		</bean>
 
-    <!-- Handlers for integration/redirect controllers -->
-    <bean id="webcertRedirectIntegrationExceptionHandler"
-        class="se.inera.intyg.webcert.web.web.handlers.WebcertRedirectIntegrationExceptionHandler"/>
+		<!-- Handlers for integration/redirect controllers -->
+		<bean id="webcertRedirectIntegrationExceptionHandler"
+				class="se.inera.intyg.webcert.web.web.handlers.WebcertRedirectIntegrationExceptionHandler"/>
 
-    <!-- Handlers for REST services -->
-    <bean id="webcertRestExceptionHandler"
-        class="se.inera.intyg.webcert.web.web.handlers.WebcertRestExceptionHandler"/>
+		<!-- Handlers for REST services -->
+		<bean id="webcertRestExceptionHandler"
+				class="se.inera.intyg.webcert.web.web.handlers.WebcertRestExceptionHandler"/>
 
-    <bean id="localDateTimeHandler" class="se.inera.intyg.webcert.web.web.handlers.LocalDateTimeHandler"/>
+		<bean id="localDateTimeHandler" class="se.inera.intyg.webcert.web.web.handlers.LocalDateTimeHandler"/>
 
-    <!-- Thread pool for BankID GRP collect tasks. -->
-    <bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
-      <property name="corePoolSize" value="5"/>
-      <property name="maxPoolSize" value="10"/>
-      <property name="queueCapacity" value="25"/>
-    </bean>
+		<!-- Thread pool for BankID GRP collect tasks. -->
+		<bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+			<property name="corePoolSize" value="5"/>
+			<property name="maxPoolSize" value="10"/>
+			<property name="queueCapacity" value="25"/>
+		</bean>
 
-    <!-- Use the same PU validator for both prod and test. Set as primary so it is used instead of the default validator in infra -->
-    <bean id="puResponseValidator" class="se.inera.intyg.webcert.web.integration.validators.WebcertPUResponseValidator" primary="true"/>
+		<!-- Use the same PU validator for both prod and test. Set as primary so it is used instead of the default validator in infra -->
+		<bean id="puResponseValidator" class="se.inera.intyg.webcert.web.integration.validators.WebcertPUResponseValidator" primary="true"/>
 
-    <beans profile="pu-integration-intyg-proxy-service">
-      <import resource="classpath:/pu-integration-intyg-proxy-service-config.xml"/>
-    </beans>
-  </beans>
+		<beans profile="pu-integration-intyg-proxy-service">
+			<import resource="classpath:/pu-integration-intyg-proxy-service-config.xml"/>
+		</beans>
+	</beans>
 
 </beans>

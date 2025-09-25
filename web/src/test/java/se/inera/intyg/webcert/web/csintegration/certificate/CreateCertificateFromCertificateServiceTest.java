@@ -27,6 +27,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,6 +42,9 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.Staff;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
+import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
@@ -62,6 +66,11 @@ class CreateCertificateFromCertificateServiceTest {
     CSIntegrationRequestFactory csIntegrationRequestFactory;
     @Mock
     PDLLogService pdlLogService;
+    @Mock
+    PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+    @Mock
+    CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+
     @InjectMocks
     CreateCertificateFromCertificateService createCertificateFromCertificateService;
 
@@ -183,6 +192,18 @@ class CreateCertificateFromCertificateServiceTest {
             verify(publishCertificateStatusUpdateService, times(1)).publish(
                 CERTIFICATE, HandelsekodEnum.SKAPAT
             );
+        }
+
+        @Test
+        void shouldPublishAnalyticsMessageWhenDraftIsCreated() throws CreateCertificateException {
+            doReturn(REQUEST).when(csIntegrationRequestFactory).createCertificateRequest(CERTIFICATE_MODEL_ID, PATIENT_ID);
+            doReturn(CERTIFICATE).when(csIntegrationService).createCertificate(REQUEST);
+            final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+            when(certificateAnalyticsMessageFactory.draftCreated(CERTIFICATE)).thenReturn(analyticsMessage);
+
+            createCertificateFromCertificateService.create(TYPE, PATIENT_ID);
+
+            verify(publishCertificateAnalyticsMessage, times(1)).publishEvent(analyticsMessage);
         }
 
         @Test

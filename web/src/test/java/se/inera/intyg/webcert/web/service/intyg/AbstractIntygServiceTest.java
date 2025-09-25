@@ -46,6 +46,8 @@ import se.inera.intyg.common.support.modules.support.api.dto.CertificateMetaData
 import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
@@ -131,6 +133,12 @@ public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationT
 
     @Mock
     protected IntygTextsService intygTextsService;
+
+    @Mock
+    protected PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+    
+    @Mock
+    protected CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
     @InjectMocks
     protected IntygServiceImpl intygService = new IntygServiceImpl();

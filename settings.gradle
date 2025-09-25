@@ -23,6 +23,7 @@ include ':webcert-liquibase-runner'
 include ':integration-api'
 include ':servicenow-integration'
 include ':webcert-logging'
+include ':integration-certificate-analytics-service'
 
 project(':webcert-common').projectDir = "$rootDir/common" as File
 project(':webcert-persistence').projectDir = "$rootDir/persistence" as File
@@ -39,3 +40,4 @@ project(':webcert-liquibase-runner').projectDir = "$rootDir/tools/liquibase-runn
 project(':integration-api').projectDir = "$rootDir/integration/integration-api" as File
 project(':servicenow-integration').projectDir = "$rootDir/integration/servicenow-integration" as File
 project(':webcert-logging').projectDir = "$rootDir/logging" as File
+project(':integration-certificate-analytics-service').projectDir = "$rootDir/integration-certificate-analytics-service" as File

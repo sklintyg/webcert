@@ -24,6 +24,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,9 +41,11 @@ import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.modules.registry.IntygModule;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
-import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.access.AccessResult;
 import se.inera.intyg.webcert.web.service.access.AccessResultCode;
@@ -69,6 +74,10 @@ class CreateCertificateFacadeServiceImplTest {
     private WebCertUserService webCertUserService;
     @Mock
     private PatientDetailsResolver patientDetailsResolver;
+    @Mock
+    private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+    @Mock
+    private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
     @InjectMocks
     private CreateCertificateFacadeServiceImpl serviceUnderTest;
@@ -154,6 +163,25 @@ class CreateCertificateFacadeServiceImplTest {
                         .evaluateAllowToCreateUtkast(eq(CERTIFICATE_TYPE), any(Personnummer.class));
 
                     assertEquals(CERTIFICATE_ID, serviceUnderTest.create(CERTIFICATE_TYPE, PATIENT_ID));
+                }
+
+                @Test
+                void shallPublishAnalyticsMessageWhenDraftIsCreated() throws Exception {
+                    final var certificate = createCertificate();
+                    doReturn(certificate)
+                        .when(utkastService)
+                        .createNewDraft(any(CreateNewDraftRequest.class));
+
+                    doReturn(AccessResult.create(AccessResultCode.NO_PROBLEM, "message"))
+                        .when(draftAccessServiceHelper)
+                        .evaluateAllowToCreateUtkast(eq(CERTIFICATE_TYPE), any(Personnummer.class));
+
+                    final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+                    when(certificateAnalyticsMessageFactory.draftCreated(certificate)).thenReturn(analyticsMessage);
+
+                    serviceUnderTest.create(CERTIFICATE_TYPE, PATIENT_ID);
+
+                    verify(publishCertificateAnalyticsMessage, times(1)).publishEvent(analyticsMessage);
                 }
             }
         }

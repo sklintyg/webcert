@@ -39,6 +39,8 @@ import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.infra.security.common.service.CareUnitAccessHelper;
+import se.inera.intyg.webcert.common.service.user.LoggedInWebcertUser;
+import se.inera.intyg.webcert.common.service.user.LoggedInWebcertUserService;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.model.AnvandarPreference;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -46,7 +48,7 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class WebCertUserServiceImpl implements WebCertUserService {
+public class WebCertUserServiceImpl implements WebCertUserService, LoggedInWebcertUserService {
 
     private final CommonAuthoritiesResolver authoritiesResolver;
     private final AnvandarPreferenceRepository anvandarPreferenceRepository;
@@ -196,5 +198,25 @@ public class WebCertUserServiceImpl implements WebCertUserService {
         } else {
             return user.getIdsOfSelectedVardenhet().contains(enhetsHsaId);
         }
+    }
+
+    @Override
+    public LoggedInWebcertUser getLoggedInWebcertUser() {
+        final var user = getUser();
+        if (user == null) {
+            return LoggedInWebcertUser.builder().build();
+        }
+
+        return LoggedInWebcertUser.builder()
+            .staffId(getUser().getHsaId())
+            .role(role(user.getRoles()))
+            .unitId(getUser().getValdVardenhet().getId())
+            .careProviderId(getUser().getValdVardgivare().getId())
+            .origin(getUser().getOrigin())
+            .build();
+    }
+
+    private static String role(Map<String, Role> roles) {
+        return roles != null && roles.size() == 1 ? roles.keySet().iterator().next() : null;
     }
 }

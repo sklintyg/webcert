@@ -67,9 +67,6 @@ public class JmsConfig {
     @Value("${certificateevent.loader.queueName}")
     private String certificateEventLoaderQueueName;
 
-    @Value("${certificate.event.queue.name}")
-    private String certificateEventQueueName;
-
     @Bean
     public JmsListenerContainerFactory jmsListenerContainerFactory(JmsTransactionManager jmsTransactionManager) {
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
@@ -136,12 +133,6 @@ public class JmsConfig {
     public JmsTemplate jmsCertificateEventLoaderTemplate(ConnectionFactory jmsConnectionFactory) {
         return template(jmsConnectionFactory, certificateEventLoaderQueueName);
     }
-
-    @Bean
-    public JmsTemplate jmsCertificateEventTemplate(ConnectionFactory jmsConnectionFactory) {
-        return template(jmsConnectionFactory, certificateEventQueueName);
-    }
-
 
     JmsTemplate template(final ConnectionFactory connectionFactory, final String queueName) {
         final JmsTemplate jmsTemplate = new JmsTemplate();
