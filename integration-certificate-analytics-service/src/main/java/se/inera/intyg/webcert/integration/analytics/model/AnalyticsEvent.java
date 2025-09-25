@@ -34,4 +34,5 @@ public class AnalyticsEvent {
     String unitId;
     String careProviderId;
     String origin;
+    String sessionId;
 }

@@ -34,6 +34,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.MDC;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
@@ -44,6 +45,7 @@ import se.inera.intyg.webcert.common.service.user.LoggedInWebcertUser;
 import se.inera.intyg.webcert.common.service.user.LoggedInWebcertUserService;
 import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage;
 import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
 @ExtendWith(MockitoExtension.class)
@@ -67,6 +69,7 @@ class CertificateAnalyticsMessageFactoryTest {
     private static final String EVENT_UNIT_ID = "event-unit-id";
     private static final String EVENT_CARE_PROVIDER_ID = "event-care-provider-id";
     private static final String EVENT_ORIGIN = "event.origin";
+    private static final String EVENT_SESSION_ID = "event-session-id";
 
     @Nested
     class AnalyticsMessagesBasedOnCertificate {
@@ -114,6 +117,8 @@ class CertificateAnalyticsMessageFactoryTest {
 
             // Make this lenient to enable mocking to work in parameterized tests
             lenient().when(loggedInWebcertUserService.getLoggedInWebcertUser()).thenReturn(loggedInWebcertUser);
+
+            MDC.put(MdcLogConstants.SESSION_ID_KEY, EVENT_SESSION_ID);
         }
 
         @ParameterizedTest(name = "{index} => {1}")
@@ -170,6 +175,14 @@ class CertificateAnalyticsMessageFactoryTest {
             CertificateAnalyticsMessageType messageType) {
             final var actual = test.apply(certificate);
             assertEquals(EVENT_ORIGIN, actual.getEvent().getOrigin());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnCertificate")
+        void shallReturnCorrectEventSessionId(Function<Certificate, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(certificate);
+            assertEquals(EVENT_SESSION_ID, actual.getEvent().getSessionId());
         }
 
         @ParameterizedTest(name = "{index} => {1}")
@@ -264,6 +277,8 @@ class CertificateAnalyticsMessageFactoryTest {
 
             // Make this lenient to enable mocking to work in parameterized tests
             lenient().when(loggedInWebcertUserService.getLoggedInWebcertUser()).thenReturn(loggedInWebcertUser);
+
+            MDC.put(MdcLogConstants.SESSION_ID_KEY, EVENT_SESSION_ID);
         }
 
         @ParameterizedTest(name = "{index} => {1}")
@@ -320,6 +335,14 @@ class CertificateAnalyticsMessageFactoryTest {
             CertificateAnalyticsMessageType messageType) {
             final var actual = test.apply(utkast);
             assertEquals(EVENT_ORIGIN, actual.getEvent().getOrigin());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnUtkast")
+        void shallReturnCorrectEventSessionId(Function<Utkast, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(utkast);
+            assertEquals(EVENT_SESSION_ID, actual.getEvent().getSessionId());
         }
 
         @ParameterizedTest(name = "{index} => {1}")

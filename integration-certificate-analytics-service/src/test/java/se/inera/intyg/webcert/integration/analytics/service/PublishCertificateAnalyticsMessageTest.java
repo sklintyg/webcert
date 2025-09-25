@@ -115,13 +115,13 @@ class PublishCertificateAnalyticsMessageTest {
             .event(
                 AnalyticsEvent.builder()
                     .messageType(CertificateAnalyticsMessageType.DRAFT_CREATED)
+                    .sessionId(sessionId)
                     .build()
             )
             .build();
 
         @BeforeEach
         void setUp() {
-            MDC.put(MdcLogConstants.SESSION_ID_KEY, sessionId);
             MDC.put(MdcLogConstants.TRACE_ID_KEY, traceId);
 
             when(certificateAnalyticsServiceProfile.isEnabled()).thenReturn(true);

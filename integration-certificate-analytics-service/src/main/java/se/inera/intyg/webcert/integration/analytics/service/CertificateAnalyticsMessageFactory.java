@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.integration.analytics.service;
 
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.common.service.user.LoggedInWebcertUserService;
@@ -27,6 +28,7 @@ import se.inera.intyg.webcert.integration.analytics.model.AnalyticsCertificate;
 import se.inera.intyg.webcert.integration.analytics.model.AnalyticsEvent;
 import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage;
 import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
 @Component
@@ -105,6 +107,7 @@ public class CertificateAnalyticsMessageFactory {
             .unitId(loggedInWebcertUser.getUnitId())
             .careProviderId(loggedInWebcertUser.getCareProviderId())
             .origin(loggedInWebcertUser.getOrigin())
+            .sessionId(MDC.get(MdcLogConstants.SESSION_ID_KEY))
             .build();
     }
 }

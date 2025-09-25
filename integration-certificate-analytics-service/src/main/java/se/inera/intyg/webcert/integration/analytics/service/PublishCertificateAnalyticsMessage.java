@@ -42,7 +42,7 @@ public class PublishCertificateAnalyticsMessage {
 
         jmsTemplateForCertificateAnalyticsMessages.convertAndSend(message, msg -> {
                 msg.setStringProperty("messageId", message.getMessageId());
-                msg.setStringProperty("sessionId", MDC.get(MdcLogConstants.SESSION_ID_KEY));
+                msg.setStringProperty("sessionId", message.getEvent().getSessionId());
                 msg.setStringProperty("traceId", MDC.get(MdcLogConstants.TRACE_ID_KEY));
                 msg.setStringProperty("_type", message.getType());
                 msg.setStringProperty("schemaVersion", message.getSchemaVersion());
