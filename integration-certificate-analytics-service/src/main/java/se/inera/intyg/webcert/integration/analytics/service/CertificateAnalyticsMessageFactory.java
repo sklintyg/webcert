@@ -61,6 +61,38 @@ public class CertificateAnalyticsMessageFactory {
         return create(utkast, CertificateAnalyticsMessageType.CERTIFICATE_SENT);
     }
 
+    public CertificateAnalyticsMessage deleted(Certificate certificate) {
+        return create(certificate, CertificateAnalyticsMessageType.DELETED);
+    }
+
+    public CertificateAnalyticsMessage readyForSign(Utkast utkast) {
+        return create(utkast, CertificateAnalyticsMessageType.READY_FOR_SIGN);
+    }
+
+    public CertificateAnalyticsMessage createFromTemplate(Utkast utkast) {
+        return create(utkast, CertificateAnalyticsMessageType.CREATE_FROM_TEMPLATE);
+    }
+
+    public CertificateAnalyticsMessage renew(Certificate certificate) {
+        return create(certificate, CertificateAnalyticsMessageType.RENEW);
+    }
+
+    public CertificateAnalyticsMessage replace(Certificate certificate) {
+        return create(certificate, CertificateAnalyticsMessageType.REPLACE);
+    }
+
+    public CertificateAnalyticsMessage revoked(Certificate certificate) {
+        return create(certificate, CertificateAnalyticsMessageType.REVOKED);
+    }
+
+    public CertificateAnalyticsMessage print(Certificate certificate) {
+        return create(certificate, CertificateAnalyticsMessageType.PRINT);
+    }
+
+    public CertificateAnalyticsMessage print(Utkast utkast) {
+        return create(utkast, CertificateAnalyticsMessageType.PRINT);
+    }
+
     private CertificateAnalyticsMessage create(Certificate certificate, CertificateAnalyticsMessageType type) {
         return CertificateAnalyticsMessage.builder()
             .event(

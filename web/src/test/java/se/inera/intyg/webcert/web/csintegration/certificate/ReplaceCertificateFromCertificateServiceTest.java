@@ -39,6 +39,9 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ReplaceCertificateRequestDTO;
@@ -92,6 +95,12 @@ class ReplaceCertificateFromCertificateServiceTest {
 
     @Mock
     PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+
+    @Mock
+    PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+
+    @Mock
+    CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
     @InjectMocks
     ReplaceCertificateFromCertificateService replaceCertificateFromCertificateService;
@@ -199,6 +208,16 @@ class ReplaceCertificateFromCertificateServiceTest {
             void shouldRegisterUnit() {
                 replaceCertificateFromCertificateService.replaceCertificate(ID);
                 verify(integratedUnitRegistryHelper).addUnitForCopy(CERTIFICATE, REPLACED_CERTIFICATE);
+            }
+
+            @Test
+            void shouldPublishAnalyticsMessageWhenCertificateIsReplaced() {
+                final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+                when(certificateAnalyticsMessageFactory.replace(REPLACED_CERTIFICATE)).thenReturn(analyticsMessage);
+
+                replaceCertificateFromCertificateService.replaceCertificate(ID);
+
+                verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
             }
         }
     }

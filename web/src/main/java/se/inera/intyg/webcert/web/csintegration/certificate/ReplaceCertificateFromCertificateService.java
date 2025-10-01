@@ -23,6 +23,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
@@ -42,6 +44,8 @@ public class ReplaceCertificateFromCertificateService implements ReplaceCertific
     private final IntegratedUnitRegistryHelper integratedUnitRegistryHelper;
     private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
     private final WebCertUserService webCertUserService;
+    private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+    private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
     @Override
     public String replaceCertificate(String certificateId) {
@@ -71,6 +75,9 @@ public class ReplaceCertificateFromCertificateService implements ReplaceCertific
         monitoringLogService.logIntygCopiedReplacement(replacingCertificate.getMetadata().getId(), certificateId);
         pdlLogService.logCreated(replacingCertificate);
         publishCertificateStatusUpdateService.publish(replacingCertificate, HandelsekodEnum.SKAPAT);
+        publishCertificateAnalyticsMessage.publishEvent(
+            certificateAnalyticsMessageFactory.replace(replacingCertificate)
+        );
 
         return replacingCertificate.getMetadata().getId();
     }

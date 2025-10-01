@@ -40,6 +40,9 @@ import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
@@ -62,6 +65,10 @@ class RevokeCertificateFromCertificateServiceTest {
     MonitoringLogService monitoringLogService;
     @Mock
     DecorateCertificateFromCSWithInformationFromWC decorateCertificateFromCSWithInformationFromWC;
+    @Mock
+    PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+    @Mock
+    CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
     @InjectMocks
     RevokeCertificateFromCertificateService revokeCertificateFromCertificateService;
@@ -164,6 +171,16 @@ class RevokeCertificateFromCertificateServiceTest {
             void shouldDecorateCertificateFromCSWithInformationFromWC() {
                 revokeCertificateFromCertificateService.revokeCertificate(ID, REASON, MESSAGE);
                 verify(decorateCertificateFromCSWithInformationFromWC, times(1)).decorate(CERTIFICATE_AFTER_REVOKE);
+            }
+
+            @Test
+            void shouldPublishAnalyticsMessageWhenCertificateIsRevoked() {
+                final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+                when(certificateAnalyticsMessageFactory.revoked(CERTIFICATE_AFTER_REVOKE)).thenReturn(analyticsMessage);
+
+                revokeCertificateFromCertificateService.revokeCertificate(ID, REASON, MESSAGE);
+
+                verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
             }
         }
 

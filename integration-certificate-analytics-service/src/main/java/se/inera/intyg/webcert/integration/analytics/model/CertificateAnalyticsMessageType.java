@@ -21,5 +21,12 @@ package se.inera.intyg.webcert.integration.analytics.model;
 public enum CertificateAnalyticsMessageType {
     DRAFT_CREATED,
     CERTIFICATE_SIGNED,
-    CERTIFICATE_SENT
+    CERTIFICATE_SENT,
+    DELETED,
+    READY_FOR_SIGN,
+    PRINT,
+    RENEW,
+    REPLACE,
+    REVOKED,
+    CREATE_FROM_TEMPLATE
 }
