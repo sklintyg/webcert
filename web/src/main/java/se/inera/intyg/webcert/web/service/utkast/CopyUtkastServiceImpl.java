@@ -44,6 +44,8 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.logging.HashUtility;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
@@ -160,6 +162,12 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     @Autowired
     private HashUtility hashUtility;
 
+    @Autowired
+    private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+
+  @Autowired
+  private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+
     @Override
     public CreateCompletionCopyResponse createCompletion(CreateCompletionCopyRequest copyRequest) {
         String originalIntygId = copyRequest.getOriginalIntygId();
@@ -234,6 +242,9 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
             monitoringService.logIntygCopiedRenewal(savedUtkast.getIntygsId(), originalIntygId);
 
+            final var analyticsMessage = certificateAnalyticsMessageFactory.renew(savedUtkast);
+            publishCertificateAnalyticsMessage.publishEvent(analyticsMessage);
+
             return new CreateRenewalCopyResponse(savedUtkast.getIntygsTyp(), savedUtkast.getIntygTypeVersion(), savedUtkast.getIntygsId(),
                 originalIntygId);
 
@@ -279,6 +290,9 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             Utkast savedUtkast = saveAndNotify(builderResponse, user, EventCode.ERSATTER, originalIntygId);
 
             monitoringService.logIntygCopiedReplacement(savedUtkast.getIntygsId(), originalIntygId);
+
+            final var analyticsMessage = certificateAnalyticsMessageFactory.replace(savedUtkast);
+            publishCertificateAnalyticsMessage.publishEvent(analyticsMessage);
 
             return new CreateReplacementCopyResponse(savedUtkast.getIntygsTyp(), savedUtkast.getIntygTypeVersion(),
                 savedUtkast.getIntygsId(), originalIntygId);
