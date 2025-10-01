@@ -29,6 +29,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -41,6 +42,7 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRecipient;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
@@ -78,6 +80,8 @@ class CertificateAnalyticsMessageFactoryTest {
     private static final String EVENT_ORIGIN = "event.origin";
     private static final String EVENT_SESSION_ID = "event-session-id";
 
+    private static final String RECIPIENT_ID = "recipient-id";
+
     @Nested
     class AnalyticsMessagesBasedOnCertificate {
 
@@ -109,6 +113,11 @@ class CertificateAnalyticsMessageFactoryTest {
                     .careProvider(
                         Unit.builder()
                             .unitId(CERTIFICATE_CARE_PROVIDER_ID)
+                            .build()
+                    )
+                    .recipient(
+                        CertificateRecipient.builder()
+                            .id(RECIPIENT_ID)
                             .build()
                     )
                     .build()
@@ -240,6 +249,12 @@ class CertificateAnalyticsMessageFactoryTest {
             assertEquals(CERTIFICATE_CARE_PROVIDER_ID, actual.getCertificate().getCareProviderId());
         }
 
+        @Test
+        void shallReturnCorrectRecipientIdForCertificateSent() {
+            final var actual = factory.certificateSent(certificate, certificate.getMetadata().getRecipient().getId());
+            assertEquals(RECIPIENT_ID, actual.getRecipient().getRecipientId());
+        }
+
         static Stream<Arguments> analyticsMessagesBasedOnCertificate() {
             return Stream.of(
                 Arguments.of(
@@ -259,7 +274,8 @@ class CertificateAnalyticsMessageFactoryTest {
                     CertificateAnalyticsMessageType.CERTIFICATE_SIGNED
                 ),
                 Arguments.of(
-                    (Function<Certificate, CertificateAnalyticsMessage>) certificate -> factory.certificateSent(certificate),
+                    (Function<Certificate, CertificateAnalyticsMessage>) certificate -> factory.certificateSent(certificate,
+                        certificate.getMetadata().getRecipient().getId()),
                     CertificateAnalyticsMessageType.CERTIFICATE_SENT
                 ),
                 Arguments.of(
@@ -297,6 +313,7 @@ class CertificateAnalyticsMessageFactoryTest {
             utkast.setPatientPersonnummer(Personnummer.createPersonnummer(CERTIFICATE_PATIENT_ID).orElseThrow());
             utkast.setEnhetsId(CERTIFICATE_UNIT_ID);
             utkast.setVardgivarId(CERTIFICATE_CARE_PROVIDER_ID);
+            utkast.setSkickadTillMottagare(RECIPIENT_ID);
 
             loggedInWebcertUser = LoggedInWebcertUser.builder()
                 .staffId(EVENT_USER_ID)
@@ -424,6 +441,12 @@ class CertificateAnalyticsMessageFactoryTest {
             assertEquals(CERTIFICATE_CARE_PROVIDER_ID, actual.getCertificate().getCareProviderId());
         }
 
+        @Test
+        void shallReturnCorrectRecipientIdForCertificateSent() {
+            final var actual = factory.certificateSent(utkast, utkast.getSkickadTillMottagare());
+            assertEquals(RECIPIENT_ID, actual.getRecipient().getRecipientId());
+        }
+
         static Stream<Arguments> analyticsMessagesBasedOnUtkast() {
             return Stream.of(
                 Arguments.of(
@@ -451,7 +474,8 @@ class CertificateAnalyticsMessageFactoryTest {
                     CertificateAnalyticsMessageType.CERTIFICATE_SIGNED
                 ),
                 Arguments.of(
-                    (Function<Utkast, CertificateAnalyticsMessage>) utkast -> factory.certificateSent(utkast),
+                    (Function<Utkast, CertificateAnalyticsMessage>) utkast -> factory.certificateSent(utkast,
+                        utkast.getSkickadTillMottagare()),
                     CertificateAnalyticsMessageType.CERTIFICATE_SENT
                 ),
                 Arguments.of(

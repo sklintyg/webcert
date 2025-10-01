@@ -72,7 +72,7 @@ public class SendCertificateFromCertificateService implements SendCertificateFac
         publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKICKA);
 
         publishCertificateAnalyticsMessage.publishEvent(
-            certificateAnalyticsMessageFactory.certificateSent(certificate)
+            certificateAnalyticsMessageFactory.certificateSent(certificate, certificate.getMetadata().getRecipient().getId())
         );
 
         return IntygServiceResult.OK.toString();

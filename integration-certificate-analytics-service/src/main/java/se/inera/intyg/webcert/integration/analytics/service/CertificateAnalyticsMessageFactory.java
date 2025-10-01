@@ -27,7 +27,9 @@ import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.webcert.common.service.user.LoggedInWebcertUserService;
 import se.inera.intyg.webcert.integration.analytics.model.AnalyticsCertificate;
 import se.inera.intyg.webcert.integration.analytics.model.AnalyticsEvent;
+import se.inera.intyg.webcert.integration.analytics.model.AnalyticsRecipient;
 import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage;
+import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage.CertificateAnalyticsMessageBuilder;
 import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -39,71 +41,83 @@ public class CertificateAnalyticsMessageFactory {
     private final LoggedInWebcertUserService loggedInWebcertUserService;
 
     public CertificateAnalyticsMessage draftCreated(Certificate certificate) {
-        return create(certificate, CertificateAnalyticsMessageType.DRAFT_CREATED);
+        return create(certificate, CertificateAnalyticsMessageType.DRAFT_CREATED).build();
     }
 
     public CertificateAnalyticsMessage draftCreated(Utkast utkast) {
-        return create(utkast, CertificateAnalyticsMessageType.DRAFT_CREATED);
+        return create(utkast, CertificateAnalyticsMessageType.DRAFT_CREATED).build();
     }
 
     public CertificateAnalyticsMessage draftDeleted(Certificate certificate) {
-        return create(certificate, CertificateAnalyticsMessageType.DRAFT_DELETED);
+        return create(certificate, CertificateAnalyticsMessageType.DRAFT_DELETED).build();
     }
 
     public CertificateAnalyticsMessage draftDeleted(Utkast utkast) {
-        return create(utkast, CertificateAnalyticsMessageType.DRAFT_DELETED);
+        return create(utkast, CertificateAnalyticsMessageType.DRAFT_DELETED).build();
     }
 
     public CertificateAnalyticsMessage draftReadyForSign(Certificate certificate) {
-        return create(certificate, CertificateAnalyticsMessageType.DRAFT_READY_FOR_SIGN);
+        return create(certificate, CertificateAnalyticsMessageType.DRAFT_READY_FOR_SIGN).build();
     }
 
     public CertificateAnalyticsMessage draftReadyForSign(Utkast utkast) {
-        return create(utkast, CertificateAnalyticsMessageType.DRAFT_READY_FOR_SIGN);
+        return create(utkast, CertificateAnalyticsMessageType.DRAFT_READY_FOR_SIGN).build();
     }
 
     public CertificateAnalyticsMessage lockedDraftRevoked(Utkast utkast) {
-        return create(utkast, CertificateAnalyticsMessageType.LOCKED_DRAFT_REVOKED);
+        return create(utkast, CertificateAnalyticsMessageType.LOCKED_DRAFT_REVOKED).build();
     }
 
     public CertificateAnalyticsMessage draftCreateFromTemplate(Utkast utkast) {
-        return create(utkast, CertificateAnalyticsMessageType.DRAFT_CREATED_FROM_TEMPLATE);
+        return create(utkast, CertificateAnalyticsMessageType.DRAFT_CREATED_FROM_TEMPLATE).build();
     }
 
     public CertificateAnalyticsMessage certificateSigned(Certificate certificate) {
-        return create(certificate, CertificateAnalyticsMessageType.CERTIFICATE_SIGNED);
+        return create(certificate, CertificateAnalyticsMessageType.CERTIFICATE_SIGNED).build();
     }
 
     public CertificateAnalyticsMessage certificateSigned(Utkast utkast) {
-        return create(utkast, CertificateAnalyticsMessageType.CERTIFICATE_SIGNED);
+        return create(utkast, CertificateAnalyticsMessageType.CERTIFICATE_SIGNED).build();
     }
 
-    public CertificateAnalyticsMessage certificateSent(Certificate certificate) {
-        return create(certificate, CertificateAnalyticsMessageType.CERTIFICATE_SENT);
+    public CertificateAnalyticsMessage certificateSent(Certificate certificate, String recipientId) {
+        return create(certificate, CertificateAnalyticsMessageType.CERTIFICATE_SENT)
+            .recipient(
+                AnalyticsRecipient.builder()
+                    .recipientId(recipientId)
+                    .build()
+            )
+            .build();
     }
 
-    public CertificateAnalyticsMessage certificateSent(Utkast utkast) {
-        return create(utkast, CertificateAnalyticsMessageType.CERTIFICATE_SENT);
+    public CertificateAnalyticsMessage certificateSent(Utkast utkast, String recipientId) {
+        return create(utkast, CertificateAnalyticsMessageType.CERTIFICATE_SENT)
+            .recipient(
+                AnalyticsRecipient.builder()
+                    .recipientId(recipientId)
+                    .build()
+            )
+            .build();
     }
 
     public CertificateAnalyticsMessage certificateRenewed(Certificate certificate) {
-        return create(certificate, CertificateAnalyticsMessageType.CERTIFICATE_RENEWED);
+        return create(certificate, CertificateAnalyticsMessageType.CERTIFICATE_RENEWED).build();
     }
 
     public CertificateAnalyticsMessage certificateRenewed(Utkast utkast) {
-        return create(utkast, CertificateAnalyticsMessageType.CERTIFICATE_RENEWED);
+        return create(utkast, CertificateAnalyticsMessageType.CERTIFICATE_RENEWED).build();
     }
 
     public CertificateAnalyticsMessage certificateReplace(Certificate certificate) {
-        return create(certificate, CertificateAnalyticsMessageType.CERTIFICATE_REPLACED);
+        return create(certificate, CertificateAnalyticsMessageType.CERTIFICATE_REPLACED).build();
     }
 
     public CertificateAnalyticsMessage certificateReplace(Utkast utkast) {
-        return create(utkast, CertificateAnalyticsMessageType.CERTIFICATE_REPLACED);
+        return create(utkast, CertificateAnalyticsMessageType.CERTIFICATE_REPLACED).build();
     }
 
     public CertificateAnalyticsMessage certificateRevoked(Certificate certificate) {
-        return create(certificate, CertificateAnalyticsMessageType.CERTIFICATE_REVOKED);
+        return create(certificate, CertificateAnalyticsMessageType.CERTIFICATE_REVOKED).build();
     }
 
     public CertificateAnalyticsMessage certificateRevoked(Utlatande utlatande) {
@@ -111,14 +125,14 @@ public class CertificateAnalyticsMessageFactory {
     }
 
     public CertificateAnalyticsMessage certificatePrinted(Certificate certificate) {
-        return create(certificate, CertificateAnalyticsMessageType.CERTIFICATE_PRINTED);
+        return create(certificate, CertificateAnalyticsMessageType.CERTIFICATE_PRINTED).build();
     }
 
     public CertificateAnalyticsMessage certificatePrinted(Utlatande utlatande) {
         return create(utlatande, CertificateAnalyticsMessageType.CERTIFICATE_PRINTED);
     }
 
-    private CertificateAnalyticsMessage create(Certificate certificate, CertificateAnalyticsMessageType type) {
+    private CertificateAnalyticsMessageBuilder create(Certificate certificate, CertificateAnalyticsMessageType type) {
         return CertificateAnalyticsMessage.builder()
             .event(
                 createAnalyticsEvent(type)
@@ -132,11 +146,10 @@ public class CertificateAnalyticsMessageFactory {
                     .unitId(certificate.getMetadata().getUnit().getUnitId())
                     .careProviderId(certificate.getMetadata().getCareProvider().getUnitId())
                     .build()
-            )
-            .build();
+            );
     }
 
-    private CertificateAnalyticsMessage create(Utkast utkast, CertificateAnalyticsMessageType type) {
+    private CertificateAnalyticsMessageBuilder create(Utkast utkast, CertificateAnalyticsMessageType type) {
         return CertificateAnalyticsMessage.builder()
             .event(
                 createAnalyticsEvent(type)
@@ -150,8 +163,7 @@ public class CertificateAnalyticsMessageFactory {
                     .unitId(utkast.getEnhetsId())
                     .careProviderId(utkast.getVardgivarId())
                     .build()
-            )
-            .build();
+            );
     }
 
     private CertificateAnalyticsMessage create(Utlatande utlatande, CertificateAnalyticsMessageType type) {

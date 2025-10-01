@@ -564,7 +564,7 @@ public class IntygServiceImpl implements IntygService {
 
         optionalUtkast.ifPresent(
             utkast -> publishCertificateAnalyticsMessage.publishEvent(
-                certificateAnalyticsMessageFactory.certificateSent(utkast)
+                certificateAnalyticsMessageFactory.certificateSent(utkast, recipient)
             )
         );
 
