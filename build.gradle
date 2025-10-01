@@ -10,7 +10,7 @@ plugins {
 ext {
     commonVersion = System.properties['commonVersion'] ?: '4.0.0-SNAPSHOT'
     infraVersion = System.properties['infraVersion'] ?: '4.0.0-SNAPSHOT'
-    refDataVersion = '20'
+    refDataVersion = '2.0.22'
 
     funktionstjansterGrpSchemasVersion = "2.0.0.2"
     intygClinicalprocessSchemasVersion = "1.0.24.2"
@@ -146,7 +146,7 @@ dependencyCheck {
 }
 
 reporting {
-    subprojects.collect {subproject -> subproject.name }.each { subprojectName ->
+    subprojects.collect { subproject -> subproject.name }.each { subprojectName ->
         dependencies { testReportAggregation project(":${subprojectName}") }
     }
 }
