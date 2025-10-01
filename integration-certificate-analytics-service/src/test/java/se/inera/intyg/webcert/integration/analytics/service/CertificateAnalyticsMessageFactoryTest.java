@@ -247,12 +247,36 @@ class CertificateAnalyticsMessageFactoryTest {
                     CertificateAnalyticsMessageType.DRAFT_CREATED
                 ),
                 Arguments.of(
+                    (Function<Certificate, CertificateAnalyticsMessage>) certificate -> factory.draftDeleted(certificate),
+                    CertificateAnalyticsMessageType.DRAFT_DELETED
+                ),
+                Arguments.of(
+                    (Function<Certificate, CertificateAnalyticsMessage>) certificate -> factory.draftReadyForSign(certificate),
+                    CertificateAnalyticsMessageType.DRAFT_READY_FOR_SIGN
+                ),
+                Arguments.of(
                     (Function<Certificate, CertificateAnalyticsMessage>) certificate -> factory.certificateSigned(certificate),
                     CertificateAnalyticsMessageType.CERTIFICATE_SIGNED
                 ),
                 Arguments.of(
                     (Function<Certificate, CertificateAnalyticsMessage>) certificate -> factory.certificateSent(certificate),
                     CertificateAnalyticsMessageType.CERTIFICATE_SENT
+                ),
+                Arguments.of(
+                    (Function<Certificate, CertificateAnalyticsMessage>) certificate -> factory.certificateRenewed(certificate),
+                    CertificateAnalyticsMessageType.CERTIFICATE_RENEWED
+                ),
+                Arguments.of(
+                    (Function<Certificate, CertificateAnalyticsMessage>) certificate -> factory.certificateReplace(certificate),
+                    CertificateAnalyticsMessageType.CERTIFICATE_REPLACED
+                ),
+                Arguments.of(
+                    (Function<Certificate, CertificateAnalyticsMessage>) certificate -> factory.certificateRevoked(certificate),
+                    CertificateAnalyticsMessageType.CERTIFICATE_REVOKED
+                ),
+                Arguments.of(
+                    (Function<Certificate, CertificateAnalyticsMessage>) certificate -> factory.certificatePrinted(certificate),
+                    CertificateAnalyticsMessageType.CERTIFICATE_PRINTED
                 )
             );
         }
@@ -403,16 +427,40 @@ class CertificateAnalyticsMessageFactoryTest {
         static Stream<Arguments> analyticsMessagesBasedOnUtkast() {
             return Stream.of(
                 Arguments.of(
-                    (Function<Utkast, CertificateAnalyticsMessage>) certificate -> factory.draftCreated(certificate),
+                    (Function<Utkast, CertificateAnalyticsMessage>) utkast -> factory.draftCreated(utkast),
                     CertificateAnalyticsMessageType.DRAFT_CREATED
                 ),
                 Arguments.of(
-                    (Function<Utkast, CertificateAnalyticsMessage>) certificate -> factory.certificateSigned(certificate),
+                    (Function<Utkast, CertificateAnalyticsMessage>) utkast -> factory.draftDeleted(utkast),
+                    CertificateAnalyticsMessageType.DRAFT_DELETED
+                ),
+                Arguments.of(
+                    (Function<Utkast, CertificateAnalyticsMessage>) utkast -> factory.draftReadyForSign(utkast),
+                    CertificateAnalyticsMessageType.DRAFT_READY_FOR_SIGN
+                ),
+                Arguments.of(
+                    (Function<Utkast, CertificateAnalyticsMessage>) utkast -> factory.lockedDraftRevoked(utkast),
+                    CertificateAnalyticsMessageType.LOCKED_DRAFT_REVOKED
+                ),
+                Arguments.of(
+                    (Function<Utkast, CertificateAnalyticsMessage>) utkast -> factory.draftCreateFromTemplate(utkast),
+                    CertificateAnalyticsMessageType.DRAFT_CREATED_FROM_TEMPLATE
+                ),
+                Arguments.of(
+                    (Function<Utkast, CertificateAnalyticsMessage>) utkast -> factory.certificateSigned(utkast),
                     CertificateAnalyticsMessageType.CERTIFICATE_SIGNED
                 ),
                 Arguments.of(
-                    (Function<Utkast, CertificateAnalyticsMessage>) certificate -> factory.certificateSent(certificate),
+                    (Function<Utkast, CertificateAnalyticsMessage>) utkast -> factory.certificateSent(utkast),
                     CertificateAnalyticsMessageType.CERTIFICATE_SENT
+                ),
+                Arguments.of(
+                    (Function<Utkast, CertificateAnalyticsMessage>) utkast -> factory.certificateRenewed(utkast),
+                    CertificateAnalyticsMessageType.CERTIFICATE_RENEWED
+                ),
+                Arguments.of(
+                    (Function<Utkast, CertificateAnalyticsMessage>) utkast -> factory.certificateReplace(utkast),
+                    CertificateAnalyticsMessageType.CERTIFICATE_REPLACED
                 )
             );
         }
@@ -579,6 +627,10 @@ class CertificateAnalyticsMessageFactoryTest {
                 Arguments.of(
                     (Function<Utlatande, CertificateAnalyticsMessage>) utlatande -> factory.certificatePrinted(utlatande),
                     CertificateAnalyticsMessageType.CERTIFICATE_PRINTED
+                ),
+                Arguments.of(
+                    (Function<Utlatande, CertificateAnalyticsMessage>) utlatande -> factory.certificateRevoked(utlatande),
+                    CertificateAnalyticsMessageType.CERTIFICATE_REVOKED
                 )
             );
         }
