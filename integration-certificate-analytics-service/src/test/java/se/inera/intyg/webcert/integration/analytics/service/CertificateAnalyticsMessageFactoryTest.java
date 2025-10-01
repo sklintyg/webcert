@@ -64,7 +64,7 @@ class CertificateAnalyticsMessageFactoryTest {
     private static final String CERTIFICATE_UNIT_ID = "certificate-unit-id";
     private static final String CERTIFICATE_CARE_PROVIDER_ID = "certificate-care-provider-id";
 
-    private static final String EVENT_STAFF_ID = "event-staff-id";
+    private static final String EVENT_USER_ID = "event-user-id";
     private static final String EVENT_ROLE = "event-role";
     private static final String EVENT_UNIT_ID = "event-unit-id";
     private static final String EVENT_CARE_PROVIDER_ID = "event-care-provider-id";
@@ -108,7 +108,7 @@ class CertificateAnalyticsMessageFactoryTest {
             );
 
             loggedInWebcertUser = LoggedInWebcertUser.builder()
-                .staffId(EVENT_STAFF_ID)
+                .staffId(EVENT_USER_ID)
                 .role(EVENT_ROLE)
                 .unitId(EVENT_UNIT_ID)
                 .careProviderId(EVENT_CARE_PROVIDER_ID)
@@ -142,7 +142,7 @@ class CertificateAnalyticsMessageFactoryTest {
         void shallReturnCorrectEventStaffId(Function<Certificate, CertificateAnalyticsMessage> test,
             CertificateAnalyticsMessageType messageType) {
             final var actual = test.apply(certificate);
-            assertEquals(EVENT_STAFF_ID, actual.getEvent().getStaffId());
+            assertEquals(EVENT_USER_ID, actual.getEvent().getUserId());
         }
 
         @ParameterizedTest(name = "{index} => {1}")
@@ -268,7 +268,7 @@ class CertificateAnalyticsMessageFactoryTest {
             utkast.setVardgivarId(CERTIFICATE_CARE_PROVIDER_ID);
 
             loggedInWebcertUser = LoggedInWebcertUser.builder()
-                .staffId(EVENT_STAFF_ID)
+                .staffId(EVENT_USER_ID)
                 .role(EVENT_ROLE)
                 .unitId(EVENT_UNIT_ID)
                 .careProviderId(EVENT_CARE_PROVIDER_ID)
@@ -302,7 +302,7 @@ class CertificateAnalyticsMessageFactoryTest {
         void shallReturnCorrectEventStaffId(Function<Utkast, CertificateAnalyticsMessage> test,
             CertificateAnalyticsMessageType messageType) {
             final var actual = test.apply(utkast);
-            assertEquals(EVENT_STAFF_ID, actual.getEvent().getStaffId());
+            assertEquals(EVENT_USER_ID, actual.getEvent().getUserId());
         }
 
         @ParameterizedTest(name = "{index} => {1}")

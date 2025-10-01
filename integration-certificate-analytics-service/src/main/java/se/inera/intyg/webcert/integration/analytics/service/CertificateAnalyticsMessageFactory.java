@@ -102,7 +102,7 @@ public class CertificateAnalyticsMessageFactory {
         return AnalyticsEvent.builder()
             .timestamp(LocalDateTime.now())
             .messageType(type)
-            .staffId(loggedInWebcertUser.getStaffId())
+            .userId(loggedInWebcertUser.getStaffId())
             .role(loggedInWebcertUser.getRole())
             .unitId(loggedInWebcertUser.getUnitId())
             .careProviderId(loggedInWebcertUser.getCareProviderId())
