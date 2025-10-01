@@ -23,6 +23,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
@@ -38,6 +40,8 @@ public class PrintCertificateFromCertificateService {
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
     private final PDLLogService pdlLogService;
     private final MonitoringLogService monitoringLogService;
+    private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+    private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
     public IntygPdf print(String certificateId, String certificateType, boolean isEmployerCopy) {
         final var exists = csIntegrationService.certificateExists(certificateId);
@@ -58,6 +62,10 @@ public class PrintCertificateFromCertificateService {
                 "Intyget är utskrivet från Webcert.",
                 certificate.getMetadata().getPatient().getActualPersonId().getId()
             )
+        );
+
+        publishCertificateAnalyticsMessage.publishEvent(
+            certificateAnalyticsMessageFactory.print(certificate)
         );
 
         pdlLogService.logPrinted(certificate);
