@@ -72,6 +72,8 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.GroupableItem;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.logging.HashUtility;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
@@ -178,6 +180,12 @@ public class UtkastServiceImpl implements UtkastService {
 
     @Autowired
     private HashUtility hashUtility;
+
+    @Autowired
+    private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+
+    @Autowired
+    private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
 
     public static boolean isUtkast(Utkast utkast) {
         return utkast != null && ALL_DRAFT_STATUSES_INCLUDE_LOCKED.contains(utkast.getStatus());
@@ -360,6 +368,9 @@ public class UtkastServiceImpl implements UtkastService {
             notificationService.sendNotificationForDraftReadyToSign(utkast);
             utkast.setKlartForSigneringDatum(LocalDateTime.now());
             monitoringService.logUtkastMarkedAsReadyToSignNotificationSent(intygsId, intygType);
+            publishCertificateAnalyticsMessage.publishEvent(
+                certificateAnalyticsMessageFactory.readyForSign(utkast)
+            );
             saveDraft(utkast);
 
             generateCertificateEvent(utkast, EventCode.KFSIGN);
@@ -478,6 +489,9 @@ public class UtkastServiceImpl implements UtkastService {
 
         // Audit log
         monitoringService.logUtkastDeleted(utkast.getIntygsId(), utkast.getIntygsTyp());
+        publishCertificateAnalyticsMessage.publishEvent(
+            certificateAnalyticsMessageFactory.deleted(utkast)
+        );
 
         // Notify stakeholders when a draft is deleted
         sendNotification(utkast, Event.DELETED);
@@ -849,10 +863,12 @@ public class UtkastServiceImpl implements UtkastService {
      * Revoke draft and notify stakeholders that this draft is now deleted.
      */
     private void revokeUtkast(Utkast utkast, String reason, String revokeMessage) {
-        String intygsId = utkast.getIntygsId();
-
-        String hsaId = webCertUserService.getUser().getHsaId();
+        final var intygsId = utkast.getIntygsId();
+        final var hsaId = webCertUserService.getUser().getHsaId();
         monitoringService.logUtkastRevoked(intygsId, hsaId, reason, revokeMessage);
+        publishCertificateAnalyticsMessage.publishEvent(
+            certificateAnalyticsMessageFactory.revoked(utkast)
+        );
 
         // First: mark the originating Utkast as REVOKED
         utkast.setAterkalladDatum(LocalDateTime.now());
@@ -861,6 +877,9 @@ public class UtkastServiceImpl implements UtkastService {
         // Secondly: notify stakeholders that draft is revoked
         sendNotification(utkast, Event.REVOKED);
         generateCertificateEvent(utkast, EventCode.MAKULERAT);
+        publishCertificateAnalyticsMessage.publishEvent(
+            certificateAnalyticsMessageFactory.lockedDraftRevoked(utkast)
+        );
 
         // Third: create a log event
         LogRequest logRequest = logRequestFactory.createLogRequestFromUtkast(utkast);
@@ -1189,5 +1208,4 @@ public class UtkastServiceImpl implements UtkastService {
             utkast.setPatientEfternamn(patient.getEfternamn());
         }
     }
-
 }

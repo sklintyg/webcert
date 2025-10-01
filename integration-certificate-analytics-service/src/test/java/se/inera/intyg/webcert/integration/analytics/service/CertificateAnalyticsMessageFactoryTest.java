@@ -22,6 +22,8 @@ package se.inera.intyg.webcert.integration.analytics.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -40,6 +42,11 @@ import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
+import se.inera.intyg.common.support.model.common.internal.GrundData;
+import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
+import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.model.common.internal.Vardenhet;
+import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.user.LoggedInWebcertUser;
 import se.inera.intyg.webcert.common.service.user.LoggedInWebcertUserService;
@@ -406,6 +413,172 @@ class CertificateAnalyticsMessageFactoryTest {
                 Arguments.of(
                     (Function<Utkast, CertificateAnalyticsMessage>) certificate -> factory.certificateSent(certificate),
                     CertificateAnalyticsMessageType.CERTIFICATE_SENT
+                )
+            );
+        }
+    }
+
+    @Nested
+    class AnalyticsMessagesBasedOnUtlatande {
+
+        private Utlatande utlatande;
+        private LoggedInWebcertUser loggedInWebcertUser;
+
+        @BeforeEach
+        void setUp() {
+            utlatande = mock(Utlatande.class);
+
+            final var grundData = mock(GrundData.class);
+            final var hosPersonal = mock(HoSPersonal.class);
+            final var vardenhet = mock(Vardenhet.class);
+            final var vardgivare = mock(Vardgivare.class);
+            final var patient = mock(se.inera.intyg.common.support.model.common.internal.Patient.class);
+
+            when(utlatande.getId()).thenReturn(CERTIFICATE_ID);
+            when(utlatande.getTyp()).thenReturn(CERTIFICATE_TYPE);
+            when(utlatande.getTextVersion()).thenReturn(CERTIFICATE_TYPE_VERSION);
+            when(utlatande.getGrundData()).thenReturn(grundData);
+
+            when(grundData.getPatient()).thenReturn(patient);
+            when(grundData.getSkapadAv()).thenReturn(hosPersonal);
+            when(patient.getPersonId()).thenReturn(Personnummer.createPersonnummer(CERTIFICATE_PATIENT_ID).orElseThrow());
+
+            when(hosPersonal.getVardenhet()).thenReturn(vardenhet);
+            when(vardenhet.getEnhetsid()).thenReturn(CERTIFICATE_UNIT_ID);
+            when(vardenhet.getVardgivare()).thenReturn(vardgivare);
+            when(vardgivare.getVardgivarid()).thenReturn(CERTIFICATE_CARE_PROVIDER_ID);
+
+            loggedInWebcertUser = LoggedInWebcertUser.builder()
+                .staffId(EVENT_USER_ID)
+                .role(EVENT_ROLE)
+                .unitId(EVENT_UNIT_ID)
+                .careProviderId(EVENT_CARE_PROVIDER_ID)
+                .origin(EVENT_ORIGIN)
+                .build();
+
+            // Make this lenient to enable mocking to work in parameterized tests
+            lenient().when(loggedInWebcertUserService.getLoggedInWebcertUser()).thenReturn(loggedInWebcertUser);
+
+            MDC.put(MdcLogConstants.SESSION_ID_KEY, EVENT_SESSION_ID);
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnUtlatande")
+        void shallReturnCorrectEventTimestamp(Function<Utlatande, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(utlatande);
+            assertNotNull(actual.getEvent().getTimestamp());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnUtlatande")
+        void shallReturnCorrectEventMessageType(Function<Utlatande, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(utlatande);
+            assertEquals(messageType, actual.getEvent().getMessageType());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnUtlatande")
+        void shallReturnCorrectEventStaffId(Function<Utlatande, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(utlatande);
+            assertEquals(EVENT_USER_ID, actual.getEvent().getUserId());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnUtlatande")
+        void shallReturnCorrectEventRole(Function<Utlatande, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(utlatande);
+            assertEquals(EVENT_ROLE, actual.getEvent().getRole());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnUtlatande")
+        void shallReturnCorrectEventUnitId(Function<Utlatande, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(utlatande);
+            assertEquals(EVENT_UNIT_ID, actual.getEvent().getUnitId());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnUtlatande")
+        void shallReturnCorrectEventCareProviderId(Function<Utlatande, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(utlatande);
+            assertEquals(EVENT_CARE_PROVIDER_ID, actual.getEvent().getCareProviderId());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnUtlatande")
+        void shallReturnCorrectEventOrigin(Function<Utlatande, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(utlatande);
+            assertEquals(EVENT_ORIGIN, actual.getEvent().getOrigin());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnUtlatande")
+        void shallReturnCorrectEventSessionId(Function<Utlatande, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(utlatande);
+            assertEquals(EVENT_SESSION_ID, actual.getEvent().getSessionId());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnUtlatande")
+        void shallReturnCorrectCertificateId(Function<Utlatande, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(utlatande);
+            assertEquals(CERTIFICATE_ID, actual.getCertificate().getId());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnUtlatande")
+        void shallReturnCorrectCertificateType(Function<Utlatande, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(utlatande);
+            assertEquals(CERTIFICATE_TYPE, actual.getCertificate().getType());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnUtlatande")
+        void shallReturnCorrectCertificateTypeVersion(Function<Utlatande, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(utlatande);
+            assertEquals(CERTIFICATE_TYPE_VERSION, actual.getCertificate().getTypeVersion());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnUtlatande")
+        void shallReturnCorrectCertificatePatientId(Function<Utlatande, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(utlatande);
+            assertEquals(CERTIFICATE_PATIENT_ID, actual.getCertificate().getPatientId());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnUtlatande")
+        void shallReturnCorrectCertificateUnitId(Function<Utlatande, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(utlatande);
+            assertEquals(CERTIFICATE_UNIT_ID, actual.getCertificate().getUnitId());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnUtlatande")
+        void shallReturnCorrectCertificateCareProviderId(Function<Utlatande, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(utlatande);
+            assertEquals(CERTIFICATE_CARE_PROVIDER_ID, actual.getCertificate().getCareProviderId());
+        }
+
+        static Stream<Arguments> analyticsMessagesBasedOnUtlatande() {
+            return Stream.of(
+                Arguments.of(
+                    (Function<Utlatande, CertificateAnalyticsMessage>) utlatande -> factory.print(utlatande),
+                    CertificateAnalyticsMessageType.PRINT
                 )
             );
         }

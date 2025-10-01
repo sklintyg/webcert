@@ -479,6 +479,10 @@ public class IntygServiceImpl implements IntygService {
         final String intygsId = intyg.getUtlatande().getId();
         final String intygsTyp = intyg.getUtlatande().getTyp();
 
+        publishCertificateAnalyticsMessage.publishEvent(
+        certificateAnalyticsMessageFactory.print(intyg.getUtlatande())
+      );
+
         LogRequest logRequest = logRequestFactory.createLogRequestFromUtlatande(intyg.getUtlatande());
         // Are we printing a draft?
         if (intyg.getUtlatande().getGrundData().getSigneringsdatum() == null) {
@@ -1045,10 +1049,12 @@ public class IntygServiceImpl implements IntygService {
      * a question related to a revoked certificate has been closed.
      */
     private IntygServiceResult whenSuccessfulRevoke(Utlatande intyg, String reason) {
-        String intygsId = intyg.getId();
-
-        String hsaId = webCertUserService.getUser().getHsaId();
+        final var intygsId = intyg.getId();
+        final var hsaId = webCertUserService.getUser().getHsaId();
         monitoringService.logIntygRevoked(intygsId, intyg.getTyp(), hsaId, reason);
+        publishCertificateAnalyticsMessage.publishEvent(
+            certificateAnalyticsMessageFactory.revoked(intyg)
+        );
 
         // First: send a notification informing stakeholders that this certificate has been revoked
         notificationService.sendNotificationForIntygRevoked(intygsId);

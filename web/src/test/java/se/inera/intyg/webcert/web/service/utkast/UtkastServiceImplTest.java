@@ -90,6 +90,9 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.GroupableItem;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.logging.HashUtility;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -175,6 +178,10 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     private ModuleApi moduleApi;
     @Spy
     private HashUtility hashUtility;
+    @Mock
+    private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+    @Mock
+    private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
     @Spy
     private CreateIntygsIdStrategy mockIdStrategy = new CreateIntygsIdStrategy() {
@@ -349,6 +356,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void testDeleteDraftThatIsUnsigned() {
+        final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+        when(certificateAnalyticsMessageFactory.deleted(any(Utkast.class))).thenReturn(analyticsMessage);
         when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
 
         utkastService.deleteUnsignedDraft(INTYG_ID, utkast.getVersion());
@@ -363,6 +372,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         verify(logService).logDeleteIntyg(any(LogRequest.class));
 
         verify(monitoringService).logUtkastDeleted(INTYG_ID, INTYG_TYPE);
+        verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
     }
 
     @Test
@@ -821,11 +831,15 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(authoritiesHelper.getIntygstyperForPrivilege(any(UserDetails.class), anyString()))
             .thenReturn(new HashSet<>(Arrays.asList("lisjp", "luse", "luae_fs", "luae_na")));
 
+        final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+        when(certificateAnalyticsMessageFactory.readyForSign(any(Utkast.class))).thenReturn(analyticsMessage);
+
         utkastService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, "luae_fs");
 
         verify(notificationService).sendNotificationForDraftReadyToSign(utkast);
         verify(monitoringService).logUtkastMarkedAsReadyToSignNotificationSent(INTYG_ID, "luae_fs");
         verify(utkastRepository).save(utkast);
+        verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -1065,6 +1079,9 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(userService.getUser()).thenReturn(user);
         when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(lockedUtkast));
 
+        final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+        when(certificateAnalyticsMessageFactory.lockedDraftRevoked(any(Utkast.class))).thenReturn(analyticsMessage);
+
         String reason = "reason";
         String revokeMessage = "revokeMessage";
 
@@ -1075,6 +1092,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         verify(utkastRepository, times(1)).save(lockedUtkast);
         verify(monitoringService).logUtkastRevoked(INTYG_ID, user.getHsaId(), reason, revokeMessage);
         verify(logService).logRevokeIntyg(any());
+        verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
     }
 
     @Test(expected = WebCertServiceException.class)
