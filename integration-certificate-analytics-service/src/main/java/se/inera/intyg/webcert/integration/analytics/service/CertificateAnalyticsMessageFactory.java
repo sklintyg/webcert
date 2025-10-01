@@ -22,10 +22,13 @@ import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.CertificateRelationType;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.webcert.common.service.user.LoggedInWebcertUserService;
 import se.inera.intyg.webcert.integration.analytics.model.AnalyticsCertificate;
+import se.inera.intyg.webcert.integration.analytics.model.AnalyticsCertificateRelation;
 import se.inera.intyg.webcert.integration.analytics.model.AnalyticsEvent;
 import se.inera.intyg.webcert.integration.analytics.model.AnalyticsRecipient;
 import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage;
@@ -145,8 +148,21 @@ public class CertificateAnalyticsMessageFactory {
                     .patientId(certificate.getMetadata().getPatient().getPersonId().getId())
                     .unitId(certificate.getMetadata().getUnit().getUnitId())
                     .careProviderId(certificate.getMetadata().getCareProvider().getUnitId())
+                    .parent(
+                        createCertificateAnalyticsRelation(certificate)
+                    )
                     .build()
             );
+    }
+
+    private AnalyticsCertificateRelation createCertificateAnalyticsRelation(Certificate certificate) {
+        if (certificate.getMetadata().getRelations() == null || certificate.getMetadata().getRelations().getParent() == null) {
+            return null;
+        }
+        return AnalyticsCertificateRelation.builder()
+            .id(certificate.getMetadata().getRelations().getParent().getCertificateId())
+            .type(certificate.getMetadata().getRelations().getParent().getType().name())
+            .build();
     }
 
     private CertificateAnalyticsMessageBuilder create(Utkast utkast, CertificateAnalyticsMessageType type) {
@@ -162,8 +178,28 @@ public class CertificateAnalyticsMessageFactory {
                     .patientId(utkast.getPatientPersonnummer().getPersonnummerWithDash())
                     .unitId(utkast.getEnhetsId())
                     .careProviderId(utkast.getVardgivarId())
+                    .parent(
+                        createCertificateAnalyticsRelation(utkast)
+                    )
                     .build()
             );
+    }
+
+    private AnalyticsCertificateRelation createCertificateAnalyticsRelation(Utkast utkast) {
+        if (utkast.getRelationIntygsId() == null) {
+            return null;
+        }
+        return AnalyticsCertificateRelation.builder()
+            .id(utkast.getRelationIntygsId())
+            .type(
+                switch (utkast.getRelationKod()) {
+                    case ERSATT -> CertificateRelationType.REPLACED.name();
+                    case KOMPLT -> CertificateRelationType.COMPLEMENTED.name();
+                    case RelationKod.FRLANG -> CertificateRelationType.EXTENDED.name();
+                    case KOPIA -> CertificateRelationType.COPIED.name();
+                }
+            )
+            .build();
     }
 
     private CertificateAnalyticsMessage create(Utlatande utlatande, CertificateAnalyticsMessageType type) {

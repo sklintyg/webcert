@@ -38,11 +38,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.MDC;
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.CertificateRelationType;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRecipient;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
@@ -72,6 +76,8 @@ class CertificateAnalyticsMessageFactoryTest {
     private static final String CERTIFICATE_PATIENT_ID = "19121212-1212";
     private static final String CERTIFICATE_UNIT_ID = "certificate-unit-id";
     private static final String CERTIFICATE_CARE_PROVIDER_ID = "certificate-care-provider-id";
+    private static final String CERTIFICATE_RELATION_PARENT_ID = "certificate-relation-parent-id";
+    private static final CertificateRelationType CERTIFICATE_RELATION_PARENT_TYPE = CertificateRelationType.EXTENDED;
 
     private static final String EVENT_USER_ID = "event-user-id";
     private static final String EVENT_ROLE = "event-role";
@@ -118,6 +124,16 @@ class CertificateAnalyticsMessageFactoryTest {
                     .recipient(
                         CertificateRecipient.builder()
                             .id(RECIPIENT_ID)
+                            .build()
+                    )
+                    .relations(
+                        CertificateRelations.builder()
+                            .parent(
+                                CertificateRelation.builder()
+                                    .certificateId(CERTIFICATE_RELATION_PARENT_ID)
+                                    .type(CERTIFICATE_RELATION_PARENT_TYPE)
+                                    .build()
+                            )
                             .build()
                     )
                     .build()
@@ -249,6 +265,22 @@ class CertificateAnalyticsMessageFactoryTest {
             assertEquals(CERTIFICATE_CARE_PROVIDER_ID, actual.getCertificate().getCareProviderId());
         }
 
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnCertificate")
+        void shallReturnCorrectCertificateRelationParentId(Function<Certificate, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(certificate);
+            assertEquals(CERTIFICATE_RELATION_PARENT_ID, actual.getCertificate().getParent().getId());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnCertificate")
+        void shallReturnCorrectCertificateRelationParentType(Function<Certificate, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(certificate);
+            assertEquals(CERTIFICATE_RELATION_PARENT_TYPE.name(), actual.getCertificate().getParent().getType());
+        }
+
         @Test
         void shallReturnCorrectRecipientIdForCertificateSent() {
             final var actual = factory.certificateSent(certificate, certificate.getMetadata().getRecipient().getId());
@@ -314,6 +346,8 @@ class CertificateAnalyticsMessageFactoryTest {
             utkast.setEnhetsId(CERTIFICATE_UNIT_ID);
             utkast.setVardgivarId(CERTIFICATE_CARE_PROVIDER_ID);
             utkast.setSkickadTillMottagare(RECIPIENT_ID);
+            utkast.setRelationIntygsId(CERTIFICATE_RELATION_PARENT_ID);
+            utkast.setRelationKod(RelationKod.FRLANG);
 
             loggedInWebcertUser = LoggedInWebcertUser.builder()
                 .staffId(EVENT_USER_ID)
@@ -439,6 +473,22 @@ class CertificateAnalyticsMessageFactoryTest {
             CertificateAnalyticsMessageType messageType) {
             final var actual = test.apply(utkast);
             assertEquals(CERTIFICATE_CARE_PROVIDER_ID, actual.getCertificate().getCareProviderId());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnUtkast")
+        void shallReturnCorrectCertificateRelationParentId(Function<Utkast, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(utkast);
+            assertEquals(CERTIFICATE_RELATION_PARENT_ID, actual.getCertificate().getParent().getId());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnUtkast")
+        void shallReturnCorrectCertificateRelationParentType(Function<Utkast, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(utkast);
+            assertEquals(CERTIFICATE_RELATION_PARENT_TYPE.name(), actual.getCertificate().getParent().getType());
         }
 
         @Test

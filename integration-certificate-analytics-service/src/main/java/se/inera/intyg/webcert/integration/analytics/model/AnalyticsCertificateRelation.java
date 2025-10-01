@@ -24,14 +24,8 @@ import lombok.Value;
 
 @Value
 @Builder
-public class AnalyticsCertificate {
+public class AnalyticsCertificateRelation {
 
     String id;
     String type;
-    String typeVersion;
-    String patientId;
-    String unitId;
-    String careProviderId;
-    
-    AnalyticsCertificateRelation parent;
 }
