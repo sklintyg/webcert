@@ -29,7 +29,7 @@ public class AnalyticsEvent {
 
     LocalDateTime timestamp;
     CertificateAnalyticsMessageType messageType;
-    String staffId;
+    String userId;
     String role;
     String unitId;
     String careProviderId;
