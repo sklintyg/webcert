@@ -186,7 +186,7 @@ dependencies {
     implementation "org.springframework:spring-webmvc"
     implementation "org.springframework.ws:spring-xml"
 
-    implementation "se.inera.intyg.refdata:refdata-featureK1J-357:${refDataVersion}"
+    implementation "se.inera.intyg.refdata:refdata:${refDataVersion}"
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
