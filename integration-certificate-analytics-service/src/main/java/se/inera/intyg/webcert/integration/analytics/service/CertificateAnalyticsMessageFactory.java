@@ -110,10 +110,6 @@ public class CertificateAnalyticsMessageFactory {
         return create(utlatande, CertificateAnalyticsMessageType.CERTIFICATE_REVOKED);
     }
 
-    public CertificateAnalyticsMessage revoked(Utkast utkast) {
-        return create(utkast, CertificateAnalyticsMessageType.CERTIFICATE_REVOKED);
-    }
-
     public CertificateAnalyticsMessage certificatePrinted(Certificate certificate) {
         return create(certificate, CertificateAnalyticsMessageType.CERTIFICATE_PRINTED);
     }

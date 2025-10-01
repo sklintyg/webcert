@@ -866,9 +866,6 @@ public class UtkastServiceImpl implements UtkastService {
         final var intygsId = utkast.getIntygsId();
         final var hsaId = webCertUserService.getUser().getHsaId();
         monitoringService.logUtkastRevoked(intygsId, hsaId, reason, revokeMessage);
-        publishCertificateAnalyticsMessage.publishEvent(
-            certificateAnalyticsMessageFactory.revoked(utkast)
-        );
 
         // First: mark the originating Utkast as REVOKED
         utkast.setAterkalladDatum(LocalDateTime.now());
