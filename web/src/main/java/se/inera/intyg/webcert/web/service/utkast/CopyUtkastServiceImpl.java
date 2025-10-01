@@ -165,8 +165,8 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
     @Autowired
     private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
-  @Autowired
-  private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+    @Autowired
+    private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
 
     @Override
     public CreateCompletionCopyResponse createCompletion(CreateCompletionCopyRequest copyRequest) {

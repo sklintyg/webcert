@@ -123,7 +123,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         when(intygRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(signedUtkast));
 
         final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-        when(certificateAnalyticsMessageFactory.revoked(any(Utkast.class))).thenReturn(analyticsMessage);
+        when(certificateAnalyticsMessageFactory.revoked(any(Utlatande.class))).thenReturn(analyticsMessage);
 
         // do the call
         IntygServiceResult res = intygService.revokeIntyg(INTYG_ID, INTYG_TYP_FK, REVOKE_MSG, REVOKE_REASON);
@@ -166,7 +166,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         when(csIntegrationService.placeholderCertificateExists(INTYG_ID)).thenReturn(true);
 
         final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-        when(certificateAnalyticsMessageFactory.revoked(any(Utkast.class))).thenReturn(analyticsMessage);
+        when(certificateAnalyticsMessageFactory.revoked(any(Utlatande.class))).thenReturn(analyticsMessage);
 
         IntygServiceResult res = intygService.revokeIntyg(INTYG_ID, INTYG_TYP_FK, REVOKE_MSG, REVOKE_REASON);
 
