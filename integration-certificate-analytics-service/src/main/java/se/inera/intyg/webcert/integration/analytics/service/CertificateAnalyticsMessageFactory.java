@@ -65,8 +65,8 @@ public class CertificateAnalyticsMessageFactory {
         return create(certificate, CertificateAnalyticsMessageType.DELETED);
     }
 
-    public CertificateAnalyticsMessage readyForSign(Utkast utkast) {
-        return create(utkast, CertificateAnalyticsMessageType.READY_FOR_SIGN);
+    public CertificateAnalyticsMessage readyForSign(Certificate certificate) {
+        return create(certificate, CertificateAnalyticsMessageType.READY_FOR_SIGN);
     }
 
     public CertificateAnalyticsMessage createFromTemplate(Utkast utkast) {

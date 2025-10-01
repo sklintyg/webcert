@@ -25,6 +25,8 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -33,6 +35,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ReadyForSignRequestDTO;
@@ -53,6 +58,10 @@ class ReadyForSignForCertificateServiceTest {
     MonitoringLogService monitoringLogService;
     @Mock
     DecorateCertificateFromCSWithInformationFromWC decorateCertificateFromCSWithInformationFromWC;
+    @Mock
+    PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+    @Mock
+    CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
     @InjectMocks
     ReadyForSignForCertificateService readyForSignForCertificateService;
 
@@ -63,57 +72,60 @@ class ReadyForSignForCertificateServiceTest {
         assertNull(result);
     }
 
-    @Test
-    void shallReturnCertificate() {
-        final var expectedCertificate = getCertificate();
+    @Nested
+    class CertificateExistsInCS {
+
+      private static final Certificate certificate = getCertificate();
+
+      @BeforeEach
+      void setup() {
         final var readyForSignRequestDTO = ReadyForSignRequestDTO.builder().build();
         doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
         doReturn(readyForSignRequestDTO).when(csIntegrationRequestFactory).readyForSignRequest();
-        doReturn(expectedCertificate).when(csIntegrationService).markCertificateReadyForSign(CERTIFICATE_ID, readyForSignRequestDTO);
+        doReturn(certificate).when(csIntegrationService)
+            .markCertificateReadyForSign(CERTIFICATE_ID, readyForSignRequestDTO);
+      }
 
-        final var actualCertificate = readyForSignForCertificateService.readyForSign(CERTIFICATE_ID);
-        assertEquals(expectedCertificate, actualCertificate);
-    }
+      @Test
+      void shallReturnCertificate() {
+        final var actualCertificate = readyForSignForCertificateService.readyForSign(
+            CERTIFICATE_ID);
+        assertEquals(certificate, actualCertificate);
+      }
 
-    @Test
-    void shallPublishStatusUpdateForCertificate() {
-        final var certificate = getCertificate();
-
-        final var readyForSignRequestDTO = ReadyForSignRequestDTO.builder().build();
-        doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
-        doReturn(readyForSignRequestDTO).when(csIntegrationRequestFactory).readyForSignRequest();
-        doReturn(certificate).when(csIntegrationService).markCertificateReadyForSign(CERTIFICATE_ID, readyForSignRequestDTO);
+      @Test
+      void shallPublishStatusUpdateForCertificate() {
 
         readyForSignForCertificateService.readyForSign(CERTIFICATE_ID);
 
-        verify(publishCertificateStatusUpdateService, times(1)).publish(certificate, HandelsekodEnum.KFSIGN);
-    }
+        verify(publishCertificateStatusUpdateService, times(1)).publish(certificate,
+            HandelsekodEnum.KFSIGN);
+      }
 
-    @Test
-    void shallMonitorLogUtkastMarkedAsSigned() {
-        final var certificate = getCertificate();
-
-        final var readyForSignRequestDTO = ReadyForSignRequestDTO.builder().build();
-        doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
-        doReturn(readyForSignRequestDTO).when(csIntegrationRequestFactory).readyForSignRequest();
-        doReturn(certificate).when(csIntegrationService).markCertificateReadyForSign(CERTIFICATE_ID, readyForSignRequestDTO);
-
+      @Test
+      void shallMonitorLogUtkastMarkedAsSigned() {
         readyForSignForCertificateService.readyForSign(CERTIFICATE_ID);
 
-        verify(monitoringLogService, times(1)).logUtkastMarkedAsReadyToSignNotificationSent(CERTIFICATE_ID, TYPE);
-    }
+        verify(monitoringLogService, times(1)).logUtkastMarkedAsReadyToSignNotificationSent(
+            CERTIFICATE_ID, TYPE);
+      }
 
-    @Test
-    void shouldDecorateCertificateFromCSWithInformationFromWC() {
-        final var certificate = getCertificate();
-
-        final var readyForSignRequestDTO = ReadyForSignRequestDTO.builder().build();
-        doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
-        doReturn(readyForSignRequestDTO).when(csIntegrationRequestFactory).readyForSignRequest();
-        doReturn(certificate).when(csIntegrationService).markCertificateReadyForSign(CERTIFICATE_ID, readyForSignRequestDTO);
-
+      @Test
+      void shouldDecorateCertificateFromCSWithInformationFromWC() {
         readyForSignForCertificateService.readyForSign(CERTIFICATE_ID);
         verify(decorateCertificateFromCSWithInformationFromWC, times(1)).decorate(certificate);
+      }
+
+      @Test
+      void shouldPublishAnalyticsMessageWhenCertificateIsMarkedReadyForSign() {
+        final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+        doReturn(analyticsMessage).when(certificateAnalyticsMessageFactory)
+            .readyForSign(getCertificate());
+
+        readyForSignForCertificateService.readyForSign(CERTIFICATE_ID);
+
+        verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
+      }
     }
 
     private static Certificate getCertificate() {
