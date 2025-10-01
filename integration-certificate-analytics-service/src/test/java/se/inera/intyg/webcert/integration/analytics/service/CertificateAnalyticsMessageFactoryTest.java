@@ -578,7 +578,7 @@ class CertificateAnalyticsMessageFactoryTest {
             return Stream.of(
                 Arguments.of(
                     (Function<Utlatande, CertificateAnalyticsMessage>) utlatande -> factory.print(utlatande),
-                    CertificateAnalyticsMessageType.PRINT
+                    CertificateAnalyticsMessageType.CERTIFICATE_PRINTED
                 )
             );
         }

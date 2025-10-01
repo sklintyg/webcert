@@ -490,6 +490,9 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             referensService.saveReferens(savedUtkast.getIntygsId(), user.getParameters().getReference());
         }
         notificationService.sendNotificationForDraftCreated(savedUtkast);
+        publishCertificateAnalyticsMessage.publishEvent(
+            certificateAnalyticsMessageFactory.createFromTemplate(savedUtkast)
+        );
 
         certificateEventService.createCertificateEventFromCopyUtkast(savedUtkast, user.getHsaId(), eventCode, originalCertificateId);
 

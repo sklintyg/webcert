@@ -80,23 +80,23 @@ public class CertificateAnalyticsMessageFactory {
     }
 
     public CertificateAnalyticsMessage createFromTemplate(Utkast utkast) {
-        return create(utkast, CertificateAnalyticsMessageType.CREATE_FROM_TEMPLATE);
+        return create(utkast, CertificateAnalyticsMessageType.DRAFT_CREATED_FROM_TEMPLATE);
     }
 
     public CertificateAnalyticsMessage renew(Certificate certificate) {
-        return create(certificate, CertificateAnalyticsMessageType.RENEW);
+        return create(certificate, CertificateAnalyticsMessageType.CERTIFICATE_RENEWED);
     }
 
     public CertificateAnalyticsMessage renew(Utkast utkast) {
-        return create(utkast, CertificateAnalyticsMessageType.RENEW);
+        return create(utkast, CertificateAnalyticsMessageType.CERTIFICATE_RENEWED);
     }
 
     public CertificateAnalyticsMessage replace(Certificate certificate) {
-        return create(certificate, CertificateAnalyticsMessageType.REPLACE);
+        return create(certificate, CertificateAnalyticsMessageType.CERTIFICATE_REPLACED);
     }
 
     public CertificateAnalyticsMessage replace(Utkast utkast) {
-        return create(utkast, CertificateAnalyticsMessageType.REPLACE);
+        return create(utkast, CertificateAnalyticsMessageType.CERTIFICATE_REPLACED);
     }
 
     public CertificateAnalyticsMessage revoked(Certificate certificate) {
@@ -116,11 +116,11 @@ public class CertificateAnalyticsMessageFactory {
     }
 
     public CertificateAnalyticsMessage print(Certificate certificate) {
-        return create(certificate, CertificateAnalyticsMessageType.PRINT);
+        return create(certificate, CertificateAnalyticsMessageType.CERTIFICATE_PRINTED);
     }
 
     public CertificateAnalyticsMessage print(Utlatande utlatande) {
-        return create(utlatande, CertificateAnalyticsMessageType.PRINT);
+        return create(utlatande, CertificateAnalyticsMessageType.CERTIFICATE_PRINTED);
     }
 
     private CertificateAnalyticsMessage create(Certificate certificate, CertificateAnalyticsMessageType type) {
