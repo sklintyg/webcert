@@ -212,7 +212,7 @@ class RenewCertificateFromCertificateServiceTest {
             @Test
             void shouldPublishAnalyticsMessageWhenCertificateIsRenewed() {
                 final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-                when(certificateAnalyticsMessageFactory.renew(RENEWD_CERTIFICATE)).thenReturn(analyticsMessage);
+                when(certificateAnalyticsMessageFactory.certificateRenewed(RENEWD_CERTIFICATE)).thenReturn(analyticsMessage);
 
                 renewCertificateFromCertificateService.renewCertificate(ID);
 

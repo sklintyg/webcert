@@ -76,7 +76,7 @@ public class ReplaceCertificateFromCertificateService implements ReplaceCertific
         pdlLogService.logCreated(replacingCertificate);
         publishCertificateStatusUpdateService.publish(replacingCertificate, HandelsekodEnum.SKAPAT);
         publishCertificateAnalyticsMessage.publishEvent(
-            certificateAnalyticsMessageFactory.replace(replacingCertificate)
+            certificateAnalyticsMessageFactory.certificateReplace(replacingCertificate)
         );
 
         return replacingCertificate.getMetadata().getId();

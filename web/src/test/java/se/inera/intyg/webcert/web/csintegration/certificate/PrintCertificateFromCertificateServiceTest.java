@@ -133,9 +133,9 @@ class PrintCertificateFromCertificateServiceTest {
 
         @Test
         void shouldPublishAnalyticsMessageWhenCertificateIsPrinted() {
-          certificate.setMetadata(getMetadata(CertificateStatus.UNSIGNED));
-          final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-            when(certificateAnalyticsMessageFactory.print(certificate)).thenReturn(analyticsMessage);
+            certificate.setMetadata(getMetadata(CertificateStatus.UNSIGNED));
+            final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+            when(certificateAnalyticsMessageFactory.certificatePrinted(certificate)).thenReturn(analyticsMessage);
 
             printCertificateFromCertificateService.print(ID, TYPE, EMPLOYER_COPY);
 

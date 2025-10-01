@@ -46,6 +46,30 @@ public class CertificateAnalyticsMessageFactory {
         return create(utkast, CertificateAnalyticsMessageType.DRAFT_CREATED);
     }
 
+    public CertificateAnalyticsMessage draftDeleted(Certificate certificate) {
+        return create(certificate, CertificateAnalyticsMessageType.DRAFT_DELETED);
+    }
+
+    public CertificateAnalyticsMessage draftDeleted(Utkast utkast) {
+        return create(utkast, CertificateAnalyticsMessageType.DRAFT_DELETED);
+    }
+
+    public CertificateAnalyticsMessage draftReadyForSign(Certificate certificate) {
+        return create(certificate, CertificateAnalyticsMessageType.DRAFT_READY_FOR_SIGN);
+    }
+
+    public CertificateAnalyticsMessage draftReadyForSign(Utkast utkast) {
+        return create(utkast, CertificateAnalyticsMessageType.DRAFT_READY_FOR_SIGN);
+    }
+
+    public CertificateAnalyticsMessage lockedDraftRevoked(Utkast utkast) {
+        return create(utkast, CertificateAnalyticsMessageType.LOCKED_DRAFT_REVOKED);
+    }
+
+    public CertificateAnalyticsMessage draftCreateFromTemplate(Utkast utkast) {
+        return create(utkast, CertificateAnalyticsMessageType.DRAFT_CREATED_FROM_TEMPLATE);
+    }
+
     public CertificateAnalyticsMessage certificateSigned(Certificate certificate) {
         return create(certificate, CertificateAnalyticsMessageType.CERTIFICATE_SIGNED);
     }
@@ -62,64 +86,39 @@ public class CertificateAnalyticsMessageFactory {
         return create(utkast, CertificateAnalyticsMessageType.CERTIFICATE_SENT);
     }
 
-    public CertificateAnalyticsMessage deleted(Certificate certificate) {
-        return create(certificate, CertificateAnalyticsMessageType.DRAFT_DELETED);
-    }
-
-    public CertificateAnalyticsMessage deleted(Utkast utkast) {
-        return create(utkast, CertificateAnalyticsMessageType.DRAFT_DELETED);
-    }
-
-    public CertificateAnalyticsMessage readyForSign(Certificate certificate) {
-        return create(certificate, CertificateAnalyticsMessageType.DRAFT_READY_FOR_SIGN);
-    }
-
-
-    public CertificateAnalyticsMessage readyForSign(Utkast utkast) {
-        return create(utkast, CertificateAnalyticsMessageType.DRAFT_READY_FOR_SIGN);
-    }
-
-    public CertificateAnalyticsMessage createFromTemplate(Utkast utkast) {
-        return create(utkast, CertificateAnalyticsMessageType.DRAFT_CREATED_FROM_TEMPLATE);
-    }
-
-    public CertificateAnalyticsMessage renew(Certificate certificate) {
+    public CertificateAnalyticsMessage certificateRenewed(Certificate certificate) {
         return create(certificate, CertificateAnalyticsMessageType.CERTIFICATE_RENEWED);
     }
 
-    public CertificateAnalyticsMessage renew(Utkast utkast) {
+    public CertificateAnalyticsMessage certificateRenewed(Utkast utkast) {
         return create(utkast, CertificateAnalyticsMessageType.CERTIFICATE_RENEWED);
     }
 
-    public CertificateAnalyticsMessage replace(Certificate certificate) {
+    public CertificateAnalyticsMessage certificateReplace(Certificate certificate) {
         return create(certificate, CertificateAnalyticsMessageType.CERTIFICATE_REPLACED);
     }
 
-    public CertificateAnalyticsMessage replace(Utkast utkast) {
+    public CertificateAnalyticsMessage certificateReplace(Utkast utkast) {
         return create(utkast, CertificateAnalyticsMessageType.CERTIFICATE_REPLACED);
     }
 
-    public CertificateAnalyticsMessage revoked(Certificate certificate) {
+    public CertificateAnalyticsMessage certificateRevoked(Certificate certificate) {
         return create(certificate, CertificateAnalyticsMessageType.CERTIFICATE_REVOKED);
+    }
+
+    public CertificateAnalyticsMessage certificateRevoked(Utlatande utlatande) {
+        return create(utlatande, CertificateAnalyticsMessageType.CERTIFICATE_REVOKED);
     }
 
     public CertificateAnalyticsMessage revoked(Utkast utkast) {
         return create(utkast, CertificateAnalyticsMessageType.CERTIFICATE_REVOKED);
     }
 
-    public CertificateAnalyticsMessage revoked(Utlatande utkast) {
-        return create(utkast, CertificateAnalyticsMessageType.CERTIFICATE_REVOKED);
-    }
-
-    public CertificateAnalyticsMessage lockedDraftRevoked(Utkast utkast) {
-        return create(utkast, CertificateAnalyticsMessageType.LOCKED_DRAFT_REVOKED);
-    }
-
-    public CertificateAnalyticsMessage print(Certificate certificate) {
+    public CertificateAnalyticsMessage certificatePrinted(Certificate certificate) {
         return create(certificate, CertificateAnalyticsMessageType.CERTIFICATE_PRINTED);
     }
 
-    public CertificateAnalyticsMessage print(Utlatande utlatande) {
+    public CertificateAnalyticsMessage certificatePrinted(Utlatande utlatande) {
         return create(utlatande, CertificateAnalyticsMessageType.CERTIFICATE_PRINTED);
     }
 
@@ -160,21 +159,21 @@ public class CertificateAnalyticsMessageFactory {
     }
 
     private CertificateAnalyticsMessage create(Utlatande utlatande, CertificateAnalyticsMessageType type) {
-      return CertificateAnalyticsMessage.builder()
-          .event(
-              createAnalyticsEvent(type)
-          )
-          .certificate(
-              AnalyticsCertificate.builder()
-                  .id(utlatande.getId())
-                  .type(utlatande.getTyp())
-                  .typeVersion(utlatande.getTextVersion())
-                  .patientId(utlatande.getGrundData().getPatient().getPersonId().getPersonnummerWithDash())
-                  .unitId(utlatande.getGrundData().getSkapadAv().getVardenhet().getEnhetsid())
-                  .careProviderId(utlatande.getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarid())
-                  .build()
-          )
-          .build();
+        return CertificateAnalyticsMessage.builder()
+            .event(
+                createAnalyticsEvent(type)
+            )
+            .certificate(
+                AnalyticsCertificate.builder()
+                    .id(utlatande.getId())
+                    .type(utlatande.getTyp())
+                    .typeVersion(utlatande.getTextVersion())
+                    .patientId(utlatande.getGrundData().getPatient().getPersonId().getPersonnummerWithDash())
+                    .unitId(utlatande.getGrundData().getSkapadAv().getVardenhet().getEnhetsid())
+                    .careProviderId(utlatande.getGrundData().getSkapadAv().getVardenhet().getVardgivare().getVardgivarid())
+                    .build()
+            )
+            .build();
     }
 
     private AnalyticsEvent createAnalyticsEvent(CertificateAnalyticsMessageType type) {

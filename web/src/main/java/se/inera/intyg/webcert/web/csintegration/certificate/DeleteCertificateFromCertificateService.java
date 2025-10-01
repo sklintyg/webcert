@@ -66,7 +66,7 @@ public class DeleteCertificateFromCertificateService implements DeleteCertificat
         }
 
         publishCertificateAnalyticsMessage.publishEvent(
-            certificateAnalyticsMessageFactory.deleted(certificate)
+            certificateAnalyticsMessageFactory.draftDeleted(certificate)
         );
         log.debug("Deleted certificate '{}' from Certificate Service", certificateId);
         monitoringLogService.logUtkastDeleted(certificate.getMetadata().getId(), certificate.getMetadata().getType());

@@ -242,7 +242,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
             monitoringService.logIntygCopiedRenewal(savedUtkast.getIntygsId(), originalIntygId);
 
-            final var analyticsMessage = certificateAnalyticsMessageFactory.renew(savedUtkast);
+            final var analyticsMessage = certificateAnalyticsMessageFactory.certificateRenewed(savedUtkast);
             publishCertificateAnalyticsMessage.publishEvent(analyticsMessage);
 
             return new CreateRenewalCopyResponse(savedUtkast.getIntygsTyp(), savedUtkast.getIntygTypeVersion(), savedUtkast.getIntygsId(),
@@ -291,7 +291,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
 
             monitoringService.logIntygCopiedReplacement(savedUtkast.getIntygsId(), originalIntygId);
 
-            final var analyticsMessage = certificateAnalyticsMessageFactory.replace(savedUtkast);
+            final var analyticsMessage = certificateAnalyticsMessageFactory.certificateReplace(savedUtkast);
             publishCertificateAnalyticsMessage.publishEvent(analyticsMessage);
 
             return new CreateReplacementCopyResponse(savedUtkast.getIntygsTyp(), savedUtkast.getIntygTypeVersion(),
@@ -491,7 +491,7 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
         }
         notificationService.sendNotificationForDraftCreated(savedUtkast);
         publishCertificateAnalyticsMessage.publishEvent(
-            certificateAnalyticsMessageFactory.createFromTemplate(savedUtkast)
+            certificateAnalyticsMessageFactory.draftCreateFromTemplate(savedUtkast)
         );
 
         certificateEventService.createCertificateEventFromCopyUtkast(savedUtkast, user.getHsaId(), eventCode, originalCertificateId);

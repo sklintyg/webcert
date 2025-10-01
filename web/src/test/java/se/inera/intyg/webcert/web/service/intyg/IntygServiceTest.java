@@ -884,7 +884,7 @@ public class IntygServiceTest {
             .thenReturn(buildPdfDocument());
 
         final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-        when(certificateAnalyticsMessageFactory.print(any(Utlatande.class))).thenReturn(analyticsMessage);
+        when(certificateAnalyticsMessageFactory.certificatePrinted(any(Utlatande.class))).thenReturn(analyticsMessage);
 
         IntygPdf intygPdf = intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
         assertNotNull(intygPdf);
@@ -936,7 +936,7 @@ public class IntygServiceTest {
             .thenReturn(buildPdfDocument());
 
         final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-        when(certificateAnalyticsMessageFactory.print(any(Utlatande.class))).thenReturn(analyticsMessage);
+        when(certificateAnalyticsMessageFactory.certificatePrinted(any(Utlatande.class))).thenReturn(analyticsMessage);
 
         IntygPdf pdf = intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
 
@@ -956,7 +956,7 @@ public class IntygServiceTest {
             .thenReturn(buildPdfDocument());
 
         final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-        when(certificateAnalyticsMessageFactory.print(any(Utlatande.class))).thenReturn(analyticsMessage);
+        when(certificateAnalyticsMessageFactory.certificatePrinted(any(Utlatande.class))).thenReturn(analyticsMessage);
 
         IntygPdf intygPdf = intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
         assertNotNull(intygPdf);

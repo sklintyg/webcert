@@ -75,57 +75,57 @@ class ReadyForSignForCertificateServiceTest {
     @Nested
     class CertificateExistsInCS {
 
-      private static final Certificate certificate = getCertificate();
+        private static final Certificate certificate = getCertificate();
 
-      @BeforeEach
-      void setup() {
-        final var readyForSignRequestDTO = ReadyForSignRequestDTO.builder().build();
-        doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
-        doReturn(readyForSignRequestDTO).when(csIntegrationRequestFactory).readyForSignRequest();
-        doReturn(certificate).when(csIntegrationService)
-            .markCertificateReadyForSign(CERTIFICATE_ID, readyForSignRequestDTO);
-      }
+        @BeforeEach
+        void setup() {
+            final var readyForSignRequestDTO = ReadyForSignRequestDTO.builder().build();
+            doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
+            doReturn(readyForSignRequestDTO).when(csIntegrationRequestFactory).readyForSignRequest();
+            doReturn(certificate).when(csIntegrationService)
+                .markCertificateReadyForSign(CERTIFICATE_ID, readyForSignRequestDTO);
+        }
 
-      @Test
-      void shallReturnCertificate() {
-        final var actualCertificate = readyForSignForCertificateService.readyForSign(
-            CERTIFICATE_ID);
-        assertEquals(certificate, actualCertificate);
-      }
+        @Test
+        void shallReturnCertificate() {
+            final var actualCertificate = readyForSignForCertificateService.readyForSign(
+                CERTIFICATE_ID);
+            assertEquals(certificate, actualCertificate);
+        }
 
-      @Test
-      void shallPublishStatusUpdateForCertificate() {
+        @Test
+        void shallPublishStatusUpdateForCertificate() {
 
-        readyForSignForCertificateService.readyForSign(CERTIFICATE_ID);
+            readyForSignForCertificateService.readyForSign(CERTIFICATE_ID);
 
-        verify(publishCertificateStatusUpdateService, times(1)).publish(certificate,
-            HandelsekodEnum.KFSIGN);
-      }
+            verify(publishCertificateStatusUpdateService, times(1)).publish(certificate,
+                HandelsekodEnum.KFSIGN);
+        }
 
-      @Test
-      void shallMonitorLogUtkastMarkedAsSigned() {
-        readyForSignForCertificateService.readyForSign(CERTIFICATE_ID);
+        @Test
+        void shallMonitorLogUtkastMarkedAsSigned() {
+            readyForSignForCertificateService.readyForSign(CERTIFICATE_ID);
 
-        verify(monitoringLogService, times(1)).logUtkastMarkedAsReadyToSignNotificationSent(
-            CERTIFICATE_ID, TYPE);
-      }
+            verify(monitoringLogService, times(1)).logUtkastMarkedAsReadyToSignNotificationSent(
+                CERTIFICATE_ID, TYPE);
+        }
 
-      @Test
-      void shouldDecorateCertificateFromCSWithInformationFromWC() {
-        readyForSignForCertificateService.readyForSign(CERTIFICATE_ID);
-        verify(decorateCertificateFromCSWithInformationFromWC, times(1)).decorate(certificate);
-      }
+        @Test
+        void shouldDecorateCertificateFromCSWithInformationFromWC() {
+            readyForSignForCertificateService.readyForSign(CERTIFICATE_ID);
+            verify(decorateCertificateFromCSWithInformationFromWC, times(1)).decorate(certificate);
+        }
 
-      @Test
-      void shouldPublishAnalyticsMessageWhenCertificateIsMarkedReadyForSign() {
-        final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-        doReturn(analyticsMessage).when(certificateAnalyticsMessageFactory)
-            .readyForSign(getCertificate());
+        @Test
+        void shouldPublishAnalyticsMessageWhenCertificateIsMarkedReadyForSign() {
+            final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+            doReturn(analyticsMessage).when(certificateAnalyticsMessageFactory)
+                .draftReadyForSign(getCertificate());
 
-        readyForSignForCertificateService.readyForSign(CERTIFICATE_ID);
+            readyForSignForCertificateService.readyForSign(CERTIFICATE_ID);
 
-        verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
-      }
+            verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
+        }
     }
 
     private static Certificate getCertificate() {

@@ -340,7 +340,7 @@ public class CopyUtkastServiceImplTest {
         when(mockUtkastRepository.existsById(INTYG_ID)).thenReturn(Boolean.FALSE);
 
         final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-        when(certificateAnalyticsMessageFactory.replace(any(Utkast.class))).thenReturn(analyticsMessage);
+        when(certificateAnalyticsMessageFactory.certificateReplace(any(Utkast.class))).thenReturn(analyticsMessage);
 
         UtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(createReplacementUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateReplacementCopyRequest.class), any(Person.class),
@@ -457,7 +457,7 @@ public class CopyUtkastServiceImplTest {
             .thenReturn(Optional.empty());
 
         final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-        when(certificateAnalyticsMessageFactory.renew(any(Utkast.class))).thenReturn(analyticsMessage);
+        when(certificateAnalyticsMessageFactory.certificateRenewed(any(Utkast.class))).thenReturn(analyticsMessage);
 
         CreateRenewalCopyRequest copyReq = buildRenewalRequest();
 
@@ -521,7 +521,7 @@ public class CopyUtkastServiceImplTest {
         when(mockUtkastRepository.existsById(INTYG_ID)).thenReturn(Boolean.TRUE);
 
         final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-        when(certificateAnalyticsMessageFactory.renew(any(Utkast.class))).thenReturn(analyticsMessage);
+        when(certificateAnalyticsMessageFactory.certificateRenewed(any(Utkast.class))).thenReturn(analyticsMessage);
 
         UtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(createRenewalCopyUtkastBuilder.populateCopyUtkastFromOrignalUtkast(
@@ -575,7 +575,7 @@ public class CopyUtkastServiceImplTest {
         )).thenReturn(resp);
 
         final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-        when(certificateAnalyticsMessageFactory.renew(any(Utkast.class))).thenReturn(analyticsMessage);
+        when(certificateAnalyticsMessageFactory.certificateRenewed(any(Utkast.class))).thenReturn(analyticsMessage);
 
         CreateRenewalCopyRequest renewRequest = buildRenewalRequest();
         renewRequest.setDjupintegrerad(true);
@@ -623,7 +623,7 @@ public class CopyUtkastServiceImplTest {
         )).thenReturn(resp);
 
         final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-        when(certificateAnalyticsMessageFactory.createFromTemplate(any(Utkast.class))).thenReturn(analyticsMessage);
+        when(certificateAnalyticsMessageFactory.draftCreateFromTemplate(any(Utkast.class))).thenReturn(analyticsMessage);
 
         CreateRenewalCopyRequest copyReq = buildRenewalRequest();
         copyReq.setNyttPatientPersonnummer(PATIENT_NEW_SSN);
@@ -664,7 +664,7 @@ public class CopyUtkastServiceImplTest {
         when(userService.getUser()).thenReturn(user);
 
         final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-        when(certificateAnalyticsMessageFactory.createFromTemplate(any(Utkast.class))).thenReturn(analyticsMessage);
+        when(certificateAnalyticsMessageFactory.draftCreateFromTemplate(any(Utkast.class))).thenReturn(analyticsMessage);
 
         UtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(createUtkastFromTemplateBuilder.populateCopyUtkastFromSignedIntyg(any(CreateUtkastFromTemplateRequest.class),
@@ -705,7 +705,7 @@ public class CopyUtkastServiceImplTest {
         when(mockUtkastRepository.existsById(INTYG_ID)).thenReturn(Boolean.TRUE);
 
         final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-        when(certificateAnalyticsMessageFactory.createFromTemplate(any(Utkast.class))).thenReturn(analyticsMessage);
+        when(certificateAnalyticsMessageFactory.draftCreateFromTemplate(any(Utkast.class))).thenReturn(analyticsMessage);
 
         UtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(createUtkastCopyBuilder.populateCopyUtkastFromOrignalUtkast(any(CreateUtkastFromTemplateRequest.class), any(Person.class),

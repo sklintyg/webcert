@@ -480,8 +480,8 @@ public class IntygServiceImpl implements IntygService {
         final String intygsTyp = intyg.getUtlatande().getTyp();
 
         publishCertificateAnalyticsMessage.publishEvent(
-        certificateAnalyticsMessageFactory.print(intyg.getUtlatande())
-      );
+            certificateAnalyticsMessageFactory.certificatePrinted(intyg.getUtlatande())
+        );
 
         LogRequest logRequest = logRequestFactory.createLogRequestFromUtlatande(intyg.getUtlatande());
         // Are we printing a draft?
@@ -1053,7 +1053,7 @@ public class IntygServiceImpl implements IntygService {
         final var hsaId = webCertUserService.getUser().getHsaId();
         monitoringService.logIntygRevoked(intygsId, intyg.getTyp(), hsaId, reason);
         publishCertificateAnalyticsMessage.publishEvent(
-            certificateAnalyticsMessageFactory.revoked(intyg)
+            certificateAnalyticsMessageFactory.certificateRevoked(intyg)
         );
 
         // First: send a notification informing stakeholders that this certificate has been revoked

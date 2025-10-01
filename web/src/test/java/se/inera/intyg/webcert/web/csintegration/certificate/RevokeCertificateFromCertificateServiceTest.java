@@ -176,7 +176,7 @@ class RevokeCertificateFromCertificateServiceTest {
             @Test
             void shouldPublishAnalyticsMessageWhenCertificateIsRevoked() {
                 final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-                when(certificateAnalyticsMessageFactory.revoked(CERTIFICATE_AFTER_REVOKE)).thenReturn(analyticsMessage);
+                when(certificateAnalyticsMessageFactory.certificateRevoked(CERTIFICATE_AFTER_REVOKE)).thenReturn(analyticsMessage);
 
                 revokeCertificateFromCertificateService.revokeCertificate(ID, REASON, MESSAGE);
 

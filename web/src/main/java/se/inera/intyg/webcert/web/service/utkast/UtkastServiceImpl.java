@@ -369,7 +369,7 @@ public class UtkastServiceImpl implements UtkastService {
             utkast.setKlartForSigneringDatum(LocalDateTime.now());
             monitoringService.logUtkastMarkedAsReadyToSignNotificationSent(intygsId, intygType);
             publishCertificateAnalyticsMessage.publishEvent(
-                certificateAnalyticsMessageFactory.readyForSign(utkast)
+                certificateAnalyticsMessageFactory.draftReadyForSign(utkast)
             );
             saveDraft(utkast);
 
@@ -490,7 +490,7 @@ public class UtkastServiceImpl implements UtkastService {
         // Audit log
         monitoringService.logUtkastDeleted(utkast.getIntygsId(), utkast.getIntygsTyp());
         publishCertificateAnalyticsMessage.publishEvent(
-            certificateAnalyticsMessageFactory.deleted(utkast)
+            certificateAnalyticsMessageFactory.draftDeleted(utkast)
         );
 
         // Notify stakeholders when a draft is deleted

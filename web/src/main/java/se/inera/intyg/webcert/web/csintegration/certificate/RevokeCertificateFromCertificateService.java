@@ -77,7 +77,7 @@ public class RevokeCertificateFromCertificateService implements RevokeCertificat
         monitorLog(certificate, reason, message, certificateStatusBeforeRevoke);
         publishCertificateStatusUpdateService.publish(revokedCertificate, HandelsekodEnum.MAKULE);
         publishCertificateAnalyticsMessage.publishEvent(
-            certificateAnalyticsMessageFactory.revoked(revokedCertificate)
+            certificateAnalyticsMessageFactory.certificateRevoked(revokedCertificate)
         );
 
         return revokedCertificate;

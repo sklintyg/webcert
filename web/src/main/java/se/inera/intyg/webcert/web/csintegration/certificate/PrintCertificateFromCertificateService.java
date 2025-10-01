@@ -65,7 +65,7 @@ public class PrintCertificateFromCertificateService {
         );
 
         publishCertificateAnalyticsMessage.publishEvent(
-            certificateAnalyticsMessageFactory.print(certificate)
+            certificateAnalyticsMessageFactory.certificatePrinted(certificate)
         );
 
         pdlLogService.logPrinted(certificate);

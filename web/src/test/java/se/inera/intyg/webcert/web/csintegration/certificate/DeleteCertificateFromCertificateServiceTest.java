@@ -174,7 +174,7 @@ class DeleteCertificateFromCertificateServiceTest {
             @Test
             void shouldPublishAnalyticsMessageWhenCertificateIsDeleted() {
                 final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-                when(certificateAnalyticsMessageFactory.deleted(CERTIFICATE)).thenReturn(analyticsMessage);
+                when(certificateAnalyticsMessageFactory.draftDeleted(CERTIFICATE)).thenReturn(analyticsMessage);
 
                 deleteCertificateFromCertificateService.deleteCertificate(ID, VERSION);
 

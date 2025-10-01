@@ -357,7 +357,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     @Test
     public void testDeleteDraftThatIsUnsigned() {
         final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-        when(certificateAnalyticsMessageFactory.deleted(any(Utkast.class))).thenReturn(analyticsMessage);
+        when(certificateAnalyticsMessageFactory.draftDeleted(any(Utkast.class))).thenReturn(analyticsMessage);
         when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
 
         utkastService.deleteUnsignedDraft(INTYG_ID, utkast.getVersion());
@@ -832,7 +832,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
             .thenReturn(new HashSet<>(Arrays.asList("lisjp", "luse", "luae_fs", "luae_na")));
 
         final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-        when(certificateAnalyticsMessageFactory.readyForSign(any(Utkast.class))).thenReturn(analyticsMessage);
+        when(certificateAnalyticsMessageFactory.draftReadyForSign(any(Utkast.class))).thenReturn(analyticsMessage);
 
         utkastService.setKlarForSigneraAndSendStatusMessage(INTYG_ID, "luae_fs");
 

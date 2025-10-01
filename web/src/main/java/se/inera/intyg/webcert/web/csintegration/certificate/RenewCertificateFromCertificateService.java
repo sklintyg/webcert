@@ -76,7 +76,7 @@ public class RenewCertificateFromCertificateService implements RenewCertificateF
         pdlLogService.logCreated(renewalCertificate);
         publishCertificateStatusUpdateService.publish(renewalCertificate, HandelsekodEnum.SKAPAT);
         publishCertificateAnalyticsMessage.publishEvent(
-            certificateAnalyticsMessageFactory.renew(renewalCertificate)
+            certificateAnalyticsMessageFactory.certificateRenewed(renewalCertificate)
         );
 
         return renewalCertificate.getMetadata().getId();

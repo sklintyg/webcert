@@ -61,7 +61,7 @@ public class ReadyForSignForCertificateService implements ReadyForSignFacadeServ
         decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
 
         publishCertificateAnalyticsMessage.publishEvent(
-            certificateAnalyticsMessageFactory.readyForSign(certificate)
+            certificateAnalyticsMessageFactory.draftReadyForSign(certificate)
         );
 
         publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.KFSIGN);

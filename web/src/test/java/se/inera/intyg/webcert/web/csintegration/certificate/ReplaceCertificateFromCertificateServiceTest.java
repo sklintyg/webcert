@@ -213,7 +213,7 @@ class ReplaceCertificateFromCertificateServiceTest {
             @Test
             void shouldPublishAnalyticsMessageWhenCertificateIsReplaced() {
                 final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-                when(certificateAnalyticsMessageFactory.replace(REPLACED_CERTIFICATE)).thenReturn(analyticsMessage);
+                when(certificateAnalyticsMessageFactory.certificateReplace(REPLACED_CERTIFICATE)).thenReturn(analyticsMessage);
 
                 replaceCertificateFromCertificateService.replaceCertificate(ID);
 
