@@ -22,7 +22,6 @@ import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
-import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
@@ -87,7 +86,7 @@ public class CertificateAnalyticsMessageFactory {
         return create(certificate, CertificateAnalyticsMessageType.CERTIFICATE_SENT)
             .recipient(
                 AnalyticsRecipient.builder()
-                    .recipientId(recipientId)
+                    .id(recipientId)
                     .build()
             )
             .build();
@@ -97,7 +96,7 @@ public class CertificateAnalyticsMessageFactory {
         return create(utkast, CertificateAnalyticsMessageType.CERTIFICATE_SENT)
             .recipient(
                 AnalyticsRecipient.builder()
-                    .recipientId(recipientId)
+                    .id(recipientId)
                     .build()
             )
             .build();
@@ -195,7 +194,7 @@ public class CertificateAnalyticsMessageFactory {
                 switch (utkast.getRelationKod()) {
                     case ERSATT -> CertificateRelationType.REPLACED.name();
                     case KOMPLT -> CertificateRelationType.COMPLEMENTED.name();
-                    case RelationKod.FRLANG -> CertificateRelationType.EXTENDED.name();
+                    case FRLANG -> CertificateRelationType.EXTENDED.name();
                     case KOPIA -> CertificateRelationType.COPIED.name();
                 }
             )

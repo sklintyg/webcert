@@ -74,6 +74,8 @@ public class RevokeCertificateFromCertificateService implements RevokeCertificat
         log.debug("Certificate with id '{}' was revoked using certificate service", certificateId);
         pdlLogService.logRevoke(revokedCertificate);
 
+        // TODO: Must be fixed because now the reason is logged when it should be the user that revoked
+        // and the message when it should be the reason. Important that the message is not logged!
         monitorLog(certificate, reason, message, certificateStatusBeforeRevoke);
         publishCertificateStatusUpdateService.publish(revokedCertificate, HandelsekodEnum.MAKULE);
         publishCertificateAnalyticsMessage.publishEvent(

@@ -26,5 +26,5 @@ import lombok.Value;
 @Builder
 public class AnalyticsRecipient {
 
-    String recipientId;
+    String id;
 }

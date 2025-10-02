@@ -284,7 +284,7 @@ class CertificateAnalyticsMessageFactoryTest {
         @Test
         void shallReturnCorrectRecipientIdForCertificateSent() {
             final var actual = factory.certificateSent(certificate, certificate.getMetadata().getRecipient().getId());
-            assertEquals(RECIPIENT_ID, actual.getRecipient().getRecipientId());
+            assertEquals(RECIPIENT_ID, actual.getRecipient().getId());
         }
 
         static Stream<Arguments> analyticsMessagesBasedOnCertificate() {
@@ -494,7 +494,7 @@ class CertificateAnalyticsMessageFactoryTest {
         @Test
         void shallReturnCorrectRecipientIdForCertificateSent() {
             final var actual = factory.certificateSent(utkast, utkast.getSkickadTillMottagare());
-            assertEquals(RECIPIENT_ID, actual.getRecipient().getRecipientId());
+            assertEquals(RECIPIENT_ID, actual.getRecipient().getId());
         }
 
         static Stream<Arguments> analyticsMessagesBasedOnUtkast() {
