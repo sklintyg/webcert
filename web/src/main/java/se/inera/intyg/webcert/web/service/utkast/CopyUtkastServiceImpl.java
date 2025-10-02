@@ -197,6 +197,9 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             Utkast savedUtkast = saveAndNotify(builderResponse, user, EventCode.KOMPLETTERAR, originalIntygId);
 
             monitoringService.logIntygCopiedCompletion(savedUtkast.getIntygsId(), originalIntygId);
+            publishCertificateAnalyticsMessage.publishEvent(
+                certificateAnalyticsMessageFactory.certificateComplemented(savedUtkast)
+            );
 
             return new CreateCompletionCopyResponse(savedUtkast.getIntygsTyp(), savedUtkast.getIntygTypeVersion(),
                 savedUtkast.getIntygsId(), originalIntygId);

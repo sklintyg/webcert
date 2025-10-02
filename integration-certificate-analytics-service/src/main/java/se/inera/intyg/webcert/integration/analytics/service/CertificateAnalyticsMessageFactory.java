@@ -130,6 +130,10 @@ public class CertificateAnalyticsMessageFactory {
         return create(certificate, CertificateAnalyticsMessageType.CERTIFICATE_COMPLEMENTED).build();
     }
 
+    public CertificateAnalyticsMessage certificateComplemented(Utkast certificate) {
+        return create(certificate, CertificateAnalyticsMessageType.CERTIFICATE_COMPLEMENTED).build();
+    }
+
     public CertificateAnalyticsMessage certificateRevoked(Certificate certificate) {
         return create(certificate, CertificateAnalyticsMessageType.CERTIFICATE_REVOKED).build();
     }

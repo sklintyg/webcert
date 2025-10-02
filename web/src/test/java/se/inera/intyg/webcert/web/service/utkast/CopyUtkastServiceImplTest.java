@@ -417,6 +417,9 @@ public class CopyUtkastServiceImplTest {
         UtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(copyCompletionUtkastBuilder.populateCopyUtkastFromOrignalUtkast(any(CreateCompletionCopyRequest.class), any(Person.class),
             any(boolean.class))).thenReturn(resp);
+        final var message = CertificateAnalyticsMessage.builder().build();
+        when(certificateAnalyticsMessageFactory.certificateComplemented(any(Utkast.class)))
+            .thenReturn(message);
 
         CreateCompletionCopyRequest copyReq = buildCompletionRequest();
         setupMockForGettingUtlatande();
@@ -436,6 +439,7 @@ public class CopyUtkastServiceImplTest {
         verify(certificateEventService)
             .createCertificateEventFromCopyUtkast(resp.getUtkast(), user.getHsaId(), EventCode.KOMPLETTERAR, INTYG_ID);
         verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE);
+        verify(publishCertificateAnalyticsMessage).publishEvent(message);
     }
 
     @Test
