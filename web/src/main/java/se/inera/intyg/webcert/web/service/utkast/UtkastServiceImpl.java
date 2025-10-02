@@ -660,6 +660,10 @@ public class UtkastServiceImpl implements UtkastService {
             logUpdateOfIntyg(utkast);
         }
 
+        publishCertificateAnalyticsMessage.publishEvent(
+            certificateAnalyticsMessageFactory.draftUpdated(utkast)
+        );
+
         // Flush JPA changes, to make sure the version attribute is updated
         utkastRepository.flush();
 

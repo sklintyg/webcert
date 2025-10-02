@@ -74,6 +74,14 @@ public class CertificateAnalyticsMessageFactory {
         return create(utkast, CertificateAnalyticsMessageType.DRAFT_CREATED_FROM_TEMPLATE).build();
     }
 
+    public CertificateAnalyticsMessage draftUpdated(Utkast utkast) {
+        return create(utkast, CertificateAnalyticsMessageType.DRAFT_UPDATED).build();
+    }
+
+    public CertificateAnalyticsMessage draftUpdated(Certificate certificate) {
+        return create(certificate, CertificateAnalyticsMessageType.DRAFT_UPDATED).build();
+    }
+
     public CertificateAnalyticsMessage certificateSigned(Certificate certificate) {
         return create(certificate, CertificateAnalyticsMessageType.CERTIFICATE_SIGNED).build();
     }

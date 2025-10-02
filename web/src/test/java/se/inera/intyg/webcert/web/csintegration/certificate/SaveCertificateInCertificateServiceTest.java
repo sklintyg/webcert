@@ -36,6 +36,9 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SaveCertificateRequestDTO;
@@ -55,6 +58,10 @@ class SaveCertificateInCertificateServiceTest {
     PDLLogService pdlLogService;
     @Mock
     MonitoringLogService monitoringLogService;
+    @Mock
+    PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+    @Mock
+    CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
     @InjectMocks
     SaveCertificateInCertificateService saveCertificateInCertificateService;
 
@@ -142,6 +149,16 @@ class SaveCertificateInCertificateServiceTest {
         void shouldPublishCertificateStatusUpdate() {
             saveCertificateInCertificateService.saveCertificate(CERTIFICATE, PDL_LOG);
             verify(publishCertificateStatusUpdateService, times(1)).publish(CERTIFICATE, HandelsekodEnum.ANDRAT);
+        }
+
+        @Test
+        void shouldPublishAnalyticsMessage() {
+            final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+            when(certificateAnalyticsMessageFactory.draftUpdated(CERTIFICATE)).thenReturn(analyticsMessage);
+
+            saveCertificateInCertificateService.saveCertificate(CERTIFICATE, PDL_LOG);
+
+            verify(publishCertificateAnalyticsMessage, times(1)).publishEvent(analyticsMessage);
         }
     }
 }

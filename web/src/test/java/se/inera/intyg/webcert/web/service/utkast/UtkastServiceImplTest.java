@@ -452,6 +452,9 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(userService.getUser()).thenReturn(user);
         when(moduleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
 
+        final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+        when(certificateAnalyticsMessageFactory.draftUpdated(utkast)).thenReturn(analyticsMessage);
+
         SaveDraftResponse res = utkastService.saveDraft(INTYG_ID, UTKAST_VERSION, INTYG_JSON, true);
 
         verify(utkastRepository).save(any(Utkast.class));
@@ -464,8 +467,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         verify(monitoringService).logUtkastEdited(INTYG_ID, INTYG_TYPE);
 
-        assertNotNull("An DraftValidation should be returned", res);
-        assertEquals("Validation should fail", UtkastStatus.DRAFT_INCOMPLETE, res.getStatus());
+        // Assert analytics message
+        verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
     }
 
     @Test
