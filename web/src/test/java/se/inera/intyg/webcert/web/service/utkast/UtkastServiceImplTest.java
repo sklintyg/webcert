@@ -467,8 +467,10 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         verify(monitoringService).logUtkastEdited(INTYG_ID, INTYG_TYPE);
 
-        // Assert analytics message
         verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
+
+        assertNotNull("An DraftValidation should be returned", res);
+        assertEquals("Validation should fail", UtkastStatus.DRAFT_INCOMPLETE, res.getStatus());
     }
 
     @Test
