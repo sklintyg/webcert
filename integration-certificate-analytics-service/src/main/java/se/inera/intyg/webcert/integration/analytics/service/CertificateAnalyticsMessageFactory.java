@@ -126,6 +126,10 @@ public class CertificateAnalyticsMessageFactory {
         return create(utkast, CertificateAnalyticsMessageType.CERTIFICATE_REPLACED).build();
     }
 
+    public CertificateAnalyticsMessage certificateComplemented(Certificate certificate) {
+        return create(certificate, CertificateAnalyticsMessageType.CERTIFICATE_COMPLEMENTED).build();
+    }
+
     public CertificateAnalyticsMessage certificateRevoked(Certificate certificate) {
         return create(certificate, CertificateAnalyticsMessageType.CERTIFICATE_REVOKED).build();
     }
