@@ -58,6 +58,14 @@ public class CertificateAnalyticsMessageFactory {
         return create(utkast, CertificateAnalyticsMessageType.DRAFT_DELETED).build();
     }
 
+    public CertificateAnalyticsMessage draftUpdated(Utkast utkast) {
+        return create(utkast, CertificateAnalyticsMessageType.DRAFT_UPDATED).build();
+    }
+
+    public CertificateAnalyticsMessage draftUpdated(Certificate certificate) {
+        return create(certificate, CertificateAnalyticsMessageType.DRAFT_UPDATED).build();
+    }
+
     public CertificateAnalyticsMessage draftReadyForSign(Certificate certificate) {
         return create(certificate, CertificateAnalyticsMessageType.DRAFT_READY_FOR_SIGN).build();
     }
@@ -72,14 +80,6 @@ public class CertificateAnalyticsMessageFactory {
 
     public CertificateAnalyticsMessage draftCreateFromTemplate(Utkast utkast) {
         return create(utkast, CertificateAnalyticsMessageType.DRAFT_CREATED_FROM_TEMPLATE).build();
-    }
-
-    public CertificateAnalyticsMessage draftUpdated(Utkast utkast) {
-        return create(utkast, CertificateAnalyticsMessageType.DRAFT_UPDATED).build();
-    }
-
-    public CertificateAnalyticsMessage draftUpdated(Certificate certificate) {
-        return create(certificate, CertificateAnalyticsMessageType.DRAFT_UPDATED).build();
     }
 
     public CertificateAnalyticsMessage certificateSigned(Certificate certificate) {

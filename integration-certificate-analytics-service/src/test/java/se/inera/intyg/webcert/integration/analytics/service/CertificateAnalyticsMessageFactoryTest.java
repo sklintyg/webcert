@@ -323,6 +323,10 @@ class CertificateAnalyticsMessageFactoryTest {
                     CertificateAnalyticsMessageType.CERTIFICATE_REPLACED
                 ),
                 Arguments.of(
+                    (Function<Certificate, CertificateAnalyticsMessage>) certificate -> factory.certificateReplace(certificate),
+                    CertificateAnalyticsMessageType.CERTIFICATE_COMPLEMENTED
+                ),
+                Arguments.of(
                     (Function<Certificate, CertificateAnalyticsMessage>) certificate -> factory.certificateRevoked(certificate),
                     CertificateAnalyticsMessageType.CERTIFICATE_REVOKED
                 ),
@@ -543,6 +547,10 @@ class CertificateAnalyticsMessageFactoryTest {
                 Arguments.of(
                     (Function<Utkast, CertificateAnalyticsMessage>) utkast -> factory.certificateReplace(utkast),
                     CertificateAnalyticsMessageType.CERTIFICATE_REPLACED
+                ),
+                Arguments.of(
+                    (Function<Utkast, CertificateAnalyticsMessage>) utkast -> factory.certificateComplemented(utkast),
+                    CertificateAnalyticsMessageType.CERTIFICATE_COMPLEMENTED
                 )
             );
         }
