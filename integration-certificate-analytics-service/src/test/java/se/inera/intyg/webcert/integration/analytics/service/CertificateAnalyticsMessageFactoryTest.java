@@ -323,7 +323,7 @@ class CertificateAnalyticsMessageFactoryTest {
                     CertificateAnalyticsMessageType.CERTIFICATE_REPLACED
                 ),
                 Arguments.of(
-                    (Function<Certificate, CertificateAnalyticsMessage>) certificate -> factory.certificateReplace(certificate),
+                    (Function<Certificate, CertificateAnalyticsMessage>) certificate -> factory.certificateComplemented(certificate),
                     CertificateAnalyticsMessageType.CERTIFICATE_COMPLEMENTED
                 ),
                 Arguments.of(
