@@ -437,7 +437,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
-    public void logUtkastRevoked(String intygsId, String hsaId, String reason, String revokeMessage) {
+    public void logUtkastRevoked(String intygsId, String hsaId, String reason) {
         try (MdcCloseableMap ignored = MdcCloseableMap.builder()
             .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.UTKAST_REVOKED))
             .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_CHANGE)

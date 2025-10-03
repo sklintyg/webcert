@@ -867,9 +867,10 @@ public class UtkastServiceImpl implements UtkastService {
      * Revoke draft and notify stakeholders that this draft is now deleted.
      */
     private void revokeUtkast(Utkast utkast, String reason, String revokeMessage) {
-        final var intygsId = utkast.getIntygsId();
-        final var hsaId = webCertUserService.getUser().getHsaId();
-        monitoringService.logUtkastRevoked(intygsId, hsaId, reason, revokeMessage);
+        String intygsId = utkast.getIntygsId();
+
+        String hsaId = webCertUserService.getUser().getHsaId();
+        monitoringService.logUtkastRevoked(intygsId, hsaId, reason);
 
         // First: mark the originating Utkast as REVOKED
         utkast.setAterkalladDatum(LocalDateTime.now());

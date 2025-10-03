@@ -73,8 +73,8 @@ public class RevokeCertificateFromCertificateService implements RevokeCertificat
         decorateCertificateFromCSWithInformationFromWC.decorate(revokedCertificate);
         log.debug("Certificate with id '{}' was revoked using certificate service", certificateId);
         pdlLogService.logRevoke(revokedCertificate);
-        
-        monitorLog(certificate, reason, message, certificateStatusBeforeRevoke);
+
+        monitorLog(certificate, revokedCertificate.getMetadata().getRevokedBy().getPersonId(), reason, certificateStatusBeforeRevoke);
         publishCertificateStatusUpdateService.publish(revokedCertificate, HandelsekodEnum.MAKULE);
         publishCertificateAnalyticsMessage.publishEvent(
             certificateAnalyticsMessageFactory.certificateRevoked(revokedCertificate)
@@ -83,13 +83,12 @@ public class RevokeCertificateFromCertificateService implements RevokeCertificat
         return revokedCertificate;
     }
 
-    private void monitorLog(Certificate certificate, String reason, String message, CertificateStatus certificateStatusBeforeRevoke) {
+    private void monitorLog(Certificate certificate, String revokedBy, String reason, CertificateStatus certificateStatusBeforeRevoke) {
         if (certificateStatusBeforeRevoke == CertificateStatus.LOCKED) {
             monitoringLogService.logUtkastRevoked(
                 certificate.getMetadata().getId(),
-                certificate.getMetadata().getType(),
-                reason,
-                message
+                revokedBy,
+                reason
             );
         }
 
@@ -97,8 +96,8 @@ public class RevokeCertificateFromCertificateService implements RevokeCertificat
             monitoringLogService.logIntygRevoked(
                 certificate.getMetadata().getId(),
                 certificate.getMetadata().getType(),
-                reason,
-                message
+                revokedBy,
+                reason
             );
         }
     }

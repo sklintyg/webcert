@@ -1095,7 +1095,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         // Assert notification message
         verify(notificationService).sendNotificationForDraftRevoked(any(Utkast.class));
         verify(utkastRepository, times(1)).save(lockedUtkast);
-        verify(monitoringService).logUtkastRevoked(INTYG_ID, user.getHsaId(), reason, revokeMessage);
+        verify(monitoringService).logUtkastRevoked(INTYG_ID, user.getHsaId(), reason);
         verify(logService).logRevokeIntyg(any());
         verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
     }
