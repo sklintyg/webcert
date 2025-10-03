@@ -25,6 +25,8 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
@@ -42,6 +44,8 @@ public class RevokeCertificateFromCertificateService implements RevokeCertificat
     private final MonitoringLogService monitoringLogService;
     private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
     private final DecorateCertificateFromCSWithInformationFromWC decorateCertificateFromCSWithInformationFromWC;
+    private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+    private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
     @Override
     public Certificate revokeCertificate(String certificateId, String reason, String message) {
@@ -70,19 +74,18 @@ public class RevokeCertificateFromCertificateService implements RevokeCertificat
         log.debug("Certificate with id '{}' was revoked using certificate service", certificateId);
         pdlLogService.logRevoke(revokedCertificate);
 
-        monitorLog(certificate, reason, message, certificateStatusBeforeRevoke);
+        monitorLog(certificate, revokedCertificate.getMetadata().getRevokedBy().getPersonId(), reason, certificateStatusBeforeRevoke);
         publishCertificateStatusUpdateService.publish(revokedCertificate, HandelsekodEnum.MAKULE);
 
         return revokedCertificate;
     }
 
-    private void monitorLog(Certificate certificate, String reason, String message, CertificateStatus certificateStatusBeforeRevoke) {
+    private void monitorLog(Certificate certificate, String revokedBy, String reason, CertificateStatus certificateStatusBeforeRevoke) {
         if (certificateStatusBeforeRevoke == CertificateStatus.LOCKED) {
             monitoringLogService.logUtkastRevoked(
                 certificate.getMetadata().getId(),
-                certificate.getMetadata().getType(),
-                reason,
-                message
+                revokedBy,
+                reason
             );
         }
 
@@ -90,8 +93,8 @@ public class RevokeCertificateFromCertificateService implements RevokeCertificat
             monitoringLogService.logIntygRevoked(
                 certificate.getMetadata().getId(),
                 certificate.getMetadata().getType(),
-                reason,
-                message
+                revokedBy,
+                reason
             );
         }
     }

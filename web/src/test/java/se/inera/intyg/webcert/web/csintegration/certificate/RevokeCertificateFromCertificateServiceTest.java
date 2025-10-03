@@ -39,6 +39,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
+import se.inera.intyg.common.support.facade.model.Staff;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
@@ -70,6 +71,7 @@ class RevokeCertificateFromCertificateServiceTest {
     private static final String TYPE = "TYPE";
     private static final String REASON = "REASON";
     private static final String MESSAGE = "MESSAGE";
+    private static final String REVOKED_BY_STAFF_ID = "REVOKED_BY_STAFF_ID";
     private static final Certificate CERTIFICATE_AFTER_REVOKE = new Certificate();
     private static final Certificate CERTIFICATE_BEFORE_REVOKE = new Certificate();
     private static final GetCertificateRequestDTO GET_REQUEST = GetCertificateRequestDTO.builder().build();
@@ -98,6 +100,11 @@ class RevokeCertificateFromCertificateServiceTest {
                 .id(ID)
                 .type(TYPE)
                 .status(CertificateStatus.REVOKED)
+                .revokedBy(
+                    Staff.builder()
+                        .personId(REVOKED_BY_STAFF_ID)
+                        .build()
+                )
                 .build());
 
             when(csIntegrationService.certificateExists(ID))
@@ -145,13 +152,13 @@ class RevokeCertificateFromCertificateServiceTest {
             void shouldMonitorLogRevokeLockedDraft() {
                 CERTIFICATE_BEFORE_REVOKE.getMetadata().setStatus(CertificateStatus.LOCKED);
                 revokeCertificateFromCertificateService.revokeCertificate(ID, REASON, MESSAGE);
-                verify(monitoringLogService).logUtkastRevoked(ID, TYPE, REASON, MESSAGE);
+                verify(monitoringLogService).logUtkastRevoked(ID, REVOKED_BY_STAFF_ID, REASON);
             }
 
             @Test
             void shouldMonitorLogRevokeCertificate() {
                 revokeCertificateFromCertificateService.revokeCertificate(ID, REASON, MESSAGE);
-                verify(monitoringLogService).logIntygRevoked(ID, TYPE, REASON, MESSAGE);
+                verify(monitoringLogService).logIntygRevoked(ID, TYPE, REVOKED_BY_STAFF_ID, REASON);
             }
 
             @Test

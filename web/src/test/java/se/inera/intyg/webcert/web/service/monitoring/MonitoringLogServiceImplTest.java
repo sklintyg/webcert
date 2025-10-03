@@ -414,7 +414,7 @@ class MonitoringLogServiceImplTest {
 
     @Test
     void shouldLogUtkastRevoked() {
-        logService.logUtkastRevoked(INTYGS_ID, HSA_ID, REASON, REVOKE_MESSAGE);
+        logService.logUtkastRevoked(INTYGS_ID, HSA_ID, REASON);
         verifyLog(Level.INFO, "UTKAST_REVOKED Utkast 'INTYGS_ID' revoked by 'HSA_ID' reason 'REASON'");
     }
 

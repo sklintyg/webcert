@@ -852,7 +852,7 @@ public class UtkastServiceImpl implements UtkastService {
         String intygsId = utkast.getIntygsId();
 
         String hsaId = webCertUserService.getUser().getHsaId();
-        monitoringService.logUtkastRevoked(intygsId, hsaId, reason, revokeMessage);
+        monitoringService.logUtkastRevoked(intygsId, hsaId, reason);
 
         // First: mark the originating Utkast as REVOKED
         utkast.setAterkalladDatum(LocalDateTime.now());
