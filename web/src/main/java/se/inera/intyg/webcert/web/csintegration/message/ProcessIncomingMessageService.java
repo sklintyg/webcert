@@ -19,11 +19,12 @@
 
 package se.inera.intyg.webcert.web.csintegration.message;
 
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.web.csintegration.certificate.IntegratedUnitNotificationEvaluator;
 import se.inera.intyg.webcert.web.csintegration.certificate.PublishCertificateStatusUpdateService;
@@ -48,10 +49,13 @@ public class ProcessIncomingMessageService {
     private final MonitoringLogService monitoringLogService;
     private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
     private final SendMailNotificationForReceivedMessageService sendMailNotificationForReceivedMessageService;
+    private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+    private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
 
     public SendMessageToCareResponseType process(SendMessageToCareType sendMessageToCare) {
+        final var incomingMessageRequest = csIntegrationRequestFactory.getIncomingMessageRequest(sendMessageToCare);
         csIntegrationService.postMessage(
-            csIntegrationRequestFactory.getIncomingMessageRequest(sendMessageToCare)
+            incomingMessageRequest
         );
 
         final var certificate = csIntegrationService.getInternalCertificate(
@@ -66,18 +70,22 @@ public class ProcessIncomingMessageService {
             certificate.getMetadata().getType(),
             certificate.getMetadata().getUnit().getUnitId(),
             questionType,
-            sendMessageToCare.getKomplettering().stream().map(Komplettering::getFrageId).collect(Collectors.toList()),
+            sendMessageToCare.getKomplettering().stream().map(Komplettering::getFrageId).toList(),
             isAnswer,
             sendMessageToCare.getMeddelandeId()
         );
 
-        final var shouldReciveMailNotifications = shouldReciveMailNotifications(certificate);
+        final var shouldReceiveMailNotifications = shouldReciveMailNotifications(certificate);
 
-        if (!unitIsIntegrated(certificate) || shouldReciveMailNotifications) {
+        if (!unitIsIntegrated(certificate) || shouldReceiveMailNotifications) {
             sendMailNotificationForReceivedMessageService.send(sendMessageToCare, certificate);
         } else {
             publishCertificateStatusUpdateService.publish(certificate, getEventType(questionType, isAnswer));
         }
+
+        publishCertificateAnalyticsMessage.publishEvent(
+            certificateAnalyticsMessageFactory.receivedMesssage(certificate, incomingMessageRequest)
+        );
 
         final var sendMessageToCareResponseType = new SendMessageToCareResponseType();
         final var result = new ResultType();

@@ -23,8 +23,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Value;
+import se.inera.intyg.webcert.common.dto.PersonIdDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificatePdfRequestDTO.GetCitizenCertificatePdfRequestDTOBuilder;
-import se.inera.intyg.webcert.web.csintegration.patient.PersonIdDTO;
 
 @JsonDeserialize(builder = GetCitizenCertificatePdfRequestDTOBuilder.class)
 @Value

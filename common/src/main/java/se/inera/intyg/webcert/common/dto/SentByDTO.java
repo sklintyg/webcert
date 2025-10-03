@@ -17,25 +17,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.csintegration.message.dto;
+package se.inera.intyg.webcert.common.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import lombok.Builder;
-import lombok.Value;
-import se.inera.intyg.webcert.web.csintegration.message.dto.IncomingComplementDTO.IncomingComplementDTOBuilder;
+import lombok.Getter;
 
-@JsonDeserialize(builder = IncomingComplementDTOBuilder.class)
-@Value
-@Builder
-public class IncomingComplementDTO {
+@Getter
+public enum SentByDTO {
+    FK("FKASSA"), WC("HSVARD");
 
-    String questionId;
-    Integer instance;
-    String content;
+    private final String code;
 
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class IncomingComplementDTOBuilder {
+    SentByDTO(String code) {
+        this.code = code;
+    }
 
+    public static SentByDTO getByCode(String code) {
+        for (SentByDTO sentByDTO : values()) {
+            if (sentByDTO.getCode().equals(code)) {
+                return sentByDTO;
+            }
+        }
+        throw new IllegalArgumentException(
+            String.format("No matching code found for '%s'", code)
+        );
     }
 }

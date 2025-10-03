@@ -21,15 +21,20 @@ package se.inera.intyg.webcert.integration.analytics.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -54,6 +59,11 @@ import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.dto.IncomingComplementDTO;
+import se.inera.intyg.webcert.common.dto.IncomingMessageRequestDTO;
+import se.inera.intyg.webcert.common.dto.IncomingMessageRequestDTO.IncomingMessageRequestDTOBuilder;
+import se.inera.intyg.webcert.common.dto.MessageTypeDTO;
+import se.inera.intyg.webcert.common.dto.SentByDTO;
 import se.inera.intyg.webcert.common.service.user.LoggedInWebcertUser;
 import se.inera.intyg.webcert.common.service.user.LoggedInWebcertUserService;
 import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage;
@@ -68,7 +78,7 @@ class CertificateAnalyticsMessageFactoryTest {
     private LoggedInWebcertUserService loggedInWebcertUserService;
 
     @InjectMocks
-    private static CertificateAnalyticsMessageFactory factory;
+    private CertificateAnalyticsMessageFactory factory;
 
     private static final String CERTIFICATE_ID = "certificate-id";
     private static final String CERTIFICATE_TYPE = "certiticate-type";
@@ -86,9 +96,14 @@ class CertificateAnalyticsMessageFactoryTest {
     private static final String EVENT_ORIGIN = "event.origin";
     private static final String EVENT_SESSION_ID = "event-session-id";
 
+    private static final String MESSAGE_ID = "message-id";
+    private static final String MESSAGE_ANSWER_ID = "message-answer-id";
+    private static final String MESSAGE_REMINDER_ID = "message-reminder-id";
+
     private static final String RECIPIENT_ID = "recipient-id";
 
     @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     class AnalyticsMessagesBasedOnCertificate {
 
         private Certificate certificate;
@@ -287,7 +302,7 @@ class CertificateAnalyticsMessageFactoryTest {
             assertEquals(RECIPIENT_ID, actual.getRecipient().getId());
         }
 
-        static Stream<Arguments> analyticsMessagesBasedOnCertificate() {
+        Stream<Arguments> analyticsMessagesBasedOnCertificate() {
             return Stream.of(
                 Arguments.of(
                     (Function<Certificate, CertificateAnalyticsMessage>) certificate -> factory.draftCreated(certificate),
@@ -339,6 +354,7 @@ class CertificateAnalyticsMessageFactoryTest {
     }
 
     @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     class AnalyticsMessagesBasedOnUtkast {
 
         private Utkast utkast;
@@ -505,7 +521,7 @@ class CertificateAnalyticsMessageFactoryTest {
             assertEquals(RECIPIENT_ID, actual.getRecipient().getId());
         }
 
-        static Stream<Arguments> analyticsMessagesBasedOnUtkast() {
+        Stream<Arguments> analyticsMessagesBasedOnUtkast() {
             return Stream.of(
                 Arguments.of(
                     (Function<Utkast, CertificateAnalyticsMessage>) utkast -> factory.draftCreated(utkast),
@@ -557,6 +573,7 @@ class CertificateAnalyticsMessageFactoryTest {
     }
 
     @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     class AnalyticsMessagesBasedOnUtlatande {
 
         private Utlatande utlatande;
@@ -712,7 +729,7 @@ class CertificateAnalyticsMessageFactoryTest {
             assertEquals(CERTIFICATE_CARE_PROVIDER_ID, actual.getCertificate().getCareProviderId());
         }
 
-        static Stream<Arguments> analyticsMessagesBasedOnUtlatande() {
+        Stream<Arguments> analyticsMessagesBasedOnUtlatande() {
             return Stream.of(
                 Arguments.of(
                     (Function<Utlatande, CertificateAnalyticsMessage>) utlatande -> factory.certificatePrinted(utlatande),
@@ -723,6 +740,285 @@ class CertificateAnalyticsMessageFactoryTest {
                     CertificateAnalyticsMessageType.CERTIFICATE_REVOKED
                 )
             );
+        }
+    }
+
+    @Nested
+    class AnalyticsMessagesBasedOnIncomingMessages {
+
+        private Certificate certificate;
+        private IncomingMessageRequestDTOBuilder incomingMessageBuilder;
+        private IncomingMessageRequestDTO incomingMessage;
+
+        @BeforeEach
+        void setUp() {
+            certificate = new Certificate();
+            certificate.setMetadata(
+                CertificateMetadata.builder()
+                    .id(CERTIFICATE_ID)
+                    .type(CERTIFICATE_TYPE)
+                    .typeVersion(CERTIFICATE_TYPE_VERSION)
+                    .patient(
+                        Patient.builder()
+                            .personId(
+                                PersonId.builder()
+                                    .id(CERTIFICATE_PATIENT_ID)
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .unit(
+                        Unit.builder()
+                            .unitId(CERTIFICATE_UNIT_ID)
+                            .build()
+                    )
+                    .careProvider(
+                        Unit.builder()
+                            .unitId(CERTIFICATE_CARE_PROVIDER_ID)
+                            .build()
+                    )
+                    .recipient(
+                        CertificateRecipient.builder()
+                            .id(RECIPIENT_ID)
+                            .build()
+                    )
+                    .relations(
+                        CertificateRelations.builder()
+                            .parent(
+                                CertificateRelation.builder()
+                                    .certificateId(CERTIFICATE_RELATION_PARENT_ID)
+                                    .type(CERTIFICATE_RELATION_PARENT_TYPE)
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .build()
+            );
+
+            incomingMessageBuilder = IncomingMessageRequestDTO.builder()
+                .id(MESSAGE_ID)
+                .answerMessageId(MESSAGE_ANSWER_ID)
+                .reminderMessageId(MESSAGE_REMINDER_ID)
+                .type(MessageTypeDTO.KOMPLT)
+                .sent(LocalDateTime.now())
+                .sentBy(SentByDTO.FK)
+                .lastDateToAnswer(LocalDate.now().plusWeeks(1));
+
+            incomingMessage = incomingMessageBuilder.build();
+
+            final var noLoggedInUser = LoggedInWebcertUser.builder()
+                .build();
+
+            when(loggedInWebcertUserService.getLoggedInWebcertUser()).thenReturn(noLoggedInUser);
+        }
+
+        @Test
+        void shallReturnCorrectEventTimestamp() {
+            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            assertNotNull(actual.getEvent().getTimestamp());
+        }
+
+        @Test
+        void shallReturnCorrectEventMessageTypeWhenAVSTMN() {
+            final var actual = factory.receivedMesssage(certificate,
+                incomingMessageBuilder
+                    .type(MessageTypeDTO.AVSTMN)
+                    .build()
+            );
+            assertEquals(CertificateAnalyticsMessageType.QUESTION_FROM_RECIPIENT, actual.getEvent().getMessageType());
+        }
+
+        @Test
+        void shallReturnCorrectEventMessageTypeWhenOVRIGT() {
+            final var actual = factory.receivedMesssage(certificate,
+                incomingMessageBuilder
+                    .type(MessageTypeDTO.OVRIGT)
+                    .build()
+            );
+            assertEquals(CertificateAnalyticsMessageType.QUESTION_FROM_RECIPIENT, actual.getEvent().getMessageType());
+        }
+
+        @Test
+        void shallReturnCorrectEventMessageTypeWhenKONTKT() {
+            final var actual = factory.receivedMesssage(certificate,
+                incomingMessageBuilder
+                    .type(MessageTypeDTO.KONTKT)
+                    .build()
+            );
+            assertEquals(CertificateAnalyticsMessageType.QUESTION_FROM_RECIPIENT, actual.getEvent().getMessageType());
+        }
+
+        @Test
+        void shallReturnCorrectEventMessageTypeWhenKOMPLT() {
+            final var actual = factory.receivedMesssage(certificate,
+                incomingMessageBuilder
+                    .type(MessageTypeDTO.KOMPLT)
+                    .build()
+            );
+            assertEquals(CertificateAnalyticsMessageType.COMPLEMENT_FROM_RECIPIENT, actual.getEvent().getMessageType());
+        }
+
+        @Test
+        void shallReturnCorrectEventMessageTypeWhenPAMINN() {
+            final var actual = factory.receivedMesssage(certificate,
+                incomingMessageBuilder
+                    .type(MessageTypeDTO.PAMINN)
+                    .build()
+            );
+            assertEquals(CertificateAnalyticsMessageType.REMINDER_FROM_RECIPIENT, actual.getEvent().getMessageType());
+        }
+
+        @Test
+        void shallReturnCorrectEventStaffId() {
+            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            assertNull(actual.getEvent().getUserId(), "Event user id shall be null when received message since no user is logged in");
+        }
+
+        @Test
+        void shallReturnCorrectEventRole() {
+            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            assertNull(actual.getEvent().getRole(), "Event role shall be null when received message since no user is logged in");
+        }
+
+        @Test
+        void shallReturnCorrectEventUnitId() {
+            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            assertNull(actual.getEvent().getUnitId(), "Event unit id shall be null when received message since no user is logged in");
+        }
+
+        @Test
+        void shallReturnCorrectEventCareProviderId() {
+            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            assertNull(actual.getEvent().getCareProviderId(),
+                "Event care provider id shall be null when received message since no user is logged in"
+            );
+        }
+
+        @Test
+        void shallReturnCorrectEventOrigin() {
+            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            assertNull(actual.getEvent().getOrigin(), "Event origin shall be null when received message since no user is logged in");
+        }
+
+        @Test
+        void shallReturnCorrectEventSessionId() {
+            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            assertNull(actual.getEvent().getSessionId(), "Event session id shall be null when received message since no user is logged in");
+        }
+
+        @Test
+        void shallReturnCorrectCertificateId() {
+            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            assertEquals(CERTIFICATE_ID, actual.getCertificate().getId());
+        }
+
+        @Test
+        void shallReturnCorrectCertificateType() {
+            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            assertEquals(CERTIFICATE_TYPE, actual.getCertificate().getType());
+        }
+
+        @Test
+        void shallReturnCorrectCertificateTypeVersion() {
+            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            assertEquals(CERTIFICATE_TYPE_VERSION, actual.getCertificate().getTypeVersion());
+        }
+
+        @Test
+        void shallReturnCorrectCertificatePatientId() {
+            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            assertEquals(CERTIFICATE_PATIENT_ID, actual.getCertificate().getPatientId());
+        }
+
+        @Test
+        void shallReturnCorrectCertificateUnitId() {
+            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            assertEquals(CERTIFICATE_UNIT_ID, actual.getCertificate().getUnitId());
+        }
+
+        @Test
+        void shallReturnCorrectCertificateCareProviderId() {
+            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            assertEquals(CERTIFICATE_CARE_PROVIDER_ID, actual.getCertificate().getCareProviderId());
+        }
+
+        @Test
+        void shallReturnCorrectCertificateRelationParentId() {
+            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            assertEquals(CERTIFICATE_RELATION_PARENT_ID, actual.getCertificate().getParent().getId());
+        }
+
+        @Test
+        void shallReturnCorrectCertificateRelationParentType() {
+            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            assertEquals(CERTIFICATE_RELATION_PARENT_TYPE.name(), actual.getCertificate().getParent().getType());
+        }
+
+        @Test
+        void shallReturnCorrectMessageId() {
+            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            assertEquals(incomingMessage.getId(), actual.getMessage().getId());
+        }
+
+        @Test
+        void shallReturnCorrectAnswerId() {
+            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            assertEquals(incomingMessage.getAnswerMessageId(), actual.getMessage().getAnswerId());
+        }
+
+        @Test
+        void shallReturnCorrectReminderId() {
+            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            assertEquals(incomingMessage.getReminderMessageId(), actual.getMessage().getReminderId());
+        }
+
+        @Test
+        void shallReturnCorrectMessageType() {
+            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            assertEquals(incomingMessage.getType().name(), actual.getMessage().getType());
+        }
+
+        @Test
+        void shallReturnCorrectMessageSender() {
+            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            assertEquals(incomingMessage.getSentBy().getCode(), actual.getMessage().getSender());
+        }
+
+        @Test
+        void shallReturnCorrectMessageRecipient() {
+            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            assertEquals(SentByDTO.WC.getCode(), actual.getMessage().getRecipient());
+        }
+
+        @Test
+        void shallReturnCorrectMessageSent() {
+            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            assertEquals(incomingMessage.getSent(), actual.getMessage().getSent());
+        }
+
+        @Test
+        void shallReturnCorrectMessageLastDayAnswer() {
+            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            assertEquals(incomingMessage.getLastDateToAnswer(), actual.getMessage().getLastDateToAnswer());
+        }
+
+        @Test
+        void shallReturnCorrectQuestions() {
+            final var expected = List.of("question-1", "question-2", "question-3");
+
+            final var actual = factory.receivedMesssage(certificate,
+                incomingMessageBuilder.complements(
+                        expected.stream()
+                            .map(id ->
+                                IncomingComplementDTO.builder()
+                                    .questionId(id)
+                                    .build()
+                            )
+                            .toList()
+                    )
+                    .build()
+            );
+            assertEquals(expected, actual.getMessage().getQuestionIds());
         }
     }
 }

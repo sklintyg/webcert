@@ -25,10 +25,14 @@ import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.webcert.common.dto.IncomingComplementDTO;
+import se.inera.intyg.webcert.common.dto.IncomingMessageRequestDTO;
+import se.inera.intyg.webcert.common.dto.SentByDTO;
 import se.inera.intyg.webcert.common.service.user.LoggedInWebcertUserService;
 import se.inera.intyg.webcert.integration.analytics.model.AnalyticsCertificate;
 import se.inera.intyg.webcert.integration.analytics.model.AnalyticsCertificateRelation;
 import se.inera.intyg.webcert.integration.analytics.model.AnalyticsEvent;
+import se.inera.intyg.webcert.integration.analytics.model.AnalyticsMessage;
 import se.inera.intyg.webcert.integration.analytics.model.AnalyticsRecipient;
 import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage;
 import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage.CertificateAnalyticsMessageBuilder;
@@ -150,6 +154,29 @@ public class CertificateAnalyticsMessageFactory {
         return create(utlatande, CertificateAnalyticsMessageType.CERTIFICATE_PRINTED);
     }
 
+    public CertificateAnalyticsMessage receivedMesssage(Certificate certificate, IncomingMessageRequestDTO incomingMessageRequest) {
+        return create(certificate, messageTypeForIncomingMessage(incomingMessageRequest))
+            .message(
+                AnalyticsMessage.builder()
+                    .id(incomingMessageRequest.getId())
+                    .answerId(incomingMessageRequest.getAnswerMessageId())
+                    .reminderId(incomingMessageRequest.getReminderMessageId())
+                    .type(incomingMessageRequest.getType().name())
+                    .questionIds(
+                        incomingMessageRequest.getComplements() == null ? null :
+                            incomingMessageRequest.getComplements().stream()
+                                .map(IncomingComplementDTO::getQuestionId)
+                                .toList()
+                    )
+                    .sender(incomingMessageRequest.getSentBy().getCode())
+                    .recipient(SentByDTO.WC.getCode())
+                    .sent(incomingMessageRequest.getSent())
+                    .lastDateToAnswer(incomingMessageRequest.getLastDateToAnswer())
+                    .build()
+            )
+            .build();
+    }
+
     private CertificateAnalyticsMessageBuilder create(Certificate certificate, CertificateAnalyticsMessageType type) {
         return CertificateAnalyticsMessage.builder()
             .event(
@@ -247,5 +274,13 @@ public class CertificateAnalyticsMessageFactory {
             .origin(loggedInWebcertUser.getOrigin())
             .sessionId(MDC.get(MdcLogConstants.SESSION_ID_KEY))
             .build();
+    }
+
+    private static CertificateAnalyticsMessageType messageTypeForIncomingMessage(IncomingMessageRequestDTO incomingMessageRequest) {
+        return switch (incomingMessageRequest.getType()) {
+            case AVSTMN, KONTKT, OVRIGT -> CertificateAnalyticsMessageType.QUESTION_FROM_RECIPIENT;
+            case KOMPLT -> CertificateAnalyticsMessageType.COMPLEMENT_FROM_RECIPIENT;
+            case PAMINN -> CertificateAnalyticsMessageType.REMINDER_FROM_RECIPIENT;
+        };
     }
 }

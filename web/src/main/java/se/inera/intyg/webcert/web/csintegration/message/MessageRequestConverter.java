@@ -24,12 +24,12 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.web.csintegration.message.dto.IncomingComplementDTO;
-import se.inera.intyg.webcert.web.csintegration.message.dto.IncomingMessageRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.message.dto.MessageTypeDTO;
-import se.inera.intyg.webcert.web.csintegration.message.dto.SentByDTO;
-import se.inera.intyg.webcert.web.csintegration.patient.PersonIdDTO;
-import se.inera.intyg.webcert.web.csintegration.patient.PersonIdType;
+import se.inera.intyg.webcert.common.dto.IncomingComplementDTO;
+import se.inera.intyg.webcert.common.dto.IncomingMessageRequestDTO;
+import se.inera.intyg.webcert.common.dto.MessageTypeDTO;
+import se.inera.intyg.webcert.common.dto.PersonIdDTO;
+import se.inera.intyg.webcert.common.dto.PersonIdType;
+import se.inera.intyg.webcert.common.dto.SentByDTO;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareType;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareType.Komplettering;
 

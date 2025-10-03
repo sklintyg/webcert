@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.csintegration.message.dto;
+package se.inera.intyg.webcert.common.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
@@ -26,8 +26,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.webcert.web.csintegration.message.dto.IncomingMessageRequestDTO.IncomingMessageRequestDTOBuilder;
-import se.inera.intyg.webcert.web.csintegration.patient.PersonIdDTO;
+import se.inera.intyg.webcert.common.dto.IncomingMessageRequestDTO.IncomingMessageRequestDTOBuilder;
 
 @JsonDeserialize(builder = IncomingMessageRequestDTOBuilder.class)
 @Value
