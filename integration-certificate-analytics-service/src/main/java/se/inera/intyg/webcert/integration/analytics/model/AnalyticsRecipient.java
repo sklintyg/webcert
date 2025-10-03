@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026 Inera AB (http://www.inera.se)
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
  *
  * This file is part of sklintyg (https://github.com/sklintyg).
  *
@@ -16,20 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package se.inera.intyg.webcert.integration.analytics.model;
 
-public enum CertificateAnalyticsMessageType {
-    DRAFT_CREATED,
-    DRAFT_DELETED,
-    DRAFT_UPDATED,
-    DRAFT_READY_FOR_SIGN,
-    DRAFT_CREATED_FROM_TEMPLATE,
-    LOCKED_DRAFT_REVOKED,
-    CERTIFICATE_SIGNED,
-    CERTIFICATE_SENT,
-    CERTIFICATE_RENEWED,
-    CERTIFICATE_REPLACED,
-    CERTIFICATE_COMPLEMENTED,
-    CERTIFICATE_REVOKED,
-    CERTIFICATE_PRINTED
+import lombok.Builder;
+import lombok.Value;
+
+@Value
+@Builder
+public class AnalyticsRecipient {
+
+    String id;
 }

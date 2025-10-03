@@ -51,6 +51,7 @@ import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.service.intyg.converter.IntygModuleFacadeException;
@@ -121,6 +122,9 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         when(logRequestFactory.createLogRequestFromUtlatande(any(Utlatande.class))).thenReturn(LogRequest.builder().build());
         when(intygRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(signedUtkast));
 
+        final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+        when(certificateAnalyticsMessageFactory.certificateRevoked(any(Utlatande.class))).thenReturn(analyticsMessage);
+
         // do the call
         IntygServiceResult res = intygService.revokeIntyg(INTYG_ID, INTYG_TYP_FK, REVOKE_MSG, REVOKE_REASON);
 
@@ -132,6 +136,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         verify(certificateSenderService, times(1)).revokeCertificate(eq(INTYG_ID), any(), eq(INTYG_TYP_FK), eq(INTYG_TYPE_VERSION));
         verify(moduleFacade, times(1)).getRevokeCertificateRequest(eq(INTYG_TYP_FK), any(), any(), eq(REVOKE_MSG));
         verify(monitoringService).logIntygRevoked(INTYG_ID, INTYG_TYP_FK, HSA_ID, REVOKE_REASON);
+        verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
 
         assertEquals(IntygServiceResult.OK, res);
     }
@@ -160,6 +165,9 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         when(intygRelationHelper.getRelationsForIntyg(PARENT_INTYG_ID)).thenReturn(parentRelations);
         when(csIntegrationService.placeholderCertificateExists(INTYG_ID)).thenReturn(true);
 
+        final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+        when(certificateAnalyticsMessageFactory.certificateRevoked(any(Utlatande.class))).thenReturn(analyticsMessage);
+
         IntygServiceResult res = intygService.revokeIntyg(INTYG_ID, INTYG_TYP_FK, REVOKE_MSG, REVOKE_REASON);
 
         verify(arendeService).closeAllNonClosedQuestions(INTYG_ID);
@@ -172,6 +180,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
         verify(monitoringService).logIntygRevoked(INTYG_ID, INTYG_TYP_FK, HSA_ID, REVOKE_REASON);
         verify(csIntegrationService).placeholderCertificateExists(INTYG_ID);
         verify(csIntegrationService).revokePlaceholderCertificate(INTYG_ID);
+        verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
 
         assertEquals(IntygServiceResult.OK, res);
     }

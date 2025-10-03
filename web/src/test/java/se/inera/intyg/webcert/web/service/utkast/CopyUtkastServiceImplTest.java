@@ -60,6 +60,9 @@ import se.inera.intyg.infra.pu.integration.api.services.PUService;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.logging.HashUtility;
 import se.inera.intyg.webcert.persistence.utkast.model.Signatur;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -203,6 +206,12 @@ public class CopyUtkastServiceImplTest {
     @Mock
     private HashUtility hashUtility;
 
+    @Mock
+    private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+
+    @Mock
+    private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+
     @InjectMocks
     private CopyUtkastService copyService = new CopyUtkastServiceImpl();
 
@@ -330,6 +339,9 @@ public class CopyUtkastServiceImplTest {
 
         when(mockUtkastRepository.existsById(INTYG_ID)).thenReturn(Boolean.FALSE);
 
+        final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+        when(certificateAnalyticsMessageFactory.certificateReplace(any(Utkast.class))).thenReturn(analyticsMessage);
+
         UtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(createReplacementUtkastBuilder.populateCopyUtkastFromSignedIntyg(any(CreateReplacementCopyRequest.class), any(Person.class),
             eq(true))).thenReturn(resp);
@@ -352,6 +364,7 @@ public class CopyUtkastServiceImplTest {
         verify(certificateEventService)
             .createCertificateEventFromCopyUtkast(resp.getUtkast(), user.getHsaId(), EventCode.ERSATTER, INTYG_ID);
         verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE);
+        verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -404,6 +417,9 @@ public class CopyUtkastServiceImplTest {
         UtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(copyCompletionUtkastBuilder.populateCopyUtkastFromOrignalUtkast(any(CreateCompletionCopyRequest.class), any(Person.class),
             any(boolean.class))).thenReturn(resp);
+        final var message = CertificateAnalyticsMessage.builder().build();
+        when(certificateAnalyticsMessageFactory.certificateComplemented(any(Utkast.class)))
+            .thenReturn(message);
 
         CreateCompletionCopyRequest copyReq = buildCompletionRequest();
         setupMockForGettingUtlatande();
@@ -423,6 +439,7 @@ public class CopyUtkastServiceImplTest {
         verify(certificateEventService)
             .createCertificateEventFromCopyUtkast(resp.getUtkast(), user.getHsaId(), EventCode.KOMPLETTERAR, INTYG_ID);
         verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE);
+        verify(publishCertificateAnalyticsMessage).publishEvent(message);
     }
 
     @Test
@@ -442,6 +459,9 @@ public class CopyUtkastServiceImplTest {
         when(certificateRelationService.getNewestRelationOfType(INTYG_ID, RelationKod.ERSATT,
             Collections.singletonList(UtkastStatus.SIGNED)))
             .thenReturn(Optional.empty());
+
+        final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+        when(certificateAnalyticsMessageFactory.certificateRenewed(any(Utkast.class))).thenReturn(analyticsMessage);
 
         CreateRenewalCopyRequest copyReq = buildRenewalRequest();
 
@@ -463,6 +483,7 @@ public class CopyUtkastServiceImplTest {
         verify(certificateEventService)
             .createCertificateEventFromCopyUtkast(resp.getUtkast(), user.getHsaId(), EventCode.FORLANGER, INTYG_ID);
         verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE);
+        verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -503,6 +524,9 @@ public class CopyUtkastServiceImplTest {
 
         when(mockUtkastRepository.existsById(INTYG_ID)).thenReturn(Boolean.TRUE);
 
+        final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+        when(certificateAnalyticsMessageFactory.certificateRenewed(any(Utkast.class))).thenReturn(analyticsMessage);
+
         UtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(createRenewalCopyUtkastBuilder.populateCopyUtkastFromOrignalUtkast(
             any(CreateRenewalCopyRequest.class),
@@ -534,6 +558,7 @@ public class CopyUtkastServiceImplTest {
         verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE);
         verify(mockIntegreradeEnheterRegistry).addIfSameVardgivareButDifferentUnits(any(String.class), any(IntegreradEnhetEntry.class),
             anyString());
+        verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
     }
 
     @Test
@@ -552,6 +577,9 @@ public class CopyUtkastServiceImplTest {
             isNull(),
             eq(false)
         )).thenReturn(resp);
+
+        final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+        when(certificateAnalyticsMessageFactory.certificateRenewed(any(Utkast.class))).thenReturn(analyticsMessage);
 
         CreateRenewalCopyRequest renewRequest = buildRenewalRequest();
         renewRequest.setDjupintegrerad(true);
@@ -577,10 +605,9 @@ public class CopyUtkastServiceImplTest {
             .createCertificateEventFromCopyUtkast(resp.getUtkast(), user.getHsaId(), EventCode.FORLANGER, INTYG_ID);
         verify(userService).getUser();
         verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE);
-
         // Assert pdl log
         verify(logService).logCreateIntyg(any(LogRequest.class));
-
+        verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
     }
 
     @Test
@@ -598,6 +625,9 @@ public class CopyUtkastServiceImplTest {
             isNull(),
             eq(false)
         )).thenReturn(resp);
+
+        final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+        when(certificateAnalyticsMessageFactory.draftCreateFromTemplate(any(Utkast.class))).thenReturn(analyticsMessage);
 
         CreateRenewalCopyRequest copyReq = buildRenewalRequest();
         copyReq.setNyttPatientPersonnummer(PATIENT_NEW_SSN);
@@ -626,7 +656,7 @@ public class CopyUtkastServiceImplTest {
         verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE);
         // Assert pdl log
         verify(logService).logCreateIntyg(any(LogRequest.class));
-
+        verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
     }
 
     @Test
@@ -636,6 +666,9 @@ public class CopyUtkastServiceImplTest {
         WebCertUser user = new WebCertUser();
         user.setParameters(new IntegrationParameters(reference, "", "", "", "", "", "", "", "", false, false, false, true, null));
         when(userService.getUser()).thenReturn(user);
+
+        final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+        when(certificateAnalyticsMessageFactory.draftCreateFromTemplate(any(Utkast.class))).thenReturn(analyticsMessage);
 
         UtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(createUtkastFromTemplateBuilder.populateCopyUtkastFromSignedIntyg(any(CreateUtkastFromTemplateRequest.class),
@@ -662,6 +695,7 @@ public class CopyUtkastServiceImplTest {
         verify(certificateEventService)
             .createCertificateEventFromCopyUtkast(resp.getUtkast(), user.getHsaId(), EventCode.SKAPATFRAN, INTYG_ID);
         verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE_2);
+        verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
     }
 
     @Test
@@ -673,6 +707,9 @@ public class CopyUtkastServiceImplTest {
         when(userService.getUser()).thenReturn(user);
 
         when(mockUtkastRepository.existsById(INTYG_ID)).thenReturn(Boolean.TRUE);
+
+        final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+        when(certificateAnalyticsMessageFactory.draftCreateFromTemplate(any(Utkast.class))).thenReturn(analyticsMessage);
 
         UtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(createUtkastCopyBuilder.populateCopyUtkastFromOrignalUtkast(any(CreateUtkastFromTemplateRequest.class), any(Person.class),
@@ -702,6 +739,7 @@ public class CopyUtkastServiceImplTest {
         verify(certificateEventService)
             .createCertificateEventFromCopyUtkast(resp.getUtkast(), user.getHsaId(), EventCode.KOPIERATFRAN, INTYG_ID);
         verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE);
+        verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
     }
 
     @Test(expected = WebCertServiceException.class)

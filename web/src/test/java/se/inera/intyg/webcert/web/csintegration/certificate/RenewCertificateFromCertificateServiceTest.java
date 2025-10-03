@@ -39,6 +39,9 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.Patient;
 import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.RenewCertificateRequestDTO;
@@ -91,6 +94,12 @@ class RenewCertificateFromCertificateServiceTest {
 
     @Mock
     PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+
+    @Mock
+    PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+
+    @Mock
+    CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
     @InjectMocks
     RenewCertificateFromCertificateService renewCertificateFromCertificateService;
@@ -198,6 +207,16 @@ class RenewCertificateFromCertificateServiceTest {
             void shouldRegisterUnit() {
                 renewCertificateFromCertificateService.renewCertificate(ID);
                 verify(integratedUnitRegistryHelper).addUnitForCopy(CERTIFICATE, RENEWD_CERTIFICATE);
+            }
+
+            @Test
+            void shouldPublishAnalyticsMessageWhenCertificateIsRenewed() {
+                final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+                when(certificateAnalyticsMessageFactory.certificateRenewed(RENEWD_CERTIFICATE)).thenReturn(analyticsMessage);
+
+                renewCertificateFromCertificateService.renewCertificate(ID);
+
+                verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
             }
         }
     }

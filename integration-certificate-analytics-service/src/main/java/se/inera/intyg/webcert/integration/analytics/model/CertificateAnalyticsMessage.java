@@ -42,5 +42,6 @@ public class CertificateAnalyticsMessage implements Serializable {
 
     AnalyticsCertificate certificate;
     AnalyticsEvent event;
+    AnalyticsRecipient recipient;
 
 }

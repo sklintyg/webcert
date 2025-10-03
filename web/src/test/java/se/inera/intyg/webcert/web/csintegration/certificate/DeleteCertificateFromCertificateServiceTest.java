@@ -39,6 +39,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
@@ -74,6 +77,10 @@ class DeleteCertificateFromCertificateServiceTest {
     PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
     @Mock
     MonitoringLogService monitoringLogService;
+    @Mock
+    PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+    @Mock
+    CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
     @InjectMocks
     DeleteCertificateFromCertificateService deleteCertificateFromCertificateService;
@@ -162,6 +169,16 @@ class DeleteCertificateFromCertificateServiceTest {
             void shouldCallPublishCertificateStatusServiceWithXmlData() {
                 deleteCertificateFromCertificateService.deleteCertificate(ID, VERSION);
                 verify(publishCertificateStatusUpdateService).publish(CERTIFICATE, HandelsekodEnum.RADERA, XML_DATA);
+            }
+
+            @Test
+            void shouldPublishAnalyticsMessageWhenCertificateIsDeleted() {
+                final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+                when(certificateAnalyticsMessageFactory.draftDeleted(CERTIFICATE)).thenReturn(analyticsMessage);
+
+                deleteCertificateFromCertificateService.deleteCertificate(ID, VERSION);
+
+                verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
             }
         }
 

@@ -32,4 +32,6 @@ public class AnalyticsCertificate {
     String patientId;
     String unitId;
     String careProviderId;
+    
+    AnalyticsCertificateRelation parent;
 }
