@@ -28,6 +28,8 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.question.Answer;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
@@ -49,6 +51,8 @@ public class ComplementCertificateFromCertificateService implements ComplementCe
     private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
     private final PDLLogService pdlLogService;
     private final DecorateCertificateFromCSWithInformationFromWC decorateCertificateFromCSWithInformationFromWC;
+    private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+    private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
     @Override
     public Certificate complement(String certificateId, String message) {
@@ -82,6 +86,9 @@ public class ComplementCertificateFromCertificateService implements ComplementCe
         );
         pdlLogService.logCreated(certificate);
         publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKAPAT);
+        publishCertificateAnalyticsMessage.publishEvent(
+            certificateAnalyticsMessageFactory.certificateComplemented(certificate)
+        );
 
         return certificate;
     }

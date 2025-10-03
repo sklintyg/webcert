@@ -105,6 +105,7 @@ import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage;
 import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
 import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
@@ -881,6 +882,10 @@ public class IntygServiceTest {
         when(utkastRepository.findById(CERTIFICATE_ID)).thenReturn(Optional.of(getDraft(CERTIFICATE_ID, UtkastStatus.DRAFT_INCOMPLETE)));
         when(moduleFacade.convertFromInternalToPdfDocument(anyString(), anyString(), anyList(), any(UtkastStatus.class), anyBoolean()))
             .thenReturn(buildPdfDocument());
+
+        final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+        when(certificateAnalyticsMessageFactory.certificatePrinted(any(Utlatande.class))).thenReturn(analyticsMessage);
+
         IntygPdf intygPdf = intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
         assertNotNull(intygPdf);
 
@@ -888,6 +893,7 @@ public class IntygServiceTest {
         verify(logservice).logPrintIntygAsPDF(any(LogRequest.class));
         verifyNoMoreInteractions(logservice);
         verify(moduleFacade, times(0)).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0);
+        verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
     }
 
     @Test(expected = WebCertServiceException.class)
@@ -929,6 +935,9 @@ public class IntygServiceTest {
         when(moduleFacade.convertFromInternalToPdfDocument(anyString(), anyString(), anyList(), any(UtkastStatus.class), anyBoolean()))
             .thenReturn(buildPdfDocument());
 
+        final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+        when(certificateAnalyticsMessageFactory.certificatePrinted(any(Utlatande.class))).thenReturn(analyticsMessage);
+
         IntygPdf pdf = intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
 
         assertNotNull(pdf);
@@ -936,6 +945,7 @@ public class IntygServiceTest {
         verify(logservice).logPrintIntygAsPDF(any(LogRequest.class));
         verifyNoMoreInteractions(logservice);
         verify(moduleFacade, times(0)).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0);
+        verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
     }
 
     @Test
@@ -944,6 +954,10 @@ public class IntygServiceTest {
         when(utkastRepository.findById(CERTIFICATE_ID)).thenReturn(Optional.empty());
         when(moduleFacade.convertFromInternalToPdfDocument(anyString(), anyString(), anyList(), any(UtkastStatus.class), anyBoolean()))
             .thenReturn(buildPdfDocument());
+
+        final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+        when(certificateAnalyticsMessageFactory.certificatePrinted(any(Utlatande.class))).thenReturn(analyticsMessage);
+
         IntygPdf intygPdf = intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
         assertNotNull(intygPdf);
 
@@ -951,6 +965,7 @@ public class IntygServiceTest {
         verify(utkastRepository, times(2)).findById(anyString());
         verify(getCertificateTypeInfoService, times(1)).getCertificateTypeInfo(anyString(), any(GetCertificateTypeInfoType.class));
         verify(moduleFacade, times(1)).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0);
+        verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
     }
 
     @Test(expected = WebCertServiceException.class)

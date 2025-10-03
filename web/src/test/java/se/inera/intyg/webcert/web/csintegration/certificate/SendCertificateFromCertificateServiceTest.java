@@ -160,7 +160,7 @@ class SendCertificateFromCertificateServiceTest {
             @Test
             void shouldPublishCertificateAnalyticsMessage() {
                 final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-                when(certificateAnalyticsMessageFactory.certificateSent(CERTIFICATE)).thenReturn(analyticsMessage);
+                when(certificateAnalyticsMessageFactory.certificateSent(CERTIFICATE, RECIPIENT_ID)).thenReturn(analyticsMessage);
                 sendCertificateFromCertificateService.sendCertificate(ID);
                 verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
             }

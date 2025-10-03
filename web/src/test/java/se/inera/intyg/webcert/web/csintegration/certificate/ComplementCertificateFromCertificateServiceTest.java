@@ -48,6 +48,9 @@ import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.facade.model.question.Answer;
 import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.AnswerComplementRequestDTO;
@@ -109,6 +112,12 @@ class ComplementCertificateFromCertificateServiceTest {
 
     @Mock
     DecorateCertificateFromCSWithInformationFromWC decorateCertificateFromCSWithInformationFromWC;
+
+    @Mock
+    PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+
+    @Mock
+    CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
     @InjectMocks
     ComplementCertificateFromCertificateService complementCertificateFromCertificateService;
@@ -234,6 +243,16 @@ class ComplementCertificateFromCertificateServiceTest {
             void shouldDecorateCertificateFromCSWithInformationFromWC() {
                 complementCertificateFromCertificateService.complement(ID, MESSAGE);
                 verify(decorateCertificateFromCSWithInformationFromWC, times(ONE)).decorate(COMPLEMENTED_CERTIFICATE);
+            }
+
+            @Test
+            void shouldPublishAnalyticsMessage() {
+                final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+                when(certificateAnalyticsMessageFactory.certificateComplemented(COMPLEMENTED_CERTIFICATE)).thenReturn(analyticsMessage);
+
+                complementCertificateFromCertificateService.complement(ID, MESSAGE);
+
+                verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
             }
         }
 

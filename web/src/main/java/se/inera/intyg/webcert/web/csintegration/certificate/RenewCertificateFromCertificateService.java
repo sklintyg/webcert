@@ -23,6 +23,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
@@ -42,6 +44,8 @@ public class RenewCertificateFromCertificateService implements RenewCertificateF
     private final WebCertUserService webCertUserService;
     private final IntegratedUnitRegistryHelper integratedUnitRegistryHelper;
     private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+    private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+    private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
     @Override
     public String renewCertificate(String certificateId) {
@@ -71,6 +75,9 @@ public class RenewCertificateFromCertificateService implements RenewCertificateF
         monitoringLogService.logIntygCopiedRenewal(renewalCertificate.getMetadata().getId(), certificateId);
         pdlLogService.logCreated(renewalCertificate);
         publishCertificateStatusUpdateService.publish(renewalCertificate, HandelsekodEnum.SKAPAT);
+        publishCertificateAnalyticsMessage.publishEvent(
+            certificateAnalyticsMessageFactory.certificateRenewed(renewalCertificate)
+        );
 
         return renewalCertificate.getMetadata().getId();
     }

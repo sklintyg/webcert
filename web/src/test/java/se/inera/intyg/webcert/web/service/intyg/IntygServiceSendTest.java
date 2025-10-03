@@ -130,12 +130,12 @@ public class IntygServiceSendTest extends AbstractIntygServiceTest {
         when(webCertUserService.getUser()).thenReturn(webCertUser);
         when(intygRepository.findById(INTYG_ID)).thenReturn(Optional.of(utkast));
         final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-        when(certificateAnalyticsMessageFactory.certificateSent(utkast)).thenReturn(analyticsMessage);
+        when(certificateAnalyticsMessageFactory.certificateSent(utkast, "FKASSA")).thenReturn(analyticsMessage);
 
         intygService.sendIntyg(INTYG_ID, INTYG_TYP_FK, "FKASSA", false);
 
         verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
-        verify(certificateAnalyticsMessageFactory).certificateSent(utkast);
+        verify(certificateAnalyticsMessageFactory).certificateSent(utkast, "FKASSA");
     }
 
     @Test
