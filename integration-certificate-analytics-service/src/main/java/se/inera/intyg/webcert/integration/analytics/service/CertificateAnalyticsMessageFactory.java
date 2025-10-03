@@ -38,6 +38,8 @@ import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMe
 import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage.CertificateAnalyticsMessageBuilder;
 import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.arende.model.MedicinsktArende;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
 @Component
@@ -177,6 +179,29 @@ public class CertificateAnalyticsMessageFactory {
             .build();
     }
 
+    public CertificateAnalyticsMessage receivedMesssage(Utkast utkast, Arende arende) {
+        return create(utkast, messageTypeForArende(arende))
+            .message(
+                AnalyticsMessage.builder()
+                    .id(arende.getMeddelandeId())
+                    .answerId(arende.getSvarPaId())
+                    .reminderId(arende.getPaminnelseMeddelandeId())
+                    .type(arende.getAmne().name())
+                    .questionIds(
+                        arende.getKomplettering() == null ? null :
+                            arende.getKomplettering().stream()
+                                .map(MedicinsktArende::getFrageId)
+                                .toList()
+                    )
+                    .sender(SentByDTO.FK.getCode())
+                    .recipient(SentByDTO.WC.getCode())
+                    .sent(arende.getSkickatTidpunkt())
+                    .lastDateToAnswer(arende.getSistaDatumForSvar())
+                    .build()
+            )
+            .build();
+    }
+
     private CertificateAnalyticsMessageBuilder create(Certificate certificate, CertificateAnalyticsMessageType type) {
         return CertificateAnalyticsMessage.builder()
             .event(
@@ -278,6 +303,14 @@ public class CertificateAnalyticsMessageFactory {
 
     private static CertificateAnalyticsMessageType messageTypeForIncomingMessage(IncomingMessageRequestDTO incomingMessageRequest) {
         return switch (incomingMessageRequest.getType()) {
+            case AVSTMN, KONTKT, OVRIGT -> CertificateAnalyticsMessageType.QUESTION_FROM_RECIPIENT;
+            case KOMPLT -> CertificateAnalyticsMessageType.COMPLEMENT_FROM_RECIPIENT;
+            case PAMINN -> CertificateAnalyticsMessageType.REMINDER_FROM_RECIPIENT;
+        };
+    }
+
+    private static CertificateAnalyticsMessageType messageTypeForArende(Arende arende) {
+        return switch (arende.getAmne()) {
             case AVSTMN, KONTKT, OVRIGT -> CertificateAnalyticsMessageType.QUESTION_FROM_RECIPIENT;
             case KOMPLT -> CertificateAnalyticsMessageType.COMPLEMENT_FROM_RECIPIENT;
             case PAMINN -> CertificateAnalyticsMessageType.REMINDER_FROM_RECIPIENT;

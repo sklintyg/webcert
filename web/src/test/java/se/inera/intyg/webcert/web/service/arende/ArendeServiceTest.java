@@ -97,6 +97,9 @@ import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.model.WebcertCertificateRelation;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.arende.model.MedicinsktArende;
@@ -226,6 +229,12 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     @Mock
     private PaginationAndLoggingService paginationAndLoggingService;
 
+    @Mock
+    private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+
+    @Mock
+    private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+
     @InjectMocks
     private ArendeServiceImpl service;
 
@@ -323,6 +332,28 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         verify(certificateEventService).createCertificateEvent(INTYG_ID, SKICKAT_AV, EventCode.NYSVFM);
         verify(notificationService).sendNotificationForAnswerRecieved(any(Arende.class), eq(CARE_PROVIDER_ID), eq(ISSUING_DATE));
         verifyNoInteractions(arendeDraftService);
+    }
+
+    @Test
+    public void shallPublishAnalyticsMessageWhenIncomingMessageOnUtkastIsProcessed() throws WebCertServiceException {
+        final String frageid = "frageid";
+
+        Arende fragearende = new Arende();
+
+        Arende svararende = new Arende();
+        svararende.setIntygsId(INTYG_ID);
+        svararende.setSvarPaId(frageid);
+        svararende.setSkickatAv(SKICKAT_AV);
+
+        Utkast utkast = buildUtkast();
+        when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(utkast));
+        when(arendeRepository.findOneByMeddelandeId(frageid)).thenReturn(fragearende);
+        final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+        when(certificateAnalyticsMessageFactory.receivedMesssage(utkast, svararende)).thenReturn(analyticsMessage);
+
+        service.processIncomingMessage(svararende);
+
+        verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
     }
 
     @Test

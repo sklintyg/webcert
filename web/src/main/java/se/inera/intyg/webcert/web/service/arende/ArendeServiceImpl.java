@@ -56,6 +56,8 @@ import se.inera.intyg.webcert.common.model.GroupableItem;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeDraft;
@@ -174,6 +176,10 @@ public class ArendeServiceImpl implements ArendeService {
     private MessageImportService messageImportService;
     @Autowired
     private PaginationAndLoggingService paginationAndLoggingService;
+    @Autowired
+    private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+    @Autowired
+    private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
 
     private final AuthoritiesValidator authoritiesValidator = new AuthoritiesValidator();
 
@@ -206,10 +212,10 @@ public class ArendeServiceImpl implements ArendeService {
         }
 
         Utkast utkast = utkastRepository.findById(certificateId).orElse(null);
-        return getArendeForUtkast(arende, utkast, certificateId);
+        return processArende(arende, utkast, certificateId);
     }
 
-    private Arende getArendeForUtkast(Arende arende, Utkast utkast, String certificateId) {
+    private Arende processArende(Arende arende, Utkast utkast, String certificateId) {
         if (utkast != null) {
             validateArende(certificateId, utkast);
 
@@ -222,6 +228,11 @@ public class ArendeServiceImpl implements ArendeService {
                 arende.getSvarPaId() != null, arende.getMeddelandeId());
             Arende saved = arendeRepository.save(arende);
             sendNotificationAndCreateEventForIncomingMessage(saved, utkast.getVardgivarId(), utkast.getSignatur().getSigneringsDatum());
+
+            publishCertificateAnalyticsMessage.publishEvent(
+                certificateAnalyticsMessageFactory.receivedMesssage(utkast, arende)
+            );
+
             return saved;
         }
         final var certificate = intygService.fetchIntygDataForInternalUse(certificateId, false);
