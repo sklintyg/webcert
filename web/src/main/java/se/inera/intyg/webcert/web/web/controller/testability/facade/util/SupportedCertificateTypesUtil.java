@@ -21,7 +21,11 @@ package se.inera.intyg.webcert.web.web.controller.testability.facade.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.af00213.support.Af00213EntryPoint;
 import se.inera.intyg.common.ag114.support.Ag114EntryPoint;
@@ -188,6 +192,34 @@ public class SupportedCertificateTypesUtil {
                 csTestabilityIntegrationService.getSupportedTypes()
             );
         }
-        return certificateTypes;
+
+        return certificateTypes.stream()
+            .collect(Collectors.toMap(
+                cert -> cert.getType().replaceAll("\\s", "").toLowerCase(),
+                cert -> cert,
+                this::mergeCertificateType
+            ))
+            .values()
+            .stream()
+            .sorted(Comparator.comparing(CertificateType::getName, String.CASE_INSENSITIVE_ORDER))
+            .toList();
+
     }
+
+  private CertificateType mergeCertificateType(CertificateType certificateTypeWC, CertificateType certificateTypeCS) {
+    final var mergedVersions = Stream.concat(
+        certificateTypeWC.getVersions().stream(),
+        certificateTypeCS.getVersions().stream())
+        .filter(Objects::nonNull)
+        .distinct();
+
+    return new CertificateType(
+        certificateTypeWC.getType(),
+        certificateTypeWC.getInternalType(),
+        certificateTypeWC.getName(),
+        mergedVersions.toList(),
+        certificateTypeWC.getStatuses(),
+        certificateTypeWC.getFillType()
+    );
+  }
 }
