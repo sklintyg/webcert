@@ -48,8 +48,8 @@ public class SendMessageToCareResponderImpl implements SendMessageToCareResponde
     public SendMessageToCareResponseType sendMessageToCare(String logicalAddress, SendMessageToCareType request) {
         LOG.debug("Received new message to care");
 
-        SendMessageToCareResponseType response = new SendMessageToCareResponseType();
-        ResultType result = new ResultType();
+        final var response = new SendMessageToCareResponseType();
+        final var result = new ResultType();
 
         try {
             return processIncomingMessage.process(request);
@@ -66,9 +66,7 @@ public class SendMessageToCareResponderImpl implements SendMessageToCareResponde
                         ex.getMessage()
                     );
                     break;
-                case INVALID_STATE:
-                case DATA_NOT_FOUND:
-                case EXTERNAL_SYSTEM_PROBLEM:
+                case INVALID_STATE, DATA_NOT_FOUND, EXTERNAL_SYSTEM_PROBLEM:
                     result.setResultCode(ResultCodeType.ERROR);
                     result.setErrorId(ErrorIdType.VALIDATION_ERROR);
                     result.setResultText(ex.getMessage());
@@ -98,7 +96,7 @@ public class SendMessageToCareResponderImpl implements SendMessageToCareResponde
         } catch (HttpClientErrorException exception) {
             result.setResultCode(ResultCodeType.ERROR);
 
-            if (exception.getRawStatusCode() == HttpStatus.BAD_REQUEST.value()) {
+            if (exception.getStatusCode() == HttpStatus.BAD_REQUEST) {
                 result.setErrorId(ErrorIdType.VALIDATION_ERROR);
                 LOG.error(
                     String.format("Could not process incoming message to care. Bad request returned. Question id %s. Certificate id %s. %s",

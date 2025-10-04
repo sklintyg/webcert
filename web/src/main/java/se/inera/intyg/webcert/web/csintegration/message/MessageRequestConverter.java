@@ -20,7 +20,6 @@
 package se.inera.intyg.webcert.web.csintegration.message;
 
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -46,7 +45,7 @@ public class MessageRequestConverter {
             .complements(
                 messageToCareType.getKomplettering().stream()
                     .map(MessageRequestConverter::toComplementDTO)
-                    .collect(Collectors.toList())
+                    .toList()
             )
             .reminderMessageId(messageToCareType.getPaminnelseMeddelandeId())
             .personId(
