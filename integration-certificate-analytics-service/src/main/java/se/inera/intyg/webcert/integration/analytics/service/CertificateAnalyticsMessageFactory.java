@@ -247,6 +247,22 @@ public class CertificateAnalyticsMessageFactory {
             .build();
     }
 
+    public CertificateAnalyticsMessage sentMessage(Utkast utkast, Arende arende) {
+        return create(utkast, isAnswer(arende) ? ANSWER_TO_RECIPIENT : QUESTION_TO_RECIPIENT)
+            .message(
+                AnalyticsMessage.builder()
+                    .id(arende.getMeddelandeId())
+                    .answerId(arende.getSvarPaId())
+                    .type(arende.getAmne().name())
+                    .sender(SentByDTO.WC.getCode())
+                    .recipient(SentByDTO.FK.getCode())
+                    .sent(arende.getSkickatTidpunkt())
+                    .lastDateToAnswer(arende.getSistaDatumForSvar())
+                    .build()
+            )
+            .build();
+    }
+
     private CertificateAnalyticsMessageBuilder create(Certificate certificate, CertificateAnalyticsMessageType type) {
         return CertificateAnalyticsMessage.builder()
             .event(
@@ -347,37 +363,46 @@ public class CertificateAnalyticsMessageFactory {
     }
 
     private static CertificateAnalyticsMessageType messageTypeForIncomingMessage(IncomingMessageRequestDTO incomingMessageRequest) {
-        if (incomingMessageRequest.getAnswerMessageId() == null || incomingMessageRequest.getAnswerMessageId().isEmpty()) {
+        if (isAnswer(incomingMessageRequest)) {
             return switch (incomingMessageRequest.getType()) {
-                case AVSTMN, KONTKT, OVRIGT -> QUESTION_FROM_RECIPIENT;
+                case AVSTMN, KONTKT, OVRIGT -> ANSWER_FROM_RECIPIENT;
                 case KOMPLT -> COMPLEMENT_FROM_RECIPIENT;
                 case PAMINN -> REMINDER_FROM_RECIPIENT;
             };
         }
+
         return switch (incomingMessageRequest.getType()) {
-            case AVSTMN, KONTKT, OVRIGT -> ANSWER_FROM_RECIPIENT;
+            case AVSTMN, KONTKT, OVRIGT -> QUESTION_FROM_RECIPIENT;
             case KOMPLT -> COMPLEMENT_FROM_RECIPIENT;
             case PAMINN -> REMINDER_FROM_RECIPIENT;
         };
     }
 
     private static CertificateAnalyticsMessageType messageTypeForArende(Arende arende) {
-        if (arende.getSvarPaId() == null || arende.getSvarPaId().isEmpty()) {
+        if (isAnswer(arende)) {
             return switch (arende.getAmne()) {
-                case AVSTMN, KONTKT, OVRIGT -> QUESTION_FROM_RECIPIENT;
+                case AVSTMN, KONTKT, OVRIGT -> ANSWER_FROM_RECIPIENT;
                 case KOMPLT -> COMPLEMENT_FROM_RECIPIENT;
                 case PAMINN -> REMINDER_FROM_RECIPIENT;
             };
         }
 
         return switch (arende.getAmne()) {
-            case AVSTMN, KONTKT, OVRIGT -> ANSWER_FROM_RECIPIENT;
+            case AVSTMN, KONTKT, OVRIGT -> QUESTION_FROM_RECIPIENT;
             case KOMPLT -> COMPLEMENT_FROM_RECIPIENT;
             case PAMINN -> REMINDER_FROM_RECIPIENT;
         };
     }
 
+    private static boolean isAnswer(IncomingMessageRequestDTO incomingMessageRequest) {
+        return incomingMessageRequest.getAnswerMessageId() != null && !incomingMessageRequest.getAnswerMessageId().isEmpty();
+    }
+
     private static boolean isAnswer(Question question) {
         return question.getAnswer() != null && question.getAnswer().getId() != null && !question.getAnswer().getId().isEmpty();
+    }
+
+    private static boolean isAnswer(Arende arende) {
+        return arende.getSvarPaId() != null && !arende.getSvarPaId().isEmpty();
     }
 }

@@ -271,7 +271,7 @@ public class ArendeServiceImpl implements ArendeService {
 
         validateAccessRightsToCreateQuestion(intygId);
 
-        Utkast utkast = utkastRepository.findById(intygId).orElse(null);
+        final var utkast = utkastRepository.findById(intygId).orElse(null);
 
         Arende arende;
         if (utkast != null) {
@@ -289,7 +289,7 @@ public class ArendeServiceImpl implements ArendeService {
                 LocalDateTime.now(systemClock), webcertUserService.getUser().getNamn(), employeeNameService);
         }
 
-        Arende saved = processOutgoingMessage(arende, NotificationEvent.NEW_QUESTION_FROM_CARE, true);
+        final var saved = processOutgoingMessage(arende, NotificationEvent.NEW_QUESTION_FROM_CARE, true, utkast);
 
         logService.logCreateMessage(webcertUserService.getUser(), saved.getPatientPersonId(), saved.getIntygsId());
 
@@ -335,7 +335,9 @@ public class ArendeServiceImpl implements ArendeService {
         Arende arende = ArendeConverter.createAnswerFromArende(meddelande, svarPaMeddelande, LocalDateTime.now(systemClock),
             webcertUserService.getUser().getNamn());
 
-        Arende saved = processOutgoingMessage(arende, NotificationEvent.NEW_ANSWER_FROM_CARE, true);
+        final var utkast = utkastRepository.findById(arende.getIntygsId()).orElse(null);
+
+        final var saved = processOutgoingMessage(arende, NotificationEvent.NEW_ANSWER_FROM_CARE, true, utkast);
 
         logService.logCreateMessage(webcertUserService.getUser(), saved.getPatientPersonId(), saved.getIntygsId());
 
@@ -358,6 +360,8 @@ public class ArendeServiceImpl implements ArendeService {
 
         validateAccessRightsToAnswerComplement(intygsId);
 
+        final var utkast = utkastRepository.findById(intygsId).orElse(null);
+
         Arende latest = getLatestKomplArende(intygsId, arendeList);
         for (Arende arende : arendeList) {
             if (arende.getStatus() != Status.CLOSED) {
@@ -369,7 +373,7 @@ public class ArendeServiceImpl implements ArendeService {
 
                 arendeDraftService.delete(arende.getIntygsId(), arende.getMeddelandeId());
                 Arende saved = processOutgoingMessage(answer, NotificationEvent.NEW_ANSWER_FROM_CARE,
-                    Objects.equals(arende.getMeddelandeId(), latest.getMeddelandeId()));
+                    Objects.equals(arende.getMeddelandeId(), latest.getMeddelandeId()), utkast);
 
                 allArende.add(saved);
             }
@@ -957,7 +961,7 @@ public class ArendeServiceImpl implements ArendeService {
     }
 
 
-    private Arende processOutgoingMessage(Arende arende, NotificationEvent notificationEvent, boolean sendToRecipient) {
+    private Arende processOutgoingMessage(Arende arende, NotificationEvent notificationEvent, boolean sendToRecipient, Utkast utkast) {
         Arende saved = arendeRepository.save(arende);
         monitoringLog.logArendeCreated(arende.getIntygsId(), arende.getIntygTyp(), arende.getEnhetId(), arende.getAmne(),
             arende.getSvarPaId() != null, arende.getMeddelandeId());
@@ -976,6 +980,12 @@ public class ArendeServiceImpl implements ArendeService {
             }
 
             sendNotificationAndCreateEvent(saved, notificationEvent);
+
+            if (utkast != null) {
+                publishCertificateAnalyticsMessage.publishEvent(
+                    certificateAnalyticsMessageFactory.sentMessage(utkast, arende)
+                );
+            }
         }
 
         return saved;
