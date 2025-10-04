@@ -17,24 +17,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.csintegration.patient;
+package se.inera.intyg.webcert.common.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.webcert.web.csintegration.patient.PersonIdDTO.PersonIdDTOBuilder;
+import se.inera.intyg.webcert.common.dto.IncomingComplementDTO.IncomingComplementDTOBuilder;
 
-@JsonDeserialize(builder = PersonIdDTOBuilder.class)
+@JsonDeserialize(builder = IncomingComplementDTOBuilder.class)
 @Value
 @Builder
-public class PersonIdDTO {
+public class IncomingComplementDTO {
 
-    PersonIdType type;
-    String id;
+    String questionId;
+    Integer instance;
+    String content;
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class PersonIdDTOBuilder {
+    public static class IncomingComplementDTOBuilder {
 
     }
 }

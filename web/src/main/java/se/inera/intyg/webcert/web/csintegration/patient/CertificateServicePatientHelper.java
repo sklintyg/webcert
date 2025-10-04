@@ -23,6 +23,8 @@ import java.util.Optional;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.validate.SamordningsnummerValidator;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.dto.PersonIdDTO;
+import se.inera.intyg.webcert.common.dto.PersonIdType;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 
 @Component
@@ -50,11 +52,11 @@ public class CertificateServicePatientHelper {
             .build();
     }
 
-    public PersonIdDTO getPersonId(Personnummer patientId) {
-        return new PersonIdDTO(
-            isCoordinationNumber(patientId) ? PersonIdType.COORDINATION_NUMBER : PersonIdType.PERSONAL_IDENTITY_NUMBER,
-            patientId.getOriginalPnr()
-        );
+    private PersonIdDTO getPersonId(Personnummer patientId) {
+        return PersonIdDTO.builder()
+            .type(isCoordinationNumber(patientId) ? PersonIdType.COORDINATION_NUMBER : PersonIdType.PERSONAL_IDENTITY_NUMBER)
+            .id(patientId.getOriginalPnr())
+            .build();
     }
 
     private boolean isCoordinationNumber(Personnummer personId) {

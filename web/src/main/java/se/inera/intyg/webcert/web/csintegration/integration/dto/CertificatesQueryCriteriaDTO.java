@@ -25,8 +25,8 @@ import java.util.List;
 import lombok.Builder;
 import lombok.Value;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
+import se.inera.intyg.webcert.common.dto.PersonIdDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesQueryCriteriaDTO.CertificatesQueryCriteriaDTOBuilder;
-import se.inera.intyg.webcert.web.csintegration.patient.PersonIdDTO;
 
 @JsonDeserialize(builder = CertificatesQueryCriteriaDTOBuilder.class)
 @Value

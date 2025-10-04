@@ -18,7 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.arende;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -31,13 +31,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import org.assertj.core.util.Lists;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
@@ -57,7 +56,8 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 
-public class ArendeServiceImplTest {
+@ExtendWith(MockitoExtension.class)
+class ArendeServiceImplTest {
 
     private static final String PATIENT_PERSON_ID = "191212121212";
 
@@ -85,13 +85,8 @@ public class ArendeServiceImplTest {
     @Mock
     private PaginationAndLoggingService paginationAndLoggingService;
 
-    @Before
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-    }
-
     @Test
-    public void filterArende() {
+    void filterArende() {
         //Given
         final ArendeServiceImpl arendeService = Mockito.spy(arendeServiceReal);
 
@@ -121,7 +116,7 @@ public class ArendeServiceImplTest {
         Mockito.when(statusMap.get(any(Personnummer.class))).thenReturn(response);
         Mockito.when(patientDetailsResolver.getPersonStatusesForList(any())).thenReturn(statusMap);
         final QueryFragaSvarResponse qfsr = new QueryFragaSvarResponse();
-        qfsr.setResults(Lists.emptyList());
+        qfsr.setResults(List.of());
         Mockito.when(fragaSvarService.filterFragaSvar(any())).thenReturn(qfsr);
         final QueryFragaSvarParameter filterParameters = new QueryFragaSvarParameter();
 

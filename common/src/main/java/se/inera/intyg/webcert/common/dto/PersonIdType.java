@@ -17,8 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.csintegration.message.dto;
+package se.inera.intyg.webcert.common.dto;
 
-public enum MessageTypeDTO {
-    AVSTMN, KONTKT, OVRIGT, PAMINN, KOMPLT
+public enum PersonIdType {
+
+    COORDINATION_NUMBER, PERSONAL_IDENTITY_NUMBER
+
 }

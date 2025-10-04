@@ -26,6 +26,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.web.csintegration.certificate.PublishCertificateStatusUpdateService;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
@@ -44,6 +46,8 @@ public class SendMessageFromCertificateService implements SendQuestionFacadeServ
     private final PDLLogService pdlLogService;
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
+    private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+    private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
 
     @Override
     public Question send(Question question) {
@@ -70,6 +74,10 @@ public class SendMessageFromCertificateService implements SendQuestionFacadeServ
         );
 
         publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.NYFRFV);
+
+        publishCertificateAnalyticsMessage.publishEvent(
+            certificateAnalyticsMessageFactory.sentMessage(certificate, sentMessage)
+        );
 
         monitoringLogService.logArendeCreated(
             certificate.getMetadata().getId(),

@@ -22,7 +22,9 @@ package se.inera.intyg.webcert.web.csintegration.message;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -39,6 +41,9 @@ import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
+import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.web.csintegration.certificate.PublishCertificateStatusUpdateService;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
@@ -76,6 +81,10 @@ class SendMessageFromCertificateServiceTest {
     CSIntegrationService csIntegrationService;
     @Mock
     CSIntegrationRequestFactory csIntegrationRequestFactory;
+    @Mock
+    CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+    @Mock
+    PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
     @InjectMocks
     SendMessageFromCertificateService sendMessageFromCertificateService;
     private Certificate certificate;
@@ -147,6 +156,16 @@ class SendMessageFromCertificateServiceTest {
         void shallPublishStatusUpdate() {
             sendMessageFromCertificateService.send(QUESTION);
             verify(publishCertificateStatusUpdateService).publish(certificate, HandelsekodEnum.NYFRFV);
+        }
+
+        @Test
+        void shallPublishAnalyticsMessage() {
+            final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+            when(certificateAnalyticsMessageFactory.sentMessage(certificate, SENT_QUESTION)).thenReturn(analyticsMessage);
+
+            sendMessageFromCertificateService.send(QUESTION);
+
+            verify(publishCertificateAnalyticsMessage, times(1)).publishEvent(analyticsMessage);
         }
 
         @Test
