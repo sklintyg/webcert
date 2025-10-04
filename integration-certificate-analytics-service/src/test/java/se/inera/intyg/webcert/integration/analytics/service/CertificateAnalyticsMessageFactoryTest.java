@@ -53,6 +53,11 @@ import se.inera.intyg.common.support.facade.model.metadata.CertificateRecipient;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
+import se.inera.intyg.common.support.facade.model.question.Answer;
+import se.inera.intyg.common.support.facade.model.question.Complement;
+import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.common.support.facade.model.question.Question.QuestionBuilder;
+import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
@@ -811,6 +816,8 @@ class CertificateAnalyticsMessageFactoryTest {
                 .build();
 
             when(loggedInWebcertUserService.getLoggedInWebcertUser()).thenReturn(noLoggedInUser);
+
+            MDC.clear();
         }
 
         @Test
@@ -1083,6 +1090,367 @@ class CertificateAnalyticsMessageFactoryTest {
                     .build()
             );
             assertEquals(expected, actual.getMessage().getQuestionIds());
+        }
+    }
+
+    @Nested
+    class AnalyticsMessagesBasedOnSentQuestions {
+
+        private Certificate certificate;
+        private QuestionBuilder questionBuilder;
+        private Question question;
+
+        @BeforeEach
+        void setUp() {
+            certificate = new Certificate();
+            certificate.setMetadata(
+                CertificateMetadata.builder()
+                    .id(CERTIFICATE_ID)
+                    .type(CERTIFICATE_TYPE)
+                    .typeVersion(CERTIFICATE_TYPE_VERSION)
+                    .patient(
+                        Patient.builder()
+                            .personId(
+                                PersonId.builder()
+                                    .id(CERTIFICATE_PATIENT_ID)
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .unit(
+                        Unit.builder()
+                            .unitId(CERTIFICATE_UNIT_ID)
+                            .build()
+                    )
+                    .careProvider(
+                        Unit.builder()
+                            .unitId(CERTIFICATE_CARE_PROVIDER_ID)
+                            .build()
+                    )
+                    .recipient(
+                        CertificateRecipient.builder()
+                            .id(RECIPIENT_ID)
+                            .build()
+                    )
+                    .relations(
+                        CertificateRelations.builder()
+                            .parent(
+                                CertificateRelation.builder()
+                                    .certificateId(CERTIFICATE_RELATION_PARENT_ID)
+                                    .type(CERTIFICATE_RELATION_PARENT_TYPE)
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .build()
+            );
+
+            questionBuilder = Question.builder()
+                .id(MESSAGE_ID)
+                .type(QuestionType.COMPLEMENT)
+                .author(EVENT_USER_ID)
+                .sent(LocalDateTime.now())
+                .lastDateToReply(LocalDate.now().plusWeeks(1));
+
+            question = questionBuilder.build();
+
+            final var loggedInWebcertUser = LoggedInWebcertUser.builder()
+                .staffId(EVENT_USER_ID)
+                .role(EVENT_ROLE)
+                .unitId(EVENT_UNIT_ID)
+                .careProviderId(EVENT_CARE_PROVIDER_ID)
+                .origin(EVENT_ORIGIN)
+                .build();
+
+            when(loggedInWebcertUserService.getLoggedInWebcertUser()).thenReturn(loggedInWebcertUser);
+
+            MDC.put(MdcLogConstants.SESSION_ID_KEY, EVENT_SESSION_ID);
+        }
+
+        @Test
+        void shallReturnCorrectEventTimestamp() {
+            final var actual = factory.sentMessage(certificate, question);
+            assertNotNull(actual.getEvent().getTimestamp());
+        }
+
+        @Test
+        void shallReturnCorrectEventMessageTypeWhenAVSTMN() {
+            final var actual = factory.sentMessage(certificate,
+                questionBuilder
+                    .type(QuestionType.COORDINATION)
+                    .build()
+            );
+            assertEquals(CertificateAnalyticsMessageType.QUESTION_TO_RECIPIENT, actual.getEvent().getMessageType());
+        }
+
+        @Test
+        void shallReturnCorrectEventMessageTypeWhenOVRIGT() {
+            final var actual = factory.sentMessage(certificate,
+                questionBuilder
+                    .type(QuestionType.OTHER)
+                    .build()
+            );
+            assertEquals(CertificateAnalyticsMessageType.QUESTION_TO_RECIPIENT, actual.getEvent().getMessageType());
+        }
+
+        @Test
+        void shallReturnCorrectEventMessageTypeWhenKONTKT() {
+            final var actual = factory.sentMessage(certificate,
+                questionBuilder
+                    .type(QuestionType.CONTACT)
+                    .build()
+            );
+            assertEquals(CertificateAnalyticsMessageType.QUESTION_TO_RECIPIENT, actual.getEvent().getMessageType());
+        }
+
+        @Test
+        void shallReturnCorrectEventMessageTypeWhenAVSTMNAndAnAnswer() {
+            final var actual = factory.sentMessage(certificate,
+                questionBuilder
+                    .id(MESSAGE_ANSWER_ID)
+                    .type(QuestionType.COORDINATION)
+                    .answer(
+                        Answer.builder()
+                            .id(MESSAGE_ID)
+                            .build()
+                    )
+                    .build()
+            );
+            assertEquals(CertificateAnalyticsMessageType.ANSWER_TO_RECIPIENT, actual.getEvent().getMessageType());
+        }
+
+        @Test
+        void shallReturnCorrectEventMessageTypeWhenOVRIGTAndAnAnswer() {
+            final var actual = factory.sentMessage(certificate,
+                questionBuilder
+                    .id(MESSAGE_ANSWER_ID)
+                    .type(QuestionType.OTHER)
+                    .answer(
+                        Answer.builder()
+                            .id(MESSAGE_ID)
+                            .build()
+                    )
+                    .build()
+            );
+            assertEquals(CertificateAnalyticsMessageType.ANSWER_TO_RECIPIENT, actual.getEvent().getMessageType());
+        }
+
+        @Test
+        void shallReturnCorrectEventMessageTypeWhenKONTKTAndAnAnswer() {
+            final var actual = factory.sentMessage(certificate,
+                questionBuilder
+                    .id(MESSAGE_ANSWER_ID)
+                    .type(QuestionType.CONTACT)
+                    .answer(
+                        Answer.builder()
+                            .id(MESSAGE_ID)
+                            .build()
+                    )
+                    .build()
+            );
+            assertEquals(CertificateAnalyticsMessageType.ANSWER_TO_RECIPIENT, actual.getEvent().getMessageType());
+        }
+
+        @Test
+        void shallReturnCorrectEventMessageTypeWhenKOMPLTAndAnAnswer() {
+            final var actual = factory.sentMessage(certificate,
+                questionBuilder
+                    .id(MESSAGE_ANSWER_ID)
+                    .type(QuestionType.COMPLEMENT)
+                    .answer(
+                        Answer.builder()
+                            .id(MESSAGE_ID)
+                            .build()
+                    )
+                    .build()
+            );
+            assertEquals(CertificateAnalyticsMessageType.ANSWER_TO_RECIPIENT, actual.getEvent().getMessageType());
+        }
+
+        @Test
+        void shallReturnCorrectEventStaffId() {
+            final var actual = factory.sentMessage(certificate, question);
+            assertEquals(EVENT_USER_ID, actual.getEvent().getUserId());
+        }
+
+        @Test
+        void shallReturnCorrectEventRole() {
+            final var actual = factory.sentMessage(certificate, question);
+            assertEquals(EVENT_ROLE, actual.getEvent().getRole());
+        }
+
+        @Test
+        void shallReturnCorrectEventUnitId() {
+            final var actual = factory.sentMessage(certificate, question);
+            assertEquals(EVENT_UNIT_ID, actual.getEvent().getUnitId());
+        }
+
+        @Test
+        void shallReturnCorrectEventCareProviderId() {
+            final var actual = factory.sentMessage(certificate, question);
+            assertEquals(EVENT_CARE_PROVIDER_ID, actual.getEvent().getCareProviderId());
+        }
+
+        @Test
+        void shallReturnCorrectEventOrigin() {
+            final var actual = factory.sentMessage(certificate, question);
+            assertEquals(EVENT_ORIGIN, actual.getEvent().getOrigin());
+        }
+
+        @Test
+        void shallReturnCorrectEventSessionId() {
+            final var actual = factory.sentMessage(certificate, question);
+            assertEquals(EVENT_SESSION_ID, actual.getEvent().getSessionId());
+        }
+
+        @Test
+        void shallReturnCorrectCertificateId() {
+            final var actual = factory.sentMessage(certificate, question);
+            assertEquals(CERTIFICATE_ID, actual.getCertificate().getId());
+        }
+
+        @Test
+        void shallReturnCorrectCertificateType() {
+            final var actual = factory.sentMessage(certificate, question);
+            assertEquals(CERTIFICATE_TYPE, actual.getCertificate().getType());
+        }
+
+        @Test
+        void shallReturnCorrectCertificateTypeVersion() {
+            final var actual = factory.sentMessage(certificate, question);
+            assertEquals(CERTIFICATE_TYPE_VERSION, actual.getCertificate().getTypeVersion());
+        }
+
+        @Test
+        void shallReturnCorrectCertificatePatientId() {
+            final var actual = factory.sentMessage(certificate, question);
+            assertEquals(CERTIFICATE_PATIENT_ID, actual.getCertificate().getPatientId());
+        }
+
+        @Test
+        void shallReturnCorrectCertificateUnitId() {
+            final var actual = factory.sentMessage(certificate, question);
+            assertEquals(CERTIFICATE_UNIT_ID, actual.getCertificate().getUnitId());
+        }
+
+        @Test
+        void shallReturnCorrectCertificateCareProviderId() {
+            final var actual = factory.sentMessage(certificate, question);
+            assertEquals(CERTIFICATE_CARE_PROVIDER_ID, actual.getCertificate().getCareProviderId());
+        }
+
+        @Test
+        void shallReturnCorrectCertificateRelationParentId() {
+            final var actual = factory.sentMessage(certificate, question);
+            assertEquals(CERTIFICATE_RELATION_PARENT_ID, actual.getCertificate().getParent().getId());
+        }
+
+        @Test
+        void shallReturnCorrectCertificateRelationParentType() {
+            final var actual = factory.sentMessage(certificate, question);
+            assertEquals(CERTIFICATE_RELATION_PARENT_TYPE.name(), actual.getCertificate().getParent().getType());
+        }
+
+        @Test
+        void shallReturnCorrectMessageId() {
+            final var actual = factory.sentMessage(certificate, question);
+            assertEquals(MESSAGE_ID, actual.getMessage().getId());
+        }
+
+        @Test
+        void shallReturnCorrectAnswerId() {
+            final var actual = factory.sentMessage(certificate,
+                questionBuilder
+                    .id(MESSAGE_ANSWER_ID)
+                    .answer(
+                        Answer.builder()
+                            .id(MESSAGE_ID)
+                            .build()
+                    )
+                    .build()
+            );
+            assertEquals(MESSAGE_ANSWER_ID, actual.getMessage().getAnswerId());
+        }
+
+        @Test
+        void shallReturnCorrectMessageTypeWhenComplement() {
+            final var actual = factory.sentMessage(certificate,
+                questionBuilder
+                    .type(QuestionType.COMPLEMENT)
+                    .build()
+            );
+            assertEquals(ArendeAmne.KOMPLT.name(), actual.getMessage().getType());
+        }
+
+        @Test
+        void shallReturnCorrectMessageTypeWhenContact() {
+            final var actual = factory.sentMessage(certificate,
+                questionBuilder
+                    .type(QuestionType.CONTACT)
+                    .build()
+            );
+            assertEquals(ArendeAmne.KONTKT.name(), actual.getMessage().getType());
+        }
+
+        @Test
+        void shallReturnCorrectMessageTypeWhenCoordination() {
+            final var actual = factory.sentMessage(certificate,
+                questionBuilder
+                    .type(QuestionType.COORDINATION)
+                    .build()
+            );
+            assertEquals(ArendeAmne.AVSTMN.name(), actual.getMessage().getType());
+        }
+
+        @Test
+        void shallReturnCorrectMessageTypeWhenOther() {
+            final var actual = factory.sentMessage(certificate,
+                questionBuilder
+                    .type(QuestionType.OTHER)
+                    .build()
+            );
+            assertEquals(ArendeAmne.OVRIGT.name(), actual.getMessage().getType());
+        }
+
+        @Test
+        void shallReturnCorrectMessageSender() {
+            final var actual = factory.sentMessage(certificate, question);
+            assertEquals(SentByDTO.WC.getCode(), actual.getMessage().getSender());
+        }
+
+        @Test
+        void shallReturnCorrectMessageRecipient() {
+            final var actual = factory.sentMessage(certificate, question);
+            assertEquals(SentByDTO.FK.getCode(), actual.getMessage().getRecipient());
+        }
+
+        @Test
+        void shallReturnCorrectMessageSent() {
+            final var actual = factory.sentMessage(certificate, question);
+            assertEquals(question.getSent(), actual.getMessage().getSent());
+        }
+
+        @Test
+        void shallReturnCorrectMessageLastDayAnswer() {
+            final var actual = factory.sentMessage(certificate, question);
+            assertEquals(question.getLastDateToReply(), actual.getMessage().getLastDateToAnswer());
+        }
+
+        @Test
+        void shallReturnCorrectQuestions() {
+            final var actual = factory.sentMessage(certificate,
+                questionBuilder.complements(
+                        new Complement[]{
+                            Complement.builder()
+                                .questionId("complement-question-id")
+                                .build()
+                        }
+                    )
+                    .build()
+            );
+            assertNull(actual.getMessage().getQuestionIds(),
+                "Question ids shall be null since it will never be sent to a certificate recipient"
+            );
         }
     }
 
