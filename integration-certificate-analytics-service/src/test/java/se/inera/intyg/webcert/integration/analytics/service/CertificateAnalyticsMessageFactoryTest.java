@@ -800,8 +800,6 @@ class CertificateAnalyticsMessageFactoryTest {
 
             incomingMessageBuilder = IncomingMessageRequestDTO.builder()
                 .id(MESSAGE_ID)
-                .answerMessageId(MESSAGE_ANSWER_ID)
-                .reminderMessageId(MESSAGE_REMINDER_ID)
                 .type(MessageTypeDTO.KOMPLT)
                 .sent(LocalDateTime.now())
                 .sentBy(SentByDTO.FK)
@@ -865,6 +863,61 @@ class CertificateAnalyticsMessageFactoryTest {
         void shallReturnCorrectEventMessageTypeWhenPAMINN() {
             final var actual = factory.receivedMessage(certificate,
                 incomingMessageBuilder
+                    .type(MessageTypeDTO.PAMINN)
+                    .build()
+            );
+            assertEquals(CertificateAnalyticsMessageType.REMINDER_FROM_RECIPIENT, actual.getEvent().getMessageType());
+        }
+
+        @Test
+        void shallReturnCorrectEventMessageTypeWhenAVSTMNAndAnAnswer() {
+            final var actual = factory.receivedMessage(certificate,
+                incomingMessageBuilder
+                    .answerMessageId(MESSAGE_ANSWER_ID)
+                    .type(MessageTypeDTO.AVSTMN)
+                    .build()
+            );
+            assertEquals(CertificateAnalyticsMessageType.ANSWER_FROM_RECIPIENT, actual.getEvent().getMessageType());
+        }
+
+        @Test
+        void shallReturnCorrectEventMessageTypeWhenOVRIGTAndAnAnswer() {
+            final var actual = factory.receivedMessage(certificate,
+                incomingMessageBuilder
+                    .answerMessageId(MESSAGE_ANSWER_ID)
+                    .type(MessageTypeDTO.OVRIGT)
+                    .build()
+            );
+            assertEquals(CertificateAnalyticsMessageType.ANSWER_FROM_RECIPIENT, actual.getEvent().getMessageType());
+        }
+
+        @Test
+        void shallReturnCorrectEventMessageTypeWhenKONTKTAndAnAnswer() {
+            final var actual = factory.receivedMessage(certificate,
+                incomingMessageBuilder
+                    .answerMessageId(MESSAGE_ANSWER_ID)
+                    .type(MessageTypeDTO.KONTKT)
+                    .build()
+            );
+            assertEquals(CertificateAnalyticsMessageType.ANSWER_FROM_RECIPIENT, actual.getEvent().getMessageType());
+        }
+
+        @Test
+        void shallReturnCorrectEventMessageTypeWhenKOMPLTAndAnAnswer() {
+            final var actual = factory.receivedMessage(certificate,
+                incomingMessageBuilder
+                    .answerMessageId(MESSAGE_ANSWER_ID)
+                    .type(MessageTypeDTO.KOMPLT)
+                    .build()
+            );
+            assertEquals(CertificateAnalyticsMessageType.COMPLEMENT_FROM_RECIPIENT, actual.getEvent().getMessageType());
+        }
+
+        @Test
+        void shallReturnCorrectEventMessageTypeWhenPAMINNAndAnAnswer() {
+            final var actual = factory.receivedMessage(certificate,
+                incomingMessageBuilder
+                    .answerMessageId(MESSAGE_ANSWER_ID)
                     .type(MessageTypeDTO.PAMINN)
                     .build()
             );
@@ -960,19 +1013,27 @@ class CertificateAnalyticsMessageFactoryTest {
         @Test
         void shallReturnCorrectMessageId() {
             final var actual = factory.receivedMessage(certificate, incomingMessage);
-            assertEquals(incomingMessage.getId(), actual.getMessage().getId());
+            assertEquals(MESSAGE_ID, actual.getMessage().getId());
         }
 
         @Test
         void shallReturnCorrectAnswerId() {
-            final var actual = factory.receivedMessage(certificate, incomingMessage);
-            assertEquals(incomingMessage.getAnswerMessageId(), actual.getMessage().getAnswerId());
+            final var actual = factory.receivedMessage(certificate,
+                incomingMessageBuilder
+                    .answerMessageId(MESSAGE_ANSWER_ID)
+                    .build()
+            );
+            assertEquals(MESSAGE_ANSWER_ID, actual.getMessage().getAnswerId());
         }
 
         @Test
         void shallReturnCorrectReminderId() {
-            final var actual = factory.receivedMessage(certificate, incomingMessage);
-            assertEquals(incomingMessage.getReminderMessageId(), actual.getMessage().getReminderId());
+            final var actual = factory.receivedMessage(certificate,
+                incomingMessageBuilder
+                    .reminderMessageId(MESSAGE_REMINDER_ID)
+                    .build()
+            );
+            assertEquals(MESSAGE_REMINDER_ID, actual.getMessage().getReminderId());
         }
 
         @Test

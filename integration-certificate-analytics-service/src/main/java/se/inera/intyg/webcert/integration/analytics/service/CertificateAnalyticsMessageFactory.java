@@ -302,8 +302,15 @@ public class CertificateAnalyticsMessageFactory {
     }
 
     private static CertificateAnalyticsMessageType messageTypeForIncomingMessage(IncomingMessageRequestDTO incomingMessageRequest) {
+        if (incomingMessageRequest.getAnswerMessageId() == null || incomingMessageRequest.getAnswerMessageId().isEmpty()) {
+            return switch (incomingMessageRequest.getType()) {
+                case AVSTMN, KONTKT, OVRIGT -> CertificateAnalyticsMessageType.QUESTION_FROM_RECIPIENT;
+                case KOMPLT -> CertificateAnalyticsMessageType.COMPLEMENT_FROM_RECIPIENT;
+                case PAMINN -> CertificateAnalyticsMessageType.REMINDER_FROM_RECIPIENT;
+            };
+        }
         return switch (incomingMessageRequest.getType()) {
-            case AVSTMN, KONTKT, OVRIGT -> CertificateAnalyticsMessageType.QUESTION_FROM_RECIPIENT;
+            case AVSTMN, KONTKT, OVRIGT -> CertificateAnalyticsMessageType.ANSWER_FROM_RECIPIENT;
             case KOMPLT -> CertificateAnalyticsMessageType.COMPLEMENT_FROM_RECIPIENT;
             case PAMINN -> CertificateAnalyticsMessageType.REMINDER_FROM_RECIPIENT;
         };
@@ -323,6 +330,5 @@ public class CertificateAnalyticsMessageFactory {
             case KOMPLT -> CertificateAnalyticsMessageType.COMPLEMENT_FROM_RECIPIENT;
             case PAMINN -> CertificateAnalyticsMessageType.REMINDER_FROM_RECIPIENT;
         };
-
     }
 }
