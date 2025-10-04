@@ -84,7 +84,7 @@ public class ProcessIncomingMessageService {
         }
 
         publishCertificateAnalyticsMessage.publishEvent(
-            certificateAnalyticsMessageFactory.receivedMesssage(certificate, incomingMessageRequest)
+            certificateAnalyticsMessageFactory.receivedMessage(certificate, incomingMessageRequest)
         );
 
         final var sendMessageToCareResponseType = new SendMessageToCareResponseType();

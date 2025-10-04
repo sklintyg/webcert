@@ -349,7 +349,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(utkast));
         when(arendeRepository.findOneByMeddelandeId(frageid)).thenReturn(fragearende);
         final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-        when(certificateAnalyticsMessageFactory.receivedMesssage(utkast, svararende)).thenReturn(analyticsMessage);
+        when(certificateAnalyticsMessageFactory.receivedMessage(utkast, svararende)).thenReturn(analyticsMessage);
 
         service.processIncomingMessage(svararende);
 

@@ -817,13 +817,13 @@ class CertificateAnalyticsMessageFactoryTest {
 
         @Test
         void shallReturnCorrectEventTimestamp() {
-            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            final var actual = factory.receivedMessage(certificate, incomingMessage);
             assertNotNull(actual.getEvent().getTimestamp());
         }
 
         @Test
         void shallReturnCorrectEventMessageTypeWhenAVSTMN() {
-            final var actual = factory.receivedMesssage(certificate,
+            final var actual = factory.receivedMessage(certificate,
                 incomingMessageBuilder
                     .type(MessageTypeDTO.AVSTMN)
                     .build()
@@ -833,7 +833,7 @@ class CertificateAnalyticsMessageFactoryTest {
 
         @Test
         void shallReturnCorrectEventMessageTypeWhenOVRIGT() {
-            final var actual = factory.receivedMesssage(certificate,
+            final var actual = factory.receivedMessage(certificate,
                 incomingMessageBuilder
                     .type(MessageTypeDTO.OVRIGT)
                     .build()
@@ -843,7 +843,7 @@ class CertificateAnalyticsMessageFactoryTest {
 
         @Test
         void shallReturnCorrectEventMessageTypeWhenKONTKT() {
-            final var actual = factory.receivedMesssage(certificate,
+            final var actual = factory.receivedMessage(certificate,
                 incomingMessageBuilder
                     .type(MessageTypeDTO.KONTKT)
                     .build()
@@ -853,7 +853,7 @@ class CertificateAnalyticsMessageFactoryTest {
 
         @Test
         void shallReturnCorrectEventMessageTypeWhenKOMPLT() {
-            final var actual = factory.receivedMesssage(certificate,
+            final var actual = factory.receivedMessage(certificate,
                 incomingMessageBuilder
                     .type(MessageTypeDTO.KOMPLT)
                     .build()
@@ -863,7 +863,7 @@ class CertificateAnalyticsMessageFactoryTest {
 
         @Test
         void shallReturnCorrectEventMessageTypeWhenPAMINN() {
-            final var actual = factory.receivedMesssage(certificate,
+            final var actual = factory.receivedMessage(certificate,
                 incomingMessageBuilder
                     .type(MessageTypeDTO.PAMINN)
                     .build()
@@ -873,25 +873,25 @@ class CertificateAnalyticsMessageFactoryTest {
 
         @Test
         void shallReturnCorrectEventStaffId() {
-            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            final var actual = factory.receivedMessage(certificate, incomingMessage);
             assertNull(actual.getEvent().getUserId(), "Event user id shall be null when received message since no user is logged in");
         }
 
         @Test
         void shallReturnCorrectEventRole() {
-            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            final var actual = factory.receivedMessage(certificate, incomingMessage);
             assertNull(actual.getEvent().getRole(), "Event role shall be null when received message since no user is logged in");
         }
 
         @Test
         void shallReturnCorrectEventUnitId() {
-            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            final var actual = factory.receivedMessage(certificate, incomingMessage);
             assertNull(actual.getEvent().getUnitId(), "Event unit id shall be null when received message since no user is logged in");
         }
 
         @Test
         void shallReturnCorrectEventCareProviderId() {
-            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            final var actual = factory.receivedMessage(certificate, incomingMessage);
             assertNull(actual.getEvent().getCareProviderId(),
                 "Event care provider id shall be null when received message since no user is logged in"
             );
@@ -899,109 +899,109 @@ class CertificateAnalyticsMessageFactoryTest {
 
         @Test
         void shallReturnCorrectEventOrigin() {
-            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            final var actual = factory.receivedMessage(certificate, incomingMessage);
             assertNull(actual.getEvent().getOrigin(), "Event origin shall be null when received message since no user is logged in");
         }
 
         @Test
         void shallReturnCorrectEventSessionId() {
-            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            final var actual = factory.receivedMessage(certificate, incomingMessage);
             assertNull(actual.getEvent().getSessionId(), "Event session id shall be null when received message since no user is logged in");
         }
 
         @Test
         void shallReturnCorrectCertificateId() {
-            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            final var actual = factory.receivedMessage(certificate, incomingMessage);
             assertEquals(CERTIFICATE_ID, actual.getCertificate().getId());
         }
 
         @Test
         void shallReturnCorrectCertificateType() {
-            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            final var actual = factory.receivedMessage(certificate, incomingMessage);
             assertEquals(CERTIFICATE_TYPE, actual.getCertificate().getType());
         }
 
         @Test
         void shallReturnCorrectCertificateTypeVersion() {
-            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            final var actual = factory.receivedMessage(certificate, incomingMessage);
             assertEquals(CERTIFICATE_TYPE_VERSION, actual.getCertificate().getTypeVersion());
         }
 
         @Test
         void shallReturnCorrectCertificatePatientId() {
-            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            final var actual = factory.receivedMessage(certificate, incomingMessage);
             assertEquals(CERTIFICATE_PATIENT_ID, actual.getCertificate().getPatientId());
         }
 
         @Test
         void shallReturnCorrectCertificateUnitId() {
-            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            final var actual = factory.receivedMessage(certificate, incomingMessage);
             assertEquals(CERTIFICATE_UNIT_ID, actual.getCertificate().getUnitId());
         }
 
         @Test
         void shallReturnCorrectCertificateCareProviderId() {
-            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            final var actual = factory.receivedMessage(certificate, incomingMessage);
             assertEquals(CERTIFICATE_CARE_PROVIDER_ID, actual.getCertificate().getCareProviderId());
         }
 
         @Test
         void shallReturnCorrectCertificateRelationParentId() {
-            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            final var actual = factory.receivedMessage(certificate, incomingMessage);
             assertEquals(CERTIFICATE_RELATION_PARENT_ID, actual.getCertificate().getParent().getId());
         }
 
         @Test
         void shallReturnCorrectCertificateRelationParentType() {
-            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            final var actual = factory.receivedMessage(certificate, incomingMessage);
             assertEquals(CERTIFICATE_RELATION_PARENT_TYPE.name(), actual.getCertificate().getParent().getType());
         }
 
         @Test
         void shallReturnCorrectMessageId() {
-            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            final var actual = factory.receivedMessage(certificate, incomingMessage);
             assertEquals(incomingMessage.getId(), actual.getMessage().getId());
         }
 
         @Test
         void shallReturnCorrectAnswerId() {
-            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            final var actual = factory.receivedMessage(certificate, incomingMessage);
             assertEquals(incomingMessage.getAnswerMessageId(), actual.getMessage().getAnswerId());
         }
 
         @Test
         void shallReturnCorrectReminderId() {
-            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            final var actual = factory.receivedMessage(certificate, incomingMessage);
             assertEquals(incomingMessage.getReminderMessageId(), actual.getMessage().getReminderId());
         }
 
         @Test
         void shallReturnCorrectMessageType() {
-            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            final var actual = factory.receivedMessage(certificate, incomingMessage);
             assertEquals(incomingMessage.getType().name(), actual.getMessage().getType());
         }
 
         @Test
         void shallReturnCorrectMessageSender() {
-            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            final var actual = factory.receivedMessage(certificate, incomingMessage);
             assertEquals(incomingMessage.getSentBy().getCode(), actual.getMessage().getSender());
         }
 
         @Test
         void shallReturnCorrectMessageRecipient() {
-            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            final var actual = factory.receivedMessage(certificate, incomingMessage);
             assertEquals(SentByDTO.WC.getCode(), actual.getMessage().getRecipient());
         }
 
         @Test
         void shallReturnCorrectMessageSent() {
-            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            final var actual = factory.receivedMessage(certificate, incomingMessage);
             assertEquals(incomingMessage.getSent(), actual.getMessage().getSent());
         }
 
         @Test
         void shallReturnCorrectMessageLastDayAnswer() {
-            final var actual = factory.receivedMesssage(certificate, incomingMessage);
+            final var actual = factory.receivedMessage(certificate, incomingMessage);
             assertEquals(incomingMessage.getLastDateToAnswer(), actual.getMessage().getLastDateToAnswer());
         }
 
@@ -1009,7 +1009,7 @@ class CertificateAnalyticsMessageFactoryTest {
         void shallReturnCorrectQuestions() {
             final var expected = List.of("question-1", "question-2", "question-3");
 
-            final var actual = factory.receivedMesssage(certificate,
+            final var actual = factory.receivedMessage(certificate,
                 incomingMessageBuilder.complements(
                         expected.stream()
                             .map(id ->
@@ -1049,8 +1049,6 @@ class CertificateAnalyticsMessageFactoryTest {
 
             arende = new Arende();
             arende.setMeddelandeId(MESSAGE_ID);
-            arende.setSvarPaId(MESSAGE_ANSWER_ID);
-            arende.setPaminnelseMeddelandeId(MESSAGE_REMINDER_ID);
             arende.setAmne(ArendeAmne.AVSTMN);
 
             // Make this lenient to enable mocking to work in parameterized tests
@@ -1059,66 +1057,106 @@ class CertificateAnalyticsMessageFactoryTest {
 
         @Test
         void shallReturnCorrectEventTimestamp() {
-            final var actual = factory.receivedMesssage(utkast, arende);
+            final var actual = factory.receivedMessage(utkast, arende);
             assertNotNull(actual.getEvent().getTimestamp());
         }
 
         @Test
         void shallReturnCorrectEventMessageTypeWhenAVSTMN() {
             arende.setAmne(ArendeAmne.AVSTMN);
-            final var actual = factory.receivedMesssage(utkast, arende);
+            final var actual = factory.receivedMessage(utkast, arende);
             assertEquals(CertificateAnalyticsMessageType.QUESTION_FROM_RECIPIENT, actual.getEvent().getMessageType());
         }
 
         @Test
         void shallReturnCorrectEventMessageTypeWhenOVRIGT() {
             arende.setAmne(ArendeAmne.OVRIGT);
-            final var actual = factory.receivedMesssage(utkast, arende);
+            final var actual = factory.receivedMessage(utkast, arende);
             assertEquals(CertificateAnalyticsMessageType.QUESTION_FROM_RECIPIENT, actual.getEvent().getMessageType());
         }
 
         @Test
         void shallReturnCorrectEventMessageTypeWhenKONTKT() {
             arende.setAmne(ArendeAmne.KONTKT);
-            final var actual = factory.receivedMesssage(utkast, arende);
+            final var actual = factory.receivedMessage(utkast, arende);
             assertEquals(CertificateAnalyticsMessageType.QUESTION_FROM_RECIPIENT, actual.getEvent().getMessageType());
         }
 
         @Test
         void shallReturnCorrectEventMessageTypeWhenKOMPLT() {
             arende.setAmne(ArendeAmne.KOMPLT);
-            final var actual = factory.receivedMesssage(utkast, arende);
+            final var actual = factory.receivedMessage(utkast, arende);
             assertEquals(CertificateAnalyticsMessageType.COMPLEMENT_FROM_RECIPIENT, actual.getEvent().getMessageType());
         }
 
         @Test
         void shallReturnCorrectEventMessageTypeWhenPAMINN() {
             arende.setAmne(ArendeAmne.PAMINN);
-            final var actual = factory.receivedMesssage(utkast, arende);
+            final var actual = factory.receivedMessage(utkast, arende);
+            assertEquals(CertificateAnalyticsMessageType.REMINDER_FROM_RECIPIENT, actual.getEvent().getMessageType());
+        }
+
+        @Test
+        void shallReturnCorrectEventMessageTypeWhenAVSTMNAndAnAnswer() {
+            arende.setAmne(ArendeAmne.AVSTMN);
+            arende.setSvarPaId(MESSAGE_ANSWER_ID);
+            final var actual = factory.receivedMessage(utkast, arende);
+            assertEquals(CertificateAnalyticsMessageType.ANSWER_FROM_RECIPIENT, actual.getEvent().getMessageType());
+        }
+
+        @Test
+        void shallReturnCorrectEventMessageTypeWhenOVRIGTAndAnAnswer() {
+            arende.setAmne(ArendeAmne.OVRIGT);
+            arende.setSvarPaId(MESSAGE_ANSWER_ID);
+            final var actual = factory.receivedMessage(utkast, arende);
+            assertEquals(CertificateAnalyticsMessageType.ANSWER_FROM_RECIPIENT, actual.getEvent().getMessageType());
+        }
+
+        @Test
+        void shallReturnCorrectEventMessageTypeWhenKONTKTAndAnAnswer() {
+            arende.setAmne(ArendeAmne.KONTKT);
+            arende.setSvarPaId(MESSAGE_ANSWER_ID);
+            final var actual = factory.receivedMessage(utkast, arende);
+            assertEquals(CertificateAnalyticsMessageType.ANSWER_FROM_RECIPIENT, actual.getEvent().getMessageType());
+        }
+
+        @Test
+        void shallReturnCorrectEventMessageTypeWhenKOMPLTAndAnAnswer() {
+            arende.setAmne(ArendeAmne.KOMPLT);
+            arende.setSvarPaId(MESSAGE_ANSWER_ID);
+            final var actual = factory.receivedMessage(utkast, arende);
+            assertEquals(CertificateAnalyticsMessageType.COMPLEMENT_FROM_RECIPIENT, actual.getEvent().getMessageType());
+        }
+
+        @Test
+        void shallReturnCorrectEventMessageTypeWhenPAMINNAndAnAnswer() {
+            arende.setAmne(ArendeAmne.PAMINN);
+            arende.setSvarPaId(MESSAGE_ANSWER_ID);
+            final var actual = factory.receivedMessage(utkast, arende);
             assertEquals(CertificateAnalyticsMessageType.REMINDER_FROM_RECIPIENT, actual.getEvent().getMessageType());
         }
 
         @Test
         void shallReturnCorrectEventStaffId() {
-            final var actual = factory.receivedMesssage(utkast, arende);
+            final var actual = factory.receivedMessage(utkast, arende);
             assertNull(actual.getEvent().getUserId(), "Event user id shall be null when received message since no user is logged in");
         }
 
         @Test
         void shallReturnCorrectEventRole() {
-            final var actual = factory.receivedMesssage(utkast, arende);
+            final var actual = factory.receivedMessage(utkast, arende);
             assertNull(actual.getEvent().getRole(), "Event role shall be null when received message since no user is logged in");
         }
 
         @Test
         void shallReturnCorrectEventUnitId() {
-            final var actual = factory.receivedMesssage(utkast, arende);
+            final var actual = factory.receivedMessage(utkast, arende);
             assertNull(actual.getEvent().getUnitId(), "Event unit id shall be null when received message since no user is logged in");
         }
 
         @Test
         void shallReturnCorrectEventCareProviderId() {
-            final var actual = factory.receivedMesssage(utkast, arende);
+            final var actual = factory.receivedMessage(utkast, arende);
             assertNull(actual.getEvent().getCareProviderId(),
                 "Event care provider id shall be null when received message since no user is logged in"
             );
@@ -1126,109 +1164,111 @@ class CertificateAnalyticsMessageFactoryTest {
 
         @Test
         void shallReturnCorrectEventOrigin() {
-            final var actual = factory.receivedMesssage(utkast, arende);
+            final var actual = factory.receivedMessage(utkast, arende);
             assertNull(actual.getEvent().getOrigin(), "Event origin shall be null when received message since no user is logged in");
         }
 
         @Test
         void shallReturnCorrectEventSessionId() {
-            final var actual = factory.receivedMesssage(utkast, arende);
+            final var actual = factory.receivedMessage(utkast, arende);
             assertNull(actual.getEvent().getSessionId(), "Event session id shall be null when received message since no user is logged in");
         }
 
         @Test
         void shallReturnCorrectCertificateId() {
-            final var actual = factory.receivedMesssage(utkast, arende);
+            final var actual = factory.receivedMessage(utkast, arende);
             assertEquals(CERTIFICATE_ID, actual.getCertificate().getId());
         }
 
         @Test
         void shallReturnCorrectCertificateType() {
-            final var actual = factory.receivedMesssage(utkast, arende);
+            final var actual = factory.receivedMessage(utkast, arende);
             assertEquals(CERTIFICATE_TYPE, actual.getCertificate().getType());
         }
 
         @Test
         void shallReturnCorrectCertificateTypeVersion() {
-            final var actual = factory.receivedMesssage(utkast, arende);
+            final var actual = factory.receivedMessage(utkast, arende);
             assertEquals(CERTIFICATE_TYPE_VERSION, actual.getCertificate().getTypeVersion());
         }
 
         @Test
         void shallReturnCorrectCertificatePatientId() {
-            final var actual = factory.receivedMesssage(utkast, arende);
+            final var actual = factory.receivedMessage(utkast, arende);
             assertEquals(CERTIFICATE_PATIENT_ID, actual.getCertificate().getPatientId());
         }
 
         @Test
         void shallReturnCorrectCertificateUnitId() {
-            final var actual = factory.receivedMesssage(utkast, arende);
+            final var actual = factory.receivedMessage(utkast, arende);
             assertEquals(CERTIFICATE_UNIT_ID, actual.getCertificate().getUnitId());
         }
 
         @Test
         void shallReturnCorrectCertificateCareProviderId() {
-            final var actual = factory.receivedMesssage(utkast, arende);
+            final var actual = factory.receivedMessage(utkast, arende);
             assertEquals(CERTIFICATE_CARE_PROVIDER_ID, actual.getCertificate().getCareProviderId());
         }
 
         @Test
         void shallReturnCorrectCertificateRelationParentId() {
-            final var actual = factory.receivedMesssage(utkast, arende);
+            final var actual = factory.receivedMessage(utkast, arende);
             assertEquals(CERTIFICATE_RELATION_PARENT_ID, actual.getCertificate().getParent().getId());
         }
 
         @Test
         void shallReturnCorrectCertificateRelationParentType() {
-            final var actual = factory.receivedMesssage(utkast, arende);
+            final var actual = factory.receivedMessage(utkast, arende);
             assertEquals(CERTIFICATE_RELATION_PARENT_TYPE.name(), actual.getCertificate().getParent().getType());
         }
 
         @Test
         void shallReturnCorrectMessageId() {
-            final var actual = factory.receivedMesssage(utkast, arende);
+            final var actual = factory.receivedMessage(utkast, arende);
             assertEquals(MESSAGE_ID, actual.getMessage().getId());
         }
 
         @Test
         void shallReturnCorrectAnswerId() {
-            final var actual = factory.receivedMesssage(utkast, arende);
+            arende.setSvarPaId(MESSAGE_ANSWER_ID);
+            final var actual = factory.receivedMessage(utkast, arende);
             assertEquals(MESSAGE_ANSWER_ID, actual.getMessage().getAnswerId());
         }
 
         @Test
         void shallReturnCorrectReminderId() {
-            final var actual = factory.receivedMesssage(utkast, arende);
+            arende.setPaminnelseMeddelandeId(MESSAGE_REMINDER_ID);
+            final var actual = factory.receivedMessage(utkast, arende);
             assertEquals(MESSAGE_REMINDER_ID, actual.getMessage().getReminderId());
         }
 
         @Test
         void shallReturnCorrectMessageType() {
-            final var actual = factory.receivedMesssage(utkast, arende);
+            final var actual = factory.receivedMessage(utkast, arende);
             assertEquals(arende.getAmne().name(), actual.getMessage().getType());
         }
 
         @Test
         void shallReturnCorrectMessageSender() {
-            final var actual = factory.receivedMesssage(utkast, arende);
+            final var actual = factory.receivedMessage(utkast, arende);
             assertEquals(SentByDTO.FK.getCode(), actual.getMessage().getSender());
         }
 
         @Test
         void shallReturnCorrectMessageRecipient() {
-            final var actual = factory.receivedMesssage(utkast, arende);
+            final var actual = factory.receivedMessage(utkast, arende);
             assertEquals(SentByDTO.WC.getCode(), actual.getMessage().getRecipient());
         }
 
         @Test
         void shallReturnCorrectMessageSent() {
-            final var actual = factory.receivedMesssage(utkast, arende);
+            final var actual = factory.receivedMessage(utkast, arende);
             assertEquals(arende.getSkickatTidpunkt(), actual.getMessage().getSent());
         }
 
         @Test
         void shallReturnCorrectMessageLastDayAnswer() {
-            final var actual = factory.receivedMesssage(utkast, arende);
+            final var actual = factory.receivedMessage(utkast, arende);
             assertEquals(arende.getSistaDatumForSvar(), actual.getMessage().getLastDateToAnswer());
         }
 
@@ -1246,7 +1286,7 @@ class CertificateAnalyticsMessageFactoryTest {
                     .toList()
             );
 
-            final var actual = factory.receivedMesssage(utkast, arende);
+            final var actual = factory.receivedMessage(utkast, arende);
             assertEquals(expected, actual.getMessage().getQuestionIds());
         }
     }

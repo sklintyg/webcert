@@ -226,7 +226,7 @@ class ProcessIncomingMessageServiceTest {
     @Test
     void shallPublishAnalyticsMessage() {
         final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-        when(certificateAnalyticsMessageFactory.receivedMesssage(certificate, INCOMING_MESSAGE_REQUEST_DTO)).thenReturn(analyticsMessage);
+        when(certificateAnalyticsMessageFactory.receivedMessage(certificate, INCOMING_MESSAGE_REQUEST_DTO)).thenReturn(analyticsMessage);
 
         processIncomingMessageService.process(sendMessageToCareType);
 

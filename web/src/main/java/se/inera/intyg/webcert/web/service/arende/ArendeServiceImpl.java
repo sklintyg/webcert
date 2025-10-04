@@ -230,7 +230,7 @@ public class ArendeServiceImpl implements ArendeService {
             sendNotificationAndCreateEventForIncomingMessage(saved, utkast.getVardgivarId(), utkast.getSignatur().getSigneringsDatum());
 
             publishCertificateAnalyticsMessage.publishEvent(
-                certificateAnalyticsMessageFactory.receivedMesssage(utkast, arende)
+                certificateAnalyticsMessageFactory.receivedMessage(utkast, arende)
             );
 
             return saved;

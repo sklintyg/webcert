@@ -156,7 +156,7 @@ public class CertificateAnalyticsMessageFactory {
         return create(utlatande, CertificateAnalyticsMessageType.CERTIFICATE_PRINTED);
     }
 
-    public CertificateAnalyticsMessage receivedMesssage(Certificate certificate, IncomingMessageRequestDTO incomingMessageRequest) {
+    public CertificateAnalyticsMessage receivedMessage(Certificate certificate, IncomingMessageRequestDTO incomingMessageRequest) {
         return create(certificate, messageTypeForIncomingMessage(incomingMessageRequest))
             .message(
                 AnalyticsMessage.builder()
@@ -179,7 +179,7 @@ public class CertificateAnalyticsMessageFactory {
             .build();
     }
 
-    public CertificateAnalyticsMessage receivedMesssage(Utkast utkast, Arende arende) {
+    public CertificateAnalyticsMessage receivedMessage(Utkast utkast, Arende arende) {
         return create(utkast, messageTypeForArende(arende))
             .message(
                 AnalyticsMessage.builder()
@@ -310,10 +310,19 @@ public class CertificateAnalyticsMessageFactory {
     }
 
     private static CertificateAnalyticsMessageType messageTypeForArende(Arende arende) {
+        if (arende.getSvarPaId() == null || arende.getSvarPaId().isEmpty()) {
+            return switch (arende.getAmne()) {
+                case AVSTMN, KONTKT, OVRIGT -> CertificateAnalyticsMessageType.QUESTION_FROM_RECIPIENT;
+                case KOMPLT -> CertificateAnalyticsMessageType.COMPLEMENT_FROM_RECIPIENT;
+                case PAMINN -> CertificateAnalyticsMessageType.REMINDER_FROM_RECIPIENT;
+            };
+        }
+
         return switch (arende.getAmne()) {
-            case AVSTMN, KONTKT, OVRIGT -> CertificateAnalyticsMessageType.QUESTION_FROM_RECIPIENT;
+            case AVSTMN, KONTKT, OVRIGT -> CertificateAnalyticsMessageType.ANSWER_FROM_RECIPIENT;
             case KOMPLT -> CertificateAnalyticsMessageType.COMPLEMENT_FROM_RECIPIENT;
             case PAMINN -> CertificateAnalyticsMessageType.REMINDER_FROM_RECIPIENT;
         };
+
     }
 }
