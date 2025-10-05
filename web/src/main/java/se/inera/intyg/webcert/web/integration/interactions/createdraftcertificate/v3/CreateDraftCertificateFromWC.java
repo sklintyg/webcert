@@ -22,6 +22,7 @@ package se.inera.intyg.webcert.web.integration.interactions.createdraftcertifica
 import static se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3.CreateDraftCertificateResponseFactory.createErrorResponse;
 
 import com.google.common.base.Joiner;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -36,15 +37,19 @@ import se.inera.intyg.common.support.modules.support.api.notification.SchemaVers
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.integration.tak.service.TakService;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.intyg.webcert.web.integration.util.AuthoritiesHelperUtil;
 import se.inera.intyg.webcert.web.integration.validators.ResultValidator;
+import se.inera.intyg.webcert.web.service.user.LoggedInWebcertUserFactory;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.CreateDraftCertificateResponseType;
@@ -74,6 +79,12 @@ public class CreateDraftCertificateFromWC implements CreateDraftCertificate {
     private IntegreradeEnheterRegistry integreradeEnheterRegistry;
     @Autowired
     private CreateDraftCertificateValidator validator;
+    @Autowired
+    private LoggedInWebcertUserFactory loggedInWebcertUserFactory;
+    @Autowired
+    private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+    @Autowired
+    private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
 
     @Override
     public CreateDraftCertificateResponseType create(Intyg certificate, IntygUser user) {
@@ -121,6 +132,14 @@ public class CreateDraftCertificateFromWC implements CreateDraftCertificate {
             }
         }
         final var utkast = createNewDraft(certificate, latestIntygTypeVersion, user);
+
+        final var loggedInWebcertUser = loggedInWebcertUserFactory.create(user);
+        publishCertificateAnalyticsMessage.publishEvent(
+            certificate.getForifyllnad() == null ?
+                certificateAnalyticsMessageFactory.draftCreated(utkast, loggedInWebcertUser) :
+                certificateAnalyticsMessageFactory.draftCreatedWithPrefill(utkast, loggedInWebcertUser)
+        );
+
         return createSuccessResponse(utkast.getIntygsId(), invokingUnitHsaId, validateDraftCreationResponse);
     }
 
@@ -167,5 +186,9 @@ public class CreateDraftCertificateFromWC implements CreateDraftCertificate {
         response.setResult(result);
         response.setIntygsId(intygId);
         return response;
+    }
+
+    private static String role(Map<String, Role> roles) {
+        return roles != null && roles.size() == 1 ? roles.keySet().iterator().next() : null;
     }
 }

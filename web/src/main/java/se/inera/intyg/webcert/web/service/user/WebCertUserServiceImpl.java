@@ -53,6 +53,7 @@ public class WebCertUserServiceImpl implements WebCertUserService, LoggedInWebce
     private final CommonAuthoritiesResolver authoritiesResolver;
     private final AnvandarPreferenceRepository anvandarPreferenceRepository;
     private final FindByIndexNameSessionRepository<?> sessionRepository;
+    private final LoggedInWebcertUserFactory loggedInWebcertUserFactory;
 
     @Value("${logout.timeout.seconds}")
     private int logoutTimeout;
@@ -207,16 +208,6 @@ public class WebCertUserServiceImpl implements WebCertUserService, LoggedInWebce
             return LoggedInWebcertUser.builder().build();
         }
 
-        return LoggedInWebcertUser.builder()
-            .staffId(getUser().getHsaId())
-            .role(role(user.getRoles()))
-            .unitId(getUser().getValdVardenhet().getId())
-            .careProviderId(getUser().getValdVardgivare().getId())
-            .origin(getUser().getOrigin())
-            .build();
-    }
-
-    private static String role(Map<String, Role> roles) {
-        return roles != null && roles.size() == 1 ? roles.keySet().iterator().next() : null;
+        return loggedInWebcertUserFactory.create(user);
     }
 }

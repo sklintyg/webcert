@@ -33,6 +33,8 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.web.csintegration.exception.HandleApiErrorService;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
@@ -41,6 +43,7 @@ import se.inera.intyg.webcert.web.integration.interactions.createdraftcertificat
 import se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3.CreateDraftCertificateResponseFactory;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
+import se.inera.intyg.webcert.web.service.user.LoggedInWebcertUserFactory;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.CreateDraftCertificateResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
@@ -59,6 +62,9 @@ public class CreateDraftCertificateFromCS implements CreateDraftCertificate {
     private final MonitoringLogService monitoringLogService;
     private final HandleApiErrorService handleApiErrorService;
     private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+    private final LoggedInWebcertUserFactory loggedInWebcertUserFactory;
+    private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+    private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
 
     @Override
     public CreateDraftCertificateResponseType create(Intyg certificate, IntygUser user) {
@@ -79,8 +85,9 @@ public class CreateDraftCertificateFromCS implements CreateDraftCertificate {
         integratedUnitRegistryHelper.addUnit(user);
 
         try {
+            final var draftCertificateRequest = csIntegrationRequestFactory.createDraftCertificateRequest(modelId.get(), certificate, user);
             final var createdCertificate = csIntegrationService.createCertificate(
-                csIntegrationRequestFactory.createDraftCertificateRequest(modelId.get(), certificate, user)
+                draftCertificateRequest
             );
 
             pdlLogService.logCreatedWithIntygUser(createdCertificate, user);
@@ -93,6 +100,13 @@ public class CreateDraftCertificateFromCS implements CreateDraftCertificate {
             );
 
             publishCertificateStatusUpdateService.publish(createdCertificate, HandelsekodEnum.SKAPAT, Optional.of(user), Optional.empty());
+
+            final var loggedInWebcertUser = loggedInWebcertUserFactory.create(user);
+            publishCertificateAnalyticsMessage.publishEvent(
+                draftCertificateRequest.getPrefillXml() == null ?
+                    certificateAnalyticsMessageFactory.draftCreated(createdCertificate, loggedInWebcertUser) :
+                    certificateAnalyticsMessageFactory.draftCreatedWithPrefill(createdCertificate, loggedInWebcertUser)
+            );
 
             return createSuccessResponse(createdCertificate.getMetadata().getId(), createdCertificate.getMetadata().getUnit().getUnitId());
         } catch (Forbidden exception) {
