@@ -24,8 +24,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Builder;
 import lombok.Value;
+import se.inera.intyg.webcert.common.dto.PersonIdDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageQueryCriteriaDTO.MessageQueryCriteriaDTOBuilder;
-import se.inera.intyg.webcert.web.csintegration.patient.PersonIdDTO;
 import se.inera.intyg.webcert.web.service.facade.list.dto.QuestionSenderType;
 
 @JsonDeserialize(builder = MessageQueryCriteriaDTOBuilder.class)

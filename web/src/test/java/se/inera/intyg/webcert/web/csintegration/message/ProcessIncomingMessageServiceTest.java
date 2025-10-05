@@ -25,6 +25,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -38,13 +39,16 @@ import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
+import se.inera.intyg.webcert.common.dto.IncomingMessageRequestDTO;
+import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.integreradenhet.model.IntegreradEnhet;
 import se.inera.intyg.webcert.web.csintegration.certificate.IntegratedUnitNotificationEvaluator;
 import se.inera.intyg.webcert.web.csintegration.certificate.PublishCertificateStatusUpdateService;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
-import se.inera.intyg.webcert.web.csintegration.message.dto.IncomingMessageRequestDTO;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareResponseType;
@@ -84,6 +88,10 @@ class ProcessIncomingMessageServiceTest {
     CSIntegrationRequestFactory csIntegrationRequestFactory;
     @Mock
     MonitoringLogService monitoringLogService;
+    @Mock
+    CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+    @Mock
+    PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
     @InjectMocks
     ProcessIncomingMessageService processIncomingMessageService;
 
@@ -213,5 +221,15 @@ class ProcessIncomingMessageServiceTest {
 
         final var actualResult = processIncomingMessageService.process(sendMessageToCareType);
         assertEquals(ResultCodeType.OK, actualResult.getResult().getResultCode());
+    }
+
+    @Test
+    void shallPublishAnalyticsMessage() {
+        final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+        when(certificateAnalyticsMessageFactory.receivedMessage(certificate, INCOMING_MESSAGE_REQUEST_DTO)).thenReturn(analyticsMessage);
+
+        processIncomingMessageService.process(sendMessageToCareType);
+
+        verify(publishCertificateAnalyticsMessage, times(1)).publishEvent(analyticsMessage);
     }
 }

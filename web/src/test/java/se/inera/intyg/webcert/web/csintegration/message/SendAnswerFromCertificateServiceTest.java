@@ -22,7 +22,9 @@ package se.inera.intyg.webcert.web.csintegration.message;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -40,6 +42,9 @@ import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.facade.model.question.Answer;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
+import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.web.csintegration.certificate.PublishCertificateStatusUpdateService;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
@@ -78,6 +83,10 @@ class SendAnswerFromCertificateServiceTest {
     CSIntegrationService csIntegrationService;
     @Mock
     CSIntegrationRequestFactory csIntegrationRequestFactory;
+    @Mock
+    CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+    @Mock
+    PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
     @InjectMocks
     SendAnswerFromCertificateService sendAnswerFromCertificateService;
     private Certificate certificate;
@@ -143,21 +152,28 @@ class SendAnswerFromCertificateServiceTest {
         @Test
         void shallPdlLogCreateMessage() {
             sendAnswerFromCertificateService.send(QUESTION_ID, MESSAGE);
-            ;
             verify(pdlLogService).logCreateMessage(PERSON_ID, CERTIFICATE_ID);
         }
 
         @Test
         void shallPublishStatusUpdate() {
             sendAnswerFromCertificateService.send(QUESTION_ID, MESSAGE);
-            ;
             verify(publishCertificateStatusUpdateService).publish(certificate, HandelsekodEnum.HANFRFM);
+        }
+
+        @Test
+        void shallPublishAnalyticsMessage() {
+            final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+            when(certificateAnalyticsMessageFactory.sentMessage(certificate, SENT_QUESTION)).thenReturn(analyticsMessage);
+
+            sendAnswerFromCertificateService.send(QUESTION_ID, MESSAGE);
+
+            verify(publishCertificateAnalyticsMessage, times(1)).publishEvent(analyticsMessage);
         }
 
         @Test
         void shallMonitorLog() {
             sendAnswerFromCertificateService.send(QUESTION_ID, MESSAGE);
-            ;
             verify(monitoringLogService).logArendeCreated(
                 CERTIFICATE_ID,
                 CERTIFICATE_TYPE,

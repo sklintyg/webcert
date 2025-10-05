@@ -35,6 +35,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.infra.pu.integration.api.model.Person;
 import se.inera.intyg.infra.pu.integration.api.model.PersonSvar;
 import se.inera.intyg.schemas.contract.Personnummer;
+import se.inera.intyg.webcert.common.dto.PersonIdType;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 
 @ExtendWith(MockitoExtension.class)

@@ -18,22 +18,50 @@
  */
 package se.inera.intyg.webcert.integration.analytics.service;
 
+import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.ANSWER_FROM_RECIPIENT;
+import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.ANSWER_TO_RECIPIENT;
+import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.CERTIFICATE_COMPLEMENTED;
+import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.CERTIFICATE_PRINTED;
+import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.CERTIFICATE_RENEWED;
+import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.CERTIFICATE_REPLACED;
+import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.CERTIFICATE_REVOKED;
+import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.CERTIFICATE_SENT;
+import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.CERTIFICATE_SIGNED;
+import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.COMPLEMENT_FROM_RECIPIENT;
+import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.DRAFT_CREATED;
+import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.DRAFT_CREATED_FROM_TEMPLATE;
+import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.DRAFT_DELETED;
+import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.DRAFT_READY_FOR_SIGN;
+import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.DRAFT_UPDATED;
+import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.LOCKED_DRAFT_REVOKED;
+import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.QUESTION_FROM_RECIPIENT;
+import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.QUESTION_TO_RECIPIENT;
+import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.REMINDER_FROM_RECIPIENT;
+
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateRelationType;
+import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.webcert.common.dto.IncomingComplementDTO;
+import se.inera.intyg.webcert.common.dto.IncomingMessageRequestDTO;
+import se.inera.intyg.webcert.common.dto.SentByDTO;
 import se.inera.intyg.webcert.common.service.user.LoggedInWebcertUserService;
 import se.inera.intyg.webcert.integration.analytics.model.AnalyticsCertificate;
 import se.inera.intyg.webcert.integration.analytics.model.AnalyticsCertificateRelation;
 import se.inera.intyg.webcert.integration.analytics.model.AnalyticsEvent;
+import se.inera.intyg.webcert.integration.analytics.model.AnalyticsMessage;
 import se.inera.intyg.webcert.integration.analytics.model.AnalyticsRecipient;
 import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage;
 import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage.CertificateAnalyticsMessageBuilder;
 import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
+import se.inera.intyg.webcert.persistence.arende.model.MedicinsktArende;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 
 @Component
@@ -43,55 +71,55 @@ public class CertificateAnalyticsMessageFactory {
     private final LoggedInWebcertUserService loggedInWebcertUserService;
 
     public CertificateAnalyticsMessage draftCreated(Certificate certificate) {
-        return create(certificate, CertificateAnalyticsMessageType.DRAFT_CREATED).build();
+        return create(certificate, DRAFT_CREATED).build();
     }
 
     public CertificateAnalyticsMessage draftCreated(Utkast utkast) {
-        return create(utkast, CertificateAnalyticsMessageType.DRAFT_CREATED).build();
+        return create(utkast, DRAFT_CREATED).build();
     }
 
     public CertificateAnalyticsMessage draftDeleted(Certificate certificate) {
-        return create(certificate, CertificateAnalyticsMessageType.DRAFT_DELETED).build();
+        return create(certificate, DRAFT_DELETED).build();
     }
 
     public CertificateAnalyticsMessage draftDeleted(Utkast utkast) {
-        return create(utkast, CertificateAnalyticsMessageType.DRAFT_DELETED).build();
+        return create(utkast, DRAFT_DELETED).build();
     }
 
     public CertificateAnalyticsMessage draftUpdated(Utkast utkast) {
-        return create(utkast, CertificateAnalyticsMessageType.DRAFT_UPDATED).build();
+        return create(utkast, DRAFT_UPDATED).build();
     }
 
     public CertificateAnalyticsMessage draftUpdated(Certificate certificate) {
-        return create(certificate, CertificateAnalyticsMessageType.DRAFT_UPDATED).build();
+        return create(certificate, DRAFT_UPDATED).build();
     }
 
     public CertificateAnalyticsMessage draftReadyForSign(Certificate certificate) {
-        return create(certificate, CertificateAnalyticsMessageType.DRAFT_READY_FOR_SIGN).build();
+        return create(certificate, DRAFT_READY_FOR_SIGN).build();
     }
 
     public CertificateAnalyticsMessage draftReadyForSign(Utkast utkast) {
-        return create(utkast, CertificateAnalyticsMessageType.DRAFT_READY_FOR_SIGN).build();
+        return create(utkast, DRAFT_READY_FOR_SIGN).build();
     }
 
     public CertificateAnalyticsMessage lockedDraftRevoked(Utkast utkast) {
-        return create(utkast, CertificateAnalyticsMessageType.LOCKED_DRAFT_REVOKED).build();
+        return create(utkast, LOCKED_DRAFT_REVOKED).build();
     }
 
     public CertificateAnalyticsMessage draftCreateFromTemplate(Utkast utkast) {
-        return create(utkast, CertificateAnalyticsMessageType.DRAFT_CREATED_FROM_TEMPLATE).build();
+        return create(utkast, DRAFT_CREATED_FROM_TEMPLATE).build();
     }
 
     public CertificateAnalyticsMessage certificateSigned(Certificate certificate) {
-        return create(certificate, CertificateAnalyticsMessageType.CERTIFICATE_SIGNED).build();
+        return create(certificate, CERTIFICATE_SIGNED).build();
     }
 
     public CertificateAnalyticsMessage certificateSigned(Utkast utkast) {
-        return create(utkast, CertificateAnalyticsMessageType.CERTIFICATE_SIGNED).build();
+        return create(utkast, CERTIFICATE_SIGNED).build();
     }
 
     public CertificateAnalyticsMessage certificateSent(Certificate certificate, String recipientId) {
-        return create(certificate, CertificateAnalyticsMessageType.CERTIFICATE_SENT)
+        return create(certificate, CERTIFICATE_SENT)
             .recipient(
                 AnalyticsRecipient.builder()
                     .id(recipientId)
@@ -101,7 +129,7 @@ public class CertificateAnalyticsMessageFactory {
     }
 
     public CertificateAnalyticsMessage certificateSent(Utkast utkast, String recipientId) {
-        return create(utkast, CertificateAnalyticsMessageType.CERTIFICATE_SENT)
+        return create(utkast, CERTIFICATE_SENT)
             .recipient(
                 AnalyticsRecipient.builder()
                     .id(recipientId)
@@ -111,43 +139,128 @@ public class CertificateAnalyticsMessageFactory {
     }
 
     public CertificateAnalyticsMessage certificateRenewed(Certificate certificate) {
-        return create(certificate, CertificateAnalyticsMessageType.CERTIFICATE_RENEWED).build();
+        return create(certificate, CERTIFICATE_RENEWED).build();
     }
 
     public CertificateAnalyticsMessage certificateRenewed(Utkast utkast) {
-        return create(utkast, CertificateAnalyticsMessageType.CERTIFICATE_RENEWED).build();
+        return create(utkast, CERTIFICATE_RENEWED).build();
     }
 
     public CertificateAnalyticsMessage certificateReplace(Certificate certificate) {
-        return create(certificate, CertificateAnalyticsMessageType.CERTIFICATE_REPLACED).build();
+        return create(certificate, CERTIFICATE_REPLACED).build();
     }
 
     public CertificateAnalyticsMessage certificateReplace(Utkast utkast) {
-        return create(utkast, CertificateAnalyticsMessageType.CERTIFICATE_REPLACED).build();
+        return create(utkast, CERTIFICATE_REPLACED).build();
     }
 
     public CertificateAnalyticsMessage certificateComplemented(Certificate certificate) {
-        return create(certificate, CertificateAnalyticsMessageType.CERTIFICATE_COMPLEMENTED).build();
+        return create(certificate, CERTIFICATE_COMPLEMENTED).build();
     }
 
     public CertificateAnalyticsMessage certificateComplemented(Utkast certificate) {
-        return create(certificate, CertificateAnalyticsMessageType.CERTIFICATE_COMPLEMENTED).build();
+        return create(certificate, CERTIFICATE_COMPLEMENTED).build();
     }
 
     public CertificateAnalyticsMessage certificateRevoked(Certificate certificate) {
-        return create(certificate, CertificateAnalyticsMessageType.CERTIFICATE_REVOKED).build();
+        return create(certificate, CERTIFICATE_REVOKED).build();
     }
 
     public CertificateAnalyticsMessage certificateRevoked(Utlatande utlatande) {
-        return create(utlatande, CertificateAnalyticsMessageType.CERTIFICATE_REVOKED);
+        return create(utlatande, CERTIFICATE_REVOKED);
     }
 
     public CertificateAnalyticsMessage certificatePrinted(Certificate certificate) {
-        return create(certificate, CertificateAnalyticsMessageType.CERTIFICATE_PRINTED).build();
+        return create(certificate, CERTIFICATE_PRINTED).build();
     }
 
     public CertificateAnalyticsMessage certificatePrinted(Utlatande utlatande) {
-        return create(utlatande, CertificateAnalyticsMessageType.CERTIFICATE_PRINTED);
+        return create(utlatande, CERTIFICATE_PRINTED);
+    }
+
+    public CertificateAnalyticsMessage receivedMessage(Certificate certificate, IncomingMessageRequestDTO incomingMessageRequest) {
+        return create(certificate, messageTypeForIncomingMessage(incomingMessageRequest))
+            .message(
+                AnalyticsMessage.builder()
+                    .id(incomingMessageRequest.getId())
+                    .answerId(incomingMessageRequest.getAnswerMessageId())
+                    .reminderId(incomingMessageRequest.getReminderMessageId())
+                    .type(incomingMessageRequest.getType().name())
+                    .questionIds(
+                        incomingMessageRequest.getComplements() == null ? null :
+                            incomingMessageRequest.getComplements().stream()
+                                .map(IncomingComplementDTO::getQuestionId)
+                                .toList()
+                    )
+                    .sender(incomingMessageRequest.getSentBy().getCode())
+                    .recipient(SentByDTO.WC.getCode())
+                    .sent(incomingMessageRequest.getSent())
+                    .lastDateToAnswer(incomingMessageRequest.getLastDateToAnswer())
+                    .build()
+            )
+            .build();
+    }
+
+    public CertificateAnalyticsMessage receivedMessage(Utkast utkast, Arende arende) {
+        return create(utkast, messageTypeForArende(arende))
+            .message(
+                AnalyticsMessage.builder()
+                    .id(arende.getMeddelandeId())
+                    .answerId(arende.getSvarPaId())
+                    .reminderId(arende.getPaminnelseMeddelandeId())
+                    .type(arende.getAmne().name())
+                    .questionIds(
+                        arende.getKomplettering() == null ? null :
+                            arende.getKomplettering().stream()
+                                .map(MedicinsktArende::getFrageId)
+                                .toList()
+                    )
+                    .sender(SentByDTO.FK.getCode())
+                    .recipient(SentByDTO.WC.getCode())
+                    .sent(arende.getSkickatTidpunkt())
+                    .lastDateToAnswer(arende.getSistaDatumForSvar())
+                    .build()
+            )
+            .build();
+    }
+
+    public CertificateAnalyticsMessage sentMessage(Certificate certificate, Question question) {
+        return create(certificate, isAnswer(question) ? ANSWER_TO_RECIPIENT : QUESTION_TO_RECIPIENT)
+            .message(
+                AnalyticsMessage.builder()
+                    .id(isAnswer(question) ? question.getAnswer().getId() : question.getId())
+                    .answerId(isAnswer(question) ? question.getId() : null)
+                    .type(
+                        switch (question.getType()) {
+                            case COMPLEMENT -> ArendeAmne.KOMPLT.name();
+                            case COORDINATION -> ArendeAmne.AVSTMN.name();
+                            case CONTACT -> ArendeAmne.KONTKT.name();
+                            case OTHER, MISSING -> ArendeAmne.OVRIGT.name();
+                        }
+                    )
+                    .sender(SentByDTO.WC.getCode())
+                    .recipient(SentByDTO.FK.getCode())
+                    .sent(question.getSent())
+                    .lastDateToAnswer(isAnswer(question) ? null : question.getLastDateToReply())
+                    .build()
+            )
+            .build();
+    }
+
+    public CertificateAnalyticsMessage sentMessage(Utkast utkast, Arende arende) {
+        return create(utkast, isAnswer(arende) ? ANSWER_TO_RECIPIENT : QUESTION_TO_RECIPIENT)
+            .message(
+                AnalyticsMessage.builder()
+                    .id(arende.getMeddelandeId())
+                    .answerId(arende.getSvarPaId())
+                    .type(arende.getAmne().name())
+                    .sender(SentByDTO.WC.getCode())
+                    .recipient(SentByDTO.FK.getCode())
+                    .sent(arende.getSkickatTidpunkt())
+                    .lastDateToAnswer(arende.getSistaDatumForSvar())
+                    .build()
+            )
+            .build();
     }
 
     private CertificateAnalyticsMessageBuilder create(Certificate certificate, CertificateAnalyticsMessageType type) {
@@ -247,5 +360,49 @@ public class CertificateAnalyticsMessageFactory {
             .origin(loggedInWebcertUser.getOrigin())
             .sessionId(MDC.get(MdcLogConstants.SESSION_ID_KEY))
             .build();
+    }
+
+    private static CertificateAnalyticsMessageType messageTypeForIncomingMessage(IncomingMessageRequestDTO incomingMessageRequest) {
+        if (isAnswer(incomingMessageRequest)) {
+            return switch (incomingMessageRequest.getType()) {
+                case AVSTMN, KONTKT, OVRIGT -> ANSWER_FROM_RECIPIENT;
+                case KOMPLT -> COMPLEMENT_FROM_RECIPIENT;
+                case PAMINN -> REMINDER_FROM_RECIPIENT;
+            };
+        }
+
+        return switch (incomingMessageRequest.getType()) {
+            case AVSTMN, KONTKT, OVRIGT -> QUESTION_FROM_RECIPIENT;
+            case KOMPLT -> COMPLEMENT_FROM_RECIPIENT;
+            case PAMINN -> REMINDER_FROM_RECIPIENT;
+        };
+    }
+
+    private static CertificateAnalyticsMessageType messageTypeForArende(Arende arende) {
+        if (isAnswer(arende)) {
+            return switch (arende.getAmne()) {
+                case AVSTMN, KONTKT, OVRIGT -> ANSWER_FROM_RECIPIENT;
+                case KOMPLT -> COMPLEMENT_FROM_RECIPIENT;
+                case PAMINN -> REMINDER_FROM_RECIPIENT;
+            };
+        }
+
+        return switch (arende.getAmne()) {
+            case AVSTMN, KONTKT, OVRIGT -> QUESTION_FROM_RECIPIENT;
+            case KOMPLT -> COMPLEMENT_FROM_RECIPIENT;
+            case PAMINN -> REMINDER_FROM_RECIPIENT;
+        };
+    }
+
+    private static boolean isAnswer(IncomingMessageRequestDTO incomingMessageRequest) {
+        return incomingMessageRequest.getAnswerMessageId() != null && !incomingMessageRequest.getAnswerMessageId().isEmpty();
+    }
+
+    private static boolean isAnswer(Question question) {
+        return question.getAnswer() != null && question.getAnswer().getId() != null && !question.getAnswer().getId().isEmpty();
+    }
+
+    private static boolean isAnswer(Arende arende) {
+        return arende.getSvarPaId() != null && !arende.getSvarPaId().isEmpty();
     }
 }

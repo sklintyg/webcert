@@ -17,10 +17,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.csintegration.patient;
+package se.inera.intyg.webcert.common.dto;
 
-public enum PersonIdType {
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import lombok.Builder;
+import lombok.Value;
+import se.inera.intyg.webcert.common.dto.PersonIdDTO.PersonIdDTOBuilder;
 
-    COORDINATION_NUMBER, PERSONAL_IDENTITY_NUMBER
+@JsonDeserialize(builder = PersonIdDTOBuilder.class)
+@Value
+@Builder
+public class PersonIdDTO {
 
+    PersonIdType type;
+    String id;
+
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class PersonIdDTOBuilder {
+
+    }
 }
