@@ -50,14 +50,20 @@ import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
+import se.inera.intyg.webcert.common.service.user.LoggedInWebcertUser;
+import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.web.csintegration.exception.HandleApiErrorService;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.PrefillXmlDTO;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
+import se.inera.intyg.webcert.web.service.user.LoggedInWebcertUserFactory;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.PersonId;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.TypAvIntyg;
@@ -92,6 +98,12 @@ class CreateDraftCertificateFromCSTest {
     private CSIntegrationService csIntegrationService;
     @Mock
     private CSIntegrationRequestFactory csIntegrationRequestFactory;
+    @Mock
+    private LoggedInWebcertUserFactory loggedInWebcertUserFactory;
+    @Mock
+    private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+    @Mock
+    private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
     @InjectMocks
     private CreateDraftCertificateFromCS createDraftCertificateFromCS;
 
@@ -286,6 +298,51 @@ class CreateDraftCertificateFromCSTest {
         verifyNoInteractions(monitoringLogService);
     }
 
+    @Test
+    void shouldPublishAnalyticsMessageWhenDraftIsCreated() {
+        final var certificate = getIntyg(VALID_PERSON_ID);
+        final var user = mock(IntygUser.class);
+        final var modelIdDTO = CertificateModelIdDTO.builder().build();
+        final var request = CreateCertificateRequestDTO.builder().build();
+
+        when(csIntegrationService.certificateExternalTypeExists(CODE_SYSTEM, CODE)).thenReturn(Optional.of(modelIdDTO));
+        when(csIntegrationRequestFactory.createDraftCertificateRequest(modelIdDTO, certificate, user)).thenReturn(request);
+        when(csIntegrationService.createCertificate(request)).thenReturn(CERTIFICATE);
+
+        final var loggedInWebcertUser = LoggedInWebcertUser.builder().build();
+        when(loggedInWebcertUserFactory.create(user)).thenReturn(loggedInWebcertUser);
+
+        final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+        when(certificateAnalyticsMessageFactory.draftCreated(CERTIFICATE, loggedInWebcertUser)).thenReturn(analyticsMessage);
+
+        createDraftCertificateFromCS.create(certificate, user);
+
+        verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
+    }
+
+    @Test
+    void shouldPublishAnalyticsMessageWhenDraftIsCreatedWithPrefill() {
+        final var certificate = getIntyg(VALID_PERSON_ID);
+        final var user = mock(IntygUser.class);
+        final var modelIdDTO = CertificateModelIdDTO.builder().build();
+        final var request = CreateCertificateRequestDTO.builder()
+            .prefillXml(new PrefillXmlDTO("<xml></xml>"))
+            .build();
+
+        when(csIntegrationService.certificateExternalTypeExists(CODE_SYSTEM, CODE)).thenReturn(Optional.of(modelIdDTO));
+        when(csIntegrationRequestFactory.createDraftCertificateRequest(modelIdDTO, certificate, user)).thenReturn(request);
+        when(csIntegrationService.createCertificate(request)).thenReturn(CERTIFICATE);
+
+        final var loggedInWebcertUser = LoggedInWebcertUser.builder().build();
+        when(loggedInWebcertUserFactory.create(user)).thenReturn(loggedInWebcertUser);
+
+        final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+        when(certificateAnalyticsMessageFactory.draftCreatedWithPrefill(CERTIFICATE, loggedInWebcertUser)).thenReturn(analyticsMessage);
+
+        createDraftCertificateFromCS.create(certificate, user);
+
+        verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
+    }
 
     private static Intyg getIntyg(String extension) {
         final var intyg = new Intyg();

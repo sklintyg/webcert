@@ -363,6 +363,219 @@ class CertificateAnalyticsMessageFactoryTest {
 
     @Nested
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    class AnalyticsMessagesBasedOnCertificateWithoutLoggedInUser {
+
+        private Certificate certificate;
+        private LoggedInWebcertUser loggedInWebcertUser;
+
+        @BeforeEach
+        void setUp() {
+            certificate = new Certificate();
+            certificate.setMetadata(
+                CertificateMetadata.builder()
+                    .id(CERTIFICATE_ID)
+                    .type(CERTIFICATE_TYPE)
+                    .typeVersion(CERTIFICATE_TYPE_VERSION)
+                    .patient(
+                        Patient.builder()
+                            .personId(
+                                PersonId.builder()
+                                    .id(CERTIFICATE_PATIENT_ID)
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .unit(
+                        Unit.builder()
+                            .unitId(CERTIFICATE_UNIT_ID)
+                            .build()
+                    )
+                    .careProvider(
+                        Unit.builder()
+                            .unitId(CERTIFICATE_CARE_PROVIDER_ID)
+                            .build()
+                    )
+                    .recipient(
+                        CertificateRecipient.builder()
+                            .id(RECIPIENT_ID)
+                            .build()
+                    )
+                    .relations(
+                        CertificateRelations.builder()
+                            .parent(
+                                CertificateRelation.builder()
+                                    .certificateId(CERTIFICATE_RELATION_PARENT_ID)
+                                    .type(CERTIFICATE_RELATION_PARENT_TYPE)
+                                    .build()
+                            )
+                            .build()
+                    )
+                    .build()
+            );
+
+            loggedInWebcertUser = LoggedInWebcertUser.builder()
+                .staffId(EVENT_USER_ID)
+                .role(EVENT_ROLE)
+                .unitId(EVENT_UNIT_ID)
+                .careProviderId(EVENT_CARE_PROVIDER_ID)
+                .build();
+
+            MDC.put(MdcLogConstants.SESSION_ID_KEY, "-");
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnCertificateWithoutLoggedInUser")
+        void shallReturnCorrectEventTimestamp(Function<CertificateAndUser, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(CertificateAndUser.create(certificate, loggedInWebcertUser));
+            assertNotNull(actual.getEvent().getTimestamp());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnCertificateWithoutLoggedInUser")
+        void shallReturnCorrectEventMessageType(Function<CertificateAndUser, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(CertificateAndUser.create(certificate, loggedInWebcertUser));
+            assertEquals(messageType, actual.getEvent().getMessageType());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnCertificateWithoutLoggedInUser")
+        void shallReturnCorrectEventStaffId(Function<CertificateAndUser, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(CertificateAndUser.create(certificate, loggedInWebcertUser));
+            assertEquals(EVENT_USER_ID, actual.getEvent().getUserId());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnCertificateWithoutLoggedInUser")
+        void shallReturnCorrectEventRole(Function<CertificateAndUser, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(CertificateAndUser.create(certificate, loggedInWebcertUser));
+            assertEquals(EVENT_ROLE, actual.getEvent().getRole());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnCertificateWithoutLoggedInUser")
+        void shallReturnCorrectEventUnitId(Function<CertificateAndUser, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(CertificateAndUser.create(certificate, loggedInWebcertUser));
+            assertEquals(EVENT_UNIT_ID, actual.getEvent().getUnitId());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnCertificateWithoutLoggedInUser")
+        void shallReturnCorrectEventCareProviderId(Function<CertificateAndUser, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(CertificateAndUser.create(certificate, loggedInWebcertUser));
+            assertEquals(EVENT_CARE_PROVIDER_ID, actual.getEvent().getCareProviderId());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnCertificateWithoutLoggedInUser")
+        void shallReturnCorrectEventOrigin(Function<CertificateAndUser, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(CertificateAndUser.create(certificate, loggedInWebcertUser));
+            assertNull(actual.getEvent().getOrigin(), "Origin should be null when no user logged in");
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnCertificateWithoutLoggedInUser")
+        void shallReturnCorrectEventSessionId(Function<CertificateAndUser, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(CertificateAndUser.create(certificate, loggedInWebcertUser));
+            assertNull(actual.getEvent().getSessionId(), "SessionId should be null when no user logged in");
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnCertificateWithoutLoggedInUser")
+        void shallReturnCorrectCertificateId(Function<CertificateAndUser, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(CertificateAndUser.create(certificate, loggedInWebcertUser));
+            assertEquals(CERTIFICATE_ID, actual.getCertificate().getId());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnCertificateWithoutLoggedInUser")
+        void shallReturnCorrectCertificateType(Function<CertificateAndUser, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(CertificateAndUser.create(certificate, loggedInWebcertUser));
+            assertEquals(CERTIFICATE_TYPE, actual.getCertificate().getType());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnCertificateWithoutLoggedInUser")
+        void shallReturnCorrectCertificateTypeVersion(Function<CertificateAndUser, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(CertificateAndUser.create(certificate, loggedInWebcertUser));
+            assertEquals(CERTIFICATE_TYPE_VERSION, actual.getCertificate().getTypeVersion());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnCertificateWithoutLoggedInUser")
+        void shallReturnCorrectCertificatePatientId(Function<CertificateAndUser, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(CertificateAndUser.create(certificate, loggedInWebcertUser));
+            assertEquals(CERTIFICATE_PATIENT_ID, actual.getCertificate().getPatientId());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnCertificateWithoutLoggedInUser")
+        void shallReturnCorrectCertificateUnitId(Function<CertificateAndUser, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(CertificateAndUser.create(certificate, loggedInWebcertUser));
+            assertEquals(CERTIFICATE_UNIT_ID, actual.getCertificate().getUnitId());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnCertificateWithoutLoggedInUser")
+        void shallReturnCorrectCertificateCareProviderId(Function<CertificateAndUser, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(CertificateAndUser.create(certificate, loggedInWebcertUser));
+            assertEquals(CERTIFICATE_CARE_PROVIDER_ID, actual.getCertificate().getCareProviderId());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnCertificateWithoutLoggedInUser")
+        void shallReturnCorrectCertificateRelationParentId(Function<CertificateAndUser, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(CertificateAndUser.create(certificate, loggedInWebcertUser));
+            assertEquals(CERTIFICATE_RELATION_PARENT_ID, actual.getCertificate().getParent().getId());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnCertificateWithoutLoggedInUser")
+        void shallReturnCorrectCertificateRelationParentType(Function<CertificateAndUser, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(CertificateAndUser.create(certificate, loggedInWebcertUser));
+            assertEquals(CERTIFICATE_RELATION_PARENT_TYPE.name(), actual.getCertificate().getParent().getType());
+        }
+
+        Stream<Arguments> analyticsMessagesBasedOnCertificateWithoutLoggedInUser() {
+            return Stream.of(
+                Arguments.of(
+                    (Function<CertificateAndUser, CertificateAnalyticsMessage>) certificateAndUser ->
+                        factory.draftCreated(certificateAndUser.certificate(), certificateAndUser.user()),
+                    CertificateAnalyticsMessageType.DRAFT_CREATED
+                ),
+                Arguments.of(
+                    (Function<CertificateAndUser, CertificateAnalyticsMessage>) certificateAndUser ->
+                        factory.draftCreatedWithPrefill(certificateAndUser.certificate(), certificateAndUser.user()),
+                    CertificateAnalyticsMessageType.DRAFT_CREATED_WITH_PREFILL
+                )
+            );
+        }
+
+        record CertificateAndUser(Certificate certificate, LoggedInWebcertUser user) {
+
+            public static CertificateAndUser create(Certificate certificate, LoggedInWebcertUser user) {
+                return new CertificateAndUser(certificate, user);
+            }
+        }
+    }
+
+    @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     class AnalyticsMessagesBasedOnUtkast {
 
         private Utkast utkast;
@@ -577,6 +790,187 @@ class CertificateAnalyticsMessageFactoryTest {
                     CertificateAnalyticsMessageType.CERTIFICATE_COMPLEMENTED
                 )
             );
+        }
+    }
+
+    @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    class AnalyticsMessagesBasedOnUtkastWithoutLoggedInUser {
+
+        private Utkast utkast;
+        private LoggedInWebcertUser loggedInWebcertUser;
+
+        @BeforeEach
+        void setUp() {
+            utkast = new Utkast();
+            utkast.setIntygsId(CERTIFICATE_ID);
+            utkast.setIntygsTyp(CERTIFICATE_TYPE);
+            utkast.setIntygTypeVersion(CERTIFICATE_TYPE_VERSION);
+            utkast.setPatientPersonnummer(Personnummer.createPersonnummer(CERTIFICATE_PATIENT_ID).orElseThrow());
+            utkast.setEnhetsId(CERTIFICATE_UNIT_ID);
+            utkast.setVardgivarId(CERTIFICATE_CARE_PROVIDER_ID);
+            utkast.setSkickadTillMottagare(RECIPIENT_ID);
+            utkast.setRelationIntygsId(CERTIFICATE_RELATION_PARENT_ID);
+            utkast.setRelationKod(RelationKod.FRLANG);
+
+            loggedInWebcertUser = LoggedInWebcertUser.builder()
+                .staffId(EVENT_USER_ID)
+                .role(EVENT_ROLE)
+                .unitId(EVENT_UNIT_ID)
+                .careProviderId(EVENT_CARE_PROVIDER_ID)
+                .build();
+
+            MDC.put(MdcLogConstants.SESSION_ID_KEY, "-");
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnCertificateWithoutLoggedInUser")
+        void shallReturnCorrectEventTimestamp(Function<UtkastAndUser, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(UtkastAndUser.create(utkast, loggedInWebcertUser));
+            assertNotNull(actual.getEvent().getTimestamp());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnCertificateWithoutLoggedInUser")
+        void shallReturnCorrectEventMessageType(Function<UtkastAndUser, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(UtkastAndUser.create(utkast, loggedInWebcertUser));
+            assertEquals(messageType, actual.getEvent().getMessageType());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnCertificateWithoutLoggedInUser")
+        void shallReturnCorrectEventStaffId(Function<UtkastAndUser, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(UtkastAndUser.create(utkast, loggedInWebcertUser));
+            assertEquals(EVENT_USER_ID, actual.getEvent().getUserId());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnCertificateWithoutLoggedInUser")
+        void shallReturnCorrectEventRole(Function<UtkastAndUser, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(UtkastAndUser.create(utkast, loggedInWebcertUser));
+            assertEquals(EVENT_ROLE, actual.getEvent().getRole());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnCertificateWithoutLoggedInUser")
+        void shallReturnCorrectEventUnitId(Function<UtkastAndUser, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(UtkastAndUser.create(utkast, loggedInWebcertUser));
+            assertEquals(EVENT_UNIT_ID, actual.getEvent().getUnitId());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnCertificateWithoutLoggedInUser")
+        void shallReturnCorrectEventCareProviderId(Function<UtkastAndUser, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(UtkastAndUser.create(utkast, loggedInWebcertUser));
+            assertEquals(EVENT_CARE_PROVIDER_ID, actual.getEvent().getCareProviderId());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnCertificateWithoutLoggedInUser")
+        void shallReturnCorrectEventOrigin(Function<UtkastAndUser, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(UtkastAndUser.create(utkast, loggedInWebcertUser));
+            assertNull(actual.getEvent().getOrigin(), "Origin should be null when no user logged in");
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnCertificateWithoutLoggedInUser")
+        void shallReturnCorrectEventSessionId(Function<UtkastAndUser, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(UtkastAndUser.create(utkast, loggedInWebcertUser));
+            assertNull(actual.getEvent().getSessionId(), "SessionId should be null when no user logged in");
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnCertificateWithoutLoggedInUser")
+        void shallReturnCorrectCertificateId(Function<UtkastAndUser, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(UtkastAndUser.create(utkast, loggedInWebcertUser));
+            assertEquals(CERTIFICATE_ID, actual.getCertificate().getId());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnCertificateWithoutLoggedInUser")
+        void shallReturnCorrectCertificateType(Function<UtkastAndUser, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(UtkastAndUser.create(utkast, loggedInWebcertUser));
+            assertEquals(CERTIFICATE_TYPE, actual.getCertificate().getType());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnCertificateWithoutLoggedInUser")
+        void shallReturnCorrectCertificateTypeVersion(Function<UtkastAndUser, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(UtkastAndUser.create(utkast, loggedInWebcertUser));
+            assertEquals(CERTIFICATE_TYPE_VERSION, actual.getCertificate().getTypeVersion());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnCertificateWithoutLoggedInUser")
+        void shallReturnCorrectCertificatePatientId(Function<UtkastAndUser, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(UtkastAndUser.create(utkast, loggedInWebcertUser));
+            assertEquals(CERTIFICATE_PATIENT_ID, actual.getCertificate().getPatientId());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnCertificateWithoutLoggedInUser")
+        void shallReturnCorrectCertificateUnitId(Function<UtkastAndUser, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(UtkastAndUser.create(utkast, loggedInWebcertUser));
+            assertEquals(CERTIFICATE_UNIT_ID, actual.getCertificate().getUnitId());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnCertificateWithoutLoggedInUser")
+        void shallReturnCorrectCertificateCareProviderId(Function<UtkastAndUser, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(UtkastAndUser.create(utkast, loggedInWebcertUser));
+            assertEquals(CERTIFICATE_CARE_PROVIDER_ID, actual.getCertificate().getCareProviderId());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnCertificateWithoutLoggedInUser")
+        void shallReturnCorrectCertificateRelationParentId(Function<UtkastAndUser, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(UtkastAndUser.create(utkast, loggedInWebcertUser));
+            assertEquals(CERTIFICATE_RELATION_PARENT_ID, actual.getCertificate().getParent().getId());
+        }
+
+        @ParameterizedTest(name = "{index} => {1}")
+        @MethodSource("analyticsMessagesBasedOnCertificateWithoutLoggedInUser")
+        void shallReturnCorrectCertificateRelationParentType(Function<UtkastAndUser, CertificateAnalyticsMessage> test,
+            CertificateAnalyticsMessageType messageType) {
+            final var actual = test.apply(UtkastAndUser.create(utkast, loggedInWebcertUser));
+            assertEquals(CERTIFICATE_RELATION_PARENT_TYPE.name(), actual.getCertificate().getParent().getType());
+        }
+
+        Stream<Arguments> analyticsMessagesBasedOnCertificateWithoutLoggedInUser() {
+            return Stream.of(
+                Arguments.of(
+                    (Function<UtkastAndUser, CertificateAnalyticsMessage>) utkastAndUser ->
+                        factory.draftCreated(utkastAndUser.certificate(), utkastAndUser.user()),
+                    CertificateAnalyticsMessageType.DRAFT_CREATED
+                ),
+                Arguments.of(
+                    (Function<UtkastAndUser, CertificateAnalyticsMessage>) utkastAndUser ->
+                        factory.draftCreatedWithPrefill(utkastAndUser.certificate(), utkastAndUser.user()),
+                    CertificateAnalyticsMessageType.DRAFT_CREATED_WITH_PREFILL
+                )
+            );
+        }
+
+        record UtkastAndUser(Utkast certificate, LoggedInWebcertUser user) {
+
+            public static UtkastAndUser create(Utkast utkast, LoggedInWebcertUser user) {
+                return new UtkastAndUser(utkast, user);
+            }
         }
     }
 
@@ -817,7 +1211,7 @@ class CertificateAnalyticsMessageFactoryTest {
 
             when(loggedInWebcertUserService.getLoggedInWebcertUser()).thenReturn(noLoggedInUser);
 
-            MDC.clear();
+            MDC.put(MdcLogConstants.SESSION_ID_KEY, "-");
         }
 
         @Test
@@ -1483,7 +1877,7 @@ class CertificateAnalyticsMessageFactoryTest {
             // Make this lenient to enable mocking to work in parameterized tests
             lenient().when(loggedInWebcertUserService.getLoggedInWebcertUser()).thenReturn(noLoggedInUser);
 
-            MDC.clear();
+            MDC.put(MdcLogConstants.SESSION_ID_KEY, "-");
         }
 
         @Test

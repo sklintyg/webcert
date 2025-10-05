@@ -30,6 +30,7 @@ import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnal
 import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.COMPLEMENT_FROM_RECIPIENT;
 import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.DRAFT_CREATED;
 import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.DRAFT_CREATED_FROM_TEMPLATE;
+import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.DRAFT_CREATED_WITH_PREFILL;
 import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.DRAFT_DELETED;
 import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.DRAFT_READY_FOR_SIGN;
 import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.DRAFT_UPDATED;
@@ -49,6 +50,7 @@ import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.webcert.common.dto.IncomingComplementDTO;
 import se.inera.intyg.webcert.common.dto.IncomingMessageRequestDTO;
 import se.inera.intyg.webcert.common.dto.SentByDTO;
+import se.inera.intyg.webcert.common.service.user.LoggedInWebcertUser;
 import se.inera.intyg.webcert.common.service.user.LoggedInWebcertUserService;
 import se.inera.intyg.webcert.integration.analytics.model.AnalyticsCertificate;
 import se.inera.intyg.webcert.integration.analytics.model.AnalyticsCertificateRelation;
@@ -76,6 +78,50 @@ public class CertificateAnalyticsMessageFactory {
 
     public CertificateAnalyticsMessage draftCreated(Utkast utkast) {
         return create(utkast, DRAFT_CREATED).build();
+    }
+
+    public CertificateAnalyticsMessage draftCreated(Certificate certificate, LoggedInWebcertUser loggedInWebcertUser) {
+        return CertificateAnalyticsMessage.builder()
+            .event(
+                createAnalyticsEvent(DRAFT_CREATED, loggedInWebcertUser)
+            )
+            .certificate(
+                createCertificate(certificate)
+            )
+            .build();
+    }
+
+    public CertificateAnalyticsMessage draftCreated(Utkast utkast, LoggedInWebcertUser loggedInWebcertUser) {
+        return CertificateAnalyticsMessage.builder()
+            .event(
+                createAnalyticsEvent(DRAFT_CREATED, loggedInWebcertUser)
+            )
+            .certificate(
+                createCertificate(utkast)
+            )
+            .build();
+    }
+
+    public CertificateAnalyticsMessage draftCreatedWithPrefill(Certificate certificate, LoggedInWebcertUser loggedInWebcertUser) {
+        return CertificateAnalyticsMessage.builder()
+            .event(
+                createAnalyticsEvent(DRAFT_CREATED_WITH_PREFILL, loggedInWebcertUser)
+            )
+            .certificate(
+                createCertificate(certificate)
+            )
+            .build();
+    }
+
+    public CertificateAnalyticsMessage draftCreatedWithPrefill(Utkast utkast, LoggedInWebcertUser loggedInWebcertUser) {
+        return CertificateAnalyticsMessage.builder()
+            .event(
+                createAnalyticsEvent(DRAFT_CREATED_WITH_PREFILL, loggedInWebcertUser)
+            )
+            .certificate(
+                createCertificate(utkast)
+            )
+            .build();
     }
 
     public CertificateAnalyticsMessage draftDeleted(Certificate certificate) {
@@ -269,28 +315,8 @@ public class CertificateAnalyticsMessageFactory {
                 createAnalyticsEvent(type)
             )
             .certificate(
-                AnalyticsCertificate.builder()
-                    .id(certificate.getMetadata().getId())
-                    .type(certificate.getMetadata().getType())
-                    .typeVersion(certificate.getMetadata().getTypeVersion())
-                    .patientId(certificate.getMetadata().getPatient().getPersonId().getId())
-                    .unitId(certificate.getMetadata().getUnit().getUnitId())
-                    .careProviderId(certificate.getMetadata().getCareProvider().getUnitId())
-                    .parent(
-                        createCertificateAnalyticsRelation(certificate)
-                    )
-                    .build()
+                createCertificate(certificate)
             );
-    }
-
-    private AnalyticsCertificateRelation createCertificateAnalyticsRelation(Certificate certificate) {
-        if (certificate.getMetadata().getRelations() == null || certificate.getMetadata().getRelations().getParent() == null) {
-            return null;
-        }
-        return AnalyticsCertificateRelation.builder()
-            .id(certificate.getMetadata().getRelations().getParent().getCertificateId())
-            .type(certificate.getMetadata().getRelations().getParent().getType().name())
-            .build();
     }
 
     private CertificateAnalyticsMessageBuilder create(Utkast utkast, CertificateAnalyticsMessageType type) {
@@ -299,35 +325,8 @@ public class CertificateAnalyticsMessageFactory {
                 createAnalyticsEvent(type)
             )
             .certificate(
-                AnalyticsCertificate.builder()
-                    .id(utkast.getIntygsId())
-                    .type(utkast.getIntygsTyp())
-                    .typeVersion(utkast.getIntygTypeVersion())
-                    .patientId(utkast.getPatientPersonnummer().getPersonnummerWithDash())
-                    .unitId(utkast.getEnhetsId())
-                    .careProviderId(utkast.getVardgivarId())
-                    .parent(
-                        createCertificateAnalyticsRelation(utkast)
-                    )
-                    .build()
+                createCertificate(utkast)
             );
-    }
-
-    private AnalyticsCertificateRelation createCertificateAnalyticsRelation(Utkast utkast) {
-        if (utkast.getRelationIntygsId() == null) {
-            return null;
-        }
-        return AnalyticsCertificateRelation.builder()
-            .id(utkast.getRelationIntygsId())
-            .type(
-                switch (utkast.getRelationKod()) {
-                    case ERSATT -> CertificateRelationType.REPLACED.name();
-                    case KOMPLT -> CertificateRelationType.COMPLEMENTED.name();
-                    case FRLANG -> CertificateRelationType.EXTENDED.name();
-                    case KOPIA -> CertificateRelationType.COPIED.name();
-                }
-            )
-            .build();
     }
 
     private CertificateAnalyticsMessage create(Utlatande utlatande, CertificateAnalyticsMessageType type) {
@@ -350,6 +349,10 @@ public class CertificateAnalyticsMessageFactory {
 
     private AnalyticsEvent createAnalyticsEvent(CertificateAnalyticsMessageType type) {
         final var loggedInWebcertUser = loggedInWebcertUserService.getLoggedInWebcertUser();
+        return createAnalyticsEvent(type, loggedInWebcertUser);
+    }
+
+    private AnalyticsEvent createAnalyticsEvent(CertificateAnalyticsMessageType type, LoggedInWebcertUser loggedInWebcertUser) {
         return AnalyticsEvent.builder()
             .timestamp(LocalDateTime.now())
             .messageType(type)
@@ -358,7 +361,70 @@ public class CertificateAnalyticsMessageFactory {
             .unitId(loggedInWebcertUser.getUnitId())
             .careProviderId(loggedInWebcertUser.getCareProviderId())
             .origin(loggedInWebcertUser.getOrigin())
-            .sessionId(MDC.get(MdcLogConstants.SESSION_ID_KEY))
+            .sessionId(sessionId())
+            .build();
+    }
+
+    private static String sessionId() {
+        final var sessionId = MDC.get(MdcLogConstants.SESSION_ID_KEY);
+        if (sessionId == null || sessionId.isBlank() || sessionId.equals("-")) {
+            return null;
+        }
+        return sessionId;
+    }
+
+    private AnalyticsCertificate createCertificate(Certificate certificate) {
+        return AnalyticsCertificate.builder()
+            .id(certificate.getMetadata().getId())
+            .type(certificate.getMetadata().getType())
+            .typeVersion(certificate.getMetadata().getTypeVersion())
+            .patientId(certificate.getMetadata().getPatient().getPersonId().getId())
+            .unitId(certificate.getMetadata().getUnit().getUnitId())
+            .careProviderId(certificate.getMetadata().getCareProvider().getUnitId())
+            .parent(
+                createCertificateAnalyticsRelation(certificate)
+            )
+            .build();
+    }
+
+    private AnalyticsCertificateRelation createCertificateAnalyticsRelation(Certificate certificate) {
+        if (certificate.getMetadata().getRelations() == null || certificate.getMetadata().getRelations().getParent() == null) {
+            return null;
+        }
+        return AnalyticsCertificateRelation.builder()
+            .id(certificate.getMetadata().getRelations().getParent().getCertificateId())
+            .type(certificate.getMetadata().getRelations().getParent().getType().name())
+            .build();
+    }
+
+    private AnalyticsCertificate createCertificate(Utkast utkast) {
+        return AnalyticsCertificate.builder()
+            .id(utkast.getIntygsId())
+            .type(utkast.getIntygsTyp())
+            .typeVersion(utkast.getIntygTypeVersion())
+            .patientId(utkast.getPatientPersonnummer().getPersonnummerWithDash())
+            .unitId(utkast.getEnhetsId())
+            .careProviderId(utkast.getVardgivarId())
+            .parent(
+                createCertificateAnalyticsRelation(utkast)
+            )
+            .build();
+    }
+
+    private AnalyticsCertificateRelation createCertificateAnalyticsRelation(Utkast utkast) {
+        if (utkast.getRelationIntygsId() == null) {
+            return null;
+        }
+        return AnalyticsCertificateRelation.builder()
+            .id(utkast.getRelationIntygsId())
+            .type(
+                switch (utkast.getRelationKod()) {
+                    case ERSATT -> CertificateRelationType.REPLACED.name();
+                    case KOMPLT -> CertificateRelationType.COMPLEMENTED.name();
+                    case FRLANG -> CertificateRelationType.EXTENDED.name();
+                    case KOPIA -> CertificateRelationType.COPIED.name();
+                }
+            )
             .build();
     }
 

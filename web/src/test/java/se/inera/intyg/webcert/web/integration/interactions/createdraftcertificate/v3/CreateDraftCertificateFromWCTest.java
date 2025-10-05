@@ -19,10 +19,11 @@
 
 package se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -30,12 +31,12 @@ import static org.mockito.Mockito.when;
 import com.google.common.collect.ImmutableMap;
 import java.util.Collections;
 import org.assertj.core.util.Lists;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.fk7263.rest.Fk7263ModuleApi;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.UtkastStatus;
@@ -46,6 +47,10 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.webcert.common.service.user.LoggedInWebcertUser;
+import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.integration.tak.model.TakResult;
 import se.inera.intyg.webcert.integration.tak.service.TakService;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
@@ -54,6 +59,7 @@ import se.inera.intyg.webcert.web.integration.interactions.createdraftcertificat
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
 import se.inera.intyg.webcert.web.integration.validators.ResultValidator;
+import se.inera.intyg.webcert.web.service.user.LoggedInWebcertUserFactory;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.CreateNewDraftRequest;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.CreateDraftCertificateType;
@@ -66,9 +72,10 @@ import se.riv.clinicalprocess.healthcond.certificate.types.v3.TypAvIntyg;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ErrorIdType;
 import se.riv.clinicalprocess.healthcond.certificate.v3.Patient;
 import se.riv.clinicalprocess.healthcond.certificate.v3.ResultCodeType;
+import se.riv.clinicalprocess.healthcond.certificate.v33.Forifyllnad;
 
-@RunWith(MockitoJUnitRunner.class)
-public class CreateDraftCertificateFromWCTest extends BaseCreateDraftCertificateTest {
+@ExtendWith(MockitoExtension.class)
+class CreateDraftCertificateFromWCTest extends BaseCreateDraftCertificateTest {
 
     private static final String USER_HSAID = "SE1234567890";
     private static final String UNIT_HSAID = "SE0987654321";
@@ -96,20 +103,27 @@ public class CreateDraftCertificateFromWCTest extends BaseCreateDraftCertificate
     private IntygModuleRegistry moduleRegistry;
     @Mock
     private IntygTextsService intygTextsService;
+    @Mock
+    private LoggedInWebcertUserFactory loggedInWebcertUserFactory;
+    @Mock
+    private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+    @Mock
+    private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
     @InjectMocks
     private CreateDraftCertificateFromWC createDraftCertificateFromWC;
 
-    @Before
+    @BeforeEach
+    @Override
     public void setup() throws ModuleNotFoundException {
-        when(moduleRegistry.getModuleIdFromExternalId(any())).thenReturn(UTKAST_TYPE);
-        when(mockUtkastService.checkIfPersonHasExistingIntyg(any(), any(), any())).thenReturn(ImmutableMap.of(
+        lenient().when(moduleRegistry.getModuleIdFromExternalId(any())).thenReturn(UTKAST_TYPE);
+        lenient().when(mockUtkastService.checkIfPersonHasExistingIntyg(any(), any(), any())).thenReturn(ImmutableMap.of(
             "utkast", ImmutableMap.of(),
             "intyg", ImmutableMap.of()));
-        when(intygTextsService.getLatestVersion(any(String.class))).thenReturn(INTYG_TYPE_VERSION);
+        lenient().when(intygTextsService.getLatestVersion(any(String.class))).thenReturn(INTYG_TYPE_VERSION);
     }
 
     @Test
-    public void testCreateDraftCertificateSuccess() throws ModuleNotFoundException {
+    void testCreateDraftCertificateSuccess() throws ModuleNotFoundException {
         final var vardperson = createVardpersonReferens(
             createCertificateType().getIntyg().getSkapadAv().getPersonalId().getRoot(),
             createCertificateType().getIntyg().getSkapadAv().getFullstandigtNamn());
@@ -136,7 +150,7 @@ public class CreateDraftCertificateFromWCTest extends BaseCreateDraftCertificate
     }
 
     @Test
-    public void testCreateDraftCertificateTakningNotOK() throws ModuleNotFoundException {
+    void testCreateDraftCertificateTakningNotOK() throws ModuleNotFoundException {
         when(moduleRegistry.getModuleApi(any(), any())).thenReturn(new Fk7263ModuleApi());
         when(mockValidator.validateCertificateErrors(any(Intyg.class), any(IntygUser.class))).thenReturn(new ResultValidator());
         when(takService.verifyTakningForCareUnit(any(String.class), any(String.class), any(SchemaVersion.class), any(IntygUser.class)))
@@ -152,7 +166,7 @@ public class CreateDraftCertificateFromWCTest extends BaseCreateDraftCertificate
     }
 
     @Test
-    public void testCreateDraftCertificateValidationError() {
+    void testCreateDraftCertificateValidationError() {
         final var resultValidator = mock(ResultValidator.class);
         when(resultValidator.hasErrors()).thenReturn(true);
         when(mockValidator.validateCertificateErrors(any(Intyg.class), any(IntygUser.class))).thenReturn(resultValidator);
@@ -165,7 +179,7 @@ public class CreateDraftCertificateFromWCTest extends BaseCreateDraftCertificate
     }
 
     @Test
-    public void testCreateDraftCertificateMultipleMIUs() throws ModuleNotFoundException {
+    void testCreateDraftCertificateMultipleMIUs() throws ModuleNotFoundException {
         final var vardperson = createVardpersonReferens(
             createCertificateType().getIntyg().getSkapadAv().getPersonalId().getRoot(),
             createCertificateType().getIntyg().getSkapadAv().getFullstandigtNamn());
@@ -191,7 +205,7 @@ public class CreateDraftCertificateFromWCTest extends BaseCreateDraftCertificate
     }
 
     @Test
-    public void testCreateDraftCertificateVardenhetAlredyExistsInRegistry() throws ModuleNotFoundException {
+    void testCreateDraftCertificateVardenhetAlredyExistsInRegistry() throws ModuleNotFoundException {
         final var vardperson = createVardpersonReferens(
             createCertificateType().getIntyg().getSkapadAv().getPersonalId().getRoot(),
             createCertificateType().getIntyg().getSkapadAv().getFullstandigtNamn());
@@ -217,7 +231,7 @@ public class CreateDraftCertificateFromWCTest extends BaseCreateDraftCertificate
     }
 
     @Test
-    public void shouldReturnErrorIfModuleApiThrows() throws ModuleNotFoundException {
+    void shouldReturnErrorIfModuleApiThrows() throws ModuleNotFoundException {
         when(mockValidator.validateCertificateErrors(any(Intyg.class), any(IntygUser.class))).thenReturn(new ResultValidator());
         when(moduleRegistry.getModuleApi(any(), any())).thenThrow(ModuleNotFoundException.class);
         final var response = createDraftCertificateFromWC.create(buildIntyg(), getIntygUser(USER_HSAID));
@@ -226,6 +240,62 @@ public class CreateDraftCertificateFromWCTest extends BaseCreateDraftCertificate
         assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
         assertEquals(ErrorIdType.APPLICATION_ERROR, response.getResult().getErrorId());
         assertEquals("Internal error. Could not get module api.", response.getResult().getResultText());
+    }
+
+    @Test
+    void shouldPublishAnalyticsMessageWhenDraftIsCreated() throws ModuleNotFoundException {
+        final var user = getIntygUser(USER_HSAID);
+        final var vardperson = createVardpersonReferens(
+            createCertificateType().getIntyg().getSkapadAv().getPersonalId().getRoot(),
+            createCertificateType().getIntyg().getSkapadAv().getFullstandigtNamn());
+        final var utkast = createUtkast(Long.parseLong(UTKAST_VERSION), vardperson);
+
+        when(moduleRegistry.getModuleApi(any(), any())).thenReturn(new Fk7263ModuleApi());
+        when(mockValidator.validateCertificateErrors(any(Intyg.class), any(IntygUser.class))).thenReturn(new ResultValidator());
+        when(mockRequestBuilder.buildCreateNewDraftRequest(any(Intyg.class), any(String.class), any(IntygUser.class)))
+            .thenReturn(createCreateNewDraftRequest(createVardenhet(createVardgivare())));
+        when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
+        when(takService.verifyTakningForCareUnit(any(String.class), any(String.class), any(SchemaVersion.class), any(IntygUser.class)))
+            .thenReturn(new TakResult(true, Collections.emptyList()));
+
+        final var loggedInWebcertUser = LoggedInWebcertUser.builder().build();
+        when(loggedInWebcertUserFactory.create(user)).thenReturn(loggedInWebcertUser);
+
+        final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+        when(certificateAnalyticsMessageFactory.draftCreated(utkast, loggedInWebcertUser)).thenReturn(analyticsMessage);
+
+        createDraftCertificateFromWC.create(buildIntyg(), user);
+
+        verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
+    }
+
+    @Test
+    void shouldPublishAnalyticsMessageWhenDraftIsCreatedWithPrefill() throws ModuleNotFoundException {
+        final var certificate = buildIntyg();
+        certificate.setForifyllnad(new Forifyllnad());
+        final var user = getIntygUser(USER_HSAID);
+        final var vardperson = createVardpersonReferens(
+            createCertificateType().getIntyg().getSkapadAv().getPersonalId().getRoot(),
+            createCertificateType().getIntyg().getSkapadAv().getFullstandigtNamn());
+        final var utkast = createUtkast(Long.parseLong(UTKAST_VERSION), vardperson);
+
+        when(moduleRegistry.getModuleApi(any(), any())).thenReturn(new Fk7263ModuleApi());
+        when(mockValidator.validateCertificateErrors(any(Intyg.class), any(IntygUser.class))).thenReturn(new ResultValidator());
+        when(mockRequestBuilder.buildCreateNewDraftRequest(any(Intyg.class), any(String.class), any(IntygUser.class)))
+            .thenReturn(createCreateNewDraftRequest(createVardenhet(createVardgivare())));
+        when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
+        when(takService.verifyTakningForCareUnit(any(String.class), any(String.class), any(SchemaVersion.class), any(IntygUser.class)))
+            .thenReturn(new TakResult(true, Collections.emptyList()));
+
+        final var loggedInWebcertUser = LoggedInWebcertUser.builder().build();
+        when(loggedInWebcertUserFactory.create(user)).thenReturn(loggedInWebcertUser);
+
+        final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+        when(certificateAnalyticsMessageFactory.draftCreatedWithPrefill(utkast, loggedInWebcertUser)).thenReturn(analyticsMessage);
+
+        createDraftCertificateFromWC.create(certificate, user);
+
+        verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
     }
 
     private VardpersonReferens createVardpersonReferens(String hsaId, String name) {

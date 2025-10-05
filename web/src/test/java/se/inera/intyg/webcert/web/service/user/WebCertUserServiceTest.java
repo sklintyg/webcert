@@ -53,6 +53,7 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Privilege;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
+import se.inera.intyg.webcert.common.service.user.LoggedInWebcertUser;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.model.AnvandarPreference;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
@@ -78,6 +79,8 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
     private AnvandarPreferenceRepository anvandarPreferenceRepository;
     @Mock
     private FindByIndexNameSessionRepository<?> sessionRepository;
+    @Mock
+    private LoggedInWebcertUserFactory loggedInWebcertUserFactory;
 
     @InjectMocks
     public WebCertUserServiceImpl webcertUserService;
@@ -328,6 +331,36 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
 
         user.setValdVardenhet(null);
         assertFalse(user.isValdVardenhetMottagning());
+    }
+
+    @Test
+    public void shallReturnLoggedInWebcertUserWhenUserLoggedIn() {
+        final var expected = LoggedInWebcertUser.builder()
+            .staffId("HSA-id")
+            .unitId("VG1VE1")
+            .careProviderId("VG1")
+            .role(AuthoritiesConstants.ROLE_LAKARE)
+            .origin(UserOriginType.NORMAL.name())
+            .build();
+
+        final var webcertUser = createWebCertUser(false);
+        applyUserToThreadLocalCtx(webcertUser);
+
+        when(loggedInWebcertUserFactory.create(webcertUser)).thenReturn(expected);
+
+        final var actual = webcertUserService.getLoggedInWebcertUser();
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void shallReturnEmptyLoggedInWebcertUserWhenNoUserLoggedIn() {
+        final var expected = LoggedInWebcertUser.builder()
+            .build();
+
+        applyUserToThreadLocalCtx(null);
+
+        final var actual = webcertUserService.getLoggedInWebcertUser();
+        assertEquals(expected, actual);
     }
 
     private WebCertUser setupUserMottagningAccessTest() {
