@@ -84,8 +84,11 @@ public class ComplementCertificateFromCertificateService implements ComplementCe
             certificate.getMetadata().getId(),
             certificateToComplement.getMetadata().getId()
         );
+
         pdlLogService.logCreated(certificate);
+
         publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKAPAT);
+
         publishCertificateAnalyticsMessage.publishEvent(
             certificateAnalyticsMessageFactory.certificateComplemented(certificate)
         );
@@ -114,18 +117,35 @@ public class ComplementCertificateFromCertificateService implements ComplementCe
         );
         decorateCertificateFromCSWithInformationFromWC.decorate(certificate);
 
-        final var messageId = csIntegrationService.getQuestions(certificateId).stream()
+        final var messages = csIntegrationService.getQuestions(certificateId).stream()
             .filter(question -> question.getType() == QuestionType.COMPLEMENT)
             .filter(question -> !answeredComplementIds.contains(question.getId()))
+            .toList();
+
+        messages.stream()
             .map(Question::getAnswer)
             .filter(Objects::nonNull)
             .map(Answer::getId)
-            .toList();
-
-        messageId.forEach(id -> monitoringLogService.logArendeCreated(certificate.getMetadata().getId(),
-            certificate.getMetadata().getType(), certificate.getMetadata().getUnit().getUnitId(), ArendeAmne.KOMPLT, true, id));
+            .forEach(id ->
+                monitoringLogService.logArendeCreated(
+                    certificate.getMetadata().getId(),
+                    certificate.getMetadata().getType(),
+                    certificate.getMetadata().getUnit().getUnitId(),
+                    ArendeAmne.KOMPLT,
+                    true,
+                    id
+                )
+            );
 
         publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.HANFRFM);
+
+        messages.stream()
+            .max((q1, q2) -> q2.getSent().compareTo(q1.getSent()))
+            .ifPresent(question ->
+                publishCertificateAnalyticsMessage.publishEvent(
+                    certificateAnalyticsMessageFactory.sentMessage(certificate, question)
+                )
+            );
 
         return certificate;
     }
