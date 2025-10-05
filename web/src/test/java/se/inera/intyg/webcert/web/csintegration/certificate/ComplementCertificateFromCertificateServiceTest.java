@@ -31,6 +31,7 @@ import static org.mockito.Mockito.when;
 import static se.inera.intyg.common.support.facade.model.question.QuestionType.COMPLEMENT;
 import static se.inera.intyg.webcert.persistence.arende.model.ArendeAmne.KOMPLT;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -337,18 +338,38 @@ class ComplementCertificateFromCertificateServiceTest {
 
             @Test
             void shouldMonitorlogOnlyPreviouslyUnansweredComplements() {
-                final var question1 = Question.builder().id("q1").type(COMPLEMENT).answer(Answer.builder().id("a1").build()).build();
-                final var question2 = Question.builder().id("q2").type(COMPLEMENT).answer(Answer.builder().id("a2").build()).build();
+                final var question1 = Question.builder()
+                    .id("q1")
+                    .type(COMPLEMENT)
+                    .sent(LocalDateTime.now().minusDays(5))
+                    .answer(
+                        Answer.builder()
+                            .id("a1")
+                            .build()
+                    )
+                    .build();
+                final var question2 = Question.builder()
+                    .id("q2")
+                    .type(COMPLEMENT)
+                    .sent(LocalDateTime.now().minusDays(4))
+                    .answer(
+                        Answer.builder()
+                            .id("a2")
+                            .build()
+                    )
+                    .build();
 
                 final var questionsBefore = List.of(question1, question2,
-                    Question.builder().id("q3").type(COMPLEMENT).build(),
-                    Question.builder().id("q4").type(COMPLEMENT).build()
+                    Question.builder().id("q3").type(COMPLEMENT).sent(LocalDateTime.now().minusDays(3)).build(),
+                    Question.builder().id("q4").type(COMPLEMENT).sent(LocalDateTime.now().minusDays(2)).build()
                 );
 
                 final var questionsAfter = List.of(question1, question2,
-                    Question.builder().id("q3").type(COMPLEMENT).answer(Answer.builder().id("a3").build()).build(),
-                    Question.builder().id("q4").type(COMPLEMENT).answer(Answer.builder().id("a4").build()).build(),
-                    Question.builder().id("q5").type(COMPLEMENT).build()
+                    Question.builder().id("q3").type(COMPLEMENT).sent(LocalDateTime.now().minusDays(3))
+                        .answer(Answer.builder().id("a3").build()).build(),
+                    Question.builder().id("q4").type(COMPLEMENT).sent(LocalDateTime.now().minusDays(2))
+                        .answer(Answer.builder().id("a4").build()).build(),
+                    Question.builder().id("q5").type(COMPLEMENT).sent(LocalDateTime.now().minusDays(1)).build()
                 );
 
                 when(csIntegrationService.getQuestions(certId)).thenReturn(questionsBefore).thenReturn(questionsAfter);
@@ -357,6 +378,93 @@ class ComplementCertificateFromCertificateServiceTest {
                 verify(monitoringLogService, times(ONE)).logArendeCreated(certId, certType, certUnitId, KOMPLT, true, "a3");
                 verify(monitoringLogService, times(ONE)).logArendeCreated(certId, certType, certUnitId, KOMPLT, true, "a4");
                 verifyNoMoreInteractions(monitoringLogService);
+            }
+        }
+
+        @Nested
+        class PublishAnalyticsMessageForAnsweredComplements {
+
+            String certId;
+            String certType;
+            String certUnitId;
+
+            @BeforeEach
+            void setup() {
+                certId = CERTIFICATE.getMetadata().getId();
+                certType = CERTIFICATE.getMetadata().getType();
+                certUnitId = CERTIFICATE.getMetadata().getUnit().getUnitId();
+
+                when(csIntegrationRequestFactory.answerComplementOnCertificateRequest(MESSAGE))
+                    .thenReturn(ANSWER_COMPLEMENT_REQUEST_DTO);
+                when(csIntegrationService.answerComplementOnCertificate(ID, ANSWER_COMPLEMENT_REQUEST_DTO))
+                    .thenReturn(CERTIFICATE);
+            }
+
+            @Test
+            void shouldPublishCertificateAnalyticsEventForComplement() {
+                final var questionsBefore = List.of(
+                    Question.builder().id("q1").type(COMPLEMENT).sent(LocalDateTime.now().minusDays(3)).build()
+                );
+
+                final var questionsAfter = List.of(
+                    Question.builder().id("q1").type(COMPLEMENT).sent(LocalDateTime.now().minusDays(3))
+                        .answer(Answer.builder().id("a3").build()).build()
+                );
+
+                when(csIntegrationService.getQuestions(certId)).thenReturn(questionsBefore).thenReturn(questionsAfter);
+
+                final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+                when(certificateAnalyticsMessageFactory.sentMessage(CERTIFICATE, questionsAfter.getFirst())).thenReturn(analyticsMessage);
+
+                complementCertificateFromCertificateService.answerComplement(ID, MESSAGE);
+
+                verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
+            }
+
+            @Test
+            void shouldPublishCertificateAnalyticsEventForTheLatestComplement() {
+                final var question1 = Question.builder()
+                    .id("q1")
+                    .type(COMPLEMENT)
+                    .sent(LocalDateTime.now().minusDays(5))
+                    .answer(
+                        Answer.builder()
+                            .id("a1")
+                            .build()
+                    )
+                    .build();
+                final var question2 = Question.builder()
+                    .id("q2")
+                    .type(COMPLEMENT)
+                    .sent(LocalDateTime.now().minusDays(4))
+                    .answer(
+                        Answer.builder()
+                            .id("a2")
+                            .build()
+                    )
+                    .build();
+
+                final var questionsBefore = List.of(question1, question2,
+                    Question.builder().id("q3").type(COMPLEMENT).sent(LocalDateTime.now().minusDays(3)).build(),
+                    Question.builder().id("q4").type(COMPLEMENT).sent(LocalDateTime.now().minusDays(2)).build()
+                );
+
+                final var questionsAfter = List.of(question1, question2,
+                    Question.builder().id("q3").type(COMPLEMENT).sent(LocalDateTime.now().minusDays(3))
+                        .answer(Answer.builder().id("a3").build()).build(),
+                    Question.builder().id("q4").type(COMPLEMENT).sent(LocalDateTime.now().minusDays(2))
+                        .answer(Answer.builder().id("a4").build()).build(),
+                    Question.builder().id("q5").type(COMPLEMENT).sent(LocalDateTime.now().minusDays(1)).build()
+                );
+
+                when(csIntegrationService.getQuestions(certId)).thenReturn(questionsBefore).thenReturn(questionsAfter);
+
+                final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
+                when(certificateAnalyticsMessageFactory.sentMessage(CERTIFICATE, questionsAfter.get(2))).thenReturn(analyticsMessage);
+
+                complementCertificateFromCertificateService.answerComplement(ID, MESSAGE);
+
+                verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
             }
         }
     }
