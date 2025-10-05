@@ -328,6 +328,10 @@ public class UtkastServiceImpl implements UtkastService {
             // Do the mandatory PDL logging
             logUpdateOfIntyg(to);
 
+            publishCertificateAnalyticsMessage.publishEvent(
+                certificateAnalyticsMessageFactory.draftUpdatedFromCertificate(to)
+            );
+
             // Flush JPA changes, to make sure the version attribute is updated
             utkastRepository.flush();
 

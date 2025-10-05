@@ -757,6 +757,10 @@ class CertificateAnalyticsMessageFactoryTest {
                     CertificateAnalyticsMessageType.DRAFT_UPDATED
                 ),
                 Arguments.of(
+                    (Function<Utkast, CertificateAnalyticsMessage>) utkast -> factory.draftUpdatedFromCertificate(utkast),
+                    CertificateAnalyticsMessageType.DRAFT_UPDATED_FROM_CERTIFICATE
+                ),
+                Arguments.of(
                     (Function<Utkast, CertificateAnalyticsMessage>) utkast -> factory.draftReadyForSign(utkast),
                     CertificateAnalyticsMessageType.DRAFT_READY_FOR_SIGN
                 ),
@@ -765,8 +769,8 @@ class CertificateAnalyticsMessageFactoryTest {
                     CertificateAnalyticsMessageType.LOCKED_DRAFT_REVOKED
                 ),
                 Arguments.of(
-                    (Function<Utkast, CertificateAnalyticsMessage>) utkast -> factory.draftCreateFromTemplate(utkast),
-                    CertificateAnalyticsMessageType.DRAFT_CREATED_FROM_TEMPLATE
+                    (Function<Utkast, CertificateAnalyticsMessage>) utkast -> factory.draftCreatedFromCertificate(utkast),
+                    CertificateAnalyticsMessageType.DRAFT_CREATED_FROM_CERTIFICATE
                 ),
                 Arguments.of(
                     (Function<Utkast, CertificateAnalyticsMessage>) utkast -> factory.certificateSigned(utkast),
