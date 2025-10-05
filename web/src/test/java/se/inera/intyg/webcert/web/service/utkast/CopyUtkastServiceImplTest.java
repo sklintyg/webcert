@@ -627,7 +627,7 @@ public class CopyUtkastServiceImplTest {
         )).thenReturn(resp);
 
         final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-        when(certificateAnalyticsMessageFactory.draftCreateFromTemplate(any(Utkast.class))).thenReturn(analyticsMessage);
+        when(certificateAnalyticsMessageFactory.certificateRenewed(any(Utkast.class))).thenReturn(analyticsMessage);
 
         CreateRenewalCopyRequest copyReq = buildRenewalRequest();
         copyReq.setNyttPatientPersonnummer(PATIENT_NEW_SSN);
@@ -668,7 +668,7 @@ public class CopyUtkastServiceImplTest {
         when(userService.getUser()).thenReturn(user);
 
         final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-        when(certificateAnalyticsMessageFactory.draftCreateFromTemplate(any(Utkast.class))).thenReturn(analyticsMessage);
+        when(certificateAnalyticsMessageFactory.draftCreatedFromCertificate(any(Utkast.class))).thenReturn(analyticsMessage);
 
         UtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(createUtkastFromTemplateBuilder.populateCopyUtkastFromSignedIntyg(any(CreateUtkastFromTemplateRequest.class),
@@ -708,9 +708,6 @@ public class CopyUtkastServiceImplTest {
 
         when(mockUtkastRepository.existsById(INTYG_ID)).thenReturn(Boolean.TRUE);
 
-        final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
-        when(certificateAnalyticsMessageFactory.draftCreateFromTemplate(any(Utkast.class))).thenReturn(analyticsMessage);
-
         UtkastBuilderResponse resp = createCopyUtkastBuilderResponse();
         when(createUtkastCopyBuilder.populateCopyUtkastFromOrignalUtkast(any(CreateUtkastFromTemplateRequest.class), any(Person.class),
             any(boolean.class))).thenReturn(resp);
@@ -739,7 +736,6 @@ public class CopyUtkastServiceImplTest {
         verify(certificateEventService)
             .createCertificateEventFromCopyUtkast(resp.getUtkast(), user.getHsaId(), EventCode.KOPIERATFRAN, INTYG_ID);
         verify(intygService).isRevoked(INTYG_ID, INTYG_TYPE);
-        verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
     }
 
     @Test(expected = WebCertServiceException.class)

@@ -29,11 +29,12 @@ import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnal
 import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.CERTIFICATE_SIGNED;
 import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.COMPLEMENT_FROM_RECIPIENT;
 import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.DRAFT_CREATED;
-import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.DRAFT_CREATED_FROM_TEMPLATE;
+import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.DRAFT_CREATED_FROM_CERTIFICATE;
 import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.DRAFT_CREATED_WITH_PREFILL;
 import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.DRAFT_DELETED;
 import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.DRAFT_READY_FOR_SIGN;
 import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.DRAFT_UPDATED;
+import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.DRAFT_UPDATED_FROM_CERTIFICATE;
 import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.LOCKED_DRAFT_REVOKED;
 import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.QUESTION_FROM_RECIPIENT;
 import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.QUESTION_TO_RECIPIENT;
@@ -102,6 +103,10 @@ public class CertificateAnalyticsMessageFactory {
             .build();
     }
 
+    public CertificateAnalyticsMessage draftCreatedFromCertificate(Utkast utkast) {
+        return create(utkast, DRAFT_CREATED_FROM_CERTIFICATE).build();
+    }
+
     public CertificateAnalyticsMessage draftCreatedWithPrefill(Certificate certificate, LoggedInWebcertUser loggedInWebcertUser) {
         return CertificateAnalyticsMessage.builder()
             .event(
@@ -140,6 +145,10 @@ public class CertificateAnalyticsMessageFactory {
         return create(certificate, DRAFT_UPDATED).build();
     }
 
+    public CertificateAnalyticsMessage draftUpdatedFromCertificate(Utkast utkast) {
+        return create(utkast, DRAFT_UPDATED_FROM_CERTIFICATE).build();
+    }
+
     public CertificateAnalyticsMessage draftReadyForSign(Certificate certificate) {
         return create(certificate, DRAFT_READY_FOR_SIGN).build();
     }
@@ -150,10 +159,6 @@ public class CertificateAnalyticsMessageFactory {
 
     public CertificateAnalyticsMessage lockedDraftRevoked(Utkast utkast) {
         return create(utkast, LOCKED_DRAFT_REVOKED).build();
-    }
-
-    public CertificateAnalyticsMessage draftCreateFromTemplate(Utkast utkast) {
-        return create(utkast, DRAFT_CREATED_FROM_TEMPLATE).build();
     }
 
     public CertificateAnalyticsMessage certificateSigned(Certificate certificate) {

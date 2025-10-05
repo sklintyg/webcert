@@ -357,6 +357,10 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             monitoringService.logUtkastCreatedTemplateManual(savedUtkast.getIntygsId(), savedUtkast.getIntygsTyp(),
                 savedUtkast.getSkapadAv().getHsaId(), savedUtkast.getEnhetsId(), originalIntygId, templateRequest.getOriginalIntygTyp());
 
+            publishCertificateAnalyticsMessage.publishEvent(
+                certificateAnalyticsMessageFactory.draftCreatedFromCertificate(savedUtkast)
+            );
+
             if (templateRequest.isDjupintegrerad()) {
                 checkIntegreradEnhet(builderResponse);
             }
@@ -493,9 +497,6 @@ public class CopyUtkastServiceImpl implements CopyUtkastService {
             referensService.saveReferens(savedUtkast.getIntygsId(), user.getParameters().getReference());
         }
         notificationService.sendNotificationForDraftCreated(savedUtkast);
-        publishCertificateAnalyticsMessage.publishEvent(
-            certificateAnalyticsMessageFactory.draftCreateFromTemplate(savedUtkast)
-        );
 
         certificateEventService.createCertificateEventFromCopyUtkast(savedUtkast, user.getHsaId(), eventCode, originalCertificateId);
 
