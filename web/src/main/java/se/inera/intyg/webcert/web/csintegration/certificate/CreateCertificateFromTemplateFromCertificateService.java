@@ -81,7 +81,6 @@ public class CreateCertificateFromTemplateFromCertificateService implements Crea
             originalCertificate.getMetadata().getType()
         );
         publishCertificateStatusUpdateService.publish(createdCertificate, HandelsekodEnum.SKAPAT);
-        // TODO: Is this needed?         certificateEventService.createCertificateEventFromCopyUtkast(savedUtkast, user.getHsaId(), eventCode, originalCertificateId);
 
         log.debug("Successfully created certificate from template with new id '{}' in Certificate Service",
             response.getCertificate().getMetadata().getId());
