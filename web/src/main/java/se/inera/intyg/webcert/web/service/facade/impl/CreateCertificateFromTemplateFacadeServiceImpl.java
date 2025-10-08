@@ -35,7 +35,7 @@ import se.inera.intyg.webcert.web.service.utkast.CopyUtkastService;
 import se.inera.intyg.webcert.web.service.utkast.util.CopyUtkastServiceHelper;
 import se.inera.intyg.webcert.web.web.controller.api.dto.CopyIntygRequest;
 
-@Service
+@Service("createCertificateFromTemplateFromWC")
 public class CreateCertificateFromTemplateFacadeServiceImpl implements CreateCertificateFromTemplateFacadeService {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateCertificateFromTemplateFacadeServiceImpl.class);
@@ -81,16 +81,15 @@ public class CreateCertificateFromTemplateFacadeServiceImpl implements CreateCer
     }
 
     private String getNewCertificateType(String templateType) {
-        switch (templateType) {
-            case LisjpEntryPoint.MODULE_ID:
-                return Ag7804EntryPoint.MODULE_ID;
-            case DbModuleEntryPoint.MODULE_ID:
-                return DoiModuleEntryPoint.MODULE_ID;
-            default:
-                throw new IllegalArgumentException(
-                    String.format("Cannot create draft from template because certificate type '%s' is not supported", templateType)
-                );
-        }
+      return switch (templateType) {
+        case LisjpEntryPoint.MODULE_ID -> Ag7804EntryPoint.MODULE_ID;
+        case DbModuleEntryPoint.MODULE_ID -> DoiModuleEntryPoint.MODULE_ID;
+        default -> throw new IllegalArgumentException(
+            String.format(
+                "Cannot create draft from template because certificate type '%s' is not supported",
+                templateType)
+        );
+      };
     }
 
     private Personnummer getPersonId(Patient patient) {

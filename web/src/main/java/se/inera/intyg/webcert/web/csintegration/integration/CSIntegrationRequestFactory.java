@@ -43,6 +43,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModel
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateServiceTypeInfoRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesQueryCriteriaDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesWithQARequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateFromTemplateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteAnswerRequestDTO;
@@ -149,6 +150,15 @@ public class CSIntegrationRequestFactory {
             .externalReference(certificate.getRef())
             .certificateModelId(modelId)
             .prefillXml(PrefillXmlDTO.marshall(certificate.getForifyllnad()))
+            .build();
+    }
+
+    public CreateCertificateFromTemplateRequestDTO createCertificateFromTemplateRequest() {
+        return CreateCertificateFromTemplateRequestDTO.builder()
+            .user(certificateServiceUserHelper.get())
+            .unit(certificateServiceUnitHelper.getUnit())
+            .careUnit(certificateServiceUnitHelper.getCareUnit())
+            .careProvider(certificateServiceUnitHelper.getCareProvider())
             .build();
     }
 
@@ -607,3 +617,4 @@ public class CSIntegrationRequestFactory {
             .build();
     }
 }
+

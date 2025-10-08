@@ -73,6 +73,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateTypeE
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesWithQARequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesWithQAResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CitizenCertificateExistsResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateFromTemplateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateFromTemplateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateMessageResponseDTO;
@@ -3637,6 +3639,72 @@ class CSIntegrationServiceTest {
 
                 assertEquals("baseUrl/api/certificate/certificateId/renew/external", captor.getValue());
             }
+        }
+    }
+
+    @Nested
+    class CreateCertificateFromTemplate {
+
+        private static final String CERTIFICATE_ID = "certificateId";
+        private static final CreateCertificateFromTemplateRequestDTO CREATE_FROM_TEMPLATE_REQUEST = CreateCertificateFromTemplateRequestDTO.builder().build();
+        private static final CreateCertificateFromTemplateResponseDTO CREATE_FROM_TEMPLATE_RESPONSE = CreateCertificateFromTemplateResponseDTO.builder()
+            .certificate(CERTIFICATE)
+            .build();
+
+        @BeforeEach
+        void setUp() {
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/api/certificate/" + CERTIFICATE_ID + "/template";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(CreateCertificateFromTemplateRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+        }
+
+        @Test
+        void shouldPerformPostUsingRequest() {
+            final var captor = ArgumentCaptor.forClass(CreateCertificateFromTemplateRequestDTO.class);
+            doReturn(CREATE_FROM_TEMPLATE_RESPONSE).when(responseSpec).body(CreateCertificateFromTemplateResponseDTO.class);
+
+            csIntegrationService.createCertificateFromTemplate(CERTIFICATE_ID, CREATE_FROM_TEMPLATE_REQUEST);
+            verify(requestBodyUriSpec).body(captor.capture());
+
+            assertEquals(CREATE_FROM_TEMPLATE_REQUEST, captor.getValue());
+        }
+
+        @Test
+        void shouldReturnCreateCertificateFromTemplateResponseDTO() {
+            doReturn(CREATE_FROM_TEMPLATE_RESPONSE).when(responseSpec).body(CreateCertificateFromTemplateResponseDTO.class);
+
+            final var response = csIntegrationService.createCertificateFromTemplate(CERTIFICATE_ID, CREATE_FROM_TEMPLATE_REQUEST);
+
+            assertEquals(CREATE_FROM_TEMPLATE_RESPONSE, response);
+        }
+
+        @Test
+        void shouldSetUrlCorrect() {
+            final var captor = ArgumentCaptor.forClass(String.class);
+            doReturn(CREATE_FROM_TEMPLATE_RESPONSE).when(responseSpec).body(CreateCertificateFromTemplateResponseDTO.class);
+
+            csIntegrationService.createCertificateFromTemplate(CERTIFICATE_ID, CREATE_FROM_TEMPLATE_REQUEST);
+            verify(requestBodyUriSpec).uri(captor.capture());
+
+            assertEquals("baseUrl/api/certificate/" + CERTIFICATE_ID + "/template", captor.getValue());
+        }
+
+        @Test
+        void shouldReturnNullIfResponseIsNull() {
+            doReturn(null).when(responseSpec).body(CreateCertificateFromTemplateResponseDTO.class);
+
+            final var response = csIntegrationService.createCertificateFromTemplate(CERTIFICATE_ID, CREATE_FROM_TEMPLATE_REQUEST);
+
+          assertNull(response);
         }
     }
 }

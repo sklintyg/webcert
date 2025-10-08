@@ -107,6 +107,10 @@ public class CertificateAnalyticsMessageFactory {
         return create(utkast, DRAFT_CREATED_FROM_CERTIFICATE).build();
     }
 
+    public CertificateAnalyticsMessage draftCreatedFromCertificate(Certificate certificate) {
+        return create(certificate, DRAFT_CREATED_FROM_CERTIFICATE).build();
+    }
+
     public CertificateAnalyticsMessage draftCreatedWithPrefill(Certificate certificate, LoggedInWebcertUser loggedInWebcertUser) {
         return CertificateAnalyticsMessage.builder()
             .event(

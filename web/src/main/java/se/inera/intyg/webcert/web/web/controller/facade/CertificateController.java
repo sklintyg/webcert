@@ -134,6 +134,7 @@ public class CertificateController {
     @Qualifier("complementCertificateAggregator")
     private ComplementCertificateFacadeService complementCertificateFacadeService;
     @Autowired
+    @Qualifier("createCertificateFromTemplateAggregator")
     private CreateCertificateFromTemplateFacadeService createCertificateFromTemplateFacadeService;
     @Autowired
     private CreateCertificateFromCandidateFacadeService createCertificateFromCandidateFacadeService;
