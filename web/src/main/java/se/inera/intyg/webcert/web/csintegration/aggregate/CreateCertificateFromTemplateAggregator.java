@@ -20,7 +20,6 @@ package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.CreateCertificateFromTemplateFacadeService;
 
 @Service("createCertificateFromTemplateAggregator")
@@ -29,24 +28,17 @@ public class CreateCertificateFromTemplateAggregator implements CreateCertificat
     private final CreateCertificateFromTemplateFacadeService createCertificateFromTemplateFromWC;
     private final CreateCertificateFromTemplateFacadeService createCertificateFromTemplateFromCS;
 
-    private final CertificateServiceProfile certificateServiceProfile;
-
   public CreateCertificateFromTemplateAggregator(
       @Qualifier("createCertificateFromTemplateFromWC")
       CreateCertificateFromTemplateFacadeService createCertificateFromTemplateFromWC,
       @Qualifier("createCertificateFromTemplateFromCS")
-      CreateCertificateFromTemplateFacadeService createCertificateFromTemplateFromCS,
-      CertificateServiceProfile certificateServiceProfile) {
+      CreateCertificateFromTemplateFacadeService createCertificateFromTemplateFromCS) {
     this.createCertificateFromTemplateFromWC = createCertificateFromTemplateFromWC;
     this.createCertificateFromTemplateFromCS = createCertificateFromTemplateFromCS;
-    this.certificateServiceProfile = certificateServiceProfile;
   }
 
   @Override
     public String createCertificateFromTemplate(String certificateId) {
-        if (!certificateServiceProfile.active()) {
-            return createCertificateFromTemplateFromWC.createCertificateFromTemplate(certificateId);
-        }
 
         final var responseFromCS = createCertificateFromTemplateFromCS.createCertificateFromTemplate(certificateId);
 

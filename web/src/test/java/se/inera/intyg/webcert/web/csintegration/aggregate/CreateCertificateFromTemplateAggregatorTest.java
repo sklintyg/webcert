@@ -31,66 +31,44 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.CreateCertificateFromTemplateFacadeService;
 
 @ExtendWith(MockitoExtension.class)
 class CreateCertificateFromTemplateAggregatorTest {
 
     private static final String CERTIFICATE_ID = "certificateId";
-    private static final String NEW_CERTIFICATE_ID_FROM_CS = "newCertificateIdFromCS";
     private static final String NEW_CERTIFICATE_ID_FROM_WC = "newCertificateIdFromWC";
+    private static final String NEW_CERTIFICATE_ID_FROM_CS = "newCertificateIdFromCS";
 
     CreateCertificateFromTemplateFacadeService createCertificateFromTemplateFromWC;
     CreateCertificateFromTemplateFacadeService createCertificateFromTemplateFromCS;
-    CertificateServiceProfile certificateServiceProfile;
     CreateCertificateFromTemplateFacadeService aggregator;
 
     @BeforeEach
     void setUp() {
         createCertificateFromTemplateFromWC = mock(CreateCertificateFromTemplateFacadeService.class);
         createCertificateFromTemplateFromCS = mock(CreateCertificateFromTemplateFacadeService.class);
-        certificateServiceProfile = mock(CertificateServiceProfile.class);
 
         aggregator = new CreateCertificateFromTemplateAggregator(
             createCertificateFromTemplateFromWC,
-            createCertificateFromTemplateFromCS,
-            certificateServiceProfile
+            createCertificateFromTemplateFromCS
         );
     }
 
-    @Test
-    void shouldReturnCertificateIdFromCSIfCSProfileIsActive() {
-        when(certificateServiceProfile.active())
-            .thenReturn(true);
-        when(createCertificateFromTemplateFromCS.createCertificateFromTemplate(CERTIFICATE_ID))
-            .thenReturn(NEW_CERTIFICATE_ID_FROM_CS);
+  @Test
+  void shouldReturnCertificateIdFromCSIfCSReturnsResponse() {
+    when(createCertificateFromTemplateFromCS.createCertificateFromTemplate(CERTIFICATE_ID))
+        .thenReturn(NEW_CERTIFICATE_ID_FROM_CS);
 
-        final var result = aggregator.createCertificateFromTemplate(CERTIFICATE_ID);
+    final var result = aggregator.createCertificateFromTemplate(CERTIFICATE_ID);
 
-        verify(createCertificateFromTemplateFromCS, times(1)).createCertificateFromTemplate(CERTIFICATE_ID);
-        verifyNoInteractions(createCertificateFromTemplateFromWC);
-        assertEquals(NEW_CERTIFICATE_ID_FROM_CS, result);
-    }
+    verify(createCertificateFromTemplateFromCS, times(1)).createCertificateFromTemplate(CERTIFICATE_ID);
+    verifyNoInteractions(createCertificateFromTemplateFromWC);
+    assertEquals(NEW_CERTIFICATE_ID_FROM_CS, result);
+  }
 
     @Test
-    void shouldReturnCertificateIdFromWCIfCSProfileIsNotActive() {
-        when(certificateServiceProfile.active())
-            .thenReturn(false);
-        when(createCertificateFromTemplateFromWC.createCertificateFromTemplate(CERTIFICATE_ID))
-            .thenReturn(NEW_CERTIFICATE_ID_FROM_WC);
-
-        final var result = aggregator.createCertificateFromTemplate(CERTIFICATE_ID);
-
-        verify(createCertificateFromTemplateFromWC, times(1)).createCertificateFromTemplate(CERTIFICATE_ID);
-        verifyNoInteractions(createCertificateFromTemplateFromCS);
-        assertEquals(NEW_CERTIFICATE_ID_FROM_WC, result);
-    }
-
-    @Test
-    void shouldReturnCertificateIdFromWCIfCSProfileIsActiveButCSReturnsNull() {
-        when(certificateServiceProfile.active())
-            .thenReturn(true);
+    void shouldReturnCertificateIdFromWCIfCSReturnsNull() {
         when(createCertificateFromTemplateFromCS.createCertificateFromTemplate(CERTIFICATE_ID))
             .thenReturn(null);
         when(createCertificateFromTemplateFromWC.createCertificateFromTemplate(CERTIFICATE_ID))
@@ -104,9 +82,7 @@ class CreateCertificateFromTemplateAggregatorTest {
     }
 
     @Test
-    void shouldReturnNullIfCSProfileIsActiveButBothCSAndWCReturnNull() {
-        when(certificateServiceProfile.active())
-            .thenReturn(true);
+    void shouldReturnNullAndBothCSAndWCReturnNull() {
         when(createCertificateFromTemplateFromCS.createCertificateFromTemplate(CERTIFICATE_ID))
             .thenReturn(null);
         when(createCertificateFromTemplateFromWC.createCertificateFromTemplate(CERTIFICATE_ID))
