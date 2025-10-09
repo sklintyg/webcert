@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -35,6 +36,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.Patient;
+import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.common.support.facade.model.Staff;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.Unit;
@@ -48,6 +51,9 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificat
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogServiceImpl;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 @ExtendWith(MockitoExtension.class)
 class CreateCertificateFromTemplateFromCertificateServiceTest {
@@ -66,6 +72,10 @@ class CreateCertificateFromTemplateFromCertificateServiceTest {
     CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
     @Mock
     PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+    @Mock
+    WebCertUserService webCertUserService;
+    @Mock
+    IntegrationParameters parameters;
 
     @InjectMocks
     CreateCertificateFromTemplateFromCertificateService createCertificateFromTemplateFromCertificateService;
@@ -83,6 +93,7 @@ class CreateCertificateFromTemplateFromCertificateServiceTest {
     private static final CreateCertificateFromTemplateResponseDTO RESPONSE = CreateCertificateFromTemplateResponseDTO.builder()
         .certificate(CERTIFICATE)
         .build();
+    private static final String PATIENT_ID = "patientId";
 
     @BeforeEach
     void setUp() {
@@ -100,6 +111,15 @@ class CreateCertificateFromTemplateFromCertificateServiceTest {
                         .personId(HSA_ID)
                         .build()
                 )
+                .patient(
+                    Patient.builder()
+                        .personId(
+                            PersonId.builder()
+                                .id(PATIENT_ID)
+                                .build()
+                        )
+                        .build()
+                )
                 .build()
         );
 
@@ -107,6 +127,15 @@ class CreateCertificateFromTemplateFromCertificateServiceTest {
             CertificateMetadata.builder()
                 .id(CERTIFICATE_ID)
                 .type(ORIGINAL_CERTIFICATE_TYPE)
+                .patient(
+                    Patient.builder()
+                        .personId(
+                            PersonId.builder()
+                                .id(PATIENT_ID)
+                                .build()
+                        )
+                        .build()
+                )
                 .build()
         );
     }
@@ -130,12 +159,15 @@ class CreateCertificateFromTemplateFromCertificateServiceTest {
         void setUp() {
             when(csIntegrationService.certificateExists(CERTIFICATE_ID))
                 .thenReturn(true);
-            when(csIntegrationRequestFactory.createCertificateFromTemplateRequest())
+            when(csIntegrationRequestFactory.createCertificateFromTemplateRequest(PATIENT_ID, parameters))
                 .thenReturn(REQUEST);
             when(csIntegrationRequestFactory.getCertificateRequest())
                 .thenReturn(GET_CERTIFICATE_REQUEST);
             when(csIntegrationService.getCertificate(CERTIFICATE_ID, GET_CERTIFICATE_REQUEST))
                 .thenReturn(ORIGINAL_CERTIFICATE);
+          final var user = mock(WebCertUser.class);
+          when(webCertUserService.getUser()).thenReturn(user);
+          when(user.getParameters()).thenReturn(parameters);
         }
 
         @Test
@@ -146,7 +178,7 @@ class CreateCertificateFromTemplateFromCertificateServiceTest {
             final var result = createCertificateFromTemplateFromCertificateService.createCertificateFromTemplate(CERTIFICATE_ID);
 
             verify(csIntegrationService, times(1)).certificateExists(CERTIFICATE_ID);
-            verify(csIntegrationRequestFactory, times(1)).createCertificateFromTemplateRequest();
+            verify(csIntegrationRequestFactory, times(1)).createCertificateFromTemplateRequest(PATIENT_ID, parameters);
             verify(csIntegrationService, times(1)).createCertificateFromTemplate(CERTIFICATE_ID, REQUEST);
             assertEquals(NEW_CERTIFICATE_ID, result);
         }
@@ -240,7 +272,7 @@ class CreateCertificateFromTemplateFromCertificateServiceTest {
             final var result = createCertificateFromTemplateFromCertificateService.createCertificateFromTemplate(CERTIFICATE_ID);
 
             verify(csIntegrationService, times(1)).certificateExists(CERTIFICATE_ID);
-            verify(csIntegrationRequestFactory, times(1)).createCertificateFromTemplateRequest();
+            verify(csIntegrationRequestFactory, times(1)).createCertificateFromTemplateRequest(PATIENT_ID, parameters);
             verify(csIntegrationService, times(1)).createCertificateFromTemplate(CERTIFICATE_ID, REQUEST);
             assertNull(result);
         }
@@ -256,7 +288,7 @@ class CreateCertificateFromTemplateFromCertificateServiceTest {
             final var result = createCertificateFromTemplateFromCertificateService.createCertificateFromTemplate(CERTIFICATE_ID);
 
             verify(csIntegrationService, times(1)).certificateExists(CERTIFICATE_ID);
-            verify(csIntegrationRequestFactory, times(1)).createCertificateFromTemplateRequest();
+            verify(csIntegrationRequestFactory, times(1)).createCertificateFromTemplateRequest(PATIENT_ID, parameters);
             verify(csIntegrationService, times(1)).createCertificateFromTemplate(CERTIFICATE_ID, REQUEST);
             assertNull(result);
         }
@@ -273,7 +305,7 @@ class CreateCertificateFromTemplateFromCertificateServiceTest {
             }
 
             verify(csIntegrationService, times(1)).certificateExists(CERTIFICATE_ID);
-            verify(csIntegrationRequestFactory, times(1)).createCertificateFromTemplateRequest();
+            verify(csIntegrationRequestFactory, times(1)).createCertificateFromTemplateRequest(PATIENT_ID, parameters);
             verify(csIntegrationService, times(1)).createCertificateFromTemplate(CERTIFICATE_ID, REQUEST);
         }
     }

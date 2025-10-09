@@ -153,12 +153,14 @@ public class CSIntegrationRequestFactory {
             .build();
     }
 
-    public CreateCertificateFromTemplateRequestDTO createCertificateFromTemplateRequest() {
+    public CreateCertificateFromTemplateRequestDTO createCertificateFromTemplateRequest(String patientId, IntegrationParameters integrationParameters) {
         return CreateCertificateFromTemplateRequestDTO.builder()
             .user(certificateServiceUserHelper.get())
             .unit(certificateServiceUnitHelper.getUnit())
             .careUnit(certificateServiceUnitHelper.getCareUnit())
             .careProvider(certificateServiceUnitHelper.getCareProvider())
+            .patient(certificateServicePatientHelper.get(createPatientId(patientId)))
+            .integrationParameters(integrationParameters)
             .build();
     }
 

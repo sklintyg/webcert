@@ -29,6 +29,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
 import se.inera.intyg.webcert.web.service.facade.CreateCertificateFromTemplateFacadeService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogServiceImpl;
+import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 @Slf4j
 @Service("createCertificateFromTemplateFromCS")
@@ -42,6 +43,8 @@ public class CreateCertificateFromTemplateFromCertificateService implements Crea
     private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
     private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
     private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+    private final WebCertUserService webCertUserService;
+
 
   @Override
     public String createCertificateFromTemplate(String certificateId) {
@@ -58,7 +61,10 @@ public class CreateCertificateFromTemplateFromCertificateService implements Crea
 
         log.debug("Creating certificate from template with id '{}' from Certificate Service", certificateId);
         final var createCertificateFromTemplateRequest = csIntegrationRequestFactory
-            .createCertificateFromTemplateRequest();
+            .createCertificateFromTemplateRequest(
+                originalCertificate.getMetadata().getPatient().getPersonId().getId(),
+                webCertUserService.getUser().getParameters()
+            );
 
         final var response = csIntegrationService.createCertificateFromTemplate(certificateId, createCertificateFromTemplateRequest);
 
