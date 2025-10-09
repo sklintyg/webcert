@@ -2363,6 +2363,8 @@ class CSIntegrationRequestFactoryTest {
                 .thenReturn(CARE_PROVIDER);
             when(certificateServicePatientHelper.get(PERSONNUMMER))
                 .thenReturn(PATIENT);
+            when(integrationParameters.getReference())
+                .thenReturn(EXTERNAL_REFERENCE);
         }
 
         @Test
@@ -2396,9 +2398,9 @@ class CSIntegrationRequestFactoryTest {
         }
 
         @Test
-        void shouldSetIntegrationParameters() {
+        void shouldSetExternalReference() {
             final var actualRequest = csIntegrationRequestFactory.createCertificateFromTemplateRequest(PATIENT_ID, integrationParameters);
-            assertEquals(integrationParameters, actualRequest.getIntegrationParameters());
+            assertEquals(EXTERNAL_REFERENCE, actualRequest.getExternalReference());
         }
     }
 }

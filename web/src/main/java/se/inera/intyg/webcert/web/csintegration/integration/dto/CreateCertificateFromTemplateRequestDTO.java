@@ -26,7 +26,6 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificat
 import se.inera.intyg.webcert.web.csintegration.patient.CertificateServicePatientDTO;
 import se.inera.intyg.webcert.web.csintegration.unit.CertificateServiceUnitDTO;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceUserDTO;
-import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationParameters;
 
 @JsonDeserialize(builder = CreateCertificateFromTemplateRequestDTOBuilder.class)
 @Value
@@ -38,7 +37,7 @@ public class CreateCertificateFromTemplateRequestDTO {
     CertificateServiceUnitDTO unit;
     CertificateServiceUnitDTO careUnit;
     CertificateServiceUnitDTO careProvider;
-    IntegrationParameters integrationParameters;
+    String externalReference;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class CreateCertificateFromTemplateRequestDTOBuilder {

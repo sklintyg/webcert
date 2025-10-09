@@ -66,7 +66,7 @@ public class CreateCertificateFromTemplateFromCertificateService implements Crea
                 webCertUserService.getUser().getParameters()
             );
 
-        final var response = csIntegrationService.createCertificateFromTemplate(certificateId, createCertificateFromTemplateRequest);
+        final var response = csIntegrationService.createDraftFromCertificate(certificateId, createCertificateFromTemplateRequest);
 
         if (response == null || response.getCertificate() == null) {
             log.debug("Certificate Service returned null when creating certificate from template with id '{}'", certificateId);

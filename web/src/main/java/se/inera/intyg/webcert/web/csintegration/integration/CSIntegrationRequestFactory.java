@@ -160,7 +160,7 @@ public class CSIntegrationRequestFactory {
             .careUnit(certificateServiceUnitHelper.getCareUnit())
             .careProvider(certificateServiceUnitHelper.getCareProvider())
             .patient(certificateServicePatientHelper.get(createPatientId(patientId)))
-            .integrationParameters(integrationParameters)
+            .externalReference(getExternalReference(integrationParameters))
             .build();
     }
 

@@ -172,20 +172,20 @@ class CreateCertificateFromTemplateFromCertificateServiceTest {
 
         @Test
         void shouldReturnNewCertificateIdWhenSuccessful() {
-            when(csIntegrationService.createCertificateFromTemplate(CERTIFICATE_ID, REQUEST))
+            when(csIntegrationService.createDraftFromCertificate(CERTIFICATE_ID, REQUEST))
                 .thenReturn(RESPONSE);
 
             final var result = createCertificateFromTemplateFromCertificateService.createCertificateFromTemplate(CERTIFICATE_ID);
 
             verify(csIntegrationService, times(1)).certificateExists(CERTIFICATE_ID);
             verify(csIntegrationRequestFactory, times(1)).createCertificateFromTemplateRequest(PATIENT_ID, parameters);
-            verify(csIntegrationService, times(1)).createCertificateFromTemplate(CERTIFICATE_ID, REQUEST);
+            verify(csIntegrationService, times(1)).createDraftFromCertificate(CERTIFICATE_ID, REQUEST);
             assertEquals(NEW_CERTIFICATE_ID, result);
         }
 
         @Test
         void shouldPerformPDLLoggingForCreatedCertificate() {
-            when(csIntegrationService.createCertificateFromTemplate(CERTIFICATE_ID, REQUEST))
+            when(csIntegrationService.createDraftFromCertificate(CERTIFICATE_ID, REQUEST))
                 .thenReturn(RESPONSE);
 
             createCertificateFromTemplateFromCertificateService.createCertificateFromTemplate(CERTIFICATE_ID);
@@ -195,7 +195,7 @@ class CreateCertificateFromTemplateFromCertificateServiceTest {
 
         @Test
         void shouldPublishAnalyticsMessageWhenCertificateIsCreatedFromTemplate() {
-            when(csIntegrationService.createCertificateFromTemplate(CERTIFICATE_ID, REQUEST))
+            when(csIntegrationService.createDraftFromCertificate(CERTIFICATE_ID, REQUEST))
                 .thenReturn(RESPONSE);
             final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
             when(certificateAnalyticsMessageFactory.draftCreatedFromCertificate(CERTIFICATE))
@@ -208,7 +208,7 @@ class CreateCertificateFromTemplateFromCertificateServiceTest {
 
         @Test
         void shouldPerformMonitoringLoggingForTemplateCreation() {
-            when(csIntegrationService.createCertificateFromTemplate(CERTIFICATE_ID, REQUEST))
+            when(csIntegrationService.createDraftFromCertificate(CERTIFICATE_ID, REQUEST))
                 .thenReturn(RESPONSE);
 
             createCertificateFromTemplateFromCertificateService.createCertificateFromTemplate(CERTIFICATE_ID);
@@ -225,7 +225,7 @@ class CreateCertificateFromTemplateFromCertificateServiceTest {
 
         @Test
         void shouldPublishCertificateStatusUpdateWithSkapatEvent() {
-            when(csIntegrationService.createCertificateFromTemplate(CERTIFICATE_ID, REQUEST))
+            when(csIntegrationService.createDraftFromCertificate(CERTIFICATE_ID, REQUEST))
                 .thenReturn(RESPONSE);
 
             createCertificateFromTemplateFromCertificateService.createCertificateFromTemplate(CERTIFICATE_ID);
@@ -237,7 +237,7 @@ class CreateCertificateFromTemplateFromCertificateServiceTest {
 
         @Test
         void shouldNotPerformAnyLoggingWhenCSReturnsNull() {
-            when(csIntegrationService.createCertificateFromTemplate(CERTIFICATE_ID, REQUEST))
+            when(csIntegrationService.createDraftFromCertificate(CERTIFICATE_ID, REQUEST))
                 .thenReturn(null);
 
             createCertificateFromTemplateFromCertificateService.createCertificateFromTemplate(CERTIFICATE_ID);
@@ -253,7 +253,7 @@ class CreateCertificateFromTemplateFromCertificateServiceTest {
             final var emptyResponse = CreateCertificateFromTemplateResponseDTO.builder()
                 .certificate(null)
                 .build();
-            when(csIntegrationService.createCertificateFromTemplate(CERTIFICATE_ID, REQUEST))
+            when(csIntegrationService.createDraftFromCertificate(CERTIFICATE_ID, REQUEST))
                 .thenReturn(emptyResponse);
 
             createCertificateFromTemplateFromCertificateService.createCertificateFromTemplate(CERTIFICATE_ID);
@@ -266,14 +266,14 @@ class CreateCertificateFromTemplateFromCertificateServiceTest {
 
         @Test
         void shouldReturnNullWhenCSReturnsNull() {
-            when(csIntegrationService.createCertificateFromTemplate(CERTIFICATE_ID, REQUEST))
+            when(csIntegrationService.createDraftFromCertificate(CERTIFICATE_ID, REQUEST))
                 .thenReturn(null);
 
             final var result = createCertificateFromTemplateFromCertificateService.createCertificateFromTemplate(CERTIFICATE_ID);
 
             verify(csIntegrationService, times(1)).certificateExists(CERTIFICATE_ID);
             verify(csIntegrationRequestFactory, times(1)).createCertificateFromTemplateRequest(PATIENT_ID, parameters);
-            verify(csIntegrationService, times(1)).createCertificateFromTemplate(CERTIFICATE_ID, REQUEST);
+            verify(csIntegrationService, times(1)).createDraftFromCertificate(CERTIFICATE_ID, REQUEST);
             assertNull(result);
         }
 
@@ -282,20 +282,20 @@ class CreateCertificateFromTemplateFromCertificateServiceTest {
             final var emptyResponse = CreateCertificateFromTemplateResponseDTO.builder()
                 .certificate(null)
                 .build();
-            when(csIntegrationService.createCertificateFromTemplate(CERTIFICATE_ID, REQUEST))
+            when(csIntegrationService.createDraftFromCertificate(CERTIFICATE_ID, REQUEST))
                 .thenReturn(emptyResponse);
 
             final var result = createCertificateFromTemplateFromCertificateService.createCertificateFromTemplate(CERTIFICATE_ID);
 
             verify(csIntegrationService, times(1)).certificateExists(CERTIFICATE_ID);
             verify(csIntegrationRequestFactory, times(1)).createCertificateFromTemplateRequest(PATIENT_ID, parameters);
-            verify(csIntegrationService, times(1)).createCertificateFromTemplate(CERTIFICATE_ID, REQUEST);
+            verify(csIntegrationService, times(1)).createDraftFromCertificate(CERTIFICATE_ID, REQUEST);
             assertNull(result);
         }
 
         @Test
         void shouldPropagateExceptionWhenCSIntegrationServiceThrows() {
-            when(csIntegrationService.createCertificateFromTemplate(CERTIFICATE_ID, REQUEST))
+            when(csIntegrationService.createDraftFromCertificate(CERTIFICATE_ID, REQUEST))
                 .thenThrow(new IllegalStateException("CS error"));
 
             try {
@@ -306,7 +306,7 @@ class CreateCertificateFromTemplateFromCertificateServiceTest {
 
             verify(csIntegrationService, times(1)).certificateExists(CERTIFICATE_ID);
             verify(csIntegrationRequestFactory, times(1)).createCertificateFromTemplateRequest(PATIENT_ID, parameters);
-            verify(csIntegrationService, times(1)).createCertificateFromTemplate(CERTIFICATE_ID, REQUEST);
+            verify(csIntegrationService, times(1)).createDraftFromCertificate(CERTIFICATE_ID, REQUEST);
         }
     }
 }

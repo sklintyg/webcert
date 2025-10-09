@@ -331,9 +331,9 @@ public class CSIntegrationService {
         return response.getCertificate();
     }
 
-    @PerformanceLogging(eventAction = "create-draft-from-certificate-template", eventType = EVENT_TYPE_CREATION)
-    public CreateCertificateFromTemplateResponseDTO createCertificateFromTemplate(String certificateId, CreateCertificateFromTemplateRequestDTO request) {
-        final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/createFromTemplate";
+    @PerformanceLogging(eventAction = "create-draft-from-certificate", eventType = EVENT_TYPE_CREATION)
+    public CreateCertificateFromTemplateResponseDTO createDraftFromCertificate(String certificateId, CreateCertificateFromTemplateRequestDTO request) {
+        final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/draftFromCertificate";
 
         return restClient.post()
             .uri(url)
