@@ -59,6 +59,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateTypeE
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesWithQARequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesWithQAResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CitizenCertificateExistsResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateFromTemplateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateFromTemplateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateMessageResponseDTO;
@@ -327,6 +329,20 @@ public class CSIntegrationService {
         }
 
         return response.getCertificate();
+    }
+
+    @PerformanceLogging(eventAction = "create-draft-from-certificate", eventType = EVENT_TYPE_CREATION)
+    public CreateCertificateFromTemplateResponseDTO createDraftFromCertificate(String certificateId, CreateCertificateFromTemplateRequestDTO request) {
+        final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/draft";
+
+        return restClient.post()
+            .uri(url)
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
+            .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
+            .body(request)
+            .retrieve()
+            .body(CreateCertificateFromTemplateResponseDTO.class);
     }
 
     @PerformanceLogging(eventAction = "get-certificate", eventType = EVENT_TYPE_ACCESS)
@@ -1175,3 +1191,4 @@ public class CSIntegrationService {
     }
 
 }
+

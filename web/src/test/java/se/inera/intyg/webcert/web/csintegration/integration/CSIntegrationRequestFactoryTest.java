@@ -2344,4 +2344,64 @@ class CSIntegrationRequestFactoryTest {
             assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
         }
     }
+
+    @Nested
+    class CreateCertificateFromTemplateRequest {
+
+      @Mock
+      private IntegrationParameters integrationParameters;
+
+        @BeforeEach
+        void setup() {
+            when(certificateServiceUserHelper.get())
+                .thenReturn(USER);
+            when(certificateServiceUnitHelper.getUnit())
+                .thenReturn(UNIT);
+            when(certificateServiceUnitHelper.getCareUnit())
+                .thenReturn(CARE_UNIT);
+            when(certificateServiceUnitHelper.getCareProvider())
+                .thenReturn(CARE_PROVIDER);
+            when(certificateServicePatientHelper.get(PERSONNUMMER))
+                .thenReturn(PATIENT);
+            when(integrationParameters.getReference())
+                .thenReturn(EXTERNAL_REFERENCE);
+        }
+
+        @Test
+        void shouldSetUser() {
+            final var actualRequest = csIntegrationRequestFactory.createCertificateFromTemplateRequest(PATIENT_ID, integrationParameters);
+            assertEquals(USER, actualRequest.getUser());
+        }
+
+        @Test
+        void shouldSetUnit() {
+            final var actualRequest = csIntegrationRequestFactory.createCertificateFromTemplateRequest(PATIENT_ID, integrationParameters);
+            assertEquals(UNIT, actualRequest.getUnit());
+        }
+
+        @Test
+        void shouldSetCareUnit() {
+            final var actualRequest = csIntegrationRequestFactory.createCertificateFromTemplateRequest(PATIENT_ID, integrationParameters);
+            assertEquals(CARE_UNIT, actualRequest.getCareUnit());
+        }
+
+        @Test
+        void shouldSetCareProvider() {
+            final var actualRequest = csIntegrationRequestFactory.createCertificateFromTemplateRequest(PATIENT_ID, integrationParameters);
+            assertEquals(CARE_PROVIDER, actualRequest.getCareProvider());
+        }
+
+        @Test
+        void shouldSetPatient() {
+            final var actualRequest = csIntegrationRequestFactory.createCertificateFromTemplateRequest(PATIENT_ID, integrationParameters);
+            assertEquals(PATIENT, actualRequest.getPatient());
+        }
+
+        @Test
+        void shouldSetExternalReference() {
+            final var actualRequest = csIntegrationRequestFactory.createCertificateFromTemplateRequest(PATIENT_ID, integrationParameters);
+            assertEquals(EXTERNAL_REFERENCE, actualRequest.getExternalReference());
+        }
+    }
 }
+
