@@ -33,6 +33,7 @@ public class GetCitizenCertificatePdfRequestDTO {
 
     PersonIdDTO personId;
     String additionalInfo;
+    String customizationId;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class GetCitizenCertificatePdfRequestDTOBuilder {

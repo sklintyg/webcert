@@ -72,7 +72,7 @@ class GetCertificateInternalPdfFromCSTest {
         );
 
         doReturn(true).when(csIntegrationService).citizenCertificateExists(CERTIFICATE_ID);
-        doReturn(GET_CITIZEN_CERTIFICATE_PDF_REQUEST_DTO).when(csIntegrationRequestFactory).getCitizenCertificatePdfRequest(PERSON_ID);
+        doReturn(GET_CITIZEN_CERTIFICATE_PDF_REQUEST_DTO).when(csIntegrationRequestFactory).getCitizenCertificatePdfRequest(PERSON_ID, CUSTOMIZATION_ID);
         doReturn(responseFromCS).when(csIntegrationService)
             .getCitizenCertificatePdf(GET_CITIZEN_CERTIFICATE_PDF_REQUEST_DTO, CERTIFICATE_ID);
 
