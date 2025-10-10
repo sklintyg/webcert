@@ -3656,7 +3656,7 @@ class CSIntegrationServiceTest {
             requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
             responseSpec = mock(RestClient.ResponseSpec.class);
 
-            final String uri = "baseUrl/api/certificate/" + CERTIFICATE_ID + "/draftFromCertificate";
+            final String uri = "baseUrl/api/certificate/" + CERTIFICATE_ID + "/draft";
             ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
 
             when(restClient.post()).thenReturn(requestBodyUriSpec);
@@ -3695,7 +3695,7 @@ class CSIntegrationServiceTest {
             csIntegrationService.createDraftFromCertificate(CERTIFICATE_ID, CREATE_FROM_TEMPLATE_REQUEST);
             verify(requestBodyUriSpec).uri(captor.capture());
 
-            assertEquals("baseUrl/api/certificate/" + CERTIFICATE_ID + "/draftFromCertificate", captor.getValue());
+            assertEquals("baseUrl/api/certificate/" + CERTIFICATE_ID + "/draft", captor.getValue());
         }
 
         @Test
