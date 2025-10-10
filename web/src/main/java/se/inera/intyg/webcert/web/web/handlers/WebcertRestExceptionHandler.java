@@ -70,7 +70,7 @@ public class WebcertRestExceptionHandler implements ExceptionMapper<RuntimeExcep
         // Don't log concurrent modifiation exceptions, they are logged elsewhere
         if (wcse.getErrorCode() != WebCertServiceErrorCodeEnum.CONCURRENT_MODIFICATION) {
             LOG.warn("Internal exception occured! Internal error code: {} Error message: {}", wcse.getErrorCode(),
-                wcse.getMessage());
+                wcse.getMessage(), wcse);
         }
         WebcertRestExceptionResponse exceptionResponse = new WebcertRestExceptionResponse(wcse.getErrorCode(), wcse.getMessage());
         return Response.status(Status.INTERNAL_SERVER_ERROR).entity(exceptionResponse).type(MediaType.APPLICATION_JSON)
