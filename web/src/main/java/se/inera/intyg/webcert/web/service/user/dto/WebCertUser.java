@@ -66,6 +66,7 @@ public class WebCertUser extends IntygUser implements Serializable, Saml2Authent
         this.authenticationScheme = intygUser.getAuthenticationScheme();
         this.vardgivare = intygUser.getVardgivare();
         this.befattningar = intygUser.getBefattningar();
+        this.befattningsKoder = intygUser.getBefattningsKoder();
         this.specialiseringar = intygUser.getSpecialiseringar();
         this.legitimeradeYrkesgrupper = intygUser.getLegitimeradeYrkesgrupper();
 
