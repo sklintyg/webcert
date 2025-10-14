@@ -18,20 +18,23 @@
  */
 package se.inera.intyg.webcert.web.converter.util;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.time.LocalDateTime;
+import java.util.Arrays;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendType;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
+import se.inera.intyg.infra.integration.hsatk.model.PersonInformation.PaTitle;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import java.time.LocalDateTime;
-import java.util.Arrays;
-
-import static org.junit.Assert.*;
 
 public class IntygConverterUtilTest {
 
@@ -230,6 +233,46 @@ public class IntygConverterUtilTest {
         assertEquals(2, result.getSpecialiteter().size());
         assertEquals(specialisering1, result.getSpecialiteter().get(0));
         assertEquals(specialisering2, result.getSpecialiteter().get(1));
+    }
+
+    @Test
+    public void testBuildHosPersonalFromWebCertUserWithBefattningsKoder() {
+        final String hsaId = "hsaid";
+        final String namn = "namn";
+        final String befattningsKod1 = "befattning1";
+        final String befattningsKlartext = "Title Name 1";
+        final String befattningsKod2 = "befattning2";
+        final String befattningsKlartext2 = "Title Name 2";
+
+        PaTitle hsatkTitle1 = new PaTitle();
+        hsatkTitle1.setPaTitleCode(befattningsKod1);
+        hsatkTitle1.setPaTitleName(befattningsKlartext);
+
+        PaTitle hsatkTitle2 = new PaTitle();
+        hsatkTitle2.setPaTitleCode(befattningsKod2);
+        hsatkTitle2.setPaTitleName(befattningsKlartext2);
+
+        se.inera.intyg.common.support.model.common.internal.Vardenhet vardenhet =
+            new se.inera.intyg.common.support.model.common.internal.Vardenhet();
+
+        WebCertUser user = new WebCertUser();
+        user.setHsaId(hsaId);
+        user.setNamn(namn);
+        user.setBefattningsKoder(Arrays.asList(hsatkTitle1, hsatkTitle2));
+
+        HoSPersonal result = IntygConverterUtil.buildHosPersonalFromWebCertUser(user, vardenhet);
+
+        assertEquals(hsaId, result.getPersonId());
+        assertEquals(namn, result.getFullstandigtNamn());
+        assertEquals(2, result.getBefattningsKoder().size());
+
+        se.inera.intyg.common.support.model.common.internal.PaTitle internalTitle1 = result.getBefattningsKoder().get(0);
+        assertEquals(befattningsKod1, internalTitle1.getPaTitleCode());
+        assertEquals(befattningsKlartext, internalTitle1.getPaTitleName());
+
+        se.inera.intyg.common.support.model.common.internal.PaTitle internalTitle2 = result.getBefattningsKoder().get(1);
+        assertEquals(befattningsKod2, internalTitle2.getPaTitleCode());
+        assertEquals(befattningsKlartext2, internalTitle2.getPaTitleName());
     }
 
     private Fk7263Utlatande createUtlatandeFromJson() throws Exception {
