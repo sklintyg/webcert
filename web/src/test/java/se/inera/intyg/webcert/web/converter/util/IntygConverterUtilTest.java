@@ -240,17 +240,17 @@ public class IntygConverterUtilTest {
         final String hsaId = "hsaid";
         final String namn = "namn";
         final String befattningsKod1 = "befattning1";
-        final String befattningsKlartext = "Title Name 1";
+        final String befattningsKlartext = "AT läkare";
         final String befattningsKod2 = "befattning2";
-        final String befattningsKlartext2 = "Title Name 2";
+        final String befattningsKlartext2 = "ST läkare";
 
-        PaTitle hsatkTitle1 = new PaTitle();
-        hsatkTitle1.setPaTitleCode(befattningsKod1);
-        hsatkTitle1.setPaTitleName(befattningsKlartext);
+        PaTitle paTitle = new PaTitle();
+        paTitle.setPaTitleCode(befattningsKod1);
+        paTitle.setPaTitleName(befattningsKlartext);
 
-        PaTitle hsatkTitle2 = new PaTitle();
-        hsatkTitle2.setPaTitleCode(befattningsKod2);
-        hsatkTitle2.setPaTitleName(befattningsKlartext2);
+        PaTitle paTitle2 = new PaTitle();
+        paTitle2.setPaTitleCode(befattningsKod2);
+        paTitle2.setPaTitleName(befattningsKlartext2);
 
         se.inera.intyg.common.support.model.common.internal.Vardenhet vardenhet =
             new se.inera.intyg.common.support.model.common.internal.Vardenhet();
@@ -258,7 +258,7 @@ public class IntygConverterUtilTest {
         WebCertUser user = new WebCertUser();
         user.setHsaId(hsaId);
         user.setNamn(namn);
-        user.setBefattningsKoder(Arrays.asList(hsatkTitle1, hsatkTitle2));
+        user.setBefattningsKoder(Arrays.asList(paTitle, paTitle2));
 
         HoSPersonal result = IntygConverterUtil.buildHosPersonalFromWebCertUser(user, vardenhet);
 
