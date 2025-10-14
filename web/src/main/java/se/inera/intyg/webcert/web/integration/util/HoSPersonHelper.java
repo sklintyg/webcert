@@ -137,14 +137,13 @@ public final class HoSPersonHelper {
         // set titel, medarbetaruppdrag, befattningar and specialiteter from user object
         hosPerson.setTitel(user.getTitel());
         hosPerson.setMedarbetarUppdrag(user.getSelectedMedarbetarUppdragNamn());
-
+        hosPerson.getSpecialiteter().addAll(user.getSpecialiseringar());
         Optional.ofNullable(user.getBefattningsKoder())
             .filter(paTitles -> !paTitles.isEmpty())
             .ifPresentOrElse(
                 paTitles -> hosPerson.getBefattningsKoder().addAll(convertToInternalList(user)),
                 () -> hosPerson.getBefattningar().addAll(user.getBefattningar())
             );
-        hosPerson.getSpecialiteter().addAll(user.getSpecialiseringar());
     }
 
     private static List<PaTitle> convertToInternalList(IntygUser user) {
