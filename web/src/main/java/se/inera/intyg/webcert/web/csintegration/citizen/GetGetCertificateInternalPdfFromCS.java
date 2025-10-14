@@ -44,7 +44,7 @@ public class GetGetCertificateInternalPdfFromCS implements GetCertificatePdfServ
         }
 
         final var certificatePdfResponse = csIntegrationService.getCitizenCertificatePdf(
-            csIntegrationRequestFactory.getCitizenCertificatePdfRequest(personId),
+            csIntegrationRequestFactory.getCitizenCertificatePdfRequest(personId, customizationId),
             certificateId
         );
 
