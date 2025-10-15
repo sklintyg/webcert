@@ -27,22 +27,22 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
-import se.inera.intyg.webcert.web.service.facade.CreateCertificateFromCandidateFacadeService;
+import se.inera.intyg.webcert.web.service.facade.UpdateCertificateFromCandidateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.util.CandidateDataHelper;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
-@Service
-public class CreateCertificateFromCandidateFacadeServiceImpl implements CreateCertificateFromCandidateFacadeService {
+@Service("updateCertificateFromCandidateFromWC")
+public class UpdateCertificateFromCandidateFacadeServiceImpl implements UpdateCertificateFromCandidateFacadeService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CreateCertificateFromCandidateFacadeServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(UpdateCertificateFromCandidateFacadeServiceImpl.class);
     private final UtkastService utkastService;
     private final DraftAccessServiceHelper draftAccessServiceHelper;
     private final MonitoringLogService monitoringLogService;
     private final CandidateDataHelper candidateDataHelper;
 
     @Autowired
-    public CreateCertificateFromCandidateFacadeServiceImpl(UtkastService utkastService, DraftAccessServiceHelper draftAccessServiceHelper,
+    public UpdateCertificateFromCandidateFacadeServiceImpl(UtkastService utkastService, DraftAccessServiceHelper draftAccessServiceHelper,
         MonitoringLogService monitoringLogService, CandidateDataHelper candidateDataHelper) {
         this.utkastService = utkastService;
         this.draftAccessServiceHelper = draftAccessServiceHelper;
@@ -50,16 +50,15 @@ public class CreateCertificateFromCandidateFacadeServiceImpl implements CreateCe
         this.candidateDataHelper = candidateDataHelper;
     }
 
-
     @Override
-    public String createCertificateFromCandidate(String certificateId) {
+    public String update(String certificateId) {
         LOG.debug("Get certificate '{}' that will be used as template", certificateId);
 
         final var certificate = utkastService.getDraft(certificateId, false);
         final var candidateMetadata = candidateDataHelper.getCandidateMetadata(
             certificate.getIntygsTyp(), certificate.getIntygTypeVersion(),
             certificate.getPatientPersonnummer()
-        ).get();
+        ).orElseThrow();
         var error = true;
 
         LOG.debug("Attempting to copy data from certificate with type '{}' and id '{}' to draft with type '{}' and id '{}'",

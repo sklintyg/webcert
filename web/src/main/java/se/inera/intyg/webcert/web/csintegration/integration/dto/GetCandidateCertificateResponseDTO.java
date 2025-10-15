@@ -16,10 +16,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.facade;
 
-public interface CreateCertificateFromCandidateFacadeService {
+package se.inera.intyg.webcert.web.csintegration.integration.dto;
 
-    String createCertificateFromCandidate(String certificateId);
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import lombok.Builder;
+import lombok.Value;
+import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCandidateCertificateResponseDTO.GetCandidateCertificateResponseDTOBuilder;
 
+@JsonDeserialize(builder = GetCandidateCertificateResponseDTOBuilder.class)
+@Value
+@Builder
+public class GetCandidateCertificateResponseDTO {
+
+    Certificate certificate;
+
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class GetCandidateCertificateResponseDTOBuilder {
+
+    }
 }

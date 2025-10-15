@@ -44,9 +44,8 @@ public class CreateCertificateFromTemplateFromCertificateService implements Crea
     private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
     private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
     private final WebCertUserService webCertUserService;
-
-
-  @Override
+    
+    @Override
     public String createCertificateFromTemplate(String certificateId) {
         final var existsInCS = csIntegrationService.certificateExists(certificateId);
         if (!existsInCS) {

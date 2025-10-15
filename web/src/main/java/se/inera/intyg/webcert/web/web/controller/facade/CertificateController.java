@@ -46,7 +46,6 @@ import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.service.facade.ComplementCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.CopyCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.CreateCertificateFacadeService;
-import se.inera.intyg.webcert.web.service.facade.CreateCertificateFromCandidateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.CreateCertificateFromTemplateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.DeleteCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.ForwardCertificateFacadeService;
@@ -62,6 +61,7 @@ import se.inera.intyg.webcert.web.service.facade.RevokeCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.SaveCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.SendCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.SignCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.facade.UpdateCertificateFromCandidateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.ValidateCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.impl.CreateCertificateException;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateDTO;
@@ -137,14 +137,13 @@ public class CertificateController {
     @Qualifier("createCertificateFromTemplateAggregator")
     private CreateCertificateFromTemplateFacadeService createCertificateFromTemplateFacadeService;
     @Autowired
-    private CreateCertificateFromCandidateFacadeService createCertificateFromCandidateFacadeService;
+    @Qualifier("updateCertificateFromCandidateAggregator")
+    private UpdateCertificateFromCandidateFacadeService updateCertificateFromCandidateFacadeService;
     @Autowired
     @Qualifier("createCertificateAggregator")
     private CreateCertificateFacadeService createCertificateFacadeService;
-
     @Autowired
     private GetRelatedCertificateFacadeService getRelatedCertificateFacadeService;
-
     @Autowired
     private GetCandidateMesssageForCertificateFacadeService getCandidateMesssageForCertificateFacadeService;
 
@@ -299,12 +298,12 @@ public class CertificateController {
     @Path("/{certificateId}/candidate")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "certificate-create-certificate-from-candidate", eventType = MdcLogConstants.EVENT_TYPE_CREATION)
-    public Response createCertificateFromCandidate(@PathParam("certificateId") @NotNull String certificateId) {
+    @PerformanceLogging(eventAction = "update-certificate-from-candidate", eventType = MdcLogConstants.EVENT_TYPE_CREATION)
+    public Response updateCertificateFromCandidate(@PathParam("certificateId") @NotNull String certificateId) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Filling draft of id: '{}' with candidate", certificateId);
         }
-        final var newCertificateId = createCertificateFromCandidateFacadeService.createCertificateFromCandidate(certificateId);
+        final var newCertificateId = updateCertificateFromCandidateFacadeService.update(certificateId);
         return Response.ok(CreateCertificateFromCandidateResponseDTO.create(newCertificateId)).build();
     }
 

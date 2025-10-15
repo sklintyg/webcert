@@ -46,7 +46,7 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.UtkastCandidateMetaData;
 
 @ExtendWith(MockitoExtension.class)
-class CreateCertificateFromCandidateFacadeServiceImplTest {
+class UpdateCertificateFromCandidateFacadeServiceImplTest {
 
     @Mock
     private UtkastService utkastService;
@@ -61,7 +61,7 @@ class CreateCertificateFromCandidateFacadeServiceImplTest {
     private CandidateDataHelper candidateDataHelper;
 
     @InjectMocks
-    private CreateCertificateFromCandidateFacadeServiceImpl createCertificateFromCandidateFacadeService;
+    private UpdateCertificateFromCandidateFacadeServiceImpl createCertificateFromCandidateFacadeService;
 
     private final static String CERTIFICATE_ID = "certificateId";
     private final static String CANDIDATE_ID = "candidateId";
@@ -86,7 +86,7 @@ class CreateCertificateFromCandidateFacadeServiceImplTest {
         @Test
         void shallIncludeCertificateId() {
 
-            createCertificateFromCandidateFacadeService.createCertificateFromCandidate(CERTIFICATE_ID);
+            createCertificateFromCandidateFacadeService.update(CERTIFICATE_ID);
 
             final var certificateIdArgumentCaptor = ArgumentCaptor.forClass(String.class);
 
@@ -98,7 +98,7 @@ class CreateCertificateFromCandidateFacadeServiceImplTest {
         @Test
         void shallIncludeNewCertificateType() {
 
-            createCertificateFromCandidateFacadeService.createCertificateFromCandidate(CERTIFICATE_ID);
+            createCertificateFromCandidateFacadeService.update(CERTIFICATE_ID);
 
             final var certificateTypeArgumentCaptor = ArgumentCaptor.forClass(String.class);
 
@@ -110,7 +110,7 @@ class CreateCertificateFromCandidateFacadeServiceImplTest {
         @Test
         void shallIncludePatientId() {
 
-            createCertificateFromCandidateFacadeService.createCertificateFromCandidate(CERTIFICATE_ID);
+            createCertificateFromCandidateFacadeService.update(CERTIFICATE_ID);
 
             final var certificateArgumentCaptor = ArgumentCaptor.forClass(Utkast.class);
 
@@ -122,7 +122,7 @@ class CreateCertificateFromCandidateFacadeServiceImplTest {
         @Test
         void shallReturnDraftId() {
 
-            final var actualCertificateId = createCertificateFromCandidateFacadeService.createCertificateFromCandidate(CERTIFICATE_ID);
+            final var actualCertificateId = createCertificateFromCandidateFacadeService.update(CERTIFICATE_ID);
 
             assertEquals(CERTIFICATE_ID, actualCertificateId);
         }
