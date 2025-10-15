@@ -142,6 +142,7 @@ class CSIntegrationRequestFactoryTest {
     private static final String REVOKED_MESSAGE = "REVOKED_MESSAGE";
     private static final MessageQueryCriteriaDTO MESSAGE_QUERY_CRITERIA_DTO = MessageQueryCriteriaDTO.builder()
         .build();
+    private static final String CUSTOMIZATION_ID = "customizationId";
 
     static {
         CERTIFICATE.setMetadata(
@@ -1529,10 +1530,11 @@ class CSIntegrationRequestFactoryTest {
                         .build()
                 )
                 .additionalInfo("Utskriven från 1177 intyg")
+                .customizationId(CUSTOMIZATION_ID)
                 .build();
 
             final var citizenCertificateRequest = csIntegrationRequestFactory.getCitizenCertificatePdfRequest(
-                PATIENT_ID);
+                PATIENT_ID, CUSTOMIZATION_ID);
             assertEquals(expectedRequest, citizenCertificateRequest);
         }
 
@@ -1546,17 +1548,18 @@ class CSIntegrationRequestFactoryTest {
                         .build()
                 )
                 .additionalInfo("Utskriven från 1177 intyg")
+                .customizationId(CUSTOMIZATION_ID)
                 .build();
 
             final var citizenCertificateRequest = csIntegrationRequestFactory.getCitizenCertificatePdfRequest(
-                COORDINATION_NUMBER_PATIENT_ID);
+                COORDINATION_NUMBER_PATIENT_ID, CUSTOMIZATION_ID);
             assertEquals(expectedRequest, citizenCertificateRequest);
         }
 
         @Test
         void shouldReturnGetCitizenCertificatePdfRequestWithAdditonalInfo() {
             final var citizenCertificateRequest = csIntegrationRequestFactory.getCitizenCertificatePdfRequest(
-                PATIENT_ID);
+                PATIENT_ID, CUSTOMIZATION_ID);
             assertEquals("Utskriven från 1177 intyg", citizenCertificateRequest.getAdditionalInfo());
         }
 

@@ -449,7 +449,7 @@ public class CSIntegrationRequestFactory {
         return SamordningsnummerValidator.isSamordningsNummer(Optional.of(personId));
     }
 
-    public GetCitizenCertificatePdfRequestDTO getCitizenCertificatePdfRequest(String personId) {
+    public GetCitizenCertificatePdfRequestDTO getCitizenCertificatePdfRequest(String personId, String customizationId) {
         final var citizenPersonId = createPatientId(personId);
         return GetCitizenCertificatePdfRequestDTO.builder()
             .personId(
@@ -460,6 +460,7 @@ public class CSIntegrationRequestFactory {
                     .build()
             )
             .additionalInfo("Utskriven från 1177 intyg")
+            .customizationId(customizationId)
             .build();
     }
 
