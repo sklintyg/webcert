@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.link.ResourceLinkTypeEnum;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.PDLLogService;
@@ -57,8 +58,17 @@ public class GetCertificateFromCertificateService implements GetCertificateFacad
 
         if (pdlLog) {
             pdlLogService.logRead(response);
+
+            if (containsCandidateCertificateInformation(response)) {
+                pdlLogService.logReadLevelTwo(response);
+            }
         }
 
         return response;
+    }
+
+    private boolean containsCandidateCertificateInformation(Certificate response) {
+        return response.getLinks().stream()
+            .anyMatch(link -> ResourceLinkTypeEnum.CREATE_CERTIFICATE_FROM_CANDIDATE.equals(link.getType()));
     }
 }

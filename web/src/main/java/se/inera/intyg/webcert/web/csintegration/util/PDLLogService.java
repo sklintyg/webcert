@@ -137,4 +137,8 @@ public class PDLLogService {
         }
         return additionalInfo.concat(". ").concat(recipientMessage);
     }
+
+    public void logReadLevelTwo(Certificate response) {
+        logService.logReadLevelTwo(webCertUserService.getUser(), response.getMetadata().getPatient().getPersonId().getId());
+    }
 }

@@ -235,7 +235,7 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
-    public void logListIntyg(WebCertUser user, String patient) {
+    public void logReadLevelTwo(WebCertUser user, String patient) {
         LogRequest logRequest = logRequestFactory.createLogRequestFromUser(user, patient);
         send(logMessagePopulator.populateLogMessage(
             IntygListsMessage.build(), logRequest, getLogUser(user)), logRequest.isTestIntyg());

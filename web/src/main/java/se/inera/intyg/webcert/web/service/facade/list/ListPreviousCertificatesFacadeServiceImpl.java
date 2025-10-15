@@ -148,7 +148,7 @@ public class ListPreviousCertificatesFacadeServiceImpl implements ListPreviousCe
         if (protectedPatientStatus == SekretessStatus.FALSE) {
             return list;
         }
-        
+
         return list.stream()
             .filter(certificate ->
                 authoritiesValidator
@@ -205,7 +205,7 @@ public class ListPreviousCertificatesFacadeServiceImpl implements ListPreviousCe
     }
 
     private void logListUsage(Personnummer patientId, WebCertUser user) {
-        logService.logListIntyg(user, patientId.getPersonnummerWithDash());
+        logService.logReadLevelTwo(user, patientId.getPersonnummerWithDash());
     }
 
     private List<CertificateListItem> convertList(List<ListIntygEntry> intygEntryList) {
