@@ -130,8 +130,8 @@ public final class IntygConverterUtil {
         return user.getBefattningsKoder().stream()
             .map(pt -> {
                 PaTitle internal = new PaTitle();
-                internal.setPaTitleName(pt.getPaTitleName());
-                internal.setPaTitleCode(pt.getPaTitleCode());
+                internal.setKlartext(pt.getPaTitleName());
+                internal.setKod(pt.getPaTitleCode());
                 return internal;
             })
             .toList();
