@@ -267,12 +267,12 @@ public class IntygConverterUtilTest {
         assertEquals(2, result.getBefattningsKoder().size());
 
         se.inera.intyg.common.support.model.common.internal.PaTitle internalTitle1 = result.getBefattningsKoder().get(0);
-        assertEquals(befattningsKod1, internalTitle1.getPaTitleCode());
-        assertEquals(befattningsKlartext, internalTitle1.getPaTitleName());
+        assertEquals(befattningsKod1, internalTitle1.getKod());
+        assertEquals(befattningsKlartext, internalTitle1.getKlartext());
 
         se.inera.intyg.common.support.model.common.internal.PaTitle internalTitle2 = result.getBefattningsKoder().get(1);
-        assertEquals(befattningsKod2, internalTitle2.getPaTitleCode());
-        assertEquals(befattningsKlartext2, internalTitle2.getPaTitleName());
+        assertEquals(befattningsKod2, internalTitle2.getKod());
+        assertEquals(befattningsKlartext2, internalTitle2.getKlartext());
     }
 
     private Fk7263Utlatande createUtlatandeFromJson() throws Exception {
