@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.csintegration.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -35,6 +36,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
+import se.inera.intyg.common.support.facade.model.Patient;
+import se.inera.intyg.common.support.facade.model.PersonId;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRecipient;
 import se.inera.intyg.webcert.web.service.log.LogService;
@@ -71,6 +74,15 @@ class PDLLogServiceTest {
     void setUp() {
         CERTIFICATE.setMetadata(
             CertificateMetadata.builder()
+                .patient(
+                    Patient.builder()
+                        .personId(
+                            PersonId.builder()
+                                .id(PERSON_ID)
+                                .build()
+                        )
+                        .build()
+                )
                 .recipient(
                     CertificateRecipient.builder()
                         .name(RECIPIENT_NAME)
@@ -472,7 +484,6 @@ class PDLLogServiceTest {
         assertEquals(expectedLogRequest, captor.getValue());
     }
 
-
     @Test
     void shouldLogCreateMessage() {
         final var webCertUser = new WebCertUser();
@@ -482,6 +493,18 @@ class PDLLogServiceTest {
         );
 
         verify(logService).logCreateMessage(webCertUser, PERSON_ID, CERTIFICATE_ID);
+    }
+
+    @Test
+    void shouldLogReadLevelTwo() {
+        final var webCertUser = new WebCertUser();
+        doReturn(webCertUser).when(webCertUserService).getUser();
+
+        doNothing().when(logService).logReadLevelTwo(webCertUser, PERSON_ID);
+
+        pdlLogService.logReadLevelTwo(CERTIFICATE);
+
+        verify(logService).logReadLevelTwo(webCertUser, PERSON_ID);
     }
 
     private IntegrationParameters additionalInfoIntegrationParameter() {

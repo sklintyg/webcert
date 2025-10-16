@@ -51,7 +51,6 @@ import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorD
 import se.inera.intyg.webcert.web.service.facade.ComplementCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.CopyCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.CreateCertificateFacadeService;
-import se.inera.intyg.webcert.web.service.facade.CreateCertificateFromCandidateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.CreateCertificateFromTemplateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.DeleteCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.ForwardCertificateFacadeService;
@@ -67,6 +66,7 @@ import se.inera.intyg.webcert.web.service.facade.RevokeCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.SaveCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.SendCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.SignCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.facade.UpdateCertificateFromCandidateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.ValidateCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.impl.CreateCertificateException;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygServiceResult;
@@ -128,7 +128,7 @@ public class CertificateControllerTest {
     @Mock
     private CreateCertificateFromTemplateFacadeService createCertificateFromTemplateFacadeService;
     @Mock
-    private CreateCertificateFromCandidateFacadeService createCertificateFromCandiateFacadeService;
+    private UpdateCertificateFromCandidateFacadeService createCertificateFromCandiateFacadeService;
 
     @Mock
     private GetRelatedCertificateFacadeService getRelatedCertificateFacadeService;
@@ -581,10 +581,10 @@ public class CertificateControllerTest {
 
             doReturn(expectedId)
                 .when(createCertificateFromCandiateFacadeService)
-                .createCertificateFromCandidate(anyString());
+                .update(anyString());
 
             final var response = (CreateCertificateFromCandidateResponseDTO) certificateController
-                .createCertificateFromCandidate(CERTIFICATE_ID).getEntity();
+                .updateCertificateFromCandidate(CERTIFICATE_ID).getEntity();
 
             assertEquals(expectedId, response.getCertificateId());
         }

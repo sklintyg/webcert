@@ -78,7 +78,7 @@ public class CertificateServiceTest {
     public void errorGettingCertificatesFromIT() {
         Mockito.when(itIntegrationService.getCertificatesForDoctor(null, null)).thenReturn(null);
         var certificateListResponse = certificateService.listCertificatesForDoctor(null);
-        verify(logService, times(0)).logListIntyg(any(), any());
+        verify(logService, times(0)).logReadLevelTwo(any(), any());
         assertTrue(certificateListResponse.isErrorFromIT());
     }
 
@@ -86,7 +86,7 @@ public class CertificateServiceTest {
     public void shouldReturnListOfEmptyCertificatesIfErrorGettingCertificatesFromIT() {
         Mockito.when(itIntegrationService.getCertificatesForDoctor(null, null)).thenReturn(null);
         var certificateListResponse = certificateService.listCertificatesForDoctor(null);
-        verify(logService, times(0)).logListIntyg(any(), any());
+        verify(logService, times(0)).logReadLevelTwo(any(), any());
         assertTrue(certificateListResponse.getCertificates().isEmpty());
     }
 
@@ -144,7 +144,7 @@ public class CertificateServiceTest {
         assertEquals(testUndefined || hasFlags, certificates.get(0).isProtectedIdentity());
         assertEquals(hasFlags, certificates.get(0).isDeceased());
         assertEquals(hasFlags, certificates.get(0).isTestIndicator());
-        verify(logService, times(1)).logListIntyg(user, civicRegistrationNumberWithDash);
+        verify(logService, times(1)).logReadLevelTwo(user, civicRegistrationNumberWithDash);
     }
 
     private WebCertUser buildUser() {

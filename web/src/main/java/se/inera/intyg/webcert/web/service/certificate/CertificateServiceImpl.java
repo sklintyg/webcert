@@ -76,7 +76,7 @@ public class CertificateServiceImpl implements CertificateService {
 
             responseFromIT.getCertificates().stream().map(CertificateListEntry::getCivicRegistrationNumber).distinct()
                 .forEach(patientId -> {
-                    logService.logListIntyg(user, getCivicRegistrationNumber(patientId).get().getPersonnummerWithDash());
+                    logService.logReadLevelTwo(user, getCivicRegistrationNumber(patientId).get().getPersonnummerWithDash());
                 });
             return responseFromIT;
         } catch (Exception ex) {
