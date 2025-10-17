@@ -129,7 +129,7 @@ public final class IntygConverterUtil {
     private static List<PaTitle> convertToInternalList(WebCertUser user) {
         return user.getBefattningsKoder().stream()
             .map(pt -> {
-                PaTitle internal = new PaTitle();
+                final var internal = new PaTitle();
                 internal.setKlartext(pt.getPaTitleName());
                 internal.setKod(pt.getPaTitleCode());
                 return internal;

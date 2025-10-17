@@ -138,7 +138,7 @@ public final class HoSPersonHelper {
         hosPerson.setTitel(user.getTitel());
         hosPerson.setMedarbetarUppdrag(user.getSelectedMedarbetarUppdragNamn());
         hosPerson.getSpecialiteter().addAll(user.getSpecialiseringar());
-        Optional.ofNullable(user.getBefattningsKoder())
+        Optional.of(user.getBefattningsKoder())
             .filter(paTitles -> !paTitles.isEmpty())
             .ifPresentOrElse(
                 paTitles -> hosPerson.getBefattningsKoder().addAll(convertToInternalList(user)),
