@@ -148,6 +148,7 @@ public final class HoSPersonHelper {
 
     private static List<PaTitle> convertToInternalList(IntygUser user) {
         return user.getBefattningsKoder().stream()
+            .distinct()
             .map(pt -> {
                 PaTitle internal = new PaTitle();
                 internal.setKlartext(pt.getPaTitleName());
