@@ -23,13 +23,18 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.List;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
+import se.inera.intyg.infra.integration.hsatk.model.PersonInformation;
+import se.inera.intyg.infra.integration.hsatk.model.PersonInformation.PaTitle;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -37,7 +42,7 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 class IntygConverterUtilTest {
 
     @Test
-    void testBuildSendTypeFromUtlatande() throws Exception {
+    void testBuildSendTypeFromUtlatande() {
 
         final var utlatande = createUtlatandeFromJson();
 
@@ -233,9 +238,65 @@ class IntygConverterUtilTest {
         assertEquals(specialisering2, result.getSpecialiteter().get(1));
     }
 
-    private Fk7263Utlatande createUtlatandeFromJson() throws Exception {
-        return new CustomObjectMapper().readValue(new ClassPathResource("IntygServiceTest/utlatande.json").getFile(),
-            Fk7263Utlatande.class);
+    @Nested
+    class ConvertToInternalList {
+
+        @Test
+        void shouldBuildHosPersonalWithBefattningsKoder() {
+            final var user = buildWebCertUser();
+            final var vardenhet = new se.inera.intyg.common.support.model.common.internal.Vardenhet();
+            final var befattning = buildBefattning();
+            user.setBefattningsKoder(List.of(befattning));
+            final var result = IntygConverterUtil.buildHosPersonalFromWebCertUser(user, vardenhet);
+            assertEquals(1, result.getBefattningsKoder().size());
+        }
+
+        @Test
+        void shouldHandleDuplicateBefattningsKoder() {
+            final var user = buildWebCertUser();
+            final var vardenhet = new se.inera.intyg.common.support.model.common.internal.Vardenhet();
+            final var befattning1 = buildBefattning();
+            user.setBefattningsKoder(List.of(befattning1, befattning1));
+            final var result = IntygConverterUtil.buildHosPersonalFromWebCertUser(user, vardenhet);
+            assertEquals(1, result.getBefattningsKoder().size());
+        }
+
+        @Test
+        void shouldReturnEmptyListWhenNoBefattningsKoder() {
+            final var user = buildWebCertUser();
+            final var vardenhet = new se.inera.intyg.common.support.model.common.internal.Vardenhet();
+            user.setBefattningsKoder(List.of());
+            final var result = IntygConverterUtil.buildHosPersonalFromWebCertUser(user, vardenhet);
+            assertTrue(result.getBefattningsKoder().isEmpty(), "Expected empty befattningskoder list");
+        }
+    }
+
+    private WebCertUser buildWebCertUser() {
+        final var user = new WebCertUser();
+        user.setForskrivarkod("forskrivarkod");
+        user.setHsaId("hsaid");
+        user.setNamn("namn");
+        return user;
+    }
+
+    private PersonInformation.PaTitle buildBefattning() {
+        return buildBefattning("204010", "Läkare - AT");
+    }
+
+    private PersonInformation.PaTitle buildBefattning(String kod, String klartext) {
+        final var befattning = new PaTitle();
+        befattning.setPaTitleCode(kod);
+        befattning.setPaTitleName(klartext);
+        return befattning;
+    }
+
+    private Fk7263Utlatande createUtlatandeFromJson() {
+        try {
+            final var resource = new ClassPathResource("json/utlatande_fk7263.json");
+            return new CustomObjectMapper().readValue(resource.getInputStream(), Fk7263Utlatande.class);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to read utlatande from json", e);
+        }
     }
 
 }
