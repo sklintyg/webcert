@@ -150,7 +150,7 @@ public final class HoSPersonHelper {
         return user.getBefattningsKoder().stream()
             .distinct()
             .map(pt -> {
-                PaTitle internal = new PaTitle();
+                final var internal = new PaTitle();
                 internal.setKlartext(pt.getPaTitleName());
                 internal.setKod(pt.getPaTitleCode());
                 return internal;
