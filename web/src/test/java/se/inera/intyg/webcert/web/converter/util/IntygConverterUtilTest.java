@@ -18,29 +18,35 @@
  */
 package se.inera.intyg.webcert.web.converter.util;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ClassPathResource;
-import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendType;
 import se.inera.intyg.common.fk7263.model.internal.Fk7263Utlatande;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
+import se.inera.intyg.infra.integration.hsatk.model.PersonInformation;
+import se.inera.intyg.infra.integration.hsatk.model.PersonInformation.PaTitle;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-
-import static org.junit.Assert.*;
-
-public class IntygConverterUtilTest {
+class IntygConverterUtilTest {
 
     @Test
-    public void testBuildSendTypeFromUtlatande() throws Exception {
+    void testBuildSendTypeFromUtlatande() {
 
-        Fk7263Utlatande utlatande = createUtlatandeFromJson();
+        final var utlatande = createUtlatandeFromJson();
 
-        SendType res = IntygConverterUtil.buildSendTypeFromUtlatande(utlatande);
+        final var res = IntygConverterUtil.buildSendTypeFromUtlatande(utlatande);
 
         assertNotNull(res);
 
@@ -64,62 +70,62 @@ public class IntygConverterUtilTest {
     }
 
     @Test
-    public void testConcatPatientName() {
-        String fName = "Adam Bertil Cesar";
-        String mName = "Davidsson";
-        String lName = "Eriksson";
+    void testConcatPatientName() {
+        final var fName = "Adam Bertil Cesar";
+        final var mName = "Davidsson";
+        final var lName = "Eriksson";
 
-        String name = IntygConverterUtil.concatPatientName(fName, mName, lName);
+        final var name = IntygConverterUtil.concatPatientName(fName, mName, lName);
 
         assertEquals("Adam Bertil Cesar Davidsson Eriksson", name);
     }
 
     @Test
-    public void testConcatPatientNameWithoutMiddlename() {
-        String fName = "Adam Bertil";
-        String lName = "Eriksson";
+    void testConcatPatientNameWithoutMiddlename() {
+        final var fName = "Adam Bertil";
+        final var lName = "Eriksson";
 
-        String name = IntygConverterUtil.concatPatientName(fName, null, lName);
-
-        assertEquals("Adam Bertil Eriksson", name);
-    }
-
-    @Test
-    public void testConcatPatientNameWithBlankMiddlename() {
-        String fName = "Adam Bertil";
-        String lName = "Eriksson";
-
-        String name = IntygConverterUtil.concatPatientName(fName, " ", lName);
+        final var name = IntygConverterUtil.concatPatientName(fName, null, lName);
 
         assertEquals("Adam Bertil Eriksson", name);
     }
 
     @Test
-    public void testBuildVardRefId() {
+    void testConcatPatientNameWithBlankMiddlename() {
+        final var fName = "Adam Bertil";
+        final var lName = "Eriksson";
 
-        LocalDateTime ts = LocalDateTime.parse("2014-01-01T12:34:56.123");
+        final var name = IntygConverterUtil.concatPatientName(fName, " ", lName);
 
-        String res = IntygConverterUtil.buildVardReferensId("ABC123", ts);
+        assertEquals("Adam Bertil Eriksson", name);
+    }
+
+    @Test
+    void testBuildVardRefId() {
+
+        final var ts = LocalDateTime.parse("2014-01-01T12:34:56.123");
+
+        final var res = IntygConverterUtil.buildVardReferensId("ABC123", ts);
 
         assertNotNull(res);
-        assertEquals(res, "SEND-ABC123-20140101T123456.123");
+        assertEquals("SEND-ABC123-20140101T123456.123", res);
     }
 
     @Test
-    public void testBuildHosPersonalFromWebCertUser() {
-        final String forskrivarkod = "forskrivarkod";
-        final String hsaId = "hsaid";
-        final String namn = "namn";
-        final String arbetsplatskod = "arbetsplatskod";
-        final String epost = "epost";
-        final String enhetsId = "enhetsId";
-        final String enhetsnamn = "enhetsnamn";
-        final String postadress = "postadress";
-        final String postnummer = "postnummer";
-        final String postort = "postort";
-        final String telefonnummer = "telefonnummer";
-        final String vardgivarId = "vardgivarId";
-        final String vardgivarnamn = "vardgivarnamn";
+    void testBuildHosPersonalFromWebCertUser() {
+        final var forskrivarkod = "forskrivarkod";
+        final var hsaId = "hsaid";
+        final var namn = "namn";
+        final var arbetsplatskod = "arbetsplatskod";
+        final var epost = "epost";
+        final var enhetsId = "enhetsId";
+        final var enhetsnamn = "enhetsnamn";
+        final var postadress = "postadress";
+        final var postnummer = "postnummer";
+        final var postort = "postort";
+        final var telefonnummer = "telefonnummer";
+        final var vardgivarId = "vardgivarId";
+        final var vardgivarnamn = "vardgivarnamn";
         Vardenhet valdVardenhet = new Vardenhet();
         valdVardenhet.setArbetsplatskod(arbetsplatskod);
         valdVardenhet.setEpost(epost);
@@ -156,20 +162,20 @@ public class IntygConverterUtilTest {
     }
 
     @Test
-    public void testBuildHosPersonalFromWebCertUserWithVardenhet() {
-        final String forskrivarkod = "forskrivarkod";
-        final String hsaId = "hsaid";
-        final String namn = "namn";
-        final String arbetsplatskod = "arbetsplatskod";
-        final String epost = "epost";
-        final String enhetsId = "enhetsId";
-        final String enhetsnamn = "enhetsnamn";
-        final String postadress = "postadress";
-        final String postnummer = "postnummer";
-        final String postort = "postort";
-        final String telefonnummer = "telefonnummer";
-        final String vardgivarId = "vardgivarId";
-        final String vardgivarnamn = "vardgivarnamn";
+    void testBuildHosPersonalFromWebCertUserWithVardenhet() {
+        final var forskrivarkod = "forskrivarkod";
+        final var hsaId = "hsaid";
+        final var namn = "namn";
+        final var arbetsplatskod = "arbetsplatskod";
+        final var epost = "epost";
+        final var enhetsId = "enhetsId";
+        final var enhetsnamn = "enhetsnamn";
+        final var postadress = "postadress";
+        final var postnummer = "postnummer";
+        final var postort = "postort";
+        final var telefonnummer = "telefonnummer";
+        final var vardgivarId = "vardgivarId";
+        final var vardgivarnamn = "vardgivarnamn";
         se.inera.intyg.common.support.model.common.internal.Vardgivare vardgivare = new se.inera.intyg.common.support.model.common.internal.Vardgivare();
         vardgivare.setVardgivarid(vardgivarId);
         vardgivare.setVardgivarnamn(vardgivarnamn);
@@ -206,21 +212,21 @@ public class IntygConverterUtilTest {
     }
 
     @Test
-    public void testBuildHosPersonalFromWebCertUserWithSpecialiseringarAndBefattningar() {
-        final String hsaId = "hsaid";
-        final String namn = "namn";
-        final String befattning1 = "befattning1";
-        final String befattning2 = "befattning2";
-        final String specialisering1 = "specialisering1";
-        final String specialisering2 = "specialisering2";
+    void testBuildHosPersonalFromWebCertUserWithSpecialiseringarAndBefattningar() {
+        final var hsaId = "hsaid";
+        final var namn = "namn";
+        final var befattning1 = "befattning1";
+        final var befattning2 = "befattning2";
+        final var specialisering1 = "specialisering1";
+        final var specialisering2 = "specialisering2";
         se.inera.intyg.common.support.model.common.internal.Vardenhet vardenhet = new se.inera.intyg.common.support.model.common.internal.Vardenhet();
-        WebCertUser user = new WebCertUser();
+        final var user = new WebCertUser();
         user.setHsaId(hsaId);
         user.setNamn(namn);
         user.setBefattningar(Arrays.asList(befattning1, befattning2));
         user.setSpecialiseringar(Arrays.asList(specialisering1, specialisering2));
 
-        HoSPersonal result = IntygConverterUtil.buildHosPersonalFromWebCertUser(user, vardenhet);
+        final var result = IntygConverterUtil.buildHosPersonalFromWebCertUser(user, vardenhet);
 
         assertEquals(hsaId, result.getPersonId());
         assertEquals(namn, result.getFullstandigtNamn());
@@ -232,9 +238,65 @@ public class IntygConverterUtilTest {
         assertEquals(specialisering2, result.getSpecialiteter().get(1));
     }
 
-    private Fk7263Utlatande createUtlatandeFromJson() throws Exception {
-        return new CustomObjectMapper().readValue(new ClassPathResource("IntygServiceTest/utlatande.json").getFile(),
-            Fk7263Utlatande.class);
+    @Nested
+    class ConvertToInternalList {
+
+        @Test
+        void shouldBuildHosPersonalWithBefattningsKoder() {
+            final var user = buildWebCertUser();
+            final var vardenhet = new se.inera.intyg.common.support.model.common.internal.Vardenhet();
+            final var befattning = buildBefattning();
+            user.setBefattningsKoder(List.of(befattning));
+            final var result = IntygConverterUtil.buildHosPersonalFromWebCertUser(user, vardenhet);
+            assertEquals(1, result.getBefattningsKoder().size());
+        }
+
+        @Test
+        void shouldHandleDuplicateBefattningsKoder() {
+            final var user = buildWebCertUser();
+            final var vardenhet = new se.inera.intyg.common.support.model.common.internal.Vardenhet();
+            final var befattning1 = buildBefattning();
+            user.setBefattningsKoder(List.of(befattning1, befattning1));
+            final var result = IntygConverterUtil.buildHosPersonalFromWebCertUser(user, vardenhet);
+            assertEquals(1, result.getBefattningsKoder().size());
+        }
+
+        @Test
+        void shouldReturnEmptyListWhenNoBefattningsKoder() {
+            final var user = buildWebCertUser();
+            final var vardenhet = new se.inera.intyg.common.support.model.common.internal.Vardenhet();
+            user.setBefattningsKoder(List.of());
+            final var result = IntygConverterUtil.buildHosPersonalFromWebCertUser(user, vardenhet);
+            assertTrue(result.getBefattningsKoder().isEmpty(), "Expected empty befattningskoder list");
+        }
+    }
+
+    private WebCertUser buildWebCertUser() {
+        final var user = new WebCertUser();
+        user.setForskrivarkod("forskrivarkod");
+        user.setHsaId("hsaid");
+        user.setNamn("namn");
+        return user;
+    }
+
+    private PersonInformation.PaTitle buildBefattning() {
+        return buildBefattning("204010", "Läkare - AT");
+    }
+
+    private PersonInformation.PaTitle buildBefattning(String kod, String klartext) {
+        final var befattning = new PaTitle();
+        befattning.setPaTitleCode(kod);
+        befattning.setPaTitleName(klartext);
+        return befattning;
+    }
+
+    private Fk7263Utlatande createUtlatandeFromJson() {
+        try {
+            return new CustomObjectMapper().readValue(new ClassPathResource("IntygServiceTest/utlatande.json").getFile(),
+                Fk7263Utlatande.class);
+        } catch (IOException e) {
+            throw new RuntimeException("Could not read test utlatande from json", e);
+        }
     }
 
 }

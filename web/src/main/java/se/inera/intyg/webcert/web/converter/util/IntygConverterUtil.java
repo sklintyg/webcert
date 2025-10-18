@@ -20,6 +20,11 @@ package se.inera.intyg.webcert.web.converter.util;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.LakarutlatandeEnkelType;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.VardAdresseringsType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendType;
@@ -28,6 +33,7 @@ import se.inera.intyg.common.support.model.CertificateState;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
+import se.inera.intyg.common.support.model.common.internal.PaTitle;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
@@ -35,11 +41,6 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.AbstractVardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 
 public final class IntygConverterUtil {
 
@@ -116,13 +117,22 @@ public final class IntygConverterUtil {
         hosPersonal.setFullstandigtNamn(user.getNamn());
         hosPersonal.setForskrivarKod(user.getForskrivarkod());
         hosPersonal.getBefattningar().addAll(user.getBefattningar());
+        hosPersonal.getBefattningsKoder().addAll(convertToInternalList(user));
         hosPersonal.getSpecialiteter().addAll(user.getSpecialiseringar());
-        if (vardenhet != null) {
-            hosPersonal.setVardenhet(vardenhet);
-        } else {
-            hosPersonal.setVardenhet(buildVardenhet(user));
-        }
+        hosPersonal.setVardenhet(Objects.requireNonNullElseGet(vardenhet, () -> buildVardenhet(user)));
         return hosPersonal;
+    }
+
+    private static List<PaTitle> convertToInternalList(WebCertUser user) {
+        return user.getBefattningsKoder().stream()
+            .distinct()
+            .map(pt -> {
+                final var internal = new PaTitle();
+                internal.setKlartext(pt.getPaTitleName());
+                internal.setKod(pt.getPaTitleCode());
+                return internal;
+            })
+            .toList();
     }
 
     private static Vardenhet buildVardenhet(WebCertUser user) {
