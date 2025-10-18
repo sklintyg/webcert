@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.LakarutlatandeEnkelType;
 import se.inera.ifv.insuranceprocess.healthreporting.medcertqa.v1.VardAdresseringsType;
 import se.inera.ifv.insuranceprocess.healthreporting.sendmedicalcertificateresponder.v1.SendType;
@@ -118,16 +119,13 @@ public final class IntygConverterUtil {
         hosPersonal.getBefattningar().addAll(user.getBefattningar());
         hosPersonal.getBefattningsKoder().addAll(convertToInternalList(user));
         hosPersonal.getSpecialiteter().addAll(user.getSpecialiseringar());
-        if (vardenhet != null) {
-            hosPersonal.setVardenhet(vardenhet);
-        } else {
-            hosPersonal.setVardenhet(buildVardenhet(user));
-        }
+        hosPersonal.setVardenhet(Objects.requireNonNullElseGet(vardenhet, () -> buildVardenhet(user)));
         return hosPersonal;
     }
 
     private static List<PaTitle> convertToInternalList(WebCertUser user) {
         return user.getBefattningsKoder().stream()
+            .distinct()
             .map(pt -> {
                 final var internal = new PaTitle();
                 internal.setKlartext(pt.getPaTitleName());
