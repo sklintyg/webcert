@@ -69,7 +69,7 @@ public class PaginationAndLoggingServiceImpl implements PaginationAndLoggingServ
         List<ArendeListItem> resultList = list
             .subList(filter.getStartFrom(), Math.min(filter.getPageSize() + filter.getStartFrom(), list.size()));
 
-        resultList.stream().map(ArendeListItem::getPatientId).distinct().forEach(patient -> logService.logListIntyg(user, patient));
+        resultList.stream().map(ArendeListItem::getPatientId).distinct().forEach(patient -> logService.logReadLevelTwo(user, patient));
 
         return resultList;
     }

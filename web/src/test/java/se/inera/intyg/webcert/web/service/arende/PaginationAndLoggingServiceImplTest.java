@@ -217,7 +217,7 @@ class PaginationAndLoggingServiceImplTest {
 
             paginationAndLoggingServiceImpl.get(createQueryFragaSvarParameter("amne", true), List.of(item1, item2), WEBCERT_USER);
 
-            verify(logService, times(1)).logListIntyg(eq(WEBCERT_USER), argumentCaptor.capture());
+            verify(logService, times(1)).logReadLevelTwo(eq(WEBCERT_USER), argumentCaptor.capture());
             assertEquals(TOLVAN_PERSON_ID, argumentCaptor.getValue());
         }
 
@@ -229,7 +229,7 @@ class PaginationAndLoggingServiceImplTest {
 
             paginationAndLoggingServiceImpl.get(createQueryFragaSvarParameter("amne", true), List.of(item1, item2, item3), WEBCERT_USER);
 
-            verify(logService, times(2)).logListIntyg(eq(WEBCERT_USER), argumentCaptor.capture());
+            verify(logService, times(2)).logReadLevelTwo(eq(WEBCERT_USER), argumentCaptor.capture());
             assertEquals(TOLVAN_PERSON_ID, argumentCaptor.getAllValues().get(0));
             assertEquals(LILLTOLVAN_PERSON_ID, argumentCaptor.getAllValues().get(1));
         }

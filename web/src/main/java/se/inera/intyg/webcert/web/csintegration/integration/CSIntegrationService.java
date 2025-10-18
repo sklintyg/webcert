@@ -71,6 +71,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificat
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ForwardCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ForwardCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCandidateCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCandidateCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateEventsRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateEventsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateFromMessageRequestDTO;
@@ -127,6 +129,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateW
 import se.inera.intyg.webcert.web.csintegration.integration.dto.StatisticsForUnitDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.UnitStatisticsRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.UnitStatisticsResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.UpdateWithCandidateCertificateRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.UpdateWithCandidateCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateResponseDTO;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
@@ -332,7 +336,8 @@ public class CSIntegrationService {
     }
 
     @PerformanceLogging(eventAction = "create-draft-from-certificate", eventType = EVENT_TYPE_CREATION)
-    public CreateCertificateFromTemplateResponseDTO createDraftFromCertificate(String certificateId, CreateCertificateFromTemplateRequestDTO request) {
+    public CreateCertificateFromTemplateResponseDTO createDraftFromCertificate(String certificateId,
+        CreateCertificateFromTemplateRequestDTO request) {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/draft";
 
         return restClient.post()
@@ -1190,5 +1195,39 @@ public class CSIntegrationService {
         return response.getCertificate();
     }
 
+    public Certificate getCandidateCertificate(String certificateId, GetCandidateCertificateRequestDTO request) {
+        final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/candidate";
+
+        final var response = restClient.post()
+            .uri(url)
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
+            .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
+            .body(request)
+            .retrieve()
+            .body(GetCandidateCertificateResponseDTO.class);
+
+        return response.getCertificate();
+    }
+
+    public Certificate updateWithCandidateCertificate(String certificateId, String candidateCertificateId,
+        UpdateWithCandidateCertificateRequestDTO request) {
+        final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/candidate/" + candidateCertificateId;
+
+        final var response = restClient.post()
+            .uri(url)
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
+            .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
+            .body(request)
+            .retrieve()
+            .body(UpdateWithCandidateCertificateResponseDTO.class);
+
+        if (response == null || response.getCertificate() == null) {
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
+        }
+
+        return response.getCertificate();
+    }
 }
 

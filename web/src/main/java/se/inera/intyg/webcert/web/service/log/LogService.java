@@ -212,12 +212,12 @@ public interface LogService {
     void logSetOwnOpinion(LogRequest logRequest, LogUser user);
 
     /**
-     * Creates a log event when a user lists one or more intyg.
+     * Creates a log event when a user metadata from one or more intyg.
      *
      * @param user the user who performs the action that is being logged
      * @param patient the user who performs the action that is being logged
      */
-    void logListIntyg(WebCertUser user, String patient);
+    void logReadLevelTwo(WebCertUser user, String patient);
 
     /**
      * Use this to create a {@link LogUser} instance from a supplied {@link WebCertUser}

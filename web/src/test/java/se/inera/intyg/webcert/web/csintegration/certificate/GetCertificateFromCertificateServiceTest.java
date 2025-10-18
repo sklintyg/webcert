@@ -26,6 +26,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -34,6 +35,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.link.ResourceLink;
+import se.inera.intyg.common.support.facade.model.link.ResourceLinkTypeEnum;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateRequestDTO;
@@ -91,9 +94,35 @@ class GetCertificateFromCertificateServiceTest {
         }
 
         @Test
-        void shouldPerformPDLForCreateCertificateIfPdlLogIsTrue() {
+        void shouldPerformPDLForReadCertificateIfPdlLogIsTrue() {
             getCertificateFromCertificateService.getCertificate(CERTIFICATE_ID, true, true);
             verify(pdlLogService, times(1)).logRead(CERTIFICATE);
+        }
+
+        @Test
+            // Activity level 2 is performed if the certificate contains a link to create a certificate from a candidate
+            // which indicates that metadata about the candidate certificate is present
+        void shouldPerformPDLForReadActivityLevelTwoIfPdlLogIsTrueAndCandidateResourceLinkIsIncluded() {
+            CERTIFICATE.setLinks(
+                List.of(
+                    ResourceLink.builder()
+                        .type(ResourceLinkTypeEnum.CREATE_CERTIFICATE_FROM_CANDIDATE)
+                        .build()
+                )
+            );
+
+            getCertificateFromCertificateService.getCertificate(CERTIFICATE_ID, true, true);
+            verify(pdlLogService, times(1)).logReadLevelTwo(CERTIFICATE);
+        }
+
+        @Test
+            // Activity level 2 is performed if the certificate contains a link to create a certificate from a candidate
+            // which indicates that metadata about the candidate certificate is present
+        void shouldNotPerformPDLForReadActivityLevelTwoIfPdlLogIsTrueAndCandidateResourceLinkIsExcluded() {
+            CERTIFICATE.setLinks(List.of());
+
+            getCertificateFromCertificateService.getCertificate(CERTIFICATE_ID, true, true);
+            verify(pdlLogService, times(0)).logReadLevelTwo(CERTIFICATE);
         }
 
         @Test
@@ -101,12 +130,11 @@ class GetCertificateFromCertificateServiceTest {
             getCertificateFromCertificateService.getCertificate(CERTIFICATE_ID, false, true);
             verifyNoInteractions(pdlLogService);
         }
-        
+
         @Test
         void shouldDecorateCertificateFromCSWithInformationFromWC() {
             getCertificateFromCertificateService.getCertificate(CERTIFICATE_ID, true, true);
             verify(decorateCertificateFromCSWithInformationFromWC, times(1)).decorate(CERTIFICATE);
         }
     }
-
 }

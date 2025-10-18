@@ -360,6 +360,10 @@ class CertificateAnalyticsMessageFactoryTest {
                 Arguments.of(
                     (Function<Certificate, CertificateAnalyticsMessage>) certificate -> factory.draftCreatedFromCertificate(certificate),
                     CertificateAnalyticsMessageType.DRAFT_CREATED_FROM_CERTIFICATE
+                ),
+                Arguments.of(
+                    (Function<Certificate, CertificateAnalyticsMessage>) certificate -> factory.draftUpdatedFromCertificate(certificate),
+                    CertificateAnalyticsMessageType.DRAFT_UPDATED_FROM_CERTIFICATE
                 )
             );
         }

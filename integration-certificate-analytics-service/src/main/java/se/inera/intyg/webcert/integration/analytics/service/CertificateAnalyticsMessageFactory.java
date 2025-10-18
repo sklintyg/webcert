@@ -149,6 +149,10 @@ public class CertificateAnalyticsMessageFactory {
         return create(certificate, DRAFT_UPDATED).build();
     }
 
+    public CertificateAnalyticsMessage draftUpdatedFromCertificate(Certificate certificate) {
+        return create(certificate, DRAFT_UPDATED_FROM_CERTIFICATE).build();
+    }
+
     public CertificateAnalyticsMessage draftUpdatedFromCertificate(Utkast utkast) {
         return create(utkast, DRAFT_UPDATED_FROM_CERTIFICATE).build();
     }
