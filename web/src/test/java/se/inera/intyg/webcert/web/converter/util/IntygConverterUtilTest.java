@@ -292,10 +292,10 @@ class IntygConverterUtilTest {
 
     private Fk7263Utlatande createUtlatandeFromJson() {
         try {
-            final var resource = new ClassPathResource("json/utlatande_fk7263.json");
-            return new CustomObjectMapper().readValue(resource.getInputStream(), Fk7263Utlatande.class);
+            return new CustomObjectMapper().readValue(new ClassPathResource("IntygServiceTest/utlatande.json").getFile(),
+                Fk7263Utlatande.class);
         } catch (IOException e) {
-            throw new RuntimeException("Failed to read utlatande from json", e);
+            throw new RuntimeException("Could not read test utlatande from json", e);
         }
     }
 
