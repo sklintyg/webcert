@@ -126,6 +126,12 @@
     "target": "_blank"
   },
   {
+    "key": "transportstyrelsenHemsidaLink",
+    "url": "https://www.transportstyrelsen.se",
+    "text": "Transportstyrelsens hemsida",
+    "target": "_blank"
+  },
+  {
     "key": "fmbSoc",
     "url": "https://forsakringsmedicin.socialstyrelsen.se/",
     "text": "Läs mer om FMB hos Socialstyrelsen",
