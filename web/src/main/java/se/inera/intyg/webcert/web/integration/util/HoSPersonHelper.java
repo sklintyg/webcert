@@ -18,14 +18,16 @@
  */
 package se.inera.intyg.webcert.web.integration.util;
 
+import java.util.List;
+import java.util.Optional;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
+import se.inera.intyg.common.support.model.common.internal.PaTitle;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
+import se.inera.intyg.infra.integration.hsatk.model.PersonInformation;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.AbstractVardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.common.model.IntygUser;
-
-import java.util.Optional;
 
 /**
  * Helper for finding various HSA organization entities based on hsaId from a User's Vardgivare -> Vardenhet ->
@@ -136,8 +138,24 @@ public final class HoSPersonHelper {
         // set titel, medarbetaruppdrag, befattningar and specialiteter from user object
         hosPerson.setTitel(user.getTitel());
         hosPerson.setMedarbetarUppdrag(user.getSelectedMedarbetarUppdragNamn());
-        hosPerson.getBefattningar().addAll(user.getBefattningar());
         hosPerson.getSpecialiteter().addAll(user.getSpecialiseringar());
+        Optional.of(user.getBefattningsKoder())
+            .filter(paTitles -> !paTitles.isEmpty())
+            .ifPresentOrElse(
+                paTitles -> hosPerson.getBefattningsKoder().addAll(convertToInternalList(paTitles)),
+                () -> hosPerson.getBefattningar().addAll(user.getBefattningar())
+            );
     }
 
+    private static List<PaTitle> convertToInternalList(List<PersonInformation.PaTitle> titles) {
+        return titles.stream()
+            .distinct()
+            .map(pt -> {
+                final var internal = new PaTitle();
+                internal.setKlartext(pt.getPaTitleName());
+                internal.setKod(pt.getPaTitleCode());
+                return internal;
+            })
+            .toList();
+    }
 }
