@@ -1233,7 +1233,7 @@ public class CSIntegrationService {
     }
 
     public Optional<GetSickLeaveCertificateInternalResponseDTO> getSickLeaveCertificate(String certificateId) {
-      final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/sickleave";
+      final var url = baseUrl + INTERNAL_CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/sickleave";
 
       final var response = restClient.get()
           .uri(url)
