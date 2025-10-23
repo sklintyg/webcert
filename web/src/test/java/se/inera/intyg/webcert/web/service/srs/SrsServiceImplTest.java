@@ -48,6 +48,7 @@ import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.Relation;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.infra.integration.srs.model.SrsCertificate;
 import se.inera.intyg.infra.integration.srs.model.SrsPrediction;
 import se.inera.intyg.infra.integration.srs.model.SrsQuestionResponse;
 import se.inera.intyg.infra.integration.srs.model.SrsRecommendation;
@@ -137,6 +138,9 @@ public class SrsServiceImplTest {
     @Mock
     private IntygModuleFacade intygModuleFacade;
 
+    @Mock
+    private SrsCertificateExtensionChainService srsCertificateExtensionChainService;
+
     @InjectMocks
     private SrsServiceImpl srsServiceUnderTest;
 
@@ -218,6 +222,12 @@ public class SrsServiceImplTest {
 
         when(intygModuleFacade.getUtlatandeFromInternalModel(LisjpEntryPoint.MODULE_ID, "DUMMY-MODEL-parent-intyg-id-3"))
             .thenReturn(buildUtlatande("parent-intyg-id-3", "F438A", null));
+
+        when(srsCertificateExtensionChainService.get("certId"))
+            .thenReturn(List.of(
+                new SrsCertificate("certId", "F438A", null, null),
+                new SrsCertificate("parent-intyg-id-1", "F438A", null, null),
+                new SrsCertificate("parent-intyg-id-2", "F438A", null, null)));
     }
 
     @Test(expected = IllegalArgumentException.class)
