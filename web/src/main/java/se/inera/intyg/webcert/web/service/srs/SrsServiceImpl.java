@@ -105,8 +105,8 @@ public class SrsServiceImpl implements SrsService {
 
         Utdatafilter filter = buildResponseFilter(performRiskPrediction, addMeasures, addStatistics);
 
-        List<SrsCertificate> extensionChain = getExtensionChain(certificateId);
-        //List<SrsCertificate> extensionChain = srsCertificateExtensionChainService.get(certificateId);
+        //List<SrsCertificate> extensionChain = getExtensionChain(certificateId);
+        List<SrsCertificate> extensionChain = srsCertificateExtensionChainService.get(certificateId);
 
         // If we are in a draft, the main diagnosis might not yet have been persisted on the draft, instead we use
         // the diagnosisCode parameter

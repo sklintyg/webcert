@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.lisjp.support.LisjpEntryPoint;
 import se.inera.intyg.common.lisjp.v1.model.internal.LisjpUtlatandeV1;
+import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.model.converter.util.ConverterException;
 import se.inera.intyg.infra.integration.srs.model.SrsCertificate;
@@ -70,7 +71,9 @@ public class GetSrsCertificateFromWebcert implements GetSrsCertificate {
     if (lisjpUtlatandeV1.getDiagnoser() != null && !lisjpUtlatandeV1.getDiagnoser().isEmpty()) {
       srsCert.setMainDiagnosisCode(lisjpUtlatandeV1.getDiagnoser().getFirst().getDiagnosKod());
     }
-    if (lisjpUtlatandeV1.getGrundData().getRelation() != null && !lisjpUtlatandeV1.getGrundData().getRelation().getRelationIntygsId().isEmpty()) {
+    if (lisjpUtlatandeV1.getGrundData().getRelation() != null
+        && !lisjpUtlatandeV1.getGrundData().getRelation().getRelationIntygsId().isEmpty()
+        && lisjpUtlatandeV1.getGrundData().getRelation().getRelationKod() == RelationKod.FRLANG) {
       srsCert.setExtendsCertificateId(lisjpUtlatandeV1.getGrundData().getRelation().getRelationIntygsId());
     }
     log.debug("SrsCertificate(id:{}, mainDiagCode:{}, signedDate:{})",

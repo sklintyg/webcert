@@ -1232,10 +1232,11 @@ public class CSIntegrationService {
         return response.getCertificate();
     }
 
+    @PerformanceLogging(eventAction = "get-sick-leave-certificate-for-srs", eventType = EVENT_TYPE_ACCESS)
     public Optional<GetSickLeaveCertificateInternalResponseDTO> getSickLeaveCertificate(String certificateId) {
       final var url = baseUrl + INTERNAL_CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/sickleave";
 
-      final var response = restClient.get()
+      final var response = restClient.post()
           .uri(url)
           .accept(MediaType.APPLICATION_JSON)
           .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
