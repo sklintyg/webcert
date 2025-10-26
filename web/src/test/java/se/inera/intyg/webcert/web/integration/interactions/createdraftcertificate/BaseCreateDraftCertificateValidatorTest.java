@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate;
 
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -59,7 +58,7 @@ public abstract class BaseCreateDraftCertificateValidatorTest {
     protected static final String TSBAS = TsBasEntryPoint.MODULE_ID;
     protected static final String LUSE = LuseEntryPoint.MODULE_ID;
 
-    protected static List<String> ALL_INTYG_TYPES = Arrays.asList(Fk7263EntryPoint.MODULE_ID,
+    protected static final List<String> ALL_INTYG_TYPES = Arrays.asList(Fk7263EntryPoint.MODULE_ID,
         TsBasEntryPoint.MODULE_ID, TsDiabetesEntryPoint.MODULE_ID,
         LisjpEntryPoint.MODULE_ID, LuaefsEntryPoint.MODULE_ID, LuseEntryPoint.MODULE_ID,
         LuaenaEntryPoint.MODULE_ID, DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID);
@@ -83,16 +82,16 @@ public abstract class BaseCreateDraftCertificateValidatorTest {
         when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, TSBAS.toLowerCase())).thenReturn(true);
         when(authoritiesHelper.isFeatureActive(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST, LUSE.toLowerCase())).thenReturn(true);
 
-        when(authoritiesHelper.getIntygstyperAllowedForAvliden()).thenReturn(Arrays.asList(DoiModuleEntryPoint.MODULE_ID));
+        when(authoritiesHelper.getIntygstyperAllowedForAvliden()).thenReturn(List.of(DoiModuleEntryPoint.MODULE_ID));
         when(moduleRegistry.getModuleIdFromExternalId(anyString()))
             .thenAnswer(invocation -> ((String) invocation.getArguments()[0]).toLowerCase());
         when(moduleRegistry.moduleExists(Fk7263EntryPoint.MODULE_ID)).thenReturn(true);
         when(moduleRegistry.moduleExists(TsBasEntryPoint.MODULE_ID)).thenReturn(true);
         when(moduleRegistry.moduleExists(LuseEntryPoint.MODULE_ID)).thenReturn(true);
 
-        when(moduleRegistry.getIntygModule(eq(Fk7263EntryPoint.MODULE_ID))).thenReturn(buildIntygModule(FK7263));
-        when(moduleRegistry.getIntygModule(eq(TsBasEntryPoint.MODULE_ID))).thenReturn(buildIntygModule(TSBAS));
-        when(moduleRegistry.getIntygModule(eq(LuseEntryPoint.MODULE_ID))).thenReturn(buildIntygModule(LUSE));
+        when(moduleRegistry.getIntygModule(Fk7263EntryPoint.MODULE_ID)).thenReturn(buildIntygModule(FK7263));
+        when(moduleRegistry.getIntygModule(TsBasEntryPoint.MODULE_ID)).thenReturn(buildIntygModule(TSBAS));
+        when(moduleRegistry.getIntygModule(LuseEntryPoint.MODULE_ID)).thenReturn(buildIntygModule(LUSE));
 
         when(authoritiesHelper.getIntygstyperAllowedForSekretessmarkering()).thenReturn(new HashSet<>(ALL_INTYG_TYPES));
 
@@ -100,33 +99,33 @@ public abstract class BaseCreateDraftCertificateValidatorTest {
     }
 
     protected IntygModule buildIntygModule(String id) {
-        return new IntygModule(id, "", "", "", "", "", "", "", "");
+        return new IntygModule(id, "", "", "", "", "", "", "", "", "");
     }
 
     protected WebCertUser buildUser() {
-        WebCertUser user = new WebCertUser();
-        user.setAuthorities(new HashMap<>());
+        WebCertUser webcertUser = new WebCertUser();
+        webcertUser.setAuthorities(new HashMap<>());
 
-        user.getAuthorities().put(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
+        webcertUser.getAuthorities().put(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
             createPrivilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT));
-        user.getAuthorities().put(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG,
+        webcertUser.getAuthorities().put(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG,
             createPrivilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG));
         Feature feature = new Feature();
         feature.setName(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
         feature.setIntygstyper(Arrays.asList(Fk7263EntryPoint.MODULE_ID, TsBasEntryPoint.MODULE_ID));
         feature.setGlobal(true);
-        user.setFeatures(Collections.singletonMap(feature.getName(), feature));
-        user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
-        return user;
+        webcertUser.setFeatures(Collections.singletonMap(feature.getName(), feature));
+        webcertUser.setOrigin(UserOriginType.DJUPINTEGRATION.name());
+        return webcertUser;
     }
 
     protected WebCertUser buildUserUnauthorized() {
-        WebCertUser user = new WebCertUser();
-        user.setAuthorities(new HashMap<>());
+        WebCertUser webCertUser = new WebCertUser();
+        webCertUser.setAuthorities(new HashMap<>());
 
-        user.getAuthorities().put(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
+        webCertUser.getAuthorities().put(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT,
             createPrivilege(AuthoritiesConstants.PRIVILEGE_HANTERA_SEKRETESSMARKERAD_PATIENT, ALL_INTYG_TYPES));
-        user.getAuthorities().put(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG,
+        webCertUser.getAuthorities().put(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG,
             createPrivilege(AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG, ALL_INTYG_TYPES));
         Feature feature = new Feature();
         feature.setName(AuthoritiesConstants.FEATURE_HANTERA_INTYGSUTKAST);
@@ -134,9 +133,9 @@ public abstract class BaseCreateDraftCertificateValidatorTest {
             LisjpEntryPoint.MODULE_ID, LuaenaEntryPoint.MODULE_ID, LuaefsEntryPoint.MODULE_ID, LuseEntryPoint.MODULE_ID,
             DbModuleEntryPoint.MODULE_ID, DoiModuleEntryPoint.MODULE_ID));
         feature.setGlobal(true);
-        user.setFeatures(Collections.singletonMap(feature.getName(), feature));
-        user.setOrigin(UserOriginType.DJUPINTEGRATION.name());
-        return user;
+        webCertUser.setFeatures(Collections.singletonMap(feature.getName(), feature));
+        webCertUser.setOrigin(UserOriginType.DJUPINTEGRATION.name());
+        return webCertUser;
     }
 
     protected Privilege createPrivilege(String privilege) {
@@ -149,7 +148,7 @@ public abstract class BaseCreateDraftCertificateValidatorTest {
         RequestOrigin requestOrigin = new RequestOrigin();
         requestOrigin.setName(UserOriginType.DJUPINTEGRATION.name());
         requestOrigin.setIntygstyper(intygstyper);
-        priv.setRequestOrigins(Arrays.asList(requestOrigin));
+        priv.setRequestOrigins(List.of(requestOrigin));
         priv.setIntygstyper(intygstyper);
         return priv;
     }

@@ -18,76 +18,25 @@
  */
 package se.inera.intyg.webcert.web.web.controller.testability.facade.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class CertificateType {
 
     private String type;
     private String internalType;
+    @JsonIgnore
+    private String certificateServiceTypeId;
     private String name;
     private List<String> versions;
     private List<CertificateStatus> statuses;
     private List<CreateCertificateFillType> fillType;
 
-    public CertificateType() {
-    }
-
-    public CertificateType(String type, String internalType, String name, List<String> versions, List<CertificateStatus> statuses,
-        List<CreateCertificateFillType> fillType) {
-        this.type = type;
-        this.internalType = internalType;
-        this.name = name;
-        this.versions = versions;
-        this.statuses = statuses;
-        this.fillType = fillType;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getInternalType() {
-        return internalType;
-    }
-
-    public void setInternalType(String internalType) {
-        this.internalType = internalType;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public List<String> getVersions() {
-        return versions;
-    }
-
-    public void setVersions(List<String> versions) {
-        this.versions = versions;
-    }
-
-    public List<CertificateStatus> getStatuses() {
-        return statuses;
-    }
-
-    public void setStatuses(List<CertificateStatus> statuses) {
-        this.statuses = statuses;
-    }
-
-    public List<CreateCertificateFillType> getFillType() {
-        return fillType;
-    }
-
-    public void setFillType(List<CreateCertificateFillType> fillType) {
-        this.fillType = fillType;
-    }
 }

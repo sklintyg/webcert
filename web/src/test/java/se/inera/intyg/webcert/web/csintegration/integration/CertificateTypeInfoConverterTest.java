@@ -38,6 +38,7 @@ class CertificateTypeInfoConverterTest {
     private CertificateServiceTypeInfoDTO createTypeInfo() {
         return CertificateServiceTypeInfoDTO.builder()
             .name("name")
+            .typeName("typeName")
             .description("description")
             .links(List.of(new ResourceLinkDTO()))
             .type("type")
@@ -65,7 +66,7 @@ class CertificateTypeInfoConverterTest {
         final var typeInfo = createTypeInfo();
         final var response = certificateTypeInfoConverter.convert(typeInfo);
 
-        assertEquals(typeInfo.getType(), response.getIssuerTypeId());
+        assertEquals(typeInfo.getTypeName(), response.getIssuerTypeId());
     }
 
     @Test
