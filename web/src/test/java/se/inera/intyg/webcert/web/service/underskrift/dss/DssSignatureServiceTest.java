@@ -35,6 +35,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -47,7 +48,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.xml.transform.StringResult;
 import se.inera.intyg.common.support.common.enumerations.SignaturTyp;
 import se.inera.intyg.common.support.modules.registry.IntygModule;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
@@ -163,7 +163,7 @@ public class DssSignatureServiceTest {
         when(dssSignMessageService.signSignRequest(any()))
             .thenReturn("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>");
         when(moduleRegistry.getIntygModule(anyString()))
-            .thenReturn(new IntygModule("intygsTyp", "intygsTyp", null, null, "intygsTyp", null, null, null, null));
+            .thenReturn(new IntygModule("intygsTyp", "intygsTyp", null, null, "intygsTyp", null, null, null, null, "intygsTyp"));
 
         ReflectionTestUtils.setField(dssSignatureService, "dssClientEntityHostUrl", "https://wc.localtest.me:8020");
         ReflectionTestUtils.setField(dssSignatureService, "dssClientResponseHostUrl", "https://wc.localtest.me:8020");
@@ -197,7 +197,7 @@ public class DssSignatureServiceTest {
 
         // Check signMessage
         var signRequestExtensionTypeJAXBElement = (JAXBElement<SignRequestExtensionType>) capturedSignRequest.getOptionalInputs().getAny()
-            .get(0);
+            .getFirst();
         assertNotNull(signRequestExtensionTypeJAXBElement);
 
         var actualSignMessageBytes = signRequestExtensionTypeJAXBElement.getValue().getSignMessage().getMessage();
@@ -213,16 +213,6 @@ public class DssSignatureServiceTest {
         final var notAfter = signRequestExtensionTypeJAXBElement.getValue().getConditions()
             .getNotOnOrAfter().toGregorianCalendar().getTimeInMillis();
         assertEquals("SignRequest should be valid for 10 minutes (2 min before and 8 min after", 10, (notAfter - notBefore) / 60000);
-
-        // System.out.println(toXmlString(capturedSignRequest));
-
-    }
-
-    private String toXmlString(SignRequest signRequest) {
-        var stringResult = new StringResult();
-        marshaller.marshal(signRequest, stringResult);
-
-        return stringResult.toString();
     }
 
     @Test
@@ -235,12 +225,12 @@ public class DssSignatureServiceTest {
 
         verify(underskriftService).netidSignature(ticketIdCaptor.capture(), signatureCaptor.capture(), certificateCaptor.capture());
 
-        assertEquals(ticketIdCaptor.getValue(), "0ff25a22-d78a-46c0-ae78-58e34b62ce90");
+        assertEquals("0ff25a22-d78a-46c0-ae78-58e34b62ce90", ticketIdCaptor.getValue());
 
         // CHECKSTYLE:OFF LineLength
         var certByteArray = "MIILpjCCCo6gAwIBAgIILGNiAxjmjgowDQYJKoZIhvcNAQELBQAwgYMxOTA3BgNVBAMMMENHSSBTdmVyaWdlIEFCIFNUIFN1YnN0YW50aWFsIERTUyBFbmQgVXNlciBDQSB2MjEdMBsGA1UECwwURFNTIEVuZCBVc2VyIFNpZ25pbmcxGjAYBgNVBAoMEUNHSSBTdmVyaWdlIEFCIFNUMQswCQYDVQQGEwJTRTAeFw0yMDA1MDcwNDA5NDdaFw0yMTA1MDcxMDAzMzNaMFMxDzANBgNVBCoMBkFuZHJldzEQMA4GA1UEBAwHRGlsbGFyZDEVMBMGA1UEBRMMMTk2NzA3MTgzMTMwMRcwFQYDVQQDDA5BbmRyZXcgRGlsbGFyZDBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABE2xWh+y5JLNUYMG69z7feKgXKnK1UIzP6yiaFVofi2RHONk8+Bg9rSX1g5Og65BurXk+2JNv6UwPd9MOk4ShUujggkWMIIJEjAMBgNVHRMBAf8EAjAAME0GA1UdHwRGMEQwQqBAoD6GPGh0dHA6Ly9lc2lnbi52Mi5zdC5zaWduYXR1cmVzZXJ2aWNlLnNlL3Rlc3RDQVN1YnN0YW50aWFsLmNybDAdBgNVHQ4EFgQUtU4TPRik8Zvy1lRTXsP80YfM1AIwHwYDVR0jBBgwFoAU3VXF2mDN4t1bNOpUiJzA4h8SfrswGAYDVR0gBBEwDzANBgsrBgEEAYH1fgMIAjAOBgNVHQ8BAf8EBAMCBkAwgghHBgcqhXCBSQUBBIIIOjCCCDYwgggyDCtodHRwOi8vaWQuZWxlZ25hbW5kZW4uc2UvYXV0aC1jb250LzEuMC9zYWNpDIIIATxzYWNpOlNBTUxBdXRoQ29udGV4dCB4bWxuczpzYWNpPSJodHRwOi8vaWQuZWxlZ25hbW5kZW4uc2UvYXV0aC1jb250LzEuMC9zYWNpIiB4bWxuczpkcz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC8wOS94bWxkc2lnIyIgeG1sbnM6eGVuYz0iaHR0cDovL3d3dy53My5vcmcvMjAwMS8wNC94bWxlbmMjIiB4bWxuczpzYW1sPSJ1cm46b2FzaXM6bmFtZXM6dGM6U0FNTDoyLjA6YXNzZXJ0aW9uIj48c2FjaTpBdXRoQ29udGV4dEluZm8gSWRlbnRpdHlQcm92aWRlcj0iaHR0cHM6Ly90ZXN0aWRwLnYyLnNpZ25hdHVyZXNlcnZpY2Uuc2Uvc2FtbHYyL2lkcC9tZXRhZGF0YSIgQXV0aGVudGljYXRpb25JbnN0YW50PSIyMDIwLTA1LTA3VDA2OjE0OjQ3LjM4OCswMjowMCIgQXV0aG5Db250ZXh0Q2xhc3NSZWY9InVybjpvYXNpczpuYW1lczp0YzpTQU1MOjIuMDphYzpjbGFzc2VzOlBhc3N3b3JkUHJvdGVjdGVkVHJhbnNwb3J0IiBBc3NlcnRpb25SZWY9Il83MDM5ZjBkMjIyNzVmNDFhZDEyYTU0MDZkYmFhNGE2YSIvPjxzYWNpOklkQXR0cmlidXRlcz48c2FjaTpBdHRyaWJ1dGVNYXBwaW5nIFR5cGU9InJkbiIgUmVmPSIyLjUuNC40MiI+PHNhbWw6QXR0cmlidXRlIE5hbWU9InVybjpvaWQ6Mi41LjQuNDIiIE5hbWVGb3JtYXQ9InVybjpvYXNpczpuYW1lczp0YzpTQU1MOjIuMDphdHRybmFtZS1mb3JtYXQ6dXJpIj48c2FtbDpBdHRyaWJ1dGVWYWx1ZSB4bWxuczp4c2k9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEvWE1MU2NoZW1hLWluc3RhbmNlIiB4bWxuczp4cz0iaHR0cDovL3d3dy53My5vcmcvMjAwMS9YTUxTY2hlbWEiIHhzaTp0eXBlPSJ4czpzdHJpbmciPkFuZHJldzwvc2FtbDpBdHRyaWJ1dGVWYWx1ZT48L3NhbWw6QXR0cmlidXRlPjwvc2FjaTpBdHRyaWJ1dGVNYXBwaW5nPjxzYWNpOkF0dHJpYnV0ZU1hcHBpbmcgVHlwZT0icmRuIiBSZWY9IjIuNS40LjQiPjxzYW1sOkF0dHJpYnV0ZSBOYW1lPSJ1cm46b2lkOjIuNS40LjQiIE5hbWVGb3JtYXQ9InVybjpvYXNpczpuYW1lczp0YzpTQU1MOjIuMDphdHRybmFtZS1mb3JtYXQ6dXJpIj48c2FtbDpBdHRyaWJ1dGVWYWx1ZSB4bWxuczp4c2k9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEvWE1MU2NoZW1hLWluc3RhbmNlIiB4bWxuczp4cz0iaHR0cDovL3d3dy53My5vcmcvMjAwMS9YTUxTY2hlbWEiIHhzaTp0eXBlPSJ4czpzdHJpbmciPkRpbGxhcmQ8L3NhbWw6QXR0cmlidXRlVmFsdWU+PC9zYW1sOkF0dHJpYnV0ZT48L3NhY2k6QXR0cmlidXRlTWFwcGluZz48c2FjaTpBdHRyaWJ1dGVNYXBwaW5nIFR5cGU9InJkbiIgUmVmPSIyLjUuNC41Ij48c2FtbDpBdHRyaWJ1dGUgTmFtZT0idXJuOm9pZDoxLjIuNzUyLjI5LjQuMTMiIE5hbWVGb3JtYXQ9InVybjpvYXNpczpuYW1lczp0YzpTQU1MOjIuMDphdHRybmFtZS1mb3JtYXQ6dXJpIj48c2FtbDpBdHRyaWJ1dGVWYWx1ZSB4bWxuczp4c2k9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEvWE1MU2NoZW1hLWluc3RhbmNlIiB4bWxuczp4cz0iaHR0cDovL3d3dy53My5vcmcvMjAwMS9YTUxTY2hlbWEiIHhzaTp0eXBlPSJ4czpzdHJpbmciPjE5NjcwNzE4MzEzMDwvc2FtbDpBdHRyaWJ1dGVWYWx1ZT48L3NhbWw6QXR0cmlidXRlPjwvc2FjaTpBdHRyaWJ1dGVNYXBwaW5nPjxzYWNpOkF0dHJpYnV0ZU1hcHBpbmcgVHlwZT0icmRuIiBSZWY9IjIuNS40LjMiPjxzYW1sOkF0dHJpYnV0ZSBOYW1lPSJ1cm46b2lkOjIuMTYuODQwLjEuMTEzNzMwLjMuMS4yNDEiIE5hbWVGb3JtYXQ9InVybjpvYXNpczpuYW1lczp0YzpTQU1MOjIuMDphdHRybmFtZS1mb3JtYXQ6dXJpIj48c2FtbDpBdHRyaWJ1dGVWYWx1ZSB4bWxuczp4c2k9Imh0dHA6Ly93d3cudzMub3JnLzIwMDEvWE1MU2NoZW1hLWluc3RhbmNlIiB4bWxuczp4cz0iaHR0cDovL3d3dy53My5vcmcvMjAwMS9YTUxTY2hlbWEiIHhzaTp0eXBlPSJ4czpzdHJpbmciPkFuZHJldyBEaWxsYXJkPC9zYW1sOkF0dHJpYnV0ZVZhbHVlPjwvc2FtbDpBdHRyaWJ1dGU+PC9zYWNpOkF0dHJpYnV0ZU1hcHBpbmc+PC9zYWNpOklkQXR0cmlidXRlcz48L3NhY2k6U0FNTEF1dGhDb250ZXh0PjANBgkqhkiG9w0BAQsFAAOCAQEAmDwgUV0PaZ/pIBrlx4vEIXoiqrG6s2PhSxGX5BbBhL08uCMM7Bempv/1mxueXfXksooQvEMe7zO3TdjtB0i4oIYwORQp2A71Y8aBb/cLIt/KAarS3q/1tYs3ui/EuIPRGcRD5pbfZvLkdEgBlU+cEMh5uvApCI4gfPwbqjCDwitjqnKZRGwt6z/+2zfuuqvXWeZDBkoUsWXXHYtoWXLheGruOdk8Eh2YlseqqtSSi7CKwkSxROdea9+0XBjj7pzrKhuXSpMJ6plo0GvJJV1fPrgH8xPWXVxM1NF8i4UXgIxKwmRZmAtk0c6erKGqhOVztegaobde3ontsoEyl/UBLQ==";
         // CHECKSTYLE:ON LineLength
-        assertEquals(certificateCaptor.getValue(), certByteArray);
+        assertEquals(certByteArray, certificateCaptor.getValue());
 
         var signByteArray = Base64.getDecoder()
             .decode("MEYCIQDexXhdoTJWwjcXnQUGR2QAXcEbP+5N1f8QPghNeGb2dgIhAOvoNNfTlZqPyhuuYwLryVirmx/90NHsWf+oefZEQjBd");
@@ -306,7 +296,7 @@ public class DssSignatureServiceTest {
 
         // Just one empty post in whitelist
         ReflectionTestUtils
-            .setField(dssSignatureService, "dssUnitWhitelistForIe", Arrays.asList(""));
+            .setField(dssSignatureService, "dssUnitWhitelistForIe", List.of(""));
         assertTrue(dssSignatureService.shouldUseSigningService("TSTNMT2321000156-1077"));
         assertTrue(dssSignatureService.shouldUseSigningService("TSTNMT23210001512-WILDCARD"));
         assertTrue(dssSignatureService.shouldUseSigningService("TSTNMT23210001512WILDCARD"));
@@ -314,7 +304,7 @@ public class DssSignatureServiceTest {
 
         // Shall return true for all units if wildcare * is used
         ReflectionTestUtils
-            .setField(dssSignatureService, "dssUnitWhitelistForIe", Arrays.asList("*"));
+            .setField(dssSignatureService, "dssUnitWhitelistForIe", List.of("*"));
         assertFalse(dssSignatureService.shouldUseSigningService("TSTNMT2321000156-1077"));
         assertFalse(dssSignatureService.shouldUseSigningService("TSTNMT23210001512-WILDCARD"));
         assertFalse(dssSignatureService.shouldUseSigningService("TSTNMT23210001512WILDCARD"));
@@ -341,7 +331,7 @@ public class DssSignatureServiceTest {
 
         // One wildcard value in whitelist
         ReflectionTestUtils
-            .setField(dssSignatureService, "dssUnitWhitelistForIe", Arrays.asList("TSTNMT23210001512*"));
+            .setField(dssSignatureService, "dssUnitWhitelistForIe", List.of("TSTNMT23210001512*"));
         assertTrue(dssSignatureService.shouldUseSigningService("TSTNMT2321000156-1077"));
         assertFalse(dssSignatureService.shouldUseSigningService("TSTNMT23210001512-WILDCARD"));
         assertFalse(dssSignatureService.shouldUseSigningService("TSTNMT23210001512WILDCARD"));

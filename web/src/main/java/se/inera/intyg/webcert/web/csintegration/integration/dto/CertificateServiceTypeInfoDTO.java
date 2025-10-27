@@ -34,6 +34,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 public class CertificateServiceTypeInfoDTO {
 
     String type;
+    String typeName;
     String name;
     String description;
     List<ResourceLinkDTO> links;

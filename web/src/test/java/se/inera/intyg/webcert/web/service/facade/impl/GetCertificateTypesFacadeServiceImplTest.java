@@ -102,15 +102,13 @@ class GetCertificateTypesFacadeServiceImplTest {
     @Nested
     class CorrectCases {
 
-        private List<CertificateTypeInfoDTO> types;
-        private final IntygModule module = createIntygModule();
+        private final IntygModule defaultModule = createIntygModule();
         private final IntygModule notAllowedModule = createIntygModule("notAllowed");
         private final IntygModule moduleDb = new IntygModule(CERTIFICATE_TYPE_DB, "label", "description", "detailedDescription",
-            "issuerTypeId",
-            "cssPath", "scriptPath", "dependencyDefinitionPath", "defaultRecipient");
+            "issuerTypeId", "cssPath", "scriptPath", "dependencyDefinitionPath", "defaultRecipient", CERTIFICATE_TYPE_DB);
 
         @BeforeEach
-        void setup() throws Exception {
+        void setup() {
             doReturn(CERTIFICATE_TYPE_VERSION)
                 .when(intygTextsService)
                 .getLatestVersion(anyString());
@@ -123,7 +121,7 @@ class GetCertificateTypesFacadeServiceImplTest {
                 .when(user)
                 .getOrigin();
 
-            doReturn(Set.of(module.getId(), moduleDb.getId()))
+            doReturn(Set.of(defaultModule.getId(), moduleDb.getId()))
                 .when(authoritiesHelper)
                 .getIntygstyperForPrivilege(any(), any());
         }
@@ -131,9 +129,11 @@ class GetCertificateTypesFacadeServiceImplTest {
         @Nested
         class ModuleConversion {
 
+            private List<CertificateTypeInfoDTO> types;
+
             @BeforeEach
             void setUp() {
-                doReturn(Arrays.asList(module, notAllowedModule, moduleDb))
+                doReturn(Arrays.asList(defaultModule, notAllowedModule, moduleDb))
                     .when(intygModuleRegistry)
                     .listAllModules();
                 final var patient = mock(Patient.class);
@@ -160,40 +160,42 @@ class GetCertificateTypesFacadeServiceImplTest {
             @Test
             void shallConvertId() {
                 types = getCertificateTypesFacadeService.get(PATIENT_ID);
-                assertEquals(module.getId(), types.getFirst().getId());
+                assertEquals(defaultModule.getId(), types.getFirst().getId());
             }
 
             @Test
             void shallConvertLabel() {
                 types = getCertificateTypesFacadeService.get(PATIENT_ID);
-                assertEquals(module.getLabel(), types.getFirst().getLabel());
+                assertEquals(defaultModule.getLabel(), types.getFirst().getLabel());
             }
 
             @Test
             void shallConvertDescription() {
                 types = getCertificateTypesFacadeService.get(PATIENT_ID);
-                assertEquals(module.getDescription(), types.getFirst().getDescription());
+                assertEquals(defaultModule.getDescription(), types.getFirst().getDescription());
             }
 
             @Test
             void shallConvertDetailedDescription() {
                 types = getCertificateTypesFacadeService.get(PATIENT_ID);
-                assertEquals(module.getDetailedDescription(), types.getFirst().getDetailedDescription());
+                assertEquals(defaultModule.getDetailedDescription(), types.getFirst().getDetailedDescription());
             }
 
             @Test
             void shallConvertIssuerTypeId() {
                 types = getCertificateTypesFacadeService.get(PATIENT_ID);
-                assertEquals(module.getIssuerTypeId(), types.getFirst().getIssuerTypeId());
+                assertEquals(defaultModule.getIssuerTypeId(), types.getFirst().getIssuerTypeId());
             }
         }
 
         @Nested
         class CertificateMessages {
 
+            private List<CertificateTypeInfoDTO> types;
+
             @BeforeEach
             void setUp() {
-                doReturn(Arrays.asList(module, notAllowedModule))
+                doReturn(Arrays.asList(defaultModule, notAllowedModule))
                     .when(intygModuleRegistry)
                     .listAllModules();
             }
@@ -209,10 +211,9 @@ class GetCertificateTypesFacadeServiceImplTest {
 
             @Test
             void shallExludeMessageWhenItDoesntExists() {
-                final String expectedMessage = null;
                 when(certificateTypeMessageService.get(CERTIFICATE_TYPE, PATIENT_ID)).thenReturn(Optional.empty());
                 types = getCertificateTypesFacadeService.get(PATIENT_ID);
-                assertEquals(expectedMessage, types.getFirst().getMessage());
+                assertNull(types.getFirst().getMessage());
             }
         }
 
@@ -221,14 +222,14 @@ class GetCertificateTypesFacadeServiceImplTest {
 
             @Test
             void shallConvertResourceLinks() {
-                final var module = createIntygModule();
-                doReturn(List.of(module))
+                final var intygModule = createIntygModule();
+                doReturn(List.of(intygModule))
                     .when(intygModuleRegistry)
                     .listAllModules();
 
                 doAnswer(invocation -> {
                     List<IntygModuleDTO> dtos = invocation.getArgument(0);
-                    dtos.forEach((dto) -> dto.addLink(new ActionLink(ActionLinkType.SKAPA_UTKAST)));
+                    dtos.forEach(dto -> dto.addLink(new ActionLink(ActionLinkType.SKAPA_UTKAST)));
                     return null;
                 })
                     .when(resourceLinkHelper)
@@ -347,7 +348,7 @@ class GetCertificateTypesFacadeServiceImplTest {
 
             @BeforeEach
             void setUp() {
-                doReturn(Arrays.asList(module, notAllowedModule))
+                doReturn(Arrays.asList(defaultModule, notAllowedModule))
                     .when(intygModuleRegistry)
                     .listAllModules();
             }
@@ -367,8 +368,8 @@ class GetCertificateTypesFacadeServiceImplTest {
 
         WebCertUser user;
 
-        void setup(boolean isDeprecated, boolean showDeprecated, boolean hasTextVersion) throws Exception {
-            final var module = createIntygModule(isDeprecated, showDeprecated);
+        void setup(boolean hasTextVersion) {
+            final var module = createIntygModule();
 
             if (hasTextVersion) {
                 doReturn("1.0")
@@ -395,15 +396,8 @@ class GetCertificateTypesFacadeServiceImplTest {
         }
 
         @Test
-        void shouldFilterOutDeprectatedIntygModules() throws Exception {
-            setup(true, false, false);
-            final var result = getCertificateTypesFacadeService.get(PATIENT_ID);
-            assertEquals(0, result.size());
-        }
-
-        @Test
-        void shouldNotFilterOutDeprectatedIntygModulesIfShowDeprecated() throws Exception {
-            setup(true, true, true);
+        void shouldNotFilterOutIntygModulesWithTextVersion() {
+            setup(true);
             doReturn("NORMAL")
                 .when(user)
                 .getOrigin();
@@ -414,16 +408,17 @@ class GetCertificateTypesFacadeServiceImplTest {
         }
 
         @Test
-        void shouldNotFilterOutIntygModulesWithoutTextVersion() throws Exception {
-            setup(true, true, false);
+        void shouldNotFilterOutIntygModulesWithoutTextVersion() {
+            setup(false);
             final var result = getCertificateTypesFacadeService.get(PATIENT_ID);
             assertEquals(0, result.size());
         }
 
         @Test
-        void shouldFilterOutInactiveIntygModule() throws Exception {
-            setup(true, true, false);
-            doReturn(List.of(CERTIFICATE_TYPE)).when(featuresHelper).getCertificateTypesForFeature(AuthoritiesConstants.FEATURE_INACTIVE_CERTIFICATE_TYPE);
+        void shouldFilterOutInactiveIntygModule() {
+            setup(false);
+            doReturn(List.of(CERTIFICATE_TYPE)).when(featuresHelper)
+                .getCertificateTypesForFeature(AuthoritiesConstants.FEATURE_INACTIVE_CERTIFICATE_TYPE);
             final var result = getCertificateTypesFacadeService.get(PATIENT_ID);
             assertEquals(0, result.size());
         }
@@ -431,16 +426,12 @@ class GetCertificateTypesFacadeServiceImplTest {
 
     private IntygModule createIntygModule(String id) {
         return new IntygModule(id, "label", "description", "detailedDescription", "issuerTypeId",
-            "cssPath", "scriptPath", "dependencyDefinitionPath", "defaultRecipient");
+            "cssPath", "scriptPath", "dependencyDefinitionPath", "defaultRecipient", id);
     }
 
     private IntygModule createIntygModule() {
-        return createIntygModule(false, false);
-    }
-
-    private IntygModule createIntygModule(boolean isDeprecated, boolean showDeprecated) {
         return new IntygModule(CERTIFICATE_TYPE, "label", "description", "detailedDescription", "issuerTypeId",
-            "cssPath", "scriptPath", "dependencyDefinitionPath", "defaultRecipient");
+            "cssPath", "scriptPath", "dependencyDefinitionPath", "defaultRecipient", CERTIFICATE_TYPE);
     }
 
     private Personnummer getPatientId(int minusMonths) {

@@ -86,7 +86,7 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
             .map(module -> convertModuleToTypeInfo(module, patientId))
             .map(certificateTypeInfoDTO -> addAdditionalResourceLinks(certificateTypeInfoDTO, patientId))
             .map(certificateTypeInfoDTO -> addConfirmationModal(certificateTypeInfoDTO, patientId))
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private CertificateTypeInfoDTO addAdditionalResourceLinks(CertificateTypeInfoDTO intygModule, Personnummer patientId) {
@@ -118,6 +118,7 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
     private CertificateTypeInfoDTO convertModuleToTypeInfo(IntygModuleDTO module, Personnummer patientId) {
         final var certificateTypeInfo = new CertificateTypeInfoDTO();
         certificateTypeInfo.setId(module.getId());
+        certificateTypeInfo.setCertificateServiceTypeId(module.getCertificateServiceTypeId());
         certificateTypeInfo.setLabel(module.getLabel());
         certificateTypeInfo.setDescription(module.getDescription());
         certificateTypeInfo.setDetailedDescription(module.getDetailedDescription());
@@ -152,7 +153,8 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
         final var intygModules = intygModuleRegistry.listAllModules();
         final var allowedCertificateTypes = authoritiesHelper.getIntygstyperForPrivilege(webCertUserService.getUser(),
             AuthoritiesConstants.PRIVILEGE_SKRIVA_INTYG);
-        final var inactiveCertificateTypes = featuresHelper.getCertificateTypesForFeature(AuthoritiesConstants.FEATURE_INACTIVE_CERTIFICATE_TYPE);
+        final var inactiveCertificateTypes = featuresHelper.getCertificateTypesForFeature(
+            AuthoritiesConstants.FEATURE_INACTIVE_CERTIFICATE_TYPE);
 
         final var intygModuleDTOs = intygModules.stream()
             .map(IntygModuleDTO::new)

@@ -26,7 +26,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -73,7 +72,7 @@ public class ResourceLinkHelperImplTest {
     @Test
     public void validActionsForIntygModuleWithAccessAllowed() {
         final String intygsTyp = "intygstyp";
-        final Personnummer personnummer = Personnummer.createPersonnummer("191212121212").get();
+        final Personnummer personnummer = Personnummer.createPersonnummer("191212121212").orElseThrow();
 
         doReturn(true).when(draftAccessServiceHelper).isAllowedToCreateUtkast(intygsTyp, personnummer);
 
@@ -81,28 +80,24 @@ public class ResourceLinkHelperImplTest {
         expectedActionLink.setType(ActionLinkType.SKAPA_UTKAST);
 
         final IntygModuleDTO intygModuleDTO = createIntygModuleDTO(intygsTyp);
-        final List<IntygModuleDTO> intygModuleDTOList = Arrays.asList(intygModuleDTO);
         resourceLinkHelper.decorateIntygModuleWithValidActionLinks(intygModuleDTO, personnummer);
 
         final List<ActionLink> actualLinks = intygModuleDTO.getLinks();
 
         assertNotNull(actualLinks);
         assertEquals("Should be one link", 1, actualLinks.size());
-        assertEquals("ActionLink type should be same", expectedActionLink.getType(), actualLinks.get(0).getType());
+        assertEquals("ActionLink type should be same", expectedActionLink.getType(), actualLinks.getFirst().getType());
     }
 
     @Test
     public void noValidActionsForIntygModuleWithAccessAllowed() {
         final String intygsTyp = "intygstyp";
-        final Personnummer personnummer = Personnummer.createPersonnummer("191212121212").get();
+        final Personnummer personnummer = Personnummer.createPersonnummer("191212121212").orElseThrow();
 
         doReturn(false).when(draftAccessServiceHelper)
             .isAllowedToCreateUtkast(intygsTyp, personnummer);
 
-        final ActionLink expectedActionLink = new ActionLink();
-
         final IntygModuleDTO intygModuleDTO = createIntygModuleDTO(intygsTyp);
-        final List<IntygModuleDTO> intygModuleDTOList = Arrays.asList(intygModuleDTO);
         resourceLinkHelper.decorateIntygModuleWithValidActionLinks(intygModuleDTO, personnummer);
 
         final List<ActionLink> actualLinks = intygModuleDTO.getLinks();
@@ -112,14 +107,14 @@ public class ResourceLinkHelperImplTest {
     }
 
     private IntygModuleDTO createIntygModuleDTO(String intygsTyp) {
-        return new IntygModuleDTO(new IntygModule(intygsTyp, "", "", "", "", "", "", "", ""));
+        return new IntygModuleDTO(new IntygModule(intygsTyp, "", "", "", "", "", "", "", "", ""));
     }
 
     @Test
     public void validActionsForLockedDraftHolderWithAccessAllowed() {
         final String intygsTyp = "intygstyp";
         final String intygsTypVersion = "intygstypVersion";
-        final Personnummer patient = Personnummer.createPersonnummer("191212121212").get();
+        final Personnummer patient = Personnummer.createPersonnummer("191212121212").orElseThrow();
         final Vardenhet vardenhet = mock(Vardenhet.class);
 
         doReturn(true).when(lockedDraftAccessServiceHelper).isAllowToInvalidate(any(AccessEvaluationParameters.class));
@@ -145,7 +140,7 @@ public class ResourceLinkHelperImplTest {
     public void noValidActionsForLockedDraftHolderWithAccessAllowed() {
         final String intygsTyp = "intygstyp";
         final String intygsTypVersion = "intygstypVersion";
-        final Personnummer patient = Personnummer.createPersonnummer("191212121212").get();
+        final Personnummer patient = Personnummer.createPersonnummer("191212121212").orElseThrow();
         final Vardenhet vardenhet = mock(Vardenhet.class);
 
         doReturn(false).when(lockedDraftAccessServiceHelper).isAllowToInvalidate(any(AccessEvaluationParameters.class));
@@ -176,7 +171,7 @@ public class ResourceLinkHelperImplTest {
     public void validActionsForDraftHolderWithAccessAllowed() {
         final String intygsTyp = "intygstyp";
         final String intygsTypVersion = "intygsTypVersion";
-        final Personnummer patient = Personnummer.createPersonnummer("191212121212").get();
+        final Personnummer patient = Personnummer.createPersonnummer("191212121212").orElseThrow();
         final Vardenhet vardenhet = mock(Vardenhet.class);
 
         doReturn(true).when(draftAccessServiceHelper).isAllowToEditUtkast(any(AccessEvaluationParameters.class));
@@ -221,7 +216,7 @@ public class ResourceLinkHelperImplTest {
     public void noValidActionsForDraftHolderWithAccessAllowed() {
         final String intygsTyp = "intygstyp";
         final String intygsTypVersion = "intygsTypVersion";
-        final Personnummer patient = Personnummer.createPersonnummer("191212121212").get();
+        final Personnummer patient = Personnummer.createPersonnummer("191212121212").orElseThrow();
         final Vardenhet vardenhet = mock(Vardenhet.class);
 
         doReturn(false).when(draftAccessServiceHelper).isAllowToEditUtkast(any(AccessEvaluationParameters.class));
@@ -252,7 +247,7 @@ public class ResourceLinkHelperImplTest {
     @Test
     public void validActionsForIntygContentHolderWithAccessAllowed() {
         final String intygsTyp = "intygstyp";
-        final Personnummer patient = Personnummer.createPersonnummer("191212121212").get();
+        final Personnummer patient = Personnummer.createPersonnummer("191212121212").orElseThrow();
         final Vardenhet vardenhet = mock(Vardenhet.class);
 
         doReturn(true).when(certificateAccessServiceHelper).isAllowToRenew(any(AccessEvaluationParameters.class));
@@ -322,7 +317,7 @@ public class ResourceLinkHelperImplTest {
     @Test
     public void noValidActionsForIntygContentHolderWithAccessAllowed() {
         final String intygsTyp = "intygstyp";
-        final Personnummer patient = Personnummer.createPersonnummer("191212121212").get();
+        final Personnummer patient = Personnummer.createPersonnummer("191212121212").orElseThrow();
         final Vardenhet vardenhet = mock(Vardenhet.class);
 
         doReturn(false).when(certificateAccessServiceHelper).isAllowToRenew(any(AccessEvaluationParameters.class));
@@ -377,8 +372,7 @@ public class ResourceLinkHelperImplTest {
     @Test
     public void validActionsForListIntygEntryWithAccessAllowed() {
         final String intygsTyp = "intygstyp";
-        final Personnummer patient = Personnummer.createPersonnummer("191212121212").get();
-        final Vardenhet vardenhet = mock(Vardenhet.class);
+        final Personnummer patient = Personnummer.createPersonnummer("191212121212").orElseThrow();
 
         doReturn(true).when(certificateAccessServiceHelper).isAllowToRead(any(AccessEvaluationParameters.class));
         doReturn(true).when(certificateAccessServiceHelper).isAllowToRenew(any(AccessEvaluationParameters.class));
@@ -392,7 +386,7 @@ public class ResourceLinkHelperImplTest {
         listIntygEntry.setVardenhetId("vardgivareid");
         listIntygEntry.setIntygType(intygsTyp);
 
-        final List<ListIntygEntry> listIntygEntryList = Arrays.asList(listIntygEntry);
+        final List<ListIntygEntry> listIntygEntryList = List.of(listIntygEntry);
 
         resourceLinkHelper.decorateIntygWithValidActionLinks(listIntygEntryList, patient);
 
@@ -404,8 +398,7 @@ public class ResourceLinkHelperImplTest {
     @Test
     public void noValidActionsForListIntygEntryWithAccessAllowed() {
         final String intygsTyp = "intygstyp";
-        final Personnummer patient = Personnummer.createPersonnummer("191212121212").get();
-        final Vardenhet vardenhet = mock(Vardenhet.class);
+        final Personnummer patient = Personnummer.createPersonnummer("191212121212").orElseThrow();
 
         doReturn(false).when(certificateAccessServiceHelper).isAllowToRead(any(AccessEvaluationParameters.class));
         doReturn(false).when(certificateAccessServiceHelper).isAllowToRenew(any(AccessEvaluationParameters.class));
@@ -417,7 +410,7 @@ public class ResourceLinkHelperImplTest {
         listIntygEntry.setVardenhetId("vardgivareid");
         listIntygEntry.setIntygType(intygsTyp);
 
-        final List<ListIntygEntry> listIntygEntryList = Arrays.asList(listIntygEntry);
+        final List<ListIntygEntry> listIntygEntryList = List.of(listIntygEntry);
 
         resourceLinkHelper.decorateIntygWithValidActionLinks(listIntygEntryList, patient);
 
@@ -429,7 +422,6 @@ public class ResourceLinkHelperImplTest {
     @Test
     public void validActionsForArendeListItemWithAccessAllowed() {
         final String intygsTyp = "intygstyp";
-        final Personnummer patient = Personnummer.createPersonnummer("191212121212").get();
         final Vardenhet vardenhet = mock(Vardenhet.class);
 
         doReturn(true).when(certificateAccessServiceHelper).isAllowToForwardQuestions(any(AccessEvaluationParameters.class));
@@ -441,7 +433,7 @@ public class ResourceLinkHelperImplTest {
         arendeListItem.setIntygTyp(intygsTyp);
         arendeListItem.setPatientId("191212121212");
 
-        final List<ArendeListItem> arendeListItemList = Arrays.asList(arendeListItem);
+        final List<ArendeListItem> arendeListItemList = List.of(arendeListItem);
 
         resourceLinkHelper.decorateArendeWithValidActionLinks(arendeListItemList, vardenhet);
 

@@ -67,8 +67,7 @@ public class RenewCertificateAggregator implements RenewCertificateFacadeService
         }
 
         final var certificate = getCertificateAggregator.getCertificate(certificateId, false, true);
-        final var certificateTypeExistsInCS = csIntegrationService.certificateTypeExists(
-            certificate.getMetadata().getType());
+        final var certificateTypeExistsInCS = csIntegrationService.certificateTypeExists(certificate.getMetadata().getType());
 
         return certificateTypeExistsInCS
             .map(certificateModelId -> renewLegacyCertificateFromCertificateService.renewCertificate(

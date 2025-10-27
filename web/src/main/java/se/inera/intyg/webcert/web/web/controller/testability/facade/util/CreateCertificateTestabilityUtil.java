@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.web.controller.testability.facade.util;
 
 import static se.inera.intyg.common.support.facade.util.TestabilityToolkit.updateCertificate;
+import static se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCertificateFillType.MINIMAL;
 
 import java.time.LocalDateTime;
 import javax.validation.constraints.NotNull;
@@ -44,7 +45,6 @@ import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.testability.CertificateServiceCreateRequest;
 import se.inera.intyg.webcert.web.csintegration.testability.CertificateServiceTestabilityUtil;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.integration.util.HoSPersonHelper;
 import se.inera.intyg.webcert.web.service.facade.util.UtkastToCertificateConverter;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
@@ -64,7 +64,6 @@ public class CreateCertificateTestabilityUtil {
     private final UtkastRepository utkastRepository;
     private final IntygTextsService intygTextsService;
     private final TypeAheadProvider typeAheadProvider;
-    private final CertificateServiceProfile certificateServiceProfile;
     private final CertificateServiceTestabilityUtil certificateServiceTestabilityUtil;
     private final CSIntegrationService csIntegrationService;
     private final UpdateIntygstjanstTestabilityUtil updateIntygstjanstTestabilityUtil;
@@ -75,7 +74,7 @@ public class CreateCertificateTestabilityUtil {
         WebcertUserDetailsService webcertUserDetailsService,
         PatientDetailsResolver patientDetailsResolver, UtkastService utkastService,
         UtkastToCertificateConverter utkastToCertificateConverter, UtkastRepository utkastRepository,
-        IntygTextsService intygTextsService, TypeAheadProvider typeAheadProvider, CertificateServiceProfile certificateServiceProfile,
+        IntygTextsService intygTextsService, TypeAheadProvider typeAheadProvider,
         CertificateServiceTestabilityUtil certificateServiceTestabilityUtil, CSIntegrationService csIntegrationService,
         UpdateIntygstjanstTestabilityUtil updateIntygstjanstTestabilityUtil) {
         this.moduleRegistry = moduleRegistry;
@@ -86,29 +85,19 @@ public class CreateCertificateTestabilityUtil {
         this.utkastRepository = utkastRepository;
         this.intygTextsService = intygTextsService;
         this.typeAheadProvider = typeAheadProvider;
-        this.certificateServiceProfile = certificateServiceProfile;
         this.certificateServiceTestabilityUtil = certificateServiceTestabilityUtil;
         this.csIntegrationService = csIntegrationService;
         this.updateIntygstjanstTestabilityUtil = updateIntygstjanstTestabilityUtil;
     }
 
     private static String getSkickadTillMottagare(String certificateType) {
-        switch (certificateType) {
-            case "lisjp":
-            case "luse":
-            case "luae_na":
-            case "luae_fs":
-                return "FKASSA";
-            case "ts-bas":
-            case "ts-diabetes":
-                return "TRANSP";
-            case "db":
-                return "SKV";
-            case "doi":
-                return "SOS";
-            default:
-                throw new IllegalArgumentException(String.format("The certificatetype '%s' cannot be sent!", certificateType));
-        }
+        return switch (certificateType) {
+            case "lisjp", "luse", "luae_na", "luae_fs" -> "FKASSA";
+            case "ts-bas", "ts-diabetes" -> "TRANSP";
+            case "db" -> "SKV";
+            case "doi" -> "SOS";
+            default -> throw new IllegalArgumentException(String.format("The certificatetype '%s' cannot be sent!", certificateType));
+        };
     }
 
     public String createNewCertificate(@NotNull CreateCertificateRequestDTO createCertificateRequest) {
@@ -123,8 +112,7 @@ public class CreateCertificateTestabilityUtil {
             createCertificateRequest.getCertificateTypeVersion()
         );
 
-        if (certificateServiceProfile.activeAndSupportsType(createCertificateRequest.getCertificateType(),
-            createCertificateRequest.getCertificateTypeVersion())) {
+        if (activeAndSupportsType(createCertificateRequest.getCertificateType(), createCertificateRequest.getCertificateTypeVersion())) {
             final var modelIdDTO = csIntegrationService.certificateTypeExists(createCertificateRequest.getCertificateType());
             return certificateServiceTestabilityUtil.create(
                 CertificateServiceCreateRequest.builder()
@@ -161,6 +149,12 @@ public class CreateCertificateTestabilityUtil {
         return utkast.getIntygsId();
     }
 
+    private boolean activeAndSupportsType(String type, String version) {
+        return csIntegrationService.certificateTypeExists(type)
+            .filter(model -> model.getVersion().equals(version))
+            .isPresent();
+    }
+
     private String getUpdateJsonModel(Utkast utkast, CreateCertificateRequestDTO createCertificateRequest) {
         if (CreateCertificateFillType.EMPTY.equals(createCertificateRequest.getFillType())) {
             return utkast.getModel();
@@ -177,11 +171,10 @@ public class CreateCertificateTestabilityUtil {
                 utkast.getIntygsTyp(),
                 utkast.getIntygTypeVersion()
             );
-            final var fillType =
-                CreateCertificateFillType.MINIMAL.equals(createCertificateRequest.getFillType()) ? FillType.MINIMAL : FillType.MAXIMAL;
+            final var fillType = MINIMAL.equals(createCertificateRequest.getFillType()) ? FillType.MINIMAL : FillType.MAXIMAL;
             return moduleApi.getUpdatedJsonWithTestData(utkast.getModel(), fillType, typeAheadProvider);
         } catch (Exception ex) {
-            throw new RuntimeException(ex);
+            throw new IllegalStateException(ex);
         }
     }
 
@@ -231,7 +224,7 @@ public class CreateCertificateTestabilityUtil {
                 .updateBeforeSigning(utkast.getModel(), hosPersonal, signature.getSigneringsDatum());
             utkast.setModel(updatedJson);
         } catch (Exception ex) {
-            throw new RuntimeException(ex);
+            throw new IllegalStateException(ex);
         }
     }
 
@@ -244,7 +237,7 @@ public class CreateCertificateTestabilityUtil {
 
             return moduleApi.getJsonFromCertificate(certificate, currentModel);
         } catch (Exception ex) {
-            throw new RuntimeException(ex);
+            throw new IllegalStateException(ex);
         }
     }
 
@@ -267,7 +260,7 @@ public class CreateCertificateTestabilityUtil {
         try {
             return moduleRegistry.getModuleApi(type, typeVersion);
         } catch (Exception ex) {
-            throw new RuntimeException(ex);
+            throw new IllegalStateException(ex);
         }
     }
 
@@ -275,7 +268,7 @@ public class CreateCertificateTestabilityUtil {
         try {
             return webcertUserDetailsService.buildUserPrincipal(personId, "");
         } catch (Exception ex) {
-            throw new RuntimeException(ex);
+            throw new IllegalStateException(ex);
         }
     }
 

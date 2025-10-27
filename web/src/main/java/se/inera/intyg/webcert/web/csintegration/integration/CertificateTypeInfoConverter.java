@@ -30,8 +30,8 @@ public class CertificateTypeInfoConverter {
         final var convertedTypeInfo = new CertificateTypeInfoDTO();
 
         convertedTypeInfo.setId(typeInfo.getType());
+        convertedTypeInfo.setIssuerTypeId(typeInfo.getTypeName());
         convertedTypeInfo.setLabel(typeInfo.getName());
-        convertedTypeInfo.setIssuerTypeId(typeInfo.getType());
         convertedTypeInfo.setDescription(typeInfo.getDescription());
         convertedTypeInfo.setDetailedDescription(typeInfo.getDescription());
         convertedTypeInfo.setLinks(typeInfo.getLinks());
