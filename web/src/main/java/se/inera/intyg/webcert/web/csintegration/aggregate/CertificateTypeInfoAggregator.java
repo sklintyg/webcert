@@ -21,12 +21,10 @@ package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateTypesFacadeService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
@@ -35,34 +33,24 @@ public class CertificateTypeInfoAggregator implements GetCertificateTypesFacadeS
 
     private final GetCertificateTypesFacadeService getCertificateTypeInfoFromWebcert;
     private final GetCertificateTypesFacadeService getCertificateTypeInfoFromCertificateService;
-    private final CertificateServiceProfile certificateServiceProfile;
 
     public CertificateTypeInfoAggregator(
         @Qualifier("getCertificateTypeInfoFromWebcert")
         GetCertificateTypesFacadeService getCertificateTypeInfoFromWebcert,
         @Qualifier("getCertificateTypeInfoFromCertificateService")
-        GetCertificateTypesFacadeService getCertificateTypeInfoFromCertificateService,
-        CertificateServiceProfile certificateServiceProfile) {
+        GetCertificateTypesFacadeService getCertificateTypeInfoFromCertificateService) {
         this.getCertificateTypeInfoFromWebcert = getCertificateTypeInfoFromWebcert;
         this.getCertificateTypeInfoFromCertificateService = getCertificateTypeInfoFromCertificateService;
-        this.certificateServiceProfile = certificateServiceProfile;
     }
 
     @Override
     public List<CertificateTypeInfoDTO> get(Personnummer patientId) {
         final var typesFromWebcert = getCertificateTypeInfoFromWebcert.get(patientId);
-        if (!certificateServiceProfile.active()) {
-            return typesFromWebcert;
-        }
-
         final var typesFromCertificateService = getCertificateTypeInfoFromCertificateService.get(patientId);
-        final var csIds = typesFromCertificateService.stream()
-            .map(CertificateTypeInfoDTO::getIssuerTypeId)
-            .map(id -> id.replace(" ", "").toLowerCase())
-            .collect(Collectors.toSet());
-
         final var filteredTypesFromWebcert = typesFromWebcert.stream()
-            .filter(dto -> !csIds.contains(dto.getIssuerTypeId().replace(" ", "").toLowerCase()))
+            .filter(wcType -> typesFromCertificateService.stream()
+                .noneMatch(csType -> wcType.getCertificateServiceTypeId().equalsIgnoreCase(csType.getId()))
+            )
             .toList();
 
         return Stream
@@ -71,6 +59,6 @@ public class CertificateTypeInfoAggregator implements GetCertificateTypesFacadeS
                 filteredTypesFromWebcert.stream()
             )
             .sorted(Comparator.comparing(CertificateTypeInfoDTO::getLabel))
-            .collect(Collectors.toList());
+            .toList();
     }
 }

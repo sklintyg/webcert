@@ -39,6 +39,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.facade.dto.CertificateEventDTO;
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
 import se.inera.intyg.infra.certificate.dto.SickLeaveCertificate;
@@ -155,6 +156,7 @@ public class CSIntegrationService {
     private static final String NULL_RESPONSE_EXCEPTION = "Certificate service returned null response";
     private static final String EXISTS = "/exists";
 
+    private final IntygModuleRegistry intygModuleRegistry;
     private final CertificateTypeInfoConverter certificateTypeInfoConverter;
     private final ListIntygEntryConverter listIntygEntryConverter;
     private final ListQuestionConverter listQuestionConverter;
@@ -163,8 +165,10 @@ public class CSIntegrationService {
     @Value("${certificateservice.base.url}")
     private String baseUrl;
 
-    public CSIntegrationService(CertificateTypeInfoConverter certificateTypeInfoConverter, ListIntygEntryConverter listIntygEntryConverter,
-        ListQuestionConverter listQuestionConverter, @Qualifier("csRestClient") RestClient restClient) {
+    public CSIntegrationService(IntygModuleRegistry intygModuleRegistry, CertificateTypeInfoConverter certificateTypeInfoConverter,
+        ListIntygEntryConverter listIntygEntryConverter, ListQuestionConverter listQuestionConverter,
+        @Qualifier("csRestClient") RestClient restClient) {
+        this.intygModuleRegistry = intygModuleRegistry;
         this.certificateTypeInfoConverter = certificateTypeInfoConverter;
         this.listIntygEntryConverter = listIntygEntryConverter;
         this.listQuestionConverter = listQuestionConverter;
@@ -474,7 +478,8 @@ public class CSIntegrationService {
 
     @PerformanceLogging(eventAction = "certificate-type-exists", eventType = EVENT_TYPE_INFO)
     public Optional<CertificateModelIdDTO> certificateTypeExists(String certificateType) {
-        final var url = baseUrl + CERTIFICATE_TYPE_INFO_ENDPOINT_URL + "/" + certificateType + EXISTS;
+        final var certificateServiceTypeId = certificateServiceTypeId(certificateType);
+        final var url = baseUrl + CERTIFICATE_TYPE_INFO_ENDPOINT_URL + "/" + certificateServiceTypeId + EXISTS;
 
         final var response = restClient.get()
             .uri(url)
@@ -492,6 +497,18 @@ public class CSIntegrationService {
         }
 
         return Optional.of(response.getCertificateModelId());
+    }
+
+    private String certificateServiceTypeId(String type) {
+        if (intygModuleRegistry.moduleExists(type)) {
+            try {
+                final var moduleEntryPoint = intygModuleRegistry.getModuleEntryPoint(type);
+                return moduleEntryPoint.certificateServiceTypeId();
+            } catch (Exception e) {
+                throw new IllegalStateException(e);
+            }
+        }
+        return type;
     }
 
     @PerformanceLogging(eventAction = "certificate-external-type-exists", eventType = EVENT_TYPE_INFO)

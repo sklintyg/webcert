@@ -20,12 +20,16 @@ package se.inera.intyg.webcert.web.web.controller.api.dto;
 
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
 import se.inera.intyg.common.support.modules.registry.IntygModule;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 
+@Getter
 public class IntygModuleDTO implements Comparable<IntygModuleDTO> {
 
     private String id;
+
+    private String certificateServiceTypeId;
 
     private String label;
 
@@ -55,46 +59,7 @@ public class IntygModuleDTO implements Comparable<IntygModuleDTO> {
         this.scriptPath = intygModule.getScriptPath();
         this.dependencyDefinitionPath = intygModule.getDependencyDefinitionPath();
         this.defaultRecipient = intygModule.getDefaultRecipient();
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getLabel() {
-        return label;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public String getDetailedDescription() {
-        return detailedDescription;
-    }
-
-    public String getIssuerTypeId() {
-        return issuerTypeId;
-    }
-
-    public String getCssPath() {
-        return cssPath;
-    }
-
-    public String getScriptPath() {
-        return scriptPath;
-    }
-
-    public String getDependencyDefinitionPath() {
-        return dependencyDefinitionPath;
-    }
-
-    public String getDefaultRecipient() {
-        return defaultRecipient;
-    }
-
-    public List<ActionLink> getLinks() {
-        return links;
+        this.certificateServiceTypeId = intygModule.getCertificateServiceTypeId();
     }
 
     public void addLink(ActionLink link) {

@@ -19,9 +19,7 @@
 
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -32,141 +30,83 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateTypesFacadeService;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 
 @ExtendWith(MockitoExtension.class)
 class CertificateTypeInfoAggregatorTest {
 
-    private static final CertificateTypeInfoDTO infoFromCS = new CertificateTypeInfoDTO();
-    private static final CertificateTypeInfoDTO infoFromWC = new CertificateTypeInfoDTO();
     private static final String ORIGINAL_PATIENT_ID = "191212121212";
-    private static final Personnummer PATIENT_ID = Personnummer.createPersonnummer(ORIGINAL_PATIENT_ID).get();
+    private static final Personnummer PATIENT_ID = Personnummer.createPersonnummer(ORIGINAL_PATIENT_ID).orElseThrow();
 
     GetCertificateTypesFacadeService getCertificateTypeInfoFromWebcert;
     GetCertificateTypesFacadeService getCertificateTypeInfoFromCertificateService;
-    CertificateServiceProfile certificateServiceProfile;
     CertificateTypeInfoAggregator certificateTypeInfoAggregator;
 
     @BeforeEach
     void setup() {
-        infoFromCS.setLabel("infoFromCS");
-        infoFromCS.setIssuerTypeId("CS_ID");
-        infoFromWC.setLabel("infoFromWC");
-        infoFromWC.setIssuerTypeId("WC_ID");
         getCertificateTypeInfoFromCertificateService = mock(GetCertificateTypesFacadeService.class);
         getCertificateTypeInfoFromWebcert = mock(GetCertificateTypesFacadeService.class);
-        certificateServiceProfile = mock(CertificateServiceProfile.class);
-
-        when(getCertificateTypeInfoFromWebcert.get(PATIENT_ID))
-            .thenReturn(List.of(infoFromWC));
 
         certificateTypeInfoAggregator = new CertificateTypeInfoAggregator(
             getCertificateTypeInfoFromWebcert,
-            getCertificateTypeInfoFromCertificateService,
-            certificateServiceProfile
+            getCertificateTypeInfoFromCertificateService
         );
     }
 
     @Test
-    void shouldMergeCertificateTypesLists() {
+    void shouldMergeCertificateTypesListsWhenATypeExistsInWCAndCS() {
+        final var csTypeA = new CertificateTypeInfoDTO();
+        csTypeA.setId("csIdA");
+        csTypeA.setIssuerTypeId("A");
+        csTypeA.setLabel("A");
+        final var wcTypeB = new CertificateTypeInfoDTO();
+        wcTypeB.setId("wcIdB");
+        wcTypeB.setIssuerTypeId("B");
+        wcTypeB.setLabel("BBB");
+        wcTypeB.setCertificateServiceTypeId("csIdA");
+        final var csTypeC = new CertificateTypeInfoDTO();
+        csTypeC.setId("csIdC");
+        csTypeC.setIssuerTypeId("C");
+        csTypeC.setLabel("CC");
+
         when(getCertificateTypeInfoFromCertificateService.get(PATIENT_ID))
-            .thenReturn(List.of(infoFromCS));
-        when(certificateServiceProfile.active())
-            .thenReturn(true);
+            .thenReturn(List.of(csTypeA, csTypeC));
+        when(getCertificateTypeInfoFromWebcert.get(PATIENT_ID))
+            .thenReturn(List.of(wcTypeB));
 
         final var response = certificateTypeInfoAggregator.get(PATIENT_ID);
 
         assertEquals(2, response.size());
-        assertTrue(response.contains(infoFromCS));
-        assertTrue(response.contains(infoFromWC));
+        assertTrue(response.contains(csTypeA));
+        assertTrue(response.contains(csTypeC));
     }
 
     @Test
     void shouldSortElementsInAlphabeticalOrderBasedOnLabel() {
-        when(certificateServiceProfile.active())
-            .thenReturn(true);
-        final var infoA = new CertificateTypeInfoDTO();
-        infoA.setIssuerTypeId("A");
-        infoA.setLabel("A");
-        final var infoB = new CertificateTypeInfoDTO();
-        infoB.setIssuerTypeId("B");
-        infoB.setLabel("BBB");
-        final var infoC = new CertificateTypeInfoDTO();
-        infoC.setIssuerTypeId("C");
-        infoC.setLabel("CC");
-        when(getCertificateTypeInfoFromCertificateService.get(PATIENT_ID))
-            .thenReturn(List.of(infoA, infoC));
-        when(getCertificateTypeInfoFromWebcert.get(PATIENT_ID))
-            .thenReturn(List.of(infoB));
-
-        final var response = certificateTypeInfoAggregator.get(PATIENT_ID);
-
-        assertEquals(infoA, response.getFirst());
-        assertEquals(infoB, response.get(1));
-        assertEquals(infoC, response.get(2));
-    }
-
-    @Test
-    void shouldNotMergeCertificateTypesIfProfileNotActive() {
-        final var response = certificateTypeInfoAggregator.get(PATIENT_ID);
-
-        assertEquals(1, response.size());
-        assertFalse(response.contains(infoFromCS));
-        assertTrue(response.contains(infoFromWC));
-    }
-
-    @Test
-    void shouldKeepCertificateServiceTypeIfIdIsDuplicate() {
-        final var duplicateId = "DUPLICATE_ID";
-        final var csDto = new CertificateTypeInfoDTO();
-        csDto.setIssuerTypeId(duplicateId);
-        csDto.setLabel("CS Label");
-        final var wcDto = new CertificateTypeInfoDTO();
-        wcDto.setIssuerTypeId(duplicateId);
-        wcDto.setLabel("WC Label");
+        final var csTypeA = new CertificateTypeInfoDTO();
+        csTypeA.setId("csIdA");
+        csTypeA.setIssuerTypeId("A");
+        csTypeA.setLabel("A");
+        final var wcTypeB = new CertificateTypeInfoDTO();
+        wcTypeB.setId("idB");
+        wcTypeB.setIssuerTypeId("B");
+        wcTypeB.setLabel("BBB");
+        wcTypeB.setCertificateServiceTypeId("isB");
+        final var csTypeC = new CertificateTypeInfoDTO();
+        csTypeC.setId("csIdC");
+        csTypeC.setIssuerTypeId("C");
+        csTypeC.setLabel("CC");
 
         when(getCertificateTypeInfoFromCertificateService.get(PATIENT_ID))
-            .thenReturn(List.of(csDto));
+            .thenReturn(List.of(csTypeA, csTypeC));
         when(getCertificateTypeInfoFromWebcert.get(PATIENT_ID))
-            .thenReturn(List.of(wcDto));
-        when(certificateServiceProfile.active())
-            .thenReturn(true);
+            .thenReturn(List.of(wcTypeB));
 
         final var response = certificateTypeInfoAggregator.get(PATIENT_ID);
 
-        assertAll(
-            () -> assertEquals(1, response.size()),
-            () -> assertEquals(csDto, response.getFirst()),
-            () -> assertEquals("CS Label", response.getFirst().getLabel())
-        );
-    }
-
-    @Test
-    void shouldKeepCSCertificateIfDuplicateCaseAndSpaceInsensitive() {
-        final var duplicateId = "DUPLICATEID";
-        final var duplicateIdSpace = "DUPLICATE id";
-        final var csDto = new CertificateTypeInfoDTO();
-        csDto.setIssuerTypeId(duplicateId);
-        csDto.setLabel("CS Label");
-        final var wcDto = new CertificateTypeInfoDTO();
-        wcDto.setIssuerTypeId(duplicateIdSpace);
-        wcDto.setLabel("WC Label");
-
-        when(getCertificateTypeInfoFromCertificateService.get(PATIENT_ID))
-            .thenReturn(List.of(csDto));
-        when(getCertificateTypeInfoFromWebcert.get(PATIENT_ID))
-            .thenReturn(List.of(wcDto));
-        when(certificateServiceProfile.active())
-            .thenReturn(true);
-
-        final var response = certificateTypeInfoAggregator.get(PATIENT_ID);
-
-        assertAll(
-            () -> assertEquals(1, response.size()),
-            () -> assertEquals(csDto, response.getFirst()),
-            () -> assertEquals("CS Label", response.getFirst().getLabel())
-        );
+        assertEquals(csTypeA, response.get(0));
+        assertEquals(wcTypeB, response.get(1));
+        assertEquals(csTypeC, response.get(2));
     }
 }

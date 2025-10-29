@@ -39,8 +39,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.services.texts.IntygTextsService;
 import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.common.support.model.common.internal.Patient;
-import se.inera.intyg.common.support.modules.registry.IntygModule;
-import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage;
@@ -63,8 +61,6 @@ class CreateCertificateFacadeServiceImplTest {
     @Mock
     private DraftAccessServiceHelper draftAccessServiceHelper;
     @Mock
-    private IntygModuleRegistry intygModuleRegistry;
-    @Mock
     private AccessResultExceptionHelper accessResultExceptionHelper;
     @Mock
     private UtkastService utkastService;
@@ -82,16 +78,16 @@ class CreateCertificateFacadeServiceImplTest {
     @InjectMocks
     private CreateCertificateFacadeServiceImpl serviceUnderTest;
 
-    private final static String CERTIFICATE_ID = "certificateId";
-    private final static String CERTIFICATE_TYPE = "ag7804";
-    private final static String PATIENT_ID = "191212121212";
-    private final static String LATEST_VERSION = "2.0";
+    private static final String CERTIFICATE_ID = "certificateId";
+    private static final String CERTIFICATE_TYPE = "ag7804";
+    private static final String PATIENT_ID = "191212121212";
+    private static final String LATEST_VERSION = "2.0";
 
     @BeforeEach
     void setup() {
         doReturn(LATEST_VERSION)
             .when(intygTextsService)
-            .getLatestVersion(eq(CERTIFICATE_TYPE));
+            .getLatestVersion(CERTIFICATE_TYPE);
     }
 
     @Nested
@@ -129,7 +125,7 @@ class CreateCertificateFacadeServiceImplTest {
                 }
 
                 @Test
-                void shallThrowExceptionIfCertificateIsNotUnique() throws Exception {
+                void shallThrowExceptionIfCertificateIsNotUnique() {
                     doReturn(AccessResult.create(AccessResultCode.UNIQUE_CERTIFICATE, "message"))
                         .when(draftAccessServiceHelper)
                         .evaluateAllowToCreateUtkast(eq(CERTIFICATE_TYPE), any(Personnummer.class));
@@ -140,7 +136,7 @@ class CreateCertificateFacadeServiceImplTest {
                 }
 
                 @Test
-                void shallThrowExceptionIfCreateDraftIsNotAllowed() throws Exception {
+                void shallThrowExceptionIfCreateDraftIsNotAllowed() {
                     doReturn(AccessResult.create(AccessResultCode.AUTHORIZATION_BLOCKED, "message"))
                         .when(draftAccessServiceHelper)
                         .evaluateAllowToCreateUtkast(eq(CERTIFICATE_TYPE), any(Personnummer.class));
@@ -202,11 +198,6 @@ class CreateCertificateFacadeServiceImplTest {
     void shallThrowExceptionForInvalidPatientId() {
         assertThrows(CreateCertificateException.class, () -> serviceUnderTest.create(CERTIFICATE_TYPE, "xxx"),
             "Invalid patient id");
-    }
-
-    private IntygModule createIntygModule() {
-        return new IntygModule("id", "label", "description", "detailedDescription", "issuerTypeId",
-            "cssPath", "scriptPath", "dependencyDefinitionPath", "defaultRecipient");
     }
 
     private Utkast createCertificate() {

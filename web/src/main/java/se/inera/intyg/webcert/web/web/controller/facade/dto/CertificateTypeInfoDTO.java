@@ -18,12 +18,17 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
+import lombok.Data;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateConfirmationModal;
 
+@Data
 public class CertificateTypeInfoDTO {
 
     private String id;
+    @JsonIgnore
+    private String certificateServiceTypeId;
     private String label;
     private String issuerTypeId;
     private String description;
@@ -32,70 +37,4 @@ public class CertificateTypeInfoDTO {
     private String message;
     private CertificateConfirmationModal confirmationModal;
 
-    public CertificateTypeInfoDTO() {
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getLabel() {
-        return label;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
-    public String getIssuerTypeId() {
-        return issuerTypeId;
-    }
-
-    public void setIssuerTypeId(String issuerTypeId) {
-        this.issuerTypeId = issuerTypeId;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getDetailedDescription() {
-        return detailedDescription;
-    }
-
-    public void setDetailedDescription(String detailedDescription) {
-        this.detailedDescription = detailedDescription;
-    }
-
-    public List<ResourceLinkDTO> getLinks() {
-        return links;
-    }
-
-    public void setLinks(List<ResourceLinkDTO> links) {
-        this.links = links;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public CertificateConfirmationModal getConfirmationModal() {
-        return confirmationModal;
-    }
-
-    public void setConfirmationModal(CertificateConfirmationModal confirmationModal) {
-        this.confirmationModal = confirmationModal;
-    }
 }

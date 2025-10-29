@@ -41,19 +41,20 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.client.RestTemplate;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateText;
 import se.inera.intyg.common.support.facade.model.Staff;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
+import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
+import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
 import se.inera.intyg.common.support.modules.support.facade.dto.CertificateEventDTO;
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
 import se.inera.intyg.webcert.common.dto.IncomingMessageRequestDTO;
@@ -202,12 +203,6 @@ class CSIntegrationServiceTest {
             .build();
     private static final String ID = "ID";
     private static final DeleteCertificateRequestDTO DELETE_CERTIFICATE_REQUEST = DeleteCertificateRequestDTO.builder().build();
-    private static final ParameterizedTypeReference<DeleteCertificateResponseDTO> DELETE_RESPONSE
-        = new ParameterizedTypeReference<>() {
-    };
-    private static final GetListCertificatesResponseDTO LIST_RESPONSE = GetListCertificatesResponseDTO.builder()
-        .certificates(List.of(CERTIFICATE))
-        .build();
     private static final GetPatientCertificatesRequestDTO PATIENT_LIST_REQUEST = GetPatientCertificatesRequestDTO.builder().build();
     private static final GetUnitCertificatesRequestDTO UNIT_LIST_REQUEST = GetUnitCertificatesRequestDTO.builder().build();
     private static final ListIntygEntry CONVERTED_CERTIFICATE = new ListIntygEntry();
@@ -316,10 +311,6 @@ class CSIntegrationServiceTest {
     private static final Question QUESTION_DTO = Question.builder()
         .certificateId(ID)
         .build();
-    private static final GetUnitQuestionsResponseDTO GET_QUESTIONS_RESPONSE = GetUnitQuestionsResponseDTO.builder()
-        .certificates(List.of(CERTIFICATE_DTO))
-        .questions(List.of(QUESTION_DTO))
-        .build();
     private static final SaveAnswerResponseDTO SAVE_ANSWER_RESPONSE_DTO = SaveAnswerResponseDTO.builder()
         .question(QUESTION)
         .build();
@@ -367,9 +358,6 @@ class CSIntegrationServiceTest {
     private RestClient restClient;
 
     @Mock
-    private RestTemplate restTemplate;
-
-    @Mock
     private CertificateTypeInfoConverter certificateTypeInfoConverter;
 
     @Mock
@@ -377,6 +365,9 @@ class CSIntegrationServiceTest {
 
     @Mock
     private ListQuestionConverter listQuestionConverter;
+
+    @Mock
+    private IntygModuleRegistry intygModuleRegistry;
 
     @InjectMocks
     private CSIntegrationService csIntegrationService;
@@ -852,6 +843,23 @@ class CSIntegrationServiceTest {
             final var captor = ArgumentCaptor.forClass(String.class);
 
             csIntegrationService.certificateTypeExists("type");
+            verify(requestHeadersUriSpec).uri(captor.capture());
+
+            assertEquals("baseUrl/api/certificatetypeinfo/type/exists", captor.getValue());
+        }
+
+        @Test
+        void shouldUseCertificateTypeIdIfSpecifiedForType() throws ModuleNotFoundException {
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            final var wcType = "wcType";
+            final var moduleEntryPoint = mock(ModuleEntryPoint.class);
+            when(moduleEntryPoint.certificateServiceTypeId()).thenReturn("type");
+            when(intygModuleRegistry.moduleExists(wcType)).thenReturn(true);
+            when(intygModuleRegistry.getModuleEntryPoint(wcType)).thenReturn(moduleEntryPoint);
+
+            csIntegrationService.certificateTypeExists(wcType);
             verify(requestHeadersUriSpec).uri(captor.capture());
 
             assertEquals("baseUrl/api/certificatetypeinfo/type/exists", captor.getValue());
