@@ -43,6 +43,8 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.WebcertUserDetailsService;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificateModelIdDTO;
+import se.inera.intyg.webcert.web.csintegration.testability.CSTestabilityIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.testability.CertificateServiceCreateRequest;
 import se.inera.intyg.webcert.web.csintegration.testability.CertificateServiceTestabilityUtil;
 import se.inera.intyg.webcert.web.integration.util.HoSPersonHelper;
@@ -66,6 +68,7 @@ public class CreateCertificateTestabilityUtil {
     private final TypeAheadProvider typeAheadProvider;
     private final CertificateServiceTestabilityUtil certificateServiceTestabilityUtil;
     private final CSIntegrationService csIntegrationService;
+    private final CSTestabilityIntegrationService csTestabilityIntegrationService;
     private final UpdateIntygstjanstTestabilityUtil updateIntygstjanstTestabilityUtil;
 
     @Autowired
@@ -76,6 +79,7 @@ public class CreateCertificateTestabilityUtil {
         UtkastToCertificateConverter utkastToCertificateConverter, UtkastRepository utkastRepository,
         IntygTextsService intygTextsService, TypeAheadProvider typeAheadProvider,
         CertificateServiceTestabilityUtil certificateServiceTestabilityUtil, CSIntegrationService csIntegrationService,
+        CSTestabilityIntegrationService csTestabilityIntegrationService,
         UpdateIntygstjanstTestabilityUtil updateIntygstjanstTestabilityUtil) {
         this.moduleRegistry = moduleRegistry;
         this.webcertUserDetailsService = webcertUserDetailsService;
@@ -87,6 +91,7 @@ public class CreateCertificateTestabilityUtil {
         this.typeAheadProvider = typeAheadProvider;
         this.certificateServiceTestabilityUtil = certificateServiceTestabilityUtil;
         this.csIntegrationService = csIntegrationService;
+        this.csTestabilityIntegrationService = csTestabilityIntegrationService;
         this.updateIntygstjanstTestabilityUtil = updateIntygstjanstTestabilityUtil;
     }
 
@@ -113,12 +118,15 @@ public class CreateCertificateTestabilityUtil {
         );
 
         if (activeAndSupportsType(createCertificateRequest.getCertificateType(), createCertificateRequest.getCertificateTypeVersion())) {
-            final var modelIdDTO = csIntegrationService.certificateTypeExists(createCertificateRequest.getCertificateType());
+            final var modelIdDTO = CertificateModelIdDTO.builder()
+                .type(createCertificateRequest.getCertificateType())
+                .version(createCertificateRequest.getCertificateTypeVersion())
+                .build();
             return certificateServiceTestabilityUtil.create(
                 CertificateServiceCreateRequest.builder()
                     .patient(patient)
                     .hosPerson(hosPersonal)
-                    .certificateModelId(modelIdDTO.orElseThrow())
+                    .certificateModelId(modelIdDTO)
                     .fillType(createCertificateRequest.getFillType())
                     .status(createCertificateRequest.getStatus())
                     .build()
@@ -150,9 +158,8 @@ public class CreateCertificateTestabilityUtil {
     }
 
     private boolean activeAndSupportsType(String type, String version) {
-        return csIntegrationService.certificateTypeExists(type)
-            .filter(model -> model.getVersion().equals(version))
-            .isPresent();
+        return csTestabilityIntegrationService.certificateTypeExists(type).stream()
+            .anyMatch(model -> model.getVersion().equals(version));
     }
 
     private String getUpdateJsonModel(Utkast utkast, CreateCertificateRequestDTO createCertificateRequest) {
