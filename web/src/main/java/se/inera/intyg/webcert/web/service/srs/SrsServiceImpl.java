@@ -76,6 +76,9 @@ public class SrsServiceImpl implements SrsService {
     @Autowired
     private IntygModuleFacade intygModuleFacade;
 
+    @Autowired
+    private SrsCertificateExtensionChainService srsCertificateExtensionChainService;
+
     private static final Logger LOG = LoggerFactory.getLogger(SrsServiceImpl.class);
 
     //CHECKSTYLE:OFF ParameterNumber
@@ -102,7 +105,7 @@ public class SrsServiceImpl implements SrsService {
 
         Utdatafilter filter = buildResponseFilter(performRiskPrediction, addMeasures, addStatistics);
 
-        List<SrsCertificate> extensionChain = getExtensionChain(certificateId);
+        List<SrsCertificate> extensionChain = srsCertificateExtensionChainService.get(certificateId);
 
         // If we are in a draft, the main diagnosis might not yet have been persisted on the draft, instead we use
         // the diagnosisCode parameter
@@ -176,115 +179,6 @@ public class SrsServiceImpl implements SrsService {
         final SrsForDiagnosisResponse srsForDiagnose = srsInfraService.getSrsForDiagnose(diagnosisCode);
         monitoringLog.logGetSrsForDiagnose(diagnosisCode);
         return srsForDiagnose;
-    }
-
-    /**
-     * Uses IntygModuleFacade for LISJP/FK7804 to decode the internal model of the LISJP certificate/draft.
-     *
-     * @param model model of the certificate/draft
-     * @return A LisjpUtlatandeV1 filled with info from the model of the certificate/draft
-     * @throws ConverterException if the model is not a lisjp model
-     */
-    private LisjpUtlatandeV1 getLispjV1UtlatandeFromModel(String model) throws ConverterException {
-        Utlatande utlatande = intygModuleFacade.getUtlatandeFromInternalModel(LisjpEntryPoint.MODULE_ID, model);
-        if (!(utlatande instanceof LisjpUtlatandeV1)) {
-            throw new ConverterException("Utlatande is not of type LisjpUtlatandeV1, utlatande: " + utlatande);
-        }
-        return (LisjpUtlatandeV1) utlatande;
-    }
-
-    /**
-     * Uses a LISJP/FK7804 utlatande to gather certificate information for SRS.
-     *
-     * @param lisjpUtlatandeV1 a LISJP/FK7804 utlatande
-     * @return An object holding certificate info to be used by SRS
-     * @throws ConverterException if the utlatande is null
-     */
-    private SrsCertificate buildSrsCertFromUtlatande(LisjpUtlatandeV1 lisjpUtlatandeV1) throws ConverterException {
-        if (lisjpUtlatandeV1 == null) {
-            throw new ConverterException("Utlatande to convert to SrsCert was null");
-        }
-        SrsCertificate srsCert = new SrsCertificate(lisjpUtlatandeV1.getId());
-        if (lisjpUtlatandeV1.getGrundData() != null && lisjpUtlatandeV1.getGrundData().getSigneringsdatum() != null) {
-            srsCert.setSignedDate(lisjpUtlatandeV1.getGrundData().getSigneringsdatum().toLocalDate());
-        }
-        if (lisjpUtlatandeV1.getDiagnoser() != null && !lisjpUtlatandeV1.getDiagnoser().isEmpty()) {
-            srsCert.setMainDiagnosisCode(lisjpUtlatandeV1.getDiagnoser().get(0).getDiagnosKod());
-        }
-        LOG.debug("SrsCertificate(id:{}, mainDiagCode:{}, signedDate:{})",
-            srsCert.getCertificateId(), srsCert.getMainDiagnosisCode(), srsCert.getSignedDate());
-        return srsCert;
-    }
-
-    /**
-     * Looks for a FRLNG relation in an utlatande.
-     *
-     * @param utlatande the utlatande to look in
-     * @return the parent (relation target) certificate id if found, else null
-     */
-    private String getExtensionCertificateIdFromUtlatande(LisjpUtlatandeV1 utlatande) {
-        String parentCertificateId = null;
-        if (utlatande != null && utlatande.getGrundData() != null && utlatande.getGrundData().getRelation() != null
-            && utlatande.getGrundData().getRelation().getRelationKod() == RelationKod.FRLANG
-            && StringUtils.isNotBlank(utlatande.getGrundData().getRelation().getRelationIntygsId())) {
-            parentCertificateId = utlatande.getGrundData().getRelation().getRelationIntygsId();
-        }
-        return parentCertificateId;
-    }
-
-    /**
-     * Use certificate service to look for a certificate.
-     * Uses fetchIntygWithRelations that will PDL log the access to certificates in the extension chain.
-     */
-    private IntygContentHolder getCertificate(String certificateId) {
-        return intygService.fetchIntygDataWithRelations(certificateId, LisjpEntryPoint.MODULE_ID);
-    }
-
-    /**
-     * Checks first in Webcert draft repo and then in the certificate service to find.
-     * the given certificate and returns the model.
-     *
-     * @param certificateId the certificate to look for
-     * @return the model of the draft or intyg, or null if no certificate was found
-     */
-    private String getModelForCertificateId(String certificateId) {
-        if (StringUtils.isBlank(certificateId)) {
-            return null;
-        }
-        IntygContentHolder currentCert = getCertificate(certificateId); // will fallback to check in Webcert if no hit in cert. service
-        return currentCert != null ? currentCert.getContents() : null;
-    }
-
-    /**
-     * Returns a chain of a certificate and its' directly linked parent relations of type extension (FRLANG).
-     * E.g. certificateId --extends--> certificateId2 --extends--> certificateId3 --extends---> nothing yields a chain of three
-     * certificates.
-     *
-     * @param certificateId the certificate id of the starting certificate/draft
-     * @return the extension chain as described above
-     */
-    protected List<SrsCertificate> getExtensionChain(String certificateId) {
-        LOG.debug("getExtensionChain(certificateId:{})", certificateId);
-        List<SrsCertificate> chain = new ArrayList<>();
-        int i = 0;
-        try {
-            String currentCertificateId = certificateId;
-            while (StringUtils.isNotBlank(currentCertificateId) && chain.size() < 3) {
-                String currentModel = getModelForCertificateId(currentCertificateId);
-                if (currentModel == null) {
-                    LOG.debug("No model found for certificate id " + currentCertificateId);
-                    break;
-                }
-                LisjpUtlatandeV1 currentUtlatande = getLispjV1UtlatandeFromModel(currentModel);
-                chain.add(buildSrsCertFromUtlatande(currentUtlatande));
-                LOG.debug("extensionChain[{}] id:{}, model:{}", i++, currentCertificateId, currentModel);
-                currentCertificateId = getExtensionCertificateIdFromUtlatande(currentUtlatande);
-                LOG.debug("next parentCertificateId: {}", currentCertificateId);
-            }
-        } catch (ConverterException e) {
-            LOG.error("Couldn't convert certificate to correct type while decorating extension chain for SRS", e);
-        }
-        return chain;
     }
 
     /**

@@ -104,6 +104,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertif
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetListCertificatesResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetSickLeaveCertificateInternalIgnoreModelRulesDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetSickLeaveCertificateInternalResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
@@ -138,6 +140,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.SendCertificateR
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SendCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SendMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SendMessageResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.SickLeaveCertificateDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.SignCertificateWithoutSignatureRequestDTO;
@@ -3854,6 +3857,140 @@ class CSIntegrationServiceTest {
                 csIntegrationService.updateWithCandidateCertificate(CERTIFICATE_ID, CANDIDATE_CERTIFICATE_ID, REQUEST)
             );
 
+        }
+    }
+
+    @Nested
+    class GetSickLeaveCertificate {
+
+        private static final String CERTIFICATE_ID = "certificate-id-123";
+        private RestClient.RequestBodyUriSpec requestBodyUriSpec;
+        private RestClient.ResponseSpec responseSpec;
+
+        @BeforeEach
+        void setUp() {
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/internalapi/certificate/" + CERTIFICATE_ID + "/sickleave";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.accept(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(GetSickLeaveCertificateInternalIgnoreModelRulesDTO.class)))
+                .thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+        }
+
+        @Test
+        void shouldReturnEmptyOptionalWhenResponseIsNull() {
+            doReturn(null).when(responseSpec).body(GetSickLeaveCertificateInternalResponseDTO.class);
+
+            final var result = csIntegrationService.getSickLeaveCertificate(CERTIFICATE_ID);
+
+            assertTrue(result.isEmpty());
+        }
+
+        @Test
+        void shouldReturnEmptyOptionalWhenCertificateIsNotAvailable() {
+            final var response = GetSickLeaveCertificateInternalResponseDTO.builder()
+                .available(false)
+                .sickLeaveCertificate(SickLeaveCertificateDTO.builder()
+                    .id(CERTIFICATE_ID)
+                    .diagnoseCode("F438A")
+                    .build())
+                .build();
+
+            doReturn(response).when(responseSpec).body(GetSickLeaveCertificateInternalResponseDTO.class);
+
+            final var result = csIntegrationService.getSickLeaveCertificate(CERTIFICATE_ID);
+
+            assertTrue(result.isEmpty());
+        }
+
+        @Test
+        void shouldReturnEmptyOptionalWhenSickLeaveCertificateIsNull() {
+            final var response = GetSickLeaveCertificateInternalResponseDTO.builder()
+                .available(true)
+                .sickLeaveCertificate(null)
+                .build();
+
+            doReturn(response).when(responseSpec).body(GetSickLeaveCertificateInternalResponseDTO.class);
+
+            final var result = csIntegrationService.getSickLeaveCertificate(CERTIFICATE_ID);
+
+            assertTrue(result.isEmpty());
+        }
+
+        @Test
+        void shouldReturnResponseWhenCertificateIsAvailable() {
+            final var sickLeaveCert = SickLeaveCertificateDTO.builder()
+                .id(CERTIFICATE_ID)
+                .diagnoseCode("F438A")
+                .build();
+
+            final var response = GetSickLeaveCertificateInternalResponseDTO.builder()
+                .available(true)
+                .sickLeaveCertificate(sickLeaveCert)
+                .build();
+
+            doReturn(response).when(responseSpec).body(GetSickLeaveCertificateInternalResponseDTO.class);
+
+            final var result = csIntegrationService.getSickLeaveCertificate(CERTIFICATE_ID);
+
+            assertTrue(result.isPresent());
+            assertEquals(response, result.get());
+        }
+
+        @Test
+        void shouldPerformPostWithCorrectUrl() {
+            final var response = GetSickLeaveCertificateInternalResponseDTO.builder()
+                .available(true)
+                .sickLeaveCertificate(SickLeaveCertificateDTO.builder().build())
+                .build();
+
+            doReturn(response).when(responseSpec).body(GetSickLeaveCertificateInternalResponseDTO.class);
+
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            csIntegrationService.getSickLeaveCertificate(CERTIFICATE_ID);
+            verify(requestBodyUriSpec).uri(captor.capture());
+
+            assertEquals("baseUrl/internalapi/certificate/" + CERTIFICATE_ID + "/sickleave", captor.getValue());
+        }
+
+        @Test
+        void shouldSendRequestWithIgnoreModelRulesTrue() {
+            final var response = GetSickLeaveCertificateInternalResponseDTO.builder()
+                .available(true)
+                .sickLeaveCertificate(SickLeaveCertificateDTO.builder().build())
+                .build();
+
+            doReturn(response).when(responseSpec).body(GetSickLeaveCertificateInternalResponseDTO.class);
+
+            final var captor = ArgumentCaptor.forClass(GetSickLeaveCertificateInternalIgnoreModelRulesDTO.class);
+
+            csIntegrationService.getSickLeaveCertificate(CERTIFICATE_ID);
+            verify(requestBodyUriSpec).body(captor.capture());
+
+            assertTrue(captor.getValue().isIgnoreModelRules());
+        }
+
+        @Test
+        void shouldSetAcceptHeaderToApplicationJson() {
+            final var response = GetSickLeaveCertificateInternalResponseDTO.builder()
+                .available(true)
+                .sickLeaveCertificate(SickLeaveCertificateDTO.builder().build())
+                .build();
+
+            doReturn(response).when(responseSpec).body(GetSickLeaveCertificateInternalResponseDTO.class);
+
+            csIntegrationService.getSickLeaveCertificate(CERTIFICATE_ID);
+
+            verify(requestBodyUriSpec).accept(MediaType.APPLICATION_JSON);
         }
     }
 }

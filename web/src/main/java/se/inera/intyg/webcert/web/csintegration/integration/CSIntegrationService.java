@@ -42,6 +42,7 @@ import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.facade.dto.CertificateEventDTO;
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
+import se.inera.intyg.infra.certificate.dto.SickLeaveCertificate;
 import se.inera.intyg.webcert.common.dto.IncomingMessageRequestDTO;
 import se.inera.intyg.webcert.logging.MdcHelper;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
@@ -90,6 +91,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertif
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetListCertificatesResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetSickLeaveCertificateInternalIgnoreModelRulesDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetSickLeaveCertificateInternalResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
@@ -1245,6 +1248,28 @@ public class CSIntegrationService {
         }
 
         return response.getCertificate();
+    }
+
+    @PerformanceLogging(eventAction = "get-sick-leave-certificate", eventType = EVENT_TYPE_ACCESS)
+    public Optional<GetSickLeaveCertificateInternalResponseDTO> getSickLeaveCertificate(String certificateId) {
+      final var url = baseUrl + INTERNAL_CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/sickleave";
+
+      final var response = restClient.post()
+          .uri(url)
+          .accept(MediaType.APPLICATION_JSON)
+          .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
+          .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
+          .body(GetSickLeaveCertificateInternalIgnoreModelRulesDTO.builder()
+              .ignoreModelRules(true)
+              .build())
+          .retrieve()
+          .body(GetSickLeaveCertificateInternalResponseDTO.class);
+
+      if (response == null || response.isAvailable() == false || response.getSickLeaveCertificate() == null) {
+        return Optional.empty();
+      }
+
+      return Optional.of(response);
     }
 }
 

@@ -370,6 +370,7 @@ pilots:
       - TSTNMT2321000156-1077
       - TSTNMT2321000156-105N
       - TSTNMT2321000156-105M
+      - TSTNMT2321000156-ALMC
     activated:
       - &pf010
         name: *kf120

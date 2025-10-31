@@ -48,6 +48,7 @@ import se.inera.intyg.common.support.common.enumerations.RelationKod;
 import se.inera.intyg.common.support.model.common.internal.GrundData;
 import se.inera.intyg.common.support.model.common.internal.Relation;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.infra.integration.srs.model.SrsCertificate;
 import se.inera.intyg.infra.integration.srs.model.SrsPrediction;
 import se.inera.intyg.infra.integration.srs.model.SrsQuestionResponse;
 import se.inera.intyg.infra.integration.srs.model.SrsRecommendation;
@@ -87,38 +88,6 @@ public class SrsServiceImplTest {
         return f;
     }
 
-    public static Utlatande buildUtlatande(String certificateId, String diagnosis, String parentCertificateId) {
-        GrundData grundData = new GrundData();
-        if (StringUtils.isNotBlank(parentCertificateId)) {
-            Relation parentRelation = new Relation();
-            parentRelation.setRelationKod(RelationKod.FRLANG);
-            parentRelation.setRelationIntygsId(parentCertificateId);
-            grundData.setRelation(parentRelation);
-        }
-        return LisjpUtlatandeV1.builder()
-            .setId(certificateId)
-            .setDiagnoser(Arrays.asList(se.inera.intyg.common.fkparent.model.internal.Diagnos.create(diagnosis, "TEST", "TEST", "TEST")))
-            .setGrundData(grundData)
-            .setTextVersion("1.1")
-            .build();
-    }
-
-    private static IntygContentHolder buildIntygContentHolder(String certificateId, String diagnosisCode, String extendsCertificateId,
-        boolean signed) {
-        IntygContentHolder certHolder = IntygContentHolder.builder()
-            .contents("DUMMY-MODEL-" + certificateId)
-            .revoked(false)
-            .deceased(false)
-            .sekretessmarkering(false)
-            .patientAddressChangedInPU(false)
-            .patientNameChangedInPU(false)
-            .testIntyg(false) // It's a kind of testintyg but we want to unit test as if it was a real one
-            .relations(new Relations())
-            .latestMajorTextVersion(true)
-            .build();
-        return certHolder;
-    }
-
     @Mock
     private WebCertUser user;
 
@@ -136,6 +105,9 @@ public class SrsServiceImplTest {
 
     @Mock
     private IntygModuleFacade intygModuleFacade;
+
+    @Mock
+    private SrsCertificateExtensionChainService srsCertificateExtensionChainService;
 
     @InjectMocks
     private SrsServiceImpl srsServiceUnderTest;
@@ -194,30 +166,15 @@ public class SrsServiceImplTest {
         when(diagnosService.getDiagnosisByCode("F43", Diagnoskodverk.ICD_10_SE))
             .thenReturn(DiagnosResponse.ok(List.of(DIAGNOSIS_F43), false));
 
-        when(intygService.fetchIntygDataWithRelations("intyg-id-123", LisjpEntryPoint.MODULE_ID))
-            .thenReturn(buildIntygContentHolder("intyg-id-123", "F438A", "parent-intyg-id-1", false));
+        when(srsCertificateExtensionChainService.get("intyg-id-123"))
+            .thenReturn(List.of(
+                new SrsCertificate("intyg-id-123", "F438A", null, "parent-intyg-id-1"),
+                new SrsCertificate("parent-intyg-id-1", "F438A", null, "parent-intyg-id-2"),
+                new SrsCertificate("parent-intyg-id-2", "F438A", null, null)));
 
-        when(intygService.fetchIntygDataWithRelations("parent-intyg-id-1", LisjpEntryPoint.MODULE_ID))
-            .thenReturn(buildIntygContentHolder("parent-intyg-id-1", "F438A", "parent-intyg-id2", true));
-
-        when(intygService.fetchIntygDataWithRelations("parent-intyg-id-2", LisjpEntryPoint.MODULE_ID))
-            .thenReturn(buildIntygContentHolder("parent-intyg-id-2", "F438A", null, true));
-
-        when(intygService.fetchIntygDataWithRelations("parent-intyg-id-3", LisjpEntryPoint.MODULE_ID))
-            .thenReturn(buildIntygContentHolder("parent-intyg-id-3", "F438A", null, true));
-
-        // Match dummy models to generate different utlatande
-        when(intygModuleFacade.getUtlatandeFromInternalModel(LisjpEntryPoint.MODULE_ID, "DUMMY-MODEL-intyg-id-123"))
-            .thenReturn(buildUtlatande("intyg-id-123", "F438A", "parent-intyg-id-1"));
-
-        when(intygModuleFacade.getUtlatandeFromInternalModel(LisjpEntryPoint.MODULE_ID, "DUMMY-MODEL-parent-intyg-id-1"))
-            .thenReturn(buildUtlatande("parent-intyg-id-1", "F438A", "parent-intyg-id-2"));
-
-        when(intygModuleFacade.getUtlatandeFromInternalModel(LisjpEntryPoint.MODULE_ID, "DUMMY-MODEL-parent-intyg-id-2"))
-            .thenReturn(buildUtlatande("parent-intyg-id-2", "F438A", "parent-intyg-id-3"));
-
-        when(intygModuleFacade.getUtlatandeFromInternalModel(LisjpEntryPoint.MODULE_ID, "DUMMY-MODEL-parent-intyg-id-3"))
-            .thenReturn(buildUtlatande("parent-intyg-id-3", "F438A", null));
+        when(srsCertificateExtensionChainService.get("parent-intyg-id-3"))
+            .thenReturn(List.of(
+                new SrsCertificate("parent-intyg-id-3", "F438A", null, null)));
     }
 
     @Test(expected = IllegalArgumentException.class)
