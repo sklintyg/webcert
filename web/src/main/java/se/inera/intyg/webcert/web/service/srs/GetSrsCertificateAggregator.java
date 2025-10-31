@@ -25,7 +25,7 @@ public class GetSrsCertificateAggregator implements GetSrsCertificate {
 
   @Override
   public SrsCertificate getSrsCertificate(String certificateId) {
-    if (csIntegrationService.certificateExists(certificateId)) {
+    if (Boolean.TRUE.equals(csIntegrationService.certificateExists(certificateId))) {
       return getSrsCertificateFromCS.getSrsCertificate(certificateId);
     }
     return getSrsCertificateFromWC.getSrsCertificate(certificateId);

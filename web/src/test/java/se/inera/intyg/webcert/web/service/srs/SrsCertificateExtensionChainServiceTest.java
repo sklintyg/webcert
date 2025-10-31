@@ -55,12 +55,11 @@ class SrsCertificateExtensionChainServiceTest {
   }
 
   @Test
-  void shouldReturnChainWithMultipleCertificatesWhenMultipleExtensions() {
+  void shouldReturnChainWithMultipleCertificatesWhenMultipleExtensionsAndMaxLengthOfThreeSrsCertificates() {
     final var extendedCertificateId1 = "extendedCertificateId1";
     final var extendedCertificateId2 = "extendedCertificateId2";
     final var extendedCertificateId3 = "extendedCertificateId3";
 
-    final var certificate3 = new SrsCertificate(null, null, null, null);
     final var certificate2 = new SrsCertificate(null, null, null, extendedCertificateId3);
     final var certificate1 = new SrsCertificate(null, null, null, extendedCertificateId2);
     final var baseCertificate = new SrsCertificate(null, null, null, extendedCertificateId1);
@@ -71,16 +70,13 @@ class SrsCertificateExtensionChainServiceTest {
         .thenReturn(certificate1);
     when(getSrsCertificateAggregator.getSrsCertificate(extendedCertificateId2))
         .thenReturn(certificate2);
-    when(getSrsCertificateAggregator.getSrsCertificate(extendedCertificateId3))
-        .thenReturn(certificate3);
 
     final var result = srsCertificateExtensionChainService.get(CERTIFICATE_ID);
 
-    assertEquals(4, result.size());
+    assertEquals(3, result.size());
     assertEquals(baseCertificate, result.get(0));
     assertEquals(certificate1, result.get(1));
     assertEquals(certificate2, result.get(2));
-    assertEquals(certificate3, result.get(3));
   }
 
   @Test
@@ -99,6 +95,30 @@ class SrsCertificateExtensionChainServiceTest {
     assertEquals(2, result.size());
     assertEquals("base", result.get(0).getCertificateId());
     assertEquals("extended", result.get(1).getCertificateId());
+  }
+
+  @Test
+  void shouldHandleCircularReferenceByStoppingAtMaxChainLength() {
+    final var extendedCertificateId1 = "extendedCertificateId1";
+    final var extendedCertificateId2 = "extendedCertificateId2";
+
+    final var certificate2 = new SrsCertificate(null, null, null, CERTIFICATE_ID);
+    final var certificate1 = new SrsCertificate(null, null, null, extendedCertificateId2);
+    final var baseCertificate = new SrsCertificate(null, null, null, extendedCertificateId1);
+
+    when(getSrsCertificateAggregator.getSrsCertificate(CERTIFICATE_ID))
+        .thenReturn(baseCertificate);
+    when(getSrsCertificateAggregator.getSrsCertificate(extendedCertificateId1))
+        .thenReturn(certificate1);
+    when(getSrsCertificateAggregator.getSrsCertificate(extendedCertificateId2))
+        .thenReturn(certificate2);
+
+    final var result = srsCertificateExtensionChainService.get(CERTIFICATE_ID);
+
+    assertEquals(3, result.size());
+    assertEquals(baseCertificate, result.get(0));
+    assertEquals(certificate1, result.get(1));
+    assertEquals(certificate2, result.get(2));
   }
 
 }
