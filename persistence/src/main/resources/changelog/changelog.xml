@@ -1422,6 +1422,10 @@
 	</changeSet>
 
 	<changeSet id="76" author="mww">
+		<preConditions onFail="MARK_RAN">
+			<dbms type="mysql"/>
+		</preConditions>
+
 		<sql>
 			ALTER TABLE ARENDE_UTKAST
 				ADD COLUMN QUESTION_ID_NORM VARCHAR(255)
@@ -1430,6 +1434,10 @@
 	</changeSet>
 
 	<changeSet id="77" author="mww">
+		<preConditions onFail="MARK_RAN">
+			<dbms type="mysql"/>
+		</preConditions>
+
 		<createIndex tableName="ARENDE_UTKAST" indexName="ARENDE_UTKAST_INTYGS_ID_QUESTION_ID_NORM_UNIQUE" unique="true">
 			<column name="INTYGS_ID"/>
 			<column name="QUESTION_ID_NORM"/>
