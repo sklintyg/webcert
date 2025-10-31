@@ -14,8 +14,8 @@ public class SickLeaveCertificateDTO {
 
   String id;
   String diagnoseCode;
+  LocalDateTime signingDateTime;
   String extendsCertificateId;
-  LocalDateTime signedDateTime;
 
   @JsonPOJOBuilder(withPrefix = "")
   public static class SickLeaveCertificateDTOBuilder {

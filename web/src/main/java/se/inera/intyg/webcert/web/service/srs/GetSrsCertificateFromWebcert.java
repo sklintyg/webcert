@@ -39,18 +39,36 @@ public class GetSrsCertificateFromWebcert implements GetSrsCertificate {
     }
   }
 
+  /**
+   * Use certificate service to look for a certificate.
+   * Uses fetchIntygWithRelations that will PDL log the access to certificates in the extension chain.
+   */
   private IntygContentHolder getCertificate(String certificateId) {
     return intygService.fetchIntygDataWithRelations(certificateId, LisjpEntryPoint.MODULE_ID);
   }
 
+  /**
+  * Checks first in Webcert draft repo and then in the certificate service to find.
+  * the given certificate and returns the model.
+  *
+  * @param certificateId the certificate to look for
+  * @return the model of the draft or intyg, or null if no certificate was found
+  */
   private String getModelForCertificateId(String certificateId) {
     if (StringUtils.isBlank(certificateId)) {
       return null;
     }
-    IntygContentHolder currentCert = getCertificate(certificateId); // will fallback to check in Webcert if no hit in cert. service
+    IntygContentHolder currentCert = getCertificate(certificateId);
     return currentCert != null ? currentCert.getContents() : null;
   }
 
+  /**
+   //     * Uses IntygModuleFacade for LISJP/FK7804 to decode the internal model of the LISJP certificate/draft.
+   //     *
+   //     * @param model model of the certificate/draft
+   //     * @return A LisjpUtlatandeV1 filled with info from the model of the certificate/draft
+   //     * @throws ConverterException if the model is not a lisjp model
+   //     */
   private LisjpUtlatandeV1 getLispjV1UtlatandeFromModel(String model) throws ConverterException {
     Utlatande utlatande = intygModuleFacade.getUtlatandeFromInternalModel(LisjpEntryPoint.MODULE_ID, model);
     if (!(utlatande instanceof LisjpUtlatandeV1)) {
@@ -59,6 +77,13 @@ public class GetSrsCertificateFromWebcert implements GetSrsCertificate {
     return (LisjpUtlatandeV1) utlatande;
   }
 
+  /**
+   //     * Uses a LISJP/FK7804 utlatande to gather certificate information for SRS.
+   //     *
+   //     * @param lisjpUtlatandeV1 a LISJP/FK7804 utlatande
+   //     * @return An object holding certificate info to be used by SRS
+   //     * @throws ConverterException if the utlatande is null
+   //     */
   private SrsCertificate buildSrsCertFromUtlatande(
       LisjpUtlatandeV1 lisjpUtlatandeV1) throws ConverterException {
     if (lisjpUtlatandeV1 == null) {
@@ -71,7 +96,8 @@ public class GetSrsCertificateFromWebcert implements GetSrsCertificate {
     if (lisjpUtlatandeV1.getDiagnoser() != null && !lisjpUtlatandeV1.getDiagnoser().isEmpty()) {
       srsCert.setMainDiagnosisCode(lisjpUtlatandeV1.getDiagnoser().getFirst().getDiagnosKod());
     }
-    if (lisjpUtlatandeV1.getGrundData().getRelation() != null
+    if (lisjpUtlatandeV1.getGrundData() != null
+        && lisjpUtlatandeV1.getGrundData().getRelation() != null
         && !lisjpUtlatandeV1.getGrundData().getRelation().getRelationIntygsId().isEmpty()
         && lisjpUtlatandeV1.getGrundData().getRelation().getRelationKod() == RelationKod.FRLANG) {
       srsCert.setExtendsCertificateId(lisjpUtlatandeV1.getGrundData().getRelation().getRelationIntygsId());

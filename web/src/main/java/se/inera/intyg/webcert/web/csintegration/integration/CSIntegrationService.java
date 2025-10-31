@@ -91,6 +91,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertif
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCitizenCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetListCertificatesResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetSickLeaveCertificateInternalIgnoreModelRulesDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetSickLeaveCertificateInternalResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoResponseDTO;
@@ -1249,7 +1250,7 @@ public class CSIntegrationService {
         return response.getCertificate();
     }
 
-    @PerformanceLogging(eventAction = "get-sick-leave-certificate-for-srs", eventType = EVENT_TYPE_ACCESS)
+    @PerformanceLogging(eventAction = "get-sick-leave-certificate", eventType = EVENT_TYPE_ACCESS)
     public Optional<GetSickLeaveCertificateInternalResponseDTO> getSickLeaveCertificate(String certificateId) {
       final var url = baseUrl + INTERNAL_CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/sickleave";
 
@@ -1258,6 +1259,9 @@ public class CSIntegrationService {
           .accept(MediaType.APPLICATION_JSON)
           .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
           .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
+          .body(GetSickLeaveCertificateInternalIgnoreModelRulesDTO.builder()
+              .ignoreModelRules(true)
+              .build())
           .retrieve()
           .body(GetSickLeaveCertificateInternalResponseDTO.class);
 

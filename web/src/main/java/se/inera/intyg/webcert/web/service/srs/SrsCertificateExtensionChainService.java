@@ -1,5 +1,7 @@
 package se.inera.intyg.webcert.web.service.srs;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -10,19 +12,26 @@ import se.inera.intyg.webcert.web.csintegration.aggregate.GetCertificateAggregat
 @RequiredArgsConstructor
 public class SrsCertificateExtensionChainService {
 
-  //private final GetCertificateAggregator getCertificateAggregator;
   private final GetSrsCertificateAggregator getSrsCertificateAggregator;
 
   public List<SrsCertificate> get(String certificateId) {
-    /*
-    final var certificate = getCertificateAggregator.getCertificate(certificateId, false, true);
-    final var certificateParentId = certificate.getMetadata().getRelations().getParent() != null ?
-        certificate.getMetadata().getRelations().getParent().getCertificateId() : null;
+    final var srsCertificates = new ArrayList<SrsCertificate>();
 
-     */
+    if (certificateId == null) {
+      return srsCertificates;
+    }
 
-    final var resultList = getSrsCertificateAggregator.getSrsCertificateList(certificateId);
-    return resultList;
+    addSrsCertificate(certificateId, srsCertificates);
+    return srsCertificates;
+  }
+
+  private void addSrsCertificate(String certificateId, List<SrsCertificate> srsCertificates) {
+    final var srsCert= getSrsCertificateAggregator.getSrsCertificate(certificateId);
+    srsCertificates.add(srsCert);
+
+    if (srsCert.getExtendsCertificateId() != null) {
+      addSrsCertificate(srsCert.getExtendsCertificateId(), srsCertificates);
+    }
   }
 
 }
