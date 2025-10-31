@@ -1391,10 +1391,48 @@
     </createIndex>
   </changeSet>
 
-  <changeSet id="74" author="mgr">
-    <addUniqueConstraint
-        columnNames="INTYGS_ID"
-        constraintName="ARENDE_UTKAST_INTYGS_ID_UNIQUE"
-        tableName="ARENDE_UTKAST"/>
-  </changeSet>
+	<changeSet id="74" author="mgr" runOnChange="false" runAlways="false">
+		<validCheckSum>9:80a566df25f2638d9a9a2c997ffeb667</validCheckSum>
+		<!--
+			This changeset originally attempted to add a UNIQUE constraint on INTYGS_ID,
+			which caused failures in some databases (e.g. production).
+			It is now deprecated and will be marked as executed without doing anything.
+		-->
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="0">
+				SELECT 1 WHERE 1 = 1
+			</sqlCheck>
+		</preConditions>
+	</changeSet>
+
+	<changeSet id="75" author="mww">
+		<preConditions onFail="MARK_RAN">
+			<sqlCheck expectedResult="1">
+				SELECT COUNT(*)
+				FROM DATABASECHANGELOG
+				WHERE ID = '74'
+					AND AUTHOR = 'mgr'
+					AND MD5SUM = '9:80a566df25f2638d9a9a2c997ffeb667'
+			</sqlCheck>
+		</preConditions>
+
+		<dropUniqueConstraint
+				tableName="ARENDE_UTKAST"
+				constraintName="ARENDE_UTKAST_INTYGS_ID_UNIQUE"/>
+	</changeSet>
+
+	<changeSet id="76" author="mww">
+		<sql>
+			ALTER TABLE ARENDE_UTKAST
+				ADD COLUMN QUESTION_ID_NORM VARCHAR(255)
+					GENERATED ALWAYS AS (IFNULL(QUESTION_ID, '__NULL__')) VIRTUAL;
+		</sql>
+	</changeSet>
+
+	<changeSet id="77" author="mww">
+		<createIndex tableName="ARENDE_UTKAST" indexName="ARENDE_UTKAST_INTYGS_ID_QUESTION_ID_NORM_UNIQUE" unique="true">
+			<column name="INTYGS_ID"/>
+			<column name="QUESTION_ID_NORM"/>
+		</createIndex>
+	</changeSet>
 </databaseChangeLog>
