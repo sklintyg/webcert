@@ -58,268 +58,268 @@ import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.CreateCe
 @Component
 public class CreateCertificateTestabilityUtil {
 
-  private final IntygModuleRegistry moduleRegistry;
-  private final WebcertUserDetailsService webcertUserDetailsService;
-  private final PatientDetailsResolver patientDetailsResolver;
-  private final UtkastService utkastService;
-  private final UtkastToCertificateConverter utkastToCertificateConverter;
-  private final UtkastRepository utkastRepository;
-  private final IntygTextsService intygTextsService;
-  private final TypeAheadProvider typeAheadProvider;
-  private final CertificateServiceTestabilityUtil certificateServiceTestabilityUtil;
-  private final CSIntegrationService csIntegrationService;
-  private final CSTestabilityIntegrationService csTestabilityIntegrationService;
-  private final UpdateIntygstjanstTestabilityUtil updateIntygstjanstTestabilityUtil;
+    private final IntygModuleRegistry moduleRegistry;
+    private final WebcertUserDetailsService webcertUserDetailsService;
+    private final PatientDetailsResolver patientDetailsResolver;
+    private final UtkastService utkastService;
+    private final UtkastToCertificateConverter utkastToCertificateConverter;
+    private final UtkastRepository utkastRepository;
+    private final IntygTextsService intygTextsService;
+    private final CertificateServiceTestabilityUtil certificateServiceTestabilityUtil;
+    private final TypeAheadProvider typeAheadProvider;
+    private final CSIntegrationService csIntegrationService;
+    private final CSTestabilityIntegrationService csTestabilityIntegrationService;
+    private final UpdateIntygstjanstTestabilityUtil updateIntygstjanstTestabilityUtil;
 
-  @Autowired
-  public CreateCertificateTestabilityUtil(
-      IntygModuleRegistry moduleRegistry,
-      WebcertUserDetailsService webcertUserDetailsService,
-      PatientDetailsResolver patientDetailsResolver, UtkastService utkastService,
-      UtkastToCertificateConverter utkastToCertificateConverter, UtkastRepository utkastRepository,
-      IntygTextsService intygTextsService, TypeAheadProvider typeAheadProvider,
-      CertificateServiceTestabilityUtil certificateServiceTestabilityUtil,
-      CSIntegrationService csIntegrationService,
-      CSTestabilityIntegrationService csTestabilityIntegrationService,
-      UpdateIntygstjanstTestabilityUtil updateIntygstjanstTestabilityUtil) {
-    this.moduleRegistry = moduleRegistry;
-    this.webcertUserDetailsService = webcertUserDetailsService;
-    this.patientDetailsResolver = patientDetailsResolver;
-    this.utkastService = utkastService;
-    this.utkastToCertificateConverter = utkastToCertificateConverter;
-    this.utkastRepository = utkastRepository;
-    this.intygTextsService = intygTextsService;
-    this.typeAheadProvider = typeAheadProvider;
-    this.certificateServiceTestabilityUtil = certificateServiceTestabilityUtil;
-    this.csIntegrationService = csIntegrationService;
-    this.csTestabilityIntegrationService = csTestabilityIntegrationService;
-    this.updateIntygstjanstTestabilityUtil = updateIntygstjanstTestabilityUtil;
-  }
-
-  private static String getSkickadTillMottagare(String certificateType) {
-    return switch (certificateType) {
-      case "lisjp", "luse", "luae_na", "luae_fs" -> "FKASSA";
-      case "ts-bas", "ts-diabetes" -> "TRANSP";
-      case "db" -> "SKV";
-      case "doi" -> "SOS";
-      default -> throw new IllegalArgumentException(
-          String.format("The certificatetype '%s' cannot be sent!", certificateType));
-    };
-  }
-
-  public String createNewCertificate(
-      @NotNull CreateCertificateRequestDTO createCertificateRequest) {
-    final var hosPersonal = getHoSPerson(
-        createCertificateRequest.getPersonId(),
-        createCertificateRequest.getUnitId()
-    );
-
-    final var patient = getPatient(
-        createCertificateRequest.getPatientId(),
-        createCertificateRequest.getCertificateType(),
-        createCertificateRequest.getCertificateTypeVersion()
-    );
-
-    if (activeAndSupportsType(createCertificateRequest.getCertificateType(),
-        createCertificateRequest.getCertificateTypeVersion())) {
-      final var modelIdDTO = CertificateModelIdDTO.builder()
-          .type(getCertificateServiceTypeId(createCertificateRequest))
-          .version(createCertificateRequest.getCertificateTypeVersion())
-          .build();
-      return certificateServiceTestabilityUtil.create(
-          CertificateServiceCreateRequest.builder()
-              .patient(patient)
-              .hosPerson(hosPersonal)
-              .certificateModelId(modelIdDTO)
-              .fillType(createCertificateRequest.getFillType())
-              .status(createCertificateRequest.getStatus())
-              .build()
-      );
+    @Autowired
+    public CreateCertificateTestabilityUtil(
+        IntygModuleRegistry moduleRegistry,
+        WebcertUserDetailsService webcertUserDetailsService,
+        PatientDetailsResolver patientDetailsResolver, UtkastService utkastService,
+        UtkastToCertificateConverter utkastToCertificateConverter, UtkastRepository utkastRepository,
+        IntygTextsService intygTextsService, TypeAheadProvider typeAheadProvider,
+        CertificateServiceTestabilityUtil certificateServiceTestabilityUtil,
+        CSIntegrationService csIntegrationService,
+        CSTestabilityIntegrationService csTestabilityIntegrationService,
+        UpdateIntygstjanstTestabilityUtil updateIntygstjanstTestabilityUtil) {
+        this.moduleRegistry = moduleRegistry;
+        this.webcertUserDetailsService = webcertUserDetailsService;
+        this.patientDetailsResolver = patientDetailsResolver;
+        this.utkastService = utkastService;
+        this.utkastToCertificateConverter = utkastToCertificateConverter;
+        this.utkastRepository = utkastRepository;
+        this.intygTextsService = intygTextsService;
+        this.typeAheadProvider = typeAheadProvider;
+        this.certificateServiceTestabilityUtil = certificateServiceTestabilityUtil;
+        this.csIntegrationService = csIntegrationService;
+        this.csTestabilityIntegrationService = csTestabilityIntegrationService;
+        this.updateIntygstjanstTestabilityUtil = updateIntygstjanstTestabilityUtil;
     }
 
-    final var createNewDraftRequest = new CreateNewDraftRequest(
-        null,
-        createCertificateRequest.getCertificateType(),
-        createCertificateRequest.getCertificateTypeVersion(),
-        null,
-        hosPersonal,
-        patient
-    );
-
-    createNewDraftRequest.setTestability(true);
-
-    final var utkast = createNewDraft(createNewDraftRequest);
-    final var updateJsonModel = getUpdateJsonModel(utkast, createCertificateRequest);
-    utkast.setModel(updateJsonModel);
-
-    updateCertificateWithRequestedStatus(createCertificateRequest, hosPersonal, utkast);
-
-    utkastRepository.save(utkast);
-
-    updateIntygstjanstTestabilityUtil.update(utkast, hosPersonal,
-        createCertificateRequest.getPersonId());
-
-    return utkast.getIntygsId();
-  }
-
-  private String getCertificateServiceTypeId(CreateCertificateRequestDTO createCertificateRequest) {
-    return csTestabilityIntegrationService.getCertificateServiceTypeId(
-        createCertificateRequest.getCertificateType());
-  }
-
-  private boolean activeAndSupportsType(String type, String version) {
-    return csTestabilityIntegrationService.certificateTypeExists(type).stream()
-        .anyMatch(model -> model.getVersion().equals(version));
-  }
-
-  private String getUpdateJsonModel(Utkast utkast,
-      CreateCertificateRequestDTO createCertificateRequest) {
-    if (CreateCertificateFillType.EMPTY.equals(createCertificateRequest.getFillType())) {
-      return utkast.getModel();
+    private static String getSkickadTillMottagare(String certificateType) {
+        return switch (certificateType) {
+            case "lisjp", "luse", "luae_na", "luae_fs" -> "FKASSA";
+            case "ts-bas", "ts-diabetes" -> "TRANSP";
+            case "db" -> "SKV";
+            case "doi" -> "SOS";
+            default -> throw new IllegalArgumentException(
+                String.format("The certificatetype '%s' cannot be sent!", certificateType));
+        };
     }
 
-    if (CreateCertificateFillType.WITH_VALUES.equals(createCertificateRequest.getFillType())) {
-      final var certificate = utkastToCertificateConverter.convert(utkast);
-      updateCertificate(certificate, createCertificateRequest.getValues());
-      return getJsonFromCertificate(certificate, utkast.getModel());
+    public String createNewCertificate(
+        @NotNull CreateCertificateRequestDTO createCertificateRequest) {
+        final var hosPersonal = getHoSPerson(
+            createCertificateRequest.getPersonId(),
+            createCertificateRequest.getUnitId()
+        );
+
+        final var patient = getPatient(
+            createCertificateRequest.getPatientId(),
+            createCertificateRequest.getCertificateType(),
+            createCertificateRequest.getCertificateTypeVersion()
+        );
+
+        if (activeAndSupportsType(createCertificateRequest.getCertificateType(),
+            createCertificateRequest.getCertificateTypeVersion())) {
+            final var modelIdDTO = CertificateModelIdDTO.builder()
+                .type(getCertificateServiceTypeId(createCertificateRequest))
+                .version(createCertificateRequest.getCertificateTypeVersion())
+                .build();
+            return certificateServiceTestabilityUtil.create(
+                CertificateServiceCreateRequest.builder()
+                    .patient(patient)
+                    .hosPerson(hosPersonal)
+                    .certificateModelId(modelIdDTO)
+                    .fillType(createCertificateRequest.getFillType())
+                    .status(createCertificateRequest.getStatus())
+                    .build()
+            );
+        }
+
+        final var createNewDraftRequest = new CreateNewDraftRequest(
+            null,
+            createCertificateRequest.getCertificateType(),
+            createCertificateRequest.getCertificateTypeVersion(),
+            null,
+            hosPersonal,
+            patient
+        );
+
+        createNewDraftRequest.setTestability(true);
+
+        final var utkast = createNewDraft(createNewDraftRequest);
+        final var updateJsonModel = getUpdateJsonModel(utkast, createCertificateRequest);
+        utkast.setModel(updateJsonModel);
+
+        updateCertificateWithRequestedStatus(createCertificateRequest, hosPersonal, utkast);
+
+        utkastRepository.save(utkast);
+
+        updateIntygstjanstTestabilityUtil.update(utkast, hosPersonal,
+            createCertificateRequest.getPersonId());
+
+        return utkast.getIntygsId();
     }
 
-    try {
-      final var moduleApi = moduleRegistry.getModuleApi(
-          utkast.getIntygsTyp(),
-          utkast.getIntygTypeVersion()
-      );
-      final var fillType = MINIMAL.equals(createCertificateRequest.getFillType()) ? FillType.MINIMAL
-          : FillType.MAXIMAL;
-      return moduleApi.getUpdatedJsonWithTestData(utkast.getModel(), fillType, typeAheadProvider);
-    } catch (Exception ex) {
-      throw new IllegalStateException(ex);
+    private String getCertificateServiceTypeId(CreateCertificateRequestDTO createCertificateRequest) {
+        return csTestabilityIntegrationService.getCertificateServiceTypeId(
+            createCertificateRequest.getCertificateType());
     }
-  }
 
-  private Utkast createNewDraft(CreateNewDraftRequest createNewDraftRequest) {
-    final var utkast = utkastService.createNewDraft(createNewDraftRequest);
-    downgradeMinorVersionIfNecessary(createNewDraftRequest, utkast);
-    return utkast;
-  }
-
-  private void downgradeMinorVersionIfNecessary(CreateNewDraftRequest createNewDraftRequest,
-      Utkast utkast) {
-    final var latestVersionForSameMajorVersion = intygTextsService.getLatestVersionForSameMajorVersion(
-        createNewDraftRequest.getIntygType(),
-        createNewDraftRequest.getIntygTypeVersion()
-    );
-    if (latestVersionForSameMajorVersion != null) {
-      utkast.setModel(utkast.getModel()
-          .replace(latestVersionForSameMajorVersion, createNewDraftRequest.getIntygTypeVersion()));
+    private boolean activeAndSupportsType(String type, String version) {
+        return csTestabilityIntegrationService.certificateTypeExists(type).stream()
+            .anyMatch(model -> model.getVersion().equals(version));
     }
-  }
 
-  private void updateCertificateWithRequestedStatus(
-      CreateCertificateRequestDTO createCertificateRequest, HoSPersonal hosPersonal,
-      Utkast utkast) {
-    if (createCertificateRequest.getStatus() == CertificateStatus.UNSIGNED) {
-      final var draftValidation = utkastService.validateDraft(utkast.getIntygsId(),
-          utkast.getIntygsTyp(), utkast.getModel());
-      UtkastStatus utkastStatus = draftValidation.isDraftValid() ? UtkastStatus.DRAFT_COMPLETE
-          : UtkastStatus.DRAFT_INCOMPLETE;
-      utkast.setStatus(utkastStatus);
-    } else if (createCertificateRequest.getStatus() == CertificateStatus.SIGNED) {
-      final var signature = new Signatur(LocalDateTime.now(), utkast.getSkapadAv().getHsaId(),
-          utkast.getIntygsId(),
-          utkast.getModel(), "ruffel", "fusk", SignaturTyp.LEGACY);
-      utkast.setSignatur(signature);
-      utkast.setStatus(UtkastStatus.SIGNED);
-      updateJsonBeforeSigning(hosPersonal, utkast, signature);
-      if (createCertificateRequest.isSent()) {
-        utkast.setSkickadTillMottagare(
-            getSkickadTillMottagare(createCertificateRequest.getCertificateType()));
-        utkast.setSkickadTillMottagareDatum(LocalDateTime.now());
-      }
-    } else if (createCertificateRequest.getStatus() == CertificateStatus.LOCKED) {
-      utkast.setStatus(UtkastStatus.DRAFT_LOCKED);
-    } else {
-      throw new IllegalArgumentException(
-          String.format("Status '%s' not supported when creating certificate!",
-              createCertificateRequest.getStatus()));
+    private String getUpdateJsonModel(Utkast utkast,
+        CreateCertificateRequestDTO createCertificateRequest) {
+        if (CreateCertificateFillType.EMPTY.equals(createCertificateRequest.getFillType())) {
+            return utkast.getModel();
+        }
+
+        if (CreateCertificateFillType.WITH_VALUES.equals(createCertificateRequest.getFillType())) {
+            final var certificate = utkastToCertificateConverter.convert(utkast);
+            updateCertificate(certificate, createCertificateRequest.getValues());
+            return getJsonFromCertificate(certificate, utkast.getModel());
+        }
+
+        try {
+            final var moduleApi = moduleRegistry.getModuleApi(
+                utkast.getIntygsTyp(),
+                utkast.getIntygTypeVersion()
+            );
+            final var fillType = MINIMAL.equals(createCertificateRequest.getFillType()) ? FillType.MINIMAL
+                : FillType.MAXIMAL;
+            return moduleApi.getUpdatedJsonWithTestData(utkast.getModel(), fillType, typeAheadProvider);
+        } catch (Exception ex) {
+            throw new IllegalStateException(ex);
+        }
     }
-  }
 
-  private void updateJsonBeforeSigning(HoSPersonal hosPersonal, Utkast utkast, Signatur signature) {
-    try {
-      final var updatedJson = getModuleApi(utkast.getIntygsTyp(), utkast.getIntygTypeVersion())
-          .updateBeforeSigning(utkast.getModel(), hosPersonal, signature.getSigneringsDatum());
-      utkast.setModel(updatedJson);
-    } catch (Exception ex) {
-      throw new IllegalStateException(ex);
+    private Utkast createNewDraft(CreateNewDraftRequest createNewDraftRequest) {
+        final var utkast = utkastService.createNewDraft(createNewDraftRequest);
+        downgradeMinorVersionIfNecessary(createNewDraftRequest, utkast);
+        return utkast;
     }
-  }
 
-  private String getJsonFromCertificate(Certificate certificate, String currentModel) {
-    try {
-      final var moduleApi = moduleRegistry.getModuleApi(
-          certificate.getMetadata().getType(),
-          certificate.getMetadata().getTypeVersion()
-      );
-
-      return moduleApi.getJsonFromCertificate(certificate, currentModel);
-    } catch (Exception ex) {
-      throw new IllegalStateException(ex);
+    private void downgradeMinorVersionIfNecessary(CreateNewDraftRequest createNewDraftRequest,
+        Utkast utkast) {
+        final var latestVersionForSameMajorVersion = intygTextsService.getLatestVersionForSameMajorVersion(
+            createNewDraftRequest.getIntygType(),
+            createNewDraftRequest.getIntygTypeVersion()
+        );
+        if (latestVersionForSameMajorVersion != null) {
+            utkast.setModel(utkast.getModel()
+                .replace(latestVersionForSameMajorVersion, createNewDraftRequest.getIntygTypeVersion()));
+        }
     }
-  }
 
-  private HoSPersonal getHoSPerson(String personId, String unitId) {
-    final var user = getUser(personId);
-    user.changeValdVardenhet(unitId);
-    final var unit = HoSPersonHelper.createVardenhetFromIntygUser(unitId, user);
-
-    final var hosPerson = new HoSPersonal();
-    hosPerson.setFullstandigtNamn(user.getNamn());
-    hosPerson.setPersonId(personId);
-    hosPerson.setVardenhet(unit);
-
-    HoSPersonHelper.enrichHoSPerson(hosPerson, user);
-
-    return hosPerson;
-  }
-
-  private ModuleApi getModuleApi(String type, String typeVersion) {
-    try {
-      return moduleRegistry.getModuleApi(type, typeVersion);
-    } catch (Exception ex) {
-      throw new IllegalStateException(ex);
+    private void updateCertificateWithRequestedStatus(
+        CreateCertificateRequestDTO createCertificateRequest, HoSPersonal hosPersonal,
+        Utkast utkast) {
+        if (createCertificateRequest.getStatus() == CertificateStatus.UNSIGNED) {
+            final var draftValidation = utkastService.validateDraft(utkast.getIntygsId(),
+                utkast.getIntygsTyp(), utkast.getModel());
+            UtkastStatus utkastStatus = draftValidation.isDraftValid() ? UtkastStatus.DRAFT_COMPLETE
+                : UtkastStatus.DRAFT_INCOMPLETE;
+            utkast.setStatus(utkastStatus);
+        } else if (createCertificateRequest.getStatus() == CertificateStatus.SIGNED) {
+            final var signature = new Signatur(LocalDateTime.now(), utkast.getSkapadAv().getHsaId(),
+                utkast.getIntygsId(),
+                utkast.getModel(), "ruffel", "fusk", SignaturTyp.LEGACY);
+            utkast.setSignatur(signature);
+            utkast.setStatus(UtkastStatus.SIGNED);
+            updateJsonBeforeSigning(hosPersonal, utkast, signature);
+            if (createCertificateRequest.isSent()) {
+                utkast.setSkickadTillMottagare(
+                    getSkickadTillMottagare(createCertificateRequest.getCertificateType()));
+                utkast.setSkickadTillMottagareDatum(LocalDateTime.now());
+            }
+        } else if (createCertificateRequest.getStatus() == CertificateStatus.LOCKED) {
+            utkast.setStatus(UtkastStatus.DRAFT_LOCKED);
+        } else {
+            throw new IllegalArgumentException(
+                String.format("Status '%s' not supported when creating certificate!",
+                    createCertificateRequest.getStatus()));
+        }
     }
-  }
 
-  private IntygUser getUser(String personId) {
-    try {
-      return webcertUserDetailsService.buildUserPrincipal(personId, "");
-    } catch (Exception ex) {
-      throw new IllegalStateException(ex);
+    private void updateJsonBeforeSigning(HoSPersonal hosPersonal, Utkast utkast, Signatur signature) {
+        try {
+            final var updatedJson = getModuleApi(utkast.getIntygsTyp(), utkast.getIntygTypeVersion())
+                .updateBeforeSigning(utkast.getModel(), hosPersonal, signature.getSigneringsDatum());
+            utkast.setModel(updatedJson);
+        } catch (Exception ex) {
+            throw new IllegalStateException(ex);
+        }
     }
-  }
 
-  private Patient getPatient(String patientId, String type, String typeVersion) {
-    final var personnummer = Personnummer.createPersonnummer(patientId).orElseThrow();
-    final var patient = csIntegrationService.certificateTypeExists(type).isPresent()
-        ? new Patient() : patientDetailsResolver.resolvePatient(
-        personnummer,
-        type,
-        typeVersion
-    );
-    final var personFromPUService = patientDetailsResolver.getPersonFromPUService(
-        personnummer
-    );
-    patient.setPersonId(personnummer);
-    patient.setFornamn(personFromPUService.getPerson().fornamn());
-    patient.setMellannamn(personFromPUService.getPerson().mellannamn());
-    patient.setEfternamn(personFromPUService.getPerson().efternamn());
-    patient.setTestIndicator(personFromPUService.getPerson().testIndicator());
-    patient.setAvliden(personFromPUService.getPerson().avliden());
-    patient.setSekretessmarkering(personFromPUService.getPerson().sekretessmarkering());
-    patient.setPostadress(personFromPUService.getPerson().postadress());
-    patient.setPostnummer(personFromPUService.getPerson().postnummer());
-    patient.setPostort(personFromPUService.getPerson().postort());
-    return patient;
-  }
+    private String getJsonFromCertificate(Certificate certificate, String currentModel) {
+        try {
+            final var moduleApi = moduleRegistry.getModuleApi(
+                certificate.getMetadata().getType(),
+                certificate.getMetadata().getTypeVersion()
+            );
+
+            return moduleApi.getJsonFromCertificate(certificate, currentModel);
+        } catch (Exception ex) {
+            throw new IllegalStateException(ex);
+        }
+    }
+
+    private HoSPersonal getHoSPerson(String personId, String unitId) {
+        final var user = getUser(personId);
+        user.changeValdVardenhet(unitId);
+        final var unit = HoSPersonHelper.createVardenhetFromIntygUser(unitId, user);
+
+        final var hosPerson = new HoSPersonal();
+        hosPerson.setFullstandigtNamn(user.getNamn());
+        hosPerson.setPersonId(personId);
+        hosPerson.setVardenhet(unit);
+
+        HoSPersonHelper.enrichHoSPerson(hosPerson, user);
+
+        return hosPerson;
+    }
+
+    private ModuleApi getModuleApi(String type, String typeVersion) {
+        try {
+            return moduleRegistry.getModuleApi(type, typeVersion);
+        } catch (Exception ex) {
+            throw new IllegalStateException(ex);
+        }
+    }
+
+    private IntygUser getUser(String personId) {
+        try {
+            return webcertUserDetailsService.buildUserPrincipal(personId, "");
+        } catch (Exception ex) {
+            throw new IllegalStateException(ex);
+        }
+    }
+
+    private Patient getPatient(String patientId, String type, String typeVersion) {
+        final var personnummer = Personnummer.createPersonnummer(patientId).orElseThrow();
+        final var patient = csIntegrationService.certificateTypeExists(type).isPresent()
+            ? new Patient() : patientDetailsResolver.resolvePatient(
+            personnummer,
+            type,
+            typeVersion
+        );
+        final var personFromPUService = patientDetailsResolver.getPersonFromPUService(
+            personnummer
+        );
+        patient.setPersonId(personnummer);
+        patient.setFornamn(personFromPUService.getPerson().fornamn());
+        patient.setMellannamn(personFromPUService.getPerson().mellannamn());
+        patient.setEfternamn(personFromPUService.getPerson().efternamn());
+        patient.setTestIndicator(personFromPUService.getPerson().testIndicator());
+        patient.setAvliden(personFromPUService.getPerson().avliden());
+        patient.setSekretessmarkering(personFromPUService.getPerson().sekretessmarkering());
+        patient.setPostadress(personFromPUService.getPerson().postadress());
+        patient.setPostnummer(personFromPUService.getPerson().postnummer());
+        patient.setPostort(personFromPUService.getPerson().postort());
+        return patient;
+    }
 }

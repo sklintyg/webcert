@@ -36,64 +36,64 @@ import se.inera.intyg.webcert.web.web.controller.testability.facade.dto.Certific
 @Service
 public class CSTestabilityIntegrationService {
 
-  private static final String TESTABILITY_CERTIFICATE_ENDPOINT_URL = "/testability/certificate";
-  private static final String SUPPORTED_TYPES = "/types";
-  private final RestTemplate restTemplate;
-  private final IntygModuleRegistry intygModuleRegistry;
+    private static final String TESTABILITY_CERTIFICATE_ENDPOINT_URL = "/testability/certificate";
+    private static final String SUPPORTED_TYPES = "/types";
+    private final RestTemplate restTemplate;
+    private final IntygModuleRegistry intygModuleRegistry;
 
-  public CSTestabilityIntegrationService(@Qualifier("csRestTemplate") RestTemplate restTemplate,
-      IntygModuleRegistry intygModuleRegistry) {
-    this.restTemplate = restTemplate;
-    this.intygModuleRegistry = intygModuleRegistry;
-  }
-
-  @Value("${certificateservice.base.url}")
-  private String baseUrl;
-
-  public Certificate createCertificate(CreateCertificateRequestDTO request) {
-    final var url = baseUrl + TESTABILITY_CERTIFICATE_ENDPOINT_URL;
-
-    final var response = restTemplate.postForObject(url, request,
-        CertificateServiceCreateCertificateResponseDTO.class);
-
-    if (response == null) {
-      return null;
+    public CSTestabilityIntegrationService(@Qualifier("csRestTemplate") RestTemplate restTemplate,
+        IntygModuleRegistry intygModuleRegistry) {
+        this.restTemplate = restTemplate;
+        this.intygModuleRegistry = intygModuleRegistry;
     }
 
-    return response.getCertificate();
-  }
+    @Value("${certificateservice.base.url}")
+    private String baseUrl;
 
-  public List<CertificateType> getSupportedTypes() {
-    final var url = baseUrl + TESTABILITY_CERTIFICATE_ENDPOINT_URL + SUPPORTED_TYPES;
+    public Certificate createCertificate(CreateCertificateRequestDTO request) {
+        final var url = baseUrl + TESTABILITY_CERTIFICATE_ENDPOINT_URL;
 
-    final var response = restTemplate.getForEntity(url, CertificateType[].class);
+        final var response = restTemplate.postForObject(url, request,
+            CertificateServiceCreateCertificateResponseDTO.class);
 
-    return Arrays.asList(Objects.requireNonNull(response.getBody()));
-  }
+        if (response == null) {
+            return null;
+        }
 
-  public List<CertificateModelIdDTO> certificateTypeExists(String certificateType) {
-    final var certificateServiceTypeId = getCertificateServiceTypeId(certificateType);
-    final var url = baseUrl + TESTABILITY_CERTIFICATE_ENDPOINT_URL + SUPPORTED_TYPES + "/"
-        + certificateServiceTypeId;
-
-    final var response = restTemplate.getForEntity(url, GetCertificateTypeVersionsResponse.class);
-
-    if (response.getBody() == null) {
-      return List.of();
+        return response.getCertificate();
     }
 
-    return response.getBody().getCertificateModelIds();
-  }
+    public List<CertificateType> getSupportedTypes() {
+        final var url = baseUrl + TESTABILITY_CERTIFICATE_ENDPOINT_URL + SUPPORTED_TYPES;
 
-  public String getCertificateServiceTypeId(String type) {
-    if (intygModuleRegistry.moduleExists(type)) {
-      try {
-        final var moduleEntryPoint = intygModuleRegistry.getModuleEntryPoint(type);
-        return moduleEntryPoint.certificateServiceTypeId();
-      } catch (Exception e) {
-        throw new IllegalStateException(e);
-      }
+        final var response = restTemplate.getForEntity(url, CertificateType[].class);
+
+        return Arrays.asList(Objects.requireNonNull(response.getBody()));
     }
-    return type;
-  }
+
+    public List<CertificateModelIdDTO> certificateTypeExists(String certificateType) {
+        final var certificateServiceTypeId = getCertificateServiceTypeId(certificateType);
+        final var url = baseUrl + TESTABILITY_CERTIFICATE_ENDPOINT_URL + SUPPORTED_TYPES + "/"
+            + certificateServiceTypeId;
+
+        final var response = restTemplate.getForEntity(url, GetCertificateTypeVersionsResponse.class);
+
+        if (response.getBody() == null) {
+            return List.of();
+        }
+
+        return response.getBody().getCertificateModelIds();
+    }
+
+    public String getCertificateServiceTypeId(String type) {
+        if (intygModuleRegistry.moduleExists(type)) {
+            try {
+                final var moduleEntryPoint = intygModuleRegistry.getModuleEntryPoint(type);
+                return moduleEntryPoint.certificateServiceTypeId();
+            } catch (Exception e) {
+                throw new IllegalStateException(e);
+            }
+        }
+        return type;
+    }
 }
