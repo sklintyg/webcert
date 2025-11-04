@@ -120,12 +120,13 @@ public class CreateCertificateTestabilityUtil {
             createCertificateRequest.getCertificateTypeVersion()
         );
 
-        if (activeAndSupportsType(createCertificateRequest.getCertificateType(),
-            createCertificateRequest.getCertificateTypeVersion())) {
+        if (activeAndSupportsType(createCertificateRequest.getCertificateType(), createCertificateRequest.getCertificateTypeVersion())) {
+
             final var modelIdDTO = CertificateModelIdDTO.builder()
-                .type(getCertificateServiceTypeId(createCertificateRequest))
+                .type(createCertificateRequest.getCertificateType())
                 .version(createCertificateRequest.getCertificateTypeVersion())
                 .build();
+
             return certificateServiceTestabilityUtil.create(
                 CertificateServiceCreateRequest.builder()
                     .patient(patient)
@@ -160,11 +161,6 @@ public class CreateCertificateTestabilityUtil {
             createCertificateRequest.getPersonId());
 
         return utkast.getIntygsId();
-    }
-
-    private String getCertificateServiceTypeId(CreateCertificateRequestDTO createCertificateRequest) {
-        return csTestabilityIntegrationService.getCertificateServiceTypeId(
-            createCertificateRequest.getCertificateType());
     }
 
     private boolean activeAndSupportsType(String type, String version) {
