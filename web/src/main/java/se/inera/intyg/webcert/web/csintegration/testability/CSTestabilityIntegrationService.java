@@ -118,7 +118,7 @@ public class CSTestabilityIntegrationService {
         return response.getBody().getCertificateModelIds();
     }
 
-    public String getCertificateServiceTypeId(String type) {
+    private String getCertificateServiceTypeId(String type) {
         if (intygModuleRegistry.moduleExists(type)) {
             try {
                 final var moduleEntryPoint = intygModuleRegistry.getModuleEntryPoint(type);
