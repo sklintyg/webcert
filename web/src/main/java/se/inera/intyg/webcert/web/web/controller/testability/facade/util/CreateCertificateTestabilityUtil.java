@@ -65,8 +65,8 @@ public class CreateCertificateTestabilityUtil {
     private final UtkastToCertificateConverter utkastToCertificateConverter;
     private final UtkastRepository utkastRepository;
     private final IntygTextsService intygTextsService;
-    private final TypeAheadProvider typeAheadProvider;
     private final CertificateServiceTestabilityUtil certificateServiceTestabilityUtil;
+    private final TypeAheadProvider typeAheadProvider;
     private final CSIntegrationService csIntegrationService;
     private final CSTestabilityIntegrationService csTestabilityIntegrationService;
     private final UpdateIntygstjanstTestabilityUtil updateIntygstjanstTestabilityUtil;
@@ -78,7 +78,8 @@ public class CreateCertificateTestabilityUtil {
         PatientDetailsResolver patientDetailsResolver, UtkastService utkastService,
         UtkastToCertificateConverter utkastToCertificateConverter, UtkastRepository utkastRepository,
         IntygTextsService intygTextsService, TypeAheadProvider typeAheadProvider,
-        CertificateServiceTestabilityUtil certificateServiceTestabilityUtil, CSIntegrationService csIntegrationService,
+        CertificateServiceTestabilityUtil certificateServiceTestabilityUtil,
+        CSIntegrationService csIntegrationService,
         CSTestabilityIntegrationService csTestabilityIntegrationService,
         UpdateIntygstjanstTestabilityUtil updateIntygstjanstTestabilityUtil) {
         this.moduleRegistry = moduleRegistry;
@@ -101,11 +102,13 @@ public class CreateCertificateTestabilityUtil {
             case "ts-bas", "ts-diabetes" -> "TRANSP";
             case "db" -> "SKV";
             case "doi" -> "SOS";
-            default -> throw new IllegalArgumentException(String.format("The certificatetype '%s' cannot be sent!", certificateType));
+            default -> throw new IllegalArgumentException(
+                String.format("The certificatetype '%s' cannot be sent!", certificateType));
         };
     }
 
-    public String createNewCertificate(@NotNull CreateCertificateRequestDTO createCertificateRequest) {
+    public String createNewCertificate(
+        @NotNull CreateCertificateRequestDTO createCertificateRequest) {
         final var hosPersonal = getHoSPerson(
             createCertificateRequest.getPersonId(),
             createCertificateRequest.getUnitId()
@@ -118,10 +121,12 @@ public class CreateCertificateTestabilityUtil {
         );
 
         if (activeAndSupportsType(createCertificateRequest.getCertificateType(), createCertificateRequest.getCertificateTypeVersion())) {
+
             final var modelIdDTO = CertificateModelIdDTO.builder()
                 .type(createCertificateRequest.getCertificateType())
                 .version(createCertificateRequest.getCertificateTypeVersion())
                 .build();
+
             return certificateServiceTestabilityUtil.create(
                 CertificateServiceCreateRequest.builder()
                     .patient(patient)
@@ -152,7 +157,8 @@ public class CreateCertificateTestabilityUtil {
 
         utkastRepository.save(utkast);
 
-        updateIntygstjanstTestabilityUtil.update(utkast, hosPersonal, createCertificateRequest.getPersonId());
+        updateIntygstjanstTestabilityUtil.update(utkast, hosPersonal,
+            createCertificateRequest.getPersonId());
 
         return utkast.getIntygsId();
     }
@@ -162,7 +168,8 @@ public class CreateCertificateTestabilityUtil {
             .anyMatch(model -> model.getVersion().equals(version));
     }
 
-    private String getUpdateJsonModel(Utkast utkast, CreateCertificateRequestDTO createCertificateRequest) {
+    private String getUpdateJsonModel(Utkast utkast,
+        CreateCertificateRequestDTO createCertificateRequest) {
         if (CreateCertificateFillType.EMPTY.equals(createCertificateRequest.getFillType())) {
             return utkast.getModel();
         }
@@ -178,7 +185,8 @@ public class CreateCertificateTestabilityUtil {
                 utkast.getIntygsTyp(),
                 utkast.getIntygTypeVersion()
             );
-            final var fillType = MINIMAL.equals(createCertificateRequest.getFillType()) ? FillType.MINIMAL : FillType.MAXIMAL;
+            final var fillType = MINIMAL.equals(createCertificateRequest.getFillType()) ? FillType.MINIMAL
+                : FillType.MAXIMAL;
             return moduleApi.getUpdatedJsonWithTestData(utkast.getModel(), fillType, typeAheadProvider);
         } catch (Exception ex) {
             throw new IllegalStateException(ex);
@@ -191,37 +199,45 @@ public class CreateCertificateTestabilityUtil {
         return utkast;
     }
 
-    private void downgradeMinorVersionIfNecessary(CreateNewDraftRequest createNewDraftRequest, Utkast utkast) {
+    private void downgradeMinorVersionIfNecessary(CreateNewDraftRequest createNewDraftRequest,
+        Utkast utkast) {
         final var latestVersionForSameMajorVersion = intygTextsService.getLatestVersionForSameMajorVersion(
             createNewDraftRequest.getIntygType(),
             createNewDraftRequest.getIntygTypeVersion()
         );
         if (latestVersionForSameMajorVersion != null) {
-            utkast.setModel(utkast.getModel().replace(latestVersionForSameMajorVersion, createNewDraftRequest.getIntygTypeVersion()));
+            utkast.setModel(utkast.getModel()
+                .replace(latestVersionForSameMajorVersion, createNewDraftRequest.getIntygTypeVersion()));
         }
     }
 
-    private void updateCertificateWithRequestedStatus(CreateCertificateRequestDTO createCertificateRequest, HoSPersonal hosPersonal,
+    private void updateCertificateWithRequestedStatus(
+        CreateCertificateRequestDTO createCertificateRequest, HoSPersonal hosPersonal,
         Utkast utkast) {
         if (createCertificateRequest.getStatus() == CertificateStatus.UNSIGNED) {
-            final var draftValidation = utkastService.validateDraft(utkast.getIntygsId(), utkast.getIntygsTyp(), utkast.getModel());
-            UtkastStatus utkastStatus = draftValidation.isDraftValid() ? UtkastStatus.DRAFT_COMPLETE : UtkastStatus.DRAFT_INCOMPLETE;
+            final var draftValidation = utkastService.validateDraft(utkast.getIntygsId(),
+                utkast.getIntygsTyp(), utkast.getModel());
+            UtkastStatus utkastStatus = draftValidation.isDraftValid() ? UtkastStatus.DRAFT_COMPLETE
+                : UtkastStatus.DRAFT_INCOMPLETE;
             utkast.setStatus(utkastStatus);
         } else if (createCertificateRequest.getStatus() == CertificateStatus.SIGNED) {
-            final var signature = new Signatur(LocalDateTime.now(), utkast.getSkapadAv().getHsaId(), utkast.getIntygsId(),
+            final var signature = new Signatur(LocalDateTime.now(), utkast.getSkapadAv().getHsaId(),
+                utkast.getIntygsId(),
                 utkast.getModel(), "ruffel", "fusk", SignaturTyp.LEGACY);
             utkast.setSignatur(signature);
             utkast.setStatus(UtkastStatus.SIGNED);
             updateJsonBeforeSigning(hosPersonal, utkast, signature);
             if (createCertificateRequest.isSent()) {
-                utkast.setSkickadTillMottagare(getSkickadTillMottagare(createCertificateRequest.getCertificateType()));
+                utkast.setSkickadTillMottagare(
+                    getSkickadTillMottagare(createCertificateRequest.getCertificateType()));
                 utkast.setSkickadTillMottagareDatum(LocalDateTime.now());
             }
         } else if (createCertificateRequest.getStatus() == CertificateStatus.LOCKED) {
             utkast.setStatus(UtkastStatus.DRAFT_LOCKED);
         } else {
             throw new IllegalArgumentException(
-                String.format("Status '%s' not supported when creating certificate!", createCertificateRequest.getStatus()));
+                String.format("Status '%s' not supported when creating certificate!",
+                    createCertificateRequest.getStatus()));
         }
     }
 

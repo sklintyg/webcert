@@ -53,13 +53,47 @@ public class CSTestabilityIntegrationService {
     public Certificate createCertificate(CreateCertificateRequestDTO request) {
         final var url = baseUrl + TESTABILITY_CERTIFICATE_ENDPOINT_URL;
 
-        final var response = restTemplate.postForObject(url, request, CertificateServiceCreateCertificateResponseDTO.class);
+        final var convertedRequest = convertCertificateType(request);
+
+        final var response = restTemplate.postForObject(url, convertedRequest,
+            CertificateServiceCreateCertificateResponseDTO.class);
 
         if (response == null) {
             return null;
         }
 
         return response.getCertificate();
+    }
+
+    private CreateCertificateRequestDTO convertCertificateType(CreateCertificateRequestDTO request) {
+        if (request.getCertificateModelId() == null) {
+            return request;
+        }
+
+        final var originalType = request.getCertificateModelId().getType();
+        final var convertedType = getCertificateServiceTypeId(originalType);
+
+        if (originalType.equals(convertedType)) {
+            return request;
+        }
+
+        final var convertedModelId = CertificateModelIdDTO.builder()
+            .type(convertedType)
+            .version(request.getCertificateModelId().getVersion())
+            .build();
+
+        return CreateCertificateRequestDTO.builder()
+            .user(request.getUser())
+            .patient(request.getPatient())
+            .careUnit(request.getCareUnit())
+            .unit(request.getUnit())
+            .careProvider(request.getCareProvider())
+            .certificateModelId(convertedModelId)
+            .fillType(request.getFillType())
+            .status(request.getStatus())
+            .externalReference(request.getExternalReference())
+            .prefillXml(request.getPrefillXml())
+            .build();
     }
 
     public List<CertificateType> getSupportedTypes() {
@@ -71,8 +105,9 @@ public class CSTestabilityIntegrationService {
     }
 
     public List<CertificateModelIdDTO> certificateTypeExists(String certificateType) {
-        final var certificateServiceTypeId = certificateServiceTypeId(certificateType);
-        final var url = baseUrl + TESTABILITY_CERTIFICATE_ENDPOINT_URL + SUPPORTED_TYPES + "/" + certificateServiceTypeId;
+        final var certificateServiceTypeId = getCertificateServiceTypeId(certificateType);
+        final var url = baseUrl + TESTABILITY_CERTIFICATE_ENDPOINT_URL + SUPPORTED_TYPES + "/"
+            + certificateServiceTypeId;
 
         final var response = restTemplate.getForEntity(url, GetCertificateTypeVersionsResponse.class);
 
@@ -83,7 +118,7 @@ public class CSTestabilityIntegrationService {
         return response.getBody().getCertificateModelIds();
     }
 
-    private String certificateServiceTypeId(String type) {
+    private String getCertificateServiceTypeId(String type) {
         if (intygModuleRegistry.moduleExists(type)) {
             try {
                 final var moduleEntryPoint = intygModuleRegistry.getModuleEntryPoint(type);
