@@ -41,3 +41,5 @@ project(':integration-api').projectDir = "$rootDir/integration/integration-api" 
 project(':servicenow-integration').projectDir = "$rootDir/integration/servicenow-integration" as File
 project(':webcert-logging').projectDir = "$rootDir/logging" as File
 project(':integration-certificate-analytics-service').projectDir = "$rootDir/integration-certificate-analytics-service" as File
+
+include 'integration-private-practitioner-service'
