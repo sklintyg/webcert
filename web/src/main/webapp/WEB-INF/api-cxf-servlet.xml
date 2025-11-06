@@ -18,81 +18,82 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 <beans xmlns="http://www.springframework.org/schema/beans"
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
-		xmlns:jaxrs="http://cxf.apache.org/jaxrs" xmlns:cxf="http://cxf.apache.org/core"
-		xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:jaxrs="http://cxf.apache.org/jaxrs" xmlns:cxf="http://cxf.apache.org/core"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
     http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd">
 
-	<beans>
-		<cxf:bus>
-			<cxf:features>
-				<cxf:logging/>
-			</cxf:features>
-		</cxf:bus>
+  <beans>
+    <cxf:bus>
+      <cxf:features>
+        <cxf:logging/>
+      </cxf:features>
+    </cxf:bus>
 
-		<context:annotation-config/>
-		<context:component-scan base-package="se.inera.intyg.webcert.web.web.controller.api"/>
+    <context:annotation-config/>
+    <context:component-scan base-package="se.inera.intyg.webcert.web.web.controller.api"/>
 
-		<jaxrs:server address="/">
-			<jaxrs:properties>
-				<!-- Configure ServerProviderFactory to make default exceptionhandler less specific so
-				that our webcertRestExceptionHandler gets to handle exceptions (see WEBCERT-1978) for these controllers -->
-				<entry key="default.wae.mapper.least.specific" value-type="boolean" value="true"/>
-			</jaxrs:properties>
-			<jaxrs:serviceBeans>
-				<bean class="se.inera.intyg.webcert.web.web.controller.api.JsLogApiController"/>
-				<bean class="se.inera.intyg.webcert.web.web.controller.api.UserApiController"/>
-				<bean class="se.inera.intyg.webcert.web.web.controller.api.FmbApiController"/>
-				<bean class="se.inera.intyg.webcert.web.web.controller.api.SrsApiController"/>
-				<bean class="se.inera.intyg.webcert.web.web.controller.api.ConfigApiController"/>
-				<bean class="se.inera.intyg.webcert.web.web.controller.api.SignatureApiController"/>
-				<bean class="se.inera.intyg.webcert.web.web.controller.api.SessionStatusController"/>
-				<bean class="se.inera.intyg.webcert.web.web.controller.api.SubscriptionController"/>
-				<bean class="se.inera.intyg.webcert.web.web.controller.facade.CertificateController"/>
-				<bean class="se.inera.intyg.webcert.web.web.controller.facade.QuestionController"/>
-				<bean class="se.inera.intyg.webcert.web.web.controller.facade.UserController"/>
-				<bean class="se.inera.intyg.webcert.web.web.controller.facade.IcfController"/>
-				<bean class="se.inera.intyg.webcert.web.web.controller.facade.FMBController"/>
-				<bean class="se.inera.intyg.webcert.web.web.controller.facade.LogController"/>
-				<bean class="se.inera.intyg.webcert.web.web.controller.facade.ConfigController"/>
-				<bean class="se.inera.intyg.webcert.web.web.controller.facade.PatientController"/>
-				<bean class="se.inera.intyg.webcert.web.web.controller.facade.ListController"/>
-				<bean class="se.inera.intyg.webcert.web.web.controller.facade.ListConfigController"/>
-				<bean class="se.inera.intyg.webcert.web.web.controller.facade.CertificateTypeController"/>
-				<bean class="se.inera.intyg.webcert.web.web.controller.api.InvalidateSessionApiController"/>
-			</jaxrs:serviceBeans>
-			<jaxrs:providers>
-				<ref bean="jacksonJsonProvider"/>
-				<ref bean="webcertRestExceptionHandler"/>
-				<ref bean="localDateTimeHandler"/>
-			</jaxrs:providers>
-			<jaxrs:extensionMappings>
-				<entry key="json" value="application/json"/>
-			</jaxrs:extensionMappings>
-		</jaxrs:server>
-	</beans>
+    <jaxrs:server address="/">
+      <jaxrs:properties>
+        <!-- Configure ServerProviderFactory to make default exceptionhandler less specific so
+        that our webcertRestExceptionHandler gets to handle exceptions (see WEBCERT-1978) for these controllers -->
+        <entry key="default.wae.mapper.least.specific" value-type="boolean" value="true"/>
+      </jaxrs:properties>
+      <jaxrs:serviceBeans>
+        <bean class="se.inera.intyg.webcert.web.web.controller.api.JsLogApiController"/>
+        <bean class="se.inera.intyg.webcert.web.web.controller.api.UserApiController"/>
+        <bean class="se.inera.intyg.webcert.web.web.controller.api.FmbApiController"/>
+        <bean class="se.inera.intyg.webcert.web.web.controller.api.SrsApiController"/>
+        <bean class="se.inera.intyg.webcert.web.web.controller.api.PrivatePractitionerApiController"/>
+        <bean class="se.inera.intyg.webcert.web.web.controller.api.ConfigApiController"/>
+        <bean class="se.inera.intyg.webcert.web.web.controller.api.SignatureApiController"/>
+        <bean class="se.inera.intyg.webcert.web.web.controller.api.SessionStatusController"/>
+        <bean class="se.inera.intyg.webcert.web.web.controller.api.SubscriptionController"/>
+        <bean class="se.inera.intyg.webcert.web.web.controller.facade.CertificateController"/>
+        <bean class="se.inera.intyg.webcert.web.web.controller.facade.QuestionController"/>
+        <bean class="se.inera.intyg.webcert.web.web.controller.facade.UserController"/>
+        <bean class="se.inera.intyg.webcert.web.web.controller.facade.IcfController"/>
+        <bean class="se.inera.intyg.webcert.web.web.controller.facade.FMBController"/>
+        <bean class="se.inera.intyg.webcert.web.web.controller.facade.LogController"/>
+        <bean class="se.inera.intyg.webcert.web.web.controller.facade.ConfigController"/>
+        <bean class="se.inera.intyg.webcert.web.web.controller.facade.PatientController"/>
+        <bean class="se.inera.intyg.webcert.web.web.controller.facade.ListController"/>
+        <bean class="se.inera.intyg.webcert.web.web.controller.facade.ListConfigController"/>
+        <bean class="se.inera.intyg.webcert.web.web.controller.facade.CertificateTypeController"/>
+        <bean class="se.inera.intyg.webcert.web.web.controller.api.InvalidateSessionApiController"/>
+      </jaxrs:serviceBeans>
+      <jaxrs:providers>
+        <ref bean="jacksonJsonProvider"/>
+        <ref bean="webcertRestExceptionHandler"/>
+        <ref bean="localDateTimeHandler"/>
+      </jaxrs:providers>
+      <jaxrs:extensionMappings>
+        <entry key="json" value="application/json"/>
+      </jaxrs:extensionMappings>
+    </jaxrs:server>
+  </beans>
 
-	<!-- Controllern för fejksignering får endast vara aktiv i !prod miljö -->
-	<beans profile="!prod">
-		<jaxrs:server address="/fake">
-			<jaxrs:properties>
-				<!-- Configure ServerProviderFactory to make default exceptionhandler less specific so
-				that our webcertRestExceptionHandler gets to handle exceptions (see WEBCERT-1978) for these controllers -->
-				<entry key="default.wae.mapper.least.specific" value-type="boolean" value="true"/>
-			</jaxrs:properties>
-			<jaxrs:serviceBeans>
-				<bean class="se.inera.intyg.webcert.web.web.controller.api.FakeSignatureApiController"/>
-			</jaxrs:serviceBeans>
-			<jaxrs:providers>
-				<ref bean="jacksonJsonProvider"/>
-				<ref bean="webcertRestExceptionHandler"/>
-				<ref bean="localDateTimeHandler"/>
-			</jaxrs:providers>
-			<jaxrs:extensionMappings>
-				<entry key="json" value="application/json"/>
-			</jaxrs:extensionMappings>
-		</jaxrs:server>
-	</beans>
+  <!-- Controllern för fejksignering får endast vara aktiv i !prod miljö -->
+  <beans profile="!prod">
+    <jaxrs:server address="/fake">
+      <jaxrs:properties>
+        <!-- Configure ServerProviderFactory to make default exceptionhandler less specific so
+        that our webcertRestExceptionHandler gets to handle exceptions (see WEBCERT-1978) for these controllers -->
+        <entry key="default.wae.mapper.least.specific" value-type="boolean" value="true"/>
+      </jaxrs:properties>
+      <jaxrs:serviceBeans>
+        <bean class="se.inera.intyg.webcert.web.web.controller.api.FakeSignatureApiController"/>
+      </jaxrs:serviceBeans>
+      <jaxrs:providers>
+        <ref bean="jacksonJsonProvider"/>
+        <ref bean="webcertRestExceptionHandler"/>
+        <ref bean="localDateTimeHandler"/>
+      </jaxrs:providers>
+      <jaxrs:extensionMappings>
+        <entry key="json" value="application/json"/>
+      </jaxrs:extensionMappings>
+    </jaxrs:server>
+  </beans>
 
 </beans>
