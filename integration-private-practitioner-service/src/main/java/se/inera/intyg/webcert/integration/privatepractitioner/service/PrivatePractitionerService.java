@@ -16,13 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package service;
+package se.inera.intyg.webcert.integration.privatepractitioner.service;
 
 
-import model.HoSPersonDTO;
-import model.ValidatePrivatePractitionerResponse;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.HoSPersonDTO;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerResponse;
 
 public interface PrivatePractitionerService {
   ValidatePrivatePractitionerResponse validatePrivatePractitioner(String personalIdentity);
-  HoSPersonDTO getPrivatePractitioner(String hsaIdentity, String personalIdentity);
+  HoSPersonDTO getPrivatePractitioner(String personalOrHsaIdIdentityNumber);
 }

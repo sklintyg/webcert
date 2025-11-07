@@ -1,4 +1,4 @@
-package model;
+package se.inera.intyg.webcert.integration.privatepractitioner.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;

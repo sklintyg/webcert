@@ -25,6 +25,7 @@ import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.xml.ws.WebServiceException;
 import java.util.Locale;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,7 @@ import se.inera.intyg.infra.integration.hsatk.exception.HsaServiceCallException;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
+import se.inera.intyg.webcert.integration.privatepractitioner.service.PrivatePractitionerService;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.employee.EmployeeNameService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
@@ -78,7 +80,10 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     private MonitoringLogService monitoringService;
 
     @Autowired
-    private PPService ppService;
+    private Optional<PPService> ppService;
+
+    @Autowired
+    private Optional<PrivatePractitionerService> privatePractitionerService;
 
     @Value("${privatepractitioner.logicaladdress}")
     private String ppLogicalAddress;
@@ -280,15 +285,27 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
     private MailNotificationEnhet getPrivatePractitionerEnhet(String hsaId) {
         try {
-            HoSPersonType privatePractitioner = ppService.getPrivatePractitioner(ppLogicalAddress, hsaId,
+          if (ppService.isPresent()) {
+            HoSPersonType privatePractitioner = ppService.get().getPrivatePractitioner(ppLogicalAddress, hsaId,
                 null);
             if (privatePractitioner != null) {
-                EnhetType enhet = privatePractitioner.getEnhet();
-                if (enhet != null) {
-                    return new MailNotificationEnhet(hsaId, enhet.getEnhetsnamn(), enhet.getEpost());
-                }
+              EnhetType enhet = privatePractitioner.getEnhet();
+              if (enhet != null) {
+                return new MailNotificationEnhet(hsaId, enhet.getEnhetsnamn(), enhet.getEpost());
+              }
             }
             LOG.error("Failed to lookup privatepractitioner with HSA Id '{}'", hsaId);
+          }
+          if (privatePractitionerService.isPresent()) {
+            final var privatePractitioner = privatePractitionerService.get().getPrivatePractitioner(null);
+            if (privatePractitioner != null) {
+              final var enhet = privatePractitioner.getEnhet();
+              if (enhet != null) {
+                return new MailNotificationEnhet(hsaId, enhet.getEnhetsnamn(), enhet.getEpost());
+              }
+            }
+            LOG.error("Failed to lookup privatepractitioner with HSA Id '{}'", hsaId);
+          }
         } catch (Exception e) {
             LOG.error(String.format("Failed to contact ppService to get HSA Id '%s'", hsaId), e);
         }

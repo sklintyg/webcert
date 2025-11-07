@@ -1,4 +1,4 @@
-package model;
+package se.inera.intyg.webcert.integration.privatepractitioner.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

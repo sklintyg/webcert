@@ -30,8 +30,10 @@
       serviceClass="se.riv.infrastructure.directory.privatepractitioner.getprivatepractitioner.v1.rivtabp21.GetPrivatePractitionerResponderInterface"
       address="${privatepractitioner.getprivatepractitioner.endpoint.url}" />
 
-  <bean id="ppService" class="se.inera.intyg.webcert.integration.pp.services.PPServiceImpl" />
-  <bean id="ppRestService" class="se.inera.intyg.webcert.integration.pp.services.PPRestServiceImpl" />
+  <beans profile="!private-practitioner-service-active">
+    <bean id="ppService" class="se.inera.intyg.webcert.integration.pp.services.PPServiceImpl" />
+    <bean id="ppRestService" class="se.inera.intyg.webcert.integration.pp.services.PPRestServiceImpl" />
+  </beans>
 
   <beans profile="!dev">
     <http:conduit

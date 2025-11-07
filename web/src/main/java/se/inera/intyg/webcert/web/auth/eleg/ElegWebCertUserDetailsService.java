@@ -47,6 +47,7 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEn
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.integration.pp.services.PPRestService;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
+import se.inera.intyg.webcert.integration.privatepractitioner.service.PrivatePractitionerService;
 import se.inera.intyg.webcert.logging.HashUtility;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.webcert.web.auth.common.AuthConstants;
@@ -68,8 +69,9 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
     @Value("${privatepractitioner.logicaladdress}")
     private String logicalAddress;
 
-    private final PPService ppService;
-    private final PPRestService ppRestService;
+    private final Optional<PPService> ppService;
+    private final Optional<PPRestService> ppRestService;
+    private final Optional<PrivatePractitionerService> privatePractitionerService;
     private final PUService puService;
     private final AnvandarPreferenceRepository anvandarPreferenceRepository;
     private final Optional<UserOrigin> userOrigin;
@@ -96,7 +98,8 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
     }
 
     protected WebCertUser createUser(String personId, String authenticationScheme, AuthenticationMethod authenticationMethodMethod) {
-        final var ppAuthStatus = ppRestService.validatePrivatePractitioner(personId).getResultCode();
+      if (ppRestService.isPresent()) {
+        final var ppAuthStatus = ppRestService.get().validatePrivatePractitioner(personId).getResultCode();
         redirectUnregisteredUsers(personId, ppAuthStatus);
 
         final var hosPerson = getAuthorizedHosPerson(personId);
@@ -108,6 +111,27 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         assertWebCertUserIsAuthorized(webCertUser, ppAuthStatus);
 
         return webCertUser;
+      }
+
+      if (privatePractitionerService.isPresent()) {
+        /*
+        final var ppAuthStatus = privatePractitionerService.get().validatePrivatePractitioner(personId).getResultCode();
+        redirectUnregisteredUsers(personId, ppAuthStatus);
+
+        final var hosPerson = getAuthorizedHosPerson(personId);
+        final var requestOrigin = resolveRequestOrigin();
+        final var role = lookupUserRole();
+        final var webCertUser = createWebCertUser(hosPerson, requestOrigin, role);
+        webCertUser.setAuthenticationScheme(authenticationScheme);
+        webCertUser.setAuthenticationMethod(authenticationMethodMethod);
+        assertWebCertUserIsAuthorized(webCertUser, ppAuthStatus);
+
+         */
+
+        return null;
+      }
+
+      return null;
     }
 
     private WebCertUser createWebCertUser(HoSPersonType hosPerson, String requestOrigin, Role role) {
@@ -281,7 +305,14 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
     }
 
     private HoSPersonType getHosPerson(String personId) {
-        return ppService.getPrivatePractitioner(logicalAddress, null, personId);
+      if (ppService.isPresent()) {
+        return ppService.get().getPrivatePractitioner(logicalAddress, null, personId);
+      }
+
+      if (privatePractitionerService.isPresent()) {
+        //return privatePractitionerService.get().getPrivatePractitioner(logicalAddress, null, personId);
+      }
+      return null;
     }
 
     /**

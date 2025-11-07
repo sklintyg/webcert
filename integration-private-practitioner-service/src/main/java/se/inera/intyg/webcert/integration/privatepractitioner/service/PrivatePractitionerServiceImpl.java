@@ -16,22 +16,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package service;
+package se.inera.intyg.webcert.integration.privatepractitioner.service;
+
+import static se.inera.intyg.webcert.logging.MdcLogConstants.SESSION_ID_KEY;
+import static se.inera.intyg.webcert.logging.MdcLogConstants.TRACE_ID_KEY;
 
 import com.google.common.base.Strings;
-import jakarta.xml.ws.WebServiceException;
-import model.GetPrivatePractitionerResponseDTO;
-import model.HoSPersonDTO;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.GetPrivatePractitionerResponseDTO;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.HoSPersonDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
-import model.ValidatePrivatePractitionerRequest;
-import model.ValidatePrivatePractitionerResponse;
-import model.ValidatePrivatePractitionerResultCode;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerResponse;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerResultCode;
+import se.inera.intyg.webcert.logging.MdcHelper;
 
 @Profile("private-practitioner-service-active")
 @Service("privatePractitionerService")
@@ -57,6 +61,8 @@ public class PrivatePractitionerServiceImpl implements PrivatePractitionerServic
 
     final var response = ppsRestClient.post()
         .contentType(MediaType.APPLICATION_JSON)
+        .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
+        .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
         .body(request)
         .retrieve()
         .body(ValidatePrivatePractitionerResponse.class);
@@ -84,15 +90,19 @@ public class PrivatePractitionerServiceImpl implements PrivatePractitionerServic
   }
 
   @Override
-  public HoSPersonDTO getPrivatePractitioner(String hsaIdentityNumber, String personalIdentityNumber) {
+  public HoSPersonDTO getPrivatePractitioner(String personalOrHsaIdIdentityNumber) {
 
-    String baseUrl = "";
-
-    final var response = ppsRestClient.post()
+    final var response = ppsRestClient.get()
         .uri("") //FIXME: add endpoint
-        .contentType(MediaType.APPLICATION_JSON)
+        .accept(MediaType.APPLICATION_JSON)
+        .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
+        .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
         .retrieve()
         .body(GetPrivatePractitionerResponseDTO.class);
+
+    if (response == null) {
+      throw new RestClientException("Get Private Practitioner failed. Response is null.");
+    }
 
     return response.getHoSPerson();
   }

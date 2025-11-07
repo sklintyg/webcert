@@ -147,7 +147,8 @@ public class XmlUnderskriftServiceImplTest {
                     UnderskriftTestUtil.buildIntygXMLSignature().getSignatureType().getSignedInfo().getReference().get(0)
                         .getDigestValue())));
         when(utkastRepository.save(any(Utkast.class)))
-            .thenReturn(createUtkast(INTYG_ID, 2L, INTYG_TYP, UtkastStatus.SIGNED, "model", createVardperson(),
+            .thenReturn(createUtkast(INTYG_ID, 2L, INTYG_TYP, UtkastStatus.SIGNED,
+                "se/inera/intyg/webcert/integration/privatepractitioner/model", createVardperson(),
                 ENHET_ID, PERSON_ID));
         when(redisTicketTracker.updateStatus(TICKET_ID, SignaturStatus.SIGNERAD))
             .thenReturn(createSignaturBiljett(SignaturStatus.SIGNERAD));
@@ -157,7 +158,8 @@ public class XmlUnderskriftServiceImplTest {
         when(user.getHsaId()).thenReturn("user-1");
         SignaturBiljett signaturBiljett = testee.finalizeSignature(createSignaturBiljett(SignaturStatus.BEARBETAR),
             "signatur".getBytes(Charset.forName("UTF-8")),
-            "certifikat", createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", createVardperson(),
+            "certifikat", createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE,
+                "se/inera/intyg/webcert/integration/privatepractitioner/model", createVardperson(),
                 ENHET_ID, PERSON_ID),
             user);
         assertNotNull(signaturBiljett);
@@ -204,7 +206,8 @@ public class XmlUnderskriftServiceImplTest {
         try {
             testee.finalizeSignature(createSignaturBiljett(SignaturStatus.BEARBETAR),
                 "signatur".getBytes(Charset.forName("UTF-8")),
-                "certifikat", createUtkast(INTYG_ID, 1111L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", createVardperson(),
+                "certifikat", createUtkast(INTYG_ID, 1111L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE,
+                    "se/inera/intyg/webcert/integration/privatepractitioner/model", createVardperson(),
                     ENHET_ID, PERSON_ID),
                 buildUser());
         } finally {
@@ -225,7 +228,8 @@ public class XmlUnderskriftServiceImplTest {
             testee.finalizeSignature(createSignaturBiljett(SignaturStatus.BEARBETAR),
                 "signatur".getBytes(Charset.forName("UTF-8")),
                 "certifikat",
-                createUtkast(INTYG_ID + "-difference", 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", createVardperson(),
+                createUtkast(INTYG_ID + "-difference", 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE,
+                    "se/inera/intyg/webcert/integration/privatepractitioner/model", createVardperson(),
                     ENHET_ID, PERSON_ID),
                 buildUser());
         } finally {

@@ -1,4 +1,4 @@
-package config;
+package se.inera.intyg.webcert.integration.privatepractitioner.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
