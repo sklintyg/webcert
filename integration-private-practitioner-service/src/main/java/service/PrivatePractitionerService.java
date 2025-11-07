@@ -19,10 +19,10 @@
 package service;
 
 
-import dto.ValidatePrivatePractitionerResponse;
+import model.HoSPersonDTO;
+import model.ValidatePrivatePractitionerResponse;
 
-public interface PPRestService {
-
-    ValidatePrivatePractitionerResponse validatePrivatePractitioner(String personalIdentity);
-
+public interface PrivatePractitionerService {
+  ValidatePrivatePractitionerResponse validatePrivatePractitioner(String personalIdentity);
+  HoSPersonDTO getPrivatePractitioner(String hsaIdentity, String personalIdentity);
 }

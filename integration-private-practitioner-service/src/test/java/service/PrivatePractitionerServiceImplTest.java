@@ -10,9 +10,9 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
-import dto.ValidatePrivatePractitionerRequest;
-import dto.ValidatePrivatePractitionerResponse;
-import dto.ValidatePrivatePractitionerResultCode;
+import model.ValidatePrivatePractitionerRequest;
+import model.ValidatePrivatePractitionerResponse;
+import model.ValidatePrivatePractitionerResultCode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,13 +25,13 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
 @ExtendWith(MockitoExtension.class)
-class PPRestServiceImplTest {
+class PrivatePractitionerServiceImplTest {
 
   public static final String PERSONAL_IDENTITY_NUMBER = "191212121212";
   @Mock
   private RestClient ppRestClient;
 
-  private PPRestServiceImpl service;
+  private PrivatePractitionerServiceImpl service;
 
   private RestClient.RequestBodyUriSpec requestBodyUriSpec;
   private RestClient.ResponseSpec responseSpec;
@@ -41,7 +41,7 @@ class PPRestServiceImplTest {
 
   @BeforeEach
   void setUp() {
-    service = new PPRestServiceImpl(ppRestClient);
+    service = new PrivatePractitionerServiceImpl(ppRestClient);
   }
 
   private void mockPostChain() {

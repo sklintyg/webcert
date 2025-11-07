@@ -19,28 +19,29 @@
 package service;
 
 import com.google.common.base.Strings;
-import jakarta.annotation.PostConstruct;
+import jakarta.xml.ws.WebServiceException;
+import model.GetPrivatePractitionerResponseDTO;
+import model.HoSPersonDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
-import dto.ValidatePrivatePractitionerRequest;
-import dto.ValidatePrivatePractitionerResponse;
-import dto.ValidatePrivatePractitionerResultCode;
+import model.ValidatePrivatePractitionerRequest;
+import model.ValidatePrivatePractitionerResponse;
+import model.ValidatePrivatePractitionerResultCode;
 
+@Profile("private-practitioner-service-active")
+@Service("privatePractitionerService")
+public class PrivatePractitionerServiceImpl implements PrivatePractitionerService {
 
-@Service("ppRestServiceImpl")
-public class PPRestServiceImpl implements PPRestService {
-
-  private static final Logger LOG = LoggerFactory.getLogger(PPRestServiceImpl.class);
+  private static final Logger LOG = LoggerFactory.getLogger(PrivatePractitionerServiceImpl.class);
 
   private RestClient ppsRestClient;
 
-  public PPRestServiceImpl(RestClient ppsRestClient) {
+  public PrivatePractitionerServiceImpl(RestClient ppsRestClient) {
     this.ppsRestClient = ppsRestClient;
   }
 
@@ -82,5 +83,18 @@ public class PPRestServiceImpl implements PPRestService {
     }
   }
 
+  @Override
+  public HoSPersonDTO getPrivatePractitioner(String hsaIdentityNumber, String personalIdentityNumber) {
+
+    String baseUrl = "";
+
+    final var response = ppsRestClient.post()
+        .uri("") //FIXME: add endpoint
+        .contentType(MediaType.APPLICATION_JSON)
+        .retrieve()
+        .body(GetPrivatePractitionerResponseDTO.class);
+
+    return response.getHoSPerson();
+  }
 }
 
