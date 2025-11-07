@@ -3,7 +3,7 @@ package se.inera.intyg.webcert.web.web.controller.api.dto;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
-import se.inera.intyg.webcert.web.service.ppsIntegration.dto.PrivatePractitioner;
+import se.inera.intyg.webcert.web.ppsintegration.dto.PrivatePractitioner;
 
 @Builder
 @Value

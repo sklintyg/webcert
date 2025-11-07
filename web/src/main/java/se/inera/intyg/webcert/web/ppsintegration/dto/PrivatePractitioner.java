@@ -16,13 +16,35 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.integration.privatepractitioner.service;
 
+package se.inera.intyg.webcert.web.ppsintegration.dto;
 
-import se.inera.intyg.webcert.integration.privatepractitioner.model.HoSPersonDTO;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerResponse;
+import lombok.Builder;
+import lombok.NonNull;
+import lombok.Value;
 
-public interface PrivatePractitionerService {
-  ValidatePrivatePractitionerResponse validatePrivatePractitioner(String personalIdentity);
-  HoSPersonDTO getPrivatePractitioner(String personalOrHsaIdIdentityNumber);
+@Builder
+@Value
+public class PrivatePractitioner {
+
+    @NonNull
+    String position;
+    @NonNull
+    String organisationName;
+    @NonNull
+    String formOfCare;
+    @NonNull
+    String organisationType;
+    String workplaceCode;
+    @NonNull
+    String phoneNumber;
+    @NonNull
+    String email;
+    @NonNull
+    String postalAddress;
+    @NonNull
+    String postalCode;
+    String postalCity;
+    String municipalityCode;
+    String countyCode;
 }

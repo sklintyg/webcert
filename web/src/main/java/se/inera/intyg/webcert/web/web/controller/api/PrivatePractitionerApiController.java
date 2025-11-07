@@ -8,7 +8,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.intyg.webcert.web.service.ppsIntegration.PrivatePractitionerServiceImpl;
+import se.inera.intyg.webcert.web.ppsintegration.PrivatePractitionerServiceImpl;
 import se.inera.intyg.webcert.web.web.controller.api.dto.PrivatePractitionerDTO;
 import se.inera.intyg.webcert.web.web.controller.api.dto.RegisterPrivatePractitionerRequest;
 
@@ -36,4 +36,13 @@ public class PrivatePractitionerApiController {
         service.updatePrivatePractitioner(privatePractitionerDTO);
         return Response.ok().build();
     }
+
+
+  @GET
+  @Path("/config")
+  public Response getPrivatePractitionerConfig() {
+    final var config = service.getPrivatePractitionerConfig();
+
+    return Response.ok(config).build();
+  }
 }
