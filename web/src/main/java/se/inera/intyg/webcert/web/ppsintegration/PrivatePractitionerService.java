@@ -23,11 +23,12 @@ import se.inera.intyg.webcert.integration.privatepractitioner.model.GetPrivatePr
 import se.inera.intyg.webcert.web.ppsintegration.dto.HospInformation;
 import se.inera.intyg.webcert.web.ppsintegration.dto.PrivatePractitioner;
 import se.inera.intyg.webcert.web.web.controller.api.dto.PrivatePractitionerDTO;
-import se.inera.intyg.webcert.web.web.controller.api.dto.RegisterPrivatePractitionerRequest;
+import se.inera.intyg.webcert.web.web.controller.api.dto.PrivatePractitionerRegisterRequest;
 
 public interface PrivatePractitionerService {
 
-    PrivatePractitioner registerPrivatePractitioner(RegisterPrivatePractitionerRequest registerPrivatePractitionerRequest);
+    PrivatePractitioner registerPrivatePractitioner(
+        PrivatePractitionerRegisterRequest registerPrivatePractitionerRequest);
 
     PrivatePractitioner getPrivatePractitioner();
 

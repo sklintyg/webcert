@@ -9,9 +9,11 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 import se.inera.intyg.webcert.web.ppsintegration.PrivatePractitionerService;
+import se.inera.intyg.webcert.web.web.controller.api.dto.HospInformationResponse;
+import se.inera.intyg.webcert.web.web.controller.api.dto.PrivatePractitionerConfigResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.PrivatePractitionerDTO;
 import se.inera.intyg.webcert.web.web.controller.api.dto.PrivatePractitionerResponse;
-import se.inera.intyg.webcert.web.web.controller.api.dto.RegisterPrivatePractitionerRequest;
+import se.inera.intyg.webcert.web.web.controller.api.dto.PrivatePractitionerRegisterRequest;
 
 @Path("/private-practitioner")
 @Api(value = "private-practitioner", description = "REST API för private practitioner", produces = MediaType.APPLICATION_JSON)
@@ -21,7 +23,8 @@ public class PrivatePractitionerApiController {
   PrivatePractitionerService service;
     
     @POST
-    public PrivatePractitionerResponse registerPractitioner(RegisterPrivatePractitionerRequest registerPrivatePractitionerRequest) {
+    public PrivatePractitionerResponse registerPractitioner(
+        PrivatePractitionerRegisterRequest registerPrivatePractitionerRequest) {
         final var privatePractitioner = service.registerPrivatePractitioner(registerPrivatePractitionerRequest);
         return PrivatePractitionerResponse.builder()
             .privatePractitioner(PrivatePractitionerDTO.create(privatePractitioner))
@@ -29,9 +32,10 @@ public class PrivatePractitionerApiController {
     }
 
     @GET
-    public Response getPrivatePractitioner() {
-        final var privatePractitioner = service.getPrivatePractitioner();
-        return Response.ok(privatePractitioner).build();
+    public PrivatePractitionerResponse getPrivatePractitioner() {
+        return PrivatePractitionerResponse.builder()
+            .privatePractitioner(PrivatePractitionerDTO.create(service.getPrivatePractitioner()))
+            .build();
     }
 
     @PUT
@@ -43,16 +47,18 @@ public class PrivatePractitionerApiController {
 
     @GET
     @Path("/config")
-    public Response getPrivatePractitionerConfig() {
-        final var config = service.getPrivatePractitionerConfig();
-
-        return Response.ok(config).build();
+    public PrivatePractitionerConfigResponse getPrivatePractitionerConfig() {
+        return PrivatePractitionerConfigResponse.builder()
+            .getPrivatePractitionerConfig(service.getPrivatePractitionerConfig())
+            .build();
     }
 
     @GET
     @Path("/hospInformation")
-    public Response getHospInformation() {
-        return Response.ok(service.getHospInformation()).build();
+    public HospInformationResponse getHospInformation() {
+        return HospInformationResponse.builder()
+            .hospInformation(service.getHospInformation())
+            .build();
     }
 
 }

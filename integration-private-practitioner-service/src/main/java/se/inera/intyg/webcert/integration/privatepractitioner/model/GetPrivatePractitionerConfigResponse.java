@@ -19,8 +19,16 @@
 
 package se.inera.intyg.webcert.integration.privatepractitioner.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.util.Map;
+import lombok.Builder;
+import lombok.Value;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.GetPrivatePractitionerConfigResponse.GetPrivatePractitionerConfigResponseBuilder;
 
+@Value
+@Builder
+@JsonDeserialize(builder = GetPrivatePractitionerConfigResponseBuilder.class)
 public class GetPrivatePractitionerConfigResponse {
 
     Map<String, String> positions;
@@ -28,6 +36,9 @@ public class GetPrivatePractitionerConfigResponse {
     Map<String, String> typeOfCare;
     PrivatePractitionerConsent consent;
 
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class GetPrivatePractitionerConfigResponseBuilder {
 
+    }
 }
 

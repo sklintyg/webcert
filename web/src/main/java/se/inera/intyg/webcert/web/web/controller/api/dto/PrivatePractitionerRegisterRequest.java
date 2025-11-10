@@ -5,7 +5,7 @@ import lombok.Value;
 
 @Builder
 @Value
-public class RegisterPrivatePractitionerRequest {
+public class PrivatePractitionerRegisterRequest {
 
     PrivatePractitionerRegistrationDTO privatePractitionerRegistration;
 }

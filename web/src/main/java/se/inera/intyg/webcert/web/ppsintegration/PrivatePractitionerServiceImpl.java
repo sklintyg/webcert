@@ -27,7 +27,7 @@ import se.inera.intyg.webcert.integration.privatepractitioner.service.PrivatePra
 import se.inera.intyg.webcert.web.ppsintegration.dto.HospInformation;
 import se.inera.intyg.webcert.web.ppsintegration.dto.PrivatePractitioner;
 import se.inera.intyg.webcert.web.web.controller.api.dto.PrivatePractitionerDTO;
-import se.inera.intyg.webcert.web.web.controller.api.dto.RegisterPrivatePractitionerRequest;
+import se.inera.intyg.webcert.web.web.controller.api.dto.PrivatePractitionerRegisterRequest;
 
 @Service
 @Profile("private-practitioner-service-active")
@@ -38,7 +38,7 @@ public class PrivatePractitionerServiceImpl implements PrivatePractitionerServic
 
     @Override
     public PrivatePractitioner registerPrivatePractitioner(
-        RegisterPrivatePractitionerRequest registerPrivatePractitionerRequest) {
+        PrivatePractitionerRegisterRequest registerPrivatePractitionerRequest) {
         return null;
     }
 
