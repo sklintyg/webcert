@@ -25,13 +25,13 @@ import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePriv
 import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerResultCode;
 
 @ExtendWith(MockitoExtension.class)
-class PrivatePractitionerIntegratonServiceImplTest {
+class PrivatePractitionerIntegrationServiceImplTest {
 
     public static final String PERSONAL_IDENTITY_NUMBER = "191212121212";
     @Mock
     private RestClient ppRestClient;
 
-    private PrivatePractitionerIntegratonServiceImpl service;
+    private PrivatePractitionerIntegrationServiceImpl service;
 
     private RestClient.RequestBodyUriSpec requestBodyUriSpec;
     private RestClient.ResponseSpec responseSpec;
@@ -41,7 +41,7 @@ class PrivatePractitionerIntegratonServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        service = new PrivatePractitionerIntegratonServiceImpl(ppRestClient);
+        service = new PrivatePractitionerIntegrationServiceImpl(ppRestClient);
     }
 
     private void mockPostChain() {

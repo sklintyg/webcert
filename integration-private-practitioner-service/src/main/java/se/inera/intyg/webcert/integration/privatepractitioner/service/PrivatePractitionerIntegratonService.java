@@ -19,8 +19,8 @@
 package se.inera.intyg.webcert.integration.privatepractitioner.service;
 
 
+import se.inera.intyg.webcert.integration.privatepractitioner.model.GetPrivatePractitionerConfigResponse;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.HoSPersonDTO;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerConfig;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerResponse;
 
 public interface PrivatePractitionerIntegratonService {
@@ -29,5 +29,5 @@ public interface PrivatePractitionerIntegratonService {
 
     HoSPersonDTO getPrivatePractitioner(String personalOrHsaIdIdentityNumber);
 
-    PrivatePractitionerConfig getPrivatePractitionerConfig();
+    GetPrivatePractitionerConfigResponse getPrivatePractitionerConfig();
 }

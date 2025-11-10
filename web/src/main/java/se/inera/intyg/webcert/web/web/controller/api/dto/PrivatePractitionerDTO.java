@@ -1,7 +1,6 @@
 package se.inera.intyg.webcert.web.web.controller.api.dto;
 
 import lombok.Builder;
-import lombok.NonNull;
 import lombok.Value;
 import se.inera.intyg.webcert.web.ppsintegration.dto.PrivatePractitioner;
 
@@ -9,42 +8,41 @@ import se.inera.intyg.webcert.web.ppsintegration.dto.PrivatePractitioner;
 @Value
 public class PrivatePractitionerDTO {
 
-    @NonNull
+    String personId;
+    String name;
+
     String position;
-    @NonNull
-    String organisationName;
-    @NonNull
-    String formOfCare;
-    @NonNull
-    String organisationType;
+    String careUnitName;
+    String ownershipType;
+    String typeOfCare;
+    String healthcareServiceType;
     String workplaceCode;
-    @NonNull
+
     String phoneNumber;
-    @NonNull
     String email;
-    @NonNull
     String postalAddress;
-    @NonNull
-    String postalCode;
-    String postalCity;
-    String municipalityCode;
-    String countyCode;
+    String zipCode;
+    String city;
+    String municipality;
+    String county;
+
+    Long consentFormVersion;
 
     public static PrivatePractitionerDTO create(
         PrivatePractitioner privatePractitioner) {
         return PrivatePractitionerDTO.builder()
             .position(privatePractitioner.getPosition())
-            .organisationName(privatePractitioner.getOrganisationName())
-            .formOfCare(privatePractitioner.getFormOfCare())
-            .organisationType(privatePractitioner.getOrganisationType())
+            .careUnitName(privatePractitioner.getOrganisationName())
+            .typeOfCare(privatePractitioner.getFormOfCare())
+            .healthcareServiceType(privatePractitioner.getOrganisationType())
             .workplaceCode(privatePractitioner.getWorkplaceCode())
             .phoneNumber(privatePractitioner.getPhoneNumber())
             .email(privatePractitioner.getEmail())
             .postalAddress(privatePractitioner.getPostalAddress())
-            .postalCode(privatePractitioner.getPostalCode())
-            .postalCity(privatePractitioner.getPostalCity())
-            .municipalityCode(privatePractitioner.getMunicipalityCode())
-            .countyCode(privatePractitioner.getCountyCode())
+            .zipCode(privatePractitioner.getPostalCode())
+            .city(privatePractitioner.getPostalCity())
+            .municipality(privatePractitioner.getMunicipalityCode())
+            .county(privatePractitioner.getCountyCode())
             .build();
     }
 }

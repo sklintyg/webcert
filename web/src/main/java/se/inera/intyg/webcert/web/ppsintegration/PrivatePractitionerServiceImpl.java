@@ -22,7 +22,7 @@ package se.inera.intyg.webcert.web.ppsintegration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerConfig;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.GetPrivatePractitionerConfigResponse;
 import se.inera.intyg.webcert.integration.privatepractitioner.service.PrivatePractitionerIntegratonService;
 import se.inera.intyg.webcert.web.ppsintegration.dto.PrivatePractitioner;
 import se.inera.intyg.webcert.web.web.controller.api.dto.PrivatePractitionerDTO;
@@ -51,7 +51,7 @@ public class PrivatePractitionerServiceImpl implements PrivatePractitionerServic
     }
 
     @Override
-    public PrivatePractitionerConfig getPrivatePractitionerConfig() {
+    public GetPrivatePractitionerConfigResponse getPrivatePractitionerConfig() {
         return privatePractitionerIntegratonService.getPrivatePractitionerConfig();
     }
 

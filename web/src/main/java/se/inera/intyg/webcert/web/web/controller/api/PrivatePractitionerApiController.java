@@ -7,18 +7,18 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import se.inera.intyg.webcert.web.ppsintegration.PrivatePractitionerServiceImpl;
 import se.inera.intyg.webcert.web.web.controller.api.dto.PrivatePractitionerDTO;
 import se.inera.intyg.webcert.web.web.controller.api.dto.RegisterPrivatePractitionerRequest;
 
 @Path("/private-practitioner")
 @Api(value = "private-practitioner", description = "REST API för private practitioner", produces = MediaType.APPLICATION_JSON)
+@RequiredArgsConstructor
 public class PrivatePractitionerApiController {
 
-    @Autowired
     PrivatePractitionerServiceImpl service;
-
+    
     @POST
     public Response registerPractitioner(RegisterPrivatePractitionerRequest registerPrivatePractitionerRequest) {
         final var privatePractitioner = service.registerPrivatePractitioner(registerPrivatePractitionerRequest);
@@ -38,11 +38,11 @@ public class PrivatePractitionerApiController {
     }
 
 
-  @GET
-  @Path("/config")
-  public Response getPrivatePractitionerConfig() {
-    final var config = service.getPrivatePractitionerConfig();
+    @GET
+    @Path("/config")
+    public Response getPrivatePractitionerConfig() {
+        final var config = service.getPrivatePractitionerConfig();
 
-    return Response.ok(config).build();
-  }
+        return Response.ok(config).build();
+    }
 }

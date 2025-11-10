@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.integration.privatepractitioner.model;
 
 import java.util.Map;
 
-public class PrivatePractitionerConfig {
+public class GetPrivatePractitionerConfigResponse {
 
     Map<String, String> positions;
     Map<String, String> specialties;

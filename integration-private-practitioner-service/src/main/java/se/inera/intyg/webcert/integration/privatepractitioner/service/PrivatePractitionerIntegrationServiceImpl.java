@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.integration.privatepractitioner.service;
 
+import static se.inera.intyg.webcert.integration.privatepractitioner.config.PrivatePractitionerRestClientConfig.VALIDATE_PATH;
 import static se.inera.intyg.webcert.logging.MdcLogConstants.SESSION_ID_KEY;
 import static se.inera.intyg.webcert.logging.MdcLogConstants.TRACE_ID_KEY;
 
@@ -30,9 +31,9 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.GetPrivatePractitionerConfigResponse;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.GetPrivatePractitionerResponseDTO;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.HoSPersonDTO;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerConfig;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerRequest;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerResponse;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerResultCode;
@@ -42,7 +43,7 @@ import se.inera.intyg.webcert.logging.MdcHelper;
 @Service("privatePractitionerService")
 @RequiredArgsConstructor
 @Slf4j
-public class PrivatePractitionerIntegratonServiceImpl implements PrivatePractitionerIntegratonService {
+public class PrivatePractitionerIntegrationServiceImpl implements PrivatePractitionerIntegratonService {
 
     private final RestClient ppsRestClient;
 
@@ -59,6 +60,7 @@ public class PrivatePractitionerIntegratonServiceImpl implements PrivatePractiti
 
         final var response = ppsRestClient
             .post()
+            .uri(VALIDATE_PATH)
             .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
             .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
             .body(request)
@@ -106,14 +108,14 @@ public class PrivatePractitionerIntegratonServiceImpl implements PrivatePractiti
     }
 
     @Override
-    public PrivatePractitionerConfig getPrivatePractitionerConfig() {
+    public GetPrivatePractitionerConfigResponse getPrivatePractitionerConfig() {
         return ppsRestClient
             .get()
             .accept(MediaType.APPLICATION_JSON)
             .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
             .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
             .retrieve()
-            .body(PrivatePractitionerConfig.class);
+            .body(GetPrivatePractitionerConfigResponse.class);
     }
 }
 
