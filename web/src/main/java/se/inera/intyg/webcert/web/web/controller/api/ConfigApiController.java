@@ -23,6 +23,7 @@ import io.swagger.annotations.ApiOperation;
 import jakarta.annotation.PostConstruct;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -31,10 +32,12 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import se.inera.intyg.infra.dynamiclink.model.DynamicLink;
 import se.inera.intyg.infra.dynamiclink.service.DynamicLinkService;
 import se.inera.intyg.infra.integration.ia.services.IABannerService;
+import se.inera.intyg.infra.integration.postnummer.model.Omrade;
 import se.inera.intyg.infra.integration.postnummer.service.PostnummerService;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
@@ -121,6 +124,16 @@ public class ConfigApiController extends AbstractApiController {
     @PerformanceLogging(eventAction = "config-get-kommun-list", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public List<String> getKommunList() {
         return postnummerService.getKommunList();
+    }
+
+    @GET
+    @Path("omrade/{postnummer}")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @ApiOperation(value = "Get omrade for a given postnummer from postnummerservice", httpMethod = "GET", produces = MediaType.APPLICATION_JSON)
+    @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "config-get-omrade-by-postnummer", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+    public List<Omrade> getOmradeByPostnummer(@PathParam("postnummer") String postnummer) {
+      return postnummerService.getOmradeByPostnummer(postnummer);
     }
 
     @PostConstruct
