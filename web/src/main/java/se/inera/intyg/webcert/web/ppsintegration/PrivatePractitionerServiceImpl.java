@@ -26,6 +26,7 @@ import se.inera.intyg.webcert.integration.privatepractitioner.model.GetPrivatePr
 import se.inera.intyg.webcert.integration.privatepractitioner.service.PrivatePractitionerIntegratonService;
 import se.inera.intyg.webcert.web.ppsintegration.dto.HospInformation;
 import se.inera.intyg.webcert.web.ppsintegration.dto.PrivatePractitioner;
+import se.inera.intyg.webcert.web.service.facade.user.UserService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.PrivatePractitionerDTO;
 import se.inera.intyg.webcert.web.web.controller.api.dto.PrivatePractitionerRegisterRequest;
 
@@ -33,12 +34,12 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.PrivatePractitionerRegi
 @Profile("private-practitioner-service-active")
 @RequiredArgsConstructor
 public class PrivatePractitionerServiceImpl implements PrivatePractitionerService {
-
+    private final UserService userService;
     private final PrivatePractitionerIntegratonService privatePractitionerIntegratonService;
 
     @Override
     public PrivatePractitioner registerPrivatePractitioner(
-        PrivatePractitionerRegisterRequest registerPrivatePractitionerRequest) {
+        PrivatePractitionerRegisterRequest privatePractitionerRegisterRequest) {
         return null;
     }
 
@@ -58,7 +59,8 @@ public class PrivatePractitionerServiceImpl implements PrivatePractitionerServic
 
     @Override
     public HospInformation getHospInformation() {
-      return HospInformation.convert(privatePractitionerIntegratonService.getHospInformation());
+      final var hsaId = userService.getLoggedInUser().getHsaId();
+      return HospInformation.convert(privatePractitionerIntegratonService.getHospInformation(hsaId));
     }
 
 

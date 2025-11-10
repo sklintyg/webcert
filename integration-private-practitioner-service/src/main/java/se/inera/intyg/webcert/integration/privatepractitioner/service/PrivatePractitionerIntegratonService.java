@@ -32,5 +32,5 @@ public interface PrivatePractitionerIntegratonService {
 
     GetPrivatePractitionerConfigResponse getPrivatePractitionerConfig();
 
-    HospInformationDTO getHospInformation();
+    HospInformationDTO getHospInformation(String id);
 }

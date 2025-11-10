@@ -35,6 +35,7 @@ import se.inera.intyg.webcert.integration.privatepractitioner.model.GetPrivatePr
 import se.inera.intyg.webcert.integration.privatepractitioner.model.GetPrivatePractitionerResponseDTO;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.HoSPersonDTO;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.HospInformationDTO;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.HospInformationResponse;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerRequest;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerResponse;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerResultCode;
@@ -120,15 +121,24 @@ public class PrivatePractitionerIntegrationServiceImpl implements PrivatePractit
     }
 
     @Override
-    public HospInformationDTO getHospInformation() {
-      return ppsRestClient
+    public HospInformationDTO getHospInformation(String id) {
+      final var response = ppsRestClient
           .get()
-          .uri("") //FIXME: add endpoint
+          .uri(uriBuilder -> uriBuilder
+              .path("/hosp-information")
+              .queryParam("id", id)
+              .build())
           .accept(MediaType.APPLICATION_JSON)
           .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
           .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
           .retrieve()
-          .body(HospInformationDTO.class);
+          .body(HospInformationResponse.class);
+
+      if (response == null) {
+          throw new RestClientException("Get HOSP Information failed. Response is null.");
+      }
+
+      return response.getHospInformation();
     }
 }
 
