@@ -45,4 +45,11 @@ public class PrivatePractitionerApiController {
 
         return Response.ok(config).build();
     }
+
+    @GET
+    @Path("/hospInformation")
+    public Response getHospInformation() {
+        return Response.ok(service.getHospInformation()).build();
+    }
+
 }

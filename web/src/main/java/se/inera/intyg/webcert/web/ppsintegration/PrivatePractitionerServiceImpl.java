@@ -24,6 +24,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.GetPrivatePractitionerConfigResponse;
 import se.inera.intyg.webcert.integration.privatepractitioner.service.PrivatePractitionerIntegratonService;
+import se.inera.intyg.webcert.web.ppsintegration.dto.HospInformation;
 import se.inera.intyg.webcert.web.ppsintegration.dto.PrivatePractitioner;
 import se.inera.intyg.webcert.web.web.controller.api.dto.PrivatePractitionerDTO;
 import se.inera.intyg.webcert.web.web.controller.api.dto.RegisterPrivatePractitionerRequest;
@@ -53,6 +54,11 @@ public class PrivatePractitionerServiceImpl implements PrivatePractitionerServic
     @Override
     public GetPrivatePractitionerConfigResponse getPrivatePractitionerConfig() {
         return privatePractitionerIntegratonService.getPrivatePractitionerConfig();
+    }
+
+    @Override
+    public HospInformation getHospInformation() {
+      return HospInformation.convert(privatePractitionerIntegratonService.getHospInformation());
     }
 
 

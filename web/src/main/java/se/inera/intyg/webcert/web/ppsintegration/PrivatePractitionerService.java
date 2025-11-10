@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.web.ppsintegration;
 
 import se.inera.intyg.webcert.integration.privatepractitioner.model.GetPrivatePractitionerConfigResponse;
+import se.inera.intyg.webcert.web.ppsintegration.dto.HospInformation;
 import se.inera.intyg.webcert.web.ppsintegration.dto.PrivatePractitioner;
 import se.inera.intyg.webcert.web.web.controller.api.dto.PrivatePractitionerDTO;
 import se.inera.intyg.webcert.web.web.controller.api.dto.RegisterPrivatePractitionerRequest;
@@ -33,4 +34,6 @@ public interface PrivatePractitionerService {
     void updatePrivatePractitioner(PrivatePractitionerDTO privatePractitioner);
 
     GetPrivatePractitionerConfigResponse getPrivatePractitionerConfig();
+
+    HospInformation getHospInformation();
 }
