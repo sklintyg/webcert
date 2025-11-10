@@ -7,5 +7,5 @@ import lombok.Value;
 @Value
 public class RegisterPrivatePractitionerRequest {
 
-    PrivatePractitionerDTO privatePractitioner;
+    PrivatePractitionerRegistrationDTO privatePractitionerRegistration;
 }

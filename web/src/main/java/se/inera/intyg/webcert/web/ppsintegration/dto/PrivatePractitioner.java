@@ -26,16 +26,23 @@ import lombok.Value;
 @Builder
 @Value
 public class PrivatePractitioner {
+    @NonNull
+    String personId;
+    @NonNull
+    String name;
 
     @NonNull
     String position;
     @NonNull
-    String organisationName;
+    String careUnitName;
     @NonNull
-    String formOfCare;
+    String ownershipType;
     @NonNull
-    String organisationType;
+    String typeOfCare;
+    @NonNull
+    String healthcareServiceType;
     String workplaceCode;
+
     @NonNull
     String phoneNumber;
     @NonNull
@@ -43,8 +50,8 @@ public class PrivatePractitioner {
     @NonNull
     String postalAddress;
     @NonNull
-    String postalCode;
-    String postalCity;
+    String zipCode;
+    String city;
     String municipalityCode;
     String countyCode;
 }

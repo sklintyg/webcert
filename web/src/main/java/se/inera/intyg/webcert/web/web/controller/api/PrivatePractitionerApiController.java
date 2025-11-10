@@ -8,8 +8,9 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
-import se.inera.intyg.webcert.web.ppsintegration.PrivatePractitionerServiceImpl;
+import se.inera.intyg.webcert.web.ppsintegration.PrivatePractitionerService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.PrivatePractitionerDTO;
+import se.inera.intyg.webcert.web.web.controller.api.dto.PrivatePractitionerResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.RegisterPrivatePractitionerRequest;
 
 @Path("/private-practitioner")
@@ -17,12 +18,14 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.RegisterPrivatePractiti
 @RequiredArgsConstructor
 public class PrivatePractitionerApiController {
 
-    PrivatePractitionerServiceImpl service;
+  PrivatePractitionerService service;
     
     @POST
-    public Response registerPractitioner(RegisterPrivatePractitionerRequest registerPrivatePractitionerRequest) {
+    public PrivatePractitionerResponse registerPractitioner(RegisterPrivatePractitionerRequest registerPrivatePractitionerRequest) {
         final var privatePractitioner = service.registerPrivatePractitioner(registerPrivatePractitionerRequest);
-        return Response.ok(PrivatePractitionerDTO.create(privatePractitioner)).build();
+        return PrivatePractitionerResponse.builder()
+            .privatePractitioner(PrivatePractitionerDTO.create(privatePractitioner))
+            .build();
     }
 
     @GET
