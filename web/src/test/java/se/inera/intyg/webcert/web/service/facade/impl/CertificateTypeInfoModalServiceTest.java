@@ -163,7 +163,7 @@ class CertificateTypeInfoModalServiceTest {
             () -> assertEquals("Utkast på dödsbevis på annan vårdenhet", result.get().getTitle())
         );
     }
-
+    
     @Test
     void shouldPrioritizeSignedCertificateOverDraft() {
         final var previousCertificates = new HashMap<String, Map<String, PreviousIntyg>>();

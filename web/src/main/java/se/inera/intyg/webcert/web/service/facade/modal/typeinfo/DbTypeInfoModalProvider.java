@@ -46,7 +46,7 @@ public class DbTypeInfoModalProvider implements CertificateTypeInfoModalProvider
 
         return isDraft ? "Utkast på dödsbevis hos annan vårdgivare" : "Signerat dödsbevis hos annan vårdgivare";
     }
-
+    
     private String buildDescription(PreviousCertificateInfo previousCertificateInfo) {
         return String.format(
             "<p><strong>Vårdgivare</strong><br/>%s</p>"

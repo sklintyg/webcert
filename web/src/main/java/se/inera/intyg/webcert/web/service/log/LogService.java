@@ -220,9 +220,9 @@ public interface LogService {
      */
     void logReadLevelTwo(WebCertUser user, String patient);
 
-  void logReadLevelTwo(WebCertUser user, String patient, ResourceType resourceType);
+    void logReadLevelTwo(WebCertUser user, String patient, ResourceType resourceType);
 
-  /**
+    /**
      * Use this to create a {@link LogUser} instance from a supplied {@link WebCertUser}
      *
      * Use when you can't access the WebCertUser in the current ThreadLocal, e.g. a background job spawned

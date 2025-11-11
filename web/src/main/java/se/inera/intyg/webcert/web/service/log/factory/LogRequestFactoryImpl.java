@@ -101,7 +101,7 @@ public class LogRequestFactoryImpl implements LogRequestFactory {
     @Override
     public LogRequest createLogRequestFromUser(WebCertUser user, String patientId, String intygsId) {
         final var personnummer = getPersonnummer(patientId);
-
+        
         final var logRequest = LogRequest.builder()
             .intygId(intygsId)
             .patientId(personnummer)

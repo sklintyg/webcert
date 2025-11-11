@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 import se.inera.intyg.webcert.web.service.facade.impl.PreviousCertificateInfo;
 
 class DoiTypeInfoModalProviderTest {
-
+    
     private DoiTypeInfoModalProvider provider;
 
     @BeforeEach

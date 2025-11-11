@@ -21,15 +21,12 @@ package se.inera.intyg.webcert.web.service.facade.impl;
 import lombok.Builder;
 import lombok.Value;
 
-/**
- * Modal information for displaying care unit details for DB/DOI certificates.
- */
 @Value
 @Builder
 public class CertificateTypeInfoModal {
 
-  String title;
-  String description;
-  String link;
+    String title;
+    String description;
+    String link;
 }
 

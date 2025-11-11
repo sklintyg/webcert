@@ -22,30 +22,20 @@ package se.inera.intyg.webcert.web.service.facade.modal.typeinfo;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
 import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 
-/**
- * Resolver for getting the appropriate type info modal provider based on certificate type.
- */
 public class CertificateTypeInfoModalProviderResolver {
 
     private CertificateTypeInfoModalProviderResolver() {
         throw new IllegalStateException("Utility class");
     }
 
-    /**
-     * Get the appropriate modal provider for a certificate type.
-     *
-     * @param certificateType the type of certificate (e.g., "db", "doi")
-     * @return the appropriate provider, or null if not applicable
-     */
     public static CertificateTypeInfoModalProvider getModalProvider(String certificateType) {
         if (DbModuleEntryPoint.MODULE_ID.equalsIgnoreCase(certificateType)) {
             return new DbTypeInfoModalProvider();
         }
-
+        
         if (DoiModuleEntryPoint.MODULE_ID.equalsIgnoreCase(certificateType)) {
             return new DoiTypeInfoModalProvider();
         }
-
 
         return null;
     }

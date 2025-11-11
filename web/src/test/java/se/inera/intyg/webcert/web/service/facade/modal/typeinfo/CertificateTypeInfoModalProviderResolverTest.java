@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import org.junit.jupiter.api.Test;
 
 class CertificateTypeInfoModalProviderResolverTest {
-
+    
     @Test
     void shouldReturnDbProviderForDbCertificateType() {
         final var certificateType = "db";

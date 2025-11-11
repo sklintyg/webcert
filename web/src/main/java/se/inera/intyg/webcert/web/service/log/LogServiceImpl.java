@@ -253,7 +253,7 @@ public class LogServiceImpl implements LogService {
     public LogUser getLogUser(WebCertUser webCertUser) {
         SelectableVardenhet valdVardenhet = webCertUser.getValdVardenhet();
         SelectableVardenhet valdVardgivare = webCertUser.getValdVardgivare();
-
+        
         return new LogUser.Builder(webCertUser.getHsaId(), valdVardenhet.getId(), valdVardgivare.getId())
             .userName(webCertUser.getNamn())
             .userAssignment(webCertUser.getSelectedMedarbetarUppdragNamn())

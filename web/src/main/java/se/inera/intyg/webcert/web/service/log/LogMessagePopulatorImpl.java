@@ -48,7 +48,7 @@ public class LogMessagePopulatorImpl implements LogMessagePopulator {
 
     @Override
     public PdlLogMessage populateLogMessage(PdlLogMessage logMessage, LogRequest logRequest, LogUser logUser) {
-      return populateLogMessage(logMessage, logRequest, logUser, ResourceType.RESOURCE_TYPE_INTYG);
+        return populateLogMessage(logMessage, logRequest, logUser, ResourceType.RESOURCE_TYPE_INTYG);
     }
 
     @Override

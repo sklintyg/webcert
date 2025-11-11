@@ -79,7 +79,7 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
         this.patientDetailsResolver = patientDetailsResolver;
         this.missingRelatedCertificateConfirmation = missingRelatedCertificateConfirmation;
         this.featuresHelper = featuresHelper;
-      this.certificateTypeInfoModalService = certificateTypeInfoModalService;
+        this.certificateTypeInfoModalService = certificateTypeInfoModalService;
     }
 
     @Override
@@ -133,7 +133,7 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
 
         final var typeModal = certificateTypeInfoModalService.get(module.getId(), patientId);
         typeModal.ifPresent(certificateTypeInfoModal -> certificateTypeInfo.setModalLink(
-          certificateTypeInfoModal.getLink()));
+            certificateTypeInfoModal.getLink()));
 
         return certificateTypeInfo;
     }

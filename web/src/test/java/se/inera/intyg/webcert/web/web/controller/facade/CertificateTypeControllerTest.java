@@ -89,7 +89,7 @@ class CertificateTypeControllerTest {
             assertEquals(200, response.getStatus());
         }
     }
-
+    
     @Nested
     class GetCertificateTypeInfoModalTests {
 
