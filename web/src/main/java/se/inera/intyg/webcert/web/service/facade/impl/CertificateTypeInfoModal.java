@@ -16,26 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.web.controller.facade.dto;
+package se.inera.intyg.webcert.web.service.facade.impl;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.util.List;
-import lombok.Data;
-import se.inera.intyg.common.support.facade.model.metadata.CertificateConfirmationModal;
+import lombok.Builder;
+import lombok.Value;
 
-@Data
-public class CertificateTypeInfoDTO {
+/**
+ * Modal information for displaying care unit details for DB/DOI certificates.
+ */
+@Value
+@Builder
+public class CertificateTypeInfoModal {
 
-    private String id;
-    @JsonIgnore
-    private String certificateServiceTypeId;
-    private String label;
-    private String issuerTypeId;
-    private String description;
-    private String detailedDescription;
-    private List<ResourceLinkDTO> links;
-    private String message;
-    private CertificateConfirmationModal confirmationModal;
-    private String modalLink;
-
+  String title;
+  String description;
+  String link;
 }
+

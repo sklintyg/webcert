@@ -48,13 +48,18 @@ public class LogMessagePopulatorImpl implements LogMessagePopulator {
 
     @Override
     public PdlLogMessage populateLogMessage(PdlLogMessage logMessage, LogRequest logRequest, LogUser logUser) {
+      return populateLogMessage(logMessage, logRequest, logUser, ResourceType.RESOURCE_TYPE_INTYG);
+    }
+
+    @Override
+    public PdlLogMessage populateLogMessage(PdlLogMessage logMessage, LogRequest logRequest, LogUser logUser, ResourceType resourceType) {
 
         populateWithCurrentUserAndCareUnit(logMessage, logUser);
 
         PdlResource pdlResource = new PdlResource();
         pdlResource.setPatient(createPatient(logRequest));
         pdlResource.setResourceOwner(createEnhet(logRequest));
-        pdlResource.setResourceType(ResourceType.RESOURCE_TYPE_INTYG.getResourceTypeName());
+        pdlResource.setResourceType(resourceType.getResourceTypeName());
 
         logMessage.getPdlResourceList().add(pdlResource);
 

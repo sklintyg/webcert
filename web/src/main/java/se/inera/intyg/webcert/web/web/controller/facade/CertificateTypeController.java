@@ -34,6 +34,7 @@ import se.inera.intyg.schemas.contract.InvalidPersonNummerException;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
+import se.inera.intyg.webcert.web.service.facade.GetCertificateTypeInfoModalFacadeService;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateTypesFacadeService;
 
 @Path("/certificate/type")
@@ -44,10 +45,13 @@ public class CertificateTypeController {
     private static final String UTF_8_CHARSET = ";charset=utf-8";
 
     private final GetCertificateTypesFacadeService getCertificateTypesFacadeService;
+    private final GetCertificateTypeInfoModalFacadeService getCertificateTypeInfoModalFacadeService;
 
     public CertificateTypeController(
-        @Qualifier("certificateTypeInfoAggregator") GetCertificateTypesFacadeService getCertificateTypesFacadeService) {
+        @Qualifier("certificateTypeInfoAggregator") GetCertificateTypesFacadeService getCertificateTypesFacadeService,
+        GetCertificateTypeInfoModalFacadeService getCertificateTypeInfoModalFacadeService) {
         this.getCertificateTypesFacadeService = getCertificateTypesFacadeService;
+        this.getCertificateTypeInfoModalFacadeService = getCertificateTypeInfoModalFacadeService;
     }
 
     @GET
@@ -68,8 +72,32 @@ public class CertificateTypeController {
         }
     }
 
+    @GET
+    @Path("/modal/{certificateType}/{patientId}")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "certificate-type-get-info-modal", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+    public Response getCertificateTypeInfoModal(
+        @PathParam("certificateType") @NotNull String certificateType,
+        @PathParam("patientId") @NotNull String patientId) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Retrieving certificate type info modal for certificate type: {} and patient", certificateType);
+        }
+        try {
+            final var modal = getCertificateTypeInfoModalFacadeService.get(certificateType, createPersonnummer(patientId));
+            if (modal == null) {
+                return Response.noContent().build();
+            }
+            return Response.ok(modal).build();
+        } catch (InvalidPersonNummerException e) {
+            LOG.error(e.getMessage());
+            return Response.status(Status.BAD_REQUEST).build();
+        }
+    }
+
     private Personnummer createPersonnummer(String personId) throws InvalidPersonNummerException {
         return Personnummer.createPersonnummer(personId)
             .orElseThrow(() -> new InvalidPersonNummerException("Could not parse personnummer: " + personId));
     }
 }
+

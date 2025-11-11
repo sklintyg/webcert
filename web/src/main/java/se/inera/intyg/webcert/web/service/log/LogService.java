@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.log;
 
+import se.inera.intyg.infra.logmessages.ResourceType;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.dto.LogUser;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -219,7 +220,9 @@ public interface LogService {
      */
     void logReadLevelTwo(WebCertUser user, String patient);
 
-    /**
+  void logReadLevelTwo(WebCertUser user, String patient, ResourceType resourceType);
+
+  /**
      * Use this to create a {@link LogUser} instance from a supplied {@link WebCertUser}
      *
      * Use when you can't access the WebCertUser in the current ThreadLocal, e.g. a background job spawned
