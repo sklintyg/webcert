@@ -17,41 +17,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.ppsintegration.dto;
+package se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
-import lombok.NonNull;
 import lombok.Value;
+import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerRegistrationRequest.PrivatePractitionerRegistrationRequestBuilder;
 
 @Builder
 @Value
-public class PrivatePractitioner {
-    @NonNull
-    String personId;
-    @NonNull
-    String name;
+@JsonDeserialize(builder = PrivatePractitionerRegistrationRequestBuilder.class)
+public class PrivatePractitionerRegistrationRequest {
 
-    @NonNull
     String position;
-    @NonNull
     String careUnitName;
-    @NonNull
-    String ownershipType;
-    @NonNull
     String typeOfCare;
-    @NonNull
     String healthcareServiceType;
     String workplaceCode;
 
-    @NonNull
     String phoneNumber;
-    @NonNull
     String email;
-    @NonNull
-    String postalAddress;
-    @NonNull
+    String address;
     String zipCode;
     String city;
-    String municipalityCode;
-    String countyCode;
+    String municipality;
+    String county;
+
+    Long consentFormVersion;
+
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class PrivatePractitionerRegistrationRequestBuilder {
+
+    }
 }

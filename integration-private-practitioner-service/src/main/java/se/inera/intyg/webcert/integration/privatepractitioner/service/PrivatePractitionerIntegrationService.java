@@ -18,6 +18,8 @@
  */
 package se.inera.intyg.webcert.integration.privatepractitioner.service;
 
+import static se.inera.intyg.webcert.integration.privatepractitioner.config.PrivatePractitionerRestClientConfig.CONFIG_PATH;
+import static se.inera.intyg.webcert.integration.privatepractitioner.config.PrivatePractitionerRestClientConfig.HOSP_INFO_PATH;
 import static se.inera.intyg.webcert.integration.privatepractitioner.config.PrivatePractitionerRestClientConfig.VALIDATE_PATH;
 import static se.inera.intyg.webcert.logging.MdcLogConstants.SESSION_ID_KEY;
 import static se.inera.intyg.webcert.logging.MdcLogConstants.TRACE_ID_KEY;
@@ -31,26 +33,27 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.GetPrivatePractitionerConfigResponse;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.GetPrivatePractitionerResponseDTO;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.HoSPersonDTO;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.HospInformationDTO;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.HospInformationResponse;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitioner;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerConfig;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.RegisterPrivatePractitionerRequest;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerRequest;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerResponse;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerResultCode;
 import se.inera.intyg.webcert.logging.MdcHelper;
 
-@Profile("private-practitioner-service-active")
-@Service("privatePractitionerService")
-@RequiredArgsConstructor
 @Slf4j
-public class PrivatePractitionerIntegrationServiceImpl implements PrivatePractitionerIntegratonService {
+@Service
+@Profile("private-practitioner-service-active")
+@RequiredArgsConstructor
+public class PrivatePractitionerIntegrationService {
 
     private final RestClient ppsRestClient;
+    private final RegisterPrivatePractitionerClient registerPrivatePractitionerClient;
 
-
-    @Override
     public ValidatePrivatePractitionerResponse validatePrivatePractitioner(String personalIdentityNumber) {
         validateIdentifier(personalIdentityNumber);
 
@@ -63,6 +66,8 @@ public class PrivatePractitionerIntegrationServiceImpl implements PrivatePractit
         final var response = ppsRestClient
             .post()
             .uri(VALIDATE_PATH)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
             .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
             .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
             .body(request)
@@ -79,9 +84,9 @@ public class PrivatePractitionerIntegrationServiceImpl implements PrivatePractit
     }
 
     private void logResult(ValidatePrivatePractitionerResponse response) {
-        if (response.getResultCode() == ValidatePrivatePractitionerResultCode.NO_ACCOUNT
-            || response.getResultCode() == ValidatePrivatePractitionerResultCode.NOT_AUTHORIZED_IN_HOSP) {
-            log.info(response.getResultText());
+        if (ValidatePrivatePractitionerResultCode.NO_ACCOUNT.equals(response.resultCode())
+            || ValidatePrivatePractitionerResultCode.NOT_AUTHORIZED_IN_HOSP.equals(response.resultCode())) {
+            log.info(response.resultText());
         }
     }
 
@@ -91,11 +96,13 @@ public class PrivatePractitionerIntegrationServiceImpl implements PrivatePractit
         }
     }
 
-    @Override
     public HoSPersonDTO getPrivatePractitioner(String personalOrHsaIdIdentityNumber) {
 
-        final var response = ppsRestClient.get()
-            .uri("") //FIXME: add endpoint
+        final var response = ppsRestClient
+            .get()
+            .uri(uriBuilder -> uriBuilder
+                .path("/{id}")
+                .build(personalOrHsaIdIdentityNumber))
             .accept(MediaType.APPLICATION_JSON)
             .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
             .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
@@ -109,36 +116,38 @@ public class PrivatePractitionerIntegrationServiceImpl implements PrivatePractit
         return response.getHoSPerson();
     }
 
-    @Override
-    public GetPrivatePractitionerConfigResponse getPrivatePractitionerConfig() {
+    public PrivatePractitionerConfig getPrivatePractitionerConfig() {
         return ppsRestClient
             .get()
+            .uri(CONFIG_PATH)
             .accept(MediaType.APPLICATION_JSON)
             .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
             .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
             .retrieve()
-            .body(GetPrivatePractitionerConfigResponse.class);
+            .body(PrivatePractitionerConfig.class);
     }
 
-    @Override
-    public HospInformationDTO getHospInformation(String id) {
-      final var response = ppsRestClient
-          .get()
-          .uri(uriBuilder -> uriBuilder
-              .path("/hosp-information")
-              .queryParam("id", id)
-              .build())
-          .accept(MediaType.APPLICATION_JSON)
-          .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
-          .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
-          .retrieve()
-          .body(HospInformationResponse.class);
+    public HospInformationDTO getHospInformation(String personalOrHsaIdIdentityNumber) {
+        final var response = ppsRestClient
+            .get()
+            .uri(uriBuilder -> uriBuilder
+                .path(HOSP_INFO_PATH)
+                .build(personalOrHsaIdIdentityNumber))
+            .accept(MediaType.APPLICATION_JSON)
+            .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
+            .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
+            .retrieve()
+            .body(HospInformationResponse.class);
 
-      if (response == null) {
-          throw new RestClientException("Get HOSP Information failed. Response is null.");
-      }
+        if (response == null) {
+            throw new RestClientException("Get HOSP Information failed. Response is null.");
+        }
 
-      return response.getHospInformation();
+        return response.getHospInformation();
+    }
+
+    public PrivatePractitioner registerPrivatePractitioner(RegisterPrivatePractitionerRequest registrationRequest) {
+        return registerPrivatePractitionerClient.registerPrivatePractitioner(registrationRequest);
     }
 }
 

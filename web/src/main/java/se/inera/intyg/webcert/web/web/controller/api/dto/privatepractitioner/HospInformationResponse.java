@@ -16,21 +16,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.integration.privatepractitioner.service;
 
+package se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner;
 
-import se.inera.intyg.webcert.integration.privatepractitioner.model.GetPrivatePractitionerConfigResponse;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.HoSPersonDTO;
+import java.util.List;
+import lombok.Builder;
+import lombok.Value;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.HospInformationDTO;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerResponse;
 
-public interface PrivatePractitionerIntegratonService {
+@Builder
+@Value
+public class HospInformationResponse {
 
-    ValidatePrivatePractitionerResponse validatePrivatePractitioner(String personalIdentity);
+    String personalPrescriptionCode;
+    List<String> specialityNames;
+    List<String> hsaTitles;
 
-    HoSPersonDTO getPrivatePractitioner(String personalOrHsaIdIdentityNumber);
-
-    GetPrivatePractitionerConfigResponse getPrivatePractitionerConfig();
-
-    HospInformationDTO getHospInformation(String id);
+    public static HospInformationResponse convert(HospInformationDTO hospInformationDTO) {
+        return HospInformationResponse.builder()
+            .personalPrescriptionCode(hospInformationDTO.getPersonalPrescriptionCode())
+            .specialityNames(hospInformationDTO.getSpecialityNames())
+            .hsaTitles(hospInformationDTO.getHsaTitles())
+            .build();
+    }
 }

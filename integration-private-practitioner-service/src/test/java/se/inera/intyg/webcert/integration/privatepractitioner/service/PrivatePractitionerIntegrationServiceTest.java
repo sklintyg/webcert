@@ -4,19 +4,25 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static se.inera.intyg.webcert.integration.privatepractitioner.service.TestDataDTO.kranstegeRegisterPractitionerRequest;
+import static se.inera.intyg.webcert.integration.privatepractitioner.service.TestDataModel.DR_KRANSTEGE;
+import static se.inera.intyg.webcert.logging.MdcHelper.LOG_SESSION_ID_HEADER;
+import static se.inera.intyg.webcert.logging.MdcHelper.LOG_TRACE_ID_HEADER;
+import static se.inera.intyg.webcert.logging.MdcLogConstants.SESSION_ID_KEY;
+import static se.inera.intyg.webcert.logging.MdcLogConstants.TRACE_ID_KEY;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.MDC;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
@@ -25,13 +31,15 @@ import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePriv
 import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerResultCode;
 
 @ExtendWith(MockitoExtension.class)
-class PrivatePractitionerIntegrationServiceImplTest {
+class PrivatePractitionerIntegrationServiceTest {
 
     public static final String PERSONAL_IDENTITY_NUMBER = "191212121212";
     @Mock
     private RestClient ppRestClient;
-
-    private PrivatePractitionerIntegrationServiceImpl service;
+    @Mock
+    private RegisterPrivatePractitionerClient registerPrivatePractitionerClient;
+    @InjectMocks
+    private PrivatePractitionerIntegrationService service;
 
     private RestClient.RequestBodyUriSpec requestBodyUriSpec;
     private RestClient.ResponseSpec responseSpec;
@@ -39,33 +47,38 @@ class PrivatePractitionerIntegrationServiceImplTest {
     @Captor
     private ArgumentCaptor<ValidatePrivatePractitionerRequest> requestCaptor;
 
-    @BeforeEach
-    void setUp() {
-        service = new PrivatePractitionerIntegrationServiceImpl(ppRestClient);
-    }
+    private void mockPostChain(String uri) {
+        MDC.put(TRACE_ID_KEY, "traceId");
+        MDC.put(SESSION_ID_KEY, "sessionId");
 
-    private void mockPostChain() {
         requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
         responseSpec = mock(RestClient.ResponseSpec.class);
         when(ppRestClient.post()).thenReturn(requestBodyUriSpec);
-        when(requestBodyUriSpec.contentType(any())).thenReturn(requestBodyUriSpec);
+
+        if (uri != null) {
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+        }
+        when(requestBodyUriSpec.accept(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+        when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+        when(requestBodyUriSpec.header(LOG_TRACE_ID_HEADER, "traceId")).thenReturn(requestBodyUriSpec);
+        when(requestBodyUriSpec.header(LOG_SESSION_ID_HEADER, "sessionId")).thenReturn(
+            requestBodyUriSpec);
+
         when(requestBodyUriSpec.body(any(ValidatePrivatePractitionerRequest.class))).thenReturn(requestBodyUriSpec);
         when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
     }
 
     @Test
     void validatePrivatePractitionerReturnsResponseOnOk() {
-        mockPostChain();
-        var expectedResponse = new ValidatePrivatePractitionerResponse();
-        expectedResponse.setResultCode(ValidatePrivatePractitionerResultCode.OK);
-        expectedResponse.setResultText("OK");
-        when(responseSpec.body(eq(ValidatePrivatePractitionerResponse.class))).thenReturn(expectedResponse);
+        mockPostChain("/validate");
+        var expectedResponse = new ValidatePrivatePractitionerResponse(ValidatePrivatePractitionerResultCode.OK, "OK");
+        when(responseSpec.body(ValidatePrivatePractitionerResponse.class)).thenReturn(expectedResponse);
 
         var actual = service.validatePrivatePractitioner(PERSONAL_IDENTITY_NUMBER);
 
         assertNotNull(actual);
-        assertEquals(ValidatePrivatePractitionerResultCode.OK, actual.getResultCode());
-        assertEquals("OK", actual.getResultText());
+        assertEquals(ValidatePrivatePractitionerResultCode.OK, actual.resultCode());
+        assertEquals("OK", actual.resultText());
 
         verify(ppRestClient).post();
         verify(requestBodyUriSpec).contentType(MediaType.APPLICATION_JSON);
@@ -75,17 +88,16 @@ class PrivatePractitionerIntegrationServiceImplTest {
 
     @Test
     void validatePrivatePractitionerInvalid() {
-        mockPostChain();
-        var expectedResponse = new ValidatePrivatePractitionerResponse();
-        expectedResponse.setResultCode(ValidatePrivatePractitionerResultCode.NO_ACCOUNT);
-        expectedResponse.setResultText("No account found for practitioner");
-        when(responseSpec.body(eq(ValidatePrivatePractitionerResponse.class))).thenReturn(expectedResponse);
+        mockPostChain("/validate");
+        var expectedResponse = new ValidatePrivatePractitionerResponse(ValidatePrivatePractitionerResultCode.NO_ACCOUNT,
+            "No account found for practitioner");
+        when(responseSpec.body(ValidatePrivatePractitionerResponse.class)).thenReturn(expectedResponse);
 
         var actual = service.validatePrivatePractitioner(PERSONAL_IDENTITY_NUMBER);
 
         assertNotNull(actual);
-        assertEquals(ValidatePrivatePractitionerResultCode.NO_ACCOUNT, actual.getResultCode());
-        assertEquals("No account found for practitioner", actual.getResultText());
+        assertEquals(ValidatePrivatePractitionerResultCode.NO_ACCOUNT, actual.resultCode());
+        assertEquals("No account found for practitioner", actual.resultText());
 
         verify(ppRestClient).post();
         verify(requestBodyUriSpec).contentType(MediaType.APPLICATION_JSON);
@@ -101,8 +113,17 @@ class PrivatePractitionerIntegrationServiceImplTest {
 
     @Test
     void validatePrivatePractitionerThrowsWhenResponseNull() {
-        mockPostChain();
-        when(responseSpec.body(eq(ValidatePrivatePractitionerResponse.class))).thenReturn(null);
+        mockPostChain("/validate");
+        when(responseSpec.body(ValidatePrivatePractitionerResponse.class)).thenReturn(null);
         assertThrows(RestClientException.class, () -> service.validatePrivatePractitioner(PERSONAL_IDENTITY_NUMBER));
+    }
+
+    @Test
+    void shallReturnRegisteredPrivatePractitioner() {
+        when(registerPrivatePractitionerClient.registerPrivatePractitioner(kranstegeRegisterPractitionerRequest())).thenReturn(
+            DR_KRANSTEGE);
+        final var result = service.registerPrivatePractitioner(kranstegeRegisterPractitionerRequest());
+
+        assertEquals(DR_KRANSTEGE, result);
     }
 }

@@ -17,28 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.integration.privatepractitioner.model;
+package se.inera.intyg.webcert.web.web.controller.api.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import java.util.Map;
 import lombok.Builder;
-import lombok.Value;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.GetPrivatePractitionerConfigResponse.GetPrivatePractitionerConfigResponseBuilder;
 
-@Value
 @Builder
-@JsonDeserialize(builder = GetPrivatePractitionerConfigResponseBuilder.class)
-public class GetPrivatePractitionerConfigResponse {
+public record Area(String zipCode, String city, String municipality, String county) {
 
-    Map<String, String> positions;
-    Map<String, String> specialties;
-    Map<String, String> typeOfCare;
-    PrivatePractitionerConsent consent;
-
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class GetPrivatePractitionerConfigResponseBuilder {
-
-    }
 }
-

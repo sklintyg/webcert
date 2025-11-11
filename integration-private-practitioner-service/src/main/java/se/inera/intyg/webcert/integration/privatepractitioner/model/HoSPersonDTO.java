@@ -9,22 +9,22 @@ import lombok.Value;
 
 @Value
 @Builder
-@JsonDeserialize(builder= HoSPersonDTO.HoSPersonTypeBuilder.class)
+@JsonDeserialize(builder = HoSPersonDTO.HoSPersonTypeBuilder.class)
 public class HoSPersonDTO {
 
-  HsaIdDTO hsaId;
-  PersonIdDTO personId;
-  String fullstandigtNamn;
-  List<BefattningDTO> befattning = new ArrayList<>();
-  List<SpecialitetDTO> specialitet = new ArrayList<>();
-  List<LegitimeradYrkesgruppDTO> legitimeradYrkesgrupp = new ArrayList<>();
-  String forskrivarkod;
-  boolean godkandAnvandare;
-  EnhetsTyp enhet;
+    HsaIdDTO hsaId;
+    PersonIdDTO personId;
+    String name;
+    List<Position> positions = new ArrayList<>();
+    List<Speciality> specialities = new ArrayList<>();
+    List<LicensedHealthcareProfession> licensedHealthcareProfessions = new ArrayList<>();
+    String personalPrescriptionCode;
+    boolean godkandAnvandare;
+    EnhetsTyp enhet;
 
-  @JsonPOJOBuilder(withPrefix = "")
-  public static class HoSPersonTypeBuilder {
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class HoSPersonTypeBuilder {
 
-  }
+    }
 
 }

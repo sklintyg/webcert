@@ -32,17 +32,16 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import se.inera.intyg.infra.dynamiclink.model.DynamicLink;
 import se.inera.intyg.infra.dynamiclink.service.DynamicLinkService;
 import se.inera.intyg.infra.integration.ia.services.IABannerService;
-import se.inera.intyg.infra.integration.postnummer.model.Omrade;
 import se.inera.intyg.infra.integration.postnummer.service.PostnummerService;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Area;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ConfigResponse;
 
 @Path("/config")
@@ -127,13 +126,22 @@ public class ConfigApiController extends AbstractApiController {
     }
 
     @GET
-    @Path("omrade/{postnummer}")
+    @Path("area/{zipcode}")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @ApiOperation(value = "Get omrade for a given postnummer from postnummerservice", httpMethod = "GET", produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Get area for a given area from postnummerservice", httpMethod = "GET", produces = MediaType.APPLICATION_JSON)
     @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "config-get-omrade-by-postnummer", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
-    public List<Omrade> getOmradeByPostnummer(@PathParam("postnummer") String postnummer) {
-      return postnummerService.getOmradeByPostnummer(postnummer);
+    @PerformanceLogging(eventAction = "config-get-area-by-postnummer", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+    public List<Area> getAreaByZipCode(@PathParam("zipcode") String zipCode) {
+        return postnummerService.getOmradeByPostnummer(zipCode)
+            .stream()
+            .map(o -> Area
+                .builder()
+                .zipCode(o.getPostnummer())
+                .city(o.getPostort())
+                .municipality(o.getKommun())
+                .county(o.getLan())
+                .build())
+            .toList();
     }
 
     @PostConstruct

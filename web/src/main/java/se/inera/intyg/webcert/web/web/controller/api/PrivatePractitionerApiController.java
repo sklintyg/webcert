@@ -8,33 +8,38 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
-import se.inera.intyg.webcert.web.ppsintegration.PrivatePractitionerService;
-import se.inera.intyg.webcert.web.web.controller.api.dto.HospInformationResponse;
-import se.inera.intyg.webcert.web.web.controller.api.dto.PrivatePractitionerConfigResponse;
-import se.inera.intyg.webcert.web.web.controller.api.dto.PrivatePractitionerDTO;
-import se.inera.intyg.webcert.web.web.controller.api.dto.PrivatePractitionerResponse;
-import se.inera.intyg.webcert.web.web.controller.api.dto.PrivatePractitionerRegisterRequest;
+import org.springframework.context.annotation.Profile;
+import se.inera.intyg.webcert.logging.MdcLogConstants;
+import se.inera.intyg.webcert.logging.PerformanceLogging;
+import se.inera.intyg.webcert.web.privatepractitioner.PrivatePractitionerService;
+import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.HospInformationResponse;
+import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerConfigResponse;
+import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerDTO;
+import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerRegistrationRequest;
+import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.RegisterPrivatePractitionerResponse;
 
 @Path("/private-practitioner")
-@Api(value = "private-practitioner", description = "REST API för private practitioner", produces = MediaType.APPLICATION_JSON)
+@Api(value = "private-practitioner", produces = MediaType.APPLICATION_JSON)
+@Profile("private-practitioner-service-active")
 @RequiredArgsConstructor
 public class PrivatePractitionerApiController {
 
-  PrivatePractitionerService service;
-    
+    PrivatePractitionerService service;
+
     @POST
-    public PrivatePractitionerResponse registerPractitioner(
-        PrivatePractitionerRegisterRequest registerPrivatePractitionerRequest) {
+    @PerformanceLogging(eventAction = "register-private-practitioner", eventType = MdcLogConstants.EVENT_TYPE_CREATION)
+    public RegisterPrivatePractitionerResponse registerPractitioner(
+        PrivatePractitionerRegistrationRequest registerPrivatePractitionerRequest) {
         final var privatePractitioner = service.registerPrivatePractitioner(registerPrivatePractitionerRequest);
-        return PrivatePractitionerResponse.builder()
-            .privatePractitioner(PrivatePractitionerDTO.create(privatePractitioner))
+        return RegisterPrivatePractitionerResponse.builder()
+            .privatePractitioner(privatePractitioner)
             .build();
     }
 
     @GET
-    public PrivatePractitionerResponse getPrivatePractitioner() {
-        return PrivatePractitionerResponse.builder()
-            .privatePractitioner(PrivatePractitionerDTO.create(service.getPrivatePractitioner()))
+    public RegisterPrivatePractitionerResponse getPrivatePractitioner() {
+        return RegisterPrivatePractitionerResponse.builder()
+            .privatePractitioner(service.getPrivatePractitioner())
             .build();
     }
 
@@ -48,17 +53,13 @@ public class PrivatePractitionerApiController {
     @GET
     @Path("/config")
     public PrivatePractitionerConfigResponse getPrivatePractitionerConfig() {
-        return PrivatePractitionerConfigResponse.builder()
-            .getPrivatePractitionerConfig(service.getPrivatePractitionerConfig())
-            .build();
+        return service.getPrivatePractitionerConfig();
     }
 
     @GET
     @Path("/hospInformation")
     public HospInformationResponse getHospInformation() {
-        return HospInformationResponse.builder()
-            .hospInformation(service.getHospInformation())
-            .build();
+        return service.getHospInformation();
     }
 
 }

@@ -1,22 +1,5 @@
 package se.inera.intyg.webcert.integration.privatepractitioner.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import lombok.Builder;
-import lombok.Value;
-
-@Builder
-@Value
-@JsonDeserialize(builder = HsaIdDTO.HsaIdDTOBuilder.class)
-public class HsaIdDTO {
-
-  String root;
-  String extension;
-  String identifierName;
-
-  @JsonPOJOBuilder(withPrefix = "")
-  public static class HsaIdDTOBuilder {
-
-  }
+public record HsaIdDTO(String root, String extension, String identifierName) {
 
 }
