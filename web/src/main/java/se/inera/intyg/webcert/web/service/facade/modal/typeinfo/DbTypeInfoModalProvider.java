@@ -48,8 +48,13 @@ public class DbTypeInfoModalProvider implements CertificateTypeInfoModalProvider
     }
 
     private String buildDescription(PreviousCertificateInfo previousCertificateInfo) {
-        return "<p><strong>Vårdgivare</strong><br/>" + previousCertificateInfo.getCareProviderName() + "</p>"
-            + "<p><strong>Vårdenhet</strong><br/>" + previousCertificateInfo.getCareUnitName() + "</p>"
-            + "<p><strong>Vårdenhetens HSA-id</strong><br/>" + previousCertificateInfo.getCareUnitHsaId() + "</p>";
+        return String.format(
+            "<p><strong>Vårdgivare</strong><br/>%s</p>"
+                + "<p><strong>Vårdenhet</strong><br/>%s</p>"
+                + "<p><strong>Vårdenhetens HSA-id</strong><br/>%s</p>",
+            previousCertificateInfo.getCareProviderName(),
+            previousCertificateInfo.getCareUnitName(),
+            previousCertificateInfo.getCareUnitHsaId()
+        );
     }
 }

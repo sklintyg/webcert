@@ -88,7 +88,7 @@ public class CertificateTypeInfoModalService {
             .careProviderName(utkast.getVardgivarNamn())
             .isDraft(utkast.getStatus() != UtkastStatus.SIGNED)
             .isSameCareProvider(previousCertificate.isSameVardgivare())
-            .isSameUnit(previousCertificate.isSameVardgivare())
+            .isSameUnit(previousCertificate.isSameEnhet())
             .build();
   }
 }

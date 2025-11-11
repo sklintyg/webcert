@@ -143,20 +143,24 @@ class CertificateTypeInfoModalServiceTest {
 
     @Test
     void shouldReturnModalWhenPreviousDraftExists() {
-        final var previousCertificates = createPreviousCertificatesMap(CERTIFICATE_TYPE, INTYG_ID, false, true);
+        final var previousCertificates = new HashMap<String, Map<String, PreviousIntyg>>();
+        final var utkastMap = new HashMap<String, PreviousIntyg>();
+        utkastMap.put(CERTIFICATE_TYPE, createPreviousIntyg(INTYG_ID, true, false));
+        previousCertificates.put(UTKAST_INDICATOR, utkastMap);
+
         final var utkast = createUtkast(UtkastStatus.DRAFT_INCOMPLETE);
 
         when(webCertUserService.getUser()).thenReturn(user);
         when(utkastService.checkIfPersonHasExistingIntyg(eq(personnummer), eq(user), any()))
             .thenReturn(previousCertificates);
-        when(utkastService.getDraft(eq(INTYG_ID), eq(CERTIFICATE_TYPE), anyBoolean()))
+        when(utkastService.getDraft(INTYG_ID, CERTIFICATE_TYPE, false))
             .thenReturn(utkast);
 
         final var result = service.get(CERTIFICATE_TYPE, personnummer);
 
         assertAll(
             () -> assertTrue(result.isPresent()),
-            () -> assertEquals("Utkast på dödsbevis hos annan vårdgivare", result.get().getTitle())
+            () -> assertEquals("Utkast på dödsbevis på annan vårdenhet", result.get().getTitle())
         );
     }
 
@@ -231,6 +235,7 @@ class CertificateTypeInfoModalServiceTest {
         final var intygMap = new HashMap<String, PreviousIntyg>();
         intygMap.put(certificateType, createPreviousIntyg(intygId, sameCareProvider, sameUnit));
         previousCertificates.put(INTYG_INDICATOR, intygMap);
+
         return previousCertificates;
     }
 
