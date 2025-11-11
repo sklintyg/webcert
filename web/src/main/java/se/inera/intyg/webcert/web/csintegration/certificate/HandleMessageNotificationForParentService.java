@@ -49,13 +49,13 @@ public class HandleMessageNotificationForParentService {
             certificateId
         );
 
+        final var parentCertificate = csIntegrationService.getCertificate(
+            certificateId,
+            csIntegrationRequestFactory.getCertificateRequest()
+        );
+
         questions.forEach(question -> {
             if (isQuestionRecieved(question)) {
-                final var parentCertificate = csIntegrationService.getCertificate(
-                    certificateId,
-                    csIntegrationRequestFactory.getCertificateRequest()
-                );
-
                 publishCertificateStatusUpdateService.publish(parentCertificate, HandelsekodEnum.NYFRFM);
             }
         });
