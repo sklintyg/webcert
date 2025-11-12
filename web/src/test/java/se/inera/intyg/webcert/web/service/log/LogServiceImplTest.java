@@ -82,9 +82,6 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
     @Mock
     private LogRequestFactory logRequestFactory;
 
-    @Mock
-    private LogMessagePopulator logMessagePopulator;
-
     @InjectMocks
     private LogServiceImpl logService = new LogServiceImpl();
 
