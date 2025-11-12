@@ -41,6 +41,7 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.common.support.facade.model.Staff;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage;
 import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
 import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
@@ -54,6 +55,9 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 @ExtendWith(MockitoExtension.class)
 class RevokeCertificateFromCertificateServiceTest {
 
+    private static final CertificateRelations CERTIFICATE_RELATIONS = CertificateRelations.builder().build();
+    @Mock
+    HandleMessageNotificationForParentService handleMessageNotificationForParentService;
     @Mock
     PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
     @Mock
@@ -112,6 +116,7 @@ class RevokeCertificateFromCertificateServiceTest {
                         .personId(REVOKED_BY_STAFF_ID)
                         .build()
                 )
+                .relations(CERTIFICATE_RELATIONS)
                 .build());
 
             when(csIntegrationService.certificateExists(ID))
@@ -188,6 +193,12 @@ class RevokeCertificateFromCertificateServiceTest {
                 revokeCertificateFromCertificateService.revokeCertificate(ID, REASON, MESSAGE);
 
                 verify(publishCertificateAnalyticsMessage).publishEvent(analyticsMessage);
+            }
+
+            @Test
+            void shouldHandleMessageNotificationForParentService() {
+                revokeCertificateFromCertificateService.revokeCertificate(ID, REASON, MESSAGE);
+                verify(handleMessageNotificationForParentService, times(1)).notify(CERTIFICATE_RELATIONS);
             }
         }
 

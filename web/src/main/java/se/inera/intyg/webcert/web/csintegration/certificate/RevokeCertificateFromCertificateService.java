@@ -46,6 +46,7 @@ public class RevokeCertificateFromCertificateService implements RevokeCertificat
     private final DecorateCertificateFromCSWithInformationFromWC decorateCertificateFromCSWithInformationFromWC;
     private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
     private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+    private final HandleMessageNotificationForParentService handleMessageNotificationForParentService;
 
     @Override
     public Certificate revokeCertificate(String certificateId, String reason, String message) {
@@ -59,7 +60,8 @@ public class RevokeCertificateFromCertificateService implements RevokeCertificat
             csIntegrationRequestFactory.getCertificateRequest());
 
         if (certificate == null) {
-            throw new IllegalStateException("Certificate for revocation does not exist in certificate-service");
+            throw new IllegalStateException(
+                "Certificate for revocation does not exist in certificate-service");
         }
 
         final var certificateStatusBeforeRevoke = certificate.getMetadata().getStatus();
@@ -79,11 +81,13 @@ public class RevokeCertificateFromCertificateService implements RevokeCertificat
         publishCertificateAnalyticsMessage.publishEvent(
             certificateAnalyticsMessageFactory.certificateRevoked(revokedCertificate)
         );
+        handleMessageNotificationForParentService.notify(revokedCertificate.getMetadata().getRelations());
 
         return revokedCertificate;
     }
 
-    private void monitorLog(Certificate certificate, String revokedBy, String reason, CertificateStatus certificateStatusBeforeRevoke) {
+    private void monitorLog(Certificate certificate, String revokedBy, String reason,
+        CertificateStatus certificateStatusBeforeRevoke) {
         if (certificateStatusBeforeRevoke == CertificateStatus.LOCKED) {
             monitoringLogService.logUtkastRevoked(
                 certificate.getMetadata().getId(),
