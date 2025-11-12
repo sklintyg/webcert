@@ -30,19 +30,6 @@ class PrivatePractitionerApiControllerTest {
     @InjectMocks
     PrivatePractitionerApiController controller;
 
-    @ParameterizedTest
-    @ValueSource(strings = {"position", "careUnitName", "typeOfCare", "healthcareServiceType", "phoneNumber", "email", "address",
-        "zipCode"})
-    void shouldValidateNotNullAsRequest(String fields) throws NoSuchFieldException {
-        final var declaredField = PrivatePractitionerRegistrationRequest.class.getDeclaredField(fields);
-        final var notNullAnnotation = declaredField.getAnnotation(javax.validation.constraints.NotNull.class);
-
-        assertAll(
-            () -> assertNotNull(notNullAnnotation.message()),
-            () -> assertEquals(javax.validation.constraints.NotNull.class, notNullAnnotation.annotationType())
-        );
-    }
-
     @Test
     void shouldRegisterPractitioner() {
         var result = controller.registerPractitioner(KRANSTEGE_REGISTREATION_REQUEST_DTO);

@@ -32,23 +32,23 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.Pri
 @JsonDeserialize(builder = PrivatePractitionerRegistrationRequestBuilder.class)
 public class PrivatePractitionerRegistrationRequest {
 
-    @NotNull(message = "Position is required")
+    @NonNull
     String position;
-    @NotNull(message = "Care Unit is required")
+    @NonNull
     String careUnitName;
-    @NotNull(message = "Type of Care is required")
+    @NonNull
     String typeOfCare;
-    @NotNull(message = "Healthcare Service Type is required")
+    @NonNull
     String healthcareServiceType;
     String workplaceCode;
 
-    @NotNull(message = "Phone number is required")
+    @NonNull
     String phoneNumber;
-    @NotNull(message = "Email is required")
+    @NonNull
     String email;
-    @NotNull(message = "Address is required")
+    @NonNull
     String address;
-    @NotNull(message = "Zip code is required")
+    @NonNull
     String zipCode;
     String city;
     String municipality;
