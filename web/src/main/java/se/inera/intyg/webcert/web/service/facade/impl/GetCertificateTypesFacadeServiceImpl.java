@@ -131,9 +131,9 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
         certificateTypeMessageService.get(module.getId(), patientId)
             .ifPresent(message -> certificateTypeInfo.setMessage(message.getMessage()));
 
-        final var typeModal = certificateTypeInfoModalService.get(module.getId(), patientId);
-        typeModal.ifPresent(certificateTypeInfoModal -> certificateTypeInfo.setModalLink(
-            certificateTypeInfoModal.getLink()));
+        certificateTypeInfoModalService.get(module.getId(), patientId)
+            .ifPresent(certificateTypeInfoModal -> certificateTypeInfo.setModalLink(
+                certificateTypeInfoModal.getLink()));
 
         return certificateTypeInfo;
     }
