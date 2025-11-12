@@ -130,7 +130,7 @@ public class ConfigApiController extends AbstractApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @ApiOperation(value = "Get area for a given area from postnummerservice", httpMethod = "GET", produces = MediaType.APPLICATION_JSON)
     @PrometheusTimeMethod
-    @PerformanceLogging(eventAction = "config-get-area-by-postnummer", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+    @PerformanceLogging(eventAction = "config-get-area-by-zid-code", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public List<Area> getAreaByZipCode(@PathParam("zipcode") String zipCode) {
         return postnummerService.getOmradeByPostnummer(zipCode)
             .stream()
