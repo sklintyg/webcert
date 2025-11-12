@@ -21,7 +21,9 @@ package se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import javax.validation.constraints.NotNull;
 import lombok.Builder;
+import lombok.NonNull;
 import lombok.Value;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerRegistrationRequest.PrivatePractitionerRegistrationRequestBuilder;
 
@@ -30,15 +32,23 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.Pri
 @JsonDeserialize(builder = PrivatePractitionerRegistrationRequestBuilder.class)
 public class PrivatePractitionerRegistrationRequest {
 
+    @NotNull(message = "Position is required")
     String position;
+    @NotNull(message = "Care Unit is required")
     String careUnitName;
+    @NotNull(message = "Type of Care is required")
     String typeOfCare;
+    @NotNull(message = "Healthcare Service Type is required")
     String healthcareServiceType;
     String workplaceCode;
 
+    @NotNull(message = "Phone number is required")
     String phoneNumber;
+    @NotNull(message = "Email is required")
     String email;
+    @NotNull(message = "Address is required")
     String address;
+    @NotNull(message = "Zip code is required")
     String zipCode;
     String city;
     String municipality;

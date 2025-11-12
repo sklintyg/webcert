@@ -2,11 +2,14 @@ package se.inera.intyg.webcert.web.web.controller.api;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -28,6 +31,18 @@ class PrivatePractitionerApiControllerTest {
     PrivatePractitionerService service;
     @InjectMocks
     PrivatePractitionerApiController controller;
+
+    @ParameterizedTest
+    @ValueSource(strings = {"position", "careUnitName", "typeOfCare", "healthcareServiceType", "phoneNumber", "email", "address", "zipCode"})
+    void shouldValidateNotNullAsRequest(String fields) throws NoSuchFieldException {
+        final var declaredField = PrivatePractitionerRegistrationRequest.class.getDeclaredField(fields);
+        final var notNullAnnotation = declaredField.getAnnotation(javax.validation.constraints.NotNull.class);
+
+        assertAll(
+            () -> assertNotNull(notNullAnnotation.message()),
+            () -> assertEquals(javax.validation.constraints.NotNull.class, notNullAnnotation.annotationType())
+        );
+    }
 
     @Test
     void shouldRegisterPractitioner() {

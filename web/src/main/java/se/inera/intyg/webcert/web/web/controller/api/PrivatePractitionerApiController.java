@@ -7,6 +7,7 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
@@ -32,7 +33,7 @@ public class PrivatePractitionerApiController {
     @POST
     @PerformanceLogging(eventAction = "register-private-practitioner", eventType = MdcLogConstants.EVENT_TYPE_CREATION)
     public RegisterPrivatePractitionerResponse registerPractitioner(
-        PrivatePractitionerRegistrationRequest registerPrivatePractitionerRequest) {
+        @Valid PrivatePractitionerRegistrationRequest registerPrivatePractitionerRequest) {
         final var privatePractitioner = service.registerPrivatePractitioner(registerPrivatePractitionerRequest);
         return RegisterPrivatePractitionerResponse.builder()
             .privatePractitioner(privatePractitioner)
