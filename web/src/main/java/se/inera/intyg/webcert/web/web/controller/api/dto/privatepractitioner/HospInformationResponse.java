@@ -21,22 +21,18 @@ package se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner;
 
 import java.util.List;
 import lombok.Builder;
-import lombok.Value;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.HospInformationDTO;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.HospInformation;
 
 @Builder
-@Value
-public class HospInformationResponse {
+public record HospInformationResponse(String personalPrescriptionCode, List<CodeDTO> licensedHealthcareProfessions,
+                                      List<CodeDTO> specialities) {
 
-    String personalPrescriptionCode;
-    List<String> specialityNames;
-    List<String> hsaTitles;
-
-    public static HospInformationResponse convert(HospInformationDTO hospInformationDTO) {
+    public static HospInformationResponse convert(HospInformation hospInformation) {
         return HospInformationResponse.builder()
-            .personalPrescriptionCode(hospInformationDTO.getPersonalPrescriptionCode())
-            .specialityNames(hospInformationDTO.getSpecialityNames())
-            .hsaTitles(hospInformationDTO.getHsaTitles())
+            .personalPrescriptionCode(hospInformation.getPersonalPrescriptionCode())
+            .licensedHealthcareProfessions(
+                hospInformation.getLicensedHealthcareProfessions().stream().map(l -> new CodeDTO(l.code(), l.description())).toList())
+            .specialities(hospInformation.getSpecialities().stream().map(s -> new CodeDTO(s.code(), s.description())).toList())
             .build();
     }
 }

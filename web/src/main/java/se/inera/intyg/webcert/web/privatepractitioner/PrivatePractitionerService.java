@@ -26,14 +26,10 @@ import se.inera.intyg.webcert.integration.privatepractitioner.model.OwnershipTyp
 import se.inera.intyg.webcert.integration.privatepractitioner.model.RegisterPrivatePractitionerRequest;
 import se.inera.intyg.webcert.integration.privatepractitioner.service.PrivatePractitionerIntegrationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.HealthCareServiceTypeDTO;
+import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.CodeDTO;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.HospInformationResponse;
-import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PositionDTO;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerConfigResponse;
-import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerConsentDTO;
-import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerDTO;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerRegistrationRequest;
-import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.TypeOfCareDTO;
 
 @Service
 @Profile("private-practitioner-service-active")
@@ -43,56 +39,49 @@ public class PrivatePractitionerService {
     private final WebCertUserService webCertUserService;
     private final PrivatePractitionerIntegrationService privatePractitionerIntegrationService;
 
-    public PrivatePractitionerDTO registerPrivatePractitioner(
+    public void registerPrivatePractitioner(
         PrivatePractitionerRegistrationRequest privatePractitionerRegisterRequest) {
         final var user = webCertUserService.getUser();
-        return PrivatePractitionerDTO.create(
-            privatePractitionerIntegrationService.registerPrivatePractitioner(RegisterPrivatePractitionerRequest
-                .builder()
-                .personId(user.getPersonId())
-                .name(user.getName())
-                .position(privatePractitionerRegisterRequest.getPosition())
-                .careUnitName(privatePractitionerRegisterRequest.getCareUnitName())
-                .ownershipType(OwnershipType.PRIVATE.getValue())
-                .typeOfCare(privatePractitionerRegisterRequest.getTypeOfCare())
-                .healthcareServiceType(privatePractitionerRegisterRequest.getHealthcareServiceType())
-                .workplaceCode(privatePractitionerRegisterRequest.getWorkplaceCode())
-                .phoneNumber(privatePractitionerRegisterRequest.getPhoneNumber())
-                .email(privatePractitionerRegisterRequest.getEmail())
-                .address(privatePractitionerRegisterRequest.getAddress())
-                .zipCode(privatePractitionerRegisterRequest.getZipCode())
-                .municipality(privatePractitionerRegisterRequest.getMunicipality())
-                .county(privatePractitionerRegisterRequest.getCounty())
-                .consentFormVersion(privatePractitionerRegisterRequest.getConsentFormVersion())
-                .build()));
-    }
 
-
-    public PrivatePractitionerDTO getPrivatePractitioner() {
-        return null;
-    }
-
-    public void updatePrivatePractitioner(PrivatePractitionerDTO privatePractitioner) {
+        privatePractitionerIntegrationService.registerPrivatePractitioner(RegisterPrivatePractitionerRequest
+            .builder()
+            .personId(user.getPersonId())
+            .name(user.getNamn())
+            .position(privatePractitionerRegisterRequest.getPosition())
+            .careUnitName(privatePractitionerRegisterRequest.getCareUnitName())
+            .ownershipType(OwnershipType.PRIVATE.getValue())
+            .typeOfCare(privatePractitionerRegisterRequest.getTypeOfCare())
+            .healthcareServiceType(privatePractitionerRegisterRequest.getHealthcareServiceType())
+            .workplaceCode(privatePractitionerRegisterRequest.getWorkplaceCode())
+            .phoneNumber(privatePractitionerRegisterRequest.getPhoneNumber())
+            .email(privatePractitionerRegisterRequest.getEmail())
+            .address(privatePractitionerRegisterRequest.getAddress())
+            .zipCode(privatePractitionerRegisterRequest.getZipCode())
+            .city(privatePractitionerRegisterRequest.getCity())
+            .municipality(privatePractitionerRegisterRequest.getMunicipality())
+            .county(privatePractitionerRegisterRequest.getCounty())
+            .build());
     }
 
     public PrivatePractitionerConfigResponse getPrivatePractitionerConfig() {
         final var result = privatePractitionerIntegrationService.getPrivatePractitionerConfig();
         return PrivatePractitionerConfigResponse
             .builder()
-            .positions(result.getPositions().stream().map(position -> new PositionDTO(position.code(), position.name())).toList())
-            .healthcareServiceType(
-                result.getHealthCareServiceTypes().stream()
-                    .map(healthCareServiceType -> new HealthCareServiceTypeDTO(healthCareServiceType.code(), healthCareServiceType.name()))
+            .positions(result.getPositionCodes().stream().map(position -> new CodeDTO(position.code(), position.description())).toList())
+            .healthcareServiceTypes(
+                result.getHealthcareServiceTypeCodes().stream()
+                    .map(healthCareServiceType -> new CodeDTO(healthCareServiceType.code(), healthCareServiceType.description()))
                     .toList())
-            .typeOfCare(result.getTypeOfCare().stream().map(typeOfCare -> new TypeOfCareDTO(typeOfCare.code(), typeOfCare.name())).toList())
-            .consent(new PrivatePractitionerConsentDTO(result.getConsent().content(), result.getConsent().version()))
+            .typeOfCare(result.getTypeOfCareCodes()
+                .stream()
+                .map(typeOfCare -> new CodeDTO(typeOfCare.code(), typeOfCare.description())).toList())
             .build();
     }
 
 
     public HospInformationResponse getHospInformation() {
-        final var hsaId = webCertUserService.getUser().getHsaId();
-        return HospInformationResponse.convert(privatePractitionerIntegrationService.getHospInformation(hsaId));
+        final var personId = webCertUserService.getUser().getPersonId();
+        return HospInformationResponse.convert(privatePractitionerIntegrationService.getHospInformation(personId));
     }
 
 }

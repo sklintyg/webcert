@@ -24,20 +24,19 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.util.List;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerConfig.PrivatePractitionerConfigResponseBuilder;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerConfig.PrivatePractitionerConfigBuilder;
 
 @Value
 @Builder
-@JsonDeserialize(builder = PrivatePractitionerConfigResponseBuilder.class)
+@JsonDeserialize(builder = PrivatePractitionerConfigBuilder.class)
 public class PrivatePractitionerConfig {
 
-    List<Position> positions;
-    List<HealthCareServiceType> healthCareServiceTypes;
-    List<TypeOfCare> typeOfCare;
-    PrivatePractitionerConsent consent;
+    List<Code> positionCodes;
+    List<Code> healthcareServiceTypeCodes;
+    List<Code> typeOfCareCodes;
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class PrivatePractitionerConfigResponseBuilder {
+    public static class PrivatePractitionerConfigBuilder {
 
     }
 }

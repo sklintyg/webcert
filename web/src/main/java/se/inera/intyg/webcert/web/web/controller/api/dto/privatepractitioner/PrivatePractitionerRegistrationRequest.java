@@ -54,8 +54,6 @@ public class PrivatePractitionerRegistrationRequest {
     String municipality;
     String county;
 
-    Long consentFormVersion;
-
     @JsonPOJOBuilder(withPrefix = "")
     public static class PrivatePractitionerRegistrationRequestBuilder {
 

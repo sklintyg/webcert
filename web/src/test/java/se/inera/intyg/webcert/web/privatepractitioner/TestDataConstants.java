@@ -17,10 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.integration.privatepractitioner.service;
+package se.inera.intyg.webcert.web.privatepractitioner;
 
 import java.util.List;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.Code;
+import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.CodeDTO;
 
 public class TestDataConstants {
 
@@ -45,14 +46,42 @@ public class TestDataConstants {
     public static final String DR_KRANSTEGE_MUNICIPALITY = "Kommun";
     public static final String DR_KRANSTEGE_COUNTY = "Län";
     public static final String DR_KRANSTEGE_PRESCRIPTION_CODE = "12345";
-    public static final List<Code> DR_KRANSTEGE_SPECIALITIES = List.of(
-        new Code("32", "Klinisk fysiologi"),
-        new Code("74", "Nukleärmedicin")
+    public static final List<CodeDTO> DR_KRANSTEGE_SPECIALITIES = List.of(
+        new CodeDTO("32", "Klinisk fysiologi"),
+        new CodeDTO("74", "Nukleärmedicin")
     );
     public static final List<Code> DR_KRANSTEGE_LICENSED_HEALTHCARE_PROFESSIONS =
         List.of(new Code("LK", "Läkare"));
 
     public static final long CONSENT_FORM_VERSION = 1L;
+
+    public static final List<Code> POSITIONS = List.of(new Code("203090", "Läkare legitimerad, annan"),
+        new Code("201010", "Överläkare"));
+
+    public static final List<Code> HEALTHCARE_SERVICE_TYPES = List.of(
+        new Code("11", "Medicinsk verksamhet"),
+        new Code("13", "Opererande verksamhet")
+    );
+
+    public static final List<Code> TYPE_OF_CARE = List.of(
+        new Code("01", "Öppenvård"),
+        new Code("02", "Slutenvård")
+    );
+
+
+    public static final List<CodeDTO> POSITIONS_DTO = List.of(
+        new CodeDTO("203090", "Läkare legitimerad, annan"),
+        new CodeDTO("201010", "Överläkare"));
+
+    public static final List<CodeDTO> HEALTHCARE_SERVICE_TYPES_DTO = List.of(
+        new CodeDTO("11", "Medicinsk verksamhet"),
+        new CodeDTO("13", "Opererande verksamhet")
+    );
+
+    public static final List<CodeDTO> TYPE_OF_CARE_DTO = List.of(
+        new CodeDTO("01", "Öppenvård"),
+        new CodeDTO("02", "Slutenvård")
+    );
 
 
 }

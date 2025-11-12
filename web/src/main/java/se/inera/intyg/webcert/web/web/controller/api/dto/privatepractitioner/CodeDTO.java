@@ -19,6 +19,6 @@
 
 package se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner;
 
-public record PositionDTO(String code, String name) {
+public record CodeDTO(String code, String description) {
 
 }

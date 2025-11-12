@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner;
+package se.inera.intyg.webcert.integration.privatepractitioner.model;
 
-public record TypeOfCareDTO(String code, String name) {
+public record Code(String code, String description) {
 
 }

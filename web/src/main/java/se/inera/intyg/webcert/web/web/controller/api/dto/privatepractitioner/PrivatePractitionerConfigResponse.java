@@ -23,7 +23,6 @@ import java.util.List;
 import lombok.Builder;
 
 @Builder
-public record PrivatePractitionerConfigResponse(List<PositionDTO> positions, List<HealthCareServiceTypeDTO> healthcareServiceType,
-                                                List<TypeOfCareDTO> typeOfCare, PrivatePractitionerConsentDTO consent) {
+public record PrivatePractitionerConfigResponse(List<CodeDTO> positions, List<CodeDTO> healthcareServiceTypes, List<CodeDTO> typeOfCare) {
 
 }

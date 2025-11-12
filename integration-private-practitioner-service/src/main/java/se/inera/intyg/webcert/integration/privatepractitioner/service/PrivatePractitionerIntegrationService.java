@@ -33,10 +33,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.GetPrivatePractitionerResponseDTO;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.HoSPersonDTO;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.HospInformationDTO;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.HospInformationResponse;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.HospInformation;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitioner;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerConfig;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.RegisterPrivatePractitionerRequest;
@@ -96,26 +93,6 @@ public class PrivatePractitionerIntegrationService {
         }
     }
 
-    public HoSPersonDTO getPrivatePractitioner(String personalOrHsaIdIdentityNumber) {
-
-        final var response = ppsRestClient
-            .get()
-            .uri(uriBuilder -> uriBuilder
-                .path("/{id}")
-                .build(personalOrHsaIdIdentityNumber))
-            .accept(MediaType.APPLICATION_JSON)
-            .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
-            .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
-            .retrieve()
-            .body(GetPrivatePractitionerResponseDTO.class);
-
-        if (response == null) {
-            throw new RestClientException("Get Private Practitioner failed. Response is null.");
-        }
-
-        return response.getHoSPerson();
-    }
-
     public PrivatePractitionerConfig getPrivatePractitionerConfig() {
         return ppsRestClient
             .get()
@@ -127,7 +104,7 @@ public class PrivatePractitionerIntegrationService {
             .body(PrivatePractitionerConfig.class);
     }
 
-    public HospInformationDTO getHospInformation(String personalOrHsaIdIdentityNumber) {
+    public HospInformation getHospInformation(String personalOrHsaIdIdentityNumber) {
         final var response = ppsRestClient
             .get()
             .uri(uriBuilder -> uriBuilder
@@ -137,13 +114,13 @@ public class PrivatePractitionerIntegrationService {
             .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
             .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
             .retrieve()
-            .body(HospInformationResponse.class);
+            .body(HospInformation.class);
 
         if (response == null) {
             throw new RestClientException("Get HOSP Information failed. Response is null.");
         }
 
-        return response.getHospInformation();
+        return response;
     }
 
     public PrivatePractitioner registerPrivatePractitioner(RegisterPrivatePractitionerRequest registrationRequest) {

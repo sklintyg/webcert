@@ -11,13 +11,13 @@ import se.inera.intyg.webcert.integration.privatepractitioner.model.PersonIdDTO.
 @JsonDeserialize(builder = PersonIdDTOBuilder.class)
 public class PersonIdDTO {
 
-  private String root;
-  private String extension;
-  private String identifierName;
+    String root;
+    String extension;
+    String identifierName;
 
-  @JsonPOJOBuilder(withPrefix = "")
-  public static class PersonIdDTOBuilder {
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class PersonIdDTOBuilder {
 
-  }
+    }
 
 }

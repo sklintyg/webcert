@@ -43,6 +43,4 @@ public class RegisterPrivatePractitionerRequest {
     String city;
     String municipality;
     String county;
-
-    Long consentFormVersion;
 }
