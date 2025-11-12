@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.web.service.log;
 
 import se.inera.intyg.infra.logmessages.PdlLogMessage;
-import se.inera.intyg.infra.logmessages.ResourceType;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.dto.LogUser;
 
@@ -29,6 +28,4 @@ import se.inera.intyg.webcert.web.service.log.dto.LogUser;
 public interface LogMessagePopulator {
 
     PdlLogMessage populateLogMessage(PdlLogMessage logMsg, LogRequest logRequest, LogUser user);
-
-    PdlLogMessage populateLogMessage(PdlLogMessage logMsg, LogRequest logRequest, LogUser user, ResourceType resourceType);
 }

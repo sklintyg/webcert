@@ -34,7 +34,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.infra.logmessages.ResourceType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -138,7 +137,7 @@ class GetCertificateTypeInfoModalFacadeServiceImplTest {
 
             service.get(CERTIFICATE_TYPE, personnummer);
 
-            verify(logService).logReadLevelOne(eq(user), eq(PATIENT_ID), eq(ResourceType.RESOURCE_TYPE_VARDINFORMATION));
+            verify(logService).logReadLevelOne(eq(user), eq(PATIENT_ID));
         }
 
         @Test
@@ -148,7 +147,7 @@ class GetCertificateTypeInfoModalFacadeServiceImplTest {
 
             service.get(CERTIFICATE_TYPE, personnummer);
 
-            verify(logService).logReadLevelOne(eq(user), eq(PATIENT_ID), eq(ResourceType.RESOURCE_TYPE_VARDINFORMATION));
+            verify(logService).logReadLevelOne(eq(user), eq(PATIENT_ID));
         }
 
         @Test
@@ -166,7 +165,7 @@ class GetCertificateTypeInfoModalFacadeServiceImplTest {
 
             service.get(CERTIFICATE_TYPE, differentPersonnummer);
 
-            verify(logService).logReadLevelOne(eq(user), eq(differentPatientId), eq(ResourceType.RESOURCE_TYPE_VARDINFORMATION));
+            verify(logService).logReadLevelOne(eq(user), eq(differentPatientId));
         }
     }
 }

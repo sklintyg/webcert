@@ -53,7 +53,6 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.logmessages.ActivityPurpose;
 import se.inera.intyg.infra.logmessages.ActivityType;
 import se.inera.intyg.infra.logmessages.PdlLogMessage;
-import se.inera.intyg.infra.logmessages.ResourceType;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Privilege;
@@ -210,7 +209,7 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
                 logRequest
             );
 
-        logService.logReadLevelOne(user, patientId, ResourceType.RESOURCE_TYPE_VARDINFORMATION);
+        logService.logReadLevelOne(user, patientId);
 
         verify(template, only()).send(any(MessageCreator.class));
     }

@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.log;
 
-import se.inera.intyg.infra.logmessages.ResourceType;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.dto.LogUser;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -220,7 +219,13 @@ public interface LogService {
      */
     void logReadLevelTwo(WebCertUser user, String patient);
 
-    void logReadLevelOne(WebCertUser user, String patient, ResourceType resourceType);
+    /**
+     * Creates a log event when a user metadata from one or more intyg.
+     *
+     * @param user the user who performs the action that is being logged
+     * @param patient the user who performs the action that is being logged
+     */
+    void logReadLevelOne(WebCertUser user, String patient);
 
     /**
      * Use this to create a {@link LogUser} instance from a supplied {@link WebCertUser}

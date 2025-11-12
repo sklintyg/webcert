@@ -20,7 +20,6 @@ package se.inera.intyg.webcert.web.service.facade.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.infra.logmessages.ResourceType;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateTypeInfoModalFacadeService;
 import se.inera.intyg.webcert.web.service.log.LogService;
@@ -38,8 +37,7 @@ public class GetCertificateTypeInfoModalFacadeServiceImpl implements GetCertific
     @Override
     public CertificateTypeInfoModalDTO get(String certificateType, Personnummer patientId) {
         final var modal = certificateTypeInfoModalService.get(certificateType, patientId);
-        logService.logReadLevelOne(webCertUserService.getUser(), patientId.getPersonnummer(),
-            ResourceType.RESOURCE_TYPE_VARDINFORMATION);
+        logService.logReadLevelOne(webCertUserService.getUser(), patientId.getPersonnummer());
 
         return modal.map(certificateTypeInfoModal -> CertificateTypeInfoModalDTO.builder()
             .title(certificateTypeInfoModal.getTitle())
