@@ -53,6 +53,7 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.logmessages.ActivityPurpose;
 import se.inera.intyg.infra.logmessages.ActivityType;
 import se.inera.intyg.infra.logmessages.PdlLogMessage;
+import se.inera.intyg.infra.logmessages.ResourceType;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Privilege;
@@ -60,6 +61,7 @@ import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
+import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
@@ -76,6 +78,12 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Mock
     private WebCertUserService userService = mock(WebCertUserService.class);
+
+    @Mock
+    private LogRequestFactory logRequestFactory;
+
+    @Mock
+    private LogMessagePopulator logMessagePopulator;
 
     @InjectMocks
     private LogServiceImpl logService = new LogServiceImpl();
@@ -189,6 +197,25 @@ public class LogServiceImplTest extends AuthoritiesConfigurationTestSetup {
         logService.logReadIntyg(logRequest);
 
         verify(template, times(0)).send(any(MessageCreator.class));
+    }
+
+    @Test
+    public void shouldLogReadLevelOne() {
+        final var user = createUser();
+        final var patientId = "191212121212";
+        final var populatedMessage = mock(PdlLogMessage.class);
+        final var logRequest = mock(LogRequest.class);
+
+        when(logRequest.getPatientId())
+            .thenReturn(createPnr(patientId));
+        when(logRequestFactory.createLogRequestFromUser(user, patientId))
+            .thenReturn(
+                logRequest
+            );
+
+        logService.logReadLevelOne(user, patientId, ResourceType.RESOURCE_TYPE_VARDINFORMATION);
+
+        verify(template, only()).send(any(MessageCreator.class));
     }
 
     private WebCertUser createUser() {

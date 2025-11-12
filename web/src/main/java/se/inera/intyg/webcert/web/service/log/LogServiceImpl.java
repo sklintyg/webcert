@@ -37,6 +37,7 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.infra.logmessages.ActivityType;
 import se.inera.intyg.infra.logmessages.PdlLogMessage;
 import se.inera.intyg.infra.logmessages.ResourceType;
+import se.inera.intyg.webcert.common.service.log.template.GeneralInformationMessage;
 import se.inera.intyg.webcert.common.service.log.template.IntygCreateMessage;
 import se.inera.intyg.webcert.common.service.log.template.IntygDeleteMessage;
 import se.inera.intyg.webcert.common.service.log.template.IntygListsMessage;
@@ -243,17 +244,17 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
-    public void logReadLevelTwo(WebCertUser user, String patient, ResourceType resourceType) {
+    public void logReadLevelOne(WebCertUser user, String patient, ResourceType resourceType) {
         LogRequest logRequest = logRequestFactory.createLogRequestFromUser(user, patient);
         send(logMessagePopulator.populateLogMessage(
-            IntygListsMessage.build(), logRequest, getLogUser(user), resourceType), logRequest.isTestIntyg());
+            GeneralInformationMessage.build(), logRequest, getLogUser(user), resourceType), logRequest.isTestIntyg());
     }
 
     @Override
     public LogUser getLogUser(WebCertUser webCertUser) {
         SelectableVardenhet valdVardenhet = webCertUser.getValdVardenhet();
         SelectableVardenhet valdVardgivare = webCertUser.getValdVardgivare();
-        
+
         return new LogUser.Builder(webCertUser.getHsaId(), valdVardenhet.getId(), valdVardgivare.getId())
             .userName(webCertUser.getNamn())
             .userAssignment(webCertUser.getSelectedMedarbetarUppdragNamn())

@@ -16,19 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.service.log;
+package se.inera.intyg.webcert.common.service.log.template;
 
+import se.inera.intyg.infra.logmessages.ActivityType;
 import se.inera.intyg.infra.logmessages.PdlLogMessage;
-import se.inera.intyg.infra.logmessages.ResourceType;
-import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
-import se.inera.intyg.webcert.web.service.log.dto.LogUser;
 
-/**
- * Created by eriklupander on 2017-04-24.
- */
-public interface LogMessagePopulator {
+public abstract class GeneralInformationMessage {
 
-    PdlLogMessage populateLogMessage(PdlLogMessage logMsg, LogRequest logRequest, LogUser user);
-
-    PdlLogMessage populateLogMessage(PdlLogMessage logMsg, LogRequest logRequest, LogUser user, ResourceType resourceType);
+    public static PdlLogMessage build() {
+        PdlLogMessage pdlLogMessage = new PdlLogMessage(ActivityType.READ);
+        pdlLogMessage.setActivityLevel("1");
+        return pdlLogMessage;
+    }
 }

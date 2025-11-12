@@ -220,7 +220,7 @@ public interface LogService {
      */
     void logReadLevelTwo(WebCertUser user, String patient);
 
-    void logReadLevelTwo(WebCertUser user, String patient, ResourceType resourceType);
+    void logReadLevelOne(WebCertUser user, String patient, ResourceType resourceType);
 
     /**
      * Use this to create a {@link LogUser} instance from a supplied {@link WebCertUser}

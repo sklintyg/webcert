@@ -126,7 +126,7 @@ class GetCertificateTypeInfoModalFacadeServiceImplTest {
     class Logging {
 
         @Test
-        void shouldLogReadLevelTwoWhenModalExists() {
+        void shouldLogReadLevelOneWhenModalExists() {
             final var modal = CertificateTypeInfoModal.builder()
                 .title(EXPECTED_TITLE)
                 .description(EXPECTED_DESCRIPTION)
@@ -138,21 +138,21 @@ class GetCertificateTypeInfoModalFacadeServiceImplTest {
 
             service.get(CERTIFICATE_TYPE, personnummer);
 
-            verify(logService).logReadLevelTwo(eq(user), eq(PATIENT_ID), eq(ResourceType.RESOURCE_TYPE_VARDINFORMATION));
+            verify(logService).logReadLevelOne(eq(user), eq(PATIENT_ID), eq(ResourceType.RESOURCE_TYPE_VARDINFORMATION));
         }
 
         @Test
-        void shouldLogReadLevelTwoEvenWhenNoModalExists() {
+        void shouldLogReadLevelOneEvenWhenNoModalExists() {
             when(certificateTypeInfoModalService.get(eq(CERTIFICATE_TYPE), eq(personnummer)))
                 .thenReturn(Optional.empty());
 
             service.get(CERTIFICATE_TYPE, personnummer);
 
-            verify(logService).logReadLevelTwo(eq(user), eq(PATIENT_ID), eq(ResourceType.RESOURCE_TYPE_VARDINFORMATION));
+            verify(logService).logReadLevelOne(eq(user), eq(PATIENT_ID), eq(ResourceType.RESOURCE_TYPE_VARDINFORMATION));
         }
 
         @Test
-        void shouldLogReadLevelTwoWithCorrectPatientId() {
+        void shouldLogReadLevelOneWithCorrectPatientId() {
             final var differentPatientId = "199001011234";
             final var differentPersonnummer = Personnummer.createPersonnummer(differentPatientId).orElseThrow();
 
@@ -166,7 +166,7 @@ class GetCertificateTypeInfoModalFacadeServiceImplTest {
 
             service.get(CERTIFICATE_TYPE, differentPersonnummer);
 
-            verify(logService).logReadLevelTwo(eq(user), eq(differentPatientId), eq(ResourceType.RESOURCE_TYPE_VARDINFORMATION));
+            verify(logService).logReadLevelOne(eq(user), eq(differentPatientId), eq(ResourceType.RESOURCE_TYPE_VARDINFORMATION));
         }
     }
 }

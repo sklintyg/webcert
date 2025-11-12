@@ -35,10 +35,10 @@ public class GetCertificateTypeInfoModalFacadeServiceImpl implements GetCertific
     private final LogService logService;
     private final WebCertUserService webCertUserService;
 
-  @Override
+    @Override
     public CertificateTypeInfoModalDTO get(String certificateType, Personnummer patientId) {
         final var modal = certificateTypeInfoModalService.get(certificateType, patientId);
-        logService.logReadLevelTwo(webCertUserService.getUser(), patientId.getPersonnummer(),
+        logService.logReadLevelOne(webCertUserService.getUser(), patientId.getPersonnummer(),
             ResourceType.RESOURCE_TYPE_VARDINFORMATION);
 
         return modal.map(certificateTypeInfoModal -> CertificateTypeInfoModalDTO.builder()
