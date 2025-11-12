@@ -19,7 +19,21 @@
 
 package se.inera.intyg.webcert.integration.privatepractitioner.service;
 
+import static se.inera.intyg.webcert.integration.privatepractitioner.service.TestDataConstants.DR_KRANSTEGE_ADDRESS;
+import static se.inera.intyg.webcert.integration.privatepractitioner.service.TestDataConstants.DR_KRANSTEGE_CARE_UNIT_NAME;
+import static se.inera.intyg.webcert.integration.privatepractitioner.service.TestDataConstants.DR_KRANSTEGE_CITY;
+import static se.inera.intyg.webcert.integration.privatepractitioner.service.TestDataConstants.DR_KRANSTEGE_COUNTY;
+import static se.inera.intyg.webcert.integration.privatepractitioner.service.TestDataConstants.DR_KRANSTEGE_EMAIL;
+import static se.inera.intyg.webcert.integration.privatepractitioner.service.TestDataConstants.DR_KRANSTEGE_HEALTHCARE_SERVICE_TYPE;
+import static se.inera.intyg.webcert.integration.privatepractitioner.service.TestDataConstants.DR_KRANSTEGE_MUNICIPALITY;
+import static se.inera.intyg.webcert.integration.privatepractitioner.service.TestDataConstants.DR_KRANSTEGE_NAME;
+import static se.inera.intyg.webcert.integration.privatepractitioner.service.TestDataConstants.DR_KRANSTEGE_OWNERSHIP_TYPE;
 import static se.inera.intyg.webcert.integration.privatepractitioner.service.TestDataConstants.DR_KRANSTEGE_PERSON_ID;
+import static se.inera.intyg.webcert.integration.privatepractitioner.service.TestDataConstants.DR_KRANSTEGE_PHONE_NUMBER;
+import static se.inera.intyg.webcert.integration.privatepractitioner.service.TestDataConstants.DR_KRANSTEGE_POSITION;
+import static se.inera.intyg.webcert.integration.privatepractitioner.service.TestDataConstants.DR_KRANSTEGE_TYPE_OF_CARE;
+import static se.inera.intyg.webcert.integration.privatepractitioner.service.TestDataConstants.DR_KRANSTEGE_WORKPLACE_CODE;
+import static se.inera.intyg.webcert.integration.privatepractitioner.service.TestDataConstants.DR_KRANSTEGE_ZIP_CODE;
 
 import se.inera.intyg.webcert.integration.privatepractitioner.model.RegisterPrivatePractitionerRequest;
 
@@ -33,6 +47,25 @@ public class TestDataDTO {
         return RegisterPrivatePractitionerRequest.builder()
             .personId(DR_KRANSTEGE_PERSON_ID)
             .build();
+    }
 
+    public static RegisterPrivatePractitionerRequest validRegisterPractitionerRequest() {
+        return RegisterPrivatePractitionerRequest.builder()
+            .personId(DR_KRANSTEGE_PERSON_ID)
+            .name(DR_KRANSTEGE_NAME)
+            .position(DR_KRANSTEGE_POSITION)
+            .careUnitName(DR_KRANSTEGE_CARE_UNIT_NAME)
+            .ownershipType(DR_KRANSTEGE_OWNERSHIP_TYPE)
+            .typeOfCare(DR_KRANSTEGE_TYPE_OF_CARE)
+            .healthcareServiceType(DR_KRANSTEGE_HEALTHCARE_SERVICE_TYPE)
+            .workplaceCode(DR_KRANSTEGE_WORKPLACE_CODE)
+            .phoneNumber(DR_KRANSTEGE_PHONE_NUMBER)
+            .email(DR_KRANSTEGE_EMAIL)
+            .address(DR_KRANSTEGE_ADDRESS)
+            .zipCode(DR_KRANSTEGE_ZIP_CODE)
+            .city(DR_KRANSTEGE_CITY)
+            .municipality(DR_KRANSTEGE_MUNICIPALITY)
+            .county(DR_KRANSTEGE_COUNTY)
+            .build();
     }
 }

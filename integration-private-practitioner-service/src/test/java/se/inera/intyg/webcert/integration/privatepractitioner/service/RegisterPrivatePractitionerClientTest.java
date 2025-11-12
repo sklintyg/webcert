@@ -26,6 +26,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static se.inera.intyg.webcert.integration.privatepractitioner.service.TestDataConstants.DR_KRANSTEGE_CARE_UNIT_NAME;
+import static se.inera.intyg.webcert.integration.privatepractitioner.service.TestDataConstants.DR_KRANSTEGE_HSA_ID;
+import static se.inera.intyg.webcert.integration.privatepractitioner.service.TestDataConstants.DR_KRANSTEGE_NAME;
+import static se.inera.intyg.webcert.integration.privatepractitioner.service.TestDataConstants.DR_KRANSTEGE_PERSON_ID;
+import static se.inera.intyg.webcert.integration.privatepractitioner.service.TestDataConstants.DR_KRANSTEGE_POSITION;
+import static se.inera.intyg.webcert.integration.privatepractitioner.service.TestDataDTO.validRegisterPractitionerRequest;
+import static se.inera.intyg.webcert.integration.privatepractitioner.service.TestDataModel.DR_KRANSTEGE;
 
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,12 +56,6 @@ class RegisterPrivatePractitionerClientTest {
 
   private static final String SESSION_ID = "session-123";
   private static final String TRACE_ID = "trace-456";
-  private static final String PERSON_ID = "191212121212";
-  private static final String NAME = "Test Testsson";
-  private static final String HSA_ID = "HSA-123456";
-  private static final String POSITION = "LK";
-  private static final String CARE_UNIT_NAME = "Test Vårdcental";
-  private static final String CARE_PROVIDER_NAME = "Test Vårdgivare";
 
   @Mock
   private RestClient ppsRestClient;
@@ -86,45 +87,9 @@ class RegisterPrivatePractitionerClientTest {
 
   @Test
   void shouldRegisterPrivatePractitioner() {
-    final var registrationRequest = RegisterPrivatePractitionerRequest.builder()
-        .personId(PERSON_ID)
-        .name(NAME)
-        .position(POSITION)
-        .careUnitName(CARE_UNIT_NAME)
-        .ownershipType("Privat")
-        .typeOfCare("OPEN")
-        .healthcareServiceType("01")
-        .workplaceCode("1234567890")
-        .phoneNumber("0701234567")
-        .email("test@test.se")
-        .address("Testgatan 1")
-        .zipCode("12345")
-        .city("Teststad")
-        .municipality("Testkommun")
-        .county("Testlän")
-        .build();
+    final var registrationRequest = validRegisterPractitionerRequest();
 
-    final var expectedResponse = PrivatePractitioner.builder()
-        .hsaId(HSA_ID)
-        .personId(PERSON_ID)
-        .name(NAME)
-        .position(POSITION)
-        .careUnitName(CARE_UNIT_NAME)
-        .careProviderName(CARE_PROVIDER_NAME)
-        .ownershipType("Privat")
-        .typeOfCare("OPEN")
-        .healthcareServiceType("01")
-        .workplaceCode("1234567890")
-        .phoneNumber("0701234567")
-        .email("test@test.se")
-        .address("Testgatan 1")
-        .zipCode("12345")
-        .city("Teststad")
-        .municipality("Testkommun")
-        .county("Testlän")
-        .consentFormVersion(1L)
-        .registrationDate(LocalDateTime.now())
-        .build();
+    final var expectedResponse = DR_KRANSTEGE;
 
     when(responseSpec.body(PrivatePractitioner.class)).thenReturn(expectedResponse);
 
@@ -132,12 +97,12 @@ class RegisterPrivatePractitionerClientTest {
 
     assertAll(
         () -> assertNotNull(result),
-        () -> assertEquals(HSA_ID, result.getHsaId()),
-        () -> assertEquals(PERSON_ID, result.getPersonId()),
-        () -> assertEquals(NAME, result.getName()),
-        () -> assertEquals(POSITION, result.getPosition()),
-        () -> assertEquals(CARE_UNIT_NAME, result.getCareUnitName()),
-        () -> assertEquals(CARE_PROVIDER_NAME, result.getCareProviderName()),
+        () -> assertEquals(DR_KRANSTEGE_HSA_ID, result.getHsaId()),
+        () -> assertEquals(DR_KRANSTEGE_PERSON_ID, result.getPersonId()),
+        () -> assertEquals(DR_KRANSTEGE_NAME, result.getName()),
+        () -> assertEquals(DR_KRANSTEGE_POSITION, result.getPosition()),
+        () -> assertEquals(DR_KRANSTEGE_CARE_UNIT_NAME, result.getCareUnitName()),
+        () -> assertEquals(DR_KRANSTEGE_CARE_UNIT_NAME, result.getCareProviderName()),
         () -> assertNotNull(result.getRegistrationDate())
     );
   }
@@ -145,14 +110,14 @@ class RegisterPrivatePractitionerClientTest {
   @Test
   void shouldSetCorrectHeaders() {
     final var registrationRequest = RegisterPrivatePractitionerRequest.builder()
-        .personId(PERSON_ID)
-        .name(NAME)
+        .personId(DR_KRANSTEGE_PERSON_ID)
+        .name(DR_KRANSTEGE_NAME)
         .build();
 
     final var expectedResponse = PrivatePractitioner.builder()
-        .hsaId(HSA_ID)
-        .personId(PERSON_ID)
-        .name(NAME)
+        .hsaId(DR_KRANSTEGE_HSA_ID)
+        .personId(DR_KRANSTEGE_PERSON_ID)
+        .name(DR_KRANSTEGE_NAME)
         .build();
 
     when(responseSpec.body(PrivatePractitioner.class)).thenReturn(expectedResponse);
@@ -165,18 +130,9 @@ class RegisterPrivatePractitionerClientTest {
 
   @Test
   void shouldSendCorrectRequestBody() {
-    final var registrationRequest = RegisterPrivatePractitionerRequest.builder()
-        .personId(PERSON_ID)
-        .name(NAME)
-        .position(POSITION)
-        .careUnitName(CARE_UNIT_NAME)
-        .build();
+    final var registrationRequest = validRegisterPractitionerRequest();
 
-    final var expectedResponse = PrivatePractitioner.builder()
-        .hsaId(HSA_ID)
-        .personId(PERSON_ID)
-        .name(NAME)
-        .build();
+    final var expectedResponse = DR_KRANSTEGE;
 
     when(responseSpec.body(PrivatePractitioner.class)).thenReturn(expectedResponse);
 
@@ -186,10 +142,10 @@ class RegisterPrivatePractitionerClientTest {
     final var capturedRequest = requestCaptor.getValue();
 
     assertAll(
-        () -> assertEquals(PERSON_ID, capturedRequest.getPersonId()),
-        () -> assertEquals(NAME, capturedRequest.getName()),
-        () -> assertEquals(POSITION, capturedRequest.getPosition()),
-        () -> assertEquals(CARE_UNIT_NAME, capturedRequest.getCareUnitName())
+        () -> assertEquals(DR_KRANSTEGE_PERSON_ID, capturedRequest.getPersonId()),
+        () -> assertEquals(DR_KRANSTEGE_NAME, capturedRequest.getName()),
+        () -> assertEquals(DR_KRANSTEGE_POSITION, capturedRequest.getPosition()),
+        () -> assertEquals(DR_KRANSTEGE_CARE_UNIT_NAME, capturedRequest.getCareUnitName())
     );
   }
 }

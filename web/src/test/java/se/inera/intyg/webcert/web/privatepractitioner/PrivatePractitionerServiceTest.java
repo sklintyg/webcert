@@ -24,8 +24,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_HSA_ID;
+import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_LICENSED_HEALTHCARE_PROFESSIONS;
+import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_LICENSED_HEALTHCARE_PROFESSIONS_DTO;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_NAME;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_PERSON_ID;
+import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_PRESCRIPTION_CODE;
+import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_SPECIALITIES;
+import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_SPECIALITIES_DTO;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataDTO.KRANSTEGE_REGISTREATION_REQUEST_DTO;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataDTO.PRIVATE_PRACTITIONER_CONFIG_DTO;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataIntegration.KRANSTEGE_REGISTREATION_REQUEST;
@@ -80,8 +85,18 @@ class PrivatePractitionerServiceTest {
     void shouldReturnHospInformation() {
         mockUser();
         final var hospInfo = mock(HospInformation.class);
+        when(hospInfo.getPersonalPrescriptionCode()).thenReturn(DR_KRANSTEGE_PRESCRIPTION_CODE);
+        when(hospInfo.getLicensedHealthcareProfessions()).thenReturn(DR_KRANSTEGE_LICENSED_HEALTHCARE_PROFESSIONS);
+        when(hospInfo.getSpecialities()).thenReturn(DR_KRANSTEGE_SPECIALITIES);
         when(privatePractitionerIntegrationService.getHospInformation(DR_KRANSTEGE_PERSON_ID)).thenReturn(hospInfo);
+
         final var result = service.getHospInformation();
-        assertEquals(hospInfo, result);
+
+        final var expected = se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.HospInformationResponse.builder()
+            .personalPrescriptionCode(DR_KRANSTEGE_PRESCRIPTION_CODE)
+            .licensedHealthcareProfessions(DR_KRANSTEGE_LICENSED_HEALTHCARE_PROFESSIONS_DTO)
+            .specialities(DR_KRANSTEGE_SPECIALITIES_DTO)
+            .build();
+        assertEquals(expected, result);
     }
 }
