@@ -63,11 +63,12 @@ public class SosParentCertificateValidator implements CertificateValidator {
         }
 
         final var value = textValue.getText();
-        if (value == null || value.trim().isEmpty()) {
+
+        if (value == null || value.isEmpty()) {
             return;
         }
 
-        if (!getValidMunicipalityValues().contains(value.trim())) {
+        if (!getValidMunicipalityValues().contains(value)) {
             final var validationMessage = new DraftValidationMessage(
                 DODSDATUM_DODSPLATS_CATEGORY_ID,
                 QUESTION_DODSPLATS_KOMMUN,

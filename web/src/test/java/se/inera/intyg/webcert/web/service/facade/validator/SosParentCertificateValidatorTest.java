@@ -142,17 +142,6 @@ class SosParentCertificateValidatorTest {
         }
 
         @Test
-        void shouldNotAddValidationErrorForWhitespaceValue() {
-            final var certificate = createCertificateWithMunicipalityValue("   ");
-
-            validator.validate(certificate, draftValidation);
-
-            assertTrue(draftValidation.getMessages().isEmpty(),
-                "Whitespace-only values should not be validated - there's another validation for required fields");
-            assertEquals(ValidationStatus.VALID, draftValidation.getStatus());
-        }
-
-        @Test
         void shouldNotAddValidationErrorWhenQuestionNotPresent() {
             final var certificate = createCertificateWithoutMunicipality();
 
@@ -177,23 +166,25 @@ class SosParentCertificateValidatorTest {
     class EdgeCases {
 
         @Test
-        void shouldValidateWithTrailingWhitespace() {
+        void shouldAddValidationErrorForValueWithTrailingWhitespace() {
             final var certificate = createCertificateWithMunicipalityValue("Stockholm ");
 
             validator.validate(certificate, draftValidation);
 
-            assertTrue(draftValidation.getMessages().isEmpty());
-            assertEquals(ValidationStatus.VALID, draftValidation.getStatus());
+            assertEquals(1, draftValidation.getMessages().size());
+            assertEquals("Du måste välja ett alternativ.", draftValidation.getMessages().getFirst().getMessage());
+            assertEquals(ValidationStatus.INVALID, draftValidation.getStatus());
         }
 
         @Test
-        void shouldValidateWithLeadingWhitespace() {
+        void shouldAddValidationErrorForValueWithLeadingWhitespace() {
             final var certificate = createCertificateWithMunicipalityValue(" Stockholm");
 
             validator.validate(certificate, draftValidation);
 
-            assertTrue(draftValidation.getMessages().isEmpty());
-            assertEquals(ValidationStatus.VALID, draftValidation.getStatus());
+            assertEquals(1, draftValidation.getMessages().size());
+            assertEquals("Du måste välja ett alternativ.", draftValidation.getMessages().getFirst().getMessage());
+            assertEquals(ValidationStatus.INVALID, draftValidation.getStatus());
         }
     }
 

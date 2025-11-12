@@ -19,11 +19,15 @@
 package se.inera.intyg.webcert.web.service.facade.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -40,6 +44,8 @@ import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationMessageType;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationStatus;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
+import se.inera.intyg.webcert.web.service.facade.validator.CertificateValidator;
+import se.inera.intyg.webcert.web.service.facade.validator.CertificateValidatorProvider;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
 import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationMessage;
@@ -61,11 +67,14 @@ class ValidateCertificateFacadeServiceImplTest {
     @Mock
     private IntygModuleRegistry intygModuleRegistry;
 
+    @Mock
+    private CertificateValidatorProvider certificateValidatorProvider;
+
     @InjectMocks
     private ValidateCertificateFacadeServiceImpl validateCertificateFacadeService;
 
     private Certificate certificate;
-    private DraftValidation draftValidation = new DraftValidation();
+    private final DraftValidation draftValidation = new DraftValidation();
 
     @BeforeEach
     void setup() throws Exception {
@@ -222,5 +231,28 @@ class ValidateCertificateFacadeServiceImplTest {
         );
         draftValidation.addMessage(validationMessage);
         return validationMessage;
+    }
+
+    @Nested
+    class CertificateSpecificValidation {
+
+        @Test
+        void shouldNotCallValidatorWhenValidatorProviderReturnsNull() {
+            doReturn(null).when(certificateValidatorProvider).get(CERTIFICATE_TYPE);
+
+            validateCertificateFacadeService.validate(certificate);
+
+            verify(certificateValidatorProvider).get(CERTIFICATE_TYPE);
+        }
+
+        @Test
+        void shouldCallCertificateValidatorWhenProviderReturnsValidator() {
+            final var mockValidator = mock(CertificateValidator.class);
+            doReturn(mockValidator).when(certificateValidatorProvider).get(CERTIFICATE_TYPE);
+
+            validateCertificateFacadeService.validate(certificate);
+
+            verify(mockValidator).validate(eq(certificate), any(DraftValidation.class));
+        }
     }
 }
