@@ -91,10 +91,8 @@ public class ValidateCertificateFacadeServiceImpl implements ValidateCertificate
     }
 
     private void applyCertificateSpecificValidation(Certificate certificate, DraftValidation draftValidation) {
-        final var validator = certificateValidatorProvider.get(certificate.getMetadata().getType());
-        if (validator != null) {
-            validator.validate(certificate, draftValidation);
-        }
+        certificateValidatorProvider.get(certificate.getMetadata().getType())
+            .ifPresent(validator -> validator.validate(certificate, draftValidation));
     }
 
     private ValidationErrorDTO[] convertDraftValidation(ModuleApi moduleApi, Certificate certificate, DraftValidation draftValidation) {

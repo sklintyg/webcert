@@ -20,13 +20,13 @@
 package se.inera.intyg.webcert.web.service.facade.validator;
 
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
+import se.inera.intyg.common.doi.support.DoiModuleEntryPoint;
 import se.inera.intyg.webcert.web.service.facade.util.DefaultTypeAheadProvider;
 
 class CertificateValidatorProviderTest {
@@ -35,43 +35,53 @@ class CertificateValidatorProviderTest {
 
     @BeforeEach
     void setUp() {
-        DefaultTypeAheadProvider typeAheadProvider = mock(DefaultTypeAheadProvider.class);
+        final var typeAheadProvider = mock(DefaultTypeAheadProvider.class);
         certificateValidatorProvider = new CertificateValidatorProvider(typeAheadProvider);
     }
 
     @Test
-    void shouldReturnDbValidatorForDbCertificateType() {
+    void shouldReturnSosParentValidatorForDbCertificateType() {
         final var certificateType = DbModuleEntryPoint.MODULE_ID;
 
         final var validator = certificateValidatorProvider.get(certificateType);
 
-        assertNotNull(validator);
-        assertInstanceOf(SosParentCertificateValidator.class, validator);
+        assertTrue(validator.isPresent());
+        assertInstanceOf(SosParentCertificateValidator.class, validator.get());
     }
 
     @Test
-    void shouldReturnNullForUnknownCertificateType() {
+    void shouldReturnSosParentValidatorForDoiCertificateType() {
+        final var certificateType = DoiModuleEntryPoint.MODULE_ID;
+
+        final var validator = certificateValidatorProvider.get(certificateType);
+
+        assertTrue(validator.isPresent());
+        assertInstanceOf(SosParentCertificateValidator.class, validator.get());
+    }
+
+    @Test
+    void shouldReturnEmptyForUnknownCertificateType() {
         final var certificateType = "unknown_type";
 
         final var validator = certificateValidatorProvider.get(certificateType);
 
-        assertNull(validator);
+        assertTrue(validator.isEmpty());
     }
 
     @Test
-    void shouldReturnNullForLisjpCertificateType() {
+    void shouldReturnEmptyForLisjpCertificateType() {
         final var certificateType = "lisjp";
 
         final var validator = certificateValidatorProvider.get(certificateType);
 
-        assertNull(validator);
+        assertTrue(validator.isEmpty());
     }
 
     @Test
-    void shouldReturnNullForNullCertificateType() {
+    void shouldReturnEmptyForNullCertificateType() {
         final var validator = certificateValidatorProvider.get(null);
 
-        assertNull(validator);
+        assertTrue(validator.isEmpty());
     }
 
     @Test
@@ -80,18 +90,8 @@ class CertificateValidatorProviderTest {
 
         final var validator = certificateValidatorProvider.get(certificateType);
 
-        assertNotNull(validator);
-        assertInstanceOf(SosParentCertificateValidator.class, validator);
-    }
-
-    @Test
-    void shouldReturnDoiValidatorForDoiCertificateType() {
-        final var certificateType = "doi";
-
-        final var validator = certificateValidatorProvider.get(certificateType);
-
-        assertNotNull(validator);
-        assertInstanceOf(SosParentCertificateValidator.class, validator);
+        assertTrue(validator.isPresent());
+        assertInstanceOf(SosParentCertificateValidator.class, validator.get());
     }
 
     @Test
@@ -100,8 +100,9 @@ class CertificateValidatorProviderTest {
 
         final var validator = certificateValidatorProvider.get(certificateType);
 
-        assertNotNull(validator);
-        assertInstanceOf(SosParentCertificateValidator.class, validator);
+        assertTrue(validator.isPresent());
+        assertInstanceOf(SosParentCertificateValidator.class, validator.get());
     }
 }
+
 

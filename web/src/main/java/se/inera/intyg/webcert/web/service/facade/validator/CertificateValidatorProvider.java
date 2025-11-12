@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.service.facade.validator;
 
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.db.support.DbModuleEntryPoint;
@@ -31,13 +32,14 @@ public class CertificateValidatorProvider {
 
     private final DefaultTypeAheadProvider typeAheadProvider;
 
-    public CertificateValidator get(String certificateType) {
+
+    public Optional<CertificateValidator> get(String certificateType) {
         if (DbModuleEntryPoint.MODULE_ID.equalsIgnoreCase(certificateType)
             || DoiModuleEntryPoint.MODULE_ID.equalsIgnoreCase(certificateType)
         ) {
-            return new SosParentCertificateValidator(typeAheadProvider);
+            return Optional.of(new SosParentCertificateValidator(typeAheadProvider));
         }
 
-        return null;
+        return Optional.empty();
     }
 }

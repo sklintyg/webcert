@@ -59,7 +59,7 @@ public class SosParentCertificateValidator implements CertificateValidator {
         }
 
         if (!(dataElement.getValue() instanceof CertificateDataValueText textValue)) {
-            return;
+            throw new IllegalStateException("Expected CertificateDataValueText for question " + QUESTION_DODSPLATS_KOMMUN);
         }
 
         final var value = textValue.getText();

@@ -26,6 +26,7 @@ import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -237,8 +238,8 @@ class ValidateCertificateFacadeServiceImplTest {
     class CertificateSpecificValidation {
 
         @Test
-        void shouldNotCallValidatorWhenValidatorProviderReturnsNull() {
-            doReturn(null).when(certificateValidatorProvider).get(CERTIFICATE_TYPE);
+        void shouldNotCallValidatorWhenValidatorProviderReturnsEmpty() {
+            doReturn(Optional.empty()).when(certificateValidatorProvider).get(CERTIFICATE_TYPE);
 
             validateCertificateFacadeService.validate(certificate);
 
@@ -248,7 +249,7 @@ class ValidateCertificateFacadeServiceImplTest {
         @Test
         void shouldCallCertificateValidatorWhenProviderReturnsValidator() {
             final var mockValidator = mock(CertificateValidator.class);
-            doReturn(mockValidator).when(certificateValidatorProvider).get(CERTIFICATE_TYPE);
+            doReturn(Optional.of(mockValidator)).when(certificateValidatorProvider).get(CERTIFICATE_TYPE);
 
             validateCertificateFacadeService.validate(certificate);
 
