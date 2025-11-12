@@ -33,8 +33,6 @@ import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService
 class HandleMessageNotificationForParentServiceTest {
 
     private static final String CERTIFICATE_ID = "certificateId";
-    private static final String NOT_FK = "notFk";
-    private static final String FK = "Försäkringskassan";
     @Mock
     CSIntegrationService csIntegrationService;
     @Mock
@@ -67,7 +65,7 @@ class HandleMessageNotificationForParentServiceTest {
     }
 
     @Test
-    void shouldNotPublishEventIfQuestionIsNotRecieved() {
+    void shouldPublishEventIfQuestionIsComplement() {
         final var certificateRelations = CertificateRelations.builder()
             .parent(
                 CertificateRelation.builder()
@@ -80,39 +78,9 @@ class HandleMessageNotificationForParentServiceTest {
         final var questions = List.of(
             Question.builder()
                 .type(QuestionType.COMPLEMENT)
-                .author(NOT_FK)
                 .build(),
             Question.builder()
                 .type(QuestionType.COMPLEMENT)
-                .author(NOT_FK)
-                .build()
-        );
-
-        when(csIntegrationService.getQuestions(CERTIFICATE_ID)).thenReturn(questions);
-
-        handleMessageNotificationForParentService.notify(certificateRelations);
-        verifyNoInteractions(publishCertificateStatusUpdateService);
-    }
-
-    @Test
-    void shouldPublishEventIfQuestionIsRecievedComplement() {
-        final var certificateRelations = CertificateRelations.builder()
-            .parent(
-                CertificateRelation.builder()
-                    .type(CertificateRelationType.COMPLEMENTED)
-                    .certificateId(CERTIFICATE_ID)
-                    .build()
-            )
-            .build();
-
-        final var questions = List.of(
-            Question.builder()
-                .type(QuestionType.COMPLEMENT)
-                .author(FK)
-                .build(),
-            Question.builder()
-                .type(QuestionType.COMPLEMENT)
-                .author(FK)
                 .build()
         );
 
@@ -126,7 +94,7 @@ class HandleMessageNotificationForParentServiceTest {
     }
 
     @Test
-    void shouldNotPublishEventIfQuestionIsNotRecievedComplement() {
+    void shouldNotPublishEventIfQuestionIsNotComplement() {
         final var certificateRelations = CertificateRelations.builder()
             .parent(
                 CertificateRelation.builder()
@@ -139,15 +107,12 @@ class HandleMessageNotificationForParentServiceTest {
         final var questions = List.of(
             Question.builder()
                 .type(QuestionType.OTHER)
-                .author(FK)
                 .build(),
             Question.builder()
                 .type(QuestionType.OTHER)
-                .author(FK)
                 .build(),
             Question.builder()
-                .type(QuestionType.COMPLEMENT)
-                .author(NOT_FK)
+                .type(QuestionType.MISSING)
                 .build()
         );
 

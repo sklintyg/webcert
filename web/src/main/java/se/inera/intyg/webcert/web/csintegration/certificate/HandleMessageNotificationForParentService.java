@@ -20,7 +20,6 @@
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static se.inera.intyg.common.support.facade.model.CertificateRelationType.COMPLEMENTED;
-import static se.inera.intyg.webcert.web.service.facade.list.dto.QuestionSenderType.FK;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -56,7 +55,7 @@ public class HandleMessageNotificationForParentService {
         );
 
         questions.forEach(question -> {
-            if (isQuestionRecievedComplement(question)) {
+            if (isQuestionComplement(question)) {
                 publishCertificateStatusUpdateService.publish(parentCertificate, HandelsekodEnum.NYFRFM);
             }
         });
@@ -66,7 +65,7 @@ public class HandleMessageNotificationForParentService {
         return relations == null || relations.getParent() == null || !relations.getParent().getType().equals(COMPLEMENTED);
     }
 
-    private boolean isQuestionRecievedComplement(Question question) {
-        return question.getAuthor().equalsIgnoreCase(FK.getName()) && QuestionType.COMPLEMENT.equals(question.getType());
+    private boolean isQuestionComplement(Question question) {
+        return QuestionType.COMPLEMENT.equals(question.getType());
     }
 }
