@@ -30,6 +30,7 @@ import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidationMessageType;
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
 import se.inera.intyg.webcert.web.service.facade.ValidateCertificateFacadeService;
+import se.inera.intyg.webcert.web.service.facade.validator.CertificateValidatorProvider;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidation;
 import se.inera.intyg.webcert.web.service.utkast.dto.DraftValidationMessage;
@@ -41,11 +42,14 @@ public class ValidateCertificateFacadeServiceImpl implements ValidateCertificate
 
     private final UtkastService utkastService;
     private final IntygModuleRegistry moduleRegistry;
+    private final CertificateValidatorProvider certificateValidatorProvider;
 
     @Autowired
-    public ValidateCertificateFacadeServiceImpl(UtkastService utkastService, IntygModuleRegistry moduleRegistry) {
+    public ValidateCertificateFacadeServiceImpl(UtkastService utkastService, IntygModuleRegistry moduleRegistry,
+        CertificateValidatorProvider certificateValidatorProvider) {
         this.utkastService = utkastService;
         this.moduleRegistry = moduleRegistry;
+        this.certificateValidatorProvider = certificateValidatorProvider;
     }
 
     @Override
@@ -62,6 +66,9 @@ public class ValidateCertificateFacadeServiceImpl implements ValidateCertificate
             certificate.getMetadata().getType(),
             getJsonFromCertificate(moduleApi, certificate, currentCertificate.getModel())
         );
+
+        LOG.debug("Apply certificate-specific validation for certificate '{}'", certificate.getMetadata().getId());
+        applyCertificateSpecificValidation(certificate, draftValidation);
 
         LOG.debug("Convert validation result for certificate '{}'", certificate.getMetadata().getId());
         return convertDraftValidation(moduleApi, certificate, draftValidation);
@@ -80,6 +87,13 @@ public class ValidateCertificateFacadeServiceImpl implements ValidateCertificate
             return moduleApi.getJsonFromCertificate(certificate, currentModel);
         } catch (Exception ex) {
             throw new IllegalStateException(ex);
+        }
+    }
+
+    private void applyCertificateSpecificValidation(Certificate certificate, DraftValidation draftValidation) {
+        final var validator = certificateValidatorProvider.get(certificate.getMetadata().getType());
+        if (validator != null) {
+            validator.validate(certificate, draftValidation);
         }
     }
 
@@ -103,6 +117,10 @@ public class ValidateCertificateFacadeServiceImpl implements ValidateCertificate
 
     private String getValidationText(ModuleApi moduleApi, Certificate certificate, String message,
         ValidationMessageType validationMessageType, String questionId, String dynamicKey) {
+        if (dynamicKey != null && dynamicKey.equals("NO_KEY")) {
+            return message;
+        }
+
         final var key = resolveKey(certificate, message, validationMessageType, questionId);
         final var messageProvider = moduleApi.getMessagesProvider();
         if (dynamicKey == null) {
