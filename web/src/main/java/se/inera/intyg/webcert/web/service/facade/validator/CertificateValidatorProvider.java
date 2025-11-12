@@ -32,7 +32,6 @@ public class CertificateValidatorProvider {
 
     private final DefaultTypeAheadProvider typeAheadProvider;
 
-
     public Optional<CertificateValidator> get(String certificateType) {
         if (DbModuleEntryPoint.MODULE_ID.equalsIgnoreCase(certificateType)
             || DoiModuleEntryPoint.MODULE_ID.equalsIgnoreCase(certificateType)
