@@ -25,6 +25,7 @@ import se.inera.intyg.common.support.facade.model.CertificateRelationType;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 
@@ -78,9 +79,11 @@ class HandleMessageNotificationForParentServiceTest {
 
         final var questions = List.of(
             Question.builder()
+                .type(QuestionType.COMPLEMENT)
                 .author(NOT_FK)
                 .build(),
             Question.builder()
+                .type(QuestionType.COMPLEMENT)
                 .author(NOT_FK)
                 .build()
         );
@@ -92,7 +95,7 @@ class HandleMessageNotificationForParentServiceTest {
     }
 
     @Test
-    void shouldPublishEventIfQuestionIsRecieved() {
+    void shouldPublishEventIfQuestionIsRecievedComplement() {
         final var certificateRelations = CertificateRelations.builder()
             .parent(
                 CertificateRelation.builder()
@@ -104,9 +107,11 @@ class HandleMessageNotificationForParentServiceTest {
 
         final var questions = List.of(
             Question.builder()
+                .type(QuestionType.COMPLEMENT)
                 .author(FK)
                 .build(),
             Question.builder()
+                .type(QuestionType.COMPLEMENT)
                 .author(FK)
                 .build()
         );
@@ -118,5 +123,40 @@ class HandleMessageNotificationForParentServiceTest {
 
         handleMessageNotificationForParentService.notify(certificateRelations);
         verify(publishCertificateStatusUpdateService, times(2)).publish(certificate, HandelsekodEnum.NYFRFM);
+    }
+
+    @Test
+    void shouldNotPublishEventIfQuestionIsNotRecievedComplement() {
+        final var certificateRelations = CertificateRelations.builder()
+            .parent(
+                CertificateRelation.builder()
+                    .type(CertificateRelationType.COMPLEMENTED)
+                    .certificateId(CERTIFICATE_ID)
+                    .build()
+            )
+            .build();
+
+        final var questions = List.of(
+            Question.builder()
+                .type(QuestionType.OTHER)
+                .author(FK)
+                .build(),
+            Question.builder()
+                .type(QuestionType.OTHER)
+                .author(FK)
+                .build(),
+            Question.builder()
+                .type(QuestionType.COMPLEMENT)
+                .author(NOT_FK)
+                .build()
+        );
+
+        final var certificate = mock(Certificate.class);
+
+        when(csIntegrationService.getQuestions(CERTIFICATE_ID)).thenReturn(questions);
+        when(csIntegrationService.getCertificate(eq(CERTIFICATE_ID), any())).thenReturn(certificate);
+
+        handleMessageNotificationForParentService.notify(certificateRelations);
+        verifyNoInteractions(publishCertificateStatusUpdateService);
     }
 }

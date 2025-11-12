@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.common.support.facade.model.question.Question;
+import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 
@@ -55,7 +56,7 @@ public class HandleMessageNotificationForParentService {
         );
 
         questions.forEach(question -> {
-            if (isQuestionRecieved(question)) {
+            if (isQuestionRecievedComplement(question)) {
                 publishCertificateStatusUpdateService.publish(parentCertificate, HandelsekodEnum.NYFRFM);
             }
         });
@@ -65,7 +66,7 @@ public class HandleMessageNotificationForParentService {
         return relations == null || relations.getParent() == null || !relations.getParent().getType().equals(COMPLEMENTED);
     }
 
-    private boolean isQuestionRecieved(Question question) {
-        return question.getAuthor().equalsIgnoreCase(FK.getName());
+    private boolean isQuestionRecievedComplement(Question question) {
+        return question.getAuthor().equalsIgnoreCase(FK.getName()) && QuestionType.COMPLEMENT.equals(question.getType());
     }
 }
