@@ -21,10 +21,13 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.Reg
 @Path("/private-practitioner")
 @Api(value = "private-practitioner", produces = MediaType.APPLICATION_JSON)
 @Profile("private-practitioner-service-active")
-@RequiredArgsConstructor
 public class PrivatePractitionerApiController {
 
     PrivatePractitionerService service;
+
+    public PrivatePractitionerApiController(PrivatePractitionerService service) {
+        this.service = service;
+    }
 
     @POST
     @PerformanceLogging(eventAction = "register-private-practitioner", eventType = MdcLogConstants.EVENT_TYPE_CREATION)
