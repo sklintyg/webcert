@@ -19,13 +19,13 @@ class ConfigApiControllerTest {
   private static final String ZIP_CODE = "12345";
 
   @Mock
-  PostnummerService postnummerService;
+  private PostnummerService postnummerService;
 
   @InjectMocks
-  ConfigApiController configApiController;
+  private ConfigApiController configApiController;
 
   @Test
-  void shouldGetAreaByZipCode() {
+  void shouldGetAreaByZipCodeIfExists() {
 
     when(postnummerService.getOmradeByPostnummer(ZIP_CODE)).thenReturn(List.of(
         new Omrade(ZIP_CODE, "City", "Municipality", "County")
@@ -39,6 +39,16 @@ class ConfigApiControllerTest {
         () -> assertEquals("Municipality", response.getFirst().municipality()),
         () -> assertEquals("County", response.getFirst().county())
         );
+  }
+
+  @Test
+  void shouldReturnEmptyListIfAreaByZipCodeNotFound() {
+    when(postnummerService.getOmradeByPostnummer(ZIP_CODE)).thenReturn(List.of());
+
+    final var response = configApiController.getAreaByZipCode(ZIP_CODE);
+
+    assertEquals(0, response.size());
+
   }
 
 }

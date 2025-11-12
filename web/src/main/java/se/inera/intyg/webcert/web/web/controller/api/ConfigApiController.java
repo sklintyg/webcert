@@ -132,16 +132,19 @@ public class ConfigApiController extends AbstractApiController {
     @PrometheusTimeMethod
     @PerformanceLogging(eventAction = "config-get-area-by-zid-code", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public List<Area> getAreaByZipCode(@PathParam("zipcode") String zipCode) {
-        return postnummerService.getOmradeByPostnummer(zipCode)
-            .stream()
-            .map(o -> Area
-                .builder()
-                .zipCode(o.getPostnummer())
-                .city(o.getPostort())
-                .municipality(o.getKommun())
-                .county(o.getLan())
-                .build())
-            .toList();
+        final var result = postnummerService.getOmradeByPostnummer(zipCode);
+        if (result == null || result.isEmpty()) {
+            return List.of();
+        }
+      return result.stream()
+          .map(o -> Area
+              .builder()
+              .zipCode(o.getPostnummer())
+              .city(o.getPostort())
+              .municipality(o.getKommun())
+              .county(o.getLan())
+              .build())
+          .toList();
     }
 
     @PostConstruct
