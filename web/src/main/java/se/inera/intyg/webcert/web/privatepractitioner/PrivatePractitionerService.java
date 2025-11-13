@@ -67,12 +67,12 @@ public class PrivatePractitionerService {
         final var result = privatePractitionerIntegrationService.getPrivatePractitionerConfig();
         return PrivatePractitionerConfigResponse
             .builder()
-            .positions(result.getPositionCodes().stream().map(position -> new CodeDTO(position.code(), position.description())).toList())
+            .positions(result.positionCodes().stream().map(position -> new CodeDTO(position.code(), position.description())).toList())
             .healthcareServiceTypes(
-                result.getHealthcareServiceTypeCodes().stream()
+                result.healthcareServiceTypeCodes().stream()
                     .map(healthCareServiceType -> new CodeDTO(healthCareServiceType.code(), healthCareServiceType.description()))
                     .toList())
-            .typeOfCare(result.getTypeOfCareCodes()
+            .typeOfCare(result.typeOfCareCodes()
                 .stream()
                 .map(typeOfCare -> new CodeDTO(typeOfCare.code(), typeOfCare.description())).toList())
             .build();

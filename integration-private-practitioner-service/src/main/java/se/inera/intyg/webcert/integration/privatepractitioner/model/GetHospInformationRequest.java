@@ -19,19 +19,6 @@
 
 package se.inera.intyg.webcert.integration.privatepractitioner.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import java.util.List;
-import lombok.Builder;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerConfig.PrivatePractitionerConfigBuilder;
+public record GetHospInformationRequest(String personId) {
 
-@Builder
-@JsonDeserialize(builder = PrivatePractitionerConfigBuilder.class)
-public record PrivatePractitionerConfig(List<Code> positionCodes, List<Code> typeOfCareCodes, List<Code> healthcareServiceTypeCodes) {
-
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class PrivatePractitionerConfigBuilder {
-
-    }
 }
-

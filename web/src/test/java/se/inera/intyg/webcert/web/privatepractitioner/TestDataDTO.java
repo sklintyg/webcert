@@ -24,7 +24,6 @@ import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.D
 import java.util.List;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.CodeDTO;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.HospInformationResponse;
-import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.HospInformationResponse.HospInformationResponseBuilder;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerConfigResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerRegistrationRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerRegistrationRequest.PrivatePractitionerRegistrationRequestBuilder;
@@ -48,13 +47,18 @@ public class TestDataDTO {
         new CodeDTO("32", "Klinisk fysiologi"),
         new CodeDTO("74", "Nukleärmedicin")
     );
-    public static final PrivatePractitionerRegistrationRequest KRANSTEGE_REGISTREATION_REQUEST_DTO = kranstegeRegistrationRequest().build();
+    public static final PrivatePractitionerRegistrationRequest DR_KRANSTEGE_REGISTREATION_REQUEST_DTO = kranstegeRegistrationRequest().build();
 
     public static final PrivatePractitionerConfigResponse PRIVATE_PRACTITIONER_CONFIG_DTO = PrivatePractitionerConfigResponse
         .builder()
         .positions(POSITIONS_DTO)
         .healthcareServiceTypes(HEALTHCARE_SERVICE_TYPES_DTO)
         .typeOfCare(TYPE_OF_CARE_DTO)
+        .build();
+
+    public static HospInformationResponse DR_KRANSTEGE_HOSP_INFORMATION_RESPONSE_DTO = HospInformationResponse.builder()
+        .personalPrescriptionCode(DR_KRANSTEGE_PRESCRIPTION_CODE)
+        .specialities(DR_KRANSTEGE_SPECIALITIES)
         .build();
 
     public static PrivatePractitionerRegistrationRequestBuilder kranstegeRegistrationRequest() {
@@ -71,12 +75,6 @@ public class TestDataDTO {
             .city("Stad")
             .municipality("Kommun")
             .county("Län");
-    }
-
-    public static HospInformationResponseBuilder kranstegeHospInformationResponse() {
-        return HospInformationResponse.builder()
-            .personalPrescriptionCode(DR_KRANSTEGE_PRESCRIPTION_CODE)
-            .specialities(DR_KRANSTEGE_SPECIALITIES);
     }
 
 

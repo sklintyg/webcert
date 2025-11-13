@@ -43,13 +43,8 @@ public class TestDataDTO {
         throw new IllegalStateException("Utility class");
     }
 
-    public static RegisterPrivatePractitionerRequest kranstegeRegisterPractitionerRequest() {
-        return RegisterPrivatePractitionerRequest.builder()
-            .personId(DR_KRANSTEGE_PERSON_ID)
-            .build();
-    }
 
-    public static RegisterPrivatePractitionerRequest validRegisterPractitionerRequest() {
+    public static RegisterPrivatePractitionerRequest kranstegeRegisterPractitionerRequest() {
         return RegisterPrivatePractitionerRequest.builder()
             .personId(DR_KRANSTEGE_PERSON_ID)
             .name(DR_KRANSTEGE_NAME)
