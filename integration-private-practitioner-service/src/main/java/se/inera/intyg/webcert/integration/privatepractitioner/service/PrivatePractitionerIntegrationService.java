@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.integration.privatepractitioner.service;
 
 import static se.inera.intyg.webcert.integration.privatepractitioner.config.PrivatePractitionerRestClientConfig.CONFIG_PATH;
-import static se.inera.intyg.webcert.integration.privatepractitioner.config.PrivatePractitionerRestClientConfig.HOSP_INFO_PATH;
 import static se.inera.intyg.webcert.integration.privatepractitioner.config.PrivatePractitionerRestClientConfig.VALIDATE_PATH;
 import static se.inera.intyg.webcert.logging.MdcLogConstants.SESSION_ID_KEY;
 import static se.inera.intyg.webcert.logging.MdcLogConstants.TRACE_ID_KEY;
@@ -33,6 +32,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.GetHospInformationRequest;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.HospInformation;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitioner;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerConfig;
@@ -50,6 +50,7 @@ public class PrivatePractitionerIntegrationService {
 
     private final RestClient ppsRestClient;
     private final RegisterPrivatePractitionerClient registerPrivatePractitionerClient;
+    private final GetHospInformationClient getHospInformationClient;
 
     public ValidatePrivatePractitionerResponse validatePrivatePractitioner(String personalIdentityNumber) {
         validateIdentifier(personalIdentityNumber);
@@ -105,22 +106,7 @@ public class PrivatePractitionerIntegrationService {
     }
 
     public HospInformation getHospInformation(String personalOrHsaIdIdentityNumber) {
-        final var response = ppsRestClient
-            .get()
-            .uri(uriBuilder -> uriBuilder
-                .path(HOSP_INFO_PATH)
-                .build(personalOrHsaIdIdentityNumber))
-            .accept(MediaType.APPLICATION_JSON)
-            .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
-            .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
-            .retrieve()
-            .body(HospInformation.class);
-
-        if (response == null) {
-            throw new RestClientException("Get HOSP Information failed. Response is null.");
-        }
-
-        return response;
+        return getHospInformationClient.getHospInformation(new GetHospInformationRequest(personalOrHsaIdIdentityNumber));
     }
 
     public PrivatePractitioner registerPrivatePractitioner(RegisterPrivatePractitionerRequest registrationRequest) {
