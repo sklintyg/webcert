@@ -19,7 +19,7 @@
 
 package se.inera.intyg.webcert.integration.privatepractitioner.service;
 
-import static se.inera.intyg.webcert.integration.privatepractitioner.config.PrivatePractitionerRestClientConfig.HOSP_INFO_PATH;
+import static se.inera.intyg.webcert.integration.privatepractitioner.config.PrivatePractitionerRestClientConfig.VALIDATE_PATH;
 import static se.inera.intyg.webcert.logging.MdcLogConstants.SESSION_ID_KEY;
 import static se.inera.intyg.webcert.logging.MdcLogConstants.TRACE_ID_KEY;
 
@@ -29,29 +29,30 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.GetHospInformationRequest;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.HospInformation;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerResponse;
 import se.inera.intyg.webcert.logging.MdcHelper;
 
 @Service
 @RequiredArgsConstructor
 @Profile("private-practitioner-service-active")
-public class GetHospInformationClient {
+public class ValidatePrivatePractitionerClient {
 
     private final RestClient ppsRestClient;
 
-    public HospInformation getHospInformation(GetHospInformationRequest personalOrHsaIdIdentityNumber) {
+    public ValidatePrivatePractitionerResponse validatePrivatePractitioner(
+        ValidatePrivatePractitionerRequest validatePrivatePractitionerRequest) {
 
         return ppsRestClient
             .post()
-            .uri(HOSP_INFO_PATH)
+            .uri(VALIDATE_PATH)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
             .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
             .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
-            .body(personalOrHsaIdIdentityNumber)
+            .body(validatePrivatePractitionerRequest)
             .retrieve()
-            .body(HospInformation.class);
+            .body(ValidatePrivatePractitionerResponse.class);
 
     }
 }

@@ -101,7 +101,7 @@ public class DraftModelToXmlValidatorTest {
         draft.setIntygsId("id");
         draft.setIntygsTyp("db");
         draft.setIntygTypeVersion("1.0");
-        draft.setModel("se/inera/intyg/webcert/integration/privatepractitioner/model");
+        draft.setModel("model");
         return draft;
     }
 

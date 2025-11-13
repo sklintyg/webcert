@@ -18,29 +18,20 @@
  */
 package se.inera.intyg.webcert.integration.privatepractitioner.service;
 
-import static se.inera.intyg.webcert.integration.privatepractitioner.config.PrivatePractitionerRestClientConfig.CONFIG_PATH;
-import static se.inera.intyg.webcert.integration.privatepractitioner.config.PrivatePractitionerRestClientConfig.VALIDATE_PATH;
-import static se.inera.intyg.webcert.logging.MdcLogConstants.SESSION_ID_KEY;
-import static se.inera.intyg.webcert.logging.MdcLogConstants.TRACE_ID_KEY;
-
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.GetHospInformationRequest;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.HospInformation;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitioner;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerConfig;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerConfiguration;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.RegisterPrivatePractitionerRequest;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerRequest;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerResponse;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerResultCode;
-import se.inera.intyg.webcert.logging.MdcHelper;
 
 @Slf4j
 @Service
@@ -48,61 +39,26 @@ import se.inera.intyg.webcert.logging.MdcHelper;
 @RequiredArgsConstructor
 public class PrivatePractitionerIntegrationService {
 
-    private final RestClient ppsRestClient;
     private final RegisterPrivatePractitionerClient registerPrivatePractitionerClient;
     private final GetHospInformationClient getHospInformationClient;
+    private final ValidatePrivatePractitionerClient validatePrivatePractitionerClient;
+    private final GetPrivatePractitionerConfigurationClient getPrivatePractitionerConfigurationClient;
 
     public ValidatePrivatePractitionerResponse validatePrivatePractitioner(String personalIdentityNumber) {
         validateIdentifier(personalIdentityNumber);
-
-        return doValidatePrivatePractitioner(personalIdentityNumber);
-    }
-
-    private ValidatePrivatePractitionerResponse doValidatePrivatePractitioner(String personalIdentityNumber) {
-        final var request = new ValidatePrivatePractitionerRequest(personalIdentityNumber);
-
-        final var response = ppsRestClient
-            .post()
-            .uri(VALIDATE_PATH)
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)
-            .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
-            .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
-            .body(request)
-            .retrieve()
-            .body(ValidatePrivatePractitionerResponse.class);
+        final var response = validatePrivatePractitionerClient.validatePrivatePractitioner(
+            new ValidatePrivatePractitionerRequest(personalIdentityNumber));
 
         if (response == null) {
             throw new RestClientException("Validation failed. Validation response is null.");
         }
-
         logResult(response);
 
         return response;
     }
-
-    private void logResult(ValidatePrivatePractitionerResponse response) {
-        if (ValidatePrivatePractitionerResultCode.NO_ACCOUNT.equals(response.resultCode())
-            || ValidatePrivatePractitionerResultCode.NOT_AUTHORIZED_IN_HOSP.equals(response.resultCode())) {
-            log.info(response.resultText());
-        }
-    }
-
-    private void validateIdentifier(String personalIdentityNumber) {
-        if (Strings.isNullOrEmpty(personalIdentityNumber)) {
-            throw new IllegalArgumentException("No PersonalIdentityNumber available.");
-        }
-    }
-
-    public PrivatePractitionerConfig getPrivatePractitionerConfig() {
-        return ppsRestClient
-            .get()
-            .uri(CONFIG_PATH)
-            .accept(MediaType.APPLICATION_JSON)
-            .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
-            .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
-            .retrieve()
-            .body(PrivatePractitionerConfig.class);
+    
+    public PrivatePractitionerConfiguration getPrivatePractitionerConfig() {
+        return getPrivatePractitionerConfigurationClient.getPrivatePractitionerConfig();
     }
 
     public HospInformation getHospInformation(String personalOrHsaIdIdentityNumber) {
@@ -111,6 +67,19 @@ public class PrivatePractitionerIntegrationService {
 
     public PrivatePractitioner registerPrivatePractitioner(RegisterPrivatePractitionerRequest registrationRequest) {
         return registerPrivatePractitionerClient.registerPrivatePractitioner(registrationRequest);
+    }
+
+    private void validateIdentifier(String personalIdentityNumber) {
+        if (Strings.isNullOrEmpty(personalIdentityNumber)) {
+            throw new IllegalArgumentException("No PersonalIdentityNumber available.");
+        }
+    }
+
+    private void logResult(ValidatePrivatePractitionerResponse response) {
+        if (ValidatePrivatePractitionerResultCode.NO_ACCOUNT.equals(response.resultCode())
+            || ValidatePrivatePractitionerResultCode.NOT_AUTHORIZED_IN_HOSP.equals(response.resultCode())) {
+            log.info(response.resultText());
+        }
     }
 }
 

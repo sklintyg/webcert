@@ -148,7 +148,7 @@ public class XmlUnderskriftServiceImplTest {
                         .getDigestValue())));
         when(utkastRepository.save(any(Utkast.class)))
             .thenReturn(createUtkast(INTYG_ID, 2L, INTYG_TYP, UtkastStatus.SIGNED,
-                "se/inera/intyg/webcert/integration/privatepractitioner/model", createVardperson(),
+                "model", createVardperson(),
                 ENHET_ID, PERSON_ID));
         when(redisTicketTracker.updateStatus(TICKET_ID, SignaturStatus.SIGNERAD))
             .thenReturn(createSignaturBiljett(SignaturStatus.SIGNERAD));
@@ -159,7 +159,7 @@ public class XmlUnderskriftServiceImplTest {
         SignaturBiljett signaturBiljett = testee.finalizeSignature(createSignaturBiljett(SignaturStatus.BEARBETAR),
             "signatur".getBytes(Charset.forName("UTF-8")),
             "certifikat", createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE,
-                "se/inera/intyg/webcert/integration/privatepractitioner/model", createVardperson(),
+                "model", createVardperson(),
                 ENHET_ID, PERSON_ID),
             user);
         assertNotNull(signaturBiljett);
@@ -207,7 +207,7 @@ public class XmlUnderskriftServiceImplTest {
             testee.finalizeSignature(createSignaturBiljett(SignaturStatus.BEARBETAR),
                 "signatur".getBytes(Charset.forName("UTF-8")),
                 "certifikat", createUtkast(INTYG_ID, 1111L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE,
-                    "se/inera/intyg/webcert/integration/privatepractitioner/model", createVardperson(),
+                    "model", createVardperson(),
                     ENHET_ID, PERSON_ID),
                 buildUser());
         } finally {
@@ -229,7 +229,7 @@ public class XmlUnderskriftServiceImplTest {
                 "signatur".getBytes(Charset.forName("UTF-8")),
                 "certifikat",
                 createUtkast(INTYG_ID + "-difference", 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE,
-                    "se/inera/intyg/webcert/integration/privatepractitioner/model", createVardperson(),
+                    "model", createVardperson(),
                     ENHET_ID, PERSON_ID),
                 buildUser());
         } finally {

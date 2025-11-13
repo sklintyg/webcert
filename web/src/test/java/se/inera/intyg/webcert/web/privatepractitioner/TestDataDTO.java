@@ -47,6 +47,10 @@ public class TestDataDTO {
         new CodeDTO("32", "Klinisk fysiologi"),
         new CodeDTO("74", "Nukleärmedicin")
     );
+
+    public static final List<CodeDTO> DR_KRANSTEGE_LICENSED_HEALTHCARE_PROFESSIONS =
+        List.of(new CodeDTO("LK", "Läkare"));
+
     public static final PrivatePractitionerRegistrationRequest DR_KRANSTEGE_REGISTREATION_REQUEST_DTO = kranstegeRegistrationRequest().build();
 
     public static final PrivatePractitionerConfigResponse PRIVATE_PRACTITIONER_CONFIG_DTO = PrivatePractitionerConfigResponse
@@ -58,6 +62,7 @@ public class TestDataDTO {
 
     public static HospInformationResponse DR_KRANSTEGE_HOSP_INFORMATION_RESPONSE_DTO = HospInformationResponse.builder()
         .personalPrescriptionCode(DR_KRANSTEGE_PRESCRIPTION_CODE)
+        .licensedHealthcareProfessions(DR_KRANSTEGE_LICENSED_HEALTHCARE_PROFESSIONS)
         .specialities(DR_KRANSTEGE_SPECIALITIES)
         .build();
 

@@ -19,7 +19,7 @@
 
 package se.inera.intyg.webcert.integration.privatepractitioner.service;
 
-import static se.inera.intyg.webcert.integration.privatepractitioner.config.PrivatePractitionerRestClientConfig.HOSP_INFO_PATH;
+import static se.inera.intyg.webcert.integration.privatepractitioner.config.PrivatePractitionerRestClientConfig.CONFIG_PATH;
 import static se.inera.intyg.webcert.logging.MdcLogConstants.SESSION_ID_KEY;
 import static se.inera.intyg.webcert.logging.MdcLogConstants.TRACE_ID_KEY;
 
@@ -29,29 +29,26 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.GetHospInformationRequest;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.HospInformation;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerConfiguration;
 import se.inera.intyg.webcert.logging.MdcHelper;
 
 @Service
 @RequiredArgsConstructor
 @Profile("private-practitioner-service-active")
-public class GetHospInformationClient {
+public class GetPrivatePractitionerConfigurationClient {
 
     private final RestClient ppsRestClient;
 
-    public HospInformation getHospInformation(GetHospInformationRequest personalOrHsaIdIdentityNumber) {
+    public PrivatePractitionerConfiguration getPrivatePractitionerConfig() {
 
         return ppsRestClient
-            .post()
-            .uri(HOSP_INFO_PATH)
-            .contentType(MediaType.APPLICATION_JSON)
+            .get()
+            .uri(CONFIG_PATH)
             .accept(MediaType.APPLICATION_JSON)
             .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
             .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
-            .body(personalOrHsaIdIdentityNumber)
             .retrieve()
-            .body(HospInformation.class);
+            .body(PrivatePractitionerConfiguration.class);
 
     }
 }

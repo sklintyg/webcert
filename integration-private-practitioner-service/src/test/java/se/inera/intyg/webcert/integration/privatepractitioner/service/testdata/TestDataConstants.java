@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.integration.privatepractitioner.service;
+package se.inera.intyg.webcert.integration.privatepractitioner.service.testdata;
 
 import java.util.List;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.Code;

@@ -24,8 +24,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static se.inera.intyg.webcert.integration.privatepractitioner.service.testdata.TestData.DR_KRANSTEGE;
-import static se.inera.intyg.webcert.integration.privatepractitioner.service.testdata.TestData.kranstegeRegisterPractitionerRequest;
+import static se.inera.intyg.webcert.integration.privatepractitioner.service.testdata.TestData.DR_KRANSTEGE_HOSP_INFO;
+import static se.inera.intyg.webcert.integration.privatepractitioner.service.testdata.TestDataConstants.DR_KRANSTEGE_PERSON_ID;
 import static se.inera.intyg.webcert.logging.MdcHelper.LOG_SESSION_ID_HEADER;
 import static se.inera.intyg.webcert.logging.MdcHelper.LOG_TRACE_ID_HEADER;
 
@@ -40,12 +40,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.MDC;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestClient;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitioner;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.RegisterPrivatePractitionerRequest;
+import org.springframework.web.client.RestClient.RequestBodyUriSpec;
+import org.springframework.web.client.RestClient.ResponseSpec;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.GetHospInformationRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.HospInformation;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 
 @ExtendWith(MockitoExtension.class)
-class RegisterPrivatePractitionerClientTest {
+class GetHospInformationClientTest {
 
     private static final String SESSION_ID = "session-123";
     private static final String TRACE_ID = "trace-456";
@@ -54,13 +56,14 @@ class RegisterPrivatePractitionerClientTest {
     private RestClient ppsRestClient;
 
     @InjectMocks
-    private RegisterPrivatePractitionerClient registerPrivatePractitionerClient;
+    private GetHospInformationClient getHospInformationClient;
+
 
     @Captor
-    private ArgumentCaptor<RegisterPrivatePractitionerRequest> requestCaptor;
+    private ArgumentCaptor<GetHospInformationRequest> requestCaptor;
 
-    private RestClient.RequestBodyUriSpec requestBodyUriSpec;
-    private RestClient.ResponseSpec responseSpec;
+    private RequestBodyUriSpec requestBodyUriSpec;
+    private ResponseSpec responseSpec;
 
     @BeforeEach
     void setUp() {
@@ -71,29 +74,31 @@ class RegisterPrivatePractitionerClientTest {
         responseSpec = mock(RestClient.ResponseSpec.class);
 
         when(ppsRestClient.post()).thenReturn(requestBodyUriSpec);
+        when(requestBodyUriSpec.uri("/hosp")).thenReturn(requestBodyUriSpec);
         when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
         when(requestBodyUriSpec.accept(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
         when(requestBodyUriSpec.header(LOG_TRACE_ID_HEADER, TRACE_ID)).thenReturn(requestBodyUriSpec);
         when(requestBodyUriSpec.header(LOG_SESSION_ID_HEADER, SESSION_ID)).thenReturn(
             requestBodyUriSpec);
-        when(requestBodyUriSpec.body(any(RegisterPrivatePractitionerRequest.class))).thenReturn(requestBodyUriSpec);
+        when(requestBodyUriSpec.body(any(GetHospInformationRequest.class))).thenReturn(requestBodyUriSpec);
         when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
     }
 
     @Test
-    void shouldRegisterPrivatePractitioner() {
-        when(responseSpec.body(PrivatePractitioner.class)).thenReturn(DR_KRANSTEGE);
-        final var result = registerPrivatePractitionerClient.registerPrivatePractitioner(kranstegeRegisterPractitionerRequest());
-        assertEquals(DR_KRANSTEGE, result);
+    void shouldGetHospInfo() {
+        when(responseSpec.body(HospInformation.class)).thenReturn(DR_KRANSTEGE_HOSP_INFO);
+        final var result = getHospInformationClient.getHospInformation(new GetHospInformationRequest(DR_KRANSTEGE_PERSON_ID));
+        assertEquals(DR_KRANSTEGE_HOSP_INFO, result);
     }
 
     @Test
     void shouldSendCorrectRequestBody() {
-        when(responseSpec.body(PrivatePractitioner.class)).thenReturn(DR_KRANSTEGE);
+        when(responseSpec.body(HospInformation.class)).thenReturn(DR_KRANSTEGE_HOSP_INFO);
 
-        registerPrivatePractitionerClient.registerPrivatePractitioner(kranstegeRegisterPractitionerRequest());
+        getHospInformationClient.getHospInformation(new GetHospInformationRequest(DR_KRANSTEGE_PERSON_ID));
         verify(requestBodyUriSpec).body(requestCaptor.capture());
 
-        assertEquals(kranstegeRegisterPractitionerRequest(), requestCaptor.getValue());
+        assertEquals(new GetHospInformationRequest(DR_KRANSTEGE_PERSON_ID), requestCaptor.getValue());
     }
+
 }
