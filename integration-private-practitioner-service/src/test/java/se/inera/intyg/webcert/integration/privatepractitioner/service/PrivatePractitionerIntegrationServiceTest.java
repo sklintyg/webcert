@@ -1,12 +1,5 @@
 package se.inera.intyg.webcert.integration.privatepractitioner.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static se.inera.intyg.webcert.integration.privatepractitioner.service.testdata.TestData.DR_KRANSTEGE;
-import static se.inera.intyg.webcert.integration.privatepractitioner.service.testdata.TestData.kranstegeRegisterPractitionerRequest;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -20,6 +13,12 @@ import org.springframework.web.client.RestClientException;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerRequest;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerResponse;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerResultCode;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static se.inera.intyg.webcert.integration.privatepractitioner.service.testdata.TestData.*;
 
 @ExtendWith(MockitoExtension.class)
 class PrivatePractitionerIntegrationServiceTest {
@@ -45,7 +44,7 @@ class PrivatePractitionerIntegrationServiceTest {
     void validatePrivatePractitionerReturnsResponseOnOk() {
         var expectedResponse = new ValidatePrivatePractitionerResponse(ValidatePrivatePractitionerResultCode.OK, "OK");
         when(validatePrivatePractitionerClient.validatePrivatePractitioner(
-            new ValidatePrivatePractitionerRequest(PERSONAL_IDENTITY_NUMBER))).thenReturn(expectedResponse);
+                new ValidatePrivatePractitionerRequest(PERSONAL_IDENTITY_NUMBER))).thenReturn(expectedResponse);
 
         var actual = service.validatePrivatePractitioner(PERSONAL_IDENTITY_NUMBER);
 
@@ -56,9 +55,9 @@ class PrivatePractitionerIntegrationServiceTest {
     @Test
     void validatePrivatePractitionerInvalid() {
         var expectedResponse = new ValidatePrivatePractitionerResponse(ValidatePrivatePractitionerResultCode.NO_ACCOUNT,
-            "No account found for practitioner");
+                "No account found for practitioner");
         when(validatePrivatePractitionerClient.validatePrivatePractitioner(
-            new ValidatePrivatePractitionerRequest(PERSONAL_IDENTITY_NUMBER))).thenReturn(expectedResponse);
+                new ValidatePrivatePractitionerRequest(PERSONAL_IDENTITY_NUMBER))).thenReturn(expectedResponse);
 
         var actual = service.validatePrivatePractitioner(PERSONAL_IDENTITY_NUMBER);
 
@@ -80,9 +79,23 @@ class PrivatePractitionerIntegrationServiceTest {
     @Test
     void shallReturnRegisteredPrivatePractitioner() {
         when(registerPrivatePractitionerClient.registerPrivatePractitioner(kranstegeRegisterPractitionerRequest())).thenReturn(
-            DR_KRANSTEGE);
+                DR_KRANSTEGE);
         final var result = service.registerPrivatePractitioner(kranstegeRegisterPractitionerRequest());
 
         assertEquals(DR_KRANSTEGE, result);
+    }
+
+    @Test
+    void shallReturnHospInformation() {
+        when(getHospInformationClient.getHospInformation(any())).thenReturn(DR_KRANSTEGE_HOSP_INFO);
+        final var result = service.getHospInformation(PERSONAL_IDENTITY_NUMBER);
+        assertEquals(DR_KRANSTEGE_HOSP_INFO, result);
+    }
+
+    @Test
+    void shallReturnPrivatePractitionerConfig() {
+        when(getPrivatePractitionerConfigurationClient.getPrivatePractitionerConfig()).thenReturn(PRIVATE_PRACTITIONER_CONFIG);
+        final var result = service.getPrivatePractitionerConfig();
+        assertEquals(PRIVATE_PRACTITIONER_CONFIG, result);
     }
 }
