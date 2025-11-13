@@ -31,8 +31,11 @@ public record HospInformationResponse(String personalPrescriptionCode, List<Code
         return HospInformationResponse.builder()
             .personalPrescriptionCode(hospInformation.getPersonalPrescriptionCode())
             .licensedHealthcareProfessions(
-                hospInformation.getLicensedHealthcareProfessions().stream().map(l -> new CodeDTO(l.code(), l.description())).toList())
-            .specialities(hospInformation.getSpecialities().stream().map(s -> new CodeDTO(s.code(), s.description())).toList())
+                hospInformation.getLicensedHealthcareProfessions() == null ? List.of() :
+                    hospInformation.getLicensedHealthcareProfessions().stream().map(l -> new CodeDTO(l.code(), l.description())).toList())
+            .specialities(
+                hospInformation.getSpecialities() == null ? List.of() :
+                    hospInformation.getSpecialities().stream().map(s -> new CodeDTO(s.code(), s.description())).toList())
             .build();
     }
 }

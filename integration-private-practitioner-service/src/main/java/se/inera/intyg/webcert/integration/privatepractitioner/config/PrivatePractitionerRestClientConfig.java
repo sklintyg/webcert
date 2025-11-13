@@ -14,9 +14,9 @@ public class PrivatePractitionerRestClientConfig {
 
     @Value("${privatepractitionerservice.base.url}")
     private String privatePractitionerServiceBaseUrl;
-    public static final String CONFIG_PATH = "/config";
+    public static final String CONFIG_PATH = "/configuration";
     public static final String VALIDATE_PATH = "/validate";
-    public static final String HOSP_INFO_PATH = "/hosp-information/{id}";
+    public static final String HOSP_INFO_PATH = "/hosp";
 
     @Bean(name = "ppsRestClient")
     public RestClient ppsRestClient() {

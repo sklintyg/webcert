@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.springframework.context.annotation.Profile;
@@ -19,6 +20,8 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.Pri
 @Profile("private-practitioner-service-active")
 public class PrivatePractitionerApiController {
 
+    private static final String UTF_8_CHARSET = ";charset=utf-8";
+
     PrivatePractitionerService service;
 
     public PrivatePractitionerApiController(PrivatePractitionerService service) {
@@ -26,6 +29,7 @@ public class PrivatePractitionerApiController {
     }
 
     @POST
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PerformanceLogging(eventAction = "register-private-practitioner", eventType = MdcLogConstants.EVENT_TYPE_CREATION)
     public Response registerPractitioner(
         PrivatePractitionerRegistrationRequest registerPrivatePractitionerRequest) {
@@ -35,6 +39,7 @@ public class PrivatePractitionerApiController {
 
     @GET
     @Path("/config")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PerformanceLogging(eventAction = "get-private-practitioner-config", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public PrivatePractitionerConfigResponse getPrivatePractitionerConfig() {
         return service.getPrivatePractitionerConfig();
@@ -42,6 +47,7 @@ public class PrivatePractitionerApiController {
 
     @GET
     @Path("/hospInformation")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PerformanceLogging(eventAction = "get-private-practitioner-hosp-information", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public HospInformationResponse getHospInformation() {
         return service.getHospInformation();
