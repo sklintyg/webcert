@@ -19,9 +19,10 @@
 
 package se.inera.intyg.webcert.integration.privatepractitioner.model;
 
-import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Value;
+
+import java.time.LocalDateTime;
 
 @Value
 @Builder
@@ -47,7 +48,6 @@ public class PrivatePractitioner {
     String municipality;
     String county;
 
-    Long consentFormVersion;
     LocalDateTime registrationDate;
 
 
