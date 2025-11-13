@@ -23,15 +23,15 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.util.List;
 import lombok.Builder;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerConfiguration.PrivatePractitionerConfigBuilder;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerConfiguration.PrivatePractitionerConfigurationBuilder;
 
 @Builder
-@JsonDeserialize(builder = PrivatePractitionerConfigBuilder.class)
+@JsonDeserialize(builder = PrivatePractitionerConfigurationBuilder.class)
 public record PrivatePractitionerConfiguration(List<Code> positionCodes, List<Code> typeOfCareCodes,
                                                List<Code> healthcareServiceTypeCodes) {
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class PrivatePractitionerConfigBuilder {
+    public static class PrivatePractitionerConfigurationBuilder {
 
     }
 }
