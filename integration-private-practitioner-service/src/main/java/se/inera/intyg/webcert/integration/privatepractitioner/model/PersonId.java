@@ -4,12 +4,12 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PersonIdDTO.PersonIdDTOBuilder;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.PersonId.PersonIdDTOBuilder;
 
 @Value
 @Builder
 @JsonDeserialize(builder = PersonIdDTOBuilder.class)
-public class PersonIdDTO {
+public class PersonId {
 
     String root;
     String extension;

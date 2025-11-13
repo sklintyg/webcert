@@ -11,9 +11,9 @@ import lombok.Value;
 @JsonDeserialize(builder = EnhetsTyp.EnhetsTypBuilder.class)
 public class EnhetsTyp {
 
-  HsaIdDTO enhetsId;
+  HsaId enhetsId;
   String enhetsnamn;
-  ArbetsplatsKodDTO arbetsplatskod;
+  ArbetsplatsKod arbetsplatskod;
   String agarform;
   String postadress;
   String postnummer;
@@ -22,9 +22,9 @@ public class EnhetsTyp {
   String epost;
   LocalDateTime startdatum;
   LocalDateTime slutdatum;
-  GeografiskIndelningDTO geografiskIndelning;
-  VerksamhetDTO verksamhetstyp;
-  CareProviderDTO vardgivare;
+  GeografiskIndelning geografiskIndelning;
+  Verksamhet verksamhetstyp;
+  CareProvider vardgivare;
 
   @JsonPOJOBuilder(withPrefix = "")
   public static class EnhetsTypBuilder {

@@ -2,21 +2,22 @@ package se.inera.intyg.webcert.integration.privatepractitioner.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Value;
 
 @Value
 @Builder
-@JsonDeserialize(builder = VerksamhetDTO.VerksamhetDTOBuilder.class)
-public class VerksamhetDTO {
-
-  List<CvDTO> verksamhet = new ArrayList<>();
-  List<CvDTO> vardform = new ArrayList<>();
+@JsonDeserialize(builder = CareProvider.CareProviderDTOBuilder.class)
+public class CareProvider {
+  HsaId vardgivareId;
+  String vardgivarenamn;
+  LocalDateTime startdatum;
+  LocalDateTime slutdatum;
 
   @JsonPOJOBuilder(withPrefix = "")
-  public static class VerksamhetDTOBuilder {
+  public static class CareProviderDTOBuilder {
 
   }
+
 }
