@@ -86,6 +86,7 @@ import se.inera.intyg.webcert.web.integration.util.HoSPersonHelper;
 import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
 import se.inera.intyg.webcert.web.service.dto.Lakare;
 import se.inera.intyg.webcert.web.service.employee.EmployeeNameService;
+import se.inera.intyg.webcert.web.service.facade.util.DefaultTypeAheadProvider;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
 import se.inera.intyg.webcert.web.service.log.dto.LogUser;
@@ -186,6 +187,9 @@ public class UtkastServiceImpl implements UtkastService {
 
     @Autowired
     private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+
+    @Autowired
+    private DefaultTypeAheadProvider defaultTypeAheadProvider;
 
     public static boolean isUtkast(Utkast utkast) {
         return utkast != null && ALL_DRAFT_STATUSES_INCLUDE_LOCKED.contains(utkast.getStatus());
@@ -780,7 +784,7 @@ public class UtkastServiceImpl implements UtkastService {
 
         try {
             ModuleApi moduleApi = getModuleApi(intygType, moduleRegistry.resolveVersionFromUtlatandeJson(intygType, draftAsJson));
-            return convertToDraftValidation(moduleApi.validateDraft(draftAsJson));
+            return convertToDraftValidation(moduleApi.validateDraft(draftAsJson, defaultTypeAheadProvider));
         } catch (ModuleException | ModuleNotFoundException me) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
         }

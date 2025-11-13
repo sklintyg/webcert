@@ -101,6 +101,7 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
 import se.inera.intyg.webcert.web.event.CertificateEventService;
 import se.inera.intyg.webcert.web.service.access.DraftAccessServiceHelper;
+import se.inera.intyg.webcert.web.service.facade.util.DefaultTypeAheadProvider;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.dto.LogRequest;
@@ -180,6 +181,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     private HashUtility hashUtility;
     @Mock
     private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+    @Mock
+    private DefaultTypeAheadProvider defaultTypeAheadProvider;
     @Mock
     private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
@@ -311,7 +314,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(moduleApi);
         ValidateDraftResponse validationResponse = new ValidateDraftResponse(status, Collections.emptyList());
-        when(moduleApi.validateDraft(anyString())).thenReturn(validationResponse);
+        when(moduleApi.validateDraft(anyString(), any())).thenReturn(validationResponse);
         when(utkastRepository.save(any(Utkast.class))).then(invocation -> invocation.getArguments()[0]);
 
         return request;
@@ -445,7 +448,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
         when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(moduleApi);
-        when(moduleApi.validateDraft(anyString())).thenReturn(validationResponse);
+        when(moduleApi.validateDraft(anyString(), any())).thenReturn(validationResponse);
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(utkastRepository.save(utkast)).thenReturn(utkast);
         when(moduleApi.shouldNotify(any(String.class), any(String.class))).thenReturn(true);
@@ -487,7 +490,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
         when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(moduleApi);
-        when(moduleApi.validateDraft(anyString())).thenReturn(validationResponse);
+        when(moduleApi.validateDraft(anyString(), any())).thenReturn(validationResponse);
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(utkastRepository.save(utkast)).thenReturn(utkast);
         when(moduleApi.shouldNotify(any(String.class), any(String.class))).thenReturn(true);
@@ -543,7 +546,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(moduleApi);
         when(moduleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
-        when(moduleApi.validateDraft(anyString())).thenThrow(ModuleException.class);
+        when(moduleApi.validateDraft(anyString(), any())).thenThrow(ModuleException.class);
 
         utkastService.saveDraft(INTYG_ID, UTKAST_VERSION, INTYG_JSON, false);
     }
@@ -554,7 +557,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         ValidateDraftResponse validationResponse = new ValidateDraftResponse(ValidationStatus.INVALID, Collections.singletonList(valMsg));
 
         when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(moduleApi);
-        when(moduleApi.validateDraft(INTYG_JSON)).thenReturn(validationResponse);
+        when(moduleApi.validateDraft(eq(INTYG_JSON), any())).thenReturn(validationResponse);
 
         DraftValidation res = utkastService.validateDraft(INTYG_ID, INTYG_TYPE, INTYG_JSON);
 
@@ -562,7 +565,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         assertFalse(res.isDraftValid());
         assertEquals(1, res.getMessages().size());
 
-        verify(moduleApi).validateDraft(INTYG_JSON);
+        verify(moduleApi).validateDraft(INTYG_JSON, defaultTypeAheadProvider);
     }
 
     @Test
@@ -618,7 +621,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
         when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(moduleApi);
-        when(moduleApi.validateDraft(anyString())).thenReturn(validationResponse);
+        when(moduleApi.validateDraft(anyString(), any())).thenReturn(validationResponse);
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(utkastRepository.save(utkast)).thenReturn(utkast);
         when(userService.getUser()).thenReturn(user);
@@ -804,7 +807,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
         when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(moduleApi);
-        when(moduleApi.validateDraft(anyString())).thenReturn(validationResponse);
+        when(moduleApi.validateDraft(anyString(), any())).thenReturn(validationResponse);
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
         when(utkastRepository.save(utkast)).thenReturn(utkast);
         when(userService.getUser()).thenReturn(user);
@@ -821,7 +824,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     @Test
     public void testValidateValidDraftWithWarningsIncludesWarningsInResponse() throws ModuleException, ModuleNotFoundException {
         when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(moduleApi);
-        when(moduleApi.validateDraft(anyString())).thenReturn(buildValidationResponse());
+        when(moduleApi.validateDraft(anyString(), any())).thenReturn(buildValidationResponse());
         DraftValidation validationResult = utkastService.validateDraft(INTYG_ID, INTYG_TYPE, utkast.getModel());
         assertEquals(1, validationResult.getWarnings().size());
         assertEquals(0, validationResult.getMessages().size());
