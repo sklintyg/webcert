@@ -49,7 +49,6 @@ public class PrivatePractitionerService {
             .name(user.getNamn())
             .position(privatePractitionerRegisterRequest.getPosition())
             .careUnitName(privatePractitionerRegisterRequest.getCareUnitName())
-            .ownershipType(OwnershipType.PRIVATE.getValue())
             .typeOfCare(privatePractitionerRegisterRequest.getTypeOfCare())
             .healthcareServiceType(privatePractitionerRegisterRequest.getHealthcareServiceType())
             .workplaceCode(privatePractitionerRegisterRequest.getWorkplaceCode())

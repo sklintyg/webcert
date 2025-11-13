@@ -19,13 +19,16 @@
 
 package se.inera.intyg.webcert.integration.privatepractitioner.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Value;
-
-import java.time.LocalDateTime;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitioner.PrivatePractitionerBuilder;
 
 @Value
 @Builder
+@JsonDeserialize(builder = PrivatePractitionerBuilder.class)
 public class PrivatePractitioner {
 
     String hsaId;
@@ -35,7 +38,6 @@ public class PrivatePractitioner {
     String position;
     String careUnitName;
     String careProviderName;
-    String ownershipType;
     String typeOfCare;
     String healthcareServiceType;
     String workplaceCode;
@@ -50,5 +52,8 @@ public class PrivatePractitioner {
 
     LocalDateTime registrationDate;
 
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class PrivatePractitionerBuilder {
 
+    }
 }

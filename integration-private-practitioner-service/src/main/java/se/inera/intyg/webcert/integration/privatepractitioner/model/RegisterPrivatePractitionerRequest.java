@@ -31,7 +31,6 @@ public class RegisterPrivatePractitionerRequest {
 
     String position;
     String careUnitName;
-    String ownershipType;
     String typeOfCare;
     String healthcareServiceType;
     String workplaceCode;
