@@ -86,6 +86,8 @@ class GetCertificateTypesFacadeServiceImplTest {
     private CertificateTypeMessageService certificateTypeMessageService;
     @Mock
     private PatientDetailsResolver patientDetailsResolver;
+    @Mock
+    private CertificateTypeInfoModalService certificateTypeInfoModalService;
 
     @Mock
     private MissingRelatedCertificateConfirmation missingRelatedCertificateConfirmation;
@@ -185,6 +187,41 @@ class GetCertificateTypesFacadeServiceImplTest {
             void shallConvertIssuerTypeId() {
                 types = getCertificateTypesFacadeService.get(PATIENT_ID);
                 assertEquals(defaultModule.getIssuerTypeId(), types.getFirst().getIssuerTypeId());
+            }
+        }
+
+        @Nested
+        class TypeInfoModal {
+
+            @BeforeEach
+            void setUp() {
+                doReturn(Arrays.asList(defaultModule, notAllowedModule))
+                    .when(intygModuleRegistry)
+                    .listAllModules();
+            }
+
+            @Test
+            void shallIncludeModalLinkWhenModalExists() {
+                final var link = "link";
+                when(certificateTypeInfoModalService.get(CERTIFICATE_TYPE, PATIENT_ID)).thenReturn(
+                    Optional.of(CertificateTypeInfoModal
+                        .builder()
+                        .title("Title")
+                        .link(link)
+                        .description("Message")
+                        .build()
+                    )
+                );
+                final var types = getCertificateTypesFacadeService.get(PATIENT_ID);
+                assertEquals(link, types.getFirst().getModalLink());
+            }
+
+            @Test
+            void shallExcludeLinkWhenModalDoesntExists() {
+                when(certificateTypeInfoModalService.get(CERTIFICATE_TYPE, PATIENT_ID))
+                    .thenReturn(Optional.empty());
+                final var types = getCertificateTypesFacadeService.get(PATIENT_ID);
+                assertNull(types.getFirst().getModalLink());
             }
         }
 

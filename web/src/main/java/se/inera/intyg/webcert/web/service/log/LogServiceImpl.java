@@ -36,6 +36,7 @@ import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.infra.logmessages.ActivityType;
 import se.inera.intyg.infra.logmessages.PdlLogMessage;
+import se.inera.intyg.webcert.common.service.log.template.GeneralInformationMessage;
 import se.inera.intyg.webcert.common.service.log.template.IntygCreateMessage;
 import se.inera.intyg.webcert.common.service.log.template.IntygDeleteMessage;
 import se.inera.intyg.webcert.common.service.log.template.IntygListsMessage;
@@ -239,6 +240,13 @@ public class LogServiceImpl implements LogService {
         LogRequest logRequest = logRequestFactory.createLogRequestFromUser(user, patient);
         send(logMessagePopulator.populateLogMessage(
             IntygListsMessage.build(), logRequest, getLogUser(user)), logRequest.isTestIntyg());
+    }
+
+    @Override
+    public void logReadLevelOne(WebCertUser user, String patient) {
+        LogRequest logRequest = logRequestFactory.createLogRequestFromUser(user, patient);
+        send(logMessagePopulator.populateLogMessage(
+            GeneralInformationMessage.build(), logRequest, getLogUser(user)), logRequest.isTestIntyg());
     }
 
     @Override

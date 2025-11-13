@@ -48,7 +48,6 @@ public class LogMessagePopulatorImpl implements LogMessagePopulator {
 
     @Override
     public PdlLogMessage populateLogMessage(PdlLogMessage logMessage, LogRequest logRequest, LogUser logUser) {
-
         populateWithCurrentUserAndCareUnit(logMessage, logUser);
 
         PdlResource pdlResource = new PdlResource();

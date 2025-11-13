@@ -18,24 +18,14 @@
  */
 package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.util.List;
+import lombok.Builder;
 import lombok.Data;
-import se.inera.intyg.common.support.facade.model.metadata.CertificateConfirmationModal;
 
 @Data
-public class CertificateTypeInfoDTO {
+@Builder
+public class CertificateTypeInfoModalDTO {
 
-    private String id;
-    @JsonIgnore
-    private String certificateServiceTypeId;
-    private String label;
-    private String issuerTypeId;
+    private String title;
     private String description;
-    private String detailedDescription;
-    private List<ResourceLinkDTO> links;
-    private String message;
-    private CertificateConfirmationModal confirmationModal;
-    private String modalLink;
-
 }
+

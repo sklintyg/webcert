@@ -61,13 +61,15 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
     private final PatientDetailsResolver patientDetailsResolver;
     private final MissingRelatedCertificateConfirmation missingRelatedCertificateConfirmation;
     private final FeaturesHelper featuresHelper;
+    private final CertificateTypeInfoModalService certificateTypeInfoModalService;
 
     @Autowired
     public GetCertificateTypesFacadeServiceImpl(IntygModuleRegistry intygModuleRegistry, ResourceLinkHelper resourceLinkHelper,
         AuthoritiesHelper authoritiesHelper, WebCertUserService webCertUserService,
         IntygTextsService intygTextsService, CertificateTypeMessageService certificateTypeMessageService,
         PatientDetailsResolver patientDetailsResolver,
-        MissingRelatedCertificateConfirmation missingRelatedCertificateConfirmation, FeaturesHelper featuresHelper) {
+        MissingRelatedCertificateConfirmation missingRelatedCertificateConfirmation, FeaturesHelper featuresHelper,
+        CertificateTypeInfoModalService certificateTypeInfoModalService) {
         this.intygModuleRegistry = intygModuleRegistry;
         this.resourceLinkHelper = resourceLinkHelper;
         this.authoritiesHelper = authoritiesHelper;
@@ -77,6 +79,7 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
         this.patientDetailsResolver = patientDetailsResolver;
         this.missingRelatedCertificateConfirmation = missingRelatedCertificateConfirmation;
         this.featuresHelper = featuresHelper;
+        this.certificateTypeInfoModalService = certificateTypeInfoModalService;
     }
 
     @Override
@@ -124,8 +127,14 @@ public class GetCertificateTypesFacadeServiceImpl implements GetCertificateTypes
         certificateTypeInfo.setDetailedDescription(module.getDetailedDescription());
         certificateTypeInfo.setIssuerTypeId(module.getIssuerTypeId());
         certificateTypeInfo.setLinks(convertResourceLinks(module.getLinks()));
+
         certificateTypeMessageService.get(module.getId(), patientId)
             .ifPresent(message -> certificateTypeInfo.setMessage(message.getMessage()));
+
+        certificateTypeInfoModalService.get(module.getId(), patientId)
+            .ifPresent(certificateTypeInfoModal -> certificateTypeInfo.setModalLink(
+                certificateTypeInfoModal.getLink()));
+
         return certificateTypeInfo;
     }
 

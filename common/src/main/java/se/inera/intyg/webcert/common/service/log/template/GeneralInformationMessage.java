@@ -16,26 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.web.web.controller.facade.dto;
+package se.inera.intyg.webcert.common.service.log.template;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.util.List;
-import lombok.Data;
-import se.inera.intyg.common.support.facade.model.metadata.CertificateConfirmationModal;
+import se.inera.intyg.infra.logmessages.ActivityType;
+import se.inera.intyg.infra.logmessages.PdlLogMessage;
 
-@Data
-public class CertificateTypeInfoDTO {
+public abstract class GeneralInformationMessage {
 
-    private String id;
-    @JsonIgnore
-    private String certificateServiceTypeId;
-    private String label;
-    private String issuerTypeId;
-    private String description;
-    private String detailedDescription;
-    private List<ResourceLinkDTO> links;
-    private String message;
-    private CertificateConfirmationModal confirmationModal;
-    private String modalLink;
-
+    public static PdlLogMessage build() {
+        PdlLogMessage pdlLogMessage = new PdlLogMessage(ActivityType.READ);
+        pdlLogMessage.setActivityLevel("1");
+        return pdlLogMessage;
+    }
 }

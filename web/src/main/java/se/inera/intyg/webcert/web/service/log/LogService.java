@@ -220,6 +220,14 @@ public interface LogService {
     void logReadLevelTwo(WebCertUser user, String patient);
 
     /**
+     * Creates a log event when a user metadata from one or more intyg.
+     *
+     * @param user the user who performs the action that is being logged
+     * @param patient the user who performs the action that is being logged
+     */
+    void logReadLevelOne(WebCertUser user, String patient);
+
+    /**
      * Use this to create a {@link LogUser} instance from a supplied {@link WebCertUser}
      *
      * Use when you can't access the WebCertUser in the current ThreadLocal, e.g. a background job spawned
