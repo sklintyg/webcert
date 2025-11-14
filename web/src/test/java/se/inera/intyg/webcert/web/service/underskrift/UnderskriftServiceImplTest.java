@@ -206,8 +206,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
     @Test
     public void testStartSigning() throws ModuleNotFoundException, ModuleException {
         when(utkastRepository.findById(INTYG_ID))
-            .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE,
-                "model", vardperson,
+            .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", vardperson,
                 ENHET_ID, PERSON_ID)));
 
         when(xmlUnderskriftService.skapaSigneringsBiljettMedDigest(anyString(), anyString(), anyLong(), any(),
@@ -231,8 +230,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
     @Test(expected = OptimisticLockException.class)
     public void testStartSignUtkastVersionsDifferFound() {
         when(utkastRepository.findById(INTYG_ID))
-            .thenReturn(Optional.of(createUtkast(INTYG_ID, 2L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE,
-                "model", vardperson,
+            .thenReturn(Optional.of(createUtkast(INTYG_ID, 2L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", vardperson,
                 ENHET_ID, PERSON_ID)));
         testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, USER_IP_ADDRESS);
     }
@@ -240,8 +238,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
     @Test(expected = WebCertServiceException.class)
     public void testStartSignUtkastNotReadyForSign() {
         when(utkastRepository.findById(INTYG_ID))
-            .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_INCOMPLETE,
-                "model", vardperson,
+            .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_INCOMPLETE, "model", vardperson,
                 ENHET_ID, PERSON_ID)));
         testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, USER_IP_ADDRESS);
     }
@@ -253,8 +250,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
         final String doiTyp = "doi";
 
         when(utkastRepository.findById(INTYG_ID))
-            .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, doiTyp, UtkastStatus.DRAFT_COMPLETE,
-                "model", vardperson,
+            .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, doiTyp, UtkastStatus.DRAFT_COMPLETE, "model", vardperson,
                 ENHET_ID, PERSON_ID, ersattandeIntygSkapad)));
 
         when(xmlUnderskriftService.skapaSigneringsBiljettMedDigest(anyString(), anyString(), anyLong(), any(), any(SignMethod.class),
@@ -278,8 +274,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
     @Test(expected = WebCertServiceException.class)
     public void testStartSignUtkastAlreadySigned() {
         when(utkastRepository.findById(INTYG_ID))
-            .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.SIGNED,
-                "model", vardperson,
+            .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.SIGNED, "model", vardperson,
                 ENHET_ID, PERSON_ID)));
         testee.startSigningProcess(INTYG_ID, INTYG_TYP, 1L, SignMethod.FAKE, TICKET_ID, USER_IP_ADDRESS);
     }
@@ -287,8 +282,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
     @Test(expected = WebCertServiceException.class)
     public void testStartSignInvalidDraft() throws ModuleException, ModuleNotFoundException {
         when(utkastRepository.findById(INTYG_ID))
-            .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.SIGNED,
-                "model", vardperson,
+            .thenReturn(Optional.of(createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.SIGNED, "model", vardperson,
                 ENHET_ID, PERSON_ID)));
 
         when(draftModelToXMLValidator.validateDraftModelAsXml(any()))
@@ -315,8 +309,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
 
     @Test
     public void testNetidSignature() {
-        Utkast utkast = createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE,
-            "model", vardperson,
+        Utkast utkast = createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", vardperson,
             ENHET_ID, PERSON_ID);
         when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(utkast));
         SignaturBiljett signaturBiljett = createSignaturBiljett(SignaturStatus.BEARBETAR);
@@ -334,8 +327,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
 
     @Test
     public void testGrpSignature() {
-        Utkast utkast = createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE,
-            "model", vardperson,
+        Utkast utkast = createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", vardperson,
             ENHET_ID, PERSON_ID);
         when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(utkast));
         SignaturBiljett signaturBiljett = createSignaturBiljett(SignaturStatus.BEARBETAR);
@@ -353,8 +345,7 @@ public class UnderskriftServiceImplTest extends AuthoritiesConfigurationTestSetu
 
     @Test
     public void shallPublishAnalyticsMessageWhenSigningIsFinalized() {
-        final var utkast = createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE,
-            "model", vardperson, ENHET_ID, PERSON_ID);
+        final var utkast = createUtkast(INTYG_ID, 1L, INTYG_TYP, UtkastStatus.DRAFT_COMPLETE, "model", vardperson, ENHET_ID, PERSON_ID);
         when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(utkast));
         final var signaturBiljett = createSignaturBiljett(SignaturStatus.BEARBETAR);
         when(redisTicketTracker.findBiljett(TICKET_ID)).thenReturn(signaturBiljett);

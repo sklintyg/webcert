@@ -29,13 +29,13 @@ public record HospInformationResponse(String personalPrescriptionCode, List<Code
 
     public static HospInformationResponse convert(HospInformation hospInformation) {
         return HospInformationResponse.builder()
-            .personalPrescriptionCode(hospInformation.getPersonalPrescriptionCode())
+            .personalPrescriptionCode(hospInformation.personalPrescriptionCode())
             .licensedHealthcareProfessions(
-                hospInformation.getLicensedHealthcareProfessions() == null ? List.of() :
-                    hospInformation.getLicensedHealthcareProfessions().stream().map(l -> new CodeDTO(l.code(), l.description())).toList())
+                hospInformation.licensedHealthcareProfessions() == null ? List.of() :
+                    hospInformation.licensedHealthcareProfessions().stream().map(l -> new CodeDTO(l.code(), l.description())).toList())
             .specialities(
-                hospInformation.getSpecialities() == null ? List.of() :
-                    hospInformation.getSpecialities().stream().map(s -> new CodeDTO(s.code(), s.description())).toList())
+                hospInformation.specialities() == null ? List.of() :
+                    hospInformation.specialities().stream().map(s -> new CodeDTO(s.code(), s.description())).toList())
             .build();
     }
 }

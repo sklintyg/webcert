@@ -136,15 +136,15 @@ public class ConfigApiController extends AbstractApiController {
         if (result == null || result.isEmpty()) {
             return List.of();
         }
-      return result.stream()
-          .map(o -> Area
-              .builder()
-              .zipCode(o.getPostnummer())
-              .city(o.getPostort())
-              .municipality(o.getKommun())
-              .county(o.getLan())
-              .build())
-          .toList();
+        return result.stream()
+            .map(o -> Area
+                .builder()
+                .zipCode(o.getPostnummer())
+                .city(o.getPostort())
+                .municipality(o.getKommun())
+                .county(o.getLan())
+                .build())
+            .toList();
     }
 
     @PostConstruct

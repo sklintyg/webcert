@@ -1,4 +1,32 @@
+/*
+ * Copyright (C) 2025 Inera AB (http://www.inera.se)
+ *
+ * This file is part of sklintyg (https://github.com/sklintyg).
+ *
+ * sklintyg is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * sklintyg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package se.inera.intyg.webcert.integration.privatepractitioner.service;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static se.inera.intyg.webcert.integration.privatepractitioner.service.testdata.TestData.DR_KRANSTEGE;
+import static se.inera.intyg.webcert.integration.privatepractitioner.service.testdata.TestData.DR_KRANSTEGE_HOSP_INFO;
+import static se.inera.intyg.webcert.integration.privatepractitioner.service.testdata.TestData.PRIVATE_PRACTITIONER_CONFIG;
+import static se.inera.intyg.webcert.integration.privatepractitioner.service.testdata.TestData.kranstegeRegisterPractitionerRequest;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,12 +41,6 @@ import org.springframework.web.client.RestClientException;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerRequest;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerResponse;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerResultCode;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static se.inera.intyg.webcert.integration.privatepractitioner.service.testdata.TestData.*;
 
 @ExtendWith(MockitoExtension.class)
 class PrivatePractitionerIntegrationServiceTest {
@@ -44,7 +66,7 @@ class PrivatePractitionerIntegrationServiceTest {
     void validatePrivatePractitionerReturnsResponseOnOk() {
         var expectedResponse = new ValidatePrivatePractitionerResponse(ValidatePrivatePractitionerResultCode.OK, "OK");
         when(validatePrivatePractitionerClient.validatePrivatePractitioner(
-                new ValidatePrivatePractitionerRequest(PERSONAL_IDENTITY_NUMBER))).thenReturn(expectedResponse);
+            new ValidatePrivatePractitionerRequest(PERSONAL_IDENTITY_NUMBER))).thenReturn(expectedResponse);
 
         var actual = service.validatePrivatePractitioner(PERSONAL_IDENTITY_NUMBER);
 
@@ -55,9 +77,9 @@ class PrivatePractitionerIntegrationServiceTest {
     @Test
     void validatePrivatePractitionerInvalid() {
         var expectedResponse = new ValidatePrivatePractitionerResponse(ValidatePrivatePractitionerResultCode.NO_ACCOUNT,
-                "No account found for practitioner");
+            "No account found for practitioner");
         when(validatePrivatePractitionerClient.validatePrivatePractitioner(
-                new ValidatePrivatePractitionerRequest(PERSONAL_IDENTITY_NUMBER))).thenReturn(expectedResponse);
+            new ValidatePrivatePractitionerRequest(PERSONAL_IDENTITY_NUMBER))).thenReturn(expectedResponse);
 
         var actual = service.validatePrivatePractitioner(PERSONAL_IDENTITY_NUMBER);
 
@@ -79,7 +101,7 @@ class PrivatePractitionerIntegrationServiceTest {
     @Test
     void shallReturnRegisteredPrivatePractitioner() {
         when(registerPrivatePractitionerClient.registerPrivatePractitioner(kranstegeRegisterPractitionerRequest())).thenReturn(
-                DR_KRANSTEGE);
+            DR_KRANSTEGE);
         final var result = service.registerPrivatePractitioner(kranstegeRegisterPractitionerRequest());
 
         assertEquals(DR_KRANSTEGE, result);
