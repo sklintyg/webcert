@@ -51,8 +51,4 @@ public class TestDataConstants {
     );
     public static final List<Code> DR_KRANSTEGE_LICENSED_HEALTHCARE_PROFESSIONS =
         List.of(new Code("LK", "Läkare"));
-
-    public static final long CONSENT_FORM_VERSION = 1L;
-
-
 }
