@@ -99,6 +99,7 @@ knownRoles:
   - &kr040 VARDADMINISTRATOR
   - &kr050 SJUKSKOTERSKA
   - &kr060 BARNMORSKA
+  - &kr070 PRIVATLAKARE_OBEHORIG
 
 
 # ====================================================================================================

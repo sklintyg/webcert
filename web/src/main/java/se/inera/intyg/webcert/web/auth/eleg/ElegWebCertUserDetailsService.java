@@ -175,7 +175,8 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
     }
 
     Role lookupUserRole() {
-        return getAuthoritiesResolver().getRole(AuthoritiesConstants.ROLE_PRIVATLAKARE);
+        // TODO: Will be returned to PRIVATLAKARE after we have tested
+        return getAuthoritiesResolver().getRole(AuthoritiesConstants.ROLE_PRIVATLAKARE_OBEHORIG);
     }
 
     private String resolveRequestOrigin() {
