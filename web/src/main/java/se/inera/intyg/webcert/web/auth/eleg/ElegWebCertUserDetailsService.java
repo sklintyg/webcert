@@ -28,6 +28,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.Nullable;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -48,6 +49,7 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEn
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.integration.pp.services.PPRestService;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
+import se.inera.intyg.webcert.integration.privatepractitioner.service.toggle.PrivatePractitionerServiceProfile;
 import se.inera.intyg.webcert.logging.HashUtility;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.webcert.web.auth.common.AuthConstants;
@@ -77,6 +79,10 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
     private final SubscriptionService subscriptionService;
     private final HashUtility hashUtility;
 
+    private final PrivatePractitionerServiceProfile privatePractitionerServiceProfile;
+    @Nullable
+    private final UnauthorizedPrivatePractitionerService unauthorizedPrivatePractitionerService;
+
     public WebCertUser buildFakeUserPrincipal(String personId) {
         return buildUserPrincipal(personId, AuthConstants.FAKE_AUTHENTICATION_ELEG_CONTEXT_REF, AuthenticationMethod.FAKE);
     }
@@ -98,10 +104,14 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
 
     protected WebCertUser createUser(String personId, String authenticationScheme, AuthenticationMethod authenticationMethodMethod) {
         final var ppAuthStatus = ppRestService.validatePrivatePractitioner(personId).getResultCode();
+        final var requestOrigin = resolveRequestOrigin();
+        if (privatePractitionerServiceProfile.isEnabled() && ValidatePrivatePractitionerResultCode.NO_ACCOUNT.equals(ppAuthStatus)) {
+            return unauthorizedPrivatePractitionerService.createUnauthorizedWebCertUser(personId, requestOrigin);
+        }
+
         redirectUnregisteredUsers(personId, ppAuthStatus);
 
         final var hosPerson = getAuthorizedHosPerson(personId);
-        final var requestOrigin = resolveRequestOrigin();
         final var webCertUser = createWebCertUser(hosPerson, requestOrigin);
         webCertUser.setAuthenticationScheme(authenticationScheme);
         webCertUser.setAuthenticationMethod(authenticationMethodMethod);
@@ -138,17 +148,6 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         return user;
     }
 
-    private WebCertUser createUnauthorizedWebCertUser(String personId, String requestOrigin, String name) {
-        final var role = getAuthoritiesResolver().getRole(AuthoritiesConstants.ROLE_PRIVATLAKARE_OBEHORIG);
-        WebCertUser user = new WebCertUser();
-        user.setRoles(AuthoritiesResolverUtil.toMap(role));
-        user.setOrigin(requestOrigin);
-        user.setPersonId(personId);
-        user.setNamn(name);
-        decorateWebcertUserWithUserTermsApprovedOrSubscriptionInUse(user);
-        return user;
-    }
-
     private void redirectUnregisteredUsers(String personId, ValidatePrivatePractitionerResultCode ppAuthStatus) {
         if (ppAuthStatus == NO_ACCOUNT) {
             final var hasSubscription = !subscriptionService.isUnregisteredElegUserMissingSubscription(personId);
@@ -176,7 +175,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
             + "according to private practitioner portal");
     }
 
-    private MissingSubscriptionException missingSubscriptionException(String hashedPersonIdOrHsaId) {
+    public static MissingSubscriptionException missingSubscriptionException(String hashedPersonIdOrHsaId) {
         return new MissingSubscriptionException("Private practitioner '" + hashedPersonIdOrHsaId + "' was denied access to Webcert due to "
             + "missing subscription.");
     }
