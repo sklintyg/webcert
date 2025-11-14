@@ -1,0 +1,15 @@
+dependencies {
+    implementation project(':webcert-logging')
+
+    implementation "com.fasterxml.jackson.core:jackson-databind"
+    implementation "com.google.guava:guava:${guavaVersion}"
+    implementation "jakarta.ws.rs:jakarta.ws.rs-api"
+    implementation "org.springframework:spring-web"
+    implementation "org.springframework:spring-context"
+
+    compileOnly "org.projectlombok:lombok"
+
+    annotationProcessor "org.projectlombok:lombok"
+
+    testImplementation "org.springframework:spring-test"
+}

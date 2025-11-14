@@ -63,8 +63,7 @@ public class FakeLoginService {
         final var personId = Personnummer.createPersonnummer(fakeProps.getHsaId());
 
         if (personId.isPresent()) {
-            final var userId = personId.get().getPersonnummerWithDash();
-            webCertUser = elegWebCertUserDetailsService.buildFakeUserPrincipal(userId);
+            webCertUser = elegWebCertUserDetailsService.buildFakeUserPrincipal(personId.get().getPersonnummer());
         } else {
             webCertUser = webcertUserDetailsService.buildFakeUserPrincipal(fakeProps.getHsaId());
         }
@@ -139,7 +138,7 @@ public class FakeLoginService {
             return;
         }
         final var unitList = List.of(user.getValdVardenhet().getId(), user.getValdVardgivare().getId());
-        final var features =  authoritiesResolver.getFeatures(unitList);
+        final var features = authoritiesResolver.getFeatures(unitList);
         user.setFeatures(features);
     }
 

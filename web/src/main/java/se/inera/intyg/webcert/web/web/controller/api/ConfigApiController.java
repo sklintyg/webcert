@@ -23,6 +23,7 @@ import io.swagger.annotations.ApiOperation;
 import jakarta.annotation.PostConstruct;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -40,6 +41,7 @@ import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.web.controller.AbstractApiController;
+import se.inera.intyg.webcert.web.web.controller.api.dto.Area;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ConfigResponse;
 
 @Path("/config")
@@ -121,6 +123,28 @@ public class ConfigApiController extends AbstractApiController {
     @PerformanceLogging(eventAction = "config-get-kommun-list", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public List<String> getKommunList() {
         return postnummerService.getKommunList();
+    }
+
+    @GET
+    @Path("area/{zipcode}")
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @ApiOperation(value = "Get area for a given area from postnummerservice", httpMethod = "GET", produces = MediaType.APPLICATION_JSON)
+    @PrometheusTimeMethod
+    @PerformanceLogging(eventAction = "config-get-area-by-zid-code", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+    public List<Area> getAreaByZipCode(@PathParam("zipcode") String zipCode) {
+        final var result = postnummerService.getOmradeByPostnummer(zipCode);
+        if (result == null || result.isEmpty()) {
+            return List.of();
+        }
+        return result.stream()
+            .map(o -> Area
+                .builder()
+                .zipCode(o.getPostnummer())
+                .city(o.getPostort())
+                .municipality(o.getKommun())
+                .county(o.getLan())
+                .build())
+            .toList();
     }
 
     @PostConstruct

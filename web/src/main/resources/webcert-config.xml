@@ -33,7 +33,8 @@
 	<import resource="classpath:tak-services-config.xml"/>
 	<import resource="classpath:servicenow-services-config.xml"/>
 	<import resource="classpath:integration-certificate-analytics-service-config.xml"/>
-	<import resource="classpath:basic-cache-config.xml"/>
+	<import resource="classpath:integration-private-practitioner-service-config.xml"/>
+  <import resource="classpath:basic-cache-config.xml"/>
 	<import resource="classpath:pu-services-config.xml"/>
 	<import resource="classpath:ia-services-config.xml"/>
 	<import resource="classpath:srs-services-config.xml"/>
