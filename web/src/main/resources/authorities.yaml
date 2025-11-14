@@ -1229,6 +1229,10 @@ roles:
           - <<: *ro010 # NORMAL
           - <<: *ro020 # DJUPINTEGRATION
 
+  - &r070
+    name: *kr070 # PRIVATLAKARE_OBEHORIG
+    desc: Obehörig Privatläkare
+
 # Legitimerade yrkesroller
 titles:
   - title: Läkare

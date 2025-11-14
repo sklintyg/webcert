@@ -784,7 +784,7 @@ public class UtkastServiceImpl implements UtkastService {
 
         try {
             ModuleApi moduleApi = getModuleApi(intygType, moduleRegistry.resolveVersionFromUtlatandeJson(intygType, draftAsJson));
-            return convertToDraftValidation(moduleApi.validateDraft(draftAsJson, defaultTypeAheadProvider));
+            return convertToDraftValidation(moduleApi.validateDraft(draftAsJson));
         } catch (ModuleException | ModuleNotFoundException me) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.MODULE_PROBLEM, me);
         }

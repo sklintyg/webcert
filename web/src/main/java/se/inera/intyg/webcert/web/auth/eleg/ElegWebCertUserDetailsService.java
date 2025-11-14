@@ -30,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.pu.integration.api.model.PersonSvar;
@@ -101,8 +102,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
 
         final var hosPerson = getAuthorizedHosPerson(personId);
         final var requestOrigin = resolveRequestOrigin();
-        final var role = lookupUserRole();
-        final var webCertUser = createWebCertUser(hosPerson, requestOrigin, role);
+        final var webCertUser = createWebCertUser(hosPerson, requestOrigin);
         webCertUser.setAuthenticationScheme(authenticationScheme);
         webCertUser.setAuthenticationMethod(authenticationMethodMethod);
         assertWebCertUserIsAuthorized(webCertUser, ppAuthStatus);
@@ -110,10 +110,14 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         return webCertUser;
     }
 
-    private WebCertUser createWebCertUser(HoSPersonType hosPerson, String requestOrigin, Role role) {
+    private WebCertUser createWebCertUser(HoSPersonType hosPerson, String requestOrigin) {
+        final var role = lookupUserRole();
+
         WebCertUser user = new WebCertUser();
-        user.setRoles(AuthoritiesResolverUtil.toMap(lookupUserRole()));
-        user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
+        user.setRoles(AuthoritiesResolverUtil.toMap(role));
+        if (!CollectionUtils.isEmpty(role.getPrivileges())) {
+            user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
+        }
         user.setOrigin(requestOrigin);
         user.setHsaId(hosPerson.getHsaId().getExtension());
         user.setPersonId(hosPerson.getPersonId().getExtension());
@@ -130,6 +134,17 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         decorateWebCertUserWithDefaultVardenhet(user);
         decorateWebcertUserWithSekretessMarkering(user, hosPerson);
         decorateWebcertUserWithAnvandarPreferenser(user);
+        decorateWebcertUserWithUserTermsApprovedOrSubscriptionInUse(user);
+        return user;
+    }
+
+    private WebCertUser createUnauthorizedWebCertUser(String personId, String requestOrigin, String name) {
+        final var role = getAuthoritiesResolver().getRole(AuthoritiesConstants.ROLE_PRIVATLAKARE_OBEHORIG);
+        WebCertUser user = new WebCertUser();
+        user.setRoles(AuthoritiesResolverUtil.toMap(role));
+        user.setOrigin(requestOrigin);
+        user.setPersonId(personId);
+        user.setNamn(name);
         decorateWebcertUserWithUserTermsApprovedOrSubscriptionInUse(user);
         return user;
     }
