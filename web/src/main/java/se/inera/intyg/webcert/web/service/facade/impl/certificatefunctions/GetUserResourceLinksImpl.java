@@ -166,6 +166,9 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
     }
 
     private boolean hasNormalOriginWarning(WebCertUser user) {
+        if (user.isUnauthorizedPrivatePractitioner()) {
+            return false;
+        }
         return isOriginNormal(user.getOrigin()) && user.isFeatureActive("VARNING_FRISTAENDE") && hasUserChosenUnit(user);
     }
 
@@ -174,6 +177,9 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
     }
 
     private boolean isChooseUnitAvailable(WebCertUser user) {
+        if (user.isUnauthorizedPrivatePractitioner()) {
+            return false;
+        }
         return isOriginNormal(user.getOrigin()) && !hasUserChosenUnit(user);
     }
 
@@ -199,22 +205,37 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
     }
 
     private boolean hasAccessToSearchCreatePage(WebCertUser user) {
+        if (user.isUnauthorizedPrivatePractitioner()) {
+            return false;
+        }
         return isOriginNormal(user.getOrigin()) || isOriginUthopp(user.getOrigin());
     }
 
     private boolean hasAccessToDraftList(WebCertUser user) {
+        if (user.isUnauthorizedPrivatePractitioner()) {
+            return false;
+        }
         return isOriginNormal(user.getOrigin()) || isOriginUthopp(user.getOrigin());
     }
 
     private boolean hasAccessToQuestionList(WebCertUser user) {
+        if (user.isUnauthorizedPrivatePractitioner()) {
+            return false;
+        }
         return isOriginNormal(user.getOrigin()) || isOriginUthopp(user.getOrigin());
     }
 
     private boolean hasNavigateBackButton(WebCertUser user) {
+        if (user.isUnauthorizedPrivatePractitioner()) {
+            return false;
+        }
         return isOriginNormal(user.getOrigin());
     }
 
     private boolean hasAccessToSignedCertificatesList(WebCertUser user) {
+        if (user.isUnauthorizedPrivatePractitioner()) {
+            return false;
+        }
         return (isOriginNormal(user.getOrigin()) || isOriginUthopp(user.getOrigin())) && !isUserCareAdmin(user);
     }
 
@@ -235,15 +256,15 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
     }
 
     private boolean shouldWarnForMissingSubscription(WebCertUser user) {
-        return isOriginNormal(user.getOrigin())
-            && isLoggedInCareProviderMissingSubscription(user);
+        if (user.isUnauthorizedPrivatePractitioner()) {
+            return false;
+        }
+        return isOriginNormal(user.getOrigin()) && isLoggedInCareProviderMissingSubscription(user);
     }
 
     private boolean isLoggedInCareProviderMissingSubscription(WebCertUser user) {
         return user.getValdVardgivare() != null
             && user.getSubscriptionInfo().getCareProvidersForSubscriptionModal() != null
-            && user.getSubscriptionInfo() != null
-            && user.getSubscriptionInfo().getCareProvidersForSubscriptionModal()
-            .contains(user.getValdVardgivare().getId());
+            && user.getSubscriptionInfo().getCareProvidersForSubscriptionModal().contains(user.getValdVardgivare().getId());
     }
 }
