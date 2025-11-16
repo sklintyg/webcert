@@ -203,6 +203,9 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
         } else if (UserOriginType.DJUPINTEGRATION.name().equals(user.getOrigin())) {
             LOG.debug("getStatistics was called, but webcertUser origin is DJUPINTEGRATION - returning empty answer");
             return false;
+        } else if (user.isUnauthorizedPrivatePractitioner()) {
+            LOG.debug("getStatistics was called, but webcertUser is unauthorized private practitioner - returning empty answer");
+            return false;
         }
         return true;
     }
