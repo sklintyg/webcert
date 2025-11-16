@@ -54,6 +54,10 @@ public class WebCertUser extends IntygUser implements Serializable, Saml2Authent
         super("only-for-test-use");
     }
 
+    public WebCertUser(String unauthorizedPrivatePractitioner) {
+        super(unauthorizedPrivatePractitioner);
+    }
+
     public WebCertUser(IntygUser intygUser) {
         super(intygUser.getHsaId());
         this.userTermsApprovedOrSubscriptionInUse = intygUser.isUserTermsApprovedOrSubscriptionInUse();

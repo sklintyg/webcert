@@ -18,12 +18,14 @@
  */
 package se.inera.intyg.webcert.web.auth.eleg;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -34,12 +36,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -53,6 +55,7 @@ import se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerResultC
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.integration.pp.services.PPRestService;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
+import se.inera.intyg.webcert.integration.privatepractitioner.service.toggle.PrivatePractitionerServiceProfile;
 import se.inera.intyg.webcert.logging.HashUtility;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
@@ -69,8 +72,8 @@ import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 import se.riv.infrastructure.directory.privatepractitioner.v1.VardgivareType;
 
-@RunWith(MockitoJUnitRunner.class)
-public class ElegWebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestSetup {
+@ExtendWith(MockitoExtension.class)
+class ElegWebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestSetup {
 
     private static final String HSA_ID = "191212121212";
     private static final String PERSON_ID = "197705232382";
@@ -93,6 +96,10 @@ public class ElegWebCertUserDetailsServiceTest extends AuthoritiesConfigurationT
     private SubscriptionService subscriptionService;
     @Mock
     private HashUtility hashUtility;
+    @Mock
+    private PrivatePractitionerServiceProfile privatePractitionerServiceProfile;
+    @Mock
+    private UnauthorizedPrivatePractitionerService unauthorizedPrivatePractitionerService;
     @InjectMocks
     private ElegWebCertUserDetailsService elegWebCertUserDetailsService;
 
@@ -111,19 +118,20 @@ public class ElegWebCertUserDetailsServiceTest extends AuthoritiesConfigurationT
         return vardEnhet;
     }
 
-    @Before
-    public void setupForSuccess() {
+    @BeforeEach
+    void setupForSuccess() {
         final var request = mock(HttpServletRequest.class);
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
         elegWebCertUserDetailsService.setAuthoritiesResolver(AUTHORITIES_RESOLVER);
 
-        when(ppService.getPrivatePractitioner(any(), any(), any())).thenReturn(buildHosPerson());
+        when(privatePractitionerServiceProfile.isEnabled()).thenReturn(false);
+        lenient().when(ppService.getPrivatePractitioner(any(), any(), any())).thenReturn(buildHosPerson());
         setPPRestServiceMockToReturn(ValidatePrivatePractitionerResultCode.OK);
         expectedPreferences.put("some", "setting");
-        when(anvandarPreferenceRepository.getAnvandarPreference(anyString())).thenReturn(expectedPreferences);
+        lenient().when(anvandarPreferenceRepository.getAnvandarPreference(anyString())).thenReturn(expectedPreferences);
 
-        when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar(false));
+        lenient().when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar(false));
 
         final var userOrigin = mock(WebCertUserOrigin.class);
         when(userOrigin.resolveOrigin(any(HttpServletRequest.class))).thenReturn("NORMAL");
@@ -131,7 +139,8 @@ public class ElegWebCertUserDetailsServiceTest extends AuthoritiesConfigurationT
     }
 
     @Test
-    public void shouldSetFakePropertiesWhenFakeLogin() {
+    void shouldSetFakePropertiesWhenFakeLogin() {
+        when(privatePractitionerServiceProfile.isEnabled()).thenReturn(false);
         setCheckSubscriptionElegMockToReturn(false);
         setPPRestServiceMockToReturn(ValidatePrivatePractitionerResultCode.OK);
 
@@ -141,7 +150,8 @@ public class ElegWebCertUserDetailsServiceTest extends AuthoritiesConfigurationT
     }
 
     @Test
-    public void testSuccessfulLogin() {
+    void testSuccessfulLogin() {
+        when(privatePractitionerServiceProfile.isEnabled()).thenReturn(false);
         final var user = elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME, AUTH_METHOD);
         assertNotNull(user);
         assertFalse(user.isSekretessMarkerad());
@@ -149,14 +159,16 @@ public class ElegWebCertUserDetailsServiceTest extends AuthoritiesConfigurationT
     }
 
     @Test
-    public void shallSetFirstnameAndLastnameFromFullstandigtName() {
+    void shallSetFirstnameAndLastnameFromFullstandigtName() {
+        when(privatePractitionerServiceProfile.isEnabled()).thenReturn(false);
         final var user = elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME, AUTH_METHOD);
         assertEquals("Test", user.getFornamn());
         assertEquals("Testsson", user.getEfternamn());
     }
 
     @Test
-    public void testSuccessfulLoginSekretessMarkerad() {
+    void testSuccessfulLoginSekretessMarkerad() {
+        when(privatePractitionerServiceProfile.isEnabled()).thenReturn(false);
         reset(puService);
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar(true));
 
@@ -165,32 +177,42 @@ public class ElegWebCertUserDetailsServiceTest extends AuthoritiesConfigurationT
         assertTrue(user.isSekretessMarkerad());
     }
 
-    @Test(expected = HsaServiceException.class)
-    public void testLoginPUErrorThrowsException() {
+    @Test
+    void testLoginPUErrorThrowsException() {
+        when(privatePractitionerServiceProfile.isEnabled()).thenReturn(false);
         reset(puService);
         when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.error());
 
-        elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME, AUTH_METHOD);
+        assertThrows(HsaServiceException.class,
+            () -> elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME, AUTH_METHOD)
+        );
     }
 
-    @Test(expected = HsaServiceException.class)
-    public void testLoginPUNotFoundThrowsException() {
+    @Test
+    void testLoginPUNotFoundThrowsException() {
+        when(privatePractitionerServiceProfile.isEnabled()).thenReturn(false);
         reset(puService);
         when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.notFound());
 
-        elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME, AUTH_METHOD);
+        assertThrows(HsaServiceException.class,
+            () -> elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME, AUTH_METHOD)
+        );
     }
 
-    @Test(expected = HsaServiceException.class)
-    public void testNotFoundInHSAThrowsException() {
+    @Test
+    void testNotFoundInHSAThrowsException() {
+        when(privatePractitionerServiceProfile.isEnabled()).thenReturn(false);
         reset(ppService);
         when(ppService.getPrivatePractitioner(any(), any(), any())).thenReturn(null);
 
-        elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME, AUTH_METHOD);
+        assertThrows(HsaServiceException.class,
+            () -> elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME, AUTH_METHOD)
+        );
     }
 
     @Test
-    public void shouldAdmitUserWhenHasSubscriptionAndAuthorizedInHosp() {
+    void shouldAdmitUserWhenHasSubscriptionAndAuthorizedInHosp() {
+        when(privatePractitionerServiceProfile.isEnabled()).thenReturn(false);
         setCheckSubscriptionElegMockToReturn(true);
         setPPRestServiceMockToReturn(ValidatePrivatePractitionerResultCode.OK);
 
@@ -200,7 +222,8 @@ public class ElegWebCertUserDetailsServiceTest extends AuthoritiesConfigurationT
     }
 
     @Test
-    public void shouldAdmitUserWhenMissingSubscriptionAndAuthorizedInHosp() {
+    void shouldAdmitUserWhenMissingSubscriptionAndAuthorizedInHosp() {
+        when(privatePractitionerServiceProfile.isEnabled()).thenReturn(false);
         setCheckSubscriptionElegMockToReturn(false);
         setPPRestServiceMockToReturn(ValidatePrivatePractitionerResultCode.OK);
 
@@ -209,37 +232,74 @@ public class ElegWebCertUserDetailsServiceTest extends AuthoritiesConfigurationT
         verify(subscriptionService, times(1)).checkSubscriptions(any(WebCertUser.class));
     }
 
-    @Test(expected = PrivatePractitionerAuthorizationException.class)
-    public void shouldThrowAuthExceptionWhenHasSubscriptionAndNoAccount() {
+    @Test
+    void shouldThrowAuthExceptionWhenHasSubscriptionAndNoAccount() {
+        when(privatePractitionerServiceProfile.isEnabled()).thenReturn(false);
         setUnauthorizedElegMissingSubscriptionMockToReturn(false); // -> User has subscription
         setPPRestServiceMockToReturn(ValidatePrivatePractitionerResultCode.NO_ACCOUNT);
 
-        elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME, AUTH_METHOD);
+        assertThrows(PrivatePractitionerAuthorizationException.class,
+            () -> elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME, AUTH_METHOD)
+        );
     }
 
-    @Test(expected = MissingSubscriptionException.class)
-    public void shouldThrowMissingSubscriptionExceptionWhenNoSubscriptionAndNoAccount() {
+    @Test
+    void shouldThrowMissingSubscriptionExceptionWhenNoSubscriptionAndNoAccount() {
+        when(privatePractitionerServiceProfile.isEnabled()).thenReturn(false);
         setUnauthorizedElegMissingSubscriptionMockToReturn(true); // -> User does not have subscription
         setPPRestServiceMockToReturn(ValidatePrivatePractitionerResultCode.NO_ACCOUNT);
 
-        elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME, AUTH_METHOD);
+        assertThrows(MissingSubscriptionException.class,
+            () -> elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME, AUTH_METHOD)
+        );
     }
 
-    @Test(expected = MissingSubscriptionException.class)
-    public void shouldThrowMissingSubscriptionExceptionWhenNotNotAuthorizedInHospAndNoSubscription() {
+    @Test
+    void shouldThrowMissingSubscriptionExceptionWhenNotNotAuthorizedInHospAndNoSubscription() {
+        when(privatePractitionerServiceProfile.isEnabled()).thenReturn(false);
         setCheckSubscriptionElegMockToReturn(false);
         setPPRestServiceMockToReturn(ValidatePrivatePractitionerResultCode.NOT_AUTHORIZED_IN_HOSP);
 
-        elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME, AUTH_METHOD);
+        assertThrows(MissingSubscriptionException.class,
+            () -> elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME, AUTH_METHOD)
+        );
     }
 
-    @Test(expected = PrivatePractitionerAuthorizationException.class)
-    public void shouldThrowsPrivatePractitionerAuthExceptionWhenNotNotAuthorizedInHospAndHasSubscription() {
+    @Test
+    void shouldThrowsPrivatePractitionerAuthExceptionWhenNotNotAuthorizedInHospAndHasSubscription() {
+        when(privatePractitionerServiceProfile.isEnabled()).thenReturn(false);
         setCheckSubscriptionElegMockToReturn(true);
         setPPRestServiceMockToReturn(ValidatePrivatePractitionerResultCode.NOT_AUTHORIZED_IN_HOSP);
 
-        elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME, AUTH_METHOD);
+        assertThrows(PrivatePractitionerAuthorizationException.class,
+            () -> elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME, AUTH_METHOD)
+        );
     }
+
+    @Test
+    void shouldThrowMissingSubscriptionExceptionWhenMissingSubscriptionAndPPSIsActive() {
+        when(privatePractitionerServiceProfile.isEnabled()).thenReturn(true);
+        setUnauthorizedElegMissingSubscriptionMockToReturn(true);
+        setPPRestServiceMockToReturn(ValidatePrivatePractitionerResultCode.NO_ACCOUNT);
+
+        assertThrows(MissingSubscriptionException.class,
+            () -> elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME, AUTH_METHOD)
+        );
+    }
+
+    @Test
+    void shouldReturnUnauthorizedUserWhenSubscriptionExistsAndPPSIsActive() {
+        final var expected = new WebCertUser("uauthorizedPrivatePractitioner");
+
+        when(privatePractitionerServiceProfile.isEnabled()).thenReturn(true);
+        setPPRestServiceMockToReturn(ValidatePrivatePractitionerResultCode.NO_ACCOUNT);
+        when(unauthorizedPrivatePractitionerService.createUnauthorizedWebCertUser(HSA_ID)).thenReturn(expected);
+
+        final var actual = elegWebCertUserDetailsService.buildUserPrincipal(HSA_ID, ELEG_AUTH_SCHEME, AUTH_METHOD);
+
+        assertEquals(expected, actual);
+    }
+
 
     private HoSPersonType buildHosPerson() {
         final var hoSPersonType = new HoSPersonType();
@@ -268,7 +328,7 @@ public class ElegWebCertUserDetailsServiceTest extends AuthoritiesConfigurationT
         final var response = new ValidatePrivatePractitionerResponse();
         response.setResultCode(resultCode);
         response.setResultText("Test result text generated by ElegWebcertUserDetailsServiceTest");
-        when(ppRestService.validatePrivatePractitioner(any(String.class))).thenReturn(response);
+        lenient().when(ppRestService.validatePrivatePractitioner(any(String.class))).thenReturn(response);
     }
 
     private void setCheckSubscriptionElegMockToReturn(boolean hasSubscription) {

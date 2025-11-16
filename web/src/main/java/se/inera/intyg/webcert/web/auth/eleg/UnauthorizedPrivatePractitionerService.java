@@ -19,12 +19,9 @@
 
 package se.inera.intyg.webcert.web.auth.eleg;
 
-import static se.inera.intyg.webcert.web.auth.eleg.ElegWebCertUserDetailsService.missingSubscriptionException;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import se.inera.intyg.infra.pu.integration.api.model.PersonSvar;
 import se.inera.intyg.infra.pu.integration.api.services.PUService;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
@@ -34,7 +31,6 @@ import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.logging.HashUtility;
-import se.inera.intyg.webcert.web.service.subscription.SubscriptionService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @Service
@@ -42,44 +38,35 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 @RequiredArgsConstructor
 public class UnauthorizedPrivatePractitionerService {
 
-    private final PUService puService;
-    private final SubscriptionService subscriptionService;
-    private final HashUtility hashUtility;
     private final CommonAuthoritiesResolver authoritiesResolver;
+    private final HashUtility hashUtility;
+    private final PUService puService;
 
-    public WebCertUser createUnauthorizedWebCertUser(String personId, String requestOrigin) {
-        redirectUnsubscribedUsers(personId);
+    public WebCertUser createUnauthorizedWebCertUser(String personId) {
         final var role = authoritiesResolver.getRole(AuthoritiesConstants.ROLE_PRIVATLAKARE_OBEHORIG);
-        WebCertUser user = new WebCertUser();
+        final var user = new WebCertUser("missing");
         user.setRoles(AuthoritiesResolverUtil.toMap(role));
-        user.setOrigin(requestOrigin);
         user.setPersonId(personId);
         user.setNamn(getUserName(personId));
         return user;
     }
 
-    private void redirectUnsubscribedUsers(String personId) {
-        if (!subscriptionService.isUnregisteredElegUserMissingSubscription(personId)) {
-            throw missingSubscriptionException(hashUtility.hash(personId));
-        }
-    }
-
     private String getUserName(String personId) {
-        final var personNummer = Personnummer
-            .createPersonnummer(personId)
-            .orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
-                String.format("Can't determine name for invalid personId %s",
-                    hashUtility.hash(personId))));
+        final var personNummer = Personnummer.createPersonnummer(personId)
+            .orElseThrow(() -> new WebCertServiceException(
+                    WebCertServiceErrorCodeEnum.PU_PROBLEM,
+                    "Can't determine name for invalid personId %s".formatted(hashUtility.hash(personId))
+                )
+            );
 
-        PersonSvar person = puService.getPerson(personNummer);
+        final var person = puService.getPerson(personNummer);
         if (person.getStatus() == PersonSvar.Status.FOUND) {
-            var name = String.join(" ", (StringUtils.hasText(person.getPerson().fornamn()) ? person.getPerson().fornamn() : "") +
-                (StringUtils.hasText(person.getPerson().efternamn()) ? person.getPerson().efternamn() : ""));
-            return StringUtils.hasText(name) ? name : "Okänd användare";
+            return person.getPerson().fornamn() + " " + person.getPerson().efternamn();
         } else {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
-                String.format("PU replied with %s - name cannot be determined for person %s", person.getStatus(),
-                    hashUtility.hash(personNummer.getPersonnummer())));
+                "PU replied with %s - name cannot be determined for person %s"
+                    .formatted(person.getStatus(), hashUtility.hash(personNummer.getPersonnummer()))
+            );
         }
     }
 }

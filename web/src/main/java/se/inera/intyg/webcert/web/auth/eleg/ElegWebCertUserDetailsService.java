@@ -106,7 +106,16 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
         final var ppAuthStatus = ppRestService.validatePrivatePractitioner(personId).getResultCode();
         final var requestOrigin = resolveRequestOrigin();
         if (privatePractitionerServiceProfile.isEnabled() && ValidatePrivatePractitionerResultCode.NO_ACCOUNT.equals(ppAuthStatus)) {
-            return unauthorizedPrivatePractitionerService.createUnauthorizedWebCertUser(personId, requestOrigin);
+            if (subscriptionService.isUnregisteredElegUserMissingSubscription(personId)) {
+                throw missingSubscriptionException(hashUtility.hash(personId));
+            }
+
+            final var unauthorizedUser = unauthorizedPrivatePractitionerService.createUnauthorizedWebCertUser(personId);
+            unauthorizedUser.setOrigin(requestOrigin);
+            unauthorizedUser.setAuthenticationScheme(authenticationScheme);
+            unauthorizedUser.setAuthenticationMethod(authenticationMethodMethod);
+
+            return unauthorizedUser;
         }
 
         redirectUnregisteredUsers(personId, ppAuthStatus);
@@ -189,8 +198,7 @@ public class ElegWebCertUserDetailsService extends BaseWebCertUserDetailsService
     }
 
     Role lookupUserRole() {
-        // TODO: Will be returned to PRIVATLAKARE after we have tested
-        return getAuthoritiesResolver().getRole(AuthoritiesConstants.ROLE_PRIVATLAKARE_OBEHORIG);
+        return getAuthoritiesResolver().getRole(AuthoritiesConstants.ROLE_PRIVATLAKARE);
     }
 
     private String resolveRequestOrigin() {
