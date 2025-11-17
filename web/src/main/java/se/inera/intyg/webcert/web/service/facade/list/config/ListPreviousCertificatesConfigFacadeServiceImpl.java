@@ -18,13 +18,16 @@
  */
 package se.inera.intyg.webcert.web.service.facade.list.config;
 
-import org.springframework.stereotype.Service;
-import se.inera.intyg.webcert.web.service.facade.list.config.dto.*;
-import se.inera.intyg.webcert.web.service.facade.list.config.factory.ListFilterConfigFactory;
-import se.inera.intyg.webcert.web.service.facade.list.config.factory.TableHeadingFactory;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.stereotype.Service;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.CertificateListItemValueType;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColumnType;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListConfig;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterConfig;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.TableHeading;
+import se.inera.intyg.webcert.web.service.facade.list.config.factory.ListFilterConfigFactory;
+import se.inera.intyg.webcert.web.service.facade.list.config.factory.TableHeadingFactory;
 
 @Service
 public class ListPreviousCertificatesConfigFacadeServiceImpl implements ListConfigFacadeService {
@@ -33,6 +36,7 @@ public class ListPreviousCertificatesConfigFacadeServiceImpl implements ListConf
     private static final String OPEN_CERTIFICATE_TOOLTIP = "Öppnar intyget/utkastet.";
     private static final String RENEW_BUTTON_TOOLTIP =
         "Skapar ett nytt intygsutkast för förlängning av sjukskrivning, där en del information från detta intyg följer med.";
+    private static final String DESCRIPTION = "Här ser du signerade intyg och ej signerade utkast för patienten. Ej signerade utkast raderas efter 3 månader.";
     private static final String EMPTY_LIST_TEXT = "Det finns inga tidigare intyg för patienten.";
 
     @Override
@@ -44,6 +48,7 @@ public class ListPreviousCertificatesConfigFacadeServiceImpl implements ListConf
         final var config = new ListConfig();
         config.setExcludeFilterButtons(true);
         config.setSecondaryTitle(TITLE);
+        config.setDescription(DESCRIPTION);
         config.setFilters(getFilters());
         config.addButtonTooltip(CertificateListItemValueType.OPEN_BUTTON.toString(), OPEN_CERTIFICATE_TOOLTIP);
         config.addButtonTooltip(CertificateListItemValueType.RENEW_BUTTON.toString(), RENEW_BUTTON_TOOLTIP);

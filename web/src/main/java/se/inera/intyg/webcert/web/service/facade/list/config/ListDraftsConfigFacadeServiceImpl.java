@@ -18,14 +18,18 @@
  */
 package se.inera.intyg.webcert.web.service.facade.list.config;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.webcert.web.service.facade.list.config.dto.*;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.CertificateListItemValueType;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColumnType;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListConfig;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterConfig;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.TableHeading;
 import se.inera.intyg.webcert.web.service.facade.list.config.factory.ListFilterConfigFactory;
 import se.inera.intyg.webcert.web.service.facade.list.config.factory.TableHeadingFactory;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-
-import java.util.*;
 
 @Service
 public class ListDraftsConfigFacadeServiceImpl implements ListConfigFacadeService {
@@ -33,7 +37,7 @@ public class ListDraftsConfigFacadeServiceImpl implements ListConfigFacadeServic
     private static final String TITLE = "Ej signerade utkast";
     private static final String OPEN_CERTIFICATE_TOOLTIP = "Öppnar utkastet.";
     private static final String SEARCH_CERTIFICATE_TOOLTIP = "Sök efter utkast.";
-    private static final String DESCRIPTION = "Nedan visas alla ej signerade utkast för den enhet du är inloggad på.";
+    private static final String DESCRIPTION = "Nedan visas alla ej signerade utkast för den enhet du är inloggad på. Ej signerade utkast raderas efter 3 månader.";
     private static final String EMPTY_LIST_TEXT = "Det finns inga ej signerade utkast för den enhet du är inloggad på.";
     private static final String RESET_FILTER_TOOLTIP = "Återställ sökfilter för ej signerade utkast.";
 
