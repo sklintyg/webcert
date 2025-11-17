@@ -504,6 +504,13 @@ class GetUserResourceLinksImplTest {
             final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.SUBSCRIPTION_WARNING);
         }
+
+        @Test
+        void shallIncludeRegisterPrivatePractitioner() {
+            final var user = getUnauthorizedPrivatePractitioner("NORMAL");
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.ACCESS_REGISTER_PRIVATE_PRACTITIONER);
+        }
     }
 
     private SelectableVardenhet getUnit() {

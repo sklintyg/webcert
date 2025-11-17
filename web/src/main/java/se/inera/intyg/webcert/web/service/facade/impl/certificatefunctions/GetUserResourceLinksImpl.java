@@ -162,6 +162,17 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
             );
         }
 
+        if (user.isUnauthorizedPrivatePractitioner()) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.ACCESS_REGISTER_PRIVATE_PRACTITIONER,
+                    "Skapa konto i Webcert",
+                    "",
+                    true
+                )
+            );
+        }
+
         return resourceLinks;
     }
 
