@@ -22,7 +22,7 @@ import java.text.Collator;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.CareProvider;
@@ -36,6 +36,7 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
+import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionAction;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -63,9 +64,11 @@ public class UserServiceImpl implements UserService {
         final var params = webCertUser.getParameters();
         final var isInactiveUnit = params != null && params.isInactiveUnit();
         final var launchId = getLaunchId(params);
+        final var personNumber = getPersonId(webCertUser);
 
         return User.builder()
             .hsaId(webCertUser.getHsaId())
+            .personId(personNumber.map(Personnummer::getPersonnummerWithDash).orElse(null))
             .name(webCertUser.getNamn())
             .role(getRole(webCertUser))
             .origin(webCertUser.getOrigin())
@@ -112,6 +115,10 @@ public class UserServiceImpl implements UserService {
             .build();
     }
 
+    private static Optional<Personnummer> getPersonId(WebCertUser webCertUser) {
+        return webCertUser.getPersonId() == null ? Optional.empty() : Personnummer.createPersonnummer(webCertUser.getPersonId());
+    }
+
     private static String getLaunchId(IntegrationParameters params) {
         return (params != null && params.getLaunchId() != null) ? params.getLaunchId() : null;
     }
@@ -126,7 +133,7 @@ public class UserServiceImpl implements UserService {
                 .build()
             )
             .sorted(Comparator.comparing(CareProvider::getName, SORT_SWEDISH))
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private boolean isMissingSubscription(WebCertUser webCertUser, String careProviderId) {
@@ -146,7 +153,7 @@ public class UserServiceImpl implements UserService {
                 .build()
             )
             .sorted(Comparator.comparing(CareUnit::getUnitName, SORT_SWEDISH))
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private List<Unit> getUnits(List<Mottagning> mottagningar) {
@@ -157,45 +164,32 @@ public class UserServiceImpl implements UserService {
                 .build()
             )
             .sorted(Comparator.comparing(Unit::getUnitName, SORT_SWEDISH))
-            .collect(Collectors.toList());
+            .toList();
     }
 
     private SigningMethod getSigningMethod(AuthenticationMethod authenticationMethod) {
-        switch (authenticationMethod) {
-            case FAKE:
-                return SigningMethod.FAKE;
-            case SITHS:
-            case NET_ID:
-                return SigningMethod.DSS;
-            case MOBILT_BANK_ID:
-                return SigningMethod.MOBILT_BANK_ID;
-            case BANK_ID:
-                return SigningMethod.BANK_ID;
-            default:
-                throw new IllegalArgumentException(
-                    String.format("Login method '%s' not yet supported with a signing method", authenticationMethod));
-        }
+        return switch (authenticationMethod) {
+            case FAKE -> SigningMethod.FAKE;
+            case SITHS, NET_ID -> SigningMethod.DSS;
+            case MOBILT_BANK_ID -> SigningMethod.MOBILT_BANK_ID;
+            case BANK_ID -> SigningMethod.BANK_ID;
+        };
     }
 
     private LoginMethod getLoginMethod(AuthenticationMethod authenticationMethod) {
-        switch (authenticationMethod) {
-            case FAKE:
-                return LoginMethod.FAKE;
-            case SITHS:
-                return LoginMethod.SITHS;
-            case BANK_ID:
-                return LoginMethod.BANK_ID;
-            case MOBILT_BANK_ID:
-                return LoginMethod.BANK_ID_MOBILE;
-            default:
-                throw new IllegalArgumentException(
-                    String.format("Login method '%s' not yet supported ", authenticationMethod));
-        }
+        return switch (authenticationMethod) {
+            case FAKE -> LoginMethod.FAKE;
+            case SITHS -> LoginMethod.SITHS;
+            case BANK_ID -> LoginMethod.BANK_ID;
+            case MOBILT_BANK_ID -> LoginMethod.BANK_ID_MOBILE;
+            default -> throw new IllegalArgumentException(
+                String.format("Login method '%s' not yet supported ", authenticationMethod));
+        };
     }
 
     private String getRole(WebCertUser webCertUser) {
         final var roles = webCertUser.getRoles();
-        if (roles == null || roles.values().isEmpty()) {
+        if (roles == null || roles.isEmpty()) {
             return "Roll ej angiven";
         }
 
