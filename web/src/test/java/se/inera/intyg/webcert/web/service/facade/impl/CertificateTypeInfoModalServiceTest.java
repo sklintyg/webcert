@@ -78,7 +78,7 @@ class CertificateTypeInfoModalServiceTest {
     @Test
     void shouldReturnEmptyWhenNoPreviousCertificates() {
         when(webCertUserService.getUser()).thenReturn(user);
-        when(utkastService.checkIfPersonHasExistingIntyg(eq(personnummer), eq(user), any()))
+        when(utkastService.checkIfPersonHasExistingIntyg(eq(personnummer), eq(user), any(), eq(false)))
             .thenReturn(Collections.emptyMap());
 
         final var result = service.get(CERTIFICATE_TYPE, personnummer);
@@ -94,7 +94,7 @@ class CertificateTypeInfoModalServiceTest {
         previousCertificates.put(INTYG_INDICATOR, intygMap);
 
         when(webCertUserService.getUser()).thenReturn(user);
-        when(utkastService.checkIfPersonHasExistingIntyg(eq(personnummer), eq(user), any()))
+        when(utkastService.checkIfPersonHasExistingIntyg(eq(personnummer), eq(user), any(), eq(false)))
             .thenReturn(previousCertificates);
 
         final var result = service.get(CERTIFICATE_TYPE, personnummer);
@@ -111,7 +111,7 @@ class CertificateTypeInfoModalServiceTest {
         previousCertificates.put(INTYG_INDICATOR, intygMap);
 
         when(webCertUserService.getUser()).thenReturn(user);
-        when(utkastService.checkIfPersonHasExistingIntyg(eq(personnummer), eq(user), any()))
+        when(utkastService.checkIfPersonHasExistingIntyg(eq(personnummer), eq(user), any(), eq(false)))
             .thenReturn(previousCertificates);
 
         final var result = service.get(certificateType, personnummer);
@@ -125,7 +125,7 @@ class CertificateTypeInfoModalServiceTest {
         final var utkast = createUtkast(UtkastStatus.SIGNED);
 
         when(webCertUserService.getUser()).thenReturn(user);
-        when(utkastService.checkIfPersonHasExistingIntyg(eq(personnummer), eq(user), any()))
+        when(utkastService.checkIfPersonHasExistingIntyg(eq(personnummer), eq(user), any(), eq(false)))
             .thenReturn(previousCertificates);
         when(utkastService.getDraft(eq(INTYG_ID), eq(CERTIFICATE_TYPE), anyBoolean()))
             .thenReturn(utkast);
@@ -151,7 +151,7 @@ class CertificateTypeInfoModalServiceTest {
         final var utkast = createUtkast(UtkastStatus.DRAFT_INCOMPLETE);
 
         when(webCertUserService.getUser()).thenReturn(user);
-        when(utkastService.checkIfPersonHasExistingIntyg(eq(personnummer), eq(user), any()))
+        when(utkastService.checkIfPersonHasExistingIntyg(eq(personnummer), eq(user), any(), eq(false)))
             .thenReturn(previousCertificates);
         when(utkastService.getDraft(INTYG_ID, CERTIFICATE_TYPE, false))
             .thenReturn(utkast);
@@ -163,7 +163,7 @@ class CertificateTypeInfoModalServiceTest {
             () -> assertEquals("Utkast på dödsbevis på annan vårdenhet", result.get().getTitle())
         );
     }
-    
+
     @Test
     void shouldPrioritizeSignedCertificateOverDraft() {
         final var previousCertificates = new HashMap<String, Map<String, PreviousIntyg>>();
@@ -179,7 +179,7 @@ class CertificateTypeInfoModalServiceTest {
         final var utkast = createUtkast(UtkastStatus.SIGNED);
 
         when(webCertUserService.getUser()).thenReturn(user);
-        when(utkastService.checkIfPersonHasExistingIntyg(eq(personnummer), eq(user), any()))
+        when(utkastService.checkIfPersonHasExistingIntyg(eq(personnummer), eq(user), any(), eq(false)))
             .thenReturn(previousCertificates);
         when(utkastService.getDraft(eq(INTYG_ID), eq(CERTIFICATE_TYPE), anyBoolean()))
             .thenReturn(utkast);
@@ -198,7 +198,7 @@ class CertificateTypeInfoModalServiceTest {
         final var utkast = createUtkast(UtkastStatus.SIGNED);
 
         when(webCertUserService.getUser()).thenReturn(user);
-        when(utkastService.checkIfPersonHasExistingIntyg(eq(personnummer), eq(user), any()))
+        when(utkastService.checkIfPersonHasExistingIntyg(eq(personnummer), eq(user), any(), eq(false)))
             .thenReturn(previousCertificates);
         when(utkastService.getDraft(eq(INTYG_ID), eq(CERTIFICATE_TYPE), anyBoolean()))
             .thenReturn(utkast);
@@ -215,7 +215,7 @@ class CertificateTypeInfoModalServiceTest {
         final var utkast = createUtkast(UtkastStatus.SIGNED);
 
         when(webCertUserService.getUser()).thenReturn(user);
-        when(utkastService.checkIfPersonHasExistingIntyg(eq(personnummer), eq(user), any()))
+        when(utkastService.checkIfPersonHasExistingIntyg(eq(personnummer), eq(user), any(), eq(false)))
             .thenReturn(previousCertificates);
         when(utkastService.getDraft(eq(INTYG_ID), eq(certificateType), anyBoolean()))
             .thenReturn(utkast);
