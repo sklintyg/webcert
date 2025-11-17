@@ -390,6 +390,12 @@ public class UtkastServiceImpl implements UtkastService {
     @Override
     public Map<String, Map<String, PreviousIntyg>> checkIfPersonHasExistingIntyg(final Personnummer personnummer,
         final IntygUser user, final String currentDraftId) {
+        return checkIfPersonHasExistingIntyg(personnummer, user, currentDraftId, true);
+    }
+
+    @Override
+    public Map<String, Map<String, PreviousIntyg>> checkIfPersonHasExistingIntyg(final Personnummer personnummer,
+        final IntygUser user, final String currentDraftId, boolean hideOutsideOfCareProviderValues) {
 
         List<Utkast> toFilter = utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummerWithDash(),
             authoritiesHelper.getIntygstyperForFeature(user, AuthoritiesConstants.FEATURE_UNIKT_INTYG,
@@ -399,31 +405,32 @@ public class UtkastServiceImpl implements UtkastService {
             .filter(utkast -> utkast.getStatus() == UtkastStatus.SIGNED)
             .filter(utkast -> utkast.getAterkalladDatum() == null)
             .sorted(Comparator.comparing(u -> u.getSignatur().getSigneringsDatum()))
-            .collect(Collectors.toList());
+            .toList();
 
         List<Utkast> replacedList = toFilter.stream()
             .filter(utkast -> utkast.getRelationKod() == RelationKod.ERSATT && utkast.getIntygsId().equals(currentDraftId))
-            .collect(Collectors.toList());
+            .toList();
 
         Map<String, Map<String, PreviousIntyg>> ret = new HashMap<>();
 
         ret.put(ERSATT_INDICATOR, replacedList.stream()
-            .collect(getUtkastMapCollector(user)));
+            .collect(getUtkastMapCollector(user, hideOutsideOfCareProviderValues)));
 
         ret.put(INTYG_INDICATOR, signedList.stream()
-            .collect(getUtkastMapCollector(user)));
+            .collect(getUtkastMapCollector(user, hideOutsideOfCareProviderValues)));
 
         ret.put(UTKAST_INDICATOR, toFilter.stream()
             .filter(utkast -> utkast.getStatus() != UtkastStatus.SIGNED
                 && utkast.getStatus() != UtkastStatus.DRAFT_LOCKED
                 && !utkast.getIntygsId().equals(currentDraftId))
             .sorted(Comparator.comparing(Utkast::getSkapad, Comparator.nullsFirst(Comparator.naturalOrder())))
-            .collect(getUtkastMapCollector(user)));
+            .collect(getUtkastMapCollector(user, hideOutsideOfCareProviderValues)));
 
         return ret;
     }
 
-    private Collector<Utkast, ?, Map<String, PreviousIntyg>> getUtkastMapCollector(IntygUser user) {
+    private Collector<Utkast, ?, Map<String, PreviousIntyg>> getUtkastMapCollector(IntygUser user,
+        boolean hideOutsideOfCareProviderValues) {
         return Collectors.groupingBy(Utkast::getIntygsTyp,
             Collectors.mapping(utkast -> PreviousIntyg.of(
                     Objects.equals(user.getValdVardgivare().getId(), utkast.getVardgivarId()),
@@ -431,8 +438,13 @@ public class UtkastServiceImpl implements UtkastService {
                     enableShowDoiButton(user, utkast),
                     utkast.getEnhetsNamn(),
                     utkast.getIntygsId(),
-                    utkast.getSkapad()),
-                Collectors.reducing(new PreviousIntyg(), (a, b) -> b.isSameVardgivare() ? b : a)));
+                    utkast.getSkapad(), hideOutsideOfCareProviderValues),
+                Collectors.reducing(new PreviousIntyg(), (a, b) -> {
+                    if (hideOutsideOfCareProviderValues) {
+                        return b.isSameVardgivare() ? b : a;
+                    }
+                    return b;
+                })));
     }
 
     private boolean enableShowDoiButton(IntygUser user, Utkast utkast) {

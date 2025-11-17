@@ -123,6 +123,11 @@ public interface UtkastService {
         IntygUser user,
         String currentDraftId);
 
+    Map<String, Map<String, PreviousIntyg>> checkIfPersonHasExistingIntyg(Personnummer personnummer,
+        IntygUser user,
+        String currentDraftId,
+        boolean hideOutsideOfCareProviderValues);
+
     int lockOldDrafts(int lockedAfterDay, LocalDate today);
 
     void revokeLockedDraft(String intygId, String intygTyp, String revokeMessage, String reason);
