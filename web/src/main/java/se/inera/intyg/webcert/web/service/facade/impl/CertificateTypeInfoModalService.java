@@ -39,7 +39,7 @@ public class CertificateTypeInfoModalService {
 
     private final UtkastService utkastService;
     private final WebCertUserService webCertUserService;
-    
+
     public Optional<CertificateTypeInfoModal> get(String certificateType, Personnummer patientId) {
         final var user = webCertUserService.getUser();
         final var previousCertificates = utkastService
@@ -50,7 +50,7 @@ public class CertificateTypeInfoModalService {
 
         final var previousCertificate = getPreviousIntyg(certificateType, previousCertificateMap, previousDraftMap);
 
-        if (previousCertificate.isEmpty()) {
+        if (previousCertificate.isEmpty() || previousCertificate.get().getLatestIntygsId() == null) {
             return Optional.empty();
         }
 
