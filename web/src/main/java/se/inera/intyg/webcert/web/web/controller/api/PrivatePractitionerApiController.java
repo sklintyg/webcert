@@ -14,15 +14,15 @@ import se.inera.intyg.webcert.web.privatepractitioner.PrivatePractitionerService
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.HospInformationResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerConfigResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerRegistrationRequest;
+import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerResponse;
 
-@Path("/private-practitioner")
 @Api(value = "private-practitioner", produces = MediaType.APPLICATION_JSON)
 @Profile("private-practitioner-service-active")
 public class PrivatePractitionerApiController {
 
     private static final String UTF_8_CHARSET = ";charset=utf-8";
 
-    PrivatePractitionerService service;
+    private PrivatePractitionerService service;
 
     public PrivatePractitionerApiController(PrivatePractitionerService service) {
         this.service = service;
@@ -31,10 +31,16 @@ public class PrivatePractitionerApiController {
     @POST
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PerformanceLogging(eventAction = "register-private-practitioner", eventType = MdcLogConstants.EVENT_TYPE_CREATION)
-    public Response registerPractitioner(
-        PrivatePractitionerRegistrationRequest registerPrivatePractitionerRequest) {
+    public Response registerPractitioner(PrivatePractitionerRegistrationRequest registerPrivatePractitionerRequest) {
         service.registerPrivatePractitioner(registerPrivatePractitionerRequest);
         return Response.ok().build();
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
+    @PerformanceLogging(eventAction = "get-private-practitioner", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+    public PrivatePractitionerResponse getPrivatePractitioner() {
+        return service.getPrivatePractitioner();
     }
 
     @GET

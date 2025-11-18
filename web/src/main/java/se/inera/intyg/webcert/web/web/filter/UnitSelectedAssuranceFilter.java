@@ -62,8 +62,11 @@ public class UnitSelectedAssuranceFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
         throws ServletException, IOException {
 
-        WebCertUser user = getUser();
-        boolean continueRequestIf = user == null || user.getValdVardenhet() != null || isIgnoredUrl(request);
+        final var user = getUser();
+        final var continueRequestIf = user == null
+            || user.getValdVardenhet() != null
+            || isIgnoredUrl(request)
+            || user.isUnauthorizedPrivatePractitioner();
 
         LOG.debug("continueRequestIf " + HashPatientIdHelper.fromUrl(request.getRequestURI()) + " = " + continueRequestIf);
 
@@ -76,8 +79,8 @@ public class UnitSelectedAssuranceFilter extends OncePerRequestFilter {
     }
 
     private boolean isIgnoredUrl(HttpServletRequest request) {
-        String url = request.getRequestURI();
-        boolean continueRequestIf = ignoredUrlsList.stream().filter(s -> url.contains(s)).count() > 0;
+        final var url = request.getRequestURI();
+        final var continueRequestIf = ignoredUrlsList.stream().anyMatch(url::contains);
         LOG.debug("continueRequestIf " + url + " = " + continueRequestIf);
         return continueRequestIf;
     }

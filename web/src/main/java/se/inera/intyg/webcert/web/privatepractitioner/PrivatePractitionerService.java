@@ -29,6 +29,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.Cod
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.HospInformationResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerConfigResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerRegistrationRequest;
+import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerResponse;
 
 @Service
 @Profile("private-practitioner-service-active")
@@ -38,8 +39,7 @@ public class PrivatePractitionerService {
     private final WebCertUserService webCertUserService;
     private final PrivatePractitionerIntegrationService privatePractitionerIntegrationService;
 
-    public void registerPrivatePractitioner(
-        PrivatePractitionerRegistrationRequest privatePractitionerRegisterRequest) {
+    public void registerPrivatePractitioner(PrivatePractitionerRegistrationRequest privatePractitionerRegisterRequest) {
         final var user = webCertUserService.getUser();
 
         privatePractitionerIntegrationService.registerPrivatePractitioner(RegisterPrivatePractitionerRequest
@@ -76,10 +76,13 @@ public class PrivatePractitionerService {
             .build();
     }
 
-
     public HospInformationResponse getHospInformation() {
         final var personId = webCertUserService.getUser().getPersonId();
         return HospInformationResponse.convert(privatePractitionerIntegrationService.getHospInformation(personId));
     }
 
+    public PrivatePractitionerResponse getPrivatePractitioner() {
+        final var personId = webCertUserService.getUser().getPersonId();
+        return PrivatePractitionerResponse.convert(privatePractitionerIntegrationService.getPrivatePractitioner(personId));
+    }
 }

@@ -19,6 +19,9 @@
 
 package se.inera.intyg.webcert.web.privatepractitioner;
 
+import java.util.List;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.Code;
+
 public class TestDataConstants {
 
     private TestDataConstants() {
@@ -28,9 +31,10 @@ public class TestDataConstants {
     public static final String DR_KRANSTEGE_PERSON_ID = "197705232382";
     public static final String DR_KRANSTEGE_HSA_ID = "SE165565594230-WEBCERT00001";
     public static final String DR_KRANSTEGE_NAME = "Frida Kranstege";
+    public static final String DR_KRANSTEGE_FIRST_NAME = "Frida";
+    public static final String DR_KRANSTEGE_FAMILY_NAME = "Kranstege";
     public static final String DR_KRANSTEGE_POSITION = "Överläkare";
     public static final String DR_KRANSTEGE_CARE_UNIT_NAME = "Kransteges specialistmottagning";
-    public static final String DR_KRANSTEGE_OWNERSHIP_TYPE = "Privat";
     public static final String DR_KRANSTEGE_TYPE_OF_CARE = "01";
     public static final String DR_KRANSTEGE_HEALTHCARE_SERVICE_TYPE = "11";
     public static final String DR_KRANSTEGE_WORKPLACE_CODE = "555";
@@ -42,5 +46,12 @@ public class TestDataConstants {
     public static final String DR_KRANSTEGE_MUNICIPALITY = "Kommun";
     public static final String DR_KRANSTEGE_COUNTY = "Län";
     public static final String DR_KRANSTEGE_PRESCRIPTION_CODE = "12345";
+
+    public static final List<Code> DR_KRANSTEGE_SPECIALITIES = List.of(
+        new Code("32", "Klinisk fysiologi"),
+        new Code("74", "Nukleärmedicin")
+    );
+    public static final List<Code> DR_KRANSTEGE_LICENSED_HEALTHCARE_PROFESSIONS =
+        List.of(new Code("LK", "Läkare"));
 
 }

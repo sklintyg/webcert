@@ -74,6 +74,7 @@ class UserServiceImplTest {
     private static final String UNIT_NAME = "UNIT_NAME";
     private static final String UNIT_ID = "UNIT_ID";
     private static final String HSA_ID = "HSA_ID";
+    private static final String PERSON_ID = "191212121212";
     private static final String NAME = "NAME";
     private static final String ROLE = "ROLE";
     private static final String ORIGIN = "ORIGIN";
@@ -122,6 +123,10 @@ class UserServiceImplTest {
                 .when(user)
                 .getHsaId();
 
+            doReturn(PERSON_ID)
+                .when(user)
+                .getPersonId();
+
             doReturn(NAME)
                 .when(user)
                 .getNamn();
@@ -139,6 +144,12 @@ class UserServiceImplTest {
         void shallReturnWithHsaId() {
             final var actualUser = userService.getLoggedInUser();
             assertEquals(HSA_ID, actualUser.getHsaId());
+        }
+
+        @Test
+        void shallReturnWithFormattedPersonId() {
+            final var actualUser = userService.getLoggedInUser();
+            assertEquals("19121212-1212", actualUser.getPersonId());
         }
 
         @Test
@@ -502,7 +513,7 @@ class UserServiceImplTest {
             final var loggedInUser = userService.getLoggedInUser();
             assertFalse(loggedInUser.getCareProviders().get(0).isMissingSubscription());
         }
-        
+
         @Test
         void careProviderIsNotConsideredAsMissingSubscriptionIfActionIsNone() {
             final var subscriptionInfo = new SubscriptionInfo();

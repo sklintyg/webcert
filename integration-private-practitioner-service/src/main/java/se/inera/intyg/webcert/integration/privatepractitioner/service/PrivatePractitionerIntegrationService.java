@@ -28,10 +28,10 @@ import se.inera.intyg.webcert.integration.privatepractitioner.model.GetHospInfor
 import se.inera.intyg.webcert.integration.privatepractitioner.model.HospInformation;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitioner;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerConfiguration;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerValidationRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerValidationResponse;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerValidationResultCode;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.RegisterPrivatePractitionerRequest;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerRequest;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerResponse;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerResultCode;
 
 @Slf4j
 @Service
@@ -39,15 +39,12 @@ import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePriv
 @RequiredArgsConstructor
 public class PrivatePractitionerIntegrationService {
 
-    private final RegisterPrivatePractitionerClient registerPrivatePractitionerClient;
-    private final GetHospInformationClient getHospInformationClient;
-    private final ValidatePrivatePractitionerClient validatePrivatePractitionerClient;
-    private final GetPrivatePractitionerConfigurationClient getPrivatePractitionerConfigurationClient;
+    private final PPSIntegrationService ppsIntegrationService;
 
-    public ValidatePrivatePractitionerResponse validatePrivatePractitioner(String personalIdentityNumber) {
+    public PrivatePractitionerValidationResponse validatePrivatePractitioner(String personalIdentityNumber) {
         validateIdentifier(personalIdentityNumber);
-        final var response = validatePrivatePractitionerClient.validatePrivatePractitioner(
-            new ValidatePrivatePractitionerRequest(personalIdentityNumber));
+        final var response = ppsIntegrationService.validatePrivatePractitioner(
+            new PrivatePractitionerValidationRequest(personalIdentityNumber));
 
         if (response == null) {
             throw new RestClientException("Validation failed. Validation response is null.");
@@ -56,17 +53,22 @@ public class PrivatePractitionerIntegrationService {
 
         return response;
     }
-    
+
     public PrivatePractitionerConfiguration getPrivatePractitionerConfig() {
-        return getPrivatePractitionerConfigurationClient.getPrivatePractitionerConfig();
+        return ppsIntegrationService.getPrivatePractitionerConfig();
     }
 
     public HospInformation getHospInformation(String personalOrHsaIdIdentityNumber) {
-        return getHospInformationClient.getHospInformation(new GetHospInformationRequest(personalOrHsaIdIdentityNumber));
+        return ppsIntegrationService.getHospInformation(new GetHospInformationRequest(personalOrHsaIdIdentityNumber));
     }
 
     public PrivatePractitioner registerPrivatePractitioner(RegisterPrivatePractitionerRequest registrationRequest) {
-        return registerPrivatePractitionerClient.registerPrivatePractitioner(registrationRequest);
+        return ppsIntegrationService.registerPrivatePractitioner(registrationRequest);
+    }
+
+    public PrivatePractitioner getPrivatePractitioner(String personId) {
+        validateIdentifier(personId);
+        return ppsIntegrationService.getPrivatePractitioner(personId);
     }
 
     private void validateIdentifier(String personalIdentityNumber) {
@@ -75,9 +77,9 @@ public class PrivatePractitionerIntegrationService {
         }
     }
 
-    private void logResult(ValidatePrivatePractitionerResponse response) {
-        if (ValidatePrivatePractitionerResultCode.NO_ACCOUNT.equals(response.resultCode())
-            || ValidatePrivatePractitionerResultCode.NOT_AUTHORIZED_IN_HOSP.equals(response.resultCode())) {
+    private void logResult(PrivatePractitionerValidationResponse response) {
+        if (PrivatePractitionerValidationResultCode.NO_ACCOUNT.equals(response.resultCode())
+            || PrivatePractitionerValidationResultCode.NOT_AUTHORIZED_IN_HOSP.equals(response.resultCode())) {
             log.info(response.resultText());
         }
     }

@@ -45,7 +45,6 @@
 				<bean class="se.inera.intyg.webcert.web.web.controller.api.UserApiController"/>
 				<bean class="se.inera.intyg.webcert.web.web.controller.api.FmbApiController"/>
 				<bean class="se.inera.intyg.webcert.web.web.controller.api.SrsApiController"/>
-				<bean class="se.inera.intyg.webcert.web.web.controller.api.PrivatePractitionerApiController"/>
 				<bean class="se.inera.intyg.webcert.web.web.controller.api.ConfigApiController"/>
 				<bean class="se.inera.intyg.webcert.web.web.controller.api.SignatureApiController"/>
 				<bean class="se.inera.intyg.webcert.web.web.controller.api.SessionStatusController"/>
@@ -84,6 +83,27 @@
 			</jaxrs:properties>
 			<jaxrs:serviceBeans>
 				<bean class="se.inera.intyg.webcert.web.web.controller.api.FakeSignatureApiController"/>
+			</jaxrs:serviceBeans>
+			<jaxrs:providers>
+				<ref bean="jacksonJsonProvider"/>
+				<ref bean="webcertRestExceptionHandler"/>
+				<ref bean="localDateTimeHandler"/>
+			</jaxrs:providers>
+			<jaxrs:extensionMappings>
+				<entry key="json" value="application/json"/>
+			</jaxrs:extensionMappings>
+		</jaxrs:server>
+	</beans>
+
+	<beans profile="private-practitioner-service-active">
+		<jaxrs:server address="/private-practitioner">
+			<jaxrs:properties>
+				<!-- Configure ServerProviderFactory to make default exceptionhandler less specific so
+				that our webcertRestExceptionHandler gets to handle exceptions (see WEBCERT-1978) for these controllers -->
+				<entry key="default.wae.mapper.least.specific" value-type="boolean" value="true"/>
+			</jaxrs:properties>
+			<jaxrs:serviceBeans>
+				<bean class="se.inera.intyg.webcert.web.web.controller.api.PrivatePractitionerApiController"/>
 			</jaxrs:serviceBeans>
 			<jaxrs:providers>
 				<ref bean="jacksonJsonProvider"/>

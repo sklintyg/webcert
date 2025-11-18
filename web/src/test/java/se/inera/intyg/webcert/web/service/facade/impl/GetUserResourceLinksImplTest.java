@@ -429,11 +429,102 @@ class GetUserResourceLinksImplTest {
         }
     }
 
+    @Nested
+    class NotAuthorizedPrivatePractitioner {
+
+        @InjectMocks
+        private GetUserResourceLinksImpl getUserResourceLinks;
+
+        @Test
+        void shallIncludeLogout() {
+            final var user = getUnauthorizedPrivatePractitioner("NORMAL");
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.LOG_OUT);
+        }
+
+        @Test
+        void shallExcludeCreateCertificate() {
+            final var user = getUnauthorizedPrivatePractitioner("NORMAL");
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.ACCESS_SEARCH_CREATE_PAGE);
+        }
+
+        @Test
+        void shallExcludeDraftList() {
+            final var user = getUnauthorizedPrivatePractitioner("NORMAL");
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.ACCESS_DRAFT_LIST);
+        }
+
+        @Test
+        void shallExcludeQuestionList() {
+            final var user = getUnauthorizedPrivatePractitioner("NORMAL");
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.ACCESS_QUESTION_LIST);
+        }
+
+        @Test
+        void shallExcludeSignedCertificatesList() {
+            final var user = getUnauthorizedPrivatePractitioner("NORMAL");
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.ACCESS_SIGNED_CERTIFICATES_LIST);
+        }
+
+        @Test
+        void shallExcludeChooseUnit() {
+            final var user = getUnauthorizedPrivatePractitioner("NORMAL");
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.CHOOSE_UNIT);
+        }
+
+        @Test
+        void shallExcludeChangeUnit() {
+            final var user = getUnauthorizedPrivatePractitioner("NORMAL");
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.CHANGE_UNIT);
+        }
+
+        @Test
+        void shallExcludeNavigateBackButton() {
+            final var user = getUnauthorizedPrivatePractitioner("NORMAL");
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.NAVIGATE_BACK_BUTTON);
+        }
+
+        @Test
+        void shallExcludeWarningNormalOrigin() {
+            final var user = getUnauthorizedPrivatePractitioner("NORMAL");
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.WARNING_NORMAL_ORIGIN);
+        }
+
+        @Test
+        void shallExcludeSubscriptionWarning() {
+            final var user = getUnauthorizedPrivatePractitioner("NORMAL");
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.SUBSCRIPTION_WARNING);
+        }
+
+        @Test
+        void shallIncludeRegisterPrivatePractitioner() {
+            final var user = getUnauthorizedPrivatePractitioner("NORMAL");
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.ACCESS_REGISTER_PRIVATE_PRACTITIONER);
+        }
+    }
+
     private SelectableVardenhet getUnit() {
         final var unit = new Mottagning();
         unit.setId("UNIT_ID");
         unit.setNamn("UNIT_NAME");
         return unit;
+    }
+
+    WebCertUser getUnauthorizedPrivatePractitioner(String origin) {
+        final var user = mock(WebCertUser.class);
+        when(user.getOrigin()).thenReturn(origin);
+        when(user.isUnauthorizedPrivatePractitioner()).thenReturn(true);
+        return user;
     }
 
     WebCertUser getUserWithOrigin(String origin) {

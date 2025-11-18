@@ -30,6 +30,7 @@ import org.springframework.security.saml2.provider.service.authentication.Saml2A
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
+import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.web.auth.common.AuthConstants;
 import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionInfo;
@@ -51,6 +52,10 @@ public class WebCertUser extends IntygUser implements Serializable, Saml2Authent
 
     public WebCertUser() {
         super("only-for-test-use");
+    }
+
+    public WebCertUser(String unauthorizedPrivatePractitioner) {
+        super(unauthorizedPrivatePractitioner);
     }
 
     public WebCertUser(IntygUser intygUser) {
@@ -137,5 +142,9 @@ public class WebCertUser extends IntygUser implements Serializable, Saml2Authent
             case BANK_ID, MOBILT_BANK_ID -> AuthConstants.REGISTRATION_ID_ELEG;
             default -> AuthConstants.REGISTRATION_ID_SITHS_NORMAL;
         };
+    }
+
+    public boolean isUnauthorizedPrivatePractitioner() {
+        return roles.containsKey(AuthoritiesConstants.ROLE_PRIVATLAKARE_OBEHORIG);
     }
 }
