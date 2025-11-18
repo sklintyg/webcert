@@ -41,7 +41,7 @@ public class DeleteStaleDraftsJob {
         eventCategory = MdcLogConstants.EVENT_CATEGORY_PROCESS)
     public void run() {
         if (!deleteStaleDraftsProfile.active()) {
-            log.info("Not staring job to delete stale drafts since profile is not active");
+            log.info("Not starting job to delete stale drafts since profile is not active");
             return;
         }
 

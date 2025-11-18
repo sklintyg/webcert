@@ -15,7 +15,7 @@ public class DeleteStaleDraftsService {
     private final DeleteDraftsFromCertificateService deleteDraftsFromCertificateService;
 
     public void delete(LocalDateTime staleDraftsPeriod, Integer pageSize) {
-        log.info("Staring job to delete stale drafts");
+        log.info("Starting job to delete stale drafts");
 
         final var deletedStaleDraftsWC = utkastService.deleteStaleAndLockedDrafts(staleDraftsPeriod, pageSize);
         final var deletedStaleDraftsCS = deleteDraftsFromCertificateService.delete(staleDraftsPeriod);
