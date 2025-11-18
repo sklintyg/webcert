@@ -184,4 +184,8 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
         + "LIMIT :batchSize",
         nativeQuery = true)
     List<String> findCertificatesWithoutEvents(@Param("batchSize") Integer batchSize);
+
+    @Query("SELECT u from Utkast u WHERE u.skapad <= :createdBefore AND u.status IN :statuses")
+    List<Utkast> findStaleAndLockedDrafts(@Param("createdBefore") LocalDateTime createdBefore,
+        @Param("statuses") List<UtkastStatus> statuses);
 }

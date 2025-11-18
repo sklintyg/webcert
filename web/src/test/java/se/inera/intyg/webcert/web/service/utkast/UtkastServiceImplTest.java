@@ -1247,13 +1247,32 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void shallMonitorLogWhenPdlLogging() {
-        final var expectedLogRequest = LogRequest.builder().build();
-        final var user = createUser(true);
         when(utkastRepository.getIntygsTyp(INTYG_ID)).thenReturn(INTYG_TYPE);
         when(utkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, INTYG_TYPE)).thenReturn(utkast);
         utkastService.getDraft(INTYG_ID, true);
         verify(monitoringService).logUtkastRead(anyString(), anyString());
     }
+
+    @Test
+    public void shouldReturnNumberOfDeletedDrafts() {
+        final var expectedDeletedDrafts = 2;
+
+        final var utkast1 = createUtkast(INTYG_ID, UTKAST_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_INCOMPLETE, null, INTYG_JSON,
+            setupVardperson(hoSPerson),
+            PERSONNUMMER);
+        final var utkast2 = createUtkast(INTYG_ID, UTKAST_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_INCOMPLETE, null, INTYG_JSON,
+            setupVardperson(hoSPerson),
+            PERSONNUMMER);
+
+        when(utkastRepository.findStaleAndLockedDrafts(any(LocalDateTime.class),
+            eq(List.of(UtkastStatus.DRAFT_LOCKED, UtkastStatus.DRAFT_INCOMPLETE, UtkastStatus.DRAFT_COMPLETE))))
+            .thenReturn(List.of(utkast1, utkast2));
+
+        final var resultDeletedDrafts = utkastService.deleteStaleAndLockedDrafts();
+
+        assertEquals(expectedDeletedDrafts, resultDeletedDrafts);
+    }
+
 
     private CreateNewDraftRequest buildCreateNewDraftRequest() {
         CreateNewDraftRequest request = new CreateNewDraftRequest();

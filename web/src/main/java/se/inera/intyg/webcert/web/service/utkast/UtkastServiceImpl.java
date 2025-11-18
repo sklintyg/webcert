@@ -874,7 +874,16 @@ public class UtkastServiceImpl implements UtkastService {
     @Override
     @Transactional
     public int deleteStaleAndLockedDrafts() {
-        return 0;
+        final var staleAndLockedDrafts = utkastRepository.findStaleAndLockedDrafts(
+            LocalDateTime.now().minusMonths(3),
+            List.of(UtkastStatus.DRAFT_LOCKED, UtkastStatus.DRAFT_INCOMPLETE, UtkastStatus.DRAFT_COMPLETE)
+        );
+
+        staleAndLockedDrafts.forEach(draft -> {
+            utkastRepository.delete(draft);
+        });
+
+        return staleAndLockedDrafts.size();
     }
 
     /**
@@ -1159,17 +1168,6 @@ public class UtkastServiceImpl implements UtkastService {
         Vardenhet vardenhet = grundData.getSkapadAv().getVardenhet();
 
         return IntygConverterUtil.buildHosPersonalFromWebCertUser(webCertUserService.getUser(), vardenhet);
-    }
-
-    private Vardenhet getVardenhet(Utkast utkast) {
-        final Vardgivare vardgivare = new Vardgivare();
-        vardgivare.setVardgivarid(utkast.getVardgivarId());
-
-        final Vardenhet vardenhet = new Vardenhet();
-        vardenhet.setEnhetsid(utkast.getEnhetsId());
-        vardenhet.setVardgivare(vardgivare);
-
-        return vardenhet;
     }
 
     private void updateUtkastModel(Utkast utkast, String modelJson) {
