@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.integration.privatepractitioner.service.toggle;
+package se.inera.intyg.webcert.web.privatepractitioner.toggle;
 
 public interface PrivatePractitionerServiceProfile {
 

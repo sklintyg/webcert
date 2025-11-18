@@ -22,7 +22,7 @@ public class PrivatePractitionerApiController {
 
     private static final String UTF_8_CHARSET = ";charset=utf-8";
 
-    PrivatePractitionerService service;
+    private PrivatePractitionerService service;
 
     public PrivatePractitionerApiController(PrivatePractitionerService service) {
         this.service = service;
