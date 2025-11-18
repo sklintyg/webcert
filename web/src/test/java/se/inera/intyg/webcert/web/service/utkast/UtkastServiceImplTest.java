@@ -128,7 +128,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v33.Forifyllnad;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
-    
+
     private static final long UTKAST_VERSION = 1;
     private static final long INTYG_VERSION = 2;
 
@@ -1278,7 +1278,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
             .thenReturn(page)
             .thenReturn(Page.empty());
 
-        final var resultDeletedDrafts = utkastService.deleteStaleAndLockedDrafts(LocalDateTime.now());
+        final var resultDeletedDrafts = utkastService.deleteStaleAndLockedDrafts(LocalDateTime.now(), 10);
 
         assertEquals(expectedDeletedDrafts, resultDeletedDrafts);
     }
@@ -1301,7 +1301,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
             .thenReturn(page)
             .thenReturn(Page.empty());
 
-        utkastService.deleteStaleAndLockedDrafts(LocalDateTime.now());
+        utkastService.deleteStaleAndLockedDrafts(LocalDateTime.now(), 10);
 
         verify(handleStaleDraftsService, times(1)).deleteAndNotify(List.of(utkast1, utkast2));
     }

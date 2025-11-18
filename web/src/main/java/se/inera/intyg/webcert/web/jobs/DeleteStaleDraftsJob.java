@@ -31,6 +31,10 @@ public class DeleteStaleDraftsJob {
     @Value("${delete.stale.drafts.period:P3M}")
     private String staleDraftsPeriod;
 
+
+    @Value("${delete.stale.drafts.page.size:1000}")
+    private Integer staleDraftsPageSize;
+
     @Scheduled(cron = "${delete.stale.drafts.cron}")
     @SchedulerLock(name = JOB_NAME, lockAtLeastFor = LOCK_AT_LEAST, lockAtMostFor = LOCK_AT_MOST)
     @PerformanceLogging(eventAction = "delete-stale-drafts", eventType = MdcLogConstants.EVENT_TYPE_CHANGE,
@@ -46,7 +50,7 @@ public class DeleteStaleDraftsJob {
             MDC.put(MdcLogConstants.SPAN_ID_KEY, mdcHelper.spanId());
 
             final var deleteStaleDraftsPeriod = LocalDateTime.now().minus(Period.parse(staleDraftsPeriod));
-            deleteStaleDraftsService.delete(deleteStaleDraftsPeriod);
+            deleteStaleDraftsService.delete(deleteStaleDraftsPeriod, staleDraftsPageSize);
         } finally {
             MDC.clear();
         }

@@ -14,10 +14,10 @@ public class DeleteStaleDraftsService {
     private final UtkastService utkastService;
     private final DeleteDraftsFromCertificateService deleteDraftsFromCertificateService;
 
-    public void delete(LocalDateTime staleDraftsPeriod) {
+    public void delete(LocalDateTime staleDraftsPeriod, Integer pageSize) {
         log.info("Staring job to delete stale drafts");
 
-        final var deletedStaleDraftsWC = utkastService.deleteStaleAndLockedDrafts(staleDraftsPeriod);
+        final var deletedStaleDraftsWC = utkastService.deleteStaleAndLockedDrafts(staleDraftsPeriod, pageSize);
         final var deletedStaleDraftsCS = deleteDraftsFromCertificateService.delete(staleDraftsPeriod);
 
         log.info("Successfully deleted {} stale drafts - {} in Webcert - {} in CertificateService",

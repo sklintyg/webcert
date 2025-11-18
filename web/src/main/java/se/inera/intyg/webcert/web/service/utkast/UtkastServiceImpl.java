@@ -850,14 +850,14 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
-    public int deleteStaleAndLockedDrafts(LocalDateTime createdBefore) {
+    public int deleteStaleAndLockedDrafts(LocalDateTime createdBefore, Integer pageSize) {
         final var statuses = List.of(
             UtkastStatus.DRAFT_LOCKED,
             UtkastStatus.DRAFT_INCOMPLETE,
             UtkastStatus.DRAFT_COMPLETE
         );
 
-        final var pageable = PageRequest.of(0, 1, Sort.by(Direction.ASC, "skapad"));
+        final var pageable = PageRequest.of(0, pageSize, Sort.by(Direction.ASC, "skapad"));
         var totalDeleted = 0;
         Page<Utkast> page;
 

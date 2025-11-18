@@ -1,6 +1,7 @@
 package se.inera.intyg.webcert.web.jobs;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -41,10 +42,11 @@ class DeleteStaleDraftsJobTest {
     @Test
     void shouldExecuteJobIfProfileIsActive() {
         ReflectionTestUtils.setField(deleteStaleDraftsJob, "staleDraftsPeriod", "P3M");
+        ReflectionTestUtils.setField(deleteStaleDraftsJob, "staleDraftsPageSize", 10);
         when(deleteStaleDraftsProfile.active()).thenReturn(true);
 
         deleteStaleDraftsJob.run();
 
-        verify(deleteStaleDraftsService).delete(any(LocalDateTime.class));
+        verify(deleteStaleDraftsService).delete(any(LocalDateTime.class), eq(10));
     }
 }
