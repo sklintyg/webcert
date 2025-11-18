@@ -128,7 +128,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v33.Forifyllnad;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
-
+    
     private static final long UTKAST_VERSION = 1;
     private static final long INTYG_VERSION = 2;
 

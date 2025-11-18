@@ -12,21 +12,18 @@ import se.inera.intyg.webcert.web.service.notification.NotificationService;
 @RequiredArgsConstructor
 public class HandleStaleDraftsService {
 
-  private final NotificationService notificationService;
+    private final NotificationService notificationService;
 
-  private final UtkastRepository utkastRepository;
+    private final UtkastRepository utkastRepository;
 
 
-  @Transactional
-  public void deleteAndNotify(List<Utkast> drafts) {
+    @Transactional
+    public void deleteAndNotify(List<Utkast> drafts) {
+        final var certificateIds = drafts.stream()
+            .map(Utkast::getIntygsId)
+            .toList();
 
-    final var certificateIds = drafts.stream()
-        .map(Utkast::getIntygsId)
-        .toList();
-
-    utkastRepository.deleteAllById(certificateIds);
-    drafts.forEach(notificationService::sendNotificationForDraftDeleted);
-
-  }
-
+        utkastRepository.deleteAllById(certificateIds);
+        drafts.forEach(notificationService::sendNotificationForDraftDeleted);
+    }
 }

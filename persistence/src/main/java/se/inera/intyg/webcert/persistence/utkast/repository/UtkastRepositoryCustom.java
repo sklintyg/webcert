@@ -194,8 +194,4 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
     @Query("SELECT u from Utkast u WHERE u.skapad <= :createdBefore AND u.status IN :statuses")
     Page<Utkast> findStaleAndLockedDrafts(@Param("createdBefore") LocalDateTime createdBefore,
         @Param("statuses") List<UtkastStatus> statuses, Pageable pageable);
-
-    @Modifying
-    @Query("DELETE FROM Utkast u WHERE u.intygsId IN :intygsIds")
-    int deleteByIntygsIds(@Param("intygsIds") List<String> intygsIds);
 }

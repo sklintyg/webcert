@@ -857,25 +857,19 @@ public class UtkastServiceImpl implements UtkastService {
             UtkastStatus.DRAFT_COMPLETE
         );
 
-      final var pageable = PageRequest.of(0, 1, Sort.by(Direction.ASC, "skapad", "intygsId"));
-      var totalDeleted = 0;
-      Page<Utkast> page;
+        final var pageable = PageRequest.of(0, 1, Sort.by(Direction.ASC, "skapad"));
+        var totalDeleted = 0;
+        Page<Utkast> page;
 
-      do {
-        page = utkastRepository.findStaleAndLockedDrafts(createdBefore, statuses, pageable);
-        final var drafts = page.getContent();
-
-            if (drafts.isEmpty()) {
-                break;
-            }
+        do {
+            page = utkastRepository.findStaleAndLockedDrafts(createdBefore, statuses, pageable);
+            final var drafts = page.getContent();
 
             try {
-              handleStaleDraftsService.deleteAndNotify(drafts);
-              totalDeleted += drafts.size();
-
-
+                handleStaleDraftsService.deleteAndNotify(drafts);
+                totalDeleted += drafts.size();
             } catch (Exception e) {
-              LOG.error("Error deleting stale drafts: {}", e.getMessage(), e);
+                LOG.error("Error deleting stale drafts: {}", e.getMessage(), e);
             }
 
         } while (page.hasNext());
