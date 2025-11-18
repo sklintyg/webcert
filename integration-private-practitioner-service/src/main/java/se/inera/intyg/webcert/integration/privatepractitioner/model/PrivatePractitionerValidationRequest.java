@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PrivatePractitionerValidationRequest {
 
-    private String personalIdentityNumber;
+    private String personId;
 
 }
