@@ -1290,7 +1290,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         utkastService.deleteStaleAndLockedDrafts();
 
-        verify(utkastRepository, times(2)).delete(utkast1);
+        verify(utkastRepository, times(1)).deleteAll(List.of(utkast1, utkast2));
     }
 
     @Test

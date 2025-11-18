@@ -874,16 +874,23 @@ public class UtkastServiceImpl implements UtkastService {
     @Override
     @Transactional
     public int deleteStaleAndLockedDrafts() {
-        final var staleAndLockedDrafts = utkastRepository.findStaleAndLockedDrafts(
-            LocalDateTime.now().minusMonths(3),
-            List.of(UtkastStatus.DRAFT_LOCKED, UtkastStatus.DRAFT_INCOMPLETE, UtkastStatus.DRAFT_COMPLETE)
+        final var createdBefore = LocalDateTime.now().minusMonths(3);
+        final var statuses = List.of(
+            UtkastStatus.DRAFT_LOCKED,
+            UtkastStatus.DRAFT_INCOMPLETE,
+            UtkastStatus.DRAFT_COMPLETE
         );
 
-        staleAndLockedDrafts.forEach(draft -> {
-            utkastRepository.delete(draft);
+        final var staleAndLockedDrafts = utkastRepository.findStaleAndLockedDrafts(
+            createdBefore,
+            statuses
+        );
 
-            sendNotification(draft, Event.DELETED);
-        });
+        utkastRepository.deleteAll(staleAndLockedDrafts);
+
+        staleAndLockedDrafts.forEach(draft ->
+            sendNotification(draft, Event.DELETED)
+        );
 
         return staleAndLockedDrafts.size();
     }
