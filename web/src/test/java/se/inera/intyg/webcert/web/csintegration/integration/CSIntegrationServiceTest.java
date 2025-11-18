@@ -3546,7 +3546,7 @@ class CSIntegrationServiceTest {
             requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
             responseSpec = mock(RestClient.ResponseSpec.class);
 
-            final String uri = "baseUrl/internalapi/certificate/list";
+            final String uri = "baseUrl/internalapi/certificate/draft/list";
             ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
 
             when(restClient.post()).thenReturn(requestBodyUriSpec);
@@ -3603,7 +3603,7 @@ class CSIntegrationServiceTest {
             requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
             responseSpec = mock(RestClient.ResponseSpec.class);
 
-            final String uri = "baseUrl/internalapi/certificate/delete/ids";
+            final String uri = "baseUrl/internalapi/certificate/draft/delete/ids";
             ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
 
             when(restClient.post()).thenReturn(requestBodyUriSpec);

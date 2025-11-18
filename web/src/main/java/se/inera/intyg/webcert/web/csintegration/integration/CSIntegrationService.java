@@ -1160,7 +1160,7 @@ public class CSIntegrationService {
 
     @PerformanceLogging(eventAction = "delete-drafts", eventType = EVENT_TYPE_CHANGE)
     public List<Certificate> deleteStaleDrafts(DeleteStaleDraftsRequestDTO request) {
-        final var url = baseUrl + INTERNAL_CERTIFICATE_ENDPOINT_URL + "/delete";
+        final var url = baseUrl + INTERNAL_CERTIFICATE_ENDPOINT_URL + "draft/delete";
 
         final var response = restClient.post()
             .uri(url)
@@ -1180,7 +1180,7 @@ public class CSIntegrationService {
 
     @PerformanceLogging(eventAction = "list-stale-drafts", eventType = EVENT_TYPE_ACCESS)
     public List<Certificate> listStaleDrafts(ListStaleDraftsRequestDTO request) {
-        final var url = baseUrl + INTERNAL_CERTIFICATE_ENDPOINT_URL + "/list";
+        final var url = baseUrl + INTERNAL_CERTIFICATE_ENDPOINT_URL + "draft/list";
 
         final var response = restClient.post()
             .uri(url)
