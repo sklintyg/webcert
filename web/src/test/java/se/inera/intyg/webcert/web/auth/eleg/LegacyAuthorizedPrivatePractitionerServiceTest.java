@@ -30,10 +30,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.infra.security.common.model.AuthoritiesConstants.ROLE_PRIVATLAKARE;
-import static se.inera.intyg.webcert.web.privatepractitioner.TestData.DR_KRANSTEGE;
-import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_FAMILY_NAME;
-import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_FIRST_NAME;
-import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_PERSON_ID;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -55,14 +51,21 @@ import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.integration.privatepractitioner.service.PrivatePractitionerIntegrationService;
+import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.logging.HashUtility;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.webcert.web.auth.bootstrap.AuthoritiesConfigurationTestSetup;
+import se.riv.infrastructure.directory.privatepractitioner.types.v1.HsaId;
+import se.riv.infrastructure.directory.privatepractitioner.types.v1.PersonId;
+import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
+import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
+import se.riv.infrastructure.directory.privatepractitioner.v1.VardgivareType;
 
 @ExtendWith(MockitoExtension.class)
-class AuthorizedPrivatePractitionerServiceTest extends AuthoritiesConfigurationTestSetup {
+class LegacyAuthorizedPrivatePractitionerServiceTest extends AuthoritiesConfigurationTestSetup {
 
+    private static final String HSA_ID = "191212121212";
+    private static final String PERSON_ID = "197705232382";
     private static final String ELEG_AUTH_SCHEME = "http://id.elegnamnden.se/loa/1.0/loa3";
     private static final AuthenticationMethod AUTH_METHOD = AuthenticationMethod.MOBILT_BANK_ID;
     private final Map<String, String> expectedPreferences = new HashMap<>();
@@ -70,7 +73,7 @@ class AuthorizedPrivatePractitionerServiceTest extends AuthoritiesConfigurationT
     @Mock
     private CommonAuthoritiesResolver commonAuthoritiesResolver;
     @Mock
-    private PrivatePractitionerIntegrationService privatePractitionerIntegrationService;
+    private PPService ppService;
     @Mock
     private PUService puService;
     @Mock
@@ -78,7 +81,7 @@ class AuthorizedPrivatePractitionerServiceTest extends AuthoritiesConfigurationT
     @Mock
     private HashUtility hashUtility;
     @InjectMocks
-    private AuthorizedPrivatePractitionerService authorizedPrivatePractitionerService;
+    private LegacyAuthorizedPrivatePractitionerService legacyAuthorizedPrivatePractitionerService;
 
     @BeforeEach
     void setupForSuccess() {
@@ -87,7 +90,7 @@ class AuthorizedPrivatePractitionerServiceTest extends AuthoritiesConfigurationT
 
         lenient().when(commonAuthoritiesResolver.getRole(ROLE_PRIVATLAKARE)).thenReturn(authorizedPrivatePractitioner());
 
-        lenient().when(privatePractitionerIntegrationService.getPrivatePractitioner(DR_KRANSTEGE_PERSON_ID)).thenReturn(DR_KRANSTEGE);
+        lenient().when(ppService.getPrivatePractitioner(any(), any(), any())).thenReturn(buildHosPerson());
         expectedPreferences.put("some", "setting");
         lenient().when(anvandarPreferenceRepository.getAnvandarPreference(anyString())).thenReturn(expectedPreferences);
 
@@ -96,8 +99,7 @@ class AuthorizedPrivatePractitionerServiceTest extends AuthoritiesConfigurationT
 
     @Test
     void testSuccessfulLogin() {
-        final var user = authorizedPrivatePractitionerService.create(DR_KRANSTEGE_PERSON_ID, "origin",
-            ELEG_AUTH_SCHEME,
+        final var user = legacyAuthorizedPrivatePractitionerService.create(HSA_ID, "origin", ELEG_AUTH_SCHEME,
             AUTH_METHOD);
         assertNotNull(user);
         assertFalse(user.isSekretessMarkerad());
@@ -106,11 +108,10 @@ class AuthorizedPrivatePractitionerServiceTest extends AuthoritiesConfigurationT
 
     @Test
     void shallSetFirstnameAndLastnameFromFullstandigtName() {
-        final var user = authorizedPrivatePractitionerService.create(DR_KRANSTEGE_PERSON_ID, "origin",
-            ELEG_AUTH_SCHEME,
+        final var user = legacyAuthorizedPrivatePractitionerService.create(HSA_ID, "origin", ELEG_AUTH_SCHEME,
             AUTH_METHOD);
-        assertEquals(DR_KRANSTEGE_FIRST_NAME, user.getFornamn());
-        assertEquals(DR_KRANSTEGE_FAMILY_NAME, user.getEfternamn());
+        assertEquals("Test", user.getFornamn());
+        assertEquals("Testsson", user.getEfternamn());
     }
 
     @Test
@@ -118,8 +119,7 @@ class AuthorizedPrivatePractitionerServiceTest extends AuthoritiesConfigurationT
         reset(puService);
         when(puService.getPerson(any(Personnummer.class))).thenReturn(buildPersonSvar(true));
 
-        final var user = authorizedPrivatePractitionerService.create(DR_KRANSTEGE_PERSON_ID, "origin",
-            ELEG_AUTH_SCHEME,
+        final var user = legacyAuthorizedPrivatePractitionerService.create(HSA_ID, "origin", ELEG_AUTH_SCHEME,
             AUTH_METHOD);
         assertNotNull(user);
         assertTrue(user.isSekretessMarkerad());
@@ -131,8 +131,7 @@ class AuthorizedPrivatePractitionerServiceTest extends AuthoritiesConfigurationT
         when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.error());
 
         assertThrows(WebCertServiceException.class,
-            () -> authorizedPrivatePractitionerService.create(DR_KRANSTEGE_PERSON_ID, "origin",
-                ELEG_AUTH_SCHEME,
+            () -> legacyAuthorizedPrivatePractitionerService.create(HSA_ID, "origin", ELEG_AUTH_SCHEME,
                 AUTH_METHOD)
         );
     }
@@ -143,27 +142,25 @@ class AuthorizedPrivatePractitionerServiceTest extends AuthoritiesConfigurationT
         when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.notFound());
 
         assertThrows(WebCertServiceException.class,
-            () -> authorizedPrivatePractitionerService.create(DR_KRANSTEGE_PERSON_ID, "origin",
-                ELEG_AUTH_SCHEME,
+            () -> legacyAuthorizedPrivatePractitionerService.create(HSA_ID, "origin", ELEG_AUTH_SCHEME,
                 AUTH_METHOD)
         );
     }
 
     @Test
     void testNotFoundInHSAThrowsException() {
-        reset(privatePractitionerIntegrationService);
-        when(privatePractitionerIntegrationService.getPrivatePractitioner(DR_KRANSTEGE_PERSON_ID)).thenReturn(null);
+        reset(ppService);
+        when(ppService.getPrivatePractitioner(any(), any(), any())).thenReturn(null);
 
         assertThrows(IllegalArgumentException.class,
-            () -> authorizedPrivatePractitionerService.create(DR_KRANSTEGE_PERSON_ID, "origin",
-                ELEG_AUTH_SCHEME,
+            () -> legacyAuthorizedPrivatePractitionerService.create(HSA_ID, "origin", ELEG_AUTH_SCHEME,
                 AUTH_METHOD)
         );
     }
 
     @Test
     void shouldAdmitUserWhenHasSubscriptionAndAuthorizedInHosp() {
-        final var webcertUser = authorizedPrivatePractitionerService.create(DR_KRANSTEGE_PERSON_ID, "origin",
+        final var webcertUser = legacyAuthorizedPrivatePractitionerService.create(HSA_ID, "origin",
             ELEG_AUTH_SCHEME,
             AUTH_METHOD);
         assertNotNull(webcertUser);
@@ -171,16 +168,32 @@ class AuthorizedPrivatePractitionerServiceTest extends AuthoritiesConfigurationT
 
     @Test
     void shouldAdmitUserWhenMissingSubscriptionAndAuthorizedInHosp() {
-        final var webcertUser = authorizedPrivatePractitionerService.create(DR_KRANSTEGE_PERSON_ID, "origin",
+        final var webcertUser = legacyAuthorizedPrivatePractitionerService.create(HSA_ID, "origin",
             ELEG_AUTH_SCHEME,
             AUTH_METHOD);
         assertNotNull(webcertUser);
     }
 
+    private HoSPersonType buildHosPerson() {
+        final var hoSPersonType = new HoSPersonType();
+        final var hsaId = new HsaId();
+        hsaId.setExtension(HSA_ID);
+        hoSPersonType.setHsaId(hsaId);
+        final var personId = new PersonId();
+        personId.setExtension(PERSON_ID);
+        hoSPersonType.setPersonId(personId);
+        hoSPersonType.setFullstandigtNamn("Test Testsson");
+
+        final var vardEnhet = getEnhetType();
+        hoSPersonType.setEnhet(vardEnhet);
+
+        return hoSPersonType;
+    }
+
     private PersonSvar buildPersonSvar(boolean sekretessMarkerad) {
-        final var personnummer = Personnummer.createPersonnummer(DR_KRANSTEGE_PERSON_ID).orElseThrow();
-        final var person = new Person(personnummer, sekretessMarkerad, false, DR_KRANSTEGE_FIRST_NAME, "",
-            DR_KRANSTEGE_FAMILY_NAME, "gatan", "12345", "postort", false);
+        final var personnummer = Personnummer.createPersonnummer(PERSON_ID).orElseThrow();
+        final var person = new Person(personnummer, sekretessMarkerad, false, "fornamn", "",
+            "Efternamn", "gatan", "12345", "postort", false);
         return PersonSvar.found(person);
     }
 
@@ -190,5 +203,20 @@ class AuthorizedPrivatePractitionerServiceTest extends AuthoritiesConfigurationT
         expected.setDesc("Privatläkare");
         expected.setPrivileges(List.of());
         return expected;
+    }
+
+    private static EnhetType getEnhetType() {
+        final var vardEnhet = new EnhetType();
+        vardEnhet.setEnhetsnamn("enhetsNamn");
+        final var enhetsId = new HsaId();
+        enhetsId.setExtension("enhetsId");
+        vardEnhet.setEnhetsId(enhetsId);
+        final var vardgivare = new VardgivareType();
+        final var vardgivareId = new HsaId();
+        enhetsId.setExtension("vardgivareId");
+        vardgivare.setVardgivareId(vardgivareId);
+        vardgivare.setVardgivarenamn("vardgivareName");
+        vardEnhet.setVardgivare(vardgivare);
+        return vardEnhet;
     }
 }

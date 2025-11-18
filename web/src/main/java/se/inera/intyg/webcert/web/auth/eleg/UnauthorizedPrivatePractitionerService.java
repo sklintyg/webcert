@@ -43,7 +43,7 @@ public class UnauthorizedPrivatePractitionerService {
     private final HashUtility hashUtility;
     private final PUService puService;
 
-    public WebCertUser createUnauthorizedWebCertUser(String personId, String origin, String authScheme, AuthenticationMethod authMethod) {
+    public WebCertUser create(String personId, String origin, String authScheme, AuthenticationMethod authMethod) {
         final var role = authoritiesResolver.getRole(AuthoritiesConstants.ROLE_PRIVATLAKARE_OBEHORIG);
         final var user = new WebCertUser("missing");
         user.setRoles(AuthoritiesResolverUtil.toMap(role));
