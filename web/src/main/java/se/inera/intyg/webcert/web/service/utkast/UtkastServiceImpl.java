@@ -114,13 +114,9 @@ import se.inera.intyg.webcert.web.service.utkast.util.UtkastServiceHelper;
 @Service
 public class UtkastServiceImpl implements UtkastService {
 
-    public enum Event {
-        CHANGED,
-        CREATED,
-        DELETED,
-        REVOKED
-    }
-
+    public static final String INTYG_INDICATOR = "intyg";
+    public static final String UTKAST_INDICATOR = "utkast";
+    public static final String ERSATT_INDICATOR = "ersatt";
     private static final Set<UtkastStatus> ALL_EDITABLE_DRAFT_STATUSES = UtkastStatus.getEditableDraftStatuses();
     private static final Set<UtkastStatus> ALL_DRAFT_STATUSES_INCLUDE_LOCKED = UtkastStatus.getDraftStatuses();
     private static final List<UtkastStatus> ALL_DRAFTS = Arrays.asList(
@@ -129,71 +125,49 @@ public class UtkastServiceImpl implements UtkastService {
         UtkastStatus.DRAFT_LOCKED,
         UtkastStatus.SIGNED
     );
-
     private static final Logger LOG = LoggerFactory.getLogger(UtkastServiceImpl.class);
-    public static final String INTYG_INDICATOR = "intyg";
-    public static final String UTKAST_INDICATOR = "utkast";
-    public static final String ERSATT_INDICATOR = "ersatt";
-
     @Autowired
     private CreateIntygsIdStrategy intygsIdStrategy;
-
     @Autowired
     private UtkastRepository utkastRepository;
-
     @Autowired
     private IntygModuleRegistry moduleRegistry;
-
     @Autowired
     private LogService logService;
-
     @Autowired
     private LogRequestFactory logRequestFactory;
-
     @Autowired
     private NotificationService notificationService;
-
     @Autowired
     private CertificateEventService certificateEventService;
-
     @Autowired
     private MonitoringLogService monitoringService;
-
     @Autowired
     private WebCertUserService webCertUserService;
-
     @Autowired
     private IntygTextsService intygTextsService;
-
     @Autowired
     private AuthoritiesHelper authoritiesHelper;
-
     @Autowired
     private StatisticsGroupByUtil statisticsGroupByUtil;
-
     @Autowired
     private ReferensService referensService;
-
     @Autowired
     private DraftAccessServiceHelper draftAccessServiceHelper;
-
     @Autowired
     private EmployeeNameService employeeNameService;
-
     @Autowired
     private UtkastServiceHelper utkastServiceHelper;
-
     @Autowired
     private HashUtility hashUtility;
-
     @Autowired
     private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
-
     @Autowired
     private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
-
     @Autowired
     private DefaultTypeAheadProvider defaultTypeAheadProvider;
+    @Autowired
+    private HandleStaleDraftsService handleStaleDraftsService;
 
     public static boolean isUtkast(Utkast utkast) {
         return utkast != null && ALL_DRAFT_STATUSES_INCLUDE_LOCKED.contains(utkast.getStatus());
@@ -876,7 +850,6 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
-    @Transactional
     public int deleteStaleAndLockedDrafts(LocalDateTime createdBefore) {
         final var statuses = List.of(
             UtkastStatus.DRAFT_LOCKED,
@@ -885,11 +858,10 @@ public class UtkastServiceImpl implements UtkastService {
         );
 
       final var pageable = PageRequest.of(0, 1, Sort.by(Direction.ASC, "skapad", "intygsId"));
-      int totalDeleted = 0;
+      var totalDeleted = 0;
       Page<Utkast> page;
 
       do {
-        // Find a page of stale drafts
         page = utkastRepository.findStaleAndLockedDrafts(createdBefore, statuses, pageable);
         final var drafts = page.getContent();
 
@@ -897,28 +869,19 @@ public class UtkastServiceImpl implements UtkastService {
                 break;
             }
 
-            LOG.info("Starting batch deletion of {} stale drafts. Total remaining: {}",
-                drafts.size(), page.getTotalElements());
+            try {
+              handleStaleDraftsService.deleteAndNotify(drafts);
+              totalDeleted += drafts.size();
 
-            // Send notifications before deletion
-            drafts.forEach(draft -> sendNotification(draft, Event.DELETED));
 
-            // Atomic bulk delete by IDs
-            final var intygsIds = drafts.stream()
-                .map(Utkast::getIntygsId)
-                .toList();
-            final int deleted = utkastRepository.deleteByIntygsIds(intygsIds);
-
-            totalDeleted += deleted;
-
-            LOG.info("Completed batch deletion of {} stale drafts. Total deleted: {}",
-                deleted, totalDeleted);
+            } catch (Exception e) {
+              LOG.error("Error deleting stale drafts: {}", e.getMessage(), e);
+            }
 
         } while (page.hasNext());
 
         return totalDeleted;
     }
-
 
     /**
      * Revoke draft and notify stakeholders that this draft is now deleted.
@@ -1255,5 +1218,12 @@ public class UtkastServiceImpl implements UtkastService {
         if (utkast.getPatientEfternamn() != null && !utkast.getPatientEfternamn().equals(patient.getEfternamn())) {
             utkast.setPatientEfternamn(patient.getEfternamn());
         }
+    }
+
+    public enum Event {
+        CHANGED,
+        CREATED,
+        DELETED,
+        REVOKED
     }
 }

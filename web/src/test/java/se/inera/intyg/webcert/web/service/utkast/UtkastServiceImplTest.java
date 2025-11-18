@@ -188,6 +188,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     private DefaultTypeAheadProvider defaultTypeAheadProvider;
     @Mock
     private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+    @Mock
+    private HandleStaleDraftsService handleStaleDraftsService;
 
     @Spy
     private CreateIntygsIdStrategy mockIdStrategy = new CreateIntygsIdStrategy() {
@@ -1264,7 +1266,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
             setupVardperson(hoSPerson),
             PERSONNUMMER);
 
-        final var utkast2 = createUtkast(INTYG_ID, UTKAST_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_INCOMPLETE, null, INTYG_JSON,
+        final var utkast2 = createUtkast(INTYG_ID, UTKAST_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_LOCKED,
+            null, INTYG_JSON,
             setupVardperson(hoSPerson),
             PERSONNUMMER);
 
@@ -1274,9 +1277,6 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
             any(Pageable.class)))
             .thenReturn(page)
             .thenReturn(Page.empty());
-
-        when(utkastRepository.deleteByIntygsIds(anyList()))
-            .thenReturn(expectedDeletedDrafts);
 
         final var resultDeletedDrafts = utkastService.deleteStaleAndLockedDrafts(LocalDateTime.now());
 
@@ -1289,7 +1289,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
             setupVardperson(hoSPerson),
             PERSONNUMMER);
 
-        final var utkast2 = createUtkast(INTYG_ID, UTKAST_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_INCOMPLETE, null, INTYG_JSON,
+        final var utkast2 = createUtkast(INTYG_ID, UTKAST_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_LOCKED,
+            null, INTYG_JSON,
             setupVardperson(hoSPerson),
             PERSONNUMMER);
 
@@ -1300,40 +1301,10 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
             .thenReturn(page)
             .thenReturn(Page.empty());
 
-        when(utkastRepository.deleteByIntygsIds(anyList()))
-            .thenReturn(2);
-
         utkastService.deleteStaleAndLockedDrafts(LocalDateTime.now());
 
-        verify(utkastRepository, times(1)).deleteByIntygsIds(anyList());
+        verify(handleStaleDraftsService, times(1)).deleteAndNotify(List.of(utkast1, utkast2));
     }
-
-    @Test
-    public void shouldNotifyStakeholders() {
-        final var utkast1 = createUtkast(INTYG_ID, UTKAST_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_INCOMPLETE, null, INTYG_JSON,
-            setupVardperson(hoSPerson),
-            PERSONNUMMER);
-
-        final var utkast2 = createUtkast(INTYG_ID, UTKAST_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_INCOMPLETE, null, INTYG_JSON,
-            setupVardperson(hoSPerson),
-            PERSONNUMMER);
-
-        final Page<Utkast> page = new PageImpl<>(List.of(utkast1, utkast2));
-        when(utkastRepository.findStaleAndLockedDrafts(any(LocalDateTime.class),
-            eq(List.of(UtkastStatus.DRAFT_LOCKED, UtkastStatus.DRAFT_INCOMPLETE, UtkastStatus.DRAFT_COMPLETE)),
-            any(Pageable.class)))
-            .thenReturn(page)
-            .thenReturn(Page.empty());
-
-        when(utkastRepository.deleteByIntygsIds(anyList()))
-            .thenReturn(2);
-
-        utkastService.deleteStaleAndLockedDrafts(LocalDateTime.now());
-
-        verify(notificationService, times(1)).sendNotificationForDraftDeleted(utkast1);
-        verify(notificationService, times(1)).sendNotificationForDraftDeleted(utkast2);
-    }
-
 
     private CreateNewDraftRequest buildCreateNewDraftRequest() {
         CreateNewDraftRequest request = new CreateNewDraftRequest();
