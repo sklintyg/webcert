@@ -25,69 +25,58 @@ import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.D
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_COUNTY;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_EMAIL;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_HEALTHCARE_SERVICE_TYPE;
+import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_HSA_ID;
+import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_LICENSED_HEALTHCARE_PROFESSIONS;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_MUNICIPALITY;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_NAME;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_PERSON_ID;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_PHONE_NUMBER;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_POSITION;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_PRESCRIPTION_CODE;
+import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_SPECIALITIES;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_TYPE_OF_CARE;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_WORKPLACE_CODE;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_ZIP_CODE;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.CodeDTO;
-import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.HospInformationResponse;
-import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerConfigResponse;
-import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerRegistrationRequest;
-import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerRegistrationRequest.PrivatePractitionerRegistrationRequestBuilder;
-import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerResponse;
-import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerResponse.PrivatePractitionerResponseBuilder;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.Code;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.HospInformation;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitioner;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitioner.PrivatePractitionerBuilder;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerConfiguration;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.RegisterPrivatePractitionerRequest;
 
-public class TestDataDTO {
+public class TestData {
 
-    public static final List<CodeDTO> POSITIONS_DTO = List.of(new CodeDTO("203090", "Läkare legitimerad, annan"),
-        new CodeDTO("201010", "Överläkare"));
+    private TestData() {
+        throw new IllegalStateException("Utility class");
+    }
 
-    public static final List<CodeDTO> HEALTHCARE_SERVICE_TYPES_DTO = List.of(
-        new CodeDTO("11", "Medicinsk verksamhet"),
-        new CodeDTO("13", "Opererande verksamhet")
+
+    public static final List<Code> POSITIONS = List.of(new Code("203090", "Läkare legitimerad, annan"),
+        new Code("201010", "Överläkare"));
+
+    public static final List<Code> HEALTHCARE_SERVICE_TYPES = List.of(
+        new Code("11", "Medicinsk verksamhet"),
+        new Code("13", "Opererande verksamhet")
     );
 
-    public static final List<CodeDTO> TYPE_OF_CARE_DTO = List.of(
-        new CodeDTO("01", "Öppenvård"),
-        new CodeDTO("02", "Slutenvård")
+    public static final List<Code> TYPE_OF_CARE = List.of(
+        new Code("01", "Öppenvård"),
+        new Code("02", "Slutenvård")
     );
 
-    public static final List<CodeDTO> DR_KRANSTEGE_SPECIALITIES = List.of(
-        new CodeDTO("32", "Klinisk fysiologi"),
-        new CodeDTO("74", "Nukleärmedicin")
-    );
+    public static final PrivatePractitioner DR_KRANSTEGE = kranstegeBuilder().build();
 
-    public static final List<CodeDTO> DR_KRANSTEGE_LICENSED_HEALTHCARE_PROFESSIONS =
-        List.of(new CodeDTO("LK", "Läkare"));
-
-    public static final PrivatePractitionerRegistrationRequest DR_KRANSTEGE_REGISTREATION_REQUEST_DTO = kranstegeRegistrationRequest().build();
-
-    public static final PrivatePractitionerConfigResponse PRIVATE_PRACTITIONER_CONFIG_DTO = PrivatePractitionerConfigResponse
-        .builder()
-        .positions(POSITIONS_DTO)
-        .healthcareServiceTypes(HEALTHCARE_SERVICE_TYPES_DTO)
-        .typeOfCare(TYPE_OF_CARE_DTO)
-        .build();
-
-    public static HospInformationResponse DR_KRANSTEGE_HOSP_INFORMATION_RESPONSE_DTO = HospInformationResponse.builder()
-        .personalPrescriptionCode(DR_KRANSTEGE_PRESCRIPTION_CODE)
-        .licensedHealthcareProfessions(DR_KRANSTEGE_LICENSED_HEALTHCARE_PROFESSIONS)
-        .specialities(DR_KRANSTEGE_SPECIALITIES)
-        .build();
-
-    public static PrivatePractitionerResponse DR_KRANSTEGE_RESPONSE_DTO = kranstegeResponse().build();
-
-    public static PrivatePractitionerRegistrationRequestBuilder kranstegeRegistrationRequest() {
-        return PrivatePractitionerRegistrationRequest.builder()
+    public static PrivatePractitionerBuilder kranstegeBuilder() {
+        return PrivatePractitioner.builder()
+            .personId(DR_KRANSTEGE_PERSON_ID)
+            .hsaId(DR_KRANSTEGE_HSA_ID)
+            .name(DR_KRANSTEGE_NAME)
             .position(DR_KRANSTEGE_POSITION)
             .careUnitName(DR_KRANSTEGE_CARE_UNIT_NAME)
+            .careProviderName(DR_KRANSTEGE_CARE_UNIT_NAME)
             .typeOfCare(DR_KRANSTEGE_TYPE_OF_CARE)
             .healthcareServiceType(DR_KRANSTEGE_HEALTHCARE_SERVICE_TYPE)
             .workplaceCode(DR_KRANSTEGE_WORKPLACE_CODE)
@@ -97,11 +86,25 @@ public class TestDataDTO {
             .zipCode(DR_KRANSTEGE_ZIP_CODE)
             .city(DR_KRANSTEGE_CITY)
             .municipality(DR_KRANSTEGE_MUNICIPALITY)
-            .county(DR_KRANSTEGE_COUNTY);
+            .county(DR_KRANSTEGE_COUNTY)
+            .registrationDate(LocalDateTime.now());
     }
 
-    public static PrivatePractitionerResponseBuilder kranstegeResponse() {
-        return PrivatePractitionerResponse.builder()
+    public static final PrivatePractitionerConfiguration PRIVATE_PRACTITIONER_CONFIG = PrivatePractitionerConfiguration
+        .builder()
+        .positionCodes(POSITIONS)
+        .healthcareServiceTypeCodes(HEALTHCARE_SERVICE_TYPES)
+        .typeOfCareCodes(TYPE_OF_CARE)
+        .build();
+    public static final HospInformation DR_KRANSTEGE_HOSP_INFO = HospInformation.builder()
+        .personId(DR_KRANSTEGE_PERSON_ID)
+        .personalPrescriptionCode(DR_KRANSTEGE_PRESCRIPTION_CODE)
+        .licensedHealthcareProfessions(DR_KRANSTEGE_LICENSED_HEALTHCARE_PROFESSIONS)
+        .specialities(DR_KRANSTEGE_SPECIALITIES)
+        .build();
+
+    public static RegisterPrivatePractitionerRequest kranstegeRegisterPractitionerRequest() {
+        return RegisterPrivatePractitionerRequest.builder()
             .personId(DR_KRANSTEGE_PERSON_ID)
             .name(DR_KRANSTEGE_NAME)
             .position(DR_KRANSTEGE_POSITION)
@@ -115,8 +118,7 @@ public class TestDataDTO {
             .zipCode(DR_KRANSTEGE_ZIP_CODE)
             .city(DR_KRANSTEGE_CITY)
             .municipality(DR_KRANSTEGE_MUNICIPALITY)
-            .county(DR_KRANSTEGE_COUNTY);
+            .county(DR_KRANSTEGE_COUNTY)
+            .build();
     }
-
-
 }

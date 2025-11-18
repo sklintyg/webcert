@@ -19,6 +19,9 @@
 
 package se.inera.intyg.webcert.web.privatepractitioner;
 
+import java.util.List;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.Code;
+
 public class TestDataConstants {
 
     private TestDataConstants() {
@@ -43,5 +46,12 @@ public class TestDataConstants {
     public static final String DR_KRANSTEGE_MUNICIPALITY = "Kommun";
     public static final String DR_KRANSTEGE_COUNTY = "Län";
     public static final String DR_KRANSTEGE_PRESCRIPTION_CODE = "12345";
+
+    public static final List<Code> DR_KRANSTEGE_SPECIALITIES = List.of(
+        new Code("32", "Klinisk fysiologi"),
+        new Code("74", "Nukleärmedicin")
+    );
+    public static final List<Code> DR_KRANSTEGE_LICENSED_HEALTHCARE_PROFESSIONS =
+        List.of(new Code("LK", "Läkare"));
 
 }

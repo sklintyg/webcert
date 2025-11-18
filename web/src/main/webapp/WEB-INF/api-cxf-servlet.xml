@@ -96,7 +96,7 @@
 	</beans>
 
 	<beans profile="private-practitioner-service-active">
-		<jaxrs:server address="/privatepractitioner">
+		<jaxrs:server address="/private-practitioner">
 			<jaxrs:properties>
 				<!-- Configure ServerProviderFactory to make default exceptionhandler less specific so
 				that our webcertRestExceptionHandler gets to handle exceptions (see WEBCERT-1978) for these controllers -->
