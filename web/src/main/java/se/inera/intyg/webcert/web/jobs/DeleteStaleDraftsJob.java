@@ -24,7 +24,7 @@ public class DeleteStaleDraftsJob {
     private static final String JOB_NAME = "DeleteStaleDraftsJob.run";
     private static final String LOCK_AT_MOST = "PT10M";
     private static final String LOCK_AT_LEAST = "PT30S";
-    
+
     @Scheduled(cron = "${delete.stale.drafts.cron}")
     @SchedulerLock(name = JOB_NAME, lockAtLeastFor = LOCK_AT_LEAST, lockAtMostFor = LOCK_AT_MOST)
     @PerformanceLogging(eventAction = "delete-stale-drafts", eventType = MdcLogConstants.EVENT_TYPE_CHANGE,
@@ -39,7 +39,6 @@ public class DeleteStaleDraftsJob {
             MDC.put(MdcLogConstants.TRACE_ID_KEY, mdcHelper.traceId());
             MDC.put(MdcLogConstants.SPAN_ID_KEY, mdcHelper.spanId());
 
-            log.info("Staring job to delete stale drafts");
             deleteStaleDraftsService.delete();
         } finally {
             MDC.clear();

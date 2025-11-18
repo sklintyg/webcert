@@ -135,4 +135,6 @@ public interface UtkastService {
     boolean isDraftCreatedFromReplacement(String certificateId);
 
     List<Utkast> findUtkastByPatientAndUnits(Personnummer patientId, List<String> unitIds);
+
+    int deleteStaleAndLockedDrafts();
 }

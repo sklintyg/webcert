@@ -871,6 +871,12 @@ public class UtkastServiceImpl implements UtkastService {
         }
     }
 
+    @Override
+    @Transactional
+    public int deleteStaleAndLockedDrafts() {
+        return 0;
+    }
+
     /**
      * Revoke draft and notify stakeholders that this draft is now deleted.
      */
