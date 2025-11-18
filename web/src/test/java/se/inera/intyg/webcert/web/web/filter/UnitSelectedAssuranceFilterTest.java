@@ -18,10 +18,11 @@
  */
 package se.inera.intyg.webcert.web.web.filter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -31,20 +32,20 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Arrays;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.webcert.web.service.user.WebCertUserServiceImpl;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-@RunWith(MockitoJUnitRunner.class)
-public class UnitSelectedAssuranceFilterTest {
+@ExtendWith(MockitoExtension.class)
+class UnitSelectedAssuranceFilterTest {
 
     private static final String IGNORED_URL = "/test";
     private static final String REQUEST_URL = "/api/certificate";
@@ -64,22 +65,22 @@ public class UnitSelectedAssuranceFilterTest {
     @InjectMocks
     private UnitSelectedAssuranceFilter filter = new UnitSelectedAssuranceFilter();
 
-    @Before
-    public void setup() throws ServletException {
+    @BeforeEach
+    void setup() throws ServletException {
         filter.setIgnoredUrls(IGNORED_URL);
         filter.initFilterBean();
     }
 
     @Test
-    public void testInitiateFilterSettingIgnoredUrls() throws ServletException {
+    void testInitiateFilterSettingIgnoredUrls() throws ServletException {
         filter.initFilterBean();
         assertNotNull(filter.getIgnoredUrls());
         assertEquals(IGNORED_URL, filter.getIgnoredUrls());
     }
 
     @Test
-    public void testUserWithSelectedUnitIsLoggedIn() throws ServletException, IOException {
-        WebCertUser user = createUser();
+    void testUserWithSelectedUnitIsLoggedIn() throws ServletException, IOException {
+        final var user = createUser();
         when(httpServletRequest.getRequestURI()).thenReturn(REQUEST_URL);
         when(webCertUserService.hasAuthenticationContext()).thenReturn(true);
         when(webCertUserService.getUser()).thenReturn(user);
@@ -93,8 +94,8 @@ public class UnitSelectedAssuranceFilterTest {
     }
 
     @Test
-    public void testUserWithoutSelectedCareUnitIsLoggedIn() throws ServletException, IOException {
-        WebCertUser user = new WebCertUser();
+    void testUserWithoutSelectedCareUnitIsLoggedIn() throws ServletException, IOException {
+        final var user = new WebCertUser();
         when(httpServletRequest.getRequestURI()).thenReturn(REQUEST_URL);
         when(webCertUserService.hasAuthenticationContext()).thenReturn(true);
         when(webCertUserService.getUser()).thenReturn(user);
@@ -111,7 +112,7 @@ public class UnitSelectedAssuranceFilterTest {
     }
 
     @Test
-    public void testIgnoredUrlsShouldNotGiveErrors() throws ServletException, IOException {
+    void testIgnoredUrlsShouldNotGiveErrors() throws ServletException, IOException {
         when(httpServletRequest.getRequestURI()).thenReturn(IGNORED_URL);
         when(webCertUserService.hasAuthenticationContext()).thenReturn(false);
 
@@ -121,13 +122,25 @@ public class UnitSelectedAssuranceFilterTest {
         verify(httpServletResponse, never()).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
 
+    @Test
+    void shouldNotGiveErrorsIfUnauthorizedPrivatePractitioner() throws ServletException, IOException {
+        final var user = mock(WebCertUser.class);
+        when(httpServletRequest.getRequestURI()).thenReturn(REQUEST_URL);
+        when(webCertUserService.hasAuthenticationContext()).thenReturn(true);
+        when(webCertUserService.getUser()).thenReturn(user);
+        when(user.isUnauthorizedPrivatePractitioner()).thenReturn(true);
+
+        filter.doFilterInternal(httpServletRequest, httpServletResponse, filterChain);
+
+        verify(httpServletResponse, never()).sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    }
 
     private WebCertUser createUser() {
-        Vardgivare careGiver = new Vardgivare("cgId", "cgName");
-        Vardenhet careUnit = new Vardenhet("cuId", "cuName");
-        careGiver.setVardenheter(Arrays.asList(careUnit));
+        final var careGiver = new Vardgivare("cgId", "cgName");
+        final var careUnit = new Vardenhet("cuId", "cuName");
+        careGiver.setVardenheter(List.of(careUnit));
 
-        WebCertUser user = new WebCertUser();
+        final var user = new WebCertUser();
         user.setValdVardgivare(careGiver);
         user.setValdVardenhet(careUnit);
 

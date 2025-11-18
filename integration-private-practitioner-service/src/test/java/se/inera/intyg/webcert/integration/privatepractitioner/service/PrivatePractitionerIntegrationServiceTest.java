@@ -38,9 +38,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestClientException;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerRequest;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerResponse;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerResultCode;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerValidationRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerValidationResponse;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerValidationResultCode;
 
 @ExtendWith(MockitoExtension.class)
 class PrivatePractitionerIntegrationServiceTest {
@@ -59,14 +59,14 @@ class PrivatePractitionerIntegrationServiceTest {
 
 
     @Captor
-    private ArgumentCaptor<ValidatePrivatePractitionerRequest> requestCaptor;
+    private ArgumentCaptor<PrivatePractitionerValidationRequest> requestCaptor;
 
 
     @Test
     void validatePrivatePractitionerReturnsResponseOnOk() {
-        var expectedResponse = new ValidatePrivatePractitionerResponse(ValidatePrivatePractitionerResultCode.OK, "OK");
+        var expectedResponse = new PrivatePractitionerValidationResponse(PrivatePractitionerValidationResultCode.OK, "OK");
         when(validatePrivatePractitionerClient.validatePrivatePractitioner(
-            new ValidatePrivatePractitionerRequest(PERSONAL_IDENTITY_NUMBER))).thenReturn(expectedResponse);
+            new PrivatePractitionerValidationRequest(PERSONAL_IDENTITY_NUMBER))).thenReturn(expectedResponse);
 
         var actual = service.validatePrivatePractitioner(PERSONAL_IDENTITY_NUMBER);
 
@@ -76,10 +76,10 @@ class PrivatePractitionerIntegrationServiceTest {
 
     @Test
     void validatePrivatePractitionerInvalid() {
-        var expectedResponse = new ValidatePrivatePractitionerResponse(ValidatePrivatePractitionerResultCode.NO_ACCOUNT,
+        var expectedResponse = new PrivatePractitionerValidationResponse(PrivatePractitionerValidationResultCode.NO_ACCOUNT,
             "No account found for practitioner");
         when(validatePrivatePractitionerClient.validatePrivatePractitioner(
-            new ValidatePrivatePractitionerRequest(PERSONAL_IDENTITY_NUMBER))).thenReturn(expectedResponse);
+            new PrivatePractitionerValidationRequest(PERSONAL_IDENTITY_NUMBER))).thenReturn(expectedResponse);
 
         var actual = service.validatePrivatePractitioner(PERSONAL_IDENTITY_NUMBER);
 

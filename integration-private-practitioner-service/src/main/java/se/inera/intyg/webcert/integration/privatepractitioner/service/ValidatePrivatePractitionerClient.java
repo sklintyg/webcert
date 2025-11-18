@@ -29,8 +29,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerRequest;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerResponse;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerValidationRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerValidationResponse;
 import se.inera.intyg.webcert.logging.MdcHelper;
 
 @Service
@@ -40,8 +40,8 @@ public class ValidatePrivatePractitionerClient {
 
     private final RestClient ppsRestClient;
 
-    public ValidatePrivatePractitionerResponse validatePrivatePractitioner(
-        ValidatePrivatePractitionerRequest validatePrivatePractitionerRequest) {
+    public PrivatePractitionerValidationResponse validatePrivatePractitioner(
+        PrivatePractitionerValidationRequest privatePractitionerValidationRequest) {
 
         return ppsRestClient
             .post()
@@ -50,9 +50,9 @@ public class ValidatePrivatePractitionerClient {
             .accept(MediaType.APPLICATION_JSON)
             .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
             .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
-            .body(validatePrivatePractitionerRequest)
+            .body(privatePractitionerValidationRequest)
             .retrieve()
-            .body(ValidatePrivatePractitionerResponse.class);
+            .body(PrivatePractitionerValidationResponse.class);
 
     }
 }

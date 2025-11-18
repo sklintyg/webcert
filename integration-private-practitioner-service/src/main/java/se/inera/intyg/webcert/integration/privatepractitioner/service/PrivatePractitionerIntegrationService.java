@@ -28,10 +28,10 @@ import se.inera.intyg.webcert.integration.privatepractitioner.model.GetHospInfor
 import se.inera.intyg.webcert.integration.privatepractitioner.model.HospInformation;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitioner;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerConfiguration;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerValidationRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerValidationResponse;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerValidationResultCode;
 import se.inera.intyg.webcert.integration.privatepractitioner.model.RegisterPrivatePractitionerRequest;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerRequest;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerResponse;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerResultCode;
 
 @Slf4j
 @Service
@@ -44,10 +44,10 @@ public class PrivatePractitionerIntegrationService {
     private final ValidatePrivatePractitionerClient validatePrivatePractitionerClient;
     private final GetPrivatePractitionerConfigurationClient getPrivatePractitionerConfigurationClient;
 
-    public ValidatePrivatePractitionerResponse validatePrivatePractitioner(String personalIdentityNumber) {
+    public PrivatePractitionerValidationResponse validatePrivatePractitioner(String personalIdentityNumber) {
         validateIdentifier(personalIdentityNumber);
         final var response = validatePrivatePractitionerClient.validatePrivatePractitioner(
-            new ValidatePrivatePractitionerRequest(personalIdentityNumber));
+            new PrivatePractitionerValidationRequest(personalIdentityNumber));
 
         if (response == null) {
             throw new RestClientException("Validation failed. Validation response is null.");
@@ -56,7 +56,7 @@ public class PrivatePractitionerIntegrationService {
 
         return response;
     }
-    
+
     public PrivatePractitionerConfiguration getPrivatePractitionerConfig() {
         return getPrivatePractitionerConfigurationClient.getPrivatePractitionerConfig();
     }
@@ -75,9 +75,9 @@ public class PrivatePractitionerIntegrationService {
         }
     }
 
-    private void logResult(ValidatePrivatePractitionerResponse response) {
-        if (ValidatePrivatePractitionerResultCode.NO_ACCOUNT.equals(response.resultCode())
-            || ValidatePrivatePractitionerResultCode.NOT_AUTHORIZED_IN_HOSP.equals(response.resultCode())) {
+    private void logResult(PrivatePractitionerValidationResponse response) {
+        if (PrivatePractitionerValidationResultCode.NO_ACCOUNT.equals(response.resultCode())
+            || PrivatePractitionerValidationResultCode.NOT_AUTHORIZED_IN_HOSP.equals(response.resultCode())) {
             log.info(response.resultText());
         }
     }

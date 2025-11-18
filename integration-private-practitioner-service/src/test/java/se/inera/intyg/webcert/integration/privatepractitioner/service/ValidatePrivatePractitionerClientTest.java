@@ -41,9 +41,9 @@ import org.springframework.http.MediaType;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClient.RequestBodyUriSpec;
 import org.springframework.web.client.RestClient.ResponseSpec;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerRequest;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerResponse;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.ValidatePrivatePractitionerResultCode;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerValidationRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerValidationResponse;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerValidationResultCode;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 
 @ExtendWith(MockitoExtension.class)
@@ -61,7 +61,7 @@ class ValidatePrivatePractitionerClientTest {
 
 
     @Captor
-    private ArgumentCaptor<ValidatePrivatePractitionerRequest> requestCaptor;
+    private ArgumentCaptor<PrivatePractitionerValidationRequest> requestCaptor;
 
     private RequestBodyUriSpec requestBodyUriSpec;
     private ResponseSpec responseSpec;
@@ -81,28 +81,28 @@ class ValidatePrivatePractitionerClientTest {
         when(requestBodyUriSpec.header(LOG_TRACE_ID_HEADER, TRACE_ID)).thenReturn(requestBodyUriSpec);
         when(requestBodyUriSpec.header(LOG_SESSION_ID_HEADER, SESSION_ID)).thenReturn(
             requestBodyUriSpec);
-        when(requestBodyUriSpec.body(any(ValidatePrivatePractitionerRequest.class))).thenReturn(requestBodyUriSpec);
+        when(requestBodyUriSpec.body(any(PrivatePractitionerValidationRequest.class))).thenReturn(requestBodyUriSpec);
         when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
     }
 
     @Test
     void shouldValidatePrivatePractitioner() {
-        when(responseSpec.body(ValidatePrivatePractitionerResponse.class)).thenReturn(new ValidatePrivatePractitionerResponse(
-            ValidatePrivatePractitionerResultCode.OK, "OK"));
+        when(responseSpec.body(PrivatePractitionerValidationResponse.class)).thenReturn(new PrivatePractitionerValidationResponse(
+            PrivatePractitionerValidationResultCode.OK, "OK"));
         final var result = validatePrivatePractitionerClient.validatePrivatePractitioner(
-            new ValidatePrivatePractitionerRequest(DR_KRANSTEGE_PERSON_ID));
-        assertEquals(new ValidatePrivatePractitionerResponse(
-            ValidatePrivatePractitionerResultCode.OK, "OK"), result);
+            new PrivatePractitionerValidationRequest(DR_KRANSTEGE_PERSON_ID));
+        assertEquals(new PrivatePractitionerValidationResponse(
+            PrivatePractitionerValidationResultCode.OK, "OK"), result);
     }
 
     @Test
     void shouldSendCorrectRequestBody() {
-        when(responseSpec.body(ValidatePrivatePractitionerResponse.class)).thenReturn(new ValidatePrivatePractitionerResponse(
-            ValidatePrivatePractitionerResultCode.OK, "OK"));
+        when(responseSpec.body(PrivatePractitionerValidationResponse.class)).thenReturn(new PrivatePractitionerValidationResponse(
+            PrivatePractitionerValidationResultCode.OK, "OK"));
 
-        validatePrivatePractitionerClient.validatePrivatePractitioner(new ValidatePrivatePractitionerRequest(DR_KRANSTEGE_PERSON_ID));
+        validatePrivatePractitionerClient.validatePrivatePractitioner(new PrivatePractitionerValidationRequest(DR_KRANSTEGE_PERSON_ID));
         verify(requestBodyUriSpec).body(requestCaptor.capture());
 
-        assertEquals(new ValidatePrivatePractitionerRequest(DR_KRANSTEGE_PERSON_ID), requestCaptor.getValue());
+        assertEquals(new PrivatePractitionerValidationRequest(DR_KRANSTEGE_PERSON_ID), requestCaptor.getValue());
     }
 }
