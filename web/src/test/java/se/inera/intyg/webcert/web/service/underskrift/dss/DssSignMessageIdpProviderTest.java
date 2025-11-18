@@ -39,7 +39,6 @@ class DssSignMessageIdpProviderTest {
     private DssSignMessageIdpProvider dssSignMessageIdpProvider;
 
     @Nested
-    @ExtendWith(OutputCaptureExtension.class)
     class UseSameAsAuthTest {
 
         @BeforeEach
