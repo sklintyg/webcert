@@ -15,8 +15,7 @@ public class HandleStaleDraftsService {
     private final NotificationService notificationService;
 
     private final UtkastRepository utkastRepository;
-
-
+    
     @Transactional
     public void deleteAndNotify(List<Utkast> drafts) {
         final var certificateIds = drafts.stream()
