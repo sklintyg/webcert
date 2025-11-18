@@ -65,6 +65,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertifica
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitQuestionsRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ListStaleDraftsRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.LockDraftsRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageQueryCriteriaDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrefillXmlDTO;
@@ -609,9 +610,15 @@ public class CSIntegrationRequestFactory {
             .build();
     }
 
-    public DeleteStaleDraftsRequestDTO getDeleteDraftsRequestDTO(LocalDateTime cutoffDate) {
-        return DeleteStaleDraftsRequestDTO.builder()
+    public ListStaleDraftsRequestDTO getListStaleDraftsRequestDTO(LocalDateTime cutoffDate) {
+        return ListStaleDraftsRequestDTO.builder()
             .cutoffDate(cutoffDate)
+            .build();
+    }
+
+    public DeleteStaleDraftsRequestDTO getDeleteStaleDraftsRequestDTO(List<String> certificateIds) {
+        return DeleteStaleDraftsRequestDTO.builder()
+            .certificateIds(certificateIds)
             .build();
     }
 

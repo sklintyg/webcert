@@ -23,9 +23,11 @@ import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
+import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 @Slf4j
 @Service
@@ -35,17 +37,42 @@ public class DeleteDraftsFromCertificateService {
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
     private final CertificateServiceProfile certificateServiceProfile;
+    private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
+    private final MonitoringLogService monitoringLogService;
 
     public int delete(LocalDateTime cutoffDate) {
         if (!certificateServiceProfile.active()) {
             return 0;
         }
 
-        final var certificates = csIntegrationService.deleteDrafts(
-            csIntegrationRequestFactory.getDeleteDraftsRequestDTO(cutoffDate)
+        final var staleDrafts = csIntegrationService.listStaleDrafts(
+            csIntegrationRequestFactory.getListStaleDraftsRequestDTO(cutoffDate)
         );
 
-        return certificates.size();
+        if (staleDrafts.isEmpty()) {
+            return 0;
+        }
+
+        staleDrafts.forEach(certificate ->
+            publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.RADERA)
+        );
+
+        final var certificateIds = staleDrafts.stream()
+            .map(certificate -> certificate.getMetadata().getId())
+            .toList();
+
+        final var deletedCertificates = csIntegrationService.deleteDraftsByCertificateIds(
+            csIntegrationRequestFactory.getDeleteStaleDraftsRequestDTO(certificateIds)
+        );
+
+        deletedCertificates.forEach(certificate ->
+            monitoringLogService.logUtkastDeleted(
+                certificate.getMetadata().getId(),
+                certificate.getMetadata().getType()
+            )
+        );
+
+        return deletedCertificates.size();
     }
 }
 

@@ -116,6 +116,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitQuestions
 import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.InternalCertificateXmlResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ListStaleDraftsRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ListStaleDraftsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.LockDraftsRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.LockDraftsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageExistsResponseDTO;
@@ -349,6 +351,9 @@ class CSIntegrationServiceTest {
     private static final DeleteStaleDraftsResponseDTO DELETE_STALE_DRAFTS_RESPONSE_DTO = DeleteStaleDraftsResponseDTO.builder()
         .certificates(List.of(CERTIFICATE)).build();
     private static final DeleteStaleDraftsRequestDTO DELETE_STALE_DRAFTS_REQUEST_DTO = DeleteStaleDraftsRequestDTO.builder().build();
+    private static final ListStaleDraftsRequestDTO LIST_STALE_DRAFTS_REQUEST_DTO = ListStaleDraftsRequestDTO.builder().build();
+    private static final ListStaleDraftsResponseDTO LIST_STALE_DRAFTS_RESPONSE_DTO = ListStaleDraftsResponseDTO.builder()
+        .certificates(List.of(CERTIFICATE)).build();
     private static final Map<String, StatisticsForUnitDTO> USER_STATISTICS = Map.of("unit", StatisticsForUnitDTO.builder().build());
     private static final UnitStatisticsResponseDTO STATISTICS_RESPONSE_DTO = UnitStatisticsResponseDTO.builder()
         .unitStatistics(USER_STATISTICS)
@@ -3499,7 +3504,7 @@ class CSIntegrationServiceTest {
             doReturn(DELETE_STALE_DRAFTS_RESPONSE_DTO).when(responseSpec).body(DeleteStaleDraftsResponseDTO.class);
             final var captor = ArgumentCaptor.forClass(DeleteStaleDraftsRequestDTO.class);
 
-            csIntegrationService.deleteDrafts(DELETE_STALE_DRAFTS_REQUEST_DTO);
+            csIntegrationService.deleteStaleDrafts(DELETE_STALE_DRAFTS_REQUEST_DTO);
             verify(requestBodyUriSpec).body(captor.capture());
 
             assertEquals(DELETE_STALE_DRAFTS_REQUEST_DTO, captor.getValue());
@@ -3509,7 +3514,7 @@ class CSIntegrationServiceTest {
         void shouldReturnCertificates() {
 
             doReturn(DELETE_STALE_DRAFTS_RESPONSE_DTO).when(responseSpec).body(DeleteStaleDraftsResponseDTO.class);
-            final var response = csIntegrationService.deleteDrafts(DELETE_STALE_DRAFTS_REQUEST_DTO);
+            final var response = csIntegrationService.deleteStaleDrafts(DELETE_STALE_DRAFTS_REQUEST_DTO);
 
             assertEquals(List.of(CERTIFICATE), response);
         }
@@ -3517,7 +3522,7 @@ class CSIntegrationServiceTest {
         @Test
         void shouldThrowIfResponseIsNull() {
             assertThrows(IllegalStateException.class,
-                () -> csIntegrationService.deleteDrafts(DELETE_STALE_DRAFTS_REQUEST_DTO));
+                () -> csIntegrationService.deleteStaleDrafts(DELETE_STALE_DRAFTS_REQUEST_DTO));
         }
 
         @Test
@@ -3525,11 +3530,125 @@ class CSIntegrationServiceTest {
             doReturn(DELETE_STALE_DRAFTS_RESPONSE_DTO).when(responseSpec).body(DeleteStaleDraftsResponseDTO.class);
             final var captor = ArgumentCaptor.forClass(String.class);
 
-            csIntegrationService.deleteDrafts(DELETE_STALE_DRAFTS_REQUEST_DTO);
+            csIntegrationService.deleteStaleDrafts(DELETE_STALE_DRAFTS_REQUEST_DTO);
 
             verify(requestBodyUriSpec).uri(captor.capture());
 
             assertEquals("baseUrl/internalapi/certificate/delete", captor.getValue());
+        }
+    }
+
+    @Nested
+    class ListStaleDraftsTest {
+
+        @BeforeEach
+        void setUp() {
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/internalapi/certificate/list";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(ListStaleDraftsRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+        }
+
+        @Test
+        void shouldPerformPostUsingRequest() {
+            doReturn(LIST_STALE_DRAFTS_RESPONSE_DTO).when(responseSpec).body(ListStaleDraftsResponseDTO.class);
+            final var captor = ArgumentCaptor.forClass(ListStaleDraftsRequestDTO.class);
+
+            csIntegrationService.listStaleDrafts(LIST_STALE_DRAFTS_REQUEST_DTO);
+            verify(requestBodyUriSpec).body(captor.capture());
+
+            assertEquals(LIST_STALE_DRAFTS_REQUEST_DTO, captor.getValue());
+        }
+
+        @Test
+        void shouldReturnCertificates() {
+            doReturn(LIST_STALE_DRAFTS_RESPONSE_DTO).when(responseSpec).body(ListStaleDraftsResponseDTO.class);
+            final var response = csIntegrationService.listStaleDrafts(LIST_STALE_DRAFTS_REQUEST_DTO);
+
+            assertEquals(List.of(CERTIFICATE), response);
+        }
+
+        @Test
+        void shouldThrowIfResponseIsNull() {
+            assertThrows(IllegalStateException.class,
+                () -> csIntegrationService.listStaleDrafts(LIST_STALE_DRAFTS_REQUEST_DTO));
+        }
+
+        @Test
+        void shouldSetUrlCorrect() {
+            doReturn(LIST_STALE_DRAFTS_RESPONSE_DTO).when(responseSpec).body(ListStaleDraftsResponseDTO.class);
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            csIntegrationService.listStaleDrafts(LIST_STALE_DRAFTS_REQUEST_DTO);
+
+            verify(requestBodyUriSpec).uri(captor.capture());
+
+            assertEquals("baseUrl/internalapi/certificate/list", captor.getValue());
+        }
+    }
+
+    @Nested
+    class DeleteStaleDraftsTest {
+
+        @BeforeEach
+        void setUp() {
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/internalapi/certificate/delete/ids";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(DeleteStaleDraftsRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+        }
+
+        @Test
+        void shouldPerformPostUsingRequest() {
+            doReturn(DELETE_STALE_DRAFTS_RESPONSE_DTO).when(responseSpec).body(DeleteStaleDraftsResponseDTO.class);
+            final var captor = ArgumentCaptor.forClass(DeleteStaleDraftsRequestDTO.class);
+
+            csIntegrationService.deleteDraftsByCertificateIds(DELETE_STALE_DRAFTS_REQUEST_DTO);
+            verify(requestBodyUriSpec).body(captor.capture());
+
+            assertEquals(DELETE_STALE_DRAFTS_REQUEST_DTO, captor.getValue());
+        }
+
+        @Test
+        void shouldReturnCertificates() {
+            doReturn(DELETE_STALE_DRAFTS_RESPONSE_DTO).when(responseSpec).body(DeleteStaleDraftsResponseDTO.class);
+            final var response = csIntegrationService.deleteDraftsByCertificateIds(DELETE_STALE_DRAFTS_REQUEST_DTO);
+
+            assertEquals(List.of(CERTIFICATE), response);
+        }
+
+        @Test
+        void shouldThrowIfResponseIsNull() {
+            assertThrows(IllegalStateException.class,
+                () -> csIntegrationService.deleteDraftsByCertificateIds(DELETE_STALE_DRAFTS_REQUEST_DTO));
+        }
+
+        @Test
+        void shouldSetUrlCorrect() {
+            doReturn(DELETE_STALE_DRAFTS_RESPONSE_DTO).when(responseSpec).body(DeleteStaleDraftsResponseDTO.class);
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            csIntegrationService.deleteDraftsByCertificateIds(DELETE_STALE_DRAFTS_REQUEST_DTO);
+
+            verify(requestBodyUriSpec).uri(captor.capture());
+
+            assertEquals("baseUrl/internalapi/certificate/delete/ids", captor.getValue());
         }
     }
 

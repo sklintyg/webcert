@@ -2288,13 +2288,24 @@ class CSIntegrationRequestFactoryTest {
     }
 
     @Nested
-    class DeleteDraftsRequestTests {
+    class ListStaleDraftsRequestTests {
 
         @Test
         void shouldSetCutoffDate() {
             final var expectedCutoffDate = LocalDateTime.now().minusMonths(3);
-            final var actualRequest = csIntegrationRequestFactory.getDeleteDraftsRequestDTO(expectedCutoffDate);
+            final var actualRequest = csIntegrationRequestFactory.getListStaleDraftsRequestDTO(expectedCutoffDate);
             assertEquals(expectedCutoffDate, actualRequest.getCutoffDate());
+        }
+    }
+
+    @Nested
+    class DeleteDraftsByCertificateIdsRequestTests {
+
+        @Test
+        void shouldSetCertificateIds() {
+            final var expectedCertificateIds = List.of("cert-id-1", "cert-id-2", "cert-id-3");
+            final var actualRequest = csIntegrationRequestFactory.getDeleteStaleDraftsRequestDTO(expectedCertificateIds);
+            assertEquals(expectedCertificateIds, actualRequest.getCertificateIds());
         }
     }
 

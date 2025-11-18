@@ -19,23 +19,23 @@
 
 package se.inera.intyg.webcert.web.csintegration.integration.dto;
 
-
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import java.util.List;
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteStaleDraftsRequestDTO.DeleteStaleDraftsRequestDTOBuilder;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ListStaleDraftsRequestDTO.ListStaleDraftsRequestDTOBuilder;
 
-@JsonDeserialize(builder = DeleteStaleDraftsRequestDTOBuilder.class)
+@JsonDeserialize(builder = ListStaleDraftsRequestDTOBuilder.class)
 @Value
 @Builder
-public class DeleteStaleDraftsRequestDTO {
+public class ListStaleDraftsRequestDTO {
 
-    List<String> certificateIds;
+    LocalDateTime cutoffDate;
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class DeleteStaleDraftsRequestDTOBuilder {
+    public static class ListStaleDraftsRequestDTOBuilder {
 
     }
 }
+
