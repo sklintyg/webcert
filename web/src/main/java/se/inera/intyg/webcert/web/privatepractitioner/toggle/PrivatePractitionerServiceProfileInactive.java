@@ -17,17 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.integration.privatepractitioner.service.toggle;
+package se.inera.intyg.webcert.web.privatepractitioner.toggle;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
-@Profile("private-practitioner-service-active")
-public class PrivatePractitionerServiceProfileActive implements PrivatePractitionerServiceProfile {
+@Profile("!private-practitioner-service-active")
+public class PrivatePractitionerServiceProfileInactive implements PrivatePractitionerServiceProfile {
 
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
 }
