@@ -27,13 +27,12 @@ import static se.inera.intyg.webcert.integration.privatepractitioner.service.tes
 import static se.inera.intyg.webcert.integration.privatepractitioner.service.testdata.TestData.DR_KRANSTEGE_HOSP_INFO;
 import static se.inera.intyg.webcert.integration.privatepractitioner.service.testdata.TestData.PRIVATE_PRACTITIONER_CONFIG;
 import static se.inera.intyg.webcert.integration.privatepractitioner.service.testdata.TestData.kranstegeRegisterPractitionerRequest;
+import static se.inera.intyg.webcert.integration.privatepractitioner.service.testdata.TestDataConstants.DR_KRANSTEGE_PERSON_ID;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -45,43 +44,30 @@ import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePract
 @ExtendWith(MockitoExtension.class)
 class PrivatePractitionerIntegrationServiceTest {
 
-    public static final String PERSONAL_IDENTITY_NUMBER = "191212121212";
     @Mock
-    private RegisterPrivatePractitionerClient registerPrivatePractitionerClient;
-    @Mock
-    private ValidatePrivatePractitionerClient validatePrivatePractitionerClient;
-    @Mock
-    private GetHospInformationClient getHospInformationClient;
-    @Mock
-    private GetPrivatePractitionerConfigurationClient getPrivatePractitionerConfigurationClient;
+    private PPSIntegrationService ppsIntegrationService;
     @InjectMocks
     private PrivatePractitionerIntegrationService service;
 
-
-    @Captor
-    private ArgumentCaptor<PrivatePractitionerValidationRequest> requestCaptor;
-
-
     @Test
     void validatePrivatePractitionerReturnsResponseOnOk() {
-        var expectedResponse = new PrivatePractitionerValidationResponse(PrivatePractitionerValidationResultCode.OK, "OK");
-        when(validatePrivatePractitionerClient.validatePrivatePractitioner(
-            new PrivatePractitionerValidationRequest(PERSONAL_IDENTITY_NUMBER))).thenReturn(expectedResponse);
+        final var expectedResponse = new PrivatePractitionerValidationResponse(PrivatePractitionerValidationResultCode.OK, "OK");
+        when(ppsIntegrationService.validatePrivatePractitioner(new PrivatePractitionerValidationRequest(DR_KRANSTEGE_PERSON_ID)))
+            .thenReturn(expectedResponse);
 
-        var actual = service.validatePrivatePractitioner(PERSONAL_IDENTITY_NUMBER);
+        final var actual = service.validatePrivatePractitioner(DR_KRANSTEGE_PERSON_ID);
 
         assertEquals(expectedResponse, actual);
-
     }
 
     @Test
     void validatePrivatePractitionerInvalid() {
-        var expectedResponse = new PrivatePractitionerValidationResponse(PrivatePractitionerValidationResultCode.NO_ACCOUNT,
+        final var expectedResponse = new PrivatePractitionerValidationResponse(PrivatePractitionerValidationResultCode.NO_ACCOUNT,
             "No account found for practitioner");
-        when(validatePrivatePractitionerClient.validatePrivatePractitioner(
-            new PrivatePractitionerValidationRequest(PERSONAL_IDENTITY_NUMBER))).thenReturn(expectedResponse);
+        when(ppsIntegrationService.validatePrivatePractitioner(new PrivatePractitionerValidationRequest(DR_KRANSTEGE_PERSON_ID)))
+            .thenReturn(expectedResponse);
 
-        var actual = service.validatePrivatePractitioner(PERSONAL_IDENTITY_NUMBER);
+        final var actual = service.validatePrivatePractitioner(DR_KRANSTEGE_PERSON_ID);
 
         assertEquals(expectedResponse, actual);
     }
@@ -94,13 +80,13 @@ class PrivatePractitionerIntegrationServiceTest {
 
     @Test
     void validatePrivatePractitionerThrowsWhenResponseNull() {
-        when(validatePrivatePractitionerClient.validatePrivatePractitioner(any())).thenReturn(null);
-        assertThrows(RestClientException.class, () -> service.validatePrivatePractitioner(PERSONAL_IDENTITY_NUMBER));
+        when(ppsIntegrationService.validatePrivatePractitioner(any())).thenReturn(null);
+        assertThrows(RestClientException.class, () -> service.validatePrivatePractitioner(DR_KRANSTEGE_PERSON_ID));
     }
 
     @Test
     void shallReturnRegisteredPrivatePractitioner() {
-        when(registerPrivatePractitionerClient.registerPrivatePractitioner(kranstegeRegisterPractitionerRequest())).thenReturn(
+        when(ppsIntegrationService.registerPrivatePractitioner(kranstegeRegisterPractitionerRequest())).thenReturn(
             DR_KRANSTEGE);
         final var result = service.registerPrivatePractitioner(kranstegeRegisterPractitionerRequest());
 
@@ -109,15 +95,22 @@ class PrivatePractitionerIntegrationServiceTest {
 
     @Test
     void shallReturnHospInformation() {
-        when(getHospInformationClient.getHospInformation(any())).thenReturn(DR_KRANSTEGE_HOSP_INFO);
-        final var result = service.getHospInformation(PERSONAL_IDENTITY_NUMBER);
+        when(ppsIntegrationService.getHospInformation(any())).thenReturn(DR_KRANSTEGE_HOSP_INFO);
+        final var result = service.getHospInformation(DR_KRANSTEGE_PERSON_ID);
         assertEquals(DR_KRANSTEGE_HOSP_INFO, result);
     }
 
     @Test
     void shallReturnPrivatePractitionerConfig() {
-        when(getPrivatePractitionerConfigurationClient.getPrivatePractitionerConfig()).thenReturn(PRIVATE_PRACTITIONER_CONFIG);
+        when(ppsIntegrationService.getPrivatePractitionerConfig()).thenReturn(PRIVATE_PRACTITIONER_CONFIG);
         final var result = service.getPrivatePractitionerConfig();
         assertEquals(PRIVATE_PRACTITIONER_CONFIG, result);
+    }
+
+    @Test
+    void shallReturnPrivatePractitioner() {
+        when(ppsIntegrationService.getPrivatePractitioner(DR_KRANSTEGE_PERSON_ID)).thenReturn(DR_KRANSTEGE);
+        final var result = service.getPrivatePractitioner(DR_KRANSTEGE_PERSON_ID);
+        assertEquals(DR_KRANSTEGE, result);
     }
 }

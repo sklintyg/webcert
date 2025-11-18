@@ -39,14 +39,11 @@ import se.inera.intyg.webcert.integration.privatepractitioner.model.RegisterPriv
 @RequiredArgsConstructor
 public class PrivatePractitionerIntegrationService {
 
-    private final RegisterPrivatePractitionerClient registerPrivatePractitionerClient;
-    private final GetHospInformationClient getHospInformationClient;
-    private final ValidatePrivatePractitionerClient validatePrivatePractitionerClient;
-    private final GetPrivatePractitionerConfigurationClient getPrivatePractitionerConfigurationClient;
+    private final PPSIntegrationService ppsIntegrationService;
 
     public PrivatePractitionerValidationResponse validatePrivatePractitioner(String personalIdentityNumber) {
         validateIdentifier(personalIdentityNumber);
-        final var response = validatePrivatePractitionerClient.validatePrivatePractitioner(
+        final var response = ppsIntegrationService.validatePrivatePractitioner(
             new PrivatePractitionerValidationRequest(personalIdentityNumber));
 
         if (response == null) {
@@ -58,15 +55,20 @@ public class PrivatePractitionerIntegrationService {
     }
 
     public PrivatePractitionerConfiguration getPrivatePractitionerConfig() {
-        return getPrivatePractitionerConfigurationClient.getPrivatePractitionerConfig();
+        return ppsIntegrationService.getPrivatePractitionerConfig();
     }
 
     public HospInformation getHospInformation(String personalOrHsaIdIdentityNumber) {
-        return getHospInformationClient.getHospInformation(new GetHospInformationRequest(personalOrHsaIdIdentityNumber));
+        return ppsIntegrationService.getHospInformation(new GetHospInformationRequest(personalOrHsaIdIdentityNumber));
     }
 
     public PrivatePractitioner registerPrivatePractitioner(RegisterPrivatePractitionerRequest registrationRequest) {
-        return registerPrivatePractitionerClient.registerPrivatePractitioner(registrationRequest);
+        return ppsIntegrationService.registerPrivatePractitioner(registrationRequest);
+    }
+
+    public PrivatePractitioner getPrivatePractitioner(String personId) {
+        validateIdentifier(personId);
+        return ppsIntegrationService.getPrivatePractitioner(personId);
     }
 
     private void validateIdentifier(String personalIdentityNumber) {

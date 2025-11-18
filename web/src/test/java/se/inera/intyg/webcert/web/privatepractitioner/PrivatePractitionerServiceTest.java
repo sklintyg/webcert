@@ -22,11 +22,13 @@ package se.inera.intyg.webcert.web.privatepractitioner;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static se.inera.intyg.webcert.web.privatepractitioner.TestData.DR_KRANSTEGE;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_HSA_ID;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_NAME;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_PERSON_ID;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataDTO.DR_KRANSTEGE_HOSP_INFORMATION_RESPONSE_DTO;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataDTO.DR_KRANSTEGE_REGISTREATION_REQUEST_DTO;
+import static se.inera.intyg.webcert.web.privatepractitioner.TestDataDTO.DR_KRANSTEGE_RESPONSE_DTO;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataDTO.PRIVATE_PRACTITIONER_CONFIG_DTO;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataIntegration.DR_KRANSTEGE_HOSP_INFO;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataIntegration.DR_KRANSTEGE_REGISTREATION_REQUEST;
@@ -82,5 +84,13 @@ class PrivatePractitionerServiceTest {
         when(privatePractitionerIntegrationService.getHospInformation(DR_KRANSTEGE_PERSON_ID)).thenReturn(DR_KRANSTEGE_HOSP_INFO);
         final var result = service.getHospInformation();
         assertEquals(DR_KRANSTEGE_HOSP_INFORMATION_RESPONSE_DTO, result);
+    }
+
+    @Test
+    void shouldReturnPrivatePractitioner() {
+        mockUser();
+        when(privatePractitionerIntegrationService.getPrivatePractitioner(DR_KRANSTEGE_PERSON_ID)).thenReturn(DR_KRANSTEGE);
+        final var actual = service.getPrivatePractitioner();
+        assertEquals(DR_KRANSTEGE_RESPONSE_DTO, actual);
     }
 }
