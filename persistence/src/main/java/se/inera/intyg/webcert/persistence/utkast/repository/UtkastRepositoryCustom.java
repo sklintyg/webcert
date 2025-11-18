@@ -21,6 +21,8 @@ package se.inera.intyg.webcert.persistence.utkast.repository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -188,4 +190,12 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
     @Query("SELECT u from Utkast u WHERE u.skapad <= :createdBefore AND u.status IN :statuses")
     List<Utkast> findStaleAndLockedDrafts(@Param("createdBefore") LocalDateTime createdBefore,
         @Param("statuses") List<UtkastStatus> statuses);
+
+    @Query("SELECT u from Utkast u WHERE u.skapad <= :createdBefore AND u.status IN :statuses")
+    Page<Utkast> findStaleAndLockedDrafts(@Param("createdBefore") LocalDateTime createdBefore,
+        @Param("statuses") List<UtkastStatus> statuses, Pageable pageable);
+
+    @Modifying
+    @Query("DELETE FROM Utkast u WHERE u.intygsId IN :intygsIds")
+    int deleteByIntygsIds(@Param("intygsIds") List<String> intygsIds);
 }

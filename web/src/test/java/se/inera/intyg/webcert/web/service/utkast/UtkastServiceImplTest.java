@@ -61,6 +61,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
@@ -1265,9 +1268,15 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
             setupVardperson(hoSPerson),
             PERSONNUMMER);
 
+        final Page<Utkast> page = new PageImpl<>(List.of(utkast1, utkast2));
         when(utkastRepository.findStaleAndLockedDrafts(any(LocalDateTime.class),
-            eq(List.of(UtkastStatus.DRAFT_LOCKED, UtkastStatus.DRAFT_INCOMPLETE, UtkastStatus.DRAFT_COMPLETE))))
-            .thenReturn(List.of(utkast1, utkast2));
+            eq(List.of(UtkastStatus.DRAFT_LOCKED, UtkastStatus.DRAFT_INCOMPLETE, UtkastStatus.DRAFT_COMPLETE)),
+            any(Pageable.class)))
+            .thenReturn(page)
+            .thenReturn(Page.empty());
+
+        when(utkastRepository.deleteByIntygsIds(anyList()))
+            .thenReturn(expectedDeletedDrafts);
 
         final var resultDeletedDrafts = utkastService.deleteStaleAndLockedDrafts(LocalDateTime.now());
 
@@ -1284,13 +1293,19 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
             setupVardperson(hoSPerson),
             PERSONNUMMER);
 
+        final Page<Utkast> page = new PageImpl<>(List.of(utkast1, utkast2));
         when(utkastRepository.findStaleAndLockedDrafts(any(LocalDateTime.class),
-            eq(List.of(UtkastStatus.DRAFT_LOCKED, UtkastStatus.DRAFT_INCOMPLETE, UtkastStatus.DRAFT_COMPLETE))))
-            .thenReturn(List.of(utkast1, utkast2));
+            eq(List.of(UtkastStatus.DRAFT_LOCKED, UtkastStatus.DRAFT_INCOMPLETE, UtkastStatus.DRAFT_COMPLETE)),
+            any(Pageable.class)))
+            .thenReturn(page)
+            .thenReturn(Page.empty());
+
+        when(utkastRepository.deleteByIntygsIds(anyList()))
+            .thenReturn(2);
 
         utkastService.deleteStaleAndLockedDrafts(LocalDateTime.now());
 
-        verify(utkastRepository, times(1)).deleteAll(List.of(utkast1, utkast2));
+        verify(utkastRepository, times(1)).deleteByIntygsIds(anyList());
     }
 
     @Test
@@ -1303,13 +1318,20 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
             setupVardperson(hoSPerson),
             PERSONNUMMER);
 
+        final Page<Utkast> page = new PageImpl<>(List.of(utkast1, utkast2));
         when(utkastRepository.findStaleAndLockedDrafts(any(LocalDateTime.class),
-            eq(List.of(UtkastStatus.DRAFT_LOCKED, UtkastStatus.DRAFT_INCOMPLETE, UtkastStatus.DRAFT_COMPLETE))))
-            .thenReturn(List.of(utkast1, utkast2));
+            eq(List.of(UtkastStatus.DRAFT_LOCKED, UtkastStatus.DRAFT_INCOMPLETE, UtkastStatus.DRAFT_COMPLETE)),
+            any(Pageable.class)))
+            .thenReturn(page)
+            .thenReturn(Page.empty());
+
+        when(utkastRepository.deleteByIntygsIds(anyList()))
+            .thenReturn(2);
 
         utkastService.deleteStaleAndLockedDrafts(LocalDateTime.now());
 
-        verify(notificationService, times(2)).sendNotificationForDraftDeleted(utkast1);
+        verify(notificationService, times(1)).sendNotificationForDraftDeleted(utkast1);
+        verify(notificationService, times(1)).sendNotificationForDraftDeleted(utkast2);
     }
 
 

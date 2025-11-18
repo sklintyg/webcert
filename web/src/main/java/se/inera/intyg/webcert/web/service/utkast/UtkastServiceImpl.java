@@ -37,6 +37,10 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.common.services.texts.IntygTextsService;
@@ -880,20 +884,41 @@ public class UtkastServiceImpl implements UtkastService {
             UtkastStatus.DRAFT_COMPLETE
         );
 
-        final var staleAndLockedDrafts = utkastRepository.findStaleAndLockedDrafts(
-            createdBefore,
-            statuses
-        );
+      final var pageable = PageRequest.of(0, 1, Sort.by(Direction.ASC, "skapad", "intygsId"));
+      int totalDeleted = 0;
+      Page<Utkast> page;
 
-        //TODO: Verifiera hur luquidbase genomför en deleteAll
-        utkastRepository.deleteAll(staleAndLockedDrafts);
+      do {
+        // Find a page of stale drafts
+        page = utkastRepository.findStaleAndLockedDrafts(createdBefore, statuses, pageable);
+        final var drafts = page.getContent();
 
-        staleAndLockedDrafts.forEach(draft ->
-            sendNotification(draft, Event.DELETED)
-        );
+            if (drafts.isEmpty()) {
+                break;
+            }
 
-        return staleAndLockedDrafts.size();
+            LOG.info("Starting batch deletion of {} stale drafts. Total remaining: {}",
+                drafts.size(), page.getTotalElements());
+
+            // Send notifications before deletion
+            drafts.forEach(draft -> sendNotification(draft, Event.DELETED));
+
+            // Atomic bulk delete by IDs
+            final var intygsIds = drafts.stream()
+                .map(Utkast::getIntygsId)
+                .toList();
+            final int deleted = utkastRepository.deleteByIntygsIds(intygsIds);
+
+            totalDeleted += deleted;
+
+            LOG.info("Completed batch deletion of {} stale drafts. Total deleted: {}",
+                deleted, totalDeleted);
+
+        } while (page.hasNext());
+
+        return totalDeleted;
     }
+
 
     /**
      * Revoke draft and notify stakeholders that this draft is now deleted.
