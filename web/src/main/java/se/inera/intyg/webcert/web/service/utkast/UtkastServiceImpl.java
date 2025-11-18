@@ -873,8 +873,7 @@ public class UtkastServiceImpl implements UtkastService {
 
     @Override
     @Transactional
-    public int deleteStaleAndLockedDrafts() {
-        final var createdBefore = LocalDateTime.now().minusMonths(3);
+    public int deleteStaleAndLockedDrafts(LocalDateTime createdBefore) {
         final var statuses = List.of(
             UtkastStatus.DRAFT_LOCKED,
             UtkastStatus.DRAFT_INCOMPLETE,
@@ -886,6 +885,7 @@ public class UtkastServiceImpl implements UtkastService {
             statuses
         );
 
+        //TODO: Verifiera hur luquidbase genomför en deleteAll
         utkastRepository.deleteAll(staleAndLockedDrafts);
 
         staleAndLockedDrafts.forEach(draft ->

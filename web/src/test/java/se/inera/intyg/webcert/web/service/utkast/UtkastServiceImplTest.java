@@ -1269,7 +1269,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
             eq(List.of(UtkastStatus.DRAFT_LOCKED, UtkastStatus.DRAFT_INCOMPLETE, UtkastStatus.DRAFT_COMPLETE))))
             .thenReturn(List.of(utkast1, utkast2));
 
-        final var resultDeletedDrafts = utkastService.deleteStaleAndLockedDrafts();
+        final var resultDeletedDrafts = utkastService.deleteStaleAndLockedDrafts(LocalDateTime.now());
 
         assertEquals(expectedDeletedDrafts, resultDeletedDrafts);
     }
@@ -1288,7 +1288,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
             eq(List.of(UtkastStatus.DRAFT_LOCKED, UtkastStatus.DRAFT_INCOMPLETE, UtkastStatus.DRAFT_COMPLETE))))
             .thenReturn(List.of(utkast1, utkast2));
 
-        utkastService.deleteStaleAndLockedDrafts();
+        utkastService.deleteStaleAndLockedDrafts(LocalDateTime.now());
 
         verify(utkastRepository, times(1)).deleteAll(List.of(utkast1, utkast2));
     }
@@ -1307,7 +1307,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
             eq(List.of(UtkastStatus.DRAFT_LOCKED, UtkastStatus.DRAFT_INCOMPLETE, UtkastStatus.DRAFT_COMPLETE))))
             .thenReturn(List.of(utkast1, utkast2));
 
-        utkastService.deleteStaleAndLockedDrafts();
+        utkastService.deleteStaleAndLockedDrafts(LocalDateTime.now());
 
         verify(notificationService, times(2)).sendNotificationForDraftDeleted(utkast1);
     }

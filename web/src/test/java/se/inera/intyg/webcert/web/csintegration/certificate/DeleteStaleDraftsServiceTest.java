@@ -2,6 +2,7 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import static org.mockito.Mockito.verify;
 
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,8 +20,8 @@ class DeleteStaleDraftsServiceTest {
 
     @Test
     void shouldDeleteStaleAndLockedDraftsInWC() {
-        deleteStaleDraftsService.delete();
-        
-        verify(utkastService).deleteStaleAndLockedDrafts();
+        final var staleDraftsPeriod = LocalDateTime.now();
+        deleteStaleDraftsService.delete(staleDraftsPeriod);
+        verify(utkastService).deleteStaleAndLockedDrafts(staleDraftsPeriod);
     }
 }

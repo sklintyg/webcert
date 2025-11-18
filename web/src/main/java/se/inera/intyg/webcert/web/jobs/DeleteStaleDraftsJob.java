@@ -1,9 +1,12 @@
 package se.inera.intyg.webcert.web.jobs;
 
+import java.time.LocalDateTime;
+import java.time.Period;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.webcert.logging.MdcHelper;
@@ -25,6 +28,9 @@ public class DeleteStaleDraftsJob {
     private static final String LOCK_AT_MOST = "PT10M";
     private static final String LOCK_AT_LEAST = "PT30S";
 
+    @Value("${delete.stale.drafts.period:P3M}")
+    private String staleDraftsPeriod;
+
     @Scheduled(cron = "${delete.stale.drafts.cron}")
     @SchedulerLock(name = JOB_NAME, lockAtLeastFor = LOCK_AT_LEAST, lockAtMostFor = LOCK_AT_MOST)
     @PerformanceLogging(eventAction = "delete-stale-drafts", eventType = MdcLogConstants.EVENT_TYPE_CHANGE,
@@ -39,7 +45,8 @@ public class DeleteStaleDraftsJob {
             MDC.put(MdcLogConstants.TRACE_ID_KEY, mdcHelper.traceId());
             MDC.put(MdcLogConstants.SPAN_ID_KEY, mdcHelper.spanId());
 
-            deleteStaleDraftsService.delete();
+            final var deleteStaleDraftsPeriod = LocalDateTime.now().minus(Period.parse(staleDraftsPeriod));
+            deleteStaleDraftsService.delete(deleteStaleDraftsPeriod);
         } finally {
             MDC.clear();
         }

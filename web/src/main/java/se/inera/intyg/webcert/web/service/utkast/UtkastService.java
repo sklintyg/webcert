@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.service.utkast;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import se.inera.intyg.infra.security.common.model.IntygUser;
@@ -136,5 +137,5 @@ public interface UtkastService {
 
     List<Utkast> findUtkastByPatientAndUnits(Personnummer patientId, List<String> unitIds);
 
-    int deleteStaleAndLockedDrafts();
+    int deleteStaleAndLockedDrafts(LocalDateTime createdBefore);
 }
