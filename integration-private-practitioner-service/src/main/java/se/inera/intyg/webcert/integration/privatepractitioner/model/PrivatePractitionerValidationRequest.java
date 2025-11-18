@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ValidatePrivatePractitionerRequest {
+public class PrivatePractitionerValidationRequest {
 
-  private String personalIdentityNumber;
+    private String personalIdentityNumber;
 
 }

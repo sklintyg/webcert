@@ -42,6 +42,7 @@ import se.inera.intyg.infra.pu.integration.api.model.Person;
 import se.inera.intyg.infra.pu.integration.api.model.PersonSvar;
 import se.inera.intyg.infra.pu.integration.api.services.PUService;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
+import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
@@ -62,6 +63,10 @@ class UnauthorizedPrivatePractitionerServiceTest {
     @InjectMocks
     private UnauthorizedPrivatePractitionerService unauthorizedPrivatePractitionerService;
 
+    private final String origin = "origin";
+    private final String authScheme = "authScheme";
+    private final AuthenticationMethod authMethod = AuthenticationMethod.BANK_ID;
+
     @Test
     void shouldReturnUserWithRolePrivatlakareObehorig() {
         final var expected = unauthorizedPrivatePractitioner();
@@ -69,7 +74,8 @@ class UnauthorizedPrivatePractitionerServiceTest {
         when(authoritiesResolver.getRole(ROLE_PRIVATLAKARE_OBEHORIG)).thenReturn(expected);
         when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.found(drKranstege()));
 
-        final var actual = unauthorizedPrivatePractitionerService.createUnauthorizedWebCertUser(DR_KRANSTEGE_PERSON_ID);
+        final var actual = unauthorizedPrivatePractitionerService.createUnauthorizedWebCertUser(DR_KRANSTEGE_PERSON_ID, origin, authScheme,
+            authMethod);
         assertEquals(expected, actual.getRoles().values().stream().findFirst().orElse(null));
     }
 
@@ -78,8 +84,39 @@ class UnauthorizedPrivatePractitionerServiceTest {
         when(authoritiesResolver.getRole(ROLE_PRIVATLAKARE_OBEHORIG)).thenReturn(unauthorizedPrivatePractitioner());
         when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.found(drKranstege()));
 
-        final var actual = unauthorizedPrivatePractitionerService.createUnauthorizedWebCertUser(DR_KRANSTEGE_PERSON_ID);
+        final var actual = unauthorizedPrivatePractitionerService.createUnauthorizedWebCertUser(DR_KRANSTEGE_PERSON_ID, origin, authScheme,
+            authMethod);
         assertEquals(DR_KRANSTEGE_PERSON_ID, actual.getPersonId());
+    }
+
+    @Test
+    void shouldReturnUserWithOrigin() {
+        when(authoritiesResolver.getRole(ROLE_PRIVATLAKARE_OBEHORIG)).thenReturn(unauthorizedPrivatePractitioner());
+        when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.found(drKranstege()));
+
+        final var actual = unauthorizedPrivatePractitionerService.createUnauthorizedWebCertUser(DR_KRANSTEGE_PERSON_ID, origin, authScheme,
+            authMethod);
+        assertEquals(origin, actual.getOrigin());
+    }
+
+    @Test
+    void shouldReturnUserWithAuthScheme() {
+        when(authoritiesResolver.getRole(ROLE_PRIVATLAKARE_OBEHORIG)).thenReturn(unauthorizedPrivatePractitioner());
+        when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.found(drKranstege()));
+
+        final var actual = unauthorizedPrivatePractitionerService.createUnauthorizedWebCertUser(DR_KRANSTEGE_PERSON_ID, origin, authScheme,
+            authMethod);
+        assertEquals(authScheme, actual.getAuthenticationScheme());
+    }
+
+    @Test
+    void shouldReturnUserWithAuthMethod() {
+        when(authoritiesResolver.getRole(ROLE_PRIVATLAKARE_OBEHORIG)).thenReturn(unauthorizedPrivatePractitioner());
+        when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.found(drKranstege()));
+
+        final var actual = unauthorizedPrivatePractitionerService.createUnauthorizedWebCertUser(DR_KRANSTEGE_PERSON_ID, origin, authScheme,
+            authMethod);
+        assertEquals(authMethod, actual.getAuthenticationMethod());
     }
 
     @Test
@@ -87,7 +124,8 @@ class UnauthorizedPrivatePractitionerServiceTest {
         when(authoritiesResolver.getRole(ROLE_PRIVATLAKARE_OBEHORIG)).thenReturn(unauthorizedPrivatePractitioner());
         when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.found(drKranstege()));
 
-        final var actual = unauthorizedPrivatePractitionerService.createUnauthorizedWebCertUser(DR_KRANSTEGE_PERSON_ID);
+        final var actual = unauthorizedPrivatePractitionerService.createUnauthorizedWebCertUser(DR_KRANSTEGE_PERSON_ID, origin, authScheme,
+            authMethod);
         assertEquals(DR_KRANSTEGE_NAME, actual.getNamn());
     }
 
@@ -95,7 +133,8 @@ class UnauthorizedPrivatePractitionerServiceTest {
     void shouldThrowExceptionIfPersonIdIsNotCorrect() {
         when(authoritiesResolver.getRole(ROLE_PRIVATLAKARE_OBEHORIG)).thenReturn(unauthorizedPrivatePractitioner());
 
-        assertThrows(WebCertServiceException.class, () -> unauthorizedPrivatePractitionerService.createUnauthorizedWebCertUser("ABCD1234"));
+        assertThrows(WebCertServiceException.class, () -> unauthorizedPrivatePractitionerService.createUnauthorizedWebCertUser("ABCD1234",
+            origin, authScheme, authMethod));
     }
 
     @Test
@@ -104,7 +143,8 @@ class UnauthorizedPrivatePractitionerServiceTest {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.notFound());
 
         assertThrows(WebCertServiceException.class,
-            () -> unauthorizedPrivatePractitionerService.createUnauthorizedWebCertUser(DR_KRANSTEGE_PERSON_ID)
+            () -> unauthorizedPrivatePractitionerService.createUnauthorizedWebCertUser(DR_KRANSTEGE_PERSON_ID, origin, authScheme,
+                authMethod)
         );
     }
 
@@ -114,7 +154,8 @@ class UnauthorizedPrivatePractitionerServiceTest {
         when(puService.getPerson(any(Personnummer.class))).thenReturn(PersonSvar.error());
 
         assertThrows(WebCertServiceException.class,
-            () -> unauthorizedPrivatePractitionerService.createUnauthorizedWebCertUser(DR_KRANSTEGE_PERSON_ID)
+            () -> unauthorizedPrivatePractitionerService.createUnauthorizedWebCertUser(DR_KRANSTEGE_PERSON_ID, origin, authScheme,
+                authMethod)
         );
     }
 

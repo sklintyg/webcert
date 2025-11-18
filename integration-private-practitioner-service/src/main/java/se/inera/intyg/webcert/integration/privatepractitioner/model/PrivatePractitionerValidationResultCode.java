@@ -19,7 +19,7 @@
 
 package se.inera.intyg.webcert.integration.privatepractitioner.model;
 
-public enum ValidatePrivatePractitionerResultCode {
+public enum PrivatePractitionerValidationResultCode {
     OK,
     NO_ACCOUNT,
     NOT_AUTHORIZED_IN_HOSP;

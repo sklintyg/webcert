@@ -26,6 +26,7 @@ import se.inera.intyg.infra.pu.integration.api.model.PersonSvar;
 import se.inera.intyg.infra.pu.integration.api.services.PUService;
 import se.inera.intyg.infra.security.authorities.AuthoritiesResolverUtil;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
+import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
@@ -42,12 +43,15 @@ public class UnauthorizedPrivatePractitionerService {
     private final HashUtility hashUtility;
     private final PUService puService;
 
-    public WebCertUser createUnauthorizedWebCertUser(String personId) {
+    public WebCertUser createUnauthorizedWebCertUser(String personId, String origin, String authScheme, AuthenticationMethod authMethod) {
         final var role = authoritiesResolver.getRole(AuthoritiesConstants.ROLE_PRIVATLAKARE_OBEHORIG);
         final var user = new WebCertUser("missing");
         user.setRoles(AuthoritiesResolverUtil.toMap(role));
         user.setPersonId(personId);
         user.setNamn(getUserName(personId));
+        user.setOrigin(origin);
+        user.setAuthenticationScheme(authScheme);
+        user.setAuthenticationMethod(authMethod);
         return user;
     }
 
