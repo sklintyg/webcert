@@ -42,7 +42,6 @@ import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.facade.dto.CertificateEventDTO;
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
-import se.inera.intyg.infra.certificate.dto.SickLeaveCertificate;
 import se.inera.intyg.webcert.common.dto.IncomingMessageRequestDTO;
 import se.inera.intyg.webcert.logging.MdcHelper;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
@@ -71,6 +70,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteAnswerResp
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteStaleDraftsRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteStaleDraftsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ForwardCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ForwardCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCandidateCertificateRequestDTO;
@@ -1155,6 +1156,26 @@ public class CSIntegrationService {
         return response.getCertificates();
     }
 
+    @PerformanceLogging(eventAction = "delete-drafts", eventType = EVENT_TYPE_CHANGE)
+    public List<Certificate> deleteDrafts(DeleteStaleDraftsRequestDTO request) {
+        final var url = baseUrl + INTERNAL_CERTIFICATE_ENDPOINT_URL + "/delete";
+
+        final var response = restClient.post()
+            .uri(url)
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
+            .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
+            .body(request)
+            .retrieve()
+            .body(DeleteStaleDraftsResponseDTO.class);
+
+        if (response == null) {
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
+        }
+
+        return response.getCertificates();
+    }
+
     @PerformanceLogging(eventAction = "get-certificate-events", eventType = EVENT_TYPE_ACCESS)
     public CertificateEventDTO[] getCertificateEvents(String certificateId, GetCertificateEventsRequestDTO request) {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/events";
@@ -1252,24 +1273,24 @@ public class CSIntegrationService {
 
     @PerformanceLogging(eventAction = "get-sick-leave-certificate", eventType = EVENT_TYPE_ACCESS)
     public Optional<GetSickLeaveCertificateInternalResponseDTO> getSickLeaveCertificate(String certificateId) {
-      final var url = baseUrl + INTERNAL_CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/sickleave";
+        final var url = baseUrl + INTERNAL_CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/sickleave";
 
-      final var response = restClient.post()
-          .uri(url)
-          .accept(MediaType.APPLICATION_JSON)
-          .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
-          .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
-          .body(GetSickLeaveCertificateInternalIgnoreModelRulesDTO.builder()
-              .ignoreModelRules(true)
-              .build())
-          .retrieve()
-          .body(GetSickLeaveCertificateInternalResponseDTO.class);
+        final var response = restClient.post()
+            .uri(url)
+            .accept(MediaType.APPLICATION_JSON)
+            .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
+            .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
+            .body(GetSickLeaveCertificateInternalIgnoreModelRulesDTO.builder()
+                .ignoreModelRules(true)
+                .build())
+            .retrieve()
+            .body(GetSickLeaveCertificateInternalResponseDTO.class);
 
-      if (response == null || response.isAvailable() == false || response.getSickLeaveCertificate() == null) {
-        return Optional.empty();
-      }
+        if (response == null || response.isAvailable() == false || response.getSickLeaveCertificate() == null) {
+            return Optional.empty();
+        }
 
-      return Optional.of(response);
+        return Optional.of(response);
     }
 }
 

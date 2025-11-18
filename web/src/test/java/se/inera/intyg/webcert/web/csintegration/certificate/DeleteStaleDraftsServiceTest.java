@@ -15,6 +15,8 @@ class DeleteStaleDraftsServiceTest {
 
     @Mock
     UtkastService utkastService;
+    @Mock
+    DeleteDraftsFromCertificateService deleteDraftsFromCertificateService;
     @InjectMocks
     DeleteStaleDraftsService deleteStaleDraftsService;
 
@@ -23,5 +25,12 @@ class DeleteStaleDraftsServiceTest {
         final var staleDraftsPeriod = LocalDateTime.now();
         deleteStaleDraftsService.delete(staleDraftsPeriod);
         verify(utkastService).deleteStaleAndLockedDrafts(staleDraftsPeriod);
+    }
+
+    @Test
+    void shouldDeleteStaleAndLockedDraftsInCS() {
+        final var staleDraftsPeriod = LocalDateTime.now();
+        deleteStaleDraftsService.delete(staleDraftsPeriod);
+        verify(deleteDraftsFromCertificateService).delete(staleDraftsPeriod);
     }
 }

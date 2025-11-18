@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.csintegration.integration;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
@@ -49,6 +50,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateMessageReq
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteAnswerRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteStaleDraftsRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ForwardCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCandidateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateEventsRequestDTO;
@@ -603,6 +605,12 @@ public class CSIntegrationRequestFactory {
     public LockDraftsRequestDTO getLockDraftsRequestDTO(int lockedAfterDay) {
         final var cutoffDate = LocalDate.now().minusDays(lockedAfterDay).atStartOfDay();
         return LockDraftsRequestDTO.builder()
+            .cutoffDate(cutoffDate)
+            .build();
+    }
+
+    public DeleteStaleDraftsRequestDTO getDeleteDraftsRequestDTO(LocalDateTime cutoffDate) {
+        return DeleteStaleDraftsRequestDTO.builder()
             .cutoffDate(cutoffDate)
             .build();
     }
