@@ -881,6 +881,8 @@ public class UtkastServiceImpl implements UtkastService {
 
         staleAndLockedDrafts.forEach(draft -> {
             utkastRepository.delete(draft);
+
+            sendNotification(draft, Event.DELETED);
         });
 
         return staleAndLockedDrafts.size();

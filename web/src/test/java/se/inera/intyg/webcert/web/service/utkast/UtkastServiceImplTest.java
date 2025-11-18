@@ -1260,6 +1260,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         final var utkast1 = createUtkast(INTYG_ID, UTKAST_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_INCOMPLETE, null, INTYG_JSON,
             setupVardperson(hoSPerson),
             PERSONNUMMER);
+
         final var utkast2 = createUtkast(INTYG_ID, UTKAST_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_INCOMPLETE, null, INTYG_JSON,
             setupVardperson(hoSPerson),
             PERSONNUMMER);
@@ -1271,6 +1272,44 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         final var resultDeletedDrafts = utkastService.deleteStaleAndLockedDrafts();
 
         assertEquals(expectedDeletedDrafts, resultDeletedDrafts);
+    }
+
+    @Test
+    public void shouldDeletedDrafts() {
+        final var utkast1 = createUtkast(INTYG_ID, UTKAST_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_INCOMPLETE, null, INTYG_JSON,
+            setupVardperson(hoSPerson),
+            PERSONNUMMER);
+
+        final var utkast2 = createUtkast(INTYG_ID, UTKAST_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_INCOMPLETE, null, INTYG_JSON,
+            setupVardperson(hoSPerson),
+            PERSONNUMMER);
+
+        when(utkastRepository.findStaleAndLockedDrafts(any(LocalDateTime.class),
+            eq(List.of(UtkastStatus.DRAFT_LOCKED, UtkastStatus.DRAFT_INCOMPLETE, UtkastStatus.DRAFT_COMPLETE))))
+            .thenReturn(List.of(utkast1, utkast2));
+
+        utkastService.deleteStaleAndLockedDrafts();
+
+        verify(utkastRepository, times(2)).delete(utkast1);
+    }
+
+    @Test
+    public void shouldNotifyStakeholders() {
+        final var utkast1 = createUtkast(INTYG_ID, UTKAST_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_INCOMPLETE, null, INTYG_JSON,
+            setupVardperson(hoSPerson),
+            PERSONNUMMER);
+
+        final var utkast2 = createUtkast(INTYG_ID, UTKAST_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_INCOMPLETE, null, INTYG_JSON,
+            setupVardperson(hoSPerson),
+            PERSONNUMMER);
+
+        when(utkastRepository.findStaleAndLockedDrafts(any(LocalDateTime.class),
+            eq(List.of(UtkastStatus.DRAFT_LOCKED, UtkastStatus.DRAFT_INCOMPLETE, UtkastStatus.DRAFT_COMPLETE))))
+            .thenReturn(List.of(utkast1, utkast2));
+
+        utkastService.deleteStaleAndLockedDrafts();
+
+        verify(notificationService, times(2)).sendNotificationForDraftDeleted(utkast1);
     }
 
 
