@@ -94,7 +94,7 @@ class DeleteDraftsFromCertificateServiceTest {
 
         assertEquals(0, result);
         verify(csIntegrationService).listStaleDrafts(listStaleDraftsRequestDTO);
-        verify(csIntegrationService, never()).deleteDraftsByCertificateIds(any());
+        verify(csIntegrationService, never()).deleteStaleDrafts(any());
         verifyNoInteractions(publishCertificateStatusUpdateService);
         verifyNoInteractions(monitoringLogService);
     }
@@ -119,13 +119,13 @@ class DeleteDraftsFromCertificateServiceTest {
         doReturn(staleDrafts).when(csIntegrationService).listStaleDrafts(listStaleDraftsRequestDTO);
         doReturn(deleteDraftsRequestDTO).when(csIntegrationRequestFactory)
             .getDeleteStaleDraftsRequestDTO(List.of(CERTIFICATE_ID_1, CERTIFICATE_ID_2, CERTIFICATE_ID_3));
-        doReturn(staleDrafts).when(csIntegrationService).deleteDraftsByCertificateIds(deleteDraftsRequestDTO);
+        doReturn(staleDrafts).when(csIntegrationService).deleteStaleDrafts(deleteDraftsRequestDTO);
 
         final var result = deleteDraftsFromCertificateService.delete(CUTOFF_DATE);
 
         assertEquals(3, result);
         verify(csIntegrationService).listStaleDrafts(listStaleDraftsRequestDTO);
-        verify(csIntegrationService).deleteDraftsByCertificateIds(deleteDraftsRequestDTO);
+        verify(csIntegrationService).deleteStaleDrafts(deleteDraftsRequestDTO);
     }
 
     @Test
@@ -143,7 +143,7 @@ class DeleteDraftsFromCertificateServiceTest {
         doReturn(staleDrafts).when(csIntegrationService).listStaleDrafts(listStaleDraftsRequestDTO);
         doReturn(deleteDraftsRequestDTO).when(csIntegrationRequestFactory)
             .getDeleteStaleDraftsRequestDTO(any());
-        doReturn(staleDrafts).when(csIntegrationService).deleteDraftsByCertificateIds(deleteDraftsRequestDTO);
+        doReturn(staleDrafts).when(csIntegrationService).deleteStaleDrafts(deleteDraftsRequestDTO);
 
         deleteDraftsFromCertificateService.delete(CUTOFF_DATE);
 
@@ -168,7 +168,7 @@ class DeleteDraftsFromCertificateServiceTest {
         doReturn(staleDrafts).when(csIntegrationService).listStaleDrafts(listStaleDraftsRequestDTO);
         doReturn(deleteDraftsRequestDTO).when(csIntegrationRequestFactory)
             .getDeleteStaleDraftsRequestDTO(any());
-        doReturn(staleDrafts).when(csIntegrationService).deleteDraftsByCertificateIds(deleteDraftsRequestDTO);
+        doReturn(staleDrafts).when(csIntegrationService).deleteStaleDrafts(deleteDraftsRequestDTO);
 
         deleteDraftsFromCertificateService.delete(CUTOFF_DATE);
 
@@ -193,7 +193,7 @@ class DeleteDraftsFromCertificateServiceTest {
         doReturn(staleDrafts).when(csIntegrationService).listStaleDrafts(listStaleDraftsRequestDTO);
         doReturn(deleteDraftsRequestDTO).when(csIntegrationRequestFactory)
             .getDeleteStaleDraftsRequestDTO(List.of(CERTIFICATE_ID_1, CERTIFICATE_ID_2, CERTIFICATE_ID_3));
-        doReturn(staleDrafts).when(csIntegrationService).deleteDraftsByCertificateIds(deleteDraftsRequestDTO);
+        doReturn(staleDrafts).when(csIntegrationService).deleteStaleDrafts(deleteDraftsRequestDTO);
 
         deleteDraftsFromCertificateService.delete(CUTOFF_DATE);
 

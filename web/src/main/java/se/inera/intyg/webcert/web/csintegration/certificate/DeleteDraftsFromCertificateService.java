@@ -61,7 +61,7 @@ public class DeleteDraftsFromCertificateService {
             .map(certificate -> certificate.getMetadata().getId())
             .toList();
 
-        final var deletedCertificates = csIntegrationService.deleteDraftsByCertificateIds(
+        final var deletedCertificates = csIntegrationService.deleteStaleDrafts(
             csIntegrationRequestFactory.getDeleteStaleDraftsRequestDTO(certificateIds)
         );
 

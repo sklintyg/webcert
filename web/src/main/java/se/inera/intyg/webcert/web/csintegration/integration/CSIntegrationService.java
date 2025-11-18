@@ -1160,7 +1160,7 @@ public class CSIntegrationService {
 
     @PerformanceLogging(eventAction = "delete-drafts", eventType = EVENT_TYPE_CHANGE)
     public List<Certificate> deleteStaleDrafts(DeleteStaleDraftsRequestDTO request) {
-        final var url = baseUrl + INTERNAL_CERTIFICATE_ENDPOINT_URL + "draft/delete";
+        final var url = baseUrl + INTERNAL_CERTIFICATE_ENDPOINT_URL + "/draft/delete";
 
         final var response = restClient.post()
             .uri(url)
@@ -1180,7 +1180,7 @@ public class CSIntegrationService {
 
     @PerformanceLogging(eventAction = "list-stale-drafts", eventType = EVENT_TYPE_ACCESS)
     public List<Certificate> listStaleDrafts(ListStaleDraftsRequestDTO request) {
-        final var url = baseUrl + INTERNAL_CERTIFICATE_ENDPOINT_URL + "draft/list";
+        final var url = baseUrl + INTERNAL_CERTIFICATE_ENDPOINT_URL + "/draft/list";
 
         final var response = restClient.post()
             .uri(url)
@@ -1190,26 +1190,6 @@ public class CSIntegrationService {
             .body(request)
             .retrieve()
             .body(ListStaleDraftsResponseDTO.class);
-
-        if (response == null) {
-            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
-        }
-
-        return response.getCertificates();
-    }
-
-    @PerformanceLogging(eventAction = "delete-drafts-by-ids", eventType = EVENT_TYPE_DELETION)
-    public List<Certificate> deleteDraftsByCertificateIds(DeleteStaleDraftsRequestDTO request) {
-        final var url = baseUrl + INTERNAL_CERTIFICATE_ENDPOINT_URL + "/delete/ids";
-
-        final var response = restClient.post()
-            .uri(url)
-            .contentType(MediaType.APPLICATION_JSON)
-            .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
-            .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
-            .body(request)
-            .retrieve()
-            .body(DeleteStaleDraftsResponseDTO.class);
 
         if (response == null) {
             throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
