@@ -616,9 +616,9 @@ public class CSIntegrationRequestFactory {
             .build();
     }
 
-    public DeleteStaleDraftsRequestDTO getDeleteStaleDraftsRequestDTO(List<String> certificateIds) {
+    public DeleteStaleDraftsRequestDTO getDeleteStaleDraftsRequestDTO(String certificateId) {
         return DeleteStaleDraftsRequestDTO.builder()
-            .certificateIds(certificateIds)
+            .certificateId(certificateId)
             .build();
     }
 

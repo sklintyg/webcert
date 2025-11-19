@@ -47,34 +47,39 @@ public class DeleteDraftsFromCertificateService {
             return 0;
         }
 
-        final var staleDrafts = csIntegrationService.listStaleDrafts(
+        final var staleDraftIds = csIntegrationService.listStaleDrafts(
             csIntegrationRequestFactory.getListStaleDraftsRequestDTO(cutoffDate)
         );
 
-        if (staleDrafts.isEmpty()) {
+        if (staleDraftIds.isEmpty()) {
             return 0;
         }
 
-        staleDrafts.forEach(certificate ->
-            publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.RADERA)
-        );
+        return staleDraftIds.stream()
+            .mapToInt(certificateId -> deleteSingleDraft(certificateId, cutoffDate))
+            .sum();
+    }
 
-        final var certificateIds = staleDrafts.stream()
-            .map(certificate -> certificate.getMetadata().getId())
-            .toList();
+    private int deleteSingleDraft(String certificateId, LocalDateTime cutoffDate) {
+        try {
+            final var certificateXml = csIntegrationService.getInternalCertificateXml(certificateId);
 
-        final var deletedCertificates = csIntegrationService.deleteStaleDrafts(
-            csIntegrationRequestFactory.getDeleteStaleDraftsRequestDTO(certificateIds)
-        );
+            final var deletedCertificate = csIntegrationService.deleteStaleDraft(
+                csIntegrationRequestFactory.getDeleteStaleDraftsRequestDTO(certificateId)
+            );
 
-        deletedCertificates.forEach(certificate ->
+            publishCertificateStatusUpdateService.publish(deletedCertificate, HandelsekodEnum.RADERA, certificateXml);
+
             monitoringLogService.logUtkastPruned(
-                certificate.getMetadata().getId(),
-                certificate.getMetadata().getType(),
+                deletedCertificate.getMetadata().getId(),
+                deletedCertificate.getMetadata().getType(),
                 Period.between(LocalDate.now(), cutoffDate.toLocalDate())
-            )
-        );
+            );
 
-        return deletedCertificates.size();
+            return 1;
+        } catch (Exception e) {
+            log.error("Failed to delete stale draft with id: {}", certificateId, e);
+            return 0;
+        }
     }
 }

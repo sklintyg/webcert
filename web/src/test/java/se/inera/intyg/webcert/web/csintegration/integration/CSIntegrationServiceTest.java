@@ -349,11 +349,11 @@ class CSIntegrationServiceTest {
         .certificates(List.of(CERTIFICATE)).build();
     private static final LockDraftsRequestDTO LOCK_OLD_DRAFTS_REQUEST_DTO = LockDraftsRequestDTO.builder().build();
     private static final DeleteStaleDraftsResponseDTO DELETE_STALE_DRAFTS_RESPONSE_DTO = DeleteStaleDraftsResponseDTO.builder()
-        .certificates(List.of(CERTIFICATE)).build();
+        .certificate(CERTIFICATE).build();
     private static final DeleteStaleDraftsRequestDTO DELETE_STALE_DRAFTS_REQUEST_DTO = DeleteStaleDraftsRequestDTO.builder().build();
     private static final ListStaleDraftsRequestDTO LIST_STALE_DRAFTS_REQUEST_DTO = ListStaleDraftsRequestDTO.builder().build();
     private static final ListStaleDraftsResponseDTO LIST_STALE_DRAFTS_RESPONSE_DTO = ListStaleDraftsResponseDTO.builder()
-        .certificates(List.of(CERTIFICATE)).build();
+        .certificateIds(List.of(CERTIFICATE_ID)).build();
     private static final Map<String, StatisticsForUnitDTO> USER_STATISTICS = Map.of("unit", StatisticsForUnitDTO.builder().build());
     private static final UnitStatisticsResponseDTO STATISTICS_RESPONSE_DTO = UnitStatisticsResponseDTO.builder()
         .unitStatistics(USER_STATISTICS)
@@ -3508,11 +3508,11 @@ class CSIntegrationServiceTest {
         }
 
         @Test
-        void shouldReturnCertificates() {
+        void shouldReturnCertificateIds() {
             doReturn(LIST_STALE_DRAFTS_RESPONSE_DTO).when(responseSpec).body(ListStaleDraftsResponseDTO.class);
             final var response = csIntegrationService.listStaleDrafts(LIST_STALE_DRAFTS_REQUEST_DTO);
 
-            assertEquals(List.of(CERTIFICATE), response);
+            assertEquals(List.of(CERTIFICATE_ID), response);
         }
 
         @Test
@@ -3558,24 +3558,24 @@ class CSIntegrationServiceTest {
             doReturn(DELETE_STALE_DRAFTS_RESPONSE_DTO).when(responseSpec).body(DeleteStaleDraftsResponseDTO.class);
             final var captor = ArgumentCaptor.forClass(DeleteStaleDraftsRequestDTO.class);
 
-            csIntegrationService.deleteStaleDrafts(DELETE_STALE_DRAFTS_REQUEST_DTO);
+            csIntegrationService.deleteStaleDraft(DELETE_STALE_DRAFTS_REQUEST_DTO);
             verify(requestBodyUriSpec).body(captor.capture());
 
             assertEquals(DELETE_STALE_DRAFTS_REQUEST_DTO, captor.getValue());
         }
 
         @Test
-        void shouldReturnCertificates() {
+        void shouldReturnCertificate() {
             doReturn(DELETE_STALE_DRAFTS_RESPONSE_DTO).when(responseSpec).body(DeleteStaleDraftsResponseDTO.class);
-            final var response = csIntegrationService.deleteStaleDrafts(DELETE_STALE_DRAFTS_REQUEST_DTO);
+            final var response = csIntegrationService.deleteStaleDraft(DELETE_STALE_DRAFTS_REQUEST_DTO);
 
-            assertEquals(List.of(CERTIFICATE), response);
+            assertEquals(CERTIFICATE, response);
         }
 
         @Test
         void shouldThrowIfResponseIsNull() {
             assertThrows(IllegalStateException.class,
-                () -> csIntegrationService.deleteStaleDrafts(DELETE_STALE_DRAFTS_REQUEST_DTO));
+                () -> csIntegrationService.deleteStaleDraft(DELETE_STALE_DRAFTS_REQUEST_DTO));
         }
 
         @Test
@@ -3583,7 +3583,7 @@ class CSIntegrationServiceTest {
             doReturn(DELETE_STALE_DRAFTS_RESPONSE_DTO).when(responseSpec).body(DeleteStaleDraftsResponseDTO.class);
             final var captor = ArgumentCaptor.forClass(String.class);
 
-            csIntegrationService.deleteStaleDrafts(DELETE_STALE_DRAFTS_REQUEST_DTO);
+            csIntegrationService.deleteStaleDraft(DELETE_STALE_DRAFTS_REQUEST_DTO);
 
             verify(requestBodyUriSpec).uri(captor.capture());
 

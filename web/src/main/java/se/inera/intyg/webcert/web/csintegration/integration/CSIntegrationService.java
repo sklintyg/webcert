@@ -1159,8 +1159,8 @@ public class CSIntegrationService {
         return response.getCertificates();
     }
 
-    @PerformanceLogging(eventAction = "delete-stale-drafts", eventType = EVENT_TYPE_DELETION)
-    public List<Certificate> deleteStaleDrafts(DeleteStaleDraftsRequestDTO request) {
+    @PerformanceLogging(eventAction = "delete-stale-draft", eventType = EVENT_TYPE_DELETION)
+    public Certificate deleteStaleDraft(DeleteStaleDraftsRequestDTO request) {
         final var url = baseUrl + INTERNAL_DRAFT_ENDPOINT_URL;
 
         final var response = restClient.method(HttpMethod.DELETE)
@@ -1175,11 +1175,11 @@ public class CSIntegrationService {
         if (response == null) {
             throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
         }
-        return response.getCertificates();
+        return response.getCertificate();
     }
 
     @PerformanceLogging(eventAction = "list-stale-drafts", eventType = EVENT_TYPE_ACCESS)
-    public List<Certificate> listStaleDrafts(ListStaleDraftsRequestDTO request) {
+    public List<String> listStaleDrafts(ListStaleDraftsRequestDTO request) {
         final var url = baseUrl + INTERNAL_DRAFT_ENDPOINT_URL + "/list";
 
         final var response = restClient.post()
@@ -1195,7 +1195,7 @@ public class CSIntegrationService {
             throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
         }
 
-        return response.getCertificates();
+        return response.getCertificateIds();
     }
 
     @PerformanceLogging(eventAction = "get-certificate-events", eventType = EVENT_TYPE_ACCESS)

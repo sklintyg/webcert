@@ -24,7 +24,6 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.util.List;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ListStaleDraftsResponseDTO.ListStaleDraftsResponseDTOBuilder;
 
 @JsonDeserialize(builder = ListStaleDraftsResponseDTOBuilder.class)
@@ -32,7 +31,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.ListStaleDraftsR
 @Builder
 public class ListStaleDraftsResponseDTO {
 
-    List<Certificate> certificates;
+    List<String> certificateIds;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class ListStaleDraftsResponseDTOBuilder {

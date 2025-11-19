@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.csintegration.integration.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import java.util.List;
 import lombok.Builder;
 import lombok.Value;
 import se.inera.intyg.common.support.facade.model.Certificate;
@@ -32,7 +31,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteStaleDraft
 @Builder
 public class DeleteStaleDraftsResponseDTO {
 
-    List<Certificate> certificates;
+    Certificate certificate;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class DeleteStaleDraftsResponseDTOBuilder {
