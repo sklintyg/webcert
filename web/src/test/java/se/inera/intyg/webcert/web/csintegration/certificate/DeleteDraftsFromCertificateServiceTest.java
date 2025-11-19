@@ -28,7 +28,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -50,6 +52,7 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 class DeleteDraftsFromCertificateServiceTest {
 
     private static final LocalDateTime CUTOFF_DATE = LocalDateTime.of(2025, 1, 1, 0, 0);
+    private static final Period PERIOD = Period.between(LocalDate.now(), CUTOFF_DATE.toLocalDate());
     private static final String CERTIFICATE_ID_1 = "cert-id-1";
     private static final String CERTIFICATE_ID_2 = "cert-id-2";
     private static final String CERTIFICATE_ID_3 = "cert-id-3";
@@ -172,9 +175,9 @@ class DeleteDraftsFromCertificateServiceTest {
 
         deleteDraftsFromCertificateService.delete(CUTOFF_DATE);
 
-        verify(monitoringLogService, times(2)).logUtkastDeleted(any(), eq(TYPE));
-        verify(monitoringLogService).logUtkastDeleted(CERTIFICATE_ID_1, TYPE);
-        verify(monitoringLogService).logUtkastDeleted(CERTIFICATE_ID_2, TYPE);
+        verify(monitoringLogService, times(2)).logUtkastPruned(any(), eq(TYPE), eq(PERIOD));
+        verify(monitoringLogService).logUtkastPruned(CERTIFICATE_ID_1, TYPE, PERIOD);
+        verify(monitoringLogService).logUtkastPruned(CERTIFICATE_ID_2, TYPE, PERIOD);
     }
 
     @Test
@@ -213,4 +216,3 @@ class DeleteDraftsFromCertificateServiceTest {
         return certificate;
     }
 }
-

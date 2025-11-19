@@ -866,7 +866,7 @@ public class UtkastServiceImpl implements UtkastService {
             final var drafts = page.getContent();
 
             try {
-                handleStaleDraftsService.deleteAndNotify(drafts);
+                handleStaleDraftsService.deleteAndNotify(drafts, createdBefore);
                 totalDeleted += drafts.size();
             } catch (Exception e) {
                 LOG.error("Error deleting stale drafts: {}", e.getMessage(), e);

@@ -23,6 +23,7 @@ import static se.inera.intyg.webcert.persistence.fragasvar.model.Amne.KOMPLETTER
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.Collection;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -433,6 +434,19 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
             .build()
         ) {
             logEvent(MonitoringEvent.UTKAST_DELETED, intygsId, intygsTyp);
+        }
+    }
+
+    @Override
+    public void logUtkastPruned(String intygsId, String intygsTyp, Period period) {
+        try (MdcCloseableMap ignored = MdcCloseableMap.builder()
+            .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.UTKAST_PRUNED))
+            .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_DELETION)
+            .put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId)
+            .put(MdcLogConstants.EVENT_CERTIFICATE_TYPE, intygsTyp)
+            .build()
+        ) {
+            logEvent(MonitoringEvent.UTKAST_PRUNED, intygsId, intygsTyp, period.getDays());
         }
     }
 
@@ -1180,6 +1194,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         UTKAST_PATIENT_UPDATED("Patient details for utkast '{}' of type '{}' updated"),
         UTKAST_CONCURRENTLY_EDITED("Utkast '{}' of type '{}' was concurrently edited by multiple users"),
         UTKAST_DELETED("Utkast '{}' of type '{}' was deleted"),
+        UTKAST_PRUNED("Utkast '{}' of type '{}' was pruned due to being stale for more than '{}' days"),
         UTKAST_REVOKED("Utkast '{}' revoked by '{}' reason '{}'"),
         UTKAST_PRINT("Intyg '{}' of type '{}' was printed"),
         UTKAST_READY_NOTIFICATION_SENT("Utkast '{}' of type '{}' was marked as ready and notification was sent"),

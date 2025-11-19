@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.service.monitoring;
 
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.Collection;
 import java.util.List;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
@@ -83,6 +84,8 @@ public interface MonitoringLogService extends AuthenticationLogger {
     void logUtkastConcurrentlyEdited(String intygsId, String intygsTyp);
 
     void logUtkastDeleted(String intygsId, String intygsTyp);
+
+    void logUtkastPruned(String intygsId, String intygsTyp, Period period);
 
     void logUtkastRevoked(String intygsId, String hsaId, String reason);
 

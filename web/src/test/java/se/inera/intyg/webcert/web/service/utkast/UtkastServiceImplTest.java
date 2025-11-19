@@ -1301,9 +1301,10 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
             .thenReturn(page)
             .thenReturn(Page.empty());
 
-        utkastService.deleteStaleAndLockedDrafts(LocalDateTime.now(), 10);
+        final var createdBefore = LocalDateTime.now();
+        utkastService.deleteStaleAndLockedDrafts(createdBefore, 10);
 
-        verify(handleStaleDraftsService, times(1)).deleteAndNotify(List.of(utkast1, utkast2));
+        verify(handleStaleDraftsService, times(1)).deleteAndNotify(List.of(utkast1, utkast2), createdBefore);
     }
 
     private CreateNewDraftRequest buildCreateNewDraftRequest() {
