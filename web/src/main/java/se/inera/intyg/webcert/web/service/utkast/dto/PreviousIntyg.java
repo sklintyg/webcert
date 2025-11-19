@@ -69,9 +69,9 @@ public class PreviousIntyg {
         final String enhetName,
         final String latestIntygsId,
         final LocalDateTime skapat,
-        final boolean shouldHideValues) {
+        final boolean hideMetadataIfDifferentVardgivare) {
 
-        if (shouldHideValues && !sameVardgivare) {
+        if (hideMetadataIfDifferentVardgivare && !sameVardgivare) {
             return new PreviousIntyg(sameVardgivare, skapat);
         } else {
             return new PreviousIntyg(sameVardgivare, skapat, sameEnhet, enableShowDoiButton, enhetName, latestIntygsId);

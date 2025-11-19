@@ -395,7 +395,7 @@ public class UtkastServiceImpl implements UtkastService {
 
     @Override
     public Map<String, Map<String, PreviousIntyg>> checkIfPersonHasExistingIntyg(final Personnummer personnummer,
-        final IntygUser user, final String currentDraftId, boolean hideOutsideOfCareProviderValues) {
+        final IntygUser user, final String currentDraftId, boolean hideMetadataIfDifferentVardgivare) {
 
         List<Utkast> toFilter = utkastRepository.findAllByPatientPersonnummerAndIntygsTypIn(personnummer.getPersonnummerWithDash(),
             authoritiesHelper.getIntygstyperForFeature(user, AuthoritiesConstants.FEATURE_UNIKT_INTYG,
@@ -414,17 +414,17 @@ public class UtkastServiceImpl implements UtkastService {
         Map<String, Map<String, PreviousIntyg>> ret = new HashMap<>();
 
         ret.put(ERSATT_INDICATOR, replacedList.stream()
-            .collect(getUtkastMapCollector(user, hideOutsideOfCareProviderValues)));
+            .collect(getUtkastMapCollector(user, hideMetadataIfDifferentVardgivare)));
 
         ret.put(INTYG_INDICATOR, signedList.stream()
-            .collect(getUtkastMapCollector(user, hideOutsideOfCareProviderValues)));
+            .collect(getUtkastMapCollector(user, hideMetadataIfDifferentVardgivare)));
 
         ret.put(UTKAST_INDICATOR, toFilter.stream()
             .filter(utkast -> utkast.getStatus() != UtkastStatus.SIGNED
                 && utkast.getStatus() != UtkastStatus.DRAFT_LOCKED
                 && !utkast.getIntygsId().equals(currentDraftId))
             .sorted(Comparator.comparing(Utkast::getSkapad, Comparator.nullsFirst(Comparator.naturalOrder())))
-            .collect(getUtkastMapCollector(user, hideOutsideOfCareProviderValues)));
+            .collect(getUtkastMapCollector(user, hideMetadataIfDifferentVardgivare)));
 
         return ret;
     }

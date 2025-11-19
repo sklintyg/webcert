@@ -126,7 +126,7 @@ public interface UtkastService {
     Map<String, Map<String, PreviousIntyg>> checkIfPersonHasExistingIntyg(Personnummer personnummer,
         IntygUser user,
         String currentDraftId,
-        boolean hideOutsideOfCareProviderValues);
+        boolean hideMetadataIfDifferentVardgivare);
 
     int lockOldDrafts(int lockedAfterDay, LocalDate today);
 
