@@ -21,14 +21,20 @@ package se.inera.intyg.webcert.web.service.facade.impl;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerValidationResultCode.NOT_AUTHORIZED_IN_HOSP;
+import static se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerValidationResultCode.NO_ACCOUNT;
+import static se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerValidationResultCode.OK;
+import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_PERSON_ID;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
@@ -37,6 +43,9 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerValidationResponse;
+import se.inera.intyg.webcert.integration.privatepractitioner.service.PrivatePractitionerIntegrationService;
+import se.inera.intyg.webcert.web.privatepractitioner.toggle.PrivatePractitionerServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.ResourceLinkFacadeTestHelper;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.GetUserResourceLinksImpl;
 import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionAction;
@@ -47,11 +56,20 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 @ExtendWith(MockitoExtension.class)
 class GetUserResourceLinksImplTest {
 
+    @Mock
+    private PrivatePractitionerIntegrationService privatePractitionerIntegrationService;
+    @Mock
+    private PrivatePractitionerServiceProfile privatePractitionerServiceProfile;
+    @InjectMocks
+    private GetUserResourceLinksImpl getUserResourceLinks;
+
     @Nested
     class ResourceLinks {
 
-        @InjectMocks
-        private GetUserResourceLinksImpl getUserResourceLinks;
+        @BeforeEach
+        void setUp() {
+            when(privatePractitionerServiceProfile.isEnabled()).thenReturn(false);
+        }
 
         @Test
         void shallIncludeLogoutIfOriginIsNormal() {
@@ -432,84 +450,144 @@ class GetUserResourceLinksImplTest {
     @Nested
     class NotAuthorizedPrivatePractitioner {
 
-        @InjectMocks
-        private GetUserResourceLinksImpl getUserResourceLinks;
+        @BeforeEach
+        void setUp() {
+            when(privatePractitionerServiceProfile.isEnabled()).thenReturn(true);
+        }
 
         @Test
         void shallIncludeLogout() {
-            final var user = getUnauthorizedPrivatePractitioner("NORMAL");
+            final var user = getUnauthorizedPrivatePractitioner();
+            when(privatePractitionerIntegrationService.validatePrivatePractitioner(DR_KRANSTEGE_PERSON_ID))
+                .thenReturn(new PrivatePractitionerValidationResponse(NO_ACCOUNT, null));
             final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.LOG_OUT);
         }
 
         @Test
         void shallExcludeCreateCertificate() {
-            final var user = getUnauthorizedPrivatePractitioner("NORMAL");
+            final var user = getUnauthorizedPrivatePractitioner();
+            when(privatePractitionerIntegrationService.validatePrivatePractitioner(DR_KRANSTEGE_PERSON_ID))
+                .thenReturn(new PrivatePractitionerValidationResponse(NO_ACCOUNT, null));
             final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.ACCESS_SEARCH_CREATE_PAGE);
         }
 
         @Test
         void shallExcludeDraftList() {
-            final var user = getUnauthorizedPrivatePractitioner("NORMAL");
+            final var user = getUnauthorizedPrivatePractitioner();
+            when(privatePractitionerIntegrationService.validatePrivatePractitioner(DR_KRANSTEGE_PERSON_ID))
+                .thenReturn(new PrivatePractitionerValidationResponse(NO_ACCOUNT, null));
             final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.ACCESS_DRAFT_LIST);
         }
 
         @Test
         void shallExcludeQuestionList() {
-            final var user = getUnauthorizedPrivatePractitioner("NORMAL");
+            final var user = getUnauthorizedPrivatePractitioner();
+            when(privatePractitionerIntegrationService.validatePrivatePractitioner(DR_KRANSTEGE_PERSON_ID))
+                .thenReturn(new PrivatePractitionerValidationResponse(NO_ACCOUNT, null));
             final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.ACCESS_QUESTION_LIST);
         }
 
         @Test
         void shallExcludeSignedCertificatesList() {
-            final var user = getUnauthorizedPrivatePractitioner("NORMAL");
+            final var user = getUnauthorizedPrivatePractitioner();
+            when(privatePractitionerIntegrationService.validatePrivatePractitioner(DR_KRANSTEGE_PERSON_ID))
+                .thenReturn(new PrivatePractitionerValidationResponse(NO_ACCOUNT, null));
             final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.ACCESS_SIGNED_CERTIFICATES_LIST);
         }
 
         @Test
         void shallExcludeChooseUnit() {
-            final var user = getUnauthorizedPrivatePractitioner("NORMAL");
+            final var user = getUnauthorizedPrivatePractitioner();
+            when(privatePractitionerIntegrationService.validatePrivatePractitioner(DR_KRANSTEGE_PERSON_ID))
+                .thenReturn(new PrivatePractitionerValidationResponse(NO_ACCOUNT, null));
             final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.CHOOSE_UNIT);
         }
 
         @Test
         void shallExcludeChangeUnit() {
-            final var user = getUnauthorizedPrivatePractitioner("NORMAL");
+            final var user = getUnauthorizedPrivatePractitioner();
+            when(privatePractitionerIntegrationService.validatePrivatePractitioner(DR_KRANSTEGE_PERSON_ID))
+                .thenReturn(new PrivatePractitionerValidationResponse(NO_ACCOUNT, null));
             final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.CHANGE_UNIT);
         }
 
         @Test
         void shallExcludeNavigateBackButton() {
-            final var user = getUnauthorizedPrivatePractitioner("NORMAL");
+            final var user = getUnauthorizedPrivatePractitioner();
+            when(privatePractitionerIntegrationService.validatePrivatePractitioner(DR_KRANSTEGE_PERSON_ID))
+                .thenReturn(new PrivatePractitionerValidationResponse(NO_ACCOUNT, null));
             final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.NAVIGATE_BACK_BUTTON);
         }
 
         @Test
         void shallExcludeWarningNormalOrigin() {
-            final var user = getUnauthorizedPrivatePractitioner("NORMAL");
+            final var user = getUnauthorizedPrivatePractitioner();
+            when(privatePractitionerIntegrationService.validatePrivatePractitioner(DR_KRANSTEGE_PERSON_ID))
+                .thenReturn(new PrivatePractitionerValidationResponse(NO_ACCOUNT, null));
             final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.WARNING_NORMAL_ORIGIN);
         }
 
         @Test
         void shallExcludeSubscriptionWarning() {
-            final var user = getUnauthorizedPrivatePractitioner("NORMAL");
+            final var user = getUnauthorizedPrivatePractitioner();
+            when(privatePractitionerIntegrationService.validatePrivatePractitioner(DR_KRANSTEGE_PERSON_ID))
+                .thenReturn(new PrivatePractitionerValidationResponse(NO_ACCOUNT, null));
             final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.SUBSCRIPTION_WARNING);
         }
 
         @Test
         void shallIncludeRegisterPrivatePractitioner() {
-            final var user = getUnauthorizedPrivatePractitioner("NORMAL");
+            final var user = getUnauthorizedPrivatePractitioner();
+            when(privatePractitionerIntegrationService.validatePrivatePractitioner(DR_KRANSTEGE_PERSON_ID))
+                .thenReturn(new PrivatePractitionerValidationResponse(NO_ACCOUNT, null));
             final var actualLinks = getUserResourceLinks.get(user);
             ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.ACCESS_REGISTER_PRIVATE_PRACTITIONER);
+        }
+
+        @Test
+        void shallIncludeEditPrivatePractitionerIfNotAuthorized() {
+            final var user = getUnauthorizedPrivatePractitioner();
+            when(privatePractitionerIntegrationService.validatePrivatePractitioner(DR_KRANSTEGE_PERSON_ID))
+                .thenReturn(new PrivatePractitionerValidationResponse(NOT_AUTHORIZED_IN_HOSP, null));
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.ACCESS_EDIT_PRIVATE_PRACTITIONER);
+        }
+
+        @Test
+        void shallIncludeEditPrivatePractitionerIfAuthorized() {
+            final var user = getAuthorizedPrivatePractitioner();
+            when(privatePractitionerIntegrationService.validatePrivatePractitioner(DR_KRANSTEGE_PERSON_ID))
+                .thenReturn(new PrivatePractitionerValidationResponse(OK, null));
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.ACCESS_EDIT_PRIVATE_PRACTITIONER);
+        }
+
+        @Test
+        void shallIncludeNotAuthorizedPrivatePractitionerIfNotAuthorized() {
+            final var user = getUnauthorizedPrivatePractitioner();
+            when(privatePractitionerIntegrationService.validatePrivatePractitioner(DR_KRANSTEGE_PERSON_ID))
+                .thenReturn(new PrivatePractitionerValidationResponse(NOT_AUTHORIZED_IN_HOSP, null));
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.NOT_AUTHORIZED_PRIVATE_PRACTITIONER);
+        }
+
+        @Test
+        void shallExcludeNotAuthorizedPrivatePractitionerIfNoAccount() {
+            final var user = getUnauthorizedPrivatePractitioner();
+            when(privatePractitionerIntegrationService.validatePrivatePractitioner(DR_KRANSTEGE_PERSON_ID))
+                .thenReturn(new PrivatePractitionerValidationResponse(NO_ACCOUNT, null));
+            final var actualLinks = getUserResourceLinks.get(user);
+            ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.NOT_AUTHORIZED_PRIVATE_PRACTITIONER);
         }
     }
 
@@ -520,10 +598,20 @@ class GetUserResourceLinksImplTest {
         return unit;
     }
 
-    WebCertUser getUnauthorizedPrivatePractitioner(String origin) {
+    WebCertUser getUnauthorizedPrivatePractitioner() {
         final var user = mock(WebCertUser.class);
-        when(user.getOrigin()).thenReturn(origin);
+        when(user.getPersonId()).thenReturn(DR_KRANSTEGE_PERSON_ID);
+        when(user.getOrigin()).thenReturn("NORMAL");
         when(user.isUnauthorizedPrivatePractitioner()).thenReturn(true);
+        return user;
+    }
+
+    WebCertUser getAuthorizedPrivatePractitioner() {
+        final var user = mock(WebCertUser.class);
+        when(user.getPersonId()).thenReturn(DR_KRANSTEGE_PERSON_ID);
+        when(user.getOrigin()).thenReturn("NORMAL");
+        when(user.isUnauthorizedPrivatePractitioner()).thenReturn(false);
+        when(user.isPrivatLakare()).thenReturn(true);
         return user;
     }
 

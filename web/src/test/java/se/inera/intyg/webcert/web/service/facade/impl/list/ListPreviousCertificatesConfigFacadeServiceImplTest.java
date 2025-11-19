@@ -18,6 +18,11 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl.list;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -25,9 +30,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.web.service.facade.list.config.ListPreviousCertificatesConfigFacadeServiceImpl;
-import se.inera.intyg.webcert.web.service.facade.list.config.dto.*;
-
-import static org.junit.jupiter.api.Assertions.*;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColumnType;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListConfig;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterBooleanConfig;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterConfig;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterOrderConfig;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterPageSizeConfig;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterRadioConfig;
+import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterType;
 
 @ExtendWith(MockitoExtension.class)
 class ListPreviousCertificatesConfigFacadeServiceImplTest {
@@ -45,6 +55,12 @@ class ListPreviousCertificatesConfigFacadeServiceImplTest {
     public void shouldSetSecondaryTitle() {
         final var config = listPreviousCertificatesConfigFacadeService.get();
         assertEquals("Tidigare intyg", config.getSecondaryTitle());
+    }
+
+    @Test
+    public void shouldSetDescription() {
+        final var config = listPreviousCertificatesConfigFacadeService.get();
+        assertFalse(config.getDescription().isEmpty());
     }
 
     @Test
@@ -111,7 +127,7 @@ class ListPreviousCertificatesConfigFacadeServiceImplTest {
 
         @Test
         public void shouldSetFirstValueInListAsDefault() {
-            assertTrue(filter.getValues().get(0).isDefaultValue());
+            assertTrue(filter.getValues().getFirst().isDefaultValue());
         }
     }
 
