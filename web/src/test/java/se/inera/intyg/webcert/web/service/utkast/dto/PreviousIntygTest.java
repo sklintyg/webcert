@@ -28,7 +28,29 @@ import org.junit.Test;
 public class PreviousIntygTest {
 
     @Test
-    public void testNotSameVardgivare() {
+    public void testNotSameVardgivareWithHideValues() {
+        PreviousIntyg dto = PreviousIntyg.of(false, true, false, "Enhet", "intygsId", null, true);
+
+        assertFalse(dto.isSameVardgivare());
+        assertNull(dto.getEnhetName());
+        assertNull(dto.getLatestIntygsId());
+        assertFalse(dto.isEnableShowDoiButton());
+        assertFalse(dto.isSameEnhet());
+    }
+
+    @Test
+    public void testNotSameVardgivareWithoutHideValues() {
+        PreviousIntyg dto = PreviousIntyg.of(false, true, false, "Enhet", "intygsId", null, false);
+
+        assertFalse(dto.isSameVardgivare());
+        assertEquals("Enhet", dto.getEnhetName());
+        assertEquals("intygsId", dto.getLatestIntygsId());
+        assertFalse(dto.isEnableShowDoiButton());
+        assertTrue(dto.isSameEnhet());
+    }
+
+    @Test
+    public void testNotSameVardgivareDefaultBehavior() {
         PreviousIntyg dto = PreviousIntyg.of(false, true, false, "Enhet", "intygsId", null);
 
         assertFalse(dto.isSameVardgivare());

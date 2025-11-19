@@ -43,7 +43,7 @@ public class CertificateTypeInfoModalService {
     public Optional<CertificateTypeInfoModal> get(String certificateType, Personnummer patientId) {
         final var user = webCertUserService.getUser();
         final var previousCertificates = utkastService
-            .checkIfPersonHasExistingIntyg(patientId, user, null);
+            .checkIfPersonHasExistingIntyg(patientId, user, null, false);
 
         final var previousCertificateMap = previousCertificates.getOrDefault(INTYG_INDICATOR, Collections.emptyMap());
         final var previousDraftMap = previousCertificates.getOrDefault(UTKAST_INDICATOR, Collections.emptyMap());

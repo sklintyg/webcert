@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -52,6 +53,7 @@ import se.inera.intyg.infra.pu.integration.api.model.Person;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.webcert.web.service.facade.util.DefaultTypeAheadProvider;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
@@ -74,6 +76,9 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
 
     @Mock
     private LogRequestFactory logRequestFactory;
+
+    @Mock
+    private DefaultTypeAheadProvider defaultTypeAheadProvider;
 
     @InjectMocks
     private CreateRenewalCopyUtkastBuilder renewalBuilder = new CreateRenewalCopyUtkastBuilder();
@@ -100,7 +105,7 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
         when(mockModuleApi.getUtlatandeFromJson(any(String.class))).thenReturn(utlatande);
 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
-        when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
+        when(mockModuleApi.validateDraft(anyString(), eq(defaultTypeAheadProvider))).thenReturn(vdr);
 
         UtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromSignedIntyg(renewalRequest, patientDetails, false
         );
@@ -136,7 +141,7 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
         when(mockModuleApi.createRenewalFromTemplate(any(CreateDraftCopyHolder.class), any())).thenReturn(INTYG_JSON);
 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
-        when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
+        when(mockModuleApi.validateDraft(anyString(), eq(defaultTypeAheadProvider))).thenReturn(vdr);
 
         UtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromOrignalUtkast(renewalRequest, patientDetails,
             false
@@ -164,7 +169,7 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
         when(mockModuleApi.createRenewalFromTemplate(any(CreateDraftCopyHolder.class), any())).thenReturn(INTYG_JSON);
 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
-        when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
+        when(mockModuleApi.validateDraft(anyString(), eq(defaultTypeAheadProvider))).thenReturn(vdr);
 
         UtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromOrignalUtkast(renewalRequest, null,
             false);
@@ -189,7 +194,7 @@ public class CreateRenewalCopyUtkastBuilderImplTest extends AbstractBuilderTest 
         when(mockModuleApi.createRenewalFromTemplate(any(CreateDraftCopyHolder.class), any())).thenReturn(INTYG_JSON);
 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
-        when(mockModuleApi.validateDraft(anyString())).thenReturn(vdr);
+        when(mockModuleApi.validateDraft(anyString(), eq(defaultTypeAheadProvider))).thenReturn(vdr);
 
         UtkastBuilderResponse builderResponse = renewalBuilder.populateCopyUtkastFromSignedIntyg(renewalRequest, null, false);
 

@@ -53,12 +53,13 @@ public class ElegWebCertUserDetailsService {
     private final Optional<UserOrigin> userOrigin;
     private final SubscriptionService subscriptionService;
     private final HashUtility hashUtility;
-
+    private final LegacyAuthorizedPrivatePractitionerService legacyAuthorizedPrivatePractitionerService;
     private final PrivatePractitionerServiceProfile privatePractitionerServiceProfile;
     @Nullable
     private final PrivatePractitionerIntegrationService privatePractitionerIntegrationService;
     @Nullable
     private final UnauthorizedPrivatePractitionerService unauthorizedPrivatePractitionerService;
+    @Nullable
     private final AuthorizedPrivatePractitionerService authorizedPrivatePractitionerService;
 
     public WebCertUser buildFakeUserPrincipal(String personId) {
@@ -78,6 +79,10 @@ public class ElegWebCertUserDetailsService {
             throw new IllegalStateException("UnauthorizedPrivatePractitionerService is not available");
         }
 
+        if (authorizedPrivatePractitionerService == null) {
+            throw new IllegalStateException("AuthorizedPrivatePractitionerService is not available");
+        }
+
         if (privatePractitionerIntegrationService == null) {
             throw new IllegalStateException("PrivatePractitionerIntegrationService is not available");
         }
@@ -85,14 +90,17 @@ public class ElegWebCertUserDetailsService {
         final var origin = resolveRequestOrigin();
         final var validationResult = privatePractitionerIntegrationService.validatePrivatePractitioner(personId);
         return switch (validationResult.resultCode()) {
-            case OK -> authorizedPrivatePractitionerService.createAuthorizedPrivatePractitioner(personId, origin, authScheme, authMethod);
-            case NOT_AUTHORIZED_IN_HOSP ->
-                unauthorizedPrivatePractitionerService.createUnauthorizedWebCertUser(personId, origin, authScheme, authMethod);
+            case OK -> {
+                final var user = authorizedPrivatePractitionerService.create(personId, origin, authScheme, authMethod);
+                subscriptionService.checkSubscriptions(user);
+                yield user;
+            }
+            case NOT_AUTHORIZED_IN_HOSP -> unauthorizedPrivatePractitionerService.create(personId, origin, authScheme, authMethod);
             case NO_ACCOUNT -> {
                 if (subscriptionService.isUnregisteredElegUserMissingSubscription(personId)) {
                     throw missingSubscriptionException(hashUtility.hash(personId));
                 }
-                yield unauthorizedPrivatePractitionerService.createUnauthorizedWebCertUser(personId, origin, authScheme, authMethod);
+                yield unauthorizedPrivatePractitionerService.create(personId, origin, authScheme, authMethod);
             }
         };
     }
@@ -101,12 +109,9 @@ public class ElegWebCertUserDetailsService {
         final var ppAuthStatus = ppRestService.validatePrivatePractitioner(personId).getResultCode();
         redirectUnregisteredUsers(personId, ppAuthStatus);
 
-        final var authorizedPrivatePractitioner = authorizedPrivatePractitionerService.createAuthorizedPrivatePractitioner(personId,
-            resolveRequestOrigin(), authScheme, authMethod);
-
-        assertWebCertUserIsAuthorized(authorizedPrivatePractitioner, ppAuthStatus);
-
-        return authorizedPrivatePractitioner;
+        final var user = legacyAuthorizedPrivatePractitionerService.create(personId, resolveRequestOrigin(), authScheme, authMethod);
+        assertWebCertUserIsAuthorized(user, ppAuthStatus);
+        return user;
     }
 
     private void redirectUnregisteredUsers(String personId, ValidatePrivatePractitionerResultCode ppAuthStatus) {

@@ -55,6 +55,7 @@ import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
+import se.inera.intyg.webcert.web.service.facade.util.DefaultTypeAheadProvider;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
@@ -82,6 +83,9 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
     @Mock
     private LogRequestFactory logRequestFactory;
 
+    @Mock
+    private DefaultTypeAheadProvider defaultTypeAheadProvider;
+
     @InjectMocks
     private CopyCompletionUtkastBuilder copyCompletionBuilder = new CopyCompletionUtkastBuilder();
 
@@ -103,7 +107,7 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
             "postort");
 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
-        when(mockModuleApi.validateDraft(isNull())).thenReturn(vdr);
+        when(mockModuleApi.validateDraft(isNull(), eq(defaultTypeAheadProvider))).thenReturn(vdr);
         Utlatande utlatande = new Fk7263Utlatande();
         when(mockModuleApi.getUtlatandeFromJson(any(String.class))).thenReturn(utlatande);
 
@@ -141,7 +145,7 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
             "postort");
 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
-        when(mockModuleApi.validateDraft(isNull())).thenReturn(vdr);
+        when(mockModuleApi.validateDraft(isNull(), eq(defaultTypeAheadProvider))).thenReturn(vdr);
 
         UtkastBuilderResponse builderResponse = copyCompletionBuilder.populateCopyUtkastFromOrignalUtkast(copyRequest, patientDetails,
             true);
@@ -167,7 +171,7 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
         arende.setReferensId(referensId);
         when(moduleRegistry.getModuleApi(intygsTyp, intygsTypVersion)).thenReturn(mockModuleApi);
         when(mockIntygService.fetchIntygData(INTYG_ID, intygsTyp)).thenReturn(createIntygContentHolder());
-        when(mockModuleApi.validateDraft(isNull()))
+        when(mockModuleApi.validateDraft(isNull(), eq(defaultTypeAheadProvider)))
             .thenReturn(new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>()));
         Utlatande utlatande = new Fk7263Utlatande();
         when(mockModuleApi.getUtlatandeFromJson(any(String.class))).thenReturn(utlatande);
@@ -202,7 +206,7 @@ public class CopyCompletionUtkastBuilderTest extends AbstractBuilderTest {
         arende.setReferensId(referensId);
         when(moduleRegistry.getModuleApi(intygsTyp, intygsTypVersion)).thenReturn(mockModuleApi);
         when(mockUtkastRepository.findById(INTYG_ID)).thenReturn(Optional.of(createOriginalUtkast()));
-        when(mockModuleApi.validateDraft(isNull()))
+        when(mockModuleApi.validateDraft(isNull(), eq(defaultTypeAheadProvider)))
             .thenReturn(new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>()));
         when(arendeService.getArende(meddelandeId)).thenReturn(arende);
         Utlatande utlatande = new Fk7263Utlatande();

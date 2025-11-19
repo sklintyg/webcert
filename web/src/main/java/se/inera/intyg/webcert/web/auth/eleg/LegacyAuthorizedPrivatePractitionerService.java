@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Profile;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
@@ -41,36 +41,40 @@ import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.Code;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitioner;
-import se.inera.intyg.webcert.integration.privatepractitioner.service.PrivatePractitionerIntegrationService;
+import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.logging.HashUtility;
 import se.inera.intyg.webcert.persistence.anvandarmetadata.repository.AnvandarPreferenceRepository;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
+import se.riv.infrastructure.directory.privatepractitioner.v1.BefattningType;
+import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
+import se.riv.infrastructure.directory.privatepractitioner.v1.LegitimeradYrkesgruppType;
+import se.riv.infrastructure.directory.privatepractitioner.v1.SpecialitetType;
 
 @Service
 @RequiredArgsConstructor
-@Profile("private-practitioner-service-active")
-public class AuthorizedPrivatePractitionerService {
+public class LegacyAuthorizedPrivatePractitionerService {
+
+    @Value("${privatepractitioner.logicaladdress}")
+    private String logicalAddress;
 
     private final CommonAuthoritiesResolver commonAuthoritiesResolver;
     private final HashUtility hashUtility;
+    private final PPService ppService;
     private final AnvandarPreferenceRepository anvandarPreferenceRepository;
     private final PUService puService;
-    private final PrivatePractitionerIntegrationService privatePractitionerIntegrationService;
 
     private static final String SPACE = " ";
 
     public WebCertUser create(String personId, String requestOrigin, String authenticationScheme,
         AuthenticationMethod authenticationMethodMethod) {
-        final var privatePractitioner = getAuthorizedHosPerson(personId);
-        final var webCertUser = createWebCertUser(privatePractitioner, requestOrigin);
+        final var hosPerson = getAuthorizedHosPerson(personId);
+        final var webCertUser = createWebCertUser(hosPerson, requestOrigin);
         webCertUser.setAuthenticationScheme(authenticationScheme);
         webCertUser.setAuthenticationMethod(authenticationMethodMethod);
         return webCertUser;
     }
 
-    private WebCertUser createWebCertUser(PrivatePractitioner privatePractitioner, String requestOrigin) {
+    private WebCertUser createWebCertUser(HoSPersonType hosPerson, String requestOrigin) {
         final var role = lookupUserRole();
 
         final var user = new WebCertUser();
@@ -79,20 +83,20 @@ public class AuthorizedPrivatePractitionerService {
             user.setAuthorities(AuthoritiesResolverUtil.toMap(role.getPrivileges(), Privilege::getName));
         }
         user.setOrigin(requestOrigin);
-        user.setHsaId(privatePractitioner.getHsaId());
-        user.setPersonId(privatePractitioner.getPersonId());
-        user.setNamn(getFullName(privatePractitioner, user));
+        user.setHsaId(hosPerson.getHsaId().getExtension());
+        user.setPersonId(hosPerson.getPersonId().getExtension());
+        user.setNamn(getFullName(hosPerson, user));
 
         // Forskrivarkod should be always be seven zeros
         user.setForskrivarkod("0000000");
 
         decorateWebCertUserWithAvailableFeatures(user);
-        decorateWebCertUserWithLegitimeradeYrkesgrupper(privatePractitioner, user);
-        decorateWebCertUserWithSpecialiceringar(privatePractitioner, user);
-        decorateWebCertUserWithVardgivare(privatePractitioner, user);
-        decorateWebCertUserWithBefattningar(privatePractitioner, user);
+        decorateWebCertUserWithLegitimeradeYrkesgrupper(hosPerson, user);
+        decorateWebCertUserWithSpecialiceringar(hosPerson, user);
+        decorateWebCertUserWithVardgivare(hosPerson, user);
+        decorateWebCertUserWithBefattningar(hosPerson, user);
         decorateWebCertUserWithDefaultVardenhet(user);
-        decorateWebcertUserWithSekretessMarkering(user, privatePractitioner);
+        decorateWebcertUserWithSekretessMarkering(user, hosPerson);
         decorateWebcertUserWithAnvandarPreferenser(user);
         decorateWebcertUserWithUserTermsApprovedOrSubscriptionInUse(user);
         return user;
@@ -107,8 +111,8 @@ public class AuthorizedPrivatePractitionerService {
         }
     }
 
-    private PrivatePractitioner getAuthorizedHosPerson(String personId) {
-        final var hosPerson = privatePractitionerIntegrationService.getPrivatePractitioner(personId);
+    private HoSPersonType getAuthorizedHosPerson(String personId) {
+        final var hosPerson = getHosPerson(personId);
         if (hosPerson == null) {
             throw new IllegalArgumentException("No HSAPerson found for personId specified in SAML ticket");
         }
@@ -119,8 +123,8 @@ public class AuthorizedPrivatePractitionerService {
         return commonAuthoritiesResolver.getRole(AuthoritiesConstants.ROLE_PRIVATLAKARE);
     }
 
-    private String getFullName(PrivatePractitioner privatePractitioner, WebCertUser user) {
-        final var fullName = privatePractitioner.getName();
+    private String getFullName(HoSPersonType hosPerson, WebCertUser user) {
+        final var fullName = hosPerson.getFullstandigtNamn();
         if (fullName != null && fullName.contains(SPACE)) {
             user.setFornamn(fullName.substring(0, fullName.indexOf(SPACE)));
             user.setEfternamn(fullName.substring(fullName.indexOf(SPACE) + 1));
@@ -136,11 +140,12 @@ public class AuthorizedPrivatePractitionerService {
         user.setAnvandarPreference(anvandarPreferenceRepository.getAnvandarPreference(user.getHsaId()));
     }
 
-    private void decorateWebcertUserWithSekretessMarkering(WebCertUser webCertUser, PrivatePractitioner privatePractitioner) {
+    private void decorateWebcertUserWithSekretessMarkering(WebCertUser webCertUser, HoSPersonType hosPerson) {
         // Make sure we have a valid personnr to work with..
-        final var personNummer = Personnummer.createPersonnummer(privatePractitioner.getPersonId())
+        final var personNummer = Personnummer.createPersonnummer(hosPerson.getPersonId().getExtension())
             .orElseThrow(() -> new WebCertServiceException(WebCertServiceErrorCodeEnum.PU_PROBLEM,
-                String.format("Can't determine sekretesstatus for invalid personId %s", privatePractitioner.getPersonId())));
+                String.format("Can't determine sekretesstatus for invalid personId %s",
+                    hosPerson.getPersonId().getExtension())));
 
         final var person = puService.getPerson(personNummer);
         if (person.getStatus() == PersonSvar.Status.FOUND) {
@@ -156,19 +161,19 @@ public class AuthorizedPrivatePractitionerService {
         setFirstVardenhetOnFirstVardgivareAsDefault(webCertUser);
     }
 
-    private void decorateWebCertUserWithVardgivare(PrivatePractitioner privatePractitioner, WebCertUser webCertUser) {
-        final var id = privatePractitioner.getHsaId();
-        final var namn = privatePractitioner.getCareProviderName();
+    private void decorateWebCertUserWithVardgivare(HoSPersonType hosPerson, WebCertUser webCertUser) {
+        final var id = hosPerson.getEnhet().getVardgivare().getVardgivareId().getExtension();
+        final var namn = hosPerson.getEnhet().getVardgivare().getVardgivarenamn();
 
         final var vardgivare = new Vardgivare(id, namn);
 
-        final var vardenhet = new Vardenhet(privatePractitioner.getHsaId(), privatePractitioner.getCareUnitName());
-        resolveArbetsplatsKod(privatePractitioner, vardenhet);
-        vardenhet.setPostadress(privatePractitioner.getAddress());
-        vardenhet.setPostnummer(privatePractitioner.getZipCode());
-        vardenhet.setPostort(privatePractitioner.getCity());
-        vardenhet.setTelefonnummer(privatePractitioner.getPhoneNumber());
-        vardenhet.setEpost(privatePractitioner.getEmail());
+        final var vardenhet = new Vardenhet(hosPerson.getEnhet().getEnhetsId().getExtension(), hosPerson.getEnhet().getEnhetsnamn());
+        resolveArbetsplatsKod(hosPerson, vardenhet);
+        vardenhet.setPostadress(hosPerson.getEnhet().getPostadress());
+        vardenhet.setPostnummer(hosPerson.getEnhet().getPostnummer());
+        vardenhet.setPostort(hosPerson.getEnhet().getPostort());
+        vardenhet.setTelefonnummer(hosPerson.getEnhet().getTelefonnummer());
+        vardenhet.setEpost(hosPerson.getEnhet().getEpost());
 
         final var vardenhetList = new ArrayList<Vardenhet>();
         vardenhetList.add(vardenhet);
@@ -186,39 +191,45 @@ public class AuthorizedPrivatePractitionerService {
         webCertUser.setMiuNamnPerEnhetsId(new HashMap<>());
     }
 
-    private void decorateWebCertUserWithLegitimeradeYrkesgrupper(PrivatePractitioner privatePractitioner, WebCertUser webCertUser) {
-        webCertUser.setLegitimeradeYrkesgrupper(
-            privatePractitioner.getLicensedHealthcareProfessions().stream()
-                .map(Code::description)
-                .toList()
-        );
+    private void decorateWebCertUserWithLegitimeradeYrkesgrupper(HoSPersonType hosPerson, WebCertUser webCertUser) {
+        final var legitimeradeYrkesgrupper = new ArrayList<String>();
+        for (LegitimeradYrkesgruppType ly : hosPerson.getLegitimeradYrkesgrupp()) {
+            legitimeradeYrkesgrupper.add(ly.getNamn());
+        }
+        webCertUser.setLegitimeradeYrkesgrupper(legitimeradeYrkesgrupper);
     }
 
-    private void decorateWebCertUserWithSpecialiceringar(PrivatePractitioner privatePractitioner, WebCertUser webCertUser) {
-        webCertUser.setSpecialiseringar(
-            privatePractitioner.getSpecialties().stream()
-                .map(Code::description)
-                .toList()
-        );
+    private void decorateWebCertUserWithSpecialiceringar(HoSPersonType hosPerson, WebCertUser webCertUser) {
+        List<String> specialiteter = new ArrayList<>();
+        for (SpecialitetType st : hosPerson.getSpecialitet()) {
+            specialiteter.add(st.getNamn());
+        }
+        webCertUser.setSpecialiseringar(specialiteter);
     }
 
-    private void decorateWebCertUserWithBefattningar(PrivatePractitioner privatePractitioner, WebCertUser webCertUser) {
-        webCertUser.setBefattningar(
-            List.of(
-                privatePractitioner.getPosition()
-            )
-        );
+    private void decorateWebCertUserWithBefattningar(HoSPersonType hosPerson, WebCertUser webCertUser) {
+        final var befattningar = new ArrayList<String>();
+        for (BefattningType bt : hosPerson.getBefattning()) {
+            befattningar.add(bt.getNamn());
+        }
+        webCertUser.setBefattningar(befattningar);
+    }
+
+    private HoSPersonType getHosPerson(String personId) {
+        return ppService.getPrivatePractitioner(logicalAddress, null, personId);
     }
 
     /**
      * Arbetsplatskod is not mandatory for Privatläkare. In that case, use the HSA-ID of the practitioner.
      * (See Informationspecification Webcert, version 4.6, page 83)
      */
-    private void resolveArbetsplatsKod(PrivatePractitioner privatePractitioner, Vardenhet vardenhet) {
-        if (privatePractitioner.getWorkplaceCode() == null || privatePractitioner.getWorkplaceCode().isBlank()) {
-            vardenhet.setArbetsplatskod(privatePractitioner.getHsaId());
+    private void resolveArbetsplatsKod(HoSPersonType hosPerson, Vardenhet vardenhet) {
+        if (hosPerson.getEnhet().getArbetsplatskod() == null
+            || hosPerson.getEnhet().getArbetsplatskod().getExtension() == null
+            || hosPerson.getEnhet().getArbetsplatskod().getExtension().trim().isEmpty()) {
+            vardenhet.setArbetsplatskod(hosPerson.getHsaId().getExtension());
         } else {
-            vardenhet.setArbetsplatskod(privatePractitioner.getWorkplaceCode());
+            vardenhet.setArbetsplatskod(hosPerson.getEnhet().getArbetsplatskod().getExtension());
         }
     }
 

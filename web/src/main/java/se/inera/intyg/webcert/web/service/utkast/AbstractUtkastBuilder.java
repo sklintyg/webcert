@@ -47,6 +47,7 @@ import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.converter.util.IntygConverterUtil;
+import se.inera.intyg.webcert.web.service.facade.util.DefaultTypeAheadProvider;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.util.UpdateUserUtil;
@@ -74,6 +75,9 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
 
     @Autowired
     private IntygTextsService intygTextsService;
+
+    @Autowired
+    private DefaultTypeAheadProvider defaultTypeAheadProvider;
 
     /*
      * (non-Javadoc)
@@ -373,7 +377,7 @@ public abstract class AbstractUtkastBuilder<T extends AbstractCreateCopyRequest>
     }
 
     private UtkastStatus validateDraft(ModuleApi moduleApi, String draftCopyJson) throws ModuleException {
-        ValidateDraftResponse validationResponse = moduleApi.validateDraft(draftCopyJson);
+        ValidateDraftResponse validationResponse = moduleApi.validateDraft(draftCopyJson, defaultTypeAheadProvider);
 
         ValidationStatus validationStatus = validationResponse.getStatus();
 

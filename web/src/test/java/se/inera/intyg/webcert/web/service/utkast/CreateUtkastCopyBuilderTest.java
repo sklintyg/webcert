@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -51,6 +52,7 @@ import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.infra.pu.integration.api.model.Person;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.webcert.web.service.facade.util.DefaultTypeAheadProvider;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
@@ -73,6 +75,9 @@ public class CreateUtkastCopyBuilderTest extends AbstractBuilderTest {
 
     @Mock
     private LogRequestFactory logRequestFactory;
+
+    @Mock
+    private DefaultTypeAheadProvider defaultTypeAheadProvider;
 
     @InjectMocks
     private CreateUtkastCopyBuilder createUtkastCopyBuilder = new CreateUtkastCopyBuilder();
@@ -98,7 +103,7 @@ public class CreateUtkastCopyBuilderTest extends AbstractBuilderTest {
         when(mockModuleApiDOI.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), any())).thenReturn(INTYG_JSON);
 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
-        when(mockModuleApiDOI.validateDraft(anyString())).thenReturn(vdr);
+        when(mockModuleApiDOI.validateDraft(anyString(), eq(defaultTypeAheadProvider))).thenReturn(vdr);
 
         UtkastBuilderResponse builderResponse = createUtkastCopyBuilder
             .populateCopyUtkastFromSignedIntyg(createUtkastFromTemplateRequest, patientDetails, false
@@ -137,7 +142,7 @@ public class CreateUtkastCopyBuilderTest extends AbstractBuilderTest {
         when(mockModuleApiDOI.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), any())).thenReturn(INTYG_JSON);
 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
-        when(mockModuleApiDOI.validateDraft(anyString())).thenReturn(vdr);
+        when(mockModuleApiDOI.validateDraft(anyString(), eq(defaultTypeAheadProvider))).thenReturn(vdr);
 
         UtkastBuilderResponse builderResponse = createUtkastCopyBuilder
             .populateCopyUtkastFromOrignalUtkast(createUtkastFromTemplateRequest, patientDetails, true
