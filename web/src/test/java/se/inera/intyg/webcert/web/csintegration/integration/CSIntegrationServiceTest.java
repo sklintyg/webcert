@@ -3485,7 +3485,7 @@ class CSIntegrationServiceTest {
             requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
             responseSpec = mock(RestClient.ResponseSpec.class);
 
-            final String uri = "baseUrl/internalapi/certificate/draft/list";
+            final String uri = "baseUrl/internalapi/draft/list";
             ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
 
             when(restClient.post()).thenReturn(requestBodyUriSpec);
@@ -3530,7 +3530,7 @@ class CSIntegrationServiceTest {
 
             verify(requestBodyUriSpec).uri(captor.capture());
 
-            assertEquals("baseUrl/internalapi/certificate/draft/list", captor.getValue());
+            assertEquals("baseUrl/internalapi/draft/list", captor.getValue());
         }
     }
 
@@ -3542,10 +3542,10 @@ class CSIntegrationServiceTest {
             requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
             responseSpec = mock(RestClient.ResponseSpec.class);
 
-            final String uri = "baseUrl/internalapi/certificate/draft/delete";
+            final var uri = "baseUrl/internalapi/draft";
             ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
 
-            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(restClient.method(HttpMethod.DELETE)).thenReturn(requestBodyUriSpec);
             when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
             when(requestBodyUriSpec.contentType(any())).thenReturn(requestBodyUriSpec);
             when(requestBodyUriSpec.body(any(DeleteStaleDraftsRequestDTO.class))).thenReturn(requestBodyUriSpec);
@@ -3587,7 +3587,7 @@ class CSIntegrationServiceTest {
 
             verify(requestBodyUriSpec).uri(captor.capture());
 
-            assertEquals("baseUrl/internalapi/certificate/draft/delete", captor.getValue());
+            assertEquals("baseUrl/internalapi/draft", captor.getValue());
         }
     }
 

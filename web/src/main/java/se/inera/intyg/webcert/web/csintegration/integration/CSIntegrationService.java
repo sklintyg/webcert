@@ -151,6 +151,7 @@ public class CSIntegrationService {
 
     private static final String CERTIFICATE_ENDPOINT_URL = "/api/certificate";
     private static final String INTERNAL_CERTIFICATE_ENDPOINT_URL = "/internalapi/certificate";
+    private static final String INTERNAL_DRAFT_ENDPOINT_URL = "/internalapi/draft";
     private static final String CITIZEN_ENDPOINT_URL = "/api/citizen/certificate";
     private static final String MESSAGE_ENDPOINT_URL = "/api/message";
     private static final String INTERNAL_MESSAGE_ENDPOINT_URL = "/internalapi/message";
@@ -1158,11 +1159,11 @@ public class CSIntegrationService {
         return response.getCertificates();
     }
 
-    @PerformanceLogging(eventAction = "delete-drafts", eventType = EVENT_TYPE_CHANGE)
+    @PerformanceLogging(eventAction = "delete-stale-drafts", eventType = EVENT_TYPE_DELETION)
     public List<Certificate> deleteStaleDrafts(DeleteStaleDraftsRequestDTO request) {
-        final var url = baseUrl + INTERNAL_CERTIFICATE_ENDPOINT_URL + "/draft/delete";
+        final var url = baseUrl + INTERNAL_DRAFT_ENDPOINT_URL;
 
-        final var response = restClient.post()
+        final var response = restClient.method(HttpMethod.DELETE)
             .uri(url)
             .contentType(MediaType.APPLICATION_JSON)
             .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
@@ -1174,13 +1175,12 @@ public class CSIntegrationService {
         if (response == null) {
             throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
         }
-
         return response.getCertificates();
     }
 
     @PerformanceLogging(eventAction = "list-stale-drafts", eventType = EVENT_TYPE_ACCESS)
     public List<Certificate> listStaleDrafts(ListStaleDraftsRequestDTO request) {
-        final var url = baseUrl + INTERNAL_CERTIFICATE_ENDPOINT_URL + "/draft/list";
+        final var url = baseUrl + INTERNAL_DRAFT_ENDPOINT_URL + "/list";
 
         final var response = restClient.post()
             .uri(url)
