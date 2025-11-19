@@ -42,6 +42,10 @@ public class PrivatePractitionerService {
     public void registerPrivatePractitioner(PrivatePractitionerRegistrationRequest privatePractitionerRegisterRequest) {
         final var user = webCertUserService.getUser();
 
+        if (!user.isUnauthorizedPrivatePractitioner()) {
+            throw new IllegalStateException("Only unauthorized private practitioner can register.");
+        }
+
         privatePractitionerIntegrationService.registerPrivatePractitioner(RegisterPrivatePractitionerRequest
             .builder()
             .personId(user.getPersonId())
