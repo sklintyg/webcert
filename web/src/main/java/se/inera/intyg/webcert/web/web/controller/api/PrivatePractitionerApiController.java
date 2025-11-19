@@ -16,7 +16,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.Hos
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerConfigResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerDetails;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerResponse;
-import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerUpdateRequest;
 
 @Api(value = "private-practitioner", produces = MediaType.APPLICATION_JSON)
 @Profile("private-practitioner-service-active")
@@ -65,7 +64,7 @@ public class PrivatePractitionerApiController {
     @Path("")
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PerformanceLogging(eventAction = "update-private-practitioner", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
-    public PrivatePractitionerResponse updatePrivatePractitioner(PrivatePractitionerUpdateRequest updatePrivatePractitionerRequest) {
+    public PrivatePractitionerResponse updatePrivatePractitioner(PrivatePractitionerDetails updatePrivatePractitionerRequest) {
         return service.updatePrivatePractitioner(updatePrivatePractitionerRequest);
     }
 }

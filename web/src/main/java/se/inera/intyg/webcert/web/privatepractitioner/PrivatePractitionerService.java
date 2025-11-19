@@ -29,8 +29,8 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.CodeDTO;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.HospInformationResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerConfigResponse;
+import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerDetails;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerResponse;
-import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerUpdateRequest;
 
 @Service
 @Profile("private-practitioner-service-active")
@@ -41,8 +41,7 @@ public class PrivatePractitionerService {
     private final PrivatePractitionerIntegrationService privatePractitionerIntegrationService;
     private final PrivatePractitionerUpdateRequestConverter privatePractitionerUpdateRequestConverter;
 
-    public void registerPrivatePractitioner(
-        se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerDetails privatePractitionerRegisterRequest) {
+    public void registerPrivatePractitioner(PrivatePractitionerDetails privatePractitionerRegisterRequest) {
         final var user = webCertUserService.getUser();
 
         privatePractitionerIntegrationService.registerPrivatePractitioner(PrivatePractitionerDetailsRequest
@@ -89,7 +88,7 @@ public class PrivatePractitionerService {
         return PrivatePractitionerResponse.convert(privatePractitionerIntegrationService.getPrivatePractitioner(personId));
     }
 
-    public PrivatePractitionerResponse updatePrivatePractitioner(PrivatePractitionerUpdateRequest updatePrivatePractitionerRequest) {
+    public PrivatePractitionerResponse updatePrivatePractitioner(PrivatePractitionerDetails updatePrivatePractitionerRequest) {
         return PrivatePractitionerResponse.convert(
             privatePractitionerIntegrationService.updatePrivatePractitioner(
                 privatePractitionerUpdateRequestConverter.convert(updatePrivatePractitionerRequest))
