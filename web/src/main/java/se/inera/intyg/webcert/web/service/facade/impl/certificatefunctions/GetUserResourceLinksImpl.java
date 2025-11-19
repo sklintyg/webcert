@@ -18,18 +18,31 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions;
 
+import static se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerValidationResultCode.NOT_AUTHORIZED_IN_HOSP;
+import static se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerValidationResultCode.NO_ACCOUNT;
+
 import java.util.ArrayList;
+import lombok.RequiredArgsConstructor;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
+import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerValidationResultCode;
+import se.inera.intyg.webcert.integration.privatepractitioner.service.PrivatePractitionerIntegrationService;
+import se.inera.intyg.webcert.web.privatepractitioner.toggle.PrivatePractitionerServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.GetUserResourceLinks;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
 @Service
+@RequiredArgsConstructor
 public class GetUserResourceLinksImpl implements GetUserResourceLinks {
+
+    @Nullable
+    private final PrivatePractitionerIntegrationService privatePractitionerIntegrationService;
+    private final PrivatePractitionerServiceProfile privatePractitionerServiceProfile;
 
     @Override
     public ResourceLinkDTO[] get(WebCertUser user) {
@@ -117,17 +130,6 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
             );
         }
 
-        if (user.isPrivatLakare()) {
-            resourceLinks.add(
-                ResourceLinkDTO.create(
-                    ResourceLinkTypeDTO.PRIVATE_PRACTITIONER_PORTAL,
-                    "Min sida",
-                    "",
-                    true
-                )
-            );
-        }
-
         if (hasNavigateBackButton(user)) {
             resourceLinks.add(
                 ResourceLinkDTO.create(
@@ -162,7 +164,28 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
             );
         }
 
-        if (user.isUnauthorizedPrivatePractitioner()) {
+        addAvailableFunctionsForPrivatePractitioner(user, resourceLinks);
+
+        return resourceLinks;
+    }
+
+    private void addAvailableFunctionsForPrivatePractitioner(WebCertUser user, ArrayList<ResourceLinkDTO> resourceLinks) {
+        if (!privatePractitionerServiceProfile.isEnabled()) {
+            if (user.isPrivatLakare()) {
+                resourceLinks.add(
+                    ResourceLinkDTO.create(
+                        ResourceLinkTypeDTO.PRIVATE_PRACTITIONER_PORTAL,
+                        "Min sida",
+                        "",
+                        true
+                    )
+                );
+            }
+            return;
+        }
+
+        final var resultCode = privatePractitionerValidationResultCode(user);
+        if (hasAccessToRegisterPrivatePractitioner(user, resultCode)) {
             resourceLinks.add(
                 ResourceLinkDTO.create(
                     ResourceLinkTypeDTO.ACCESS_REGISTER_PRIVATE_PRACTITIONER,
@@ -173,7 +196,27 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
             );
         }
 
-        return resourceLinks;
+        if (hasAccessToEditPrivatePractitioner(user, resultCode)) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.ACCESS_EDIT_PRIVATE_PRACTITIONER,
+                    "Ändra uppgifter",
+                    "",
+                    true
+                )
+            );
+        }
+
+        if (notAuthorizedPrivatePractitioner(user, resultCode)) {
+            resourceLinks.add(
+                ResourceLinkDTO.create(
+                    ResourceLinkTypeDTO.NOT_AUTHORIZED_PRIVATE_PRACTITIONER,
+                    "Du är inte behörig att använda Webcert",
+                    "",
+                    true
+                )
+            );
+        }
     }
 
     private boolean hasNormalOriginWarning(WebCertUser user) {
@@ -277,5 +320,27 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
         return user.getValdVardgivare() != null
             && user.getSubscriptionInfo().getCareProvidersForSubscriptionModal() != null
             && user.getSubscriptionInfo().getCareProvidersForSubscriptionModal().contains(user.getValdVardgivare().getId());
+    }
+
+    private PrivatePractitionerValidationResultCode privatePractitionerValidationResultCode(WebCertUser user) {
+        if (privatePractitionerIntegrationService == null) {
+            return null;
+        }
+        if (user.isUnauthorizedPrivatePractitioner() || user.isPrivatLakare()) {
+            return privatePractitionerIntegrationService.validatePrivatePractitioner(user.getPersonId()).resultCode();
+        }
+        return null;
+    }
+
+    private boolean hasAccessToEditPrivatePractitioner(WebCertUser user, PrivatePractitionerValidationResultCode resultCode) {
+        return user.isUnauthorizedPrivatePractitioner() && resultCode == NOT_AUTHORIZED_IN_HOSP || user.isPrivatLakare();
+    }
+
+    private boolean hasAccessToRegisterPrivatePractitioner(WebCertUser user, PrivatePractitionerValidationResultCode resultCode) {
+        return user.isUnauthorizedPrivatePractitioner() && resultCode == NO_ACCOUNT;
+    }
+
+    private boolean notAuthorizedPrivatePractitioner(WebCertUser user, PrivatePractitionerValidationResultCode resultCode) {
+        return user.isUnauthorizedPrivatePractitioner() && resultCode != NO_ACCOUNT;
     }
 }
