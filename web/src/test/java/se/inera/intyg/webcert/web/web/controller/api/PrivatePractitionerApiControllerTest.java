@@ -25,6 +25,7 @@ import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataDTO.DR_KRANSTEGE_HOSP_INFORMATION_RESPONSE_DTO;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataDTO.DR_KRANSTEGE_REGISTREATION_REQUEST_DTO;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataDTO.DR_KRANSTEGE_RESPONSE_DTO;
+import static se.inera.intyg.webcert.web.privatepractitioner.TestDataDTO.DR_KRANSTEGE_UPDATE_REQUEST_DTO;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataDTO.PRIVATE_PRACTITIONER_CONFIG_DTO;
 
 import jakarta.ws.rs.core.Response.Status;
@@ -74,6 +75,15 @@ class PrivatePractitionerApiControllerTest {
         final var actual = controller.getHospInformation();
 
         assertEquals(DR_KRANSTEGE_HOSP_INFORMATION_RESPONSE_DTO, actual);
+    }
+
+    @Test
+    void shouldUpdatePrivatePractitioner() {
+        when(service.updatePrivatePractitioner(DR_KRANSTEGE_UPDATE_REQUEST_DTO)).thenReturn(DR_KRANSTEGE_RESPONSE_DTO);
+
+        final var actual = controller.updatePrivatePractitioner(DR_KRANSTEGE_UPDATE_REQUEST_DTO);
+        
+        assertEquals(DR_KRANSTEGE_RESPONSE_DTO, actual);
     }
 }
 

@@ -30,6 +30,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.Hos
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerConfigResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerRegistrationRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerResponse;
+import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerUpdateRequest;
 
 @Service
 @Profile("private-practitioner-service-active")
@@ -84,5 +85,9 @@ public class PrivatePractitionerService {
     public PrivatePractitionerResponse getPrivatePractitioner() {
         final var personId = webCertUserService.getUser().getPersonId();
         return PrivatePractitionerResponse.convert(privatePractitionerIntegrationService.getPrivatePractitioner(personId));
+    }
+
+    public PrivatePractitionerResponse updatePrivatePractitioner(PrivatePractitionerUpdateRequest updatePrivatePractitionerRequest) {
+        return null;
     }
 }
