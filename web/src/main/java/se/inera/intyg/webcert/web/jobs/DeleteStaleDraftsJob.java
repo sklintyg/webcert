@@ -26,10 +26,9 @@ public class DeleteStaleDraftsJob {
     private final MdcHelper mdcHelper;
     private final DeleteStaleDraftsService deleteStaleDraftsService;
     private final DeleteStaleDraftsProfile deleteStaleDraftsProfile;
+
     @Value("${delete.stale.drafts.period:P3M}")
     private String staleDraftsPeriod;
-
-
     @Value("${delete.stale.drafts.page.size:1000}")
     private Integer staleDraftsPageSize;
 
