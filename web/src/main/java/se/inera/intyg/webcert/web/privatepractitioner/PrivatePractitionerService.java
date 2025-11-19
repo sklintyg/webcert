@@ -23,8 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.integration.privatepractitioner.service.PrivatePractitionerIntegrationService;
-import se.inera.intyg.webcert.web.privatepractitioner.converter.PrivatePractitionerRegisterRequestConverter;
-import se.inera.intyg.webcert.web.privatepractitioner.converter.PrivatePractitionerUpdateRequestConverter;
+import se.inera.intyg.webcert.web.privatepractitioner.converter.PrivatePractitionerDetailsConverter;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.CodeDTO;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.HospInformationResponse;
@@ -39,12 +38,11 @@ public class PrivatePractitionerService {
 
     private final WebCertUserService webCertUserService;
     private final PrivatePractitionerIntegrationService privatePractitionerIntegrationService;
-    private final PrivatePractitionerUpdateRequestConverter privatePractitionerUpdateRequestConverter;
-    private final PrivatePractitionerRegisterRequestConverter privatePractitionerRegisterRequestConverter;
+    private final PrivatePractitionerDetailsConverter privatePractitionerDetailsConverter;
 
     public void registerPrivatePractitioner(PrivatePractitionerDetails privatePractitionerRegisterRequest) {
         privatePractitionerIntegrationService.registerPrivatePractitioner(
-            privatePractitionerRegisterRequestConverter.convert(privatePractitionerRegisterRequest, webCertUserService)
+            privatePractitionerDetailsConverter.convert(privatePractitionerRegisterRequest, webCertUserService)
         );
     }
 
@@ -76,7 +74,7 @@ public class PrivatePractitionerService {
     public PrivatePractitionerResponse updatePrivatePractitioner(PrivatePractitionerDetails updatePrivatePractitionerRequest) {
         return PrivatePractitionerResponse.convert(
             privatePractitionerIntegrationService.updatePrivatePractitioner(
-                privatePractitionerUpdateRequestConverter.convert(updatePrivatePractitionerRequest, webCertUserService))
+                privatePractitionerDetailsConverter.convert(updatePrivatePractitionerRequest, webCertUserService))
         );
     }
 }

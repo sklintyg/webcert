@@ -42,7 +42,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.integration.privatepractitioner.service.PrivatePractitionerIntegrationService;
-import se.inera.intyg.webcert.web.privatepractitioner.converter.PrivatePractitionerUpdateRequestConverter;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerConfigResponse;

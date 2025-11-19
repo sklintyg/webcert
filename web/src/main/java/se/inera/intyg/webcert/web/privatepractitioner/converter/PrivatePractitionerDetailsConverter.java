@@ -6,7 +6,7 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerDetails;
 
 @Component
-public class PrivatePractitionerRegisterRequestConverter {
+public class PrivatePractitionerDetailsConverter {
 
     public PrivatePractitionerDetailsRequest convert(PrivatePractitionerDetails privatePractitionerRegisterRequest,
         WebCertUserService webCertUserService) {
