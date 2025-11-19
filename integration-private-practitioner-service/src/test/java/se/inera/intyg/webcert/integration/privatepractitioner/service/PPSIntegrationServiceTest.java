@@ -56,11 +56,11 @@ import se.inera.intyg.webcert.integration.privatepractitioner.dto.GetHospInforma
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.HospInformation;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitioner;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerConfiguration;
-import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerRegistrationRequest;
-import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerUpdateRequest;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationRequest;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationResponse;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationResultCode;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.RegisterPrivatePractitionerRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.UpdatePrivatePractitionerRequest;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 
 @ExtendWith(MockitoExtension.class)
@@ -157,7 +157,7 @@ class PPSIntegrationServiceTest {
     class TestRegister {
 
         @Captor
-        private ArgumentCaptor<PrivatePractitionerRegistrationRequest> requestCaptor;
+        private ArgumentCaptor<RegisterPrivatePractitionerRequest> requestCaptor;
 
         @BeforeEach
         void setUp() {
@@ -173,7 +173,7 @@ class PPSIntegrationServiceTest {
             when(requestBodyUriSpec.header(LOG_TRACE_ID_HEADER, TRACE_ID)).thenReturn(requestBodyUriSpec);
             when(requestBodyUriSpec.header(LOG_SESSION_ID_HEADER, SESSION_ID)).thenReturn(
                 requestBodyUriSpec);
-            when(requestBodyUriSpec.body(any(PrivatePractitionerRegistrationRequest.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(RegisterPrivatePractitionerRequest.class))).thenReturn(requestBodyUriSpec);
             when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
         }
 
@@ -199,7 +199,7 @@ class PPSIntegrationServiceTest {
     class TestUpdate {
 
         @Captor
-        private ArgumentCaptor<PrivatePractitionerUpdateRequest> requestCaptor;
+        private ArgumentCaptor<UpdatePrivatePractitionerRequest> requestCaptor;
 
         @BeforeEach
         void setUp() {
@@ -215,7 +215,7 @@ class PPSIntegrationServiceTest {
             when(requestBodyUriSpec.header(LOG_TRACE_ID_HEADER, TRACE_ID)).thenReturn(requestBodyUriSpec);
             when(requestBodyUriSpec.header(LOG_SESSION_ID_HEADER, SESSION_ID)).thenReturn(
                 requestBodyUriSpec);
-            when(requestBodyUriSpec.body(any(PrivatePractitionerUpdateRequest.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(UpdatePrivatePractitionerRequest.class))).thenReturn(requestBodyUriSpec);
             when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
         }
 

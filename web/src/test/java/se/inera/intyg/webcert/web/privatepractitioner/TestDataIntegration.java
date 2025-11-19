@@ -39,8 +39,8 @@ import java.util.List;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.Code;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.HospInformation;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerConfiguration;
-import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerRegistrationRequest;
-import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerRegistrationRequest.PrivatePractitionerRegistrationRequestBuilder;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.RegisterPrivatePractitionerRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.RegisterPrivatePractitionerRequest.RegisterPrivatePractitionerRequestBuilder;
 
 public class TestDataIntegration {
 
@@ -63,7 +63,7 @@ public class TestDataIntegration {
     public static final List<Code> DR_KRANSTEGE_LICENSED_HEALTHCARE_PROFESSIONS =
         List.of(new Code("LK", "Läkare"));
 
-    public static final PrivatePractitionerRegistrationRequest DR_KRANSTEGE_REGISTREATION_REQUEST = registerPrivatePractitionerRequest().build();
+    public static final RegisterPrivatePractitionerRequest DR_KRANSTEGE_REGISTREATION_REQUEST = registerPrivatePractitionerRequest().build();
     public static final PrivatePractitionerConfiguration PRIVATE_PRACTITIONER_CONFIG = PrivatePractitionerConfiguration
         .builder()
         .positionCodes(POSITIONS)
@@ -78,9 +78,9 @@ public class TestDataIntegration {
         .specialities(DR_KRANSTEGE_SPECIALITIES)
         .build();
 
-    public static PrivatePractitionerRegistrationRequestBuilder registerPrivatePractitionerRequest() {
+    public static RegisterPrivatePractitionerRequestBuilder registerPrivatePractitionerRequest() {
 
-        return PrivatePractitionerRegistrationRequest.builder()
+        return RegisterPrivatePractitionerRequest.builder()
             .personId(DR_KRANSTEGE_PERSON_ID)
             .name(DR_KRANSTEGE_NAME)
             .position(DR_KRANSTEGE_POSITION)

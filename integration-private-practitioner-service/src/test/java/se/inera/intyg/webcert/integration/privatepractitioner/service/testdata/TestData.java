@@ -45,9 +45,9 @@ import se.inera.intyg.webcert.integration.privatepractitioner.dto.HospInformatio
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitioner;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitioner.PrivatePractitionerBuilder;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerConfiguration;
-import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerRegistrationRequest;
-import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerUpdateRequest;
-import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerUpdateRequest.PrivatePractitionerUpdateRequestBuilder;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.RegisterPrivatePractitionerRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.UpdatePrivatePractitionerRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.UpdatePrivatePractitionerRequest.UpdatePrivatePractitionerRequestBuilder;
 
 public class TestData {
 
@@ -70,7 +70,7 @@ public class TestData {
     );
 
     public static final PrivatePractitioner DR_KRANSTEGE = kranstegeBuilder().build();
-    public static final PrivatePractitionerUpdateRequest DR_KRANSTEGE_UPDATE_REQUEST = kranstegeUpdatePractitionerRequest().build();
+    public static final UpdatePrivatePractitionerRequest DR_KRANSTEGE_UPDATE_REQUEST = kranstegeUpdatePractitionerRequest().build();
 
     public static PrivatePractitionerBuilder kranstegeBuilder() {
         return PrivatePractitioner.builder()
@@ -106,8 +106,8 @@ public class TestData {
         .specialities(DR_KRANSTEGE_SPECIALITIES)
         .build();
 
-    public static PrivatePractitionerRegistrationRequest kranstegeRegisterPractitionerRequest() {
-        return PrivatePractitionerRegistrationRequest.builder()
+    public static RegisterPrivatePractitionerRequest kranstegeRegisterPractitionerRequest() {
+        return RegisterPrivatePractitionerRequest.builder()
             .personId(DR_KRANSTEGE_PERSON_ID)
             .name(DR_KRANSTEGE_NAME)
             .position(DR_KRANSTEGE_POSITION)
@@ -125,8 +125,8 @@ public class TestData {
             .build();
     }
 
-    public static PrivatePractitionerUpdateRequestBuilder kranstegeUpdatePractitionerRequest() {
-        return PrivatePractitionerUpdateRequest.builder()
+    public static UpdatePrivatePractitionerRequestBuilder kranstegeUpdatePractitionerRequest() {
+        return UpdatePrivatePractitionerRequest.builder()
             .personId(DR_KRANSTEGE_PERSON_ID)
             .position(DR_KRANSTEGE_POSITION)
             .careUnitName(DR_KRANSTEGE_CARE_UNIT_NAME)

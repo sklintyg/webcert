@@ -36,10 +36,10 @@ import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.D
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_ZIP_CODE;
 
 import java.util.List;
-import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerRegistrationRequest;
-import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerRegistrationRequest.PrivatePractitionerRegistrationRequestBuilder;
-import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerUpdateRequest;
-import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerUpdateRequest.PrivatePractitionerUpdateRequestBuilder;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.RegisterPrivatePractitionerRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.RegisterPrivatePractitionerRequest.RegisterPrivatePractitionerRequestBuilder;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.UpdatePrivatePractitionerRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.UpdatePrivatePractitionerRequest.UpdatePrivatePractitionerRequestBuilder;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.CodeDTO;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.HospInformationResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerConfigResponse;
@@ -73,8 +73,8 @@ public class TestDataDTO {
 
     public static final PrivatePractitionerDetails DR_KRANSTEGE_REGISTRATION_REQUEST_DTO = kranstegeRegistrationRequest().build();
     public static final PrivatePractitionerDetails DR_KRANSTEGE_UPDATE_REQUEST_DTO = kranstegeUpdateRequest().build();
-    public static final PrivatePractitionerUpdateRequest DR_KRANSTEGE_UPDATE_REQUEST_INTEGRATION_DTO = kranstegeRequestUpdate().build();
-    public static final PrivatePractitionerRegistrationRequest DR_KRANSTEGE_REGISTRATION_REQUEST_INTEGRATION_DTO = kranstegeRequestRegistration().build();
+    public static final UpdatePrivatePractitionerRequest DR_KRANSTEGE_UPDATE_REQUEST_INTEGRATION_DTO = kranstegeRequestUpdate().build();
+    public static final RegisterPrivatePractitionerRequest DR_KRANSTEGE_REGISTRATION_REQUEST_INTEGRATION_DTO = kranstegeRequestRegistration().build();
 
     public static final PrivatePractitionerConfigResponse PRIVATE_PRACTITIONER_CONFIG_DTO = PrivatePractitionerConfigResponse
         .builder()
@@ -132,8 +132,8 @@ public class TestDataDTO {
             .county(DR_KRANSTEGE_COUNTY);
     }
 
-    private static PrivatePractitionerRegistrationRequestBuilder kranstegeRequestRegistration() {
-        return PrivatePractitionerRegistrationRequest.builder()
+    private static RegisterPrivatePractitionerRequestBuilder kranstegeRequestRegistration() {
+        return RegisterPrivatePractitionerRequest.builder()
             .personId(DR_KRANSTEGE_PERSON_ID)
             .name(DR_KRANSTEGE_NAME)
             .position(DR_KRANSTEGE_POSITION)
@@ -150,8 +150,8 @@ public class TestDataDTO {
             .county(DR_KRANSTEGE_COUNTY);
     }
 
-    private static PrivatePractitionerUpdateRequestBuilder kranstegeRequestUpdate() {
-        return PrivatePractitionerUpdateRequest.builder()
+    private static UpdatePrivatePractitionerRequestBuilder kranstegeRequestUpdate() {
+        return UpdatePrivatePractitionerRequest.builder()
             .personId(DR_KRANSTEGE_PERSON_ID)
             .position(DR_KRANSTEGE_POSITION)
             .careUnitName(DR_KRANSTEGE_CARE_UNIT_NAME)

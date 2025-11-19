@@ -5,7 +5,7 @@ import lombok.Value;
 
 @Value
 @Builder
-public class PrivatePractitionerUpdateRequest {
+public class UpdatePrivatePractitionerRequest {
 
     String personId;
 

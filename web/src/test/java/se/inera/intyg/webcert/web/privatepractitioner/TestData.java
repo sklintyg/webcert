@@ -45,7 +45,7 @@ import se.inera.intyg.webcert.integration.privatepractitioner.dto.HospInformatio
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitioner;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitioner.PrivatePractitionerBuilder;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerConfiguration;
-import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerRegistrationRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.RegisterPrivatePractitionerRequest;
 
 public class TestData {
 
@@ -109,8 +109,8 @@ public class TestData {
         .specialities(DR_KRANSTEGE_SPECIALITIES)
         .build();
 
-    public static PrivatePractitionerRegistrationRequest kranstegeRegisterPractitionerRequest() {
-        return PrivatePractitionerRegistrationRequest.builder()
+    public static RegisterPrivatePractitionerRequest kranstegeRegisterPractitionerRequest() {
+        return RegisterPrivatePractitionerRequest.builder()
             .personId(DR_KRANSTEGE_PERSON_ID)
             .name(DR_KRANSTEGE_NAME)
             .position(DR_KRANSTEGE_POSITION)

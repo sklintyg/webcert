@@ -35,10 +35,10 @@ import se.inera.intyg.webcert.integration.privatepractitioner.dto.GetHospInforma
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.HospInformation;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitioner;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerConfiguration;
-import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerRegistrationRequest;
-import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerUpdateRequest;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationRequest;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationResponse;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.RegisterPrivatePractitionerRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.UpdatePrivatePractitionerRequest;
 import se.inera.intyg.webcert.logging.MdcHelper;
 
 @Service
@@ -72,7 +72,7 @@ public class PPSIntegrationService {
             .body(PrivatePractitionerConfiguration.class);
     }
 
-    public PrivatePractitioner registerPrivatePractitioner(PrivatePractitionerRegistrationRequest registrationRequest) {
+    public PrivatePractitioner registerPrivatePractitioner(RegisterPrivatePractitionerRequest registrationRequest) {
         return ppsRestClient
             .post()
             .contentType(MediaType.APPLICATION_JSON)
@@ -112,7 +112,7 @@ public class PPSIntegrationService {
             .body(PrivatePractitioner.class);
     }
 
-    public PrivatePractitioner updatePrivatePractitioner(PrivatePractitionerUpdateRequest privatePractitioner) {
+    public PrivatePractitioner updatePrivatePractitioner(UpdatePrivatePractitionerRequest privatePractitioner) {
         return ppsRestClient
             .put()
             .contentType(MediaType.APPLICATION_JSON)

@@ -24,7 +24,7 @@ import lombok.Value;
 
 @Value
 @Builder
-public class PrivatePractitionerRegistrationRequest {
+public class RegisterPrivatePractitionerRequest {
 
     String personId;
     String name;
