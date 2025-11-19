@@ -52,6 +52,7 @@ import se.inera.intyg.common.util.integration.json.CustomObjectMapper;
 import se.inera.intyg.infra.pu.integration.api.model.Person;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
+import se.inera.intyg.webcert.web.service.facade.util.DefaultTypeAheadProvider;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
 import se.inera.intyg.webcert.web.service.log.LogService;
 import se.inera.intyg.webcert.web.service.log.factory.LogRequestFactory;
@@ -73,6 +74,9 @@ public class CreateUtkastFromTemplateBuilderTest extends AbstractBuilderTest {
 
     @Mock
     private LogRequestFactory logRequestFactory;
+
+    @Mock
+    private DefaultTypeAheadProvider defaultTypeAheadProvider;
 
     @InjectMocks
     private CreateUtkastFromTemplateBuilder createUtkastFromTemplateBuilder = new CreateUtkastFromTemplateBuilder();
@@ -98,7 +102,7 @@ public class CreateUtkastFromTemplateBuilderTest extends AbstractBuilderTest {
         when(mockModuleApi2.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), any())).thenReturn(INTYG_JSON);
 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
-        when(mockModuleApi2.validateDraft(anyString())).thenReturn(vdr);
+        when(mockModuleApi2.validateDraft(anyString(), eq(defaultTypeAheadProvider))).thenReturn(vdr);
 
         UtkastBuilderResponse builderResponse = createUtkastFromTemplateBuilder
             .populateCopyUtkastFromSignedIntyg(createUtkastFromTemplateRequest, patientDetails, false
@@ -134,7 +138,7 @@ public class CreateUtkastFromTemplateBuilderTest extends AbstractBuilderTest {
         when(mockModuleApi2.createNewInternalFromTemplate(any(CreateDraftCopyHolder.class), any())).thenReturn(INTYG_JSON);
 
         ValidateDraftResponse vdr = new ValidateDraftResponse(ValidationStatus.VALID, new ArrayList<>());
-        when(mockModuleApi2.validateDraft(anyString())).thenReturn(vdr);
+        when(mockModuleApi2.validateDraft(anyString(), eq(defaultTypeAheadProvider))).thenReturn(vdr);
 
         UtkastBuilderResponse builderResponse = createUtkastFromTemplateBuilder
             .populateCopyUtkastFromOrignalUtkast(createUtkastFromTemplateRequest, patientDetails, false
