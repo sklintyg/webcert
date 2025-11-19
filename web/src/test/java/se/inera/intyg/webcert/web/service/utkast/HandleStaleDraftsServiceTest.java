@@ -5,7 +5,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,7 @@ class HandleStaleDraftsServiceTest {
 
     private static final String CERTIFICATE_TYPE = "certificateType";
     private static final LocalDateTime STALE_DRAFTS_PERIOD = LocalDateTime.now().minusMonths(3);
-    private static final Period PERIOD = Period.between(LocalDate.now(), STALE_DRAFTS_PERIOD.toLocalDate());
+    private static final long PERIOD = ChronoUnit.DAYS.between(LocalDate.now(), STALE_DRAFTS_PERIOD.toLocalDate());
     @Mock
     private MonitoringLogService monitoringLogService;
     @Mock

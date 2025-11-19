@@ -27,7 +27,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
 import java.time.LocalDate;
-import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collections;
 import org.junit.jupiter.api.AfterEach;
@@ -416,7 +416,7 @@ class MonitoringLogServiceImplTest {
 
     @Test
     void shouldLogUtkastPruned() {
-        logService.logUtkastPruned(INTYGS_ID, INTYGS_TYP, Period.between(LocalDate.now(), LocalDate.now().plusDays(5)));
+        logService.logUtkastPruned(INTYGS_ID, INTYGS_TYP, ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusDays(5)));
         verifyLog(Level.INFO, "UTKAST_PRUNED Utkast 'INTYGS_ID' of type 'INTYGS_TYP' was pruned due to being stale for more than '5' days");
     }
 

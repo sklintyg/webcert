@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.web.csintegration.certificate;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -73,7 +73,7 @@ public class DeleteDraftsFromCertificateService {
             monitoringLogService.logUtkastPruned(
                 deletedCertificate.getMetadata().getId(),
                 deletedCertificate.getMetadata().getType(),
-                Period.between(LocalDate.now(), cutoffDate.toLocalDate())
+                ChronoUnit.DAYS.between(cutoffDate.toLocalDate(), LocalDate.now())
             );
 
             return 1;

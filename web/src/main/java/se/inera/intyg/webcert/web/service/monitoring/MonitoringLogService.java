@@ -19,7 +19,6 @@
 package se.inera.intyg.webcert.web.service.monitoring;
 
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.util.Collection;
 import java.util.List;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
@@ -40,14 +39,18 @@ public interface MonitoringLogService extends AuthenticationLogger {
 
     void logMailMissingAddress(String unitHsaId, String reason, MailNotification mailNotification);
 
-    void logQuestionReceived(String fragestallare, String intygsId, String externReferens, Long internReferens, String enhet, Amne amne,
+    void logQuestionReceived(String fragestallare, String intygsId, String externReferens,
+        Long internReferens, String enhet, Amne amne,
         List<String> frageIds);
 
-    void logAnswerReceived(String externReferens, Long internReferens, String intygsId, String enhet, Amne amne);
+    void logAnswerReceived(String externReferens, Long internReferens, String intygsId, String enhet,
+        Amne amne);
 
-    void logQuestionSent(String externReferens, Long internReferens, String intygsId, String enhet, Amne amne);
+    void logQuestionSent(String externReferens, Long internReferens, String intygsId, String enhet,
+        Amne amne);
 
-    void logAnswerSent(String externReferens, Long internReferens, String intygsId, String enhet, Amne amne);
+    void logAnswerSent(String externReferens, Long internReferens, String intygsId, String enhet,
+        Amne amne);
 
     void logIntygRead(String intygsId, String intygsTyp);
 
@@ -55,7 +58,8 @@ public interface MonitoringLogService extends AuthenticationLogger {
 
     void logIntygPrintPdf(String intygsId, String intygsTyp, boolean isEmployerCopy);
 
-    void logIntygSigned(String intygsId, String intygsTyp, String userHsaId, String authScheme, RelationKod relationCode);
+    void logIntygSigned(String intygsId, String intygsTyp, String userHsaId, String authScheme,
+        RelationKod relationCode);
 
     void logIntygRegistered(String intygsId, String intygsTyp);
 
@@ -71,12 +75,15 @@ public interface MonitoringLogService extends AuthenticationLogger {
 
     void logIntygCopiedCompletion(String copyIntygsId, String originalIntygId);
 
-    void logUtkastCreated(String intygsId, String intygsTyp, String unitHsaId, String userHsaId, int nrPrefillElements);
+    void logUtkastCreated(String intygsId, String intygsTyp, String unitHsaId, String userHsaId,
+        int nrPrefillElements);
 
-    void logUtkastCreatedTemplateManual(String intygsId, String intygsTyp, String userHsaId, String unitHsaId,
+    void logUtkastCreatedTemplateManual(String intygsId, String intygsTyp, String userHsaId,
+        String unitHsaId,
         String originalIntygsId, String originalIntygsTyp);
 
-    void logUtkastCreatedTemplateAuto(String intygsId, String intygsTyp, String userHsaId, String unitHsaId,
+    void logUtkastCreatedTemplateAuto(String intygsId, String intygsTyp, String userHsaId,
+        String unitHsaId,
         String originalIntygsId, String originalIntygsTyp);
 
     void logUtkastEdited(String intygsId, String intygsTyp);
@@ -85,7 +92,7 @@ public interface MonitoringLogService extends AuthenticationLogger {
 
     void logUtkastDeleted(String intygsId, String intygsTyp);
 
-    void logUtkastPruned(String intygsId, String intygsTyp, Period period);
+    void logUtkastPruned(String intygsId, String intygsTyp, long period);
 
     void logUtkastRevoked(String intygsId, String hsaId, String reason);
 
@@ -99,12 +106,14 @@ public interface MonitoringLogService extends AuthenticationLogger {
 
     void logPULookup(Personnummer personNummer, String result);
 
-    void logPrivatePractitionerTermsApproved(String userId, Personnummer personId, Integer avtalVersion);
+    void logPrivatePractitionerTermsApproved(String userId, Personnummer personId,
+        Integer avtalVersion);
 
     void logNotificationSent(String hanType, String unitId, String intygsId);
 
     // CHECKSTYLE:OFF ParameterNumber
-    void logStatusUpdateQueued(String certificateId, String correlationId, String logicalAddress, String certificateType,
+    void logStatusUpdateQueued(String certificateId, String correlationId, String logicalAddress,
+        String certificateType,
         String certificateVersion, String eventName, LocalDateTime eventTime, String currentUser);
     // CHECKSTYLE:ON ParameterNumber
 
@@ -114,20 +123,25 @@ public interface MonitoringLogService extends AuthenticationLogger {
 
     void logSubscriptionServiceCallFailure(Collection<String> queryIds, String exceptionMessage);
 
-    void logArendeReceived(String intygsId, String intygsTyp, String unitHsaId, ArendeAmne amne, List<String> frageIds, boolean isAnswer,
+    void logArendeReceived(String intygsId, String intygsTyp, String unitHsaId, ArendeAmne amne,
+        List<String> frageIds, boolean isAnswer,
         String messageId);
 
-    void logArendeCreated(String intygsId, String intygsTyp, String unitHsaId, ArendeAmne amne, boolean isAnswer, String messageId);
+    void logArendeCreated(String intygsId, String intygsTyp, String unitHsaId, ArendeAmne amne,
+        boolean isAnswer, String messageId);
 
-    void logIntegratedOtherUnit(String intygsId, String intygsTyp, String certificateCareProvider, String certificateUnitId,
+    void logIntegratedOtherUnit(String intygsId, String intygsTyp, String certificateCareProvider,
+        String certificateUnitId,
         String userCareProviderId, String userUnitId);
 
-    void logIntegratedOtherCaregiver(String intygsId, String intygsTyp, String certificateCareProvider, String certificateUnitId,
+    void logIntegratedOtherCaregiver(String intygsId, String intygsTyp,
+        String certificateCareProvider, String certificateUnitId,
         String userCareProviderId, String userUnitId);
 
     void logDiagnoskodverkChanged(String intygsId, String intygsTyp);
 
-    void logBrowserInfo(String browserName, String browserVersion, String osFamily, String osVersion, String width, String height,
+    void logBrowserInfo(String browserName, String browserVersion, String osFamily, String osVersion,
+        String width, String height,
         String netIdVersion);
 
     void logRevokedPrint(String intygsId, String intygsTyp);
@@ -140,31 +154,44 @@ public interface MonitoringLogService extends AuthenticationLogger {
 
     // SRS
 
-    void logSrsLoaded(String userClientContext, String intygsId, String caregiverId, String careUnitId, String diagnosisCode);
+    void logSrsLoaded(String userClientContext, String intygsId, String caregiverId,
+        String careUnitId, String diagnosisCode);
 
-    void logSrsPanelActivated(String userClientContext, String intygsId, String caregiverId, String careUnitId);
+    void logSrsPanelActivated(String userClientContext, String intygsId, String caregiverId,
+        String careUnitId);
 
-    void logSrsConsentAnswered(String userClientContext, String intygsId, String caregiverId, String careUnitId);
+    void logSrsConsentAnswered(String userClientContext, String intygsId, String caregiverId,
+        String careUnitId);
 
-    void logSrsQuestionAnswered(String userClientContext, String intygsId, String caregiverId, String careUnitId);
+    void logSrsQuestionAnswered(String userClientContext, String intygsId, String caregiverId,
+        String careUnitId);
 
-    void logSrsCalculateClicked(String userClientContext, String intygsId, String caregiverId, String careUnitId);
+    void logSrsCalculateClicked(String userClientContext, String intygsId, String caregiverId,
+        String careUnitId);
 
-    void logSrsHideQuestionsClicked(String userClientContext, String intygsId, String caregiverId, String careUnitId);
+    void logSrsHideQuestionsClicked(String userClientContext, String intygsId, String caregiverId,
+        String careUnitId);
 
-    void logSrsShowQuestionsClicked(String userClientContext, String intygsId, String caregiverId, String careUnitId);
+    void logSrsShowQuestionsClicked(String userClientContext, String intygsId, String caregiverId,
+        String careUnitId);
 
-    void logSrsMeasuresShowMoreClicked(String userClientContext, String intygsId, String caregiverId, String careUnitId);
+    void logSrsMeasuresShowMoreClicked(String userClientContext, String intygsId, String caregiverId,
+        String careUnitId);
 
-    void logSrsMeasuresExpandOneClicked(String userClientContext, String intygsId, String caregiverId, String careUnitId);
+    void logSrsMeasuresExpandOneClicked(String userClientContext, String intygsId, String caregiverId,
+        String careUnitId);
 
-    void logSrsMeasuresLinkClicked(String userClientContext, String intygsId, String caregiverId, String careUnitId);
+    void logSrsMeasuresLinkClicked(String userClientContext, String intygsId, String caregiverId,
+        String careUnitId);
 
-    void logSrsStatisticsActivated(String userClientContext, String intygsId, String caregiverId, String careUnitId);
+    void logSrsStatisticsActivated(String userClientContext, String intygsId, String caregiverId,
+        String careUnitId);
 
-    void logSrsStatisticsLinkClicked(String userClientContext, String intygsId, String caregiverId, String careUnitId);
+    void logSrsStatisticsLinkClicked(String userClientContext, String intygsId, String caregiverId,
+        String careUnitId);
 
-    void logSrsMeasuresDisplayed(String userClientContext, String intygsId, String caregiverId, String careUnitId);
+    void logSrsMeasuresDisplayed(String userClientContext, String intygsId, String caregiverId,
+        String careUnitId);
 
     void logGetSrsForDiagnose(String diagnosisCode);
 
@@ -189,7 +216,8 @@ public interface MonitoringLogService extends AuthenticationLogger {
      * @param careUnitId HSA-Id of the care unit.
      * @param messageType Type of message.
      */
-    void logMessageImported(String certificateId, String messageId, String caregiverId, String careUnitId, String messageType);
+    void logMessageImported(String certificateId, String messageId, String caregiverId,
+        String careUnitId, String messageType);
 
     // Signature service
     void logSignResponseReceived(String transactionId);
@@ -200,8 +228,10 @@ public interface MonitoringLogService extends AuthenticationLogger {
 
     void logSignRequestCreated(String transactionId, String intygsId);
 
-    void logSignServiceErrorReceived(String transactionId, String intygsId, String resultMajor, String resultMinor,
+    void logSignServiceErrorReceived(String transactionId, String intygsId, String resultMajor,
+        String resultMinor,
         String resultMessage);
 
-    void logClientError(String errorId, String certificateId, String errorCode, String errorMessage, String stackTrace);
+    void logClientError(String errorId, String certificateId, String errorCode, String errorMessage,
+        String stackTrace);
 }

@@ -2,7 +2,7 @@ package se.inera.intyg.webcert.web.service.utkast;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,7 +29,7 @@ public class HandleStaleDraftsService {
         utkastRepository.deleteAllById(certificateIds);
         drafts.forEach(notificationService::sendNotificationForDraftDeleted);
 
-        final var period = Period.between(LocalDate.now(), staleDraftsPeriod.toLocalDate());
+        final var period = ChronoUnit.DAYS.between(staleDraftsPeriod.toLocalDate(), LocalDate.now());
         drafts.forEach(draft -> monitoringLogService.logUtkastPruned(draft.getIntygsId(), draft.getIntygsTyp(), period));
     }
 }
