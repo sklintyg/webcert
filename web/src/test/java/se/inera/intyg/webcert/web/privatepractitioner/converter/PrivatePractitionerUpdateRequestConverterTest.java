@@ -9,7 +9,6 @@ import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.D
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataDTO.DR_KRANSTEGE_UPDATE_REQUEST_DTO;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataDTO.DR_KRANSTEGE_UPDATE_REQUEST_INTEGRATION_DTO;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -23,12 +22,7 @@ class PrivatePractitionerUpdateRequestConverterTest {
     @Mock
     private WebCertUserService webCertUserService;
 
-    private PrivatePractitionerUpdateRequestConverter converter;
-
-    @BeforeEach
-    void setUp() {
-        converter = new PrivatePractitionerUpdateRequestConverter(webCertUserService);
-    }
+    private final PrivatePractitionerUpdateRequestConverter converter = new PrivatePractitionerUpdateRequestConverter();
 
     private void mockUser() {
         final var user = new WebCertUser();
@@ -41,7 +35,7 @@ class PrivatePractitionerUpdateRequestConverterTest {
     @Test
     void shouldConvertUpdateRequest() {
         mockUser();
-        final var result = converter.convert(DR_KRANSTEGE_UPDATE_REQUEST_DTO);
+        final var result = converter.convert(DR_KRANSTEGE_UPDATE_REQUEST_DTO, webCertUserService);
 
         assertEquals(DR_KRANSTEGE_UPDATE_REQUEST_INTEGRATION_DTO, result);
     }
@@ -50,13 +44,13 @@ class PrivatePractitionerUpdateRequestConverterTest {
     void shouldThrowExceptionWhenInputIsNull() {
         mockUser();
 
-        assertThrows(IllegalArgumentException.class, () -> converter.convert(null));
+        assertThrows(IllegalArgumentException.class, () -> converter.convert(null, webCertUserService));
     }
 
     @Test
     void shouldThrowExceptionWhenUserIsNull() {
         when(webCertUserService.getUser()).thenReturn(null);
 
-        assertThrows(IllegalStateException.class, () -> converter.convert(DR_KRANSTEGE_UPDATE_REQUEST_DTO));
+        assertThrows(IllegalStateException.class, () -> converter.convert(DR_KRANSTEGE_UPDATE_REQUEST_DTO, webCertUserService));
     }
 }

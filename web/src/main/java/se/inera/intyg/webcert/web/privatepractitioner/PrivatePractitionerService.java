@@ -91,7 +91,7 @@ public class PrivatePractitionerService {
     public PrivatePractitionerResponse updatePrivatePractitioner(PrivatePractitionerDetails updatePrivatePractitionerRequest) {
         return PrivatePractitionerResponse.convert(
             privatePractitionerIntegrationService.updatePrivatePractitioner(
-                privatePractitionerUpdateRequestConverter.convert(updatePrivatePractitionerRequest))
+                privatePractitionerUpdateRequestConverter.convert(updatePrivatePractitionerRequest, webCertUserService))
         );
     }
 }

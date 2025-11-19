@@ -10,9 +10,8 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.Pri
 @RequiredArgsConstructor
 public class PrivatePractitionerUpdateRequestConverter {
 
-    private final WebCertUserService webCertUserService;
-
-    public PrivatePractitionerDetailsRequest convert(PrivatePractitionerDetails privatePractitionerUpdateRequest) {
+    public PrivatePractitionerDetailsRequest convert(PrivatePractitionerDetails privatePractitionerUpdateRequest,
+        WebCertUserService webCertUserService) {
         final var webCertUser = webCertUserService.getUser();
 
         if (privatePractitionerUpdateRequest == null) {

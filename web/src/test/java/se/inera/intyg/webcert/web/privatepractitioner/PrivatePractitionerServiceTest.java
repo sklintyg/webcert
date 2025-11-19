@@ -101,8 +101,9 @@ class PrivatePractitionerServiceTest {
 
     @Test
     void shouldUpdatePrivatePractitioner() {
-        when(privatePractitionerUpdateRequestConverter.convert(DR_KRANSTEGE_UPDATE_REQUEST_DTO)).thenReturn(
+        when(privatePractitionerUpdateRequestConverter.convert(DR_KRANSTEGE_UPDATE_REQUEST_DTO, webCertUserService)).thenReturn(
             DR_KRANSTEGE_UPDATE_REQUEST_INTEGRATION_DTO);
+        
         when(privatePractitionerIntegrationService.updatePrivatePractitioner(DR_KRANSTEGE_UPDATE_REQUEST_INTEGRATION_DTO)).thenReturn(
             DR_KRANSTEGE);
 
