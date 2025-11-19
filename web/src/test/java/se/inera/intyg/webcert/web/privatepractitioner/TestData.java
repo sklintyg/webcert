@@ -87,7 +87,13 @@ public class TestData {
             .city(DR_KRANSTEGE_CITY)
             .municipality(DR_KRANSTEGE_MUNICIPALITY)
             .county(DR_KRANSTEGE_COUNTY)
-            .registrationDate(LocalDateTime.now());
+            .registrationDate(LocalDateTime.now())
+            .licensedHealthcareProfessions(
+                DR_KRANSTEGE_LICENSED_HEALTHCARE_PROFESSIONS
+            )
+            .specialties(
+                DR_KRANSTEGE_SPECIALITIES
+            );
     }
 
     public static final PrivatePractitionerConfiguration PRIVATE_PRACTITIONER_CONFIG = PrivatePractitionerConfiguration
