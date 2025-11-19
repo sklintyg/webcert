@@ -20,14 +20,12 @@ import se.inera.intyg.webcert.web.csintegration.util.DeleteStaleDraftsProfile;
 @RequiredArgsConstructor
 public class DeleteStaleDraftsJob {
 
-    private final MdcHelper mdcHelper;
-    private final DeleteStaleDraftsService deleteStaleDraftsService;
-    private final DeleteStaleDraftsProfile deleteStaleDraftsProfile;
-
     private static final String JOB_NAME = "DeleteStaleDraftsJob.run";
     private static final String LOCK_AT_MOST = "PT10M";
     private static final String LOCK_AT_LEAST = "PT30S";
-
+    private final MdcHelper mdcHelper;
+    private final DeleteStaleDraftsService deleteStaleDraftsService;
+    private final DeleteStaleDraftsProfile deleteStaleDraftsProfile;
     @Value("${delete.stale.drafts.period:P3M}")
     private String staleDraftsPeriod;
 

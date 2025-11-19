@@ -19,6 +19,8 @@
 
 package se.inera.intyg.webcert.web.csintegration.util;
 
+import java.time.LocalDate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -26,9 +28,12 @@ import org.springframework.stereotype.Component;
 @Profile("delete-stale-drafts-active")
 public class DeleteStaleDraftsProfileActive implements DeleteStaleDraftsProfile {
 
+    @Value("${delete.stale.drafts.activation.date}")
+    private LocalDate activationDate;
+
     @Override
     public boolean active() {
-        return true;
+        return activationDate.isBefore(LocalDate.now()) || activationDate.isEqual(LocalDate.now());
     }
 
 }
