@@ -31,13 +31,13 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.GetHospInformationRequest;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.HospInformation;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitioner;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerConfiguration;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerValidationRequest;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerValidationResponse;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.RegisterPrivatePractitionerRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.GetHospInformationRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.HospInformation;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitioner;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerConfiguration;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerDetailsRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationResponse;
 import se.inera.intyg.webcert.logging.MdcHelper;
 
 @Service
@@ -71,7 +71,7 @@ public class PPSIntegrationService {
             .body(PrivatePractitionerConfiguration.class);
     }
 
-    public PrivatePractitioner registerPrivatePractitioner(RegisterPrivatePractitionerRequest registrationRequest) {
+    public PrivatePractitioner registerPrivatePractitioner(PrivatePractitionerDetailsRequest registrationRequest) {
         return ppsRestClient
             .post()
             .contentType(MediaType.APPLICATION_JSON)

@@ -4,11 +4,11 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerRegistrationRequest.PrivatePractitionerRegistrationRequestBuilder;
+import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerDetails.PrivatePractitionerDetailsBuilder;
 
 @Value
 @Builder
-@JsonDeserialize(builder = PrivatePractitionerRegistrationRequestBuilder.class)
+@JsonDeserialize(builder = PrivatePractitionerDetailsBuilder.class)
 public class PrivatePractitionerUpdateRequest {
 
     String personId;

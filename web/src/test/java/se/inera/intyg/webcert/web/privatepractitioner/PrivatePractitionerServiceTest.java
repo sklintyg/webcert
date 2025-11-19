@@ -29,6 +29,8 @@ import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.D
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataDTO.DR_KRANSTEGE_HOSP_INFORMATION_RESPONSE_DTO;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataDTO.DR_KRANSTEGE_REGISTREATION_REQUEST_DTO;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataDTO.DR_KRANSTEGE_RESPONSE_DTO;
+import static se.inera.intyg.webcert.web.privatepractitioner.TestDataDTO.DR_KRANSTEGE_UPDATE_REQUEST_DTO;
+import static se.inera.intyg.webcert.web.privatepractitioner.TestDataDTO.DR_KRANSTEGE_UPDATE_REQUEST_INTEGRATION_DTO;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataDTO.PRIVATE_PRACTITIONER_CONFIG_DTO;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataIntegration.DR_KRANSTEGE_HOSP_INFO;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataIntegration.DR_KRANSTEGE_REGISTREATION_REQUEST;
@@ -40,6 +42,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.integration.privatepractitioner.service.PrivatePractitionerIntegrationService;
+import se.inera.intyg.webcert.web.privatepractitioner.converter.PrivatePractitionerUpdateRequestConverter;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerConfigResponse;
@@ -51,6 +54,8 @@ class PrivatePractitionerServiceTest {
     WebCertUserService webCertUserService;
     @Mock
     PrivatePractitionerIntegrationService privatePractitionerIntegrationService;
+    @Mock
+    PrivatePractitionerUpdateRequestConverter privatePractitionerUpdateRequestConverter;
     @InjectMocks
     PrivatePractitionerService service;
 
@@ -91,6 +96,18 @@ class PrivatePractitionerServiceTest {
         mockUser();
         when(privatePractitionerIntegrationService.getPrivatePractitioner(DR_KRANSTEGE_PERSON_ID)).thenReturn(DR_KRANSTEGE);
         final var actual = service.getPrivatePractitioner();
+        assertEquals(DR_KRANSTEGE_RESPONSE_DTO, actual);
+    }
+
+    @Test
+    void shouldUpdatePrivatePractitioner() {
+        when(privatePractitionerUpdateRequestConverter.convert(DR_KRANSTEGE_UPDATE_REQUEST_DTO)).thenReturn(
+            DR_KRANSTEGE_UPDATE_REQUEST_INTEGRATION_DTO);
+        when(privatePractitionerIntegrationService.updatePrivatePractitioner(DR_KRANSTEGE_UPDATE_REQUEST_INTEGRATION_DTO)).thenReturn(
+            DR_KRANSTEGE);
+
+        final var actual = service.updatePrivatePractitioner(DR_KRANSTEGE_UPDATE_REQUEST_DTO);
+
         assertEquals(DR_KRANSTEGE_RESPONSE_DTO, actual);
     }
 }

@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.integration.privatepractitioner.model;
+package se.inera.intyg.webcert.integration.privatepractitioner.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
@@ -25,7 +25,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitioner.PrivatePractitionerBuilder;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitioner.PrivatePractitionerBuilder;
 
 @Value
 @Builder

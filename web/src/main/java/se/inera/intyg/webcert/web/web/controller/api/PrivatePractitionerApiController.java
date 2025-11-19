@@ -14,7 +14,7 @@ import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.privatepractitioner.PrivatePractitionerService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.HospInformationResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerConfigResponse;
-import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerRegistrationRequest;
+import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerDetails;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerUpdateRequest;
 
@@ -33,7 +33,7 @@ public class PrivatePractitionerApiController {
     @POST
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PerformanceLogging(eventAction = "register-private-practitioner", eventType = MdcLogConstants.EVENT_TYPE_CREATION)
-    public Response registerPractitioner(PrivatePractitionerRegistrationRequest registerPrivatePractitionerRequest) {
+    public Response registerPractitioner(PrivatePractitionerDetails registerPrivatePractitionerRequest) {
         service.registerPrivatePractitioner(registerPrivatePractitionerRequest);
         return Response.ok().build();
     }

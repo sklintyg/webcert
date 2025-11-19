@@ -1,4 +1,4 @@
-package se.inera.intyg.webcert.integration.privatepractitioner.model;
+package se.inera.intyg.webcert.integration.privatepractitioner.dto;
 
 public record PrivatePractitionerValidationResponse(
     PrivatePractitionerValidationResultCode resultCode,

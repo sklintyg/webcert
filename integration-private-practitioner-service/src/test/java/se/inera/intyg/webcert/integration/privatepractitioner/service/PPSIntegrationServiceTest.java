@@ -51,14 +51,14 @@ import org.springframework.web.client.RestClient.RequestBodyUriSpec;
 import org.springframework.web.client.RestClient.RequestHeadersUriSpec;
 import org.springframework.web.client.RestClient.ResponseSpec;
 import org.springframework.web.util.UriBuilder;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.GetHospInformationRequest;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.HospInformation;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitioner;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerConfiguration;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerValidationRequest;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerValidationResponse;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerValidationResultCode;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.RegisterPrivatePractitionerRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.GetHospInformationRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.HospInformation;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitioner;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerConfiguration;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerDetailsRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationResponse;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationResultCode;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 
 @ExtendWith(MockitoExtension.class)
@@ -155,7 +155,7 @@ class PPSIntegrationServiceTest {
     class TestRegister {
 
         @Captor
-        private ArgumentCaptor<RegisterPrivatePractitionerRequest> requestCaptor;
+        private ArgumentCaptor<PrivatePractitionerDetailsRequest> requestCaptor;
 
         @BeforeEach
         void setUp() {
@@ -171,7 +171,7 @@ class PPSIntegrationServiceTest {
             when(requestBodyUriSpec.header(LOG_TRACE_ID_HEADER, TRACE_ID)).thenReturn(requestBodyUriSpec);
             when(requestBodyUriSpec.header(LOG_SESSION_ID_HEADER, SESSION_ID)).thenReturn(
                 requestBodyUriSpec);
-            when(requestBodyUriSpec.body(any(RegisterPrivatePractitionerRequest.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(PrivatePractitionerDetailsRequest.class))).thenReturn(requestBodyUriSpec);
             when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
         }
 

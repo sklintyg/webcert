@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner;
 
 import java.util.List;
 import lombok.Builder;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.HospInformation;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.HospInformation;
 
 @Builder
 public record HospInformationResponse(String personalPrescriptionCode, List<CodeDTO> licensedHealthcareProfessions,

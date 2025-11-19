@@ -17,22 +17,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.integration.privatepractitioner.model;
+package se.inera.intyg.webcert.integration.privatepractitioner.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.util.List;
 import lombok.Builder;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerConfiguration.PrivatePractitionerConfigurationBuilder;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.HospInformation.HospInformationBuilder;
 
 @Builder
-@JsonDeserialize(builder = PrivatePractitionerConfigurationBuilder.class)
-public record PrivatePractitionerConfiguration(List<Code> positionCodes, List<Code> typeOfCareCodes,
-                                               List<Code> healthcareServiceTypeCodes) {
+@JsonDeserialize(builder = HospInformationBuilder.class)
+public record HospInformation(String personId, String personalPrescriptionCode, List<Code> licensedHealthcareProfessions,
+                              List<Code> specialities) {
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class PrivatePractitionerConfigurationBuilder {
+    public static class HospInformationBuilder {
 
     }
-}
 
+}

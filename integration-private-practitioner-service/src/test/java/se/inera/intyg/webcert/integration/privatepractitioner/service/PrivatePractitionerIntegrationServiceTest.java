@@ -37,9 +37,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestClientException;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerValidationRequest;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerValidationResponse;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerValidationResultCode;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationResponse;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationResultCode;
 
 @ExtendWith(MockitoExtension.class)
 class PrivatePractitionerIntegrationServiceTest {

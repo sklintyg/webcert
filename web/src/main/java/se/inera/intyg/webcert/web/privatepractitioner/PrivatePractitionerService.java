@@ -22,13 +22,13 @@ package se.inera.intyg.webcert.web.privatepractitioner;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.RegisterPrivatePractitionerRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerDetailsRequest;
 import se.inera.intyg.webcert.integration.privatepractitioner.service.PrivatePractitionerIntegrationService;
+import se.inera.intyg.webcert.web.privatepractitioner.converter.PrivatePractitionerUpdateRequestConverter;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.CodeDTO;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.HospInformationResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerConfigResponse;
-import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerRegistrationRequest;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerUpdateRequest;
 
@@ -39,11 +39,13 @@ public class PrivatePractitionerService {
 
     private final WebCertUserService webCertUserService;
     private final PrivatePractitionerIntegrationService privatePractitionerIntegrationService;
+    private final PrivatePractitionerUpdateRequestConverter privatePractitionerUpdateRequestConverter;
 
-    public void registerPrivatePractitioner(PrivatePractitionerRegistrationRequest privatePractitionerRegisterRequest) {
+    public void registerPrivatePractitioner(
+        se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerDetails privatePractitionerRegisterRequest) {
         final var user = webCertUserService.getUser();
 
-        privatePractitionerIntegrationService.registerPrivatePractitioner(RegisterPrivatePractitionerRequest
+        privatePractitionerIntegrationService.registerPrivatePractitioner(PrivatePractitionerDetailsRequest
             .builder()
             .personId(user.getPersonId())
             .name(user.getNamn())
@@ -88,6 +90,9 @@ public class PrivatePractitionerService {
     }
 
     public PrivatePractitionerResponse updatePrivatePractitioner(PrivatePractitionerUpdateRequest updatePrivatePractitionerRequest) {
-        return null;
+        return PrivatePractitionerResponse.convert(
+            privatePractitionerIntegrationService.updatePrivatePractitioner(
+                privatePractitionerUpdateRequestConverter.convert(updatePrivatePractitionerRequest))
+        );
     }
 }
