@@ -59,11 +59,22 @@ public class PreviousIntyg {
         final String enhetName,
         final String latestIntygsId,
         final LocalDateTime skapat) {
+        return of(sameVardgivare, sameEnhet, enableShowDoiButton, enhetName, latestIntygsId, skapat, true);
+    }
 
-        if (sameVardgivare) {
-            return new PreviousIntyg(sameVardgivare, skapat, sameEnhet, enableShowDoiButton, enhetName, latestIntygsId);
-        } else {
+    public static PreviousIntyg of(
+        final boolean sameVardgivare,
+        final boolean sameEnhet,
+        final boolean enableShowDoiButton,
+        final String enhetName,
+        final String latestIntygsId,
+        final LocalDateTime skapat,
+        final boolean hideMetadataIfDifferentVardgivare) {
+
+        if (hideMetadataIfDifferentVardgivare && !sameVardgivare) {
             return new PreviousIntyg(sameVardgivare, skapat);
+        } else {
+            return new PreviousIntyg(sameVardgivare, skapat, sameEnhet, enableShowDoiButton, enhetName, latestIntygsId);
         }
     }
 
