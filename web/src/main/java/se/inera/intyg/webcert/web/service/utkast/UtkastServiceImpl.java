@@ -850,7 +850,7 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
-    public int deleteStaleAndLockedDrafts(LocalDateTime createdBefore, Integer pageSize) {
+    public int deleteStaleAndLockedDrafts(LocalDateTime staleDraftsPeriod, Integer pageSize) {
         final var statuses = List.of(
             UtkastStatus.DRAFT_LOCKED,
             UtkastStatus.DRAFT_INCOMPLETE,
@@ -862,11 +862,11 @@ public class UtkastServiceImpl implements UtkastService {
         Page<Utkast> page;
 
         do {
-            page = utkastRepository.findStaleAndLockedDrafts(createdBefore, statuses, pageable);
+            page = utkastRepository.findStaleAndLockedDrafts(staleDraftsPeriod, statuses, pageable);
             final var drafts = page.getContent();
 
             try {
-                handleStaleDraftsService.deleteAndNotify(drafts, createdBefore);
+                handleStaleDraftsService.deleteAndNotify(drafts, staleDraftsPeriod);
                 totalDeleted += drafts.size();
             } catch (Exception e) {
                 LOG.error("Error deleting stale drafts: {}", e.getMessage(), e);

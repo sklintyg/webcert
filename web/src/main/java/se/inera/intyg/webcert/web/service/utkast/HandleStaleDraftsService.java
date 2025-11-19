@@ -21,15 +21,15 @@ public class HandleStaleDraftsService {
     private final MonitoringLogService monitoringLogService;
 
     @Transactional
-    public void deleteAndNotify(List<Utkast> drafts, LocalDateTime createdBefore) {
+    public void deleteAndNotify(List<Utkast> drafts, LocalDateTime staleDraftsPeriod) {
         final var certificateIds = drafts.stream()
             .map(Utkast::getIntygsId)
             .toList();
 
         utkastRepository.deleteAllById(certificateIds);
         drafts.forEach(notificationService::sendNotificationForDraftDeleted);
-        
-        final var period = Period.between(LocalDate.now(), createdBefore.toLocalDate());
+
+        final var period = Period.between(LocalDate.now(), staleDraftsPeriod.toLocalDate());
         drafts.forEach(draft -> monitoringLogService.logUtkastPruned(draft.getIntygsId(), draft.getIntygsTyp(), period));
     }
 }
