@@ -22,8 +22,8 @@ package se.inera.intyg.webcert.web.privatepractitioner;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerDetailsRequest;
 import se.inera.intyg.webcert.integration.privatepractitioner.service.PrivatePractitionerIntegrationService;
+import se.inera.intyg.webcert.web.privatepractitioner.converter.PrivatePractitionerRegisterRequestConverter;
 import se.inera.intyg.webcert.web.privatepractitioner.converter.PrivatePractitionerUpdateRequestConverter;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.CodeDTO;
@@ -40,27 +40,12 @@ public class PrivatePractitionerService {
     private final WebCertUserService webCertUserService;
     private final PrivatePractitionerIntegrationService privatePractitionerIntegrationService;
     private final PrivatePractitionerUpdateRequestConverter privatePractitionerUpdateRequestConverter;
+    private final PrivatePractitionerRegisterRequestConverter privatePractitionerRegisterRequestConverter;
 
     public void registerPrivatePractitioner(PrivatePractitionerDetails privatePractitionerRegisterRequest) {
-        final var user = webCertUserService.getUser();
-
-        privatePractitionerIntegrationService.registerPrivatePractitioner(PrivatePractitionerDetailsRequest
-            .builder()
-            .personId(user.getPersonId())
-            .name(user.getNamn())
-            .position(privatePractitionerRegisterRequest.getPosition())
-            .careUnitName(privatePractitionerRegisterRequest.getCareUnitName())
-            .typeOfCare(privatePractitionerRegisterRequest.getTypeOfCare())
-            .healthcareServiceType(privatePractitionerRegisterRequest.getHealthcareServiceType())
-            .workplaceCode(privatePractitionerRegisterRequest.getWorkplaceCode())
-            .phoneNumber(privatePractitionerRegisterRequest.getPhoneNumber())
-            .email(privatePractitionerRegisterRequest.getEmail())
-            .address(privatePractitionerRegisterRequest.getAddress())
-            .zipCode(privatePractitionerRegisterRequest.getZipCode())
-            .city(privatePractitionerRegisterRequest.getCity())
-            .municipality(privatePractitionerRegisterRequest.getMunicipality())
-            .county(privatePractitionerRegisterRequest.getCounty())
-            .build());
+        privatePractitionerIntegrationService.registerPrivatePractitioner(
+            privatePractitionerRegisterRequestConverter.convert(privatePractitionerRegisterRequest, webCertUserService)
+        );
     }
 
     public PrivatePractitionerConfigResponse getPrivatePractitionerConfig() {

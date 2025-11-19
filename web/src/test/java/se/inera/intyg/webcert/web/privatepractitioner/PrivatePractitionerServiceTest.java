@@ -27,7 +27,7 @@ import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.D
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_NAME;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_PERSON_ID;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataDTO.DR_KRANSTEGE_HOSP_INFORMATION_RESPONSE_DTO;
-import static se.inera.intyg.webcert.web.privatepractitioner.TestDataDTO.DR_KRANSTEGE_REGISTREATION_REQUEST_DTO;
+import static se.inera.intyg.webcert.web.privatepractitioner.TestDataDTO.DR_KRANSTEGE_REGISTRATION_REQUEST_DTO;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataDTO.DR_KRANSTEGE_RESPONSE_DTO;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataDTO.DR_KRANSTEGE_UPDATE_REQUEST_DTO;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataDTO.DR_KRANSTEGE_UPDATE_REQUEST_INTEGRATION_DTO;
@@ -72,7 +72,7 @@ class PrivatePractitionerServiceTest {
     @Test
     void shouldRegisterPrivatePractitioner() {
         mockUser();
-        service.registerPrivatePractitioner(DR_KRANSTEGE_REGISTREATION_REQUEST_DTO);
+        service.registerPrivatePractitioner(DR_KRANSTEGE_REGISTRATION_REQUEST_DTO);
         verify(privatePractitionerIntegrationService).registerPrivatePractitioner(DR_KRANSTEGE_REGISTREATION_REQUEST);
     }
 
@@ -103,7 +103,7 @@ class PrivatePractitionerServiceTest {
     void shouldUpdatePrivatePractitioner() {
         when(privatePractitionerUpdateRequestConverter.convert(DR_KRANSTEGE_UPDATE_REQUEST_DTO, webCertUserService)).thenReturn(
             DR_KRANSTEGE_UPDATE_REQUEST_INTEGRATION_DTO);
-        
+
         when(privatePractitionerIntegrationService.updatePrivatePractitioner(DR_KRANSTEGE_UPDATE_REQUEST_INTEGRATION_DTO)).thenReturn(
             DR_KRANSTEGE);
 

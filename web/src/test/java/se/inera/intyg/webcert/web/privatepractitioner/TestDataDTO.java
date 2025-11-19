@@ -69,27 +69,10 @@ public class TestDataDTO {
     public static final List<CodeDTO> DR_KRANSTEGE_LICENSED_HEALTHCARE_PROFESSIONS =
         List.of(new CodeDTO("LK", "Läkare"));
 
-    public static final PrivatePractitionerDetails DR_KRANSTEGE_REGISTREATION_REQUEST_DTO = kranstegeRegistrationRequest().build();
+    public static final PrivatePractitionerDetails DR_KRANSTEGE_REGISTRATION_REQUEST_DTO = kranstegeRegistrationRequest().build();
     public static final PrivatePractitionerDetails DR_KRANSTEGE_UPDATE_REQUEST_DTO = kranstegeUpdateRequest().build();
     public static final PrivatePractitionerDetailsRequest DR_KRANSTEGE_UPDATE_REQUEST_INTEGRATION_DTO = kranstegeRequestUpdate().build();
-
-    private static PrivatePractitionerDetailsRequestBuilder kranstegeRequestUpdate() {
-        return PrivatePractitionerDetailsRequest.builder()
-            .position(DR_KRANSTEGE_POSITION)
-            .name(DR_KRANSTEGE_NAME)
-            .personId(DR_KRANSTEGE_PERSON_ID)
-            .careUnitName(DR_KRANSTEGE_CARE_UNIT_NAME)
-            .typeOfCare(DR_KRANSTEGE_TYPE_OF_CARE)
-            .healthcareServiceType(DR_KRANSTEGE_HEALTHCARE_SERVICE_TYPE)
-            .workplaceCode(DR_KRANSTEGE_WORKPLACE_CODE)
-            .phoneNumber(DR_KRANSTEGE_PHONE_NUMBER)
-            .email(DR_KRANSTEGE_EMAIL)
-            .address(DR_KRANSTEGE_ADDRESS)
-            .zipCode(DR_KRANSTEGE_ZIP_CODE)
-            .city(DR_KRANSTEGE_CITY)
-            .municipality(DR_KRANSTEGE_MUNICIPALITY)
-            .county(DR_KRANSTEGE_COUNTY);
-    }
+    public static final PrivatePractitionerDetailsRequest DR_KRANSTEGE_REGISTRATION_REQUEST_INTEGRATION_DTO = kranstegeRequestRegistration().build();
 
     public static final PrivatePractitionerConfigResponse PRIVATE_PRACTITIONER_CONFIG_DTO = PrivatePractitionerConfigResponse
         .builder()
@@ -107,22 +90,14 @@ public class TestDataDTO {
     public static PrivatePractitionerResponse DR_KRANSTEGE_RESPONSE_DTO = kranstegeResponse().build();
 
     public static PrivatePractitionerDetailsBuilder kranstegeRegistrationRequest() {
-        return PrivatePractitionerDetails.builder()
-            .position(DR_KRANSTEGE_POSITION)
-            .careUnitName(DR_KRANSTEGE_CARE_UNIT_NAME)
-            .typeOfCare(DR_KRANSTEGE_TYPE_OF_CARE)
-            .healthcareServiceType(DR_KRANSTEGE_HEALTHCARE_SERVICE_TYPE)
-            .workplaceCode(DR_KRANSTEGE_WORKPLACE_CODE)
-            .phoneNumber(DR_KRANSTEGE_PHONE_NUMBER)
-            .email(DR_KRANSTEGE_EMAIL)
-            .address(DR_KRANSTEGE_ADDRESS)
-            .zipCode(DR_KRANSTEGE_ZIP_CODE)
-            .city(DR_KRANSTEGE_CITY)
-            .municipality(DR_KRANSTEGE_MUNICIPALITY)
-            .county(DR_KRANSTEGE_COUNTY);
+        return kranstegeDetailsRequest();
     }
 
     private static PrivatePractitionerDetailsBuilder kranstegeUpdateRequest() {
+        return kranstegeDetailsRequest();
+    }
+
+    private static PrivatePractitionerDetailsBuilder kranstegeDetailsRequest() {
         return PrivatePractitionerDetails.builder()
             .position(DR_KRANSTEGE_POSITION)
             .careUnitName(DR_KRANSTEGE_CARE_UNIT_NAME)
@@ -138,7 +113,7 @@ public class TestDataDTO {
             .county(DR_KRANSTEGE_COUNTY);
     }
 
-    public static PrivatePractitionerResponseBuilder kranstegeResponse() {
+    private static PrivatePractitionerResponseBuilder kranstegeResponse() {
         return PrivatePractitionerResponse.builder()
             .personId(DR_KRANSTEGE_PERSON_ID)
             .name(DR_KRANSTEGE_NAME)
@@ -156,5 +131,30 @@ public class TestDataDTO {
             .county(DR_KRANSTEGE_COUNTY);
     }
 
+    private static PrivatePractitionerDetailsRequestBuilder kranstegeRequestRegistration() {
+        return kranstegeDetailsResponse();
+    }
+
+    private static PrivatePractitionerDetailsRequestBuilder kranstegeRequestUpdate() {
+        return kranstegeDetailsResponse();
+    }
+
+    private static PrivatePractitionerDetailsRequestBuilder kranstegeDetailsResponse() {
+        return PrivatePractitionerDetailsRequest.builder()
+            .personId(DR_KRANSTEGE_PERSON_ID)
+            .position(DR_KRANSTEGE_POSITION)
+            .name(DR_KRANSTEGE_NAME)
+            .careUnitName(DR_KRANSTEGE_CARE_UNIT_NAME)
+            .typeOfCare(DR_KRANSTEGE_TYPE_OF_CARE)
+            .healthcareServiceType(DR_KRANSTEGE_HEALTHCARE_SERVICE_TYPE)
+            .workplaceCode(DR_KRANSTEGE_WORKPLACE_CODE)
+            .phoneNumber(DR_KRANSTEGE_PHONE_NUMBER)
+            .email(DR_KRANSTEGE_EMAIL)
+            .address(DR_KRANSTEGE_ADDRESS)
+            .zipCode(DR_KRANSTEGE_ZIP_CODE)
+            .city(DR_KRANSTEGE_CITY)
+            .municipality(DR_KRANSTEGE_MUNICIPALITY)
+            .county(DR_KRANSTEGE_COUNTY);
+    }
 
 }
