@@ -106,7 +106,6 @@ public class TestData {
     public static PrivatePractitionerDetailsRequest kranstegeRegisterPractitionerRequest() {
         return PrivatePractitionerDetailsRequest.builder()
             .personId(DR_KRANSTEGE_PERSON_ID)
-            .name(DR_KRANSTEGE_NAME)
             .position(DR_KRANSTEGE_POSITION)
             .careUnitName(DR_KRANSTEGE_CARE_UNIT_NAME)
             .typeOfCare(DR_KRANSTEGE_TYPE_OF_CARE)

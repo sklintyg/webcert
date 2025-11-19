@@ -26,7 +26,6 @@ import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.D
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_EMAIL;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_HEALTHCARE_SERVICE_TYPE;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_MUNICIPALITY;
-import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_NAME;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_PERSON_ID;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_PHONE_NUMBER;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_POSITION;
@@ -116,7 +115,6 @@ public class TestDataDTO {
     private static PrivatePractitionerResponseBuilder kranstegeResponse() {
         return PrivatePractitionerResponse.builder()
             .personId(DR_KRANSTEGE_PERSON_ID)
-            .name(DR_KRANSTEGE_NAME)
             .position(DR_KRANSTEGE_POSITION)
             .careUnitName(DR_KRANSTEGE_CARE_UNIT_NAME)
             .typeOfCare(DR_KRANSTEGE_TYPE_OF_CARE)
@@ -143,7 +141,6 @@ public class TestDataDTO {
         return PrivatePractitionerDetailsRequest.builder()
             .personId(DR_KRANSTEGE_PERSON_ID)
             .position(DR_KRANSTEGE_POSITION)
-            .name(DR_KRANSTEGE_NAME)
             .careUnitName(DR_KRANSTEGE_CARE_UNIT_NAME)
             .typeOfCare(DR_KRANSTEGE_TYPE_OF_CARE)
             .healthcareServiceType(DR_KRANSTEGE_HEALTHCARE_SERVICE_TYPE)

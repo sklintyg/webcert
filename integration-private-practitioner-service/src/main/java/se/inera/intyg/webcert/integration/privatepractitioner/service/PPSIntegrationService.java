@@ -110,4 +110,16 @@ public class PPSIntegrationService {
             .retrieve()
             .body(PrivatePractitioner.class);
     }
+
+    public PrivatePractitioner updatePrivatePractitioner(PrivatePractitionerDetailsRequest privatePractitioner) {
+        return ppsRestClient
+            .put()
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
+            .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
+            .body(privatePractitioner)
+            .retrieve()
+            .body(PrivatePractitioner.class);
+    }
 }

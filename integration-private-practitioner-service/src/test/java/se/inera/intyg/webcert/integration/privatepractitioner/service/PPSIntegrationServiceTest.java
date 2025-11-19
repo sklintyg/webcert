@@ -194,6 +194,48 @@ class PPSIntegrationServiceTest {
     }
 
     @Nested
+    class TestUpdate {
+
+        @Captor
+        private ArgumentCaptor<PrivatePractitionerDetailsRequest> requestCaptor;
+
+        @BeforeEach
+        void setUp() {
+            MDC.put(MdcLogConstants.SESSION_ID_KEY, SESSION_ID);
+            MDC.put(MdcLogConstants.TRACE_ID_KEY, TRACE_ID);
+
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            when(ppsRestClient.put()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.accept(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(LOG_TRACE_ID_HEADER, TRACE_ID)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(LOG_SESSION_ID_HEADER, SESSION_ID)).thenReturn(
+                requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(PrivatePractitionerDetailsRequest.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+        }
+
+        @Test
+        void shouldUpdatePrivatePractitioner() {
+            when(responseSpec.body(PrivatePractitioner.class)).thenReturn(DR_KRANSTEGE);
+            final var result = ppsIntegrationService.updatePrivatePractitioner(kranstegeRegisterPractitionerRequest());
+            assertEquals(DR_KRANSTEGE, result);
+        }
+
+        @Test
+        void shouldSendCorrectRequestBody() {
+            when(responseSpec.body(PrivatePractitioner.class)).thenReturn(DR_KRANSTEGE);
+
+            ppsIntegrationService.updatePrivatePractitioner(kranstegeRegisterPractitionerRequest());
+            verify(requestBodyUriSpec).body(requestCaptor.capture());
+
+            assertEquals(kranstegeRegisterPractitionerRequest(), requestCaptor.getValue());
+        }
+    }
+
+    @Nested
     class TestGetHospInformation {
 
         @Captor

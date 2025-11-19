@@ -72,7 +72,7 @@ public class PrivatePractitionerIntegrationService {
     }
 
     public PrivatePractitioner updatePrivatePractitioner(PrivatePractitionerDetailsRequest privatePractitioner) {
-        return null;
+        return ppsIntegrationService.updatePrivatePractitioner(privatePractitioner);
     }
 
     private void validateIdentifier(String personalIdentityNumber) {

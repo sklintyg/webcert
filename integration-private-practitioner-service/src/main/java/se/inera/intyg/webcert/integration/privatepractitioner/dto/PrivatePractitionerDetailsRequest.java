@@ -27,7 +27,6 @@ import lombok.Value;
 public class PrivatePractitionerDetailsRequest {
 
     String personId;
-    String name;
 
     String position;
     String careUnitName;

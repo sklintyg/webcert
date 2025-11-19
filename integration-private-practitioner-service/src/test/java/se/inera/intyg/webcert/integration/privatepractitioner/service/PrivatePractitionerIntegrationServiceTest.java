@@ -37,6 +37,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestClientException;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitioner;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationRequest;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationResponse;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationResultCode;
@@ -112,5 +113,12 @@ class PrivatePractitionerIntegrationServiceTest {
         when(ppsIntegrationService.getPrivatePractitioner(DR_KRANSTEGE_PERSON_ID)).thenReturn(DR_KRANSTEGE);
         final var result = service.getPrivatePractitioner(DR_KRANSTEGE_PERSON_ID);
         assertEquals(DR_KRANSTEGE, result);
+    }
+
+    @Test
+    void shallUpdateRegisteredPrivatePractitioner() {
+        final var result = service.updatePrivatePractitioner(kranstegeRegisterPractitionerRequest());
+
+        assertEquals(PrivatePractitioner.builder().build(), result);
     }
 }
