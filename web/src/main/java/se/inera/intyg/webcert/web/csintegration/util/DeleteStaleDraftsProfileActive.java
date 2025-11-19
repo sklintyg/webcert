@@ -27,8 +27,8 @@ import org.springframework.stereotype.Component;
 @Component
 @Profile("delete-stale-drafts-active")
 public class DeleteStaleDraftsProfileActive implements DeleteStaleDraftsProfile {
-
-    @Value("${delete.stale.drafts.activation.date}")
+    
+    @Value("#{T(java.time.LocalDate).parse('${delete.stale.drafts.activation.date}')}")
     private LocalDate activationDate;
 
     @Override
