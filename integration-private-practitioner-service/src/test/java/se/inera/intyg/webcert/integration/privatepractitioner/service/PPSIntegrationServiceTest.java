@@ -26,6 +26,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.integration.privatepractitioner.service.testdata.TestData.DR_KRANSTEGE;
 import static se.inera.intyg.webcert.integration.privatepractitioner.service.testdata.TestData.DR_KRANSTEGE_HOSP_INFO;
+import static se.inera.intyg.webcert.integration.privatepractitioner.service.testdata.TestData.DR_KRANSTEGE_UPDATE_REQUEST;
 import static se.inera.intyg.webcert.integration.privatepractitioner.service.testdata.TestData.PRIVATE_PRACTITIONER_CONFIG;
 import static se.inera.intyg.webcert.integration.privatepractitioner.service.testdata.TestData.kranstegeRegisterPractitionerRequest;
 import static se.inera.intyg.webcert.integration.privatepractitioner.service.testdata.TestDataConstants.DR_KRANSTEGE_PERSON_ID;
@@ -55,7 +56,8 @@ import se.inera.intyg.webcert.integration.privatepractitioner.dto.GetHospInforma
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.HospInformation;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitioner;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerConfiguration;
-import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerDetailsRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerRegistrationRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerUpdateRequest;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationRequest;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationResponse;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationResultCode;
@@ -155,7 +157,7 @@ class PPSIntegrationServiceTest {
     class TestRegister {
 
         @Captor
-        private ArgumentCaptor<PrivatePractitionerDetailsRequest> requestCaptor;
+        private ArgumentCaptor<PrivatePractitionerRegistrationRequest> requestCaptor;
 
         @BeforeEach
         void setUp() {
@@ -171,7 +173,7 @@ class PPSIntegrationServiceTest {
             when(requestBodyUriSpec.header(LOG_TRACE_ID_HEADER, TRACE_ID)).thenReturn(requestBodyUriSpec);
             when(requestBodyUriSpec.header(LOG_SESSION_ID_HEADER, SESSION_ID)).thenReturn(
                 requestBodyUriSpec);
-            when(requestBodyUriSpec.body(any(PrivatePractitionerDetailsRequest.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(PrivatePractitionerRegistrationRequest.class))).thenReturn(requestBodyUriSpec);
             when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
         }
 
@@ -197,7 +199,7 @@ class PPSIntegrationServiceTest {
     class TestUpdate {
 
         @Captor
-        private ArgumentCaptor<PrivatePractitionerDetailsRequest> requestCaptor;
+        private ArgumentCaptor<PrivatePractitionerUpdateRequest> requestCaptor;
 
         @BeforeEach
         void setUp() {
@@ -213,14 +215,14 @@ class PPSIntegrationServiceTest {
             when(requestBodyUriSpec.header(LOG_TRACE_ID_HEADER, TRACE_ID)).thenReturn(requestBodyUriSpec);
             when(requestBodyUriSpec.header(LOG_SESSION_ID_HEADER, SESSION_ID)).thenReturn(
                 requestBodyUriSpec);
-            when(requestBodyUriSpec.body(any(PrivatePractitionerDetailsRequest.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(PrivatePractitionerUpdateRequest.class))).thenReturn(requestBodyUriSpec);
             when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
         }
 
         @Test
         void shouldUpdatePrivatePractitioner() {
             when(responseSpec.body(PrivatePractitioner.class)).thenReturn(DR_KRANSTEGE);
-            final var result = ppsIntegrationService.updatePrivatePractitioner(kranstegeRegisterPractitionerRequest());
+            final var result = ppsIntegrationService.updatePrivatePractitioner(DR_KRANSTEGE_UPDATE_REQUEST);
             assertEquals(DR_KRANSTEGE, result);
         }
 
@@ -228,10 +230,10 @@ class PPSIntegrationServiceTest {
         void shouldSendCorrectRequestBody() {
             when(responseSpec.body(PrivatePractitioner.class)).thenReturn(DR_KRANSTEGE);
 
-            ppsIntegrationService.updatePrivatePractitioner(kranstegeRegisterPractitionerRequest());
+            ppsIntegrationService.updatePrivatePractitioner(DR_KRANSTEGE_UPDATE_REQUEST);
             verify(requestBodyUriSpec).body(requestCaptor.capture());
 
-            assertEquals(kranstegeRegisterPractitionerRequest(), requestCaptor.getValue());
+            assertEquals(DR_KRANSTEGE_UPDATE_REQUEST, requestCaptor.getValue());
         }
     }
 

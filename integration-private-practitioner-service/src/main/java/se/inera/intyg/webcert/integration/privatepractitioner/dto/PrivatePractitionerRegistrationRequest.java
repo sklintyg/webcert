@@ -24,9 +24,10 @@ import lombok.Value;
 
 @Value
 @Builder
-public class PrivatePractitionerDetailsRequest {
+public class PrivatePractitionerRegistrationRequest {
 
     String personId;
+    String name;
 
     String position;
     String careUnitName;

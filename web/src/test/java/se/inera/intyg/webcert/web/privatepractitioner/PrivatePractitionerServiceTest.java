@@ -42,7 +42,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.integration.privatepractitioner.service.PrivatePractitionerIntegrationService;
-import se.inera.intyg.webcert.web.privatepractitioner.converter.PrivatePractitionerDetailsConverter;
+import se.inera.intyg.webcert.web.privatepractitioner.converter.RegisterPrivatePractitionerConverter;
+import se.inera.intyg.webcert.web.privatepractitioner.converter.UpdatePrivatePractitionerConverter;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerConfigResponse;
@@ -55,7 +56,9 @@ class PrivatePractitionerServiceTest {
     @Mock
     PrivatePractitionerIntegrationService privatePractitionerIntegrationService;
     @Mock
-    PrivatePractitionerDetailsConverter privatePractitionerDetailsConverter;
+    RegisterPrivatePractitionerConverter registerPrivatePractitionerConverter;
+    @Mock
+    UpdatePrivatePractitionerConverter updatePrivatePractitionerConverter;
     @InjectMocks
     PrivatePractitionerService service;
 
@@ -71,7 +74,7 @@ class PrivatePractitionerServiceTest {
 
     @Test
     void shouldRegisterPrivatePractitioner() {
-        when(privatePractitionerDetailsConverter.convert(DR_KRANSTEGE_REGISTRATION_REQUEST_DTO, webCertUserService)).thenReturn(
+        when(registerPrivatePractitionerConverter.convert(DR_KRANSTEGE_REGISTRATION_REQUEST_DTO, webCertUserService)).thenReturn(
             DR_KRANSTEGE_REGISTREATION_REQUEST);
 
         service.registerPrivatePractitioner(DR_KRANSTEGE_REGISTRATION_REQUEST_DTO);
@@ -104,7 +107,7 @@ class PrivatePractitionerServiceTest {
 
     @Test
     void shouldUpdatePrivatePractitioner() {
-        when(privatePractitionerDetailsConverter.convert(DR_KRANSTEGE_UPDATE_REQUEST_DTO, webCertUserService)).thenReturn(
+        when(updatePrivatePractitionerConverter.convert(DR_KRANSTEGE_UPDATE_REQUEST_DTO, webCertUserService)).thenReturn(
             DR_KRANSTEGE_UPDATE_REQUEST_INTEGRATION_DTO);
 
         when(privatePractitionerIntegrationService.updatePrivatePractitioner(DR_KRANSTEGE_UPDATE_REQUEST_INTEGRATION_DTO)).thenReturn(

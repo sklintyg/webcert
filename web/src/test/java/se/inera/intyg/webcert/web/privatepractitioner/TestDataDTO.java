@@ -26,6 +26,7 @@ import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.D
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_EMAIL;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_HEALTHCARE_SERVICE_TYPE;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_MUNICIPALITY;
+import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_NAME;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_PERSON_ID;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_PHONE_NUMBER;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_POSITION;
@@ -35,8 +36,10 @@ import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.D
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_ZIP_CODE;
 
 import java.util.List;
-import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerDetailsRequest;
-import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerDetailsRequest.PrivatePractitionerDetailsRequestBuilder;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerRegistrationRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerRegistrationRequest.PrivatePractitionerRegistrationRequestBuilder;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerUpdateRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerUpdateRequest.PrivatePractitionerUpdateRequestBuilder;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.CodeDTO;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.HospInformationResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerConfigResponse;
@@ -70,8 +73,8 @@ public class TestDataDTO {
 
     public static final PrivatePractitionerDetails DR_KRANSTEGE_REGISTRATION_REQUEST_DTO = kranstegeRegistrationRequest().build();
     public static final PrivatePractitionerDetails DR_KRANSTEGE_UPDATE_REQUEST_DTO = kranstegeUpdateRequest().build();
-    public static final PrivatePractitionerDetailsRequest DR_KRANSTEGE_UPDATE_REQUEST_INTEGRATION_DTO = kranstegeRequestUpdate().build();
-    public static final PrivatePractitionerDetailsRequest DR_KRANSTEGE_REGISTRATION_REQUEST_INTEGRATION_DTO = kranstegeRequestRegistration().build();
+    public static final PrivatePractitionerUpdateRequest DR_KRANSTEGE_UPDATE_REQUEST_INTEGRATION_DTO = kranstegeRequestUpdate().build();
+    public static final PrivatePractitionerRegistrationRequest DR_KRANSTEGE_REGISTRATION_REQUEST_INTEGRATION_DTO = kranstegeRequestRegistration().build();
 
     public static final PrivatePractitionerConfigResponse PRIVATE_PRACTITIONER_CONFIG_DTO = PrivatePractitionerConfigResponse
         .builder()
@@ -129,16 +132,26 @@ public class TestDataDTO {
             .county(DR_KRANSTEGE_COUNTY);
     }
 
-    private static PrivatePractitionerDetailsRequestBuilder kranstegeRequestRegistration() {
-        return kranstegeDetailsResponse();
+    private static PrivatePractitionerRegistrationRequestBuilder kranstegeRequestRegistration() {
+        return PrivatePractitionerRegistrationRequest.builder()
+            .personId(DR_KRANSTEGE_PERSON_ID)
+            .name(DR_KRANSTEGE_NAME)
+            .position(DR_KRANSTEGE_POSITION)
+            .careUnitName(DR_KRANSTEGE_CARE_UNIT_NAME)
+            .typeOfCare(DR_KRANSTEGE_TYPE_OF_CARE)
+            .healthcareServiceType(DR_KRANSTEGE_HEALTHCARE_SERVICE_TYPE)
+            .workplaceCode(DR_KRANSTEGE_WORKPLACE_CODE)
+            .phoneNumber(DR_KRANSTEGE_PHONE_NUMBER)
+            .email(DR_KRANSTEGE_EMAIL)
+            .address(DR_KRANSTEGE_ADDRESS)
+            .zipCode(DR_KRANSTEGE_ZIP_CODE)
+            .city(DR_KRANSTEGE_CITY)
+            .municipality(DR_KRANSTEGE_MUNICIPALITY)
+            .county(DR_KRANSTEGE_COUNTY);
     }
 
-    private static PrivatePractitionerDetailsRequestBuilder kranstegeRequestUpdate() {
-        return kranstegeDetailsResponse();
-    }
-
-    private static PrivatePractitionerDetailsRequestBuilder kranstegeDetailsResponse() {
-        return PrivatePractitionerDetailsRequest.builder()
+    private static PrivatePractitionerUpdateRequestBuilder kranstegeRequestUpdate() {
+        return PrivatePractitionerUpdateRequest.builder()
             .personId(DR_KRANSTEGE_PERSON_ID)
             .position(DR_KRANSTEGE_POSITION)
             .careUnitName(DR_KRANSTEGE_CARE_UNIT_NAME)

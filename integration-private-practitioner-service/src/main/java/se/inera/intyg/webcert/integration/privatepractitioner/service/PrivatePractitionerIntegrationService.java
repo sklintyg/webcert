@@ -28,7 +28,8 @@ import se.inera.intyg.webcert.integration.privatepractitioner.dto.GetHospInforma
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.HospInformation;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitioner;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerConfiguration;
-import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerDetailsRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerRegistrationRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerUpdateRequest;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationRequest;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationResponse;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationResultCode;
@@ -62,7 +63,7 @@ public class PrivatePractitionerIntegrationService {
         return ppsIntegrationService.getHospInformation(new GetHospInformationRequest(personalOrHsaIdIdentityNumber));
     }
 
-    public PrivatePractitioner registerPrivatePractitioner(PrivatePractitionerDetailsRequest registrationRequest) {
+    public PrivatePractitioner registerPrivatePractitioner(PrivatePractitionerRegistrationRequest registrationRequest) {
         return ppsIntegrationService.registerPrivatePractitioner(registrationRequest);
     }
 
@@ -71,7 +72,7 @@ public class PrivatePractitionerIntegrationService {
         return ppsIntegrationService.getPrivatePractitioner(personId);
     }
 
-    public PrivatePractitioner updatePrivatePractitioner(PrivatePractitionerDetailsRequest privatePractitioner) {
+    public PrivatePractitioner updatePrivatePractitioner(PrivatePractitionerUpdateRequest privatePractitioner) {
         return ppsIntegrationService.updatePrivatePractitioner(privatePractitioner);
     }
 

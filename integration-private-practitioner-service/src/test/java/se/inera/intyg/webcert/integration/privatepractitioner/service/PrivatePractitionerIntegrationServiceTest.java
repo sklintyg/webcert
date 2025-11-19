@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.integration.privatepractitioner.service.testdata.TestData.DR_KRANSTEGE;
 import static se.inera.intyg.webcert.integration.privatepractitioner.service.testdata.TestData.DR_KRANSTEGE_HOSP_INFO;
+import static se.inera.intyg.webcert.integration.privatepractitioner.service.testdata.TestData.DR_KRANSTEGE_UPDATE_REQUEST;
 import static se.inera.intyg.webcert.integration.privatepractitioner.service.testdata.TestData.PRIVATE_PRACTITIONER_CONFIG;
 import static se.inera.intyg.webcert.integration.privatepractitioner.service.testdata.TestData.kranstegeRegisterPractitionerRequest;
 import static se.inera.intyg.webcert.integration.privatepractitioner.service.testdata.TestDataConstants.DR_KRANSTEGE_PERSON_ID;
@@ -37,7 +38,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestClientException;
-import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitioner;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationRequest;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationResponse;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationResultCode;
@@ -117,8 +117,9 @@ class PrivatePractitionerIntegrationServiceTest {
 
     @Test
     void shallUpdateRegisteredPrivatePractitioner() {
-        final var result = service.updatePrivatePractitioner(kranstegeRegisterPractitionerRequest());
+        when(ppsIntegrationService.updatePrivatePractitioner(DR_KRANSTEGE_UPDATE_REQUEST)).thenReturn(DR_KRANSTEGE);
+        final var result = service.updatePrivatePractitioner(DR_KRANSTEGE_UPDATE_REQUEST);
 
-        assertEquals(PrivatePractitioner.builder().build(), result);
+        assertEquals(DR_KRANSTEGE, result);
     }
 }

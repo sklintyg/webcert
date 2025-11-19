@@ -6,8 +6,8 @@ import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_HSA_ID;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_NAME;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_PERSON_ID;
-import static se.inera.intyg.webcert.web.privatepractitioner.TestDataDTO.DR_KRANSTEGE_REGISTRATION_REQUEST_DTO;
-import static se.inera.intyg.webcert.web.privatepractitioner.TestDataDTO.DR_KRANSTEGE_REGISTRATION_REQUEST_INTEGRATION_DTO;
+import static se.inera.intyg.webcert.web.privatepractitioner.TestDataDTO.DR_KRANSTEGE_UPDATE_REQUEST_DTO;
+import static se.inera.intyg.webcert.web.privatepractitioner.TestDataDTO.DR_KRANSTEGE_UPDATE_REQUEST_INTEGRATION_DTO;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,12 +17,12 @@ import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @ExtendWith(MockitoExtension.class)
-class PrivatePractitionerDetailsConverterTest {
+class UpdatePrivatePractitionerConverterTest {
 
     @Mock
     private WebCertUserService webCertUserService;
 
-    private final PrivatePractitionerDetailsConverter converter = new PrivatePractitionerDetailsConverter();
+    private final UpdatePrivatePractitionerConverter converter = new UpdatePrivatePractitionerConverter();
 
     private void mockUser() {
         final var user = new WebCertUser();
@@ -33,12 +33,12 @@ class PrivatePractitionerDetailsConverterTest {
     }
 
     @Test
-    void shouldConvertRegisterRequest() {
+    void shouldConvertUpdateRequest() {
         mockUser();
 
-        final var result = converter.convert(DR_KRANSTEGE_REGISTRATION_REQUEST_DTO, webCertUserService);
+        final var result = converter.convert(DR_KRANSTEGE_UPDATE_REQUEST_DTO, webCertUserService);
 
-        assertEquals(DR_KRANSTEGE_REGISTRATION_REQUEST_INTEGRATION_DTO, result);
+        assertEquals(DR_KRANSTEGE_UPDATE_REQUEST_INTEGRATION_DTO, result);
     }
 
     @Test
@@ -46,7 +46,7 @@ class PrivatePractitionerDetailsConverterTest {
         when(webCertUserService.getUser()).thenReturn(null);
 
         assertThrows(IllegalStateException.class, () ->
-            converter.convert(DR_KRANSTEGE_REGISTRATION_REQUEST_DTO, webCertUserService)
+            converter.convert(DR_KRANSTEGE_UPDATE_REQUEST_DTO, webCertUserService)
         );
     }
 }
