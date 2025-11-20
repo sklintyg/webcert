@@ -71,7 +71,7 @@ public class DeleteDraftsFromCertificateService {
 
             deleteHandelseForStaleDraftService.delete(certificateId);
             publishCertificateStatusUpdateService.publish(deletedCertificate, HandelsekodEnum.RADERA, certificateXml);
-
+            
             monitoringLogService.logUtkastPruned(
                 deletedCertificate.getMetadata().getId(),
                 deletedCertificate.getMetadata().getType(),
