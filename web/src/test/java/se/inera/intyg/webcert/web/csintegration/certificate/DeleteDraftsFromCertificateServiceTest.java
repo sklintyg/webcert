@@ -39,6 +39,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
@@ -63,8 +64,21 @@ class DeleteDraftsFromCertificateServiceTest {
     PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
     @Mock
     MonitoringLogService monitoringLogService;
+    @Mock
+    HandelseRepository handelseRepository;
     @InjectMocks
     DeleteDraftsFromCertificateService deleteDraftsFromCertificateService;
+
+    private static Certificate getCertificate(String id) {
+        final var certificate = new Certificate();
+        certificate.setMetadata(
+            CertificateMetadata.builder()
+                .id(id)
+                .type(TYPE)
+                .build()
+        );
+        return certificate;
+    }
 
     @Test
     void shouldReturnZeroIfCertificateServiceProfileIsNotActive() {
@@ -172,15 +186,24 @@ class DeleteDraftsFromCertificateServiceTest {
         verify(csIntegrationService, times(2)).deleteStaleDraft(any());
     }
 
-    private static Certificate getCertificate(String id) {
-        final var certificate = new Certificate();
-        certificate.setMetadata(
-            CertificateMetadata.builder()
-                .id(id)
-                .type(TYPE)
-                .build()
-        );
-        return certificate;
+    @Test
+    void shouldDeleteHandelserForEachDeletedDraft() {
+        final var staleDraftIds = List.of(CERTIFICATE_ID_1, CERTIFICATE_ID_2);
+
+        doReturn(true).when(certificateServiceProfile).active();
+        doReturn(staleDraftIds).when(csIntegrationService).listStaleDrafts(any());
+
+        doReturn("xml1").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_1);
+        doReturn("xml2").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_2);
+
+        doReturn(getCertificate(CERTIFICATE_ID_1), getCertificate(CERTIFICATE_ID_2))
+            .when(csIntegrationService).deleteStaleDraft(any());
+
+        deleteDraftsFromCertificateService.delete(CUTOFF_DATE);
+
+        verify(handelseRepository, times(1)).deleteByIntygsId(CERTIFICATE_ID_1);
+        verify(handelseRepository, times(1)).deleteByIntygsId(CERTIFICATE_ID_2);
+
     }
 }
 

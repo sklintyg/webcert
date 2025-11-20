@@ -26,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
+import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
@@ -41,6 +42,7 @@ public class DeleteDraftsFromCertificateService {
     private final CertificateServiceProfile certificateServiceProfile;
     private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
     private final MonitoringLogService monitoringLogService;
+    private final HandelseRepository handelseRepository;
 
     public int delete(LocalDateTime cutoffDate) {
         if (!certificateServiceProfile.active()) {
@@ -67,6 +69,8 @@ public class DeleteDraftsFromCertificateService {
             final var deletedCertificate = csIntegrationService.deleteStaleDraft(
                 csIntegrationRequestFactory.getDeleteStaleDraftsRequestDTO(certificateId)
             );
+
+            handelseRepository.deleteByIntygsId(certificateId);
 
             publishCertificateStatusUpdateService.publish(deletedCertificate, HandelsekodEnum.RADERA, certificateXml);
 

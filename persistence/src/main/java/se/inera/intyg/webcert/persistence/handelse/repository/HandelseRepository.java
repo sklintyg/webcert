@@ -51,6 +51,8 @@ public interface HandelseRepository extends JpaRepository<Handelse, Long> {
 
     List<Handelse> findByVardgivarId(String careProviderId);
 
+    void deleteByIntygsId(String intygsId);
+
     @Query("select h.id from Handelse h where h.intygsId in :certificateIds")
     List<Long> findHandelseIdsByCertificateIds(@Param("certificateIds") List<String> certificateIds);
 
