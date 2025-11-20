@@ -40,14 +40,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.webcert.integration.privatepractitioner.service.PrivatePractitionerIntegrationService;
+import se.inera.intyg.webcert.web.service.facade.GetUserResourceLinks;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerConfigResponse;
-
-import java.util.Map;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
 @ExtendWith(MockitoExtension.class)
 class PrivatePractitionerServiceTest {
@@ -56,29 +55,32 @@ class PrivatePractitionerServiceTest {
     WebCertUserService webCertUserService;
     @Mock
     PrivatePractitionerIntegrationService privatePractitionerIntegrationService;
+    @Mock
+    GetUserResourceLinks getUserResourceLinks;
     @InjectMocks
     PrivatePractitionerService service;
 
     WebCertUser user;
 
-    void mockUser(Map<String, Role> roles) {
+    void mockUser() {
         user = new WebCertUser();
         user.setPersonId(DR_KRANSTEGE_PERSON_ID);
         user.setNamn(DR_KRANSTEGE_NAME);
         user.setHsaId(DR_KRANSTEGE_HSA_ID);
-        user.setRoles(roles);
         when(webCertUserService.getUser()).thenReturn(user);
     }
 
     @Test
     void shouldThrowIfPrivatePractitionerIdNotUnauthorized() {
-        mockUser(Map.of(AuthoritiesConstants.ROLE_ADMIN, new Role()));
+        mockUser();
+        when(getUserResourceLinks.get(user)).thenReturn(new ResourceLinkDTO[]{ResourceLinkDTO.create(ResourceLinkTypeDTO.ACCESS_SIGNED_CERTIFICATES_LIST, "", "", true)});
         assertThrows(IllegalStateException.class, () -> service.registerPrivatePractitioner(DR_KRANSTEGE_REGISTREATION_REQUEST_DTO));
     }
 
     @Test
     void shouldRegisterPrivatePractitioner() {
-        mockUser(Map.of(AuthoritiesConstants.ROLE_PRIVATLAKARE_OBEHORIG, new Role()));
+        mockUser();
+        when(getUserResourceLinks.get(user)).thenReturn(new ResourceLinkDTO[]{ResourceLinkDTO.create(ResourceLinkTypeDTO.ACCESS_REGISTER_PRIVATE_PRACTITIONER, "", "", true)});
         service.registerPrivatePractitioner(DR_KRANSTEGE_REGISTREATION_REQUEST_DTO);
         verify(privatePractitionerIntegrationService).registerPrivatePractitioner(DR_KRANSTEGE_REGISTREATION_REQUEST);
     }
@@ -92,7 +94,7 @@ class PrivatePractitionerServiceTest {
 
     @Test
     void shouldReturnHospInformation() {
-        mockUser(null);
+        mockUser();
         when(privatePractitionerIntegrationService.getHospInformation(DR_KRANSTEGE_PERSON_ID)).thenReturn(DR_KRANSTEGE_HOSP_INFO);
         final var result = service.getHospInformation();
         assertEquals(DR_KRANSTEGE_HOSP_INFORMATION_RESPONSE_DTO, result);
@@ -100,7 +102,7 @@ class PrivatePractitionerServiceTest {
 
     @Test
     void shouldReturnPrivatePractitioner() {
-        mockUser(null);
+        mockUser();
         when(privatePractitionerIntegrationService.getPrivatePractitioner(DR_KRANSTEGE_PERSON_ID)).thenReturn(DR_KRANSTEGE);
         final var actual = service.getPrivatePractitioner();
         assertEquals(DR_KRANSTEGE_RESPONSE_DTO, actual);
