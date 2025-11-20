@@ -39,7 +39,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
-import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
@@ -65,7 +64,7 @@ class DeleteDraftsFromCertificateServiceTest {
     @Mock
     MonitoringLogService monitoringLogService;
     @Mock
-    HandelseRepository handelseRepository;
+    DeleteHandelseForStaleDraftService deleteHandelseForStaleDraftService;
     @InjectMocks
     DeleteDraftsFromCertificateService deleteDraftsFromCertificateService;
 
@@ -201,9 +200,7 @@ class DeleteDraftsFromCertificateServiceTest {
 
         deleteDraftsFromCertificateService.delete(CUTOFF_DATE);
 
-        verify(handelseRepository, times(1)).deleteByIntygsId(CERTIFICATE_ID_1);
-        verify(handelseRepository, times(1)).deleteByIntygsId(CERTIFICATE_ID_2);
-
+        verify(deleteHandelseForStaleDraftService, times(1)).delete(CERTIFICATE_ID_1);
+        verify(deleteHandelseForStaleDraftService, times(1)).delete(CERTIFICATE_ID_2);
     }
 }
-

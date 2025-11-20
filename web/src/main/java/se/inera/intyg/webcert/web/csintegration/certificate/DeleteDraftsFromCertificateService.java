@@ -19,7 +19,6 @@
 
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
-import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -27,7 +26,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
-import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
@@ -43,9 +41,8 @@ public class DeleteDraftsFromCertificateService {
     private final CertificateServiceProfile certificateServiceProfile;
     private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
     private final MonitoringLogService monitoringLogService;
-    private final HandelseRepository handelseRepository;
+    private final DeleteHandelseForStaleDraftService deleteHandelseForStaleDraftService;
 
-    @Transactional
     public int delete(LocalDateTime cutoffDate) {
         if (!certificateServiceProfile.active()) {
             return 0;
@@ -72,8 +69,7 @@ public class DeleteDraftsFromCertificateService {
                 csIntegrationRequestFactory.getDeleteStaleDraftsRequestDTO(certificateId)
             );
 
-            handelseRepository.deleteByIntygsId(certificateId);
-
+            deleteHandelseForStaleDraftService.delete(certificateId);
             publishCertificateStatusUpdateService.publish(deletedCertificate, HandelsekodEnum.RADERA, certificateXml);
 
             monitoringLogService.logUtkastPruned(
