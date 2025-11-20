@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
+import jakarta.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -44,6 +45,7 @@ public class DeleteDraftsFromCertificateService {
     private final MonitoringLogService monitoringLogService;
     private final HandelseRepository handelseRepository;
 
+    @Transactional
     public int delete(LocalDateTime cutoffDate) {
         if (!certificateServiceProfile.active()) {
             return 0;
