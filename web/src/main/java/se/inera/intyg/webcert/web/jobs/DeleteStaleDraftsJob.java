@@ -13,7 +13,6 @@ import se.inera.intyg.webcert.logging.MdcHelper;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.csintegration.certificate.DeleteStaleDraftsService;
-import se.inera.intyg.webcert.web.csintegration.util.DeleteStaleDraftsProfile;
 
 @Slf4j
 @Component
@@ -25,23 +24,17 @@ public class DeleteStaleDraftsJob {
     private static final String LOCK_AT_LEAST = "PT30S";
     private final MdcHelper mdcHelper;
     private final DeleteStaleDraftsService deleteStaleDraftsService;
-    private final DeleteStaleDraftsProfile deleteStaleDraftsProfile;
 
     @Value("${delete.stale.drafts.period:P3M}")
     private String staleDraftsPeriod;
     @Value("${delete.stale.drafts.page.size:1000}")
     private Integer staleDraftsPageSize;
 
-    @Scheduled(cron = "${delete.stale.drafts.cron}")
+    @Scheduled(cron = "${delete.stale.drafts.cron:-}")
     @SchedulerLock(name = JOB_NAME, lockAtLeastFor = LOCK_AT_LEAST, lockAtMostFor = LOCK_AT_MOST)
     @PerformanceLogging(eventAction = "delete-stale-drafts", eventType = MdcLogConstants.EVENT_TYPE_CHANGE,
         eventCategory = MdcLogConstants.EVENT_CATEGORY_PROCESS)
     public void run() {
-        if (!deleteStaleDraftsProfile.active()) {
-            log.info("Not starting job to delete stale drafts since profile is not active");
-            return;
-        }
-
         try {
             MDC.put(MdcLogConstants.TRACE_ID_KEY, mdcHelper.traceId());
             MDC.put(MdcLogConstants.SPAN_ID_KEY, mdcHelper.spanId());
@@ -51,5 +44,11 @@ public class DeleteStaleDraftsJob {
         } finally {
             MDC.clear();
         }
+    }
+
+    @Scheduled(cron = "${delete.stale.drafts.cron.run.once:-}")
+    @SchedulerLock(name = JOB_NAME, lockAtLeastFor = LOCK_AT_LEAST, lockAtMostFor = LOCK_AT_MOST)
+    public void runOnce() {
+        run();
     }
 }
