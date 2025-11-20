@@ -45,10 +45,4 @@ public class DeleteStaleDraftsJob {
             MDC.clear();
         }
     }
-
-    @Scheduled(cron = "${delete.stale.drafts.cron.run.once:-}")
-    @SchedulerLock(name = JOB_NAME, lockAtLeastFor = LOCK_AT_LEAST, lockAtMostFor = LOCK_AT_MOST)
-    public void runOnce() {
-        run();
-    }
 }
