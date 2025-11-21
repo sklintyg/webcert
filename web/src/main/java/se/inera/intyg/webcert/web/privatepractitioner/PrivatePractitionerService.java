@@ -39,13 +39,13 @@ public class PrivatePractitionerService {
 
     private final WebCertUserService webCertUserService;
     private final PrivatePractitionerIntegrationService privatePractitionerIntegrationService;
-    private final PrivatePractitionerAccessValidationHelper privatePractitionerAccessValidationHelper;
+    private final PrivatePractitionerAccessValidationService privatePractitionerAccessValidationService;
     private final RegisterPrivatePractitionerFactory registerPrivatePractitionerFactory;
     private final UpdatePrivatePractitionerFactory updatePrivatePractitionerFactory;
 
     public void registerPrivatePractitioner(PrivatePractitionerDetails privatePractitionerRegisterRequest) {
         final var user = webCertUserService.getUser();
-        if (!privatePractitionerAccessValidationHelper.hasAccessToRegister(user)) {
+        if (!privatePractitionerAccessValidationService.hasAccessToRegister(user)) {
             throw new IllegalStateException("User is not authorized to register as private practitioner");
         }
 
@@ -83,7 +83,7 @@ public class PrivatePractitionerService {
 
     public PrivatePractitionerResponse updatePrivatePractitioner(PrivatePractitionerDetails updatePrivatePractitionerRequest) {
         final var user = webCertUserService.getUser();
-        if (!privatePractitionerAccessValidationHelper.hasAccessToUpdate(user)) {
+        if (!privatePractitionerAccessValidationService.hasAccessToUpdate(user)) {
             throw new IllegalStateException("User is not authorized to update private practitioner details");
         }
         return PrivatePractitionerResponse.convert(

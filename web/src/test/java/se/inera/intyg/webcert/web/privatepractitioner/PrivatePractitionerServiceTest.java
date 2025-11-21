@@ -61,7 +61,7 @@ class PrivatePractitionerServiceTest {
     @Mock
     UpdatePrivatePractitionerFactory updatePrivatePractitionerFactory;
     @Mock
-    PrivatePractitionerAccessValidationHelper privatePractitionerAccessValidationHelper;
+    PrivatePractitionerAccessValidationService privatePractitionerAccessValidationService;
     @InjectMocks
     PrivatePractitionerService service;
 
@@ -78,7 +78,7 @@ class PrivatePractitionerServiceTest {
     @Test
     void shouldThrowIfPrivatePractitionerIdNotUnauthorized() {
         mockUser();
-        when(privatePractitionerAccessValidationHelper.hasAccessToRegister(user)).thenReturn(false);
+        when(privatePractitionerAccessValidationService.hasAccessToRegister(user)).thenReturn(false);
         assertThrows(IllegalStateException.class, () -> service.registerPrivatePractitioner(DR_KRANSTEGE_REGISTRATION_REQUEST_DTO));
     }
 
@@ -88,7 +88,7 @@ class PrivatePractitionerServiceTest {
         when(registerPrivatePractitionerFactory.create(DR_KRANSTEGE_REGISTRATION_REQUEST_DTO)).thenReturn(
             DR_KRANSTEGE_REGISTRATION_REQUEST);
 
-        when(privatePractitionerAccessValidationHelper.hasAccessToRegister(user)).thenReturn(true);
+        when(privatePractitionerAccessValidationService.hasAccessToRegister(user)).thenReturn(true);
 
         service.registerPrivatePractitioner(DR_KRANSTEGE_REGISTRATION_REQUEST_DTO);
         verify(privatePractitionerIntegrationService).registerPrivatePractitioner(DR_KRANSTEGE_REGISTRATION_REQUEST);
@@ -121,7 +121,7 @@ class PrivatePractitionerServiceTest {
     void shouldUpdatePrivatePractitioner() {
         mockUser();
 
-        when(privatePractitionerAccessValidationHelper.hasAccessToUpdate(user)).thenReturn(true);
+        when(privatePractitionerAccessValidationService.hasAccessToUpdate(user)).thenReturn(true);
 
         when(updatePrivatePractitionerFactory.create(DR_KRANSTEGE_UPDATE_REQUEST_DTO)).thenReturn(
             kranstegeRequestUpdate().personId(DR_KRANSTEGE_PERSON_ID).build());

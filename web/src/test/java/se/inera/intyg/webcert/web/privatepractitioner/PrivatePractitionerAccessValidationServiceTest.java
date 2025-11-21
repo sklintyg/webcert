@@ -18,13 +18,13 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
 @ExtendWith(MockitoExtension.class)
-class PrivatePractitionerAccessValidationHelperTest {
+class PrivatePractitionerAccessValidationServiceTest {
 
     @Mock
     private GetUserResourceLinks getUserResourceLinks;
 
     @InjectMocks
-    private PrivatePractitionerAccessValidationHelper accessValidationHelper;
+    private PrivatePractitionerAccessValidationService accessValidationHelper;
 
 
     WebCertUser user;

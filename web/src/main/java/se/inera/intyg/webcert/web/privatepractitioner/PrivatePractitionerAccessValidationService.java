@@ -9,7 +9,7 @@ import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
 @Component
 @RequiredArgsConstructor
-public class PrivatePractitionerAccessValidationHelper {
+public class PrivatePractitionerAccessValidationService {
 
     private final GetUserResourceLinks getUserResourceLinks;
 
