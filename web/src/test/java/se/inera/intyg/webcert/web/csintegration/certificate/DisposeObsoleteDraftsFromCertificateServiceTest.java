@@ -83,7 +83,7 @@ class DisposeObsoleteDraftsFromCertificateServiceTest {
     }
 
     @Test
-    void shouldReturnZeroIfNoStaleDraftsFound() {
+    void shouldReturnZeroIfNoObsoleteDraftsFound() {
         doReturn(true).when(certificateServiceProfile).active();
         doReturn(Collections.emptyList()).when(csIntegrationService).listObsoleteDrafts(any());
 
@@ -98,10 +98,10 @@ class DisposeObsoleteDraftsFromCertificateServiceTest {
 
     @Test
     void shouldDisposeEachDraftIndividually() {
-        final var staleDraftIds = List.of(CERTIFICATE_ID_1, CERTIFICATE_ID_2, CERTIFICATE_ID_3);
+        final var obsoleteDraftIds = List.of(CERTIFICATE_ID_1, CERTIFICATE_ID_2, CERTIFICATE_ID_3);
 
         doReturn(true).when(certificateServiceProfile).active();
-        doReturn(staleDraftIds).when(csIntegrationService).listObsoleteDrafts(any());
+        doReturn(obsoleteDraftIds).when(csIntegrationService).listObsoleteDrafts(any());
 
         doReturn("xml1").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_1);
         doReturn("xml2").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_2);
@@ -118,12 +118,12 @@ class DisposeObsoleteDraftsFromCertificateServiceTest {
 
     @Test
     void shouldPublishStatusUpdateWithXmlForEachDeletedDraft() {
-        final var staleDraftIds = List.of(CERTIFICATE_ID_1, CERTIFICATE_ID_2);
+        final var obsoleteDraftIds = List.of(CERTIFICATE_ID_1, CERTIFICATE_ID_2);
         final var certificate1 = getCertificate(CERTIFICATE_ID_1);
         final var certificate2 = getCertificate(CERTIFICATE_ID_2);
 
         doReturn(true).when(certificateServiceProfile).active();
-        doReturn(staleDraftIds).when(csIntegrationService).listObsoleteDrafts(any());
+        doReturn(obsoleteDraftIds).when(csIntegrationService).listObsoleteDrafts(any());
 
         doReturn("xml1").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_1);
         doReturn("xml2").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_2);
@@ -138,10 +138,10 @@ class DisposeObsoleteDraftsFromCertificateServiceTest {
 
     @Test
     void shouldLogMonitoringForEachDeletedDraft() {
-        final var staleDraftIds = List.of(CERTIFICATE_ID_1, CERTIFICATE_ID_2);
+        final var obsoleteDraftIds = List.of(CERTIFICATE_ID_1, CERTIFICATE_ID_2);
 
         doReturn(true).when(certificateServiceProfile).active();
-        doReturn(staleDraftIds).when(csIntegrationService).listObsoleteDrafts(any());
+        doReturn(obsoleteDraftIds).when(csIntegrationService).listObsoleteDrafts(any());
 
         doReturn("xml1").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_1);
         doReturn("xml2").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_2);
@@ -157,9 +157,9 @@ class DisposeObsoleteDraftsFromCertificateServiceTest {
 
     @Test
     void shouldContinueProcessingWhenOneDraftFailsToDispose() {
-        final var staleDraftIds = List.of(CERTIFICATE_ID_1, CERTIFICATE_ID_2, CERTIFICATE_ID_3);
+        final var obsoleteDraftIds = List.of(CERTIFICATE_ID_1, CERTIFICATE_ID_2, CERTIFICATE_ID_3);
         doReturn(true).when(certificateServiceProfile).active();
-        doReturn(staleDraftIds).when(csIntegrationService).listObsoleteDrafts(any());
+        doReturn(obsoleteDraftIds).when(csIntegrationService).listObsoleteDrafts(any());
 
         doReturn("xml1").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_1);
         doThrow(new RuntimeException("Failed to get XML")).when(csIntegrationService)

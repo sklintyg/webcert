@@ -348,11 +348,12 @@ class CSIntegrationServiceTest {
     private static final LockDraftsResponseDTO LOCK_OLD_DRAFTS_RESPONSE_DTO = LockDraftsResponseDTO.builder()
         .certificates(List.of(CERTIFICATE)).build();
     private static final LockDraftsRequestDTO LOCK_OLD_DRAFTS_REQUEST_DTO = LockDraftsRequestDTO.builder().build();
-    private static final DisposeObsoleteDraftsResponseDTO DELETE_STALE_DRAFTS_RESPONSE_DTO = DisposeObsoleteDraftsResponseDTO.builder()
+    private static final DisposeObsoleteDraftsResponseDTO DISPOSE_OBSOLETE_DRAFTS_RESPONSE_DTO = DisposeObsoleteDraftsResponseDTO.builder()
         .certificate(CERTIFICATE).build();
-    private static final DisposeObsoleteDraftsRequestDTO DELETE_STALE_DRAFTS_REQUEST_DTO = DisposeObsoleteDraftsRequestDTO.builder().build();
-    private static final ListObsoleteDraftsRequestDTO LIST_STALE_DRAFTS_REQUEST_DTO = ListObsoleteDraftsRequestDTO.builder().build();
-    private static final ListObsoleteDraftsResponseDTO LIST_STALE_DRAFTS_RESPONSE_DTO = ListObsoleteDraftsResponseDTO.builder()
+    private static final DisposeObsoleteDraftsRequestDTO DISPOSE_OBSOLETE_DRAFTS_REQUEST_DTO = DisposeObsoleteDraftsRequestDTO.builder()
+        .build();
+    private static final ListObsoleteDraftsRequestDTO LIST_OBSOLETE_DRAFTS_REQUEST_DTO = ListObsoleteDraftsRequestDTO.builder().build();
+    private static final ListObsoleteDraftsResponseDTO LIST_OBSOLETE_DRAFTS_RESPONSE_DTO = ListObsoleteDraftsResponseDTO.builder()
         .certificateIds(List.of(CERTIFICATE_ID)).build();
     private static final Map<String, StatisticsForUnitDTO> USER_STATISTICS = Map.of("unit", StatisticsForUnitDTO.builder().build());
     private static final UnitStatisticsResponseDTO STATISTICS_RESPONSE_DTO = UnitStatisticsResponseDTO.builder()
@@ -3498,19 +3499,19 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldPerformPostUsingRequest() {
-            doReturn(LIST_STALE_DRAFTS_RESPONSE_DTO).when(responseSpec).body(ListObsoleteDraftsResponseDTO.class);
+            doReturn(LIST_OBSOLETE_DRAFTS_RESPONSE_DTO).when(responseSpec).body(ListObsoleteDraftsResponseDTO.class);
             final var captor = ArgumentCaptor.forClass(ListObsoleteDraftsRequestDTO.class);
 
-            csIntegrationService.listObsoleteDrafts(LIST_STALE_DRAFTS_REQUEST_DTO);
+            csIntegrationService.listObsoleteDrafts(LIST_OBSOLETE_DRAFTS_REQUEST_DTO);
             verify(requestBodyUriSpec).body(captor.capture());
 
-            assertEquals(LIST_STALE_DRAFTS_REQUEST_DTO, captor.getValue());
+            assertEquals(LIST_OBSOLETE_DRAFTS_REQUEST_DTO, captor.getValue());
         }
 
         @Test
         void shouldReturnCertificateIds() {
-            doReturn(LIST_STALE_DRAFTS_RESPONSE_DTO).when(responseSpec).body(ListObsoleteDraftsResponseDTO.class);
-            final var response = csIntegrationService.listObsoleteDrafts(LIST_STALE_DRAFTS_REQUEST_DTO);
+            doReturn(LIST_OBSOLETE_DRAFTS_RESPONSE_DTO).when(responseSpec).body(ListObsoleteDraftsResponseDTO.class);
+            final var response = csIntegrationService.listObsoleteDrafts(LIST_OBSOLETE_DRAFTS_REQUEST_DTO);
 
             assertEquals(List.of(CERTIFICATE_ID), response);
         }
@@ -3518,15 +3519,15 @@ class CSIntegrationServiceTest {
         @Test
         void shouldThrowIfResponseIsNull() {
             assertThrows(IllegalStateException.class,
-                () -> csIntegrationService.listObsoleteDrafts(LIST_STALE_DRAFTS_REQUEST_DTO));
+                () -> csIntegrationService.listObsoleteDrafts(LIST_OBSOLETE_DRAFTS_REQUEST_DTO));
         }
 
         @Test
         void shouldSetUrlCorrect() {
-            doReturn(LIST_STALE_DRAFTS_RESPONSE_DTO).when(responseSpec).body(ListObsoleteDraftsResponseDTO.class);
+            doReturn(LIST_OBSOLETE_DRAFTS_RESPONSE_DTO).when(responseSpec).body(ListObsoleteDraftsResponseDTO.class);
             final var captor = ArgumentCaptor.forClass(String.class);
 
-            csIntegrationService.listObsoleteDrafts(LIST_STALE_DRAFTS_REQUEST_DTO);
+            csIntegrationService.listObsoleteDrafts(LIST_OBSOLETE_DRAFTS_REQUEST_DTO);
 
             verify(requestBodyUriSpec).uri(captor.capture());
 
@@ -3555,19 +3556,19 @@ class CSIntegrationServiceTest {
 
         @Test
         void shouldPerformPostUsingRequest() {
-            doReturn(DELETE_STALE_DRAFTS_RESPONSE_DTO).when(responseSpec).body(DisposeObsoleteDraftsResponseDTO.class);
+            doReturn(DISPOSE_OBSOLETE_DRAFTS_RESPONSE_DTO).when(responseSpec).body(DisposeObsoleteDraftsResponseDTO.class);
             final var captor = ArgumentCaptor.forClass(DisposeObsoleteDraftsRequestDTO.class);
 
-            csIntegrationService.disposeObsoleteDraft(DELETE_STALE_DRAFTS_REQUEST_DTO);
+            csIntegrationService.disposeObsoleteDraft(DISPOSE_OBSOLETE_DRAFTS_REQUEST_DTO);
             verify(requestBodyUriSpec).body(captor.capture());
 
-            assertEquals(DELETE_STALE_DRAFTS_REQUEST_DTO, captor.getValue());
+            assertEquals(DISPOSE_OBSOLETE_DRAFTS_REQUEST_DTO, captor.getValue());
         }
 
         @Test
         void shouldReturnCertificate() {
-            doReturn(DELETE_STALE_DRAFTS_RESPONSE_DTO).when(responseSpec).body(DisposeObsoleteDraftsResponseDTO.class);
-            final var response = csIntegrationService.disposeObsoleteDraft(DELETE_STALE_DRAFTS_REQUEST_DTO);
+            doReturn(DISPOSE_OBSOLETE_DRAFTS_RESPONSE_DTO).when(responseSpec).body(DisposeObsoleteDraftsResponseDTO.class);
+            final var response = csIntegrationService.disposeObsoleteDraft(DISPOSE_OBSOLETE_DRAFTS_REQUEST_DTO);
 
             assertEquals(CERTIFICATE, response);
         }
@@ -3575,15 +3576,15 @@ class CSIntegrationServiceTest {
         @Test
         void shouldThrowIfResponseIsNull() {
             assertThrows(IllegalStateException.class,
-                () -> csIntegrationService.disposeObsoleteDraft(DELETE_STALE_DRAFTS_REQUEST_DTO));
+                () -> csIntegrationService.disposeObsoleteDraft(DISPOSE_OBSOLETE_DRAFTS_REQUEST_DTO));
         }
 
         @Test
         void shouldSetUrlCorrect() {
-            doReturn(DELETE_STALE_DRAFTS_RESPONSE_DTO).when(responseSpec).body(DisposeObsoleteDraftsResponseDTO.class);
+            doReturn(DISPOSE_OBSOLETE_DRAFTS_RESPONSE_DTO).when(responseSpec).body(DisposeObsoleteDraftsResponseDTO.class);
             final var captor = ArgumentCaptor.forClass(String.class);
 
-            csIntegrationService.disposeObsoleteDraft(DELETE_STALE_DRAFTS_REQUEST_DTO);
+            csIntegrationService.disposeObsoleteDraft(DISPOSE_OBSOLETE_DRAFTS_REQUEST_DTO);
 
             verify(requestBodyUriSpec).uri(captor.capture());
 

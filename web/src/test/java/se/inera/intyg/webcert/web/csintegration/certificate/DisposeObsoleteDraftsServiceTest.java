@@ -14,7 +14,7 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 class DisposeObsoleteDraftsServiceTest {
 
     private static final int PAGE_SIZE = 10;
-    private static final LocalDateTime STALE_DRAFTS_PERIOD = LocalDateTime.now();
+    private static final LocalDateTime OBSOLETE_DRAFTS_DATE = LocalDateTime.now();
     @Mock
     UtkastService utkastService;
     @Mock
@@ -23,14 +23,14 @@ class DisposeObsoleteDraftsServiceTest {
     DisposeObsoleteDraftsService disposeObsoleteDraftsService;
 
     @Test
-    void shouldDisposeStaleAndLockedDraftsInWC() {
-        disposeObsoleteDraftsService.dispose(STALE_DRAFTS_PERIOD, PAGE_SIZE);
-        verify(utkastService).dispose(STALE_DRAFTS_PERIOD, PAGE_SIZE);
+    void shouldDisposeObsoleteDraftsInWC() {
+        disposeObsoleteDraftsService.dispose(OBSOLETE_DRAFTS_DATE, PAGE_SIZE);
+        verify(utkastService).dispose(OBSOLETE_DRAFTS_DATE, PAGE_SIZE);
     }
 
     @Test
-    void shouldDisposeStaleAndLockedDraftsInCS() {
-        disposeObsoleteDraftsService.dispose(STALE_DRAFTS_PERIOD, PAGE_SIZE);
-        verify(disposeObsoleteDraftsFromCertificateService).dispose(STALE_DRAFTS_PERIOD);
+    void shouldDisposeObsoleteDraftsInCS() {
+        disposeObsoleteDraftsService.dispose(OBSOLETE_DRAFTS_DATE, PAGE_SIZE);
+        verify(disposeObsoleteDraftsFromCertificateService).dispose(OBSOLETE_DRAFTS_DATE);
     }
 }

@@ -26,8 +26,8 @@ class DisposeObsoleteDraftsJobTest {
 
     @Test
     void shouldExecuteJob() {
-        ReflectionTestUtils.setField(disposeObsoleteDraftsJob, "staleDraftsPeriod", "P3M");
-        ReflectionTestUtils.setField(disposeObsoleteDraftsJob, "staleDraftsPageSize", 10);
+        ReflectionTestUtils.setField(disposeObsoleteDraftsJob, "obsoleteDraftsPeriod", "P3M");
+        ReflectionTestUtils.setField(disposeObsoleteDraftsJob, "obsoleteDraftsPageSize", 10);
 
         disposeObsoleteDraftsJob.run();
 
