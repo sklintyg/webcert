@@ -66,8 +66,6 @@ class DeleteDraftsFromCertificateServiceTest {
     PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
     @Mock
     MonitoringLogService monitoringLogService;
-    @Mock
-    DeleteHandelseForStaleDraftService deleteHandelseForStaleDraftService;
     @InjectMocks
     DeleteDraftsFromCertificateService deleteDraftsFromCertificateService;
 
@@ -176,25 +174,6 @@ class DeleteDraftsFromCertificateServiceTest {
         verify(csIntegrationService, times(3)).getInternalCertificateXml(any());
         assertEquals(2, result);
         verify(csIntegrationService, times(2)).deleteStaleDraft(any());
-    }
-
-    @Test
-    void shouldDeleteHandelserForEachDeletedDraft() {
-        final var staleDraftIds = List.of(CERTIFICATE_ID_1, CERTIFICATE_ID_2);
-
-        doReturn(true).when(certificateServiceProfile).active();
-        doReturn(staleDraftIds).when(csIntegrationService).listStaleDrafts(any());
-
-        doReturn("xml1").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_1);
-        doReturn("xml2").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_2);
-
-        doReturn(getCertificate(CERTIFICATE_ID_1), getCertificate(CERTIFICATE_ID_2))
-            .when(csIntegrationService).deleteStaleDraft(any());
-
-        deleteDraftsFromCertificateService.delete(CUTOFF_DATE);
-
-        verify(deleteHandelseForStaleDraftService, times(1)).delete(CERTIFICATE_ID_1);
-        verify(deleteHandelseForStaleDraftService, times(1)).delete(CERTIFICATE_ID_2);
     }
 
     private static Certificate getCertificate(String id) {

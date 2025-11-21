@@ -41,7 +41,6 @@ public class DeleteDraftsFromCertificateService {
     private final CertificateServiceProfile certificateServiceProfile;
     private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
     private final MonitoringLogService monitoringLogService;
-    private final DeleteHandelseForStaleDraftService deleteHandelseForStaleDraftService;
 
     public int delete(LocalDateTime cutoffDate) {
         if (!certificateServiceProfile.active()) {
@@ -69,7 +68,6 @@ public class DeleteDraftsFromCertificateService {
                 csIntegrationRequestFactory.getDeleteStaleDraftsRequestDTO(certificateId)
             );
 
-            deleteHandelseForStaleDraftService.delete(certificateId);
             publishCertificateStatusUpdateService.publish(deletedCertificate, HandelsekodEnum.RADERA, certificateXml);
             
             monitoringLogService.logUtkastPruned(

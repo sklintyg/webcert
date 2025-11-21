@@ -17,7 +17,6 @@ import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.persistence.event.repository.CertificateEventFailedLoadRepository;
 import se.inera.intyg.webcert.persistence.event.repository.CertificateEventProcessedRepository;
 import se.inera.intyg.webcert.persistence.event.repository.CertificateEventRepository;
-import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
@@ -37,8 +36,7 @@ class HandleStaleDraftsServiceTest {
     @Mock
     private UtkastRepository utkastRepository;
 
-    @Mock
-    private HandelseRepository handelseRepository;
+
 
     @Mock
     private CertificateEventRepository certificateEventRepository;
@@ -111,19 +109,6 @@ class HandleStaleDraftsServiceTest {
 
         verify(monitoringLogService).logUtkastPruned(certificateId1, CERTIFICATE_TYPE, PERIOD);
         verify(monitoringLogService).logUtkastPruned(certificateId2, CERTIFICATE_TYPE, PERIOD);
-    }
-
-    @Test
-    void shouldDeleteHandelse() {
-        final var certificateId1 = "cert-id-1";
-        final var certificateId2 = "cert-id-2";
-        final var draft1 = createUtkast(certificateId1, UtkastStatus.DRAFT_COMPLETE);
-        final var draft2 = createUtkast(certificateId2, UtkastStatus.DRAFT_COMPLETE);
-        final var drafts = List.of(draft1, draft2);
-
-        handleStaleDraftsService.deleteAndNotify(drafts, STALE_DRAFTS_PERIOD);
-
-        verify(handelseRepository).eraseHandelseByCertificateIds(List.of(certificateId1, certificateId2));
     }
 
     @Test

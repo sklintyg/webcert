@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.webcert.persistence.event.repository.CertificateEventFailedLoadRepository;
 import se.inera.intyg.webcert.persistence.event.repository.CertificateEventProcessedRepository;
 import se.inera.intyg.webcert.persistence.event.repository.CertificateEventRepository;
-import se.inera.intyg.webcert.persistence.handelse.repository.HandelseRepository;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
@@ -23,7 +22,6 @@ public class HandleStaleDraftsService {
     private final NotificationService notificationService;
     private final UtkastRepository utkastRepository;
     private final MonitoringLogService monitoringLogService;
-    private final HandelseRepository handelseRepository;
     private final CertificateEventRepository certificateEventRepository;
     private final CertificateEventFailedLoadRepository certificateEventFailedLoadRepository;
     private final CertificateEventProcessedRepository certificateEventProcessedRepository;
@@ -39,7 +37,6 @@ public class HandleStaleDraftsService {
             return;
         }
 
-        handelseRepository.eraseHandelseByCertificateIds(certificateIds);
         certificateEventProcessedRepository.eraseEventsProcessedByCertificateIds(certificateIds);
         certificateEventFailedLoadRepository.eraseEventsFailedByCertificateIds(certificateIds);
         certificateEventRepository.eraseCertificateEventsByCertificateIds(certificateIds);
