@@ -65,11 +65,11 @@ public class DisposeObsoleteDraftsFromCertificateService {
             final var certificateXml = csIntegrationService.getInternalCertificateXml(certificateId);
 
             final var disposedCertificate = csIntegrationService.disposeObsoleteDraft(
-                csIntegrationRequestFactory.getDeleteStaleDraftsRequestDTO(certificateId)
+                csIntegrationRequestFactory.getDisposeObsoleteDraftRequestDTO(certificateId)
             );
 
             publishCertificateStatusUpdateService.publish(disposedCertificate, HandelsekodEnum.RADERA, certificateXml);
-            
+
             monitoringLogService.logUtkastDisposed(
                 disposedCertificate.getMetadata().getId(),
                 disposedCertificate.getMetadata().getType(),

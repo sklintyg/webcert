@@ -616,7 +616,7 @@ public class CSIntegrationRequestFactory {
             .build();
     }
 
-    public DisposeObsoleteDraftsRequestDTO getDeleteStaleDraftsRequestDTO(String certificateId) {
+    public DisposeObsoleteDraftsRequestDTO getDisposeObsoleteDraftRequestDTO(String certificateId) {
         return DisposeObsoleteDraftsRequestDTO.builder()
             .certificateId(certificateId)
             .build();
@@ -663,4 +663,3 @@ public class CSIntegrationRequestFactory {
             .build();
     }
 }
-

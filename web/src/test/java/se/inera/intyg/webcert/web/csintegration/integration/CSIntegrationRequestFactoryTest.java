@@ -2304,7 +2304,7 @@ class CSIntegrationRequestFactoryTest {
         @Test
         void shouldSetCertificateIds() {
             final var expectedCertificateId = "id";
-            final var actualRequest = csIntegrationRequestFactory.getDeleteStaleDraftsRequestDTO(expectedCertificateId);
+            final var actualRequest = csIntegrationRequestFactory.getDisposeObsoleteDraftRequestDTO(expectedCertificateId);
             assertEquals(expectedCertificateId, actualRequest.getCertificateId());
         }
     }

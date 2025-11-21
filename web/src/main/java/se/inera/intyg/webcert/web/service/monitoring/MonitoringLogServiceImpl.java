@@ -1282,7 +1282,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         UTKAST_CONCURRENTLY_EDITED(
             "Utkast '{}' of type '{}' was concurrently edited by multiple users"),
         UTKAST_DELETED("Utkast '{}' of type '{}' was deleted"),
-        UTKAST_DISPOSED("Utkast '{}' of type '{}' was disposed due to being obsolete for more than '{}' days"),
+        UTKAST_DISPOSED("Utkast '{}' of type '{}' was disposed due to being older than '{}' days"),
         UTKAST_REVOKED("Utkast '{}' revoked by '{}' reason '{}'"),
         UTKAST_PRINT("Intyg '{}' of type '{}' was printed"),
         UTKAST_READY_NOTIFICATION_SENT(

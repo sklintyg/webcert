@@ -35,7 +35,6 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -403,7 +402,7 @@ public class Utkast {
         return isTestIntyg;
     }
 
-    public boolean eligeableForDispose() {
+    public boolean eligeableForDisposal() {
         return this.status.equals(UtkastStatus.DRAFT_LOCKED)
             || this.status.equals(UtkastStatus.DRAFT_COMPLETE)
             || this.status.equals(UtkastStatus.DRAFT_INCOMPLETE);

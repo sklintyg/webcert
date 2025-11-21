@@ -29,7 +29,7 @@ public class HandleObsoleteDraftsService {
     @Transactional
     public void disposeAndNotify(List<Utkast> drafts, LocalDateTime obsoleteDraftsPeriod) {
         final var certificateIds = drafts.stream()
-            .filter(Utkast::eligeableForDispose)
+            .filter(Utkast::eligeableForDisposal)
             .map(Utkast::getIntygsId)
             .toList();
 
