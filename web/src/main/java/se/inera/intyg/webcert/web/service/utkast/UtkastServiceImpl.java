@@ -37,6 +37,10 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.common.services.texts.IntygTextsService;
@@ -110,13 +114,9 @@ import se.inera.intyg.webcert.web.service.utkast.util.UtkastServiceHelper;
 @Service
 public class UtkastServiceImpl implements UtkastService {
 
-    public enum Event {
-        CHANGED,
-        CREATED,
-        DELETED,
-        REVOKED
-    }
-
+    public static final String INTYG_INDICATOR = "intyg";
+    public static final String UTKAST_INDICATOR = "utkast";
+    public static final String ERSATT_INDICATOR = "ersatt";
     private static final Set<UtkastStatus> ALL_EDITABLE_DRAFT_STATUSES = UtkastStatus.getEditableDraftStatuses();
     private static final Set<UtkastStatus> ALL_DRAFT_STATUSES_INCLUDE_LOCKED = UtkastStatus.getDraftStatuses();
     private static final List<UtkastStatus> ALL_DRAFTS = Arrays.asList(
@@ -125,71 +125,49 @@ public class UtkastServiceImpl implements UtkastService {
         UtkastStatus.DRAFT_LOCKED,
         UtkastStatus.SIGNED
     );
-
     private static final Logger LOG = LoggerFactory.getLogger(UtkastServiceImpl.class);
-    public static final String INTYG_INDICATOR = "intyg";
-    public static final String UTKAST_INDICATOR = "utkast";
-    public static final String ERSATT_INDICATOR = "ersatt";
-
     @Autowired
     private CreateIntygsIdStrategy intygsIdStrategy;
-
     @Autowired
     private UtkastRepository utkastRepository;
-
     @Autowired
     private IntygModuleRegistry moduleRegistry;
-
     @Autowired
     private LogService logService;
-
     @Autowired
     private LogRequestFactory logRequestFactory;
-
     @Autowired
     private NotificationService notificationService;
-
     @Autowired
     private CertificateEventService certificateEventService;
-
     @Autowired
     private MonitoringLogService monitoringService;
-
     @Autowired
     private WebCertUserService webCertUserService;
-
     @Autowired
     private IntygTextsService intygTextsService;
-
     @Autowired
     private AuthoritiesHelper authoritiesHelper;
-
     @Autowired
     private StatisticsGroupByUtil statisticsGroupByUtil;
-
     @Autowired
     private ReferensService referensService;
-
     @Autowired
     private DraftAccessServiceHelper draftAccessServiceHelper;
-
     @Autowired
     private EmployeeNameService employeeNameService;
-
     @Autowired
     private UtkastServiceHelper utkastServiceHelper;
-
     @Autowired
     private HashUtility hashUtility;
-
     @Autowired
     private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
-
     @Autowired
     private PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
-
     @Autowired
     private DefaultTypeAheadProvider defaultTypeAheadProvider;
+    @Autowired
+    private HandleObsoleteDraftsService handleObsoleteDraftsService;
 
     public static boolean isUtkast(Utkast utkast) {
         return utkast != null && ALL_DRAFT_STATUSES_INCLUDE_LOCKED.contains(utkast.getStatus());
@@ -883,6 +861,34 @@ public class UtkastServiceImpl implements UtkastService {
         }
     }
 
+    @Override
+    public int dispose(LocalDateTime disposeObsoleteDraftsDate, Integer pageSize) {
+        final var statuses = List.of(
+            UtkastStatus.DRAFT_LOCKED,
+            UtkastStatus.DRAFT_INCOMPLETE,
+            UtkastStatus.DRAFT_COMPLETE
+        );
+
+        final var pageable = PageRequest.of(0, pageSize, Sort.by(Direction.ASC, "skapad"));
+        var totalDisposed = 0;
+        Page<Utkast> page;
+
+        do {
+            page = utkastRepository.findObsoleteDrafts(disposeObsoleteDraftsDate, statuses, pageable);
+            final var drafts = page.getContent();
+
+            try {
+                handleObsoleteDraftsService.disposeAndNotify(drafts, disposeObsoleteDraftsDate);
+                totalDisposed += drafts.size();
+            } catch (Exception e) {
+                LOG.error("Error disposing obsolete drafts: {}", e.getMessage(), e);
+            }
+
+        } while (page.hasNext());
+
+        return totalDisposed;
+    }
+
     /**
      * Revoke draft and notify stakeholders that this draft is now deleted.
      */
@@ -1167,17 +1173,6 @@ public class UtkastServiceImpl implements UtkastService {
         return IntygConverterUtil.buildHosPersonalFromWebCertUser(webCertUserService.getUser(), vardenhet);
     }
 
-    private Vardenhet getVardenhet(Utkast utkast) {
-        final Vardgivare vardgivare = new Vardgivare();
-        vardgivare.setVardgivarid(utkast.getVardgivarId());
-
-        final Vardenhet vardenhet = new Vardenhet();
-        vardenhet.setEnhetsid(utkast.getEnhetsId());
-        vardenhet.setVardgivare(vardgivare);
-
-        return vardenhet;
-    }
-
     private void updateUtkastModel(Utkast utkast, String modelJson) {
         WebCertUser user = webCertUserService.getUser();
 
@@ -1229,5 +1224,12 @@ public class UtkastServiceImpl implements UtkastService {
         if (utkast.getPatientEfternamn() != null && !utkast.getPatientEfternamn().equals(patient.getEfternamn())) {
             utkast.setPatientEfternamn(patient.getEfternamn());
         }
+    }
+
+    public enum Event {
+        CHANGED,
+        CREATED,
+        DELETED,
+        REVOKED
     }
 }

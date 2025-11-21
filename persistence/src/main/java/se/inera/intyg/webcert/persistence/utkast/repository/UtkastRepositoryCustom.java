@@ -21,6 +21,8 @@ package se.inera.intyg.webcert.persistence.utkast.repository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -184,4 +186,8 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
         + "LIMIT :batchSize",
         nativeQuery = true)
     List<String> findCertificatesWithoutEvents(@Param("batchSize") Integer batchSize);
+
+    @Query("SELECT u from Utkast u WHERE u.skapad <= :createdBefore AND u.status IN :statuses")
+    Page<Utkast> findObsoleteDrafts(@Param("createdBefore") LocalDateTime createdBefore,
+        @Param("statuses") List<UtkastStatus> statuses, Pageable pageable);
 }
