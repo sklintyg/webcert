@@ -84,6 +84,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteAnswerResp
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.DisposeObsoleteDraftsRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.DisposeObsoleteDraftsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ForwardCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ForwardCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCandidateCertificateRequestDTO;
@@ -114,6 +116,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitQuestions
 import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.InternalCertificateXmlResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ListObsoleteDraftsRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ListObsoleteDraftsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.LockDraftsRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.LockDraftsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageExistsResponseDTO;
@@ -344,6 +348,13 @@ class CSIntegrationServiceTest {
     private static final LockDraftsResponseDTO LOCK_OLD_DRAFTS_RESPONSE_DTO = LockDraftsResponseDTO.builder()
         .certificates(List.of(CERTIFICATE)).build();
     private static final LockDraftsRequestDTO LOCK_OLD_DRAFTS_REQUEST_DTO = LockDraftsRequestDTO.builder().build();
+    private static final DisposeObsoleteDraftsResponseDTO DISPOSE_OBSOLETE_DRAFTS_RESPONSE_DTO = DisposeObsoleteDraftsResponseDTO.builder()
+        .certificate(CERTIFICATE).build();
+    private static final DisposeObsoleteDraftsRequestDTO DISPOSE_OBSOLETE_DRAFTS_REQUEST_DTO = DisposeObsoleteDraftsRequestDTO.builder()
+        .build();
+    private static final ListObsoleteDraftsRequestDTO LIST_OBSOLETE_DRAFTS_REQUEST_DTO = ListObsoleteDraftsRequestDTO.builder().build();
+    private static final ListObsoleteDraftsResponseDTO LIST_OBSOLETE_DRAFTS_RESPONSE_DTO = ListObsoleteDraftsResponseDTO.builder()
+        .certificateIds(List.of(CERTIFICATE_ID)).build();
     private static final Map<String, StatisticsForUnitDTO> USER_STATISTICS = Map.of("unit", StatisticsForUnitDTO.builder().build());
     private static final UnitStatisticsResponseDTO STATISTICS_RESPONSE_DTO = UnitStatisticsResponseDTO.builder()
         .unitStatistics(USER_STATISTICS)
@@ -3323,7 +3334,7 @@ class CSIntegrationServiceTest {
             final var response = csIntegrationService.getCertificateEvents(ID, GET_CERTIFICATE_EVENTS_REQUEST_DTO);
 
             assertEquals(EVENTS.size(), response.length);
-            assertEquals(EVENTS.get(0), response[0]);
+            assertEquals(EVENTS.getFirst(), response[0]);
         }
 
         @Test
@@ -3464,6 +3475,120 @@ class CSIntegrationServiceTest {
             verify(requestBodyUriSpec).uri(captor.capture());
 
             assertEquals("baseUrl/internalapi/certificate/lock", captor.getValue());
+        }
+    }
+
+    @Nested
+    class ListStaleDraftsTest {
+
+        @BeforeEach
+        void setUp() {
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/internalapi/draft/list";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(ListObsoleteDraftsRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+        }
+
+        @Test
+        void shouldPerformPostUsingRequest() {
+            doReturn(LIST_OBSOLETE_DRAFTS_RESPONSE_DTO).when(responseSpec).body(ListObsoleteDraftsResponseDTO.class);
+            final var captor = ArgumentCaptor.forClass(ListObsoleteDraftsRequestDTO.class);
+
+            csIntegrationService.listObsoleteDrafts(LIST_OBSOLETE_DRAFTS_REQUEST_DTO);
+            verify(requestBodyUriSpec).body(captor.capture());
+
+            assertEquals(LIST_OBSOLETE_DRAFTS_REQUEST_DTO, captor.getValue());
+        }
+
+        @Test
+        void shouldReturnCertificateIds() {
+            doReturn(LIST_OBSOLETE_DRAFTS_RESPONSE_DTO).when(responseSpec).body(ListObsoleteDraftsResponseDTO.class);
+            final var response = csIntegrationService.listObsoleteDrafts(LIST_OBSOLETE_DRAFTS_REQUEST_DTO);
+
+            assertEquals(List.of(CERTIFICATE_ID), response);
+        }
+
+        @Test
+        void shouldThrowIfResponseIsNull() {
+            assertThrows(IllegalStateException.class,
+                () -> csIntegrationService.listObsoleteDrafts(LIST_OBSOLETE_DRAFTS_REQUEST_DTO));
+        }
+
+        @Test
+        void shouldSetUrlCorrect() {
+            doReturn(LIST_OBSOLETE_DRAFTS_RESPONSE_DTO).when(responseSpec).body(ListObsoleteDraftsResponseDTO.class);
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            csIntegrationService.listObsoleteDrafts(LIST_OBSOLETE_DRAFTS_REQUEST_DTO);
+
+            verify(requestBodyUriSpec).uri(captor.capture());
+
+            assertEquals("baseUrl/internalapi/draft/list", captor.getValue());
+        }
+    }
+
+    @Nested
+    class DeleteStaleDraftsTest {
+
+        @BeforeEach
+        void setUp() {
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final var uri = "baseUrl/internalapi/draft";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.method(HttpMethod.DELETE)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.contentType(any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(DisposeObsoleteDraftsRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+        }
+
+        @Test
+        void shouldPerformPostUsingRequest() {
+            doReturn(DISPOSE_OBSOLETE_DRAFTS_RESPONSE_DTO).when(responseSpec).body(DisposeObsoleteDraftsResponseDTO.class);
+            final var captor = ArgumentCaptor.forClass(DisposeObsoleteDraftsRequestDTO.class);
+
+            csIntegrationService.disposeObsoleteDraft(DISPOSE_OBSOLETE_DRAFTS_REQUEST_DTO);
+            verify(requestBodyUriSpec).body(captor.capture());
+
+            assertEquals(DISPOSE_OBSOLETE_DRAFTS_REQUEST_DTO, captor.getValue());
+        }
+
+        @Test
+        void shouldReturnCertificate() {
+            doReturn(DISPOSE_OBSOLETE_DRAFTS_RESPONSE_DTO).when(responseSpec).body(DisposeObsoleteDraftsResponseDTO.class);
+            final var response = csIntegrationService.disposeObsoleteDraft(DISPOSE_OBSOLETE_DRAFTS_REQUEST_DTO);
+
+            assertEquals(CERTIFICATE, response);
+        }
+
+        @Test
+        void shouldThrowIfResponseIsNull() {
+            assertThrows(IllegalStateException.class,
+                () -> csIntegrationService.disposeObsoleteDraft(DISPOSE_OBSOLETE_DRAFTS_REQUEST_DTO));
+        }
+
+        @Test
+        void shouldSetUrlCorrect() {
+            doReturn(DISPOSE_OBSOLETE_DRAFTS_RESPONSE_DTO).when(responseSpec).body(DisposeObsoleteDraftsResponseDTO.class);
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            csIntegrationService.disposeObsoleteDraft(DISPOSE_OBSOLETE_DRAFTS_REQUEST_DTO);
+
+            verify(requestBodyUriSpec).uri(captor.capture());
+
+            assertEquals("baseUrl/internalapi/draft", captor.getValue());
         }
     }
 

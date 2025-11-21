@@ -35,7 +35,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
@@ -379,19 +379,11 @@ public class Utkast {
         if (data == null) {
             return new byte[0];
         }
-        try {
-            return data.getBytes(UTF_8);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("Failed to convert String to bytes!", e);
-        }
+        return data.getBytes(StandardCharsets.UTF_8);
     }
 
     private String fromBytes(byte[] bytes) {
-        try {
-            return new String(bytes, UTF_8);
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException("Failed to convert bytes to String!", e);
-        }
+        return new String(bytes, StandardCharsets.UTF_8);
     }
 
     public LocalDateTime getSkapad() {
@@ -408,5 +400,11 @@ public class Utkast {
 
     public Boolean isTestIntyg() {
         return isTestIntyg;
+    }
+
+    public boolean eligeableForDisposal() {
+        return this.status.equals(UtkastStatus.DRAFT_LOCKED)
+            || this.status.equals(UtkastStatus.DRAFT_COMPLETE)
+            || this.status.equals(UtkastStatus.DRAFT_INCOMPLETE);
     }
 }

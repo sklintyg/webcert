@@ -26,6 +26,8 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.core.Appender;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collections;
 import org.junit.jupiter.api.AfterEach;
@@ -410,6 +412,12 @@ class MonitoringLogServiceImplTest {
     void shouldLogUtkastDeleted() {
         logService.logUtkastDeleted(INTYGS_ID, INTYGS_TYP);
         verifyLog(Level.INFO, "UTKAST_DELETED Utkast 'INTYGS_ID' of type 'INTYGS_TYP' was deleted");
+    }
+
+    @Test
+    void shouldLogUtkastDisposed() {
+        logService.logUtkastDisposed(INTYGS_ID, INTYGS_TYP, ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusDays(5)));
+        verifyLog(Level.INFO, "UTKAST_PRUNED Utkast 'INTYGS_ID' of type 'INTYGS_TYP' was pruned due to being stale for more than '5' days");
     }
 
     @Test

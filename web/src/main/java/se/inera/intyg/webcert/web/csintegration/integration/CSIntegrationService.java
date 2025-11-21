@@ -42,7 +42,6 @@ import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.support.facade.dto.CertificateEventDTO;
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
-import se.inera.intyg.infra.certificate.dto.SickLeaveCertificate;
 import se.inera.intyg.webcert.common.dto.IncomingMessageRequestDTO;
 import se.inera.intyg.webcert.logging.MdcHelper;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
@@ -71,6 +70,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteAnswerResp
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteMessageRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.DisposeObsoleteDraftsRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.DisposeObsoleteDraftsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ForwardCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ForwardCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCandidateCertificateRequestDTO;
@@ -101,6 +102,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitQuestions
 import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.InternalCertificateXmlResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ListObsoleteDraftsRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ListObsoleteDraftsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.LockDraftsRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.LockDraftsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageExistsResponseDTO;
@@ -148,6 +151,7 @@ public class CSIntegrationService {
 
     private static final String CERTIFICATE_ENDPOINT_URL = "/api/certificate";
     private static final String INTERNAL_CERTIFICATE_ENDPOINT_URL = "/internalapi/certificate";
+    private static final String INTERNAL_DRAFT_ENDPOINT_URL = "/internalapi/draft";
     private static final String CITIZEN_ENDPOINT_URL = "/api/citizen/certificate";
     private static final String MESSAGE_ENDPOINT_URL = "/api/message";
     private static final String INTERNAL_MESSAGE_ENDPOINT_URL = "/internalapi/message";
@@ -1155,6 +1159,45 @@ public class CSIntegrationService {
         return response.getCertificates();
     }
 
+    @PerformanceLogging(eventAction = "internal-dispose-obsolete-draft", eventType = EVENT_TYPE_DELETION)
+    public Certificate disposeObsoleteDraft(DisposeObsoleteDraftsRequestDTO request) {
+        final var url = baseUrl + INTERNAL_DRAFT_ENDPOINT_URL;
+
+        final var response = restClient.method(HttpMethod.DELETE)
+            .uri(url)
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
+            .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
+            .body(request)
+            .retrieve()
+            .body(DisposeObsoleteDraftsResponseDTO.class);
+
+        if (response == null) {
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
+        }
+        return response.getCertificate();
+    }
+
+    @PerformanceLogging(eventAction = "internal-list-obsolete-drafts", eventType = EVENT_TYPE_ACCESS)
+    public List<String> listObsoleteDrafts(ListObsoleteDraftsRequestDTO request) {
+        final var url = baseUrl + INTERNAL_DRAFT_ENDPOINT_URL + "/list";
+
+        final var response = restClient.post()
+            .uri(url)
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
+            .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
+            .body(request)
+            .retrieve()
+            .body(ListObsoleteDraftsResponseDTO.class);
+
+        if (response == null) {
+            throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
+        }
+
+        return response.getCertificateIds();
+    }
+
     @PerformanceLogging(eventAction = "get-certificate-events", eventType = EVENT_TYPE_ACCESS)
     public CertificateEventDTO[] getCertificateEvents(String certificateId, GetCertificateEventsRequestDTO request) {
         final var url = baseUrl + CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/events";
@@ -1252,24 +1295,24 @@ public class CSIntegrationService {
 
     @PerformanceLogging(eventAction = "get-sick-leave-certificate", eventType = EVENT_TYPE_ACCESS)
     public Optional<GetSickLeaveCertificateInternalResponseDTO> getSickLeaveCertificate(String certificateId) {
-      final var url = baseUrl + INTERNAL_CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/sickleave";
+        final var url = baseUrl + INTERNAL_CERTIFICATE_ENDPOINT_URL + "/" + certificateId + "/sickleave";
 
-      final var response = restClient.post()
-          .uri(url)
-          .accept(MediaType.APPLICATION_JSON)
-          .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
-          .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
-          .body(GetSickLeaveCertificateInternalIgnoreModelRulesDTO.builder()
-              .ignoreModelRules(true)
-              .build())
-          .retrieve()
-          .body(GetSickLeaveCertificateInternalResponseDTO.class);
+        final var response = restClient.post()
+            .uri(url)
+            .accept(MediaType.APPLICATION_JSON)
+            .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
+            .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
+            .body(GetSickLeaveCertificateInternalIgnoreModelRulesDTO.builder()
+                .ignoreModelRules(true)
+                .build())
+            .retrieve()
+            .body(GetSickLeaveCertificateInternalResponseDTO.class);
 
-      if (response == null || response.isAvailable() == false || response.getSickLeaveCertificate() == null) {
-        return Optional.empty();
-      }
+        if (response == null || !response.isAvailable() || response.getSickLeaveCertificate() == null) {
+            return Optional.empty();
+        }
 
-      return Optional.of(response);
+        return Optional.of(response);
     }
 }
 

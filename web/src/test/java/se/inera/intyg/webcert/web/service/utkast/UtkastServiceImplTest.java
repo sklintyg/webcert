@@ -61,6 +61,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.common.support.common.enumerations.EventCode;
 import se.inera.intyg.common.support.common.enumerations.RelationKod;
@@ -185,6 +188,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     private DefaultTypeAheadProvider defaultTypeAheadProvider;
     @Mock
     private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
+    @Mock
+    private HandleObsoleteDraftsService handleObsoleteDraftsService;
 
     @Spy
     private CreateIntygsIdStrategy mockIdStrategy = new CreateIntygsIdStrategy() {
@@ -1247,12 +1252,59 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
     @Test
     public void shallMonitorLogWhenPdlLogging() {
-        final var expectedLogRequest = LogRequest.builder().build();
-        final var user = createUser(true);
         when(utkastRepository.getIntygsTyp(INTYG_ID)).thenReturn(INTYG_TYPE);
         when(utkastRepository.findByIntygsIdAndIntygsTyp(INTYG_ID, INTYG_TYPE)).thenReturn(utkast);
         utkastService.getDraft(INTYG_ID, true);
         verify(monitoringService).logUtkastRead(anyString(), anyString());
+    }
+
+    @Test
+    public void shouldReturnNumberOfDeletedDrafts() {
+        final var expectedDeletedDrafts = 2;
+
+        final var utkast1 = createUtkast(INTYG_ID, UTKAST_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_INCOMPLETE, null, INTYG_JSON,
+            setupVardperson(hoSPerson),
+            PERSONNUMMER);
+
+        final var utkast2 = createUtkast(INTYG_ID, UTKAST_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_LOCKED,
+            null, INTYG_JSON,
+            setupVardperson(hoSPerson),
+            PERSONNUMMER);
+
+        final Page<Utkast> page = new PageImpl<>(List.of(utkast1, utkast2));
+        when(utkastRepository.findObsoleteDrafts(any(LocalDateTime.class),
+            eq(List.of(UtkastStatus.DRAFT_LOCKED, UtkastStatus.DRAFT_INCOMPLETE, UtkastStatus.DRAFT_COMPLETE)),
+            any(Pageable.class)))
+            .thenReturn(page)
+            .thenReturn(Page.empty());
+
+        final var resultDeletedDrafts = utkastService.dispose(LocalDateTime.now(), 10);
+
+        assertEquals(expectedDeletedDrafts, resultDeletedDrafts);
+    }
+
+    @Test
+    public void shouldDeletedDrafts() {
+        final var utkast1 = createUtkast(INTYG_ID, UTKAST_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_INCOMPLETE, null, INTYG_JSON,
+            setupVardperson(hoSPerson),
+            PERSONNUMMER);
+
+        final var utkast2 = createUtkast(INTYG_ID, UTKAST_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_LOCKED,
+            null, INTYG_JSON,
+            setupVardperson(hoSPerson),
+            PERSONNUMMER);
+
+        final Page<Utkast> page = new PageImpl<>(List.of(utkast1, utkast2));
+        when(utkastRepository.findObsoleteDrafts(any(LocalDateTime.class),
+            eq(List.of(UtkastStatus.DRAFT_LOCKED, UtkastStatus.DRAFT_INCOMPLETE, UtkastStatus.DRAFT_COMPLETE)),
+            any(Pageable.class)))
+            .thenReturn(page)
+            .thenReturn(Page.empty());
+
+        final var createdBefore = LocalDateTime.now();
+        utkastService.dispose(createdBefore, 10);
+
+        verify(handleObsoleteDraftsService, times(1)).disposeAndNotify(List.of(utkast1, utkast2), createdBefore);
     }
 
     private CreateNewDraftRequest buildCreateNewDraftRequest() {

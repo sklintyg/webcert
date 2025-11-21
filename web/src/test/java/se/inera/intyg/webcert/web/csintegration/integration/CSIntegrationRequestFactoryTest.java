@@ -28,6 +28,7 @@ import static org.mockito.Mockito.when;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -2283,6 +2284,28 @@ class CSIntegrationRequestFactoryTest {
             final var expectedCuttoffDate = LocalDate.now().minusDays(5).atStartOfDay();
             final var actualRequest = csIntegrationRequestFactory.getLockDraftsRequestDTO(5);
             assertEquals(expectedCuttoffDate, actualRequest.getCutoffDate());
+        }
+    }
+
+    @Nested
+    class ListStaleDraftsRequestTests {
+
+        @Test
+        void shouldSetCutoffDate() {
+            final var expectedCutoffDate = LocalDateTime.now().minusMonths(3);
+            final var actualRequest = csIntegrationRequestFactory.getListObsoleteDraftsRequestDTO(expectedCutoffDate);
+            assertEquals(expectedCutoffDate, actualRequest.getCutoffDate());
+        }
+    }
+
+    @Nested
+    class DeleteDraftsByCertificateIdsRequestTests {
+
+        @Test
+        void shouldSetCertificateIds() {
+            final var expectedCertificateId = "id";
+            final var actualRequest = csIntegrationRequestFactory.getDisposeObsoleteDraftRequestDTO(expectedCertificateId);
+            assertEquals(expectedCertificateId, actualRequest.getCertificateId());
         }
     }
 
