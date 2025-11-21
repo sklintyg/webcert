@@ -24,8 +24,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.integration.privatepractitioner.service.PrivatePractitionerIntegrationService;
-import se.inera.intyg.webcert.web.privatepractitioner.converter.RegisterPrivatePractitionerConverter;
-import se.inera.intyg.webcert.web.privatepractitioner.converter.UpdatePrivatePractitionerConverter;
+import se.inera.intyg.webcert.web.privatepractitioner.converter.RegisterPrivatePractitionerFactory;
+import se.inera.intyg.webcert.web.privatepractitioner.converter.UpdatePrivatePractitionerFactory;
 import se.inera.intyg.webcert.web.service.facade.GetUserResourceLinks;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -43,19 +43,20 @@ public class PrivatePractitionerService {
 
     private final WebCertUserService webCertUserService;
     private final PrivatePractitionerIntegrationService privatePractitionerIntegrationService;
-    private final RegisterPrivatePractitionerConverter registerPrivatePractitionerConverter;
-    private final UpdatePrivatePractitionerConverter updatePrivatePractitionerConverter;
+    private final RegisterPrivatePractitionerFactory registerPrivatePractitionerFactory;
+    private final UpdatePrivatePractitionerFactory updatePrivatePractitionerFactory;
     private final GetUserResourceLinks getUserResourceLinks;
 
     public void registerPrivatePractitioner(PrivatePractitionerDetails privatePractitionerRegisterRequest) {
         final var user = webCertUserService.getUser();
-        
         if (hasNoAccessToRegister(user)) {
             throw new IllegalStateException("User is not authorized to register as private practitioner");
         }
 
         privatePractitionerIntegrationService.registerPrivatePractitioner(
-            registerPrivatePractitionerConverter.convert(privatePractitionerRegisterRequest, webCertUserService)
+            registerPrivatePractitionerFactory.create(privatePractitionerRegisterRequest)
+                .withName(user.getNamn())
+                .withPersonId(user.getPersonId())
         );
     }
 
@@ -85,9 +86,11 @@ public class PrivatePractitionerService {
     }
 
     public PrivatePractitionerResponse updatePrivatePractitioner(PrivatePractitionerDetails updatePrivatePractitionerRequest) {
+        final var personId = webCertUserService.getUser().getPersonId();
         return PrivatePractitionerResponse.convert(
             privatePractitionerIntegrationService.updatePrivatePractitioner(
-                updatePrivatePractitionerConverter.convert(updatePrivatePractitionerRequest, webCertUserService))
+                updatePrivatePractitionerFactory.create(updatePrivatePractitionerRequest).withPersonId(personId)
+            )
         );
     }
 

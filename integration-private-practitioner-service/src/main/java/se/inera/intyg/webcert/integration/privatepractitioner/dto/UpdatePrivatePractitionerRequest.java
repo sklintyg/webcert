@@ -2,11 +2,13 @@ package se.inera.intyg.webcert.integration.privatepractitioner.dto;
 
 import lombok.Builder;
 import lombok.Value;
+import lombok.With;
 
 @Value
 @Builder
 public class UpdatePrivatePractitionerRequest {
 
+    @With
     String personId;
 
     String position;
