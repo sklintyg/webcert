@@ -417,7 +417,7 @@ class MonitoringLogServiceImplTest {
     @Test
     void shouldLogUtkastDisposed() {
         logService.logUtkastDisposed(INTYGS_ID, INTYGS_TYP, ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.now().plusDays(5)));
-        verifyLog(Level.INFO, "UTKAST_PRUNED Utkast 'INTYGS_ID' of type 'INTYGS_TYP' was pruned due to being stale for more than '5' days");
+        verifyLog(Level.INFO, "UTKAST_DISPOSED Utkast 'INTYGS_ID' of type 'INTYGS_TYP' was disposed due to being older than '5' days");
     }
 
     @Test
