@@ -1,4 +1,4 @@
-package se.inera.intyg.webcert.web.privatepractitioner.converter;
+package se.inera.intyg.webcert.web.privatepractitioner.factory;
 
 import org.springframework.stereotype.Component;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.RegisterPrivatePractitionerRequest;
