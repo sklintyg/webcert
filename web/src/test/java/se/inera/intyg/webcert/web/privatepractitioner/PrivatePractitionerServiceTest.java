@@ -81,8 +81,9 @@ class PrivatePractitionerServiceTest {
     @Test
     void shouldThrowIfPrivatePractitionerIdNotUnauthorized() {
         mockUser();
-        when(getUserResourceLinks.get(user)).thenReturn(new ResourceLinkDTO[]{ResourceLinkDTO.create(ResourceLinkTypeDTO.ACCESS_SIGNED_CERTIFICATES_LIST, "", "", true)});
-        assertThrows(IllegalStateException.class, () -> service.registerPrivatePractitioner(DR_KRANSTEGE_REGISTREATION_REQUEST_DTO));
+        when(getUserResourceLinks.get(user)).thenReturn(
+            new ResourceLinkDTO[]{ResourceLinkDTO.create(ResourceLinkTypeDTO.ACCESS_SIGNED_CERTIFICATES_LIST, "", "", true)});
+        assertThrows(IllegalStateException.class, () -> service.registerPrivatePractitioner(DR_KRANSTEGE_REGISTRATION_REQUEST_DTO));
     }
 
     @Test
@@ -90,7 +91,8 @@ class PrivatePractitionerServiceTest {
         when(registerPrivatePractitionerConverter.convert(DR_KRANSTEGE_REGISTRATION_REQUEST_DTO, webCertUserService)).thenReturn(
             DR_KRANSTEGE_REGISTREATION_REQUEST);
 
-        when(getUserResourceLinks.get(user)).thenReturn(new ResourceLinkDTO[]{ResourceLinkDTO.create(ResourceLinkTypeDTO.ACCESS_REGISTER_PRIVATE_PRACTITIONER, "", "", true)});
+        when(getUserResourceLinks.get(user)).thenReturn(
+            new ResourceLinkDTO[]{ResourceLinkDTO.create(ResourceLinkTypeDTO.ACCESS_REGISTER_PRIVATE_PRACTITIONER, "", "", true)});
         service.registerPrivatePractitioner(DR_KRANSTEGE_REGISTRATION_REQUEST_DTO);
         verify(privatePractitionerIntegrationService).registerPrivatePractitioner(DR_KRANSTEGE_REGISTREATION_REQUEST);
     }

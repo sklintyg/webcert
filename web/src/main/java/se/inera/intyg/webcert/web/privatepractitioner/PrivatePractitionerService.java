@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.privatepractitioner;
 
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -35,8 +36,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.Pri
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerResponse;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
-import java.util.Arrays;
-
 @Service
 @Profile("private-practitioner-service-active")
 @RequiredArgsConstructor
@@ -49,6 +48,8 @@ public class PrivatePractitionerService {
     private final GetUserResourceLinks getUserResourceLinks;
 
     public void registerPrivatePractitioner(PrivatePractitionerDetails privatePractitionerRegisterRequest) {
+        final var user = webCertUserService.getUser();
+        
         if (hasNoAccessToRegister(user)) {
             throw new IllegalStateException("User is not authorized to register as private practitioner");
         }
@@ -91,6 +92,7 @@ public class PrivatePractitionerService {
     }
 
     private boolean hasNoAccessToRegister(WebCertUser user) {
-        return Arrays.stream(getUserResourceLinks.get(user)).noneMatch(link -> (link.getType().equals(ResourceLinkTypeDTO.ACCESS_REGISTER_PRIVATE_PRACTITIONER) && link.isEnabled()));
+        return Arrays.stream(getUserResourceLinks.get(user))
+            .noneMatch(link -> (link.getType().equals(ResourceLinkTypeDTO.ACCESS_REGISTER_PRIVATE_PRACTITIONER) && link.isEnabled()));
     }
 }
