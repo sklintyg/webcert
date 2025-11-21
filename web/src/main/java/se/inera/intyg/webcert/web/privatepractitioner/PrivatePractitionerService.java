@@ -19,22 +19,18 @@
 
 package se.inera.intyg.webcert.web.privatepractitioner;
 
-import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.integration.privatepractitioner.service.PrivatePractitionerIntegrationService;
 import se.inera.intyg.webcert.web.privatepractitioner.converter.RegisterPrivatePractitionerFactory;
 import se.inera.intyg.webcert.web.privatepractitioner.converter.UpdatePrivatePractitionerFactory;
-import se.inera.intyg.webcert.web.service.facade.GetUserResourceLinks;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.CodeDTO;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.HospInformationResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerConfigResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerDetails;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerResponse;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
 @Service
 @Profile("private-practitioner-service-active")
@@ -43,13 +39,13 @@ public class PrivatePractitionerService {
 
     private final WebCertUserService webCertUserService;
     private final PrivatePractitionerIntegrationService privatePractitionerIntegrationService;
+    private final PrivatePractitionerAccessValidationHelper privatePractitionerAccessValidationHelper;
     private final RegisterPrivatePractitionerFactory registerPrivatePractitionerFactory;
     private final UpdatePrivatePractitionerFactory updatePrivatePractitionerFactory;
-    private final GetUserResourceLinks getUserResourceLinks;
 
     public void registerPrivatePractitioner(PrivatePractitionerDetails privatePractitionerRegisterRequest) {
         final var user = webCertUserService.getUser();
-        if (hasNoAccessToRegister(user)) {
+        if (!privatePractitionerAccessValidationHelper.hasAccessToRegister(user)) {
             throw new IllegalStateException("User is not authorized to register as private practitioner");
         }
 
@@ -86,16 +82,14 @@ public class PrivatePractitionerService {
     }
 
     public PrivatePractitionerResponse updatePrivatePractitioner(PrivatePractitionerDetails updatePrivatePractitionerRequest) {
-        final var personId = webCertUserService.getUser().getPersonId();
+        final var user = webCertUserService.getUser();
+        if (!privatePractitionerAccessValidationHelper.hasAccessToUpdate(user)) {
+            throw new IllegalStateException("User is not authorized to update private practitioner details");
+        }
         return PrivatePractitionerResponse.convert(
             privatePractitionerIntegrationService.updatePrivatePractitioner(
-                updatePrivatePractitionerFactory.create(updatePrivatePractitionerRequest).withPersonId(personId)
+                updatePrivatePractitionerFactory.create(updatePrivatePractitionerRequest).withPersonId(user.getPersonId())
             )
         );
-    }
-
-    private boolean hasNoAccessToRegister(WebCertUser user) {
-        return Arrays.stream(getUserResourceLinks.get(user))
-            .noneMatch(link -> (link.getType().equals(ResourceLinkTypeDTO.ACCESS_REGISTER_PRIVATE_PRACTITIONER) && link.isEnabled()));
     }
 }
