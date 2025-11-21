@@ -12,25 +12,25 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import se.inera.intyg.webcert.logging.MdcHelper;
-import se.inera.intyg.webcert.web.csintegration.certificate.DeleteStaleDraftsService;
+import se.inera.intyg.webcert.web.csintegration.certificate.DisposeObsoleteDraftsService;
 
 @ExtendWith(MockitoExtension.class)
-class DeleteStaleDraftsJobTest {
+class DisposeObsoleteDraftsJobTest {
 
     @Mock
     MdcHelper mdcHelper;
     @Mock
-    DeleteStaleDraftsService deleteStaleDraftsService;
+    DisposeObsoleteDraftsService disposeObsoleteDraftsService;
     @InjectMocks
-    DeleteStaleDraftsJob deleteStaleDraftsJob;
+    DisposeObsoleteDraftsJob disposeObsoleteDraftsJob;
 
     @Test
     void shouldExecuteJob() {
-        ReflectionTestUtils.setField(deleteStaleDraftsJob, "staleDraftsPeriod", "P3M");
-        ReflectionTestUtils.setField(deleteStaleDraftsJob, "staleDraftsPageSize", 10);
+        ReflectionTestUtils.setField(disposeObsoleteDraftsJob, "staleDraftsPeriod", "P3M");
+        ReflectionTestUtils.setField(disposeObsoleteDraftsJob, "staleDraftsPageSize", 10);
 
-        deleteStaleDraftsJob.run();
+        disposeObsoleteDraftsJob.run();
 
-        verify(deleteStaleDraftsService).delete(any(LocalDateTime.class), eq(10));
+        verify(disposeObsoleteDraftsService).dispose(any(LocalDateTime.class), eq(10));
     }
 }

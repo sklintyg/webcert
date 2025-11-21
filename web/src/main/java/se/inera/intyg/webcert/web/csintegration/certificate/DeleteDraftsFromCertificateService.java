@@ -70,7 +70,7 @@ public class DeleteDraftsFromCertificateService {
 
             publishCertificateStatusUpdateService.publish(deletedCertificate, HandelsekodEnum.RADERA, certificateXml);
             
-            monitoringLogService.logUtkastPruned(
+            monitoringLogService.logUtkastDisposed(
                 deletedCertificate.getMetadata().getId(),
                 deletedCertificate.getMetadata().getType(),
                 ChronoUnit.DAYS.between(cutoffDate.toLocalDate(), LocalDate.now())

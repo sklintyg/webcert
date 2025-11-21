@@ -167,7 +167,7 @@ public class UtkastServiceImpl implements UtkastService {
     @Autowired
     private DefaultTypeAheadProvider defaultTypeAheadProvider;
     @Autowired
-    private HandleStaleDraftsService handleStaleDraftsService;
+    private HandleObsoleteDraftsService handleObsoleteDraftsService;
 
     public static boolean isUtkast(Utkast utkast) {
         return utkast != null && ALL_DRAFT_STATUSES_INCLUDE_LOCKED.contains(utkast.getStatus());
@@ -850,7 +850,7 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
-    public int deleteStaleAndLockedDrafts(LocalDateTime staleDraftsPeriod, Integer pageSize) {
+    public int dispose(LocalDateTime obsoleteDraftsPeriod, Integer pageSize) {
         final var statuses = List.of(
             UtkastStatus.DRAFT_LOCKED,
             UtkastStatus.DRAFT_INCOMPLETE,
@@ -858,23 +858,23 @@ public class UtkastServiceImpl implements UtkastService {
         );
 
         final var pageable = PageRequest.of(0, pageSize, Sort.by(Direction.ASC, "skapad"));
-        var totalDeleted = 0;
+        var totalDisposed = 0;
         Page<Utkast> page;
 
         do {
-            page = utkastRepository.findStaleAndLockedDrafts(staleDraftsPeriod, statuses, pageable);
+            page = utkastRepository.findObsoleteDrafts(obsoleteDraftsPeriod, statuses, pageable);
             final var drafts = page.getContent();
 
             try {
-                handleStaleDraftsService.deleteAndNotify(drafts, staleDraftsPeriod);
-                totalDeleted += drafts.size();
+                handleObsoleteDraftsService.disposeAndNotify(drafts, obsoleteDraftsPeriod);
+                totalDisposed += drafts.size();
             } catch (Exception e) {
-                LOG.error("Error deleting stale drafts: {}", e.getMessage(), e);
+                LOG.error("Error disposing obsolete drafts: {}", e.getMessage(), e);
             }
 
         } while (page.hasNext());
 
-        return totalDeleted;
+        return totalDisposed;
     }
 
     /**

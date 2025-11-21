@@ -188,10 +188,6 @@ public interface UtkastRepositoryCustom extends UtkastFilteredRepositoryCustom {
     List<String> findCertificatesWithoutEvents(@Param("batchSize") Integer batchSize);
 
     @Query("SELECT u from Utkast u WHERE u.skapad <= :createdBefore AND u.status IN :statuses")
-    List<Utkast> findStaleAndLockedDrafts(@Param("createdBefore") LocalDateTime createdBefore,
-        @Param("statuses") List<UtkastStatus> statuses);
-
-    @Query("SELECT u from Utkast u WHERE u.skapad <= :createdBefore AND u.status IN :statuses")
-    Page<Utkast> findStaleAndLockedDrafts(@Param("createdBefore") LocalDateTime createdBefore,
+    Page<Utkast> findObsoleteDrafts(@Param("createdBefore") LocalDateTime createdBefore,
         @Param("statuses") List<UtkastStatus> statuses, Pageable pageable);
 }

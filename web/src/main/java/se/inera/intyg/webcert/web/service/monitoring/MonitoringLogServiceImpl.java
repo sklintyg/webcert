@@ -457,15 +457,15 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
     }
 
     @Override
-    public void logUtkastPruned(String intygsId, String intygsTyp, long period) {
+    public void logUtkastDisposed(String intygsId, String intygsTyp, long period) {
         try (MdcCloseableMap ignored = MdcCloseableMap.builder()
-            .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.UTKAST_PRUNED))
+            .put(MdcLogConstants.EVENT_ACTION, toEventType(MonitoringEvent.UTKAST_DISPOSED))
             .put(MdcLogConstants.EVENT_TYPE, MdcLogConstants.EVENT_TYPE_DELETION)
             .put(MdcLogConstants.EVENT_CERTIFICATE_ID, intygsId)
             .put(MdcLogConstants.EVENT_CERTIFICATE_TYPE, intygsTyp)
             .build()
         ) {
-            logEvent(MonitoringEvent.UTKAST_PRUNED, intygsId, intygsTyp, period);
+            logEvent(MonitoringEvent.UTKAST_DISPOSED, intygsId, intygsTyp, period);
         }
     }
 
@@ -1282,7 +1282,7 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
         UTKAST_CONCURRENTLY_EDITED(
             "Utkast '{}' of type '{}' was concurrently edited by multiple users"),
         UTKAST_DELETED("Utkast '{}' of type '{}' was deleted"),
-        UTKAST_PRUNED("Utkast '{}' of type '{}' was pruned due to being stale for more than '{}' days"),
+        UTKAST_DISPOSED("Utkast '{}' of type '{}' was disposed due to being obsolete for more than '{}' days"),
         UTKAST_REVOKED("Utkast '{}' revoked by '{}' reason '{}'"),
         UTKAST_PRINT("Intyg '{}' of type '{}' was printed"),
         UTKAST_READY_NOTIFICATION_SENT(

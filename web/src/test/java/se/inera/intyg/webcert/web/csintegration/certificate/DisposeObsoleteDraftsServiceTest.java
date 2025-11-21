@@ -11,7 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
 @ExtendWith(MockitoExtension.class)
-class DeleteStaleDraftsServiceTest {
+class DisposeObsoleteDraftsServiceTest {
 
     private static final int PAGE_SIZE = 10;
     private static final LocalDateTime STALE_DRAFTS_PERIOD = LocalDateTime.now();
@@ -20,17 +20,17 @@ class DeleteStaleDraftsServiceTest {
     @Mock
     DeleteDraftsFromCertificateService deleteDraftsFromCertificateService;
     @InjectMocks
-    DeleteStaleDraftsService deleteStaleDraftsService;
+    DisposeObsoleteDraftsService disposeObsoleteDraftsService;
 
     @Test
-    void shouldDeleteStaleAndLockedDraftsInWC() {
-        deleteStaleDraftsService.delete(STALE_DRAFTS_PERIOD, PAGE_SIZE);
-        verify(utkastService).deleteStaleAndLockedDrafts(STALE_DRAFTS_PERIOD, PAGE_SIZE);
+    void shouldDisposeStaleAndLockedDraftsInWC() {
+        disposeObsoleteDraftsService.dispose(STALE_DRAFTS_PERIOD, PAGE_SIZE);
+        verify(utkastService).dispose(STALE_DRAFTS_PERIOD, PAGE_SIZE);
     }
 
     @Test
-    void shouldDeleteStaleAndLockedDraftsInCS() {
-        deleteStaleDraftsService.delete(STALE_DRAFTS_PERIOD, PAGE_SIZE);
+    void shouldDisposeStaleAndLockedDraftsInCS() {
+        disposeObsoleteDraftsService.dispose(STALE_DRAFTS_PERIOD, PAGE_SIZE);
         verify(deleteDraftsFromCertificateService).delete(STALE_DRAFTS_PERIOD);
     }
 }

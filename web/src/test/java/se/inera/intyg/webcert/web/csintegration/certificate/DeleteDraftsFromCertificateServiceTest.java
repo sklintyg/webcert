@@ -151,8 +151,8 @@ class DeleteDraftsFromCertificateServiceTest {
 
         deleteDraftsFromCertificateService.delete(CUTOFF_DATE);
 
-        verify(monitoringLogService).logUtkastPruned(CERTIFICATE_ID_1, TYPE, PERIOD);
-        verify(monitoringLogService).logUtkastPruned(CERTIFICATE_ID_2, TYPE, PERIOD);
+        verify(monitoringLogService).logUtkastDisposed(CERTIFICATE_ID_1, TYPE, PERIOD);
+        verify(monitoringLogService).logUtkastDisposed(CERTIFICATE_ID_2, TYPE, PERIOD);
     }
 
     @Test

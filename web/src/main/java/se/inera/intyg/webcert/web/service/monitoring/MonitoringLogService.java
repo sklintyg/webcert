@@ -92,7 +92,7 @@ public interface MonitoringLogService extends AuthenticationLogger {
 
     void logUtkastDeleted(String intygsId, String intygsTyp);
 
-    void logUtkastPruned(String intygsId, String intygsTyp, long period);
+    void logUtkastDisposed(String intygsId, String intygsTyp, long period);
 
     void logUtkastRevoked(String intygsId, String hsaId, String reason);
 

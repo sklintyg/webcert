@@ -17,7 +17,7 @@ import se.inera.intyg.webcert.web.service.notification.NotificationService;
 
 @Service
 @RequiredArgsConstructor
-public class HandleStaleDraftsService {
+public class HandleObsoleteDraftsService {
 
     private final NotificationService notificationService;
     private final UtkastRepository utkastRepository;
@@ -27,9 +27,9 @@ public class HandleStaleDraftsService {
     private final CertificateEventProcessedRepository certificateEventProcessedRepository;
 
     @Transactional
-    public void deleteAndNotify(List<Utkast> drafts, LocalDateTime staleDraftsPeriod) {
+    public void disposeAndNotify(List<Utkast> drafts, LocalDateTime obsoleteDraftsPeriod) {
         final var certificateIds = drafts.stream()
-            .filter(Utkast::eligeableForPrune)
+            .filter(Utkast::eligeableForDispose)
             .map(Utkast::getIntygsId)
             .toList();
 
@@ -44,7 +44,7 @@ public class HandleStaleDraftsService {
 
         drafts.forEach(notificationService::sendNotificationForDraftDeleted);
 
-        final var period = ChronoUnit.DAYS.between(staleDraftsPeriod.toLocalDate(), LocalDate.now());
-        drafts.forEach(draft -> monitoringLogService.logUtkastPruned(draft.getIntygsId(), draft.getIntygsTyp(), period));
+        final var period = ChronoUnit.DAYS.between(obsoleteDraftsPeriod.toLocalDate(), LocalDate.now());
+        drafts.forEach(draft -> monitoringLogService.logUtkastDisposed(draft.getIntygsId(), draft.getIntygsTyp(), period));
     }
 }

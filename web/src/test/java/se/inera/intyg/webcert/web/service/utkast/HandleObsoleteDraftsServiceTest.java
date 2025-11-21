@@ -23,7 +23,7 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 
 @ExtendWith(MockitoExtension.class)
-class HandleStaleDraftsServiceTest {
+class HandleObsoleteDraftsServiceTest {
 
     private static final String CERTIFICATE_TYPE = "certificateType";
     private static final LocalDateTime STALE_DRAFTS_PERIOD = LocalDateTime.now().minusMonths(3);
@@ -48,7 +48,7 @@ class HandleStaleDraftsServiceTest {
     private CertificateEventProcessedRepository certificateEventProcessedRepository;
 
     @InjectMocks
-    private HandleStaleDraftsService handleStaleDraftsService;
+    private HandleObsoleteDraftsService handleObsoleteDraftsService;
 
     @Test
     void shouldDeleteDraftsAndSendNotifications() {
@@ -57,7 +57,7 @@ class HandleStaleDraftsServiceTest {
         final var draft3 = createUtkast("cert-id-3", UtkastStatus.DRAFT_COMPLETE);
         final var drafts = List.of(draft1, draft2, draft3);
 
-        handleStaleDraftsService.deleteAndNotify(drafts, STALE_DRAFTS_PERIOD);
+        handleObsoleteDraftsService.disposeAndNotify(drafts, STALE_DRAFTS_PERIOD);
 
         verify(utkastRepository).deleteAllById(List.of("cert-id-1", "cert-id-2", "cert-id-3"));
         verify(notificationService).sendNotificationForDraftDeleted(draft1);
@@ -70,7 +70,7 @@ class HandleStaleDraftsServiceTest {
         final var draft = createUtkast("cert-id-1", UtkastStatus.DRAFT_COMPLETE);
         final var drafts = List.of(draft);
 
-        handleStaleDraftsService.deleteAndNotify(drafts, STALE_DRAFTS_PERIOD);
+        handleObsoleteDraftsService.disposeAndNotify(drafts, STALE_DRAFTS_PERIOD);
 
         verify(utkastRepository).deleteAllById(List.of("cert-id-1"));
         verify(notificationService).sendNotificationForDraftDeleted(draft);
@@ -80,7 +80,7 @@ class HandleStaleDraftsServiceTest {
     void shouldHandleEmptyListWithoutErrors() {
         final var drafts = Collections.<Utkast>emptyList();
 
-        handleStaleDraftsService.deleteAndNotify(drafts, STALE_DRAFTS_PERIOD);
+        handleObsoleteDraftsService.disposeAndNotify(drafts, STALE_DRAFTS_PERIOD);
 
         verifyNoInteractions(utkastRepository);
         verifyNoInteractions(notificationService);
@@ -92,7 +92,7 @@ class HandleStaleDraftsServiceTest {
         final var draft2 = createUtkast("cert-id-2", UtkastStatus.DRAFT_COMPLETE);
         final var drafts = List.of(draft1, draft2);
 
-        handleStaleDraftsService.deleteAndNotify(drafts, STALE_DRAFTS_PERIOD);
+        handleObsoleteDraftsService.disposeAndNotify(drafts, STALE_DRAFTS_PERIOD);
 
         verify(utkastRepository).deleteAllById(List.of("cert-id-1", "cert-id-2"));
     }
@@ -105,10 +105,10 @@ class HandleStaleDraftsServiceTest {
         final var draft2 = createUtkast(certificateId2, UtkastStatus.DRAFT_COMPLETE);
         final var drafts = List.of(draft1, draft2);
 
-        handleStaleDraftsService.deleteAndNotify(drafts, STALE_DRAFTS_PERIOD);
+        handleObsoleteDraftsService.disposeAndNotify(drafts, STALE_DRAFTS_PERIOD);
 
-        verify(monitoringLogService).logUtkastPruned(certificateId1, CERTIFICATE_TYPE, PERIOD);
-        verify(monitoringLogService).logUtkastPruned(certificateId2, CERTIFICATE_TYPE, PERIOD);
+        verify(monitoringLogService).logUtkastDisposed(certificateId1, CERTIFICATE_TYPE, PERIOD);
+        verify(monitoringLogService).logUtkastDisposed(certificateId2, CERTIFICATE_TYPE, PERIOD);
     }
 
     @Test
@@ -119,7 +119,7 @@ class HandleStaleDraftsServiceTest {
         final var draft2 = createUtkast(certificateId2, UtkastStatus.DRAFT_COMPLETE);
         final var drafts = List.of(draft1, draft2);
 
-        handleStaleDraftsService.deleteAndNotify(drafts, STALE_DRAFTS_PERIOD);
+        handleObsoleteDraftsService.disposeAndNotify(drafts, STALE_DRAFTS_PERIOD);
 
         verify(certificateEventProcessedRepository).eraseEventsProcessedByCertificateIds(List.of(certificateId1, certificateId2));
     }
@@ -132,7 +132,7 @@ class HandleStaleDraftsServiceTest {
         final var draft2 = createUtkast(certificateId2, UtkastStatus.DRAFT_COMPLETE);
         final var drafts = List.of(draft1, draft2);
 
-        handleStaleDraftsService.deleteAndNotify(drafts, STALE_DRAFTS_PERIOD);
+        handleObsoleteDraftsService.disposeAndNotify(drafts, STALE_DRAFTS_PERIOD);
 
         verify(certificateEventFailedLoadRepository).eraseEventsFailedByCertificateIds(List.of(certificateId1, certificateId2));
     }
@@ -145,7 +145,7 @@ class HandleStaleDraftsServiceTest {
         final var draft2 = createUtkast(certificateId2, UtkastStatus.DRAFT_COMPLETE);
         final var drafts = List.of(draft1, draft2);
 
-        handleStaleDraftsService.deleteAndNotify(drafts, STALE_DRAFTS_PERIOD);
+        handleObsoleteDraftsService.disposeAndNotify(drafts, STALE_DRAFTS_PERIOD);
 
         verify(certificateEventRepository).eraseCertificateEventsByCertificateIds(List.of(certificateId1, certificateId2));
     }
@@ -158,7 +158,7 @@ class HandleStaleDraftsServiceTest {
         final var draft2 = createUtkast(certificateId2, UtkastStatus.SIGNED);
         final var drafts = List.of(draft1, draft2);
 
-        handleStaleDraftsService.deleteAndNotify(drafts, STALE_DRAFTS_PERIOD);
+        handleObsoleteDraftsService.disposeAndNotify(drafts, STALE_DRAFTS_PERIOD);
 
         verifyNoInteractions(utkastRepository);
         verifyNoInteractions(utkastRepository);

@@ -189,7 +189,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
     @Mock
     private CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
     @Mock
-    private HandleStaleDraftsService handleStaleDraftsService;
+    private HandleObsoleteDraftsService handleObsoleteDraftsService;
 
     @Spy
     private CreateIntygsIdStrategy mockIdStrategy = new CreateIntygsIdStrategy() {
@@ -1272,13 +1272,13 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
             PERSONNUMMER);
 
         final Page<Utkast> page = new PageImpl<>(List.of(utkast1, utkast2));
-        when(utkastRepository.findStaleAndLockedDrafts(any(LocalDateTime.class),
+        when(utkastRepository.findObsoleteDrafts(any(LocalDateTime.class),
             eq(List.of(UtkastStatus.DRAFT_LOCKED, UtkastStatus.DRAFT_INCOMPLETE, UtkastStatus.DRAFT_COMPLETE)),
             any(Pageable.class)))
             .thenReturn(page)
             .thenReturn(Page.empty());
 
-        final var resultDeletedDrafts = utkastService.deleteStaleAndLockedDrafts(LocalDateTime.now(), 10);
+        final var resultDeletedDrafts = utkastService.dispose(LocalDateTime.now(), 10);
 
         assertEquals(expectedDeletedDrafts, resultDeletedDrafts);
     }
@@ -1295,16 +1295,16 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
             PERSONNUMMER);
 
         final Page<Utkast> page = new PageImpl<>(List.of(utkast1, utkast2));
-        when(utkastRepository.findStaleAndLockedDrafts(any(LocalDateTime.class),
+        when(utkastRepository.findObsoleteDrafts(any(LocalDateTime.class),
             eq(List.of(UtkastStatus.DRAFT_LOCKED, UtkastStatus.DRAFT_INCOMPLETE, UtkastStatus.DRAFT_COMPLETE)),
             any(Pageable.class)))
             .thenReturn(page)
             .thenReturn(Page.empty());
 
         final var createdBefore = LocalDateTime.now();
-        utkastService.deleteStaleAndLockedDrafts(createdBefore, 10);
+        utkastService.dispose(createdBefore, 10);
 
-        verify(handleStaleDraftsService, times(1)).deleteAndNotify(List.of(utkast1, utkast2), createdBefore);
+        verify(handleObsoleteDraftsService, times(1)).disposeAndNotify(List.of(utkast1, utkast2), createdBefore);
     }
 
     private CreateNewDraftRequest buildCreateNewDraftRequest() {
