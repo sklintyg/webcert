@@ -20,6 +20,7 @@
 package se.inera.intyg.webcert.web.privatepractitioner;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestData.DR_KRANSTEGE;
@@ -44,9 +45,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.integration.privatepractitioner.service.PrivatePractitionerIntegrationService;
 import se.inera.intyg.webcert.web.privatepractitioner.converter.RegisterPrivatePractitionerConverter;
 import se.inera.intyg.webcert.web.privatepractitioner.converter.UpdatePrivatePractitionerConverter;
+import se.inera.intyg.webcert.web.service.facade.GetUserResourceLinks;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerConfigResponse;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
+import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
 @ExtendWith(MockitoExtension.class)
 class PrivatePractitionerServiceTest {
@@ -59,6 +63,8 @@ class PrivatePractitionerServiceTest {
     RegisterPrivatePractitionerConverter registerPrivatePractitionerConverter;
     @Mock
     UpdatePrivatePractitionerConverter updatePrivatePractitionerConverter;
+    @Mock
+    GetUserResourceLinks getUserResourceLinks;
     @InjectMocks
     PrivatePractitionerService service;
 
@@ -73,12 +79,19 @@ class PrivatePractitionerServiceTest {
     }
 
     @Test
+    void shouldThrowIfPrivatePractitionerIdNotUnauthorized() {
+        mockUser();
+        when(getUserResourceLinks.get(user)).thenReturn(new ResourceLinkDTO[]{ResourceLinkDTO.create(ResourceLinkTypeDTO.ACCESS_SIGNED_CERTIFICATES_LIST, "", "", true)});
+        assertThrows(IllegalStateException.class, () -> service.registerPrivatePractitioner(DR_KRANSTEGE_REGISTREATION_REQUEST_DTO));
+    }
+
+    @Test
     void shouldRegisterPrivatePractitioner() {
         when(registerPrivatePractitionerConverter.convert(DR_KRANSTEGE_REGISTRATION_REQUEST_DTO, webCertUserService)).thenReturn(
             DR_KRANSTEGE_REGISTREATION_REQUEST);
 
+        when(getUserResourceLinks.get(user)).thenReturn(new ResourceLinkDTO[]{ResourceLinkDTO.create(ResourceLinkTypeDTO.ACCESS_REGISTER_PRIVATE_PRACTITIONER, "", "", true)});
         service.registerPrivatePractitioner(DR_KRANSTEGE_REGISTRATION_REQUEST_DTO);
-
         verify(privatePractitionerIntegrationService).registerPrivatePractitioner(DR_KRANSTEGE_REGISTREATION_REQUEST);
     }
 
