@@ -36,11 +36,11 @@ import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.D
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_ZIP_CODE;
 
 import java.util.List;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.Code;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.HospInformation;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerConfiguration;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.RegisterPrivatePractitionerRequest;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.RegisterPrivatePractitionerRequest.RegisterPrivatePractitionerRequestBuilder;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.Code;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.HospInformation;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerConfiguration;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.RegisterPrivatePractitionerRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.RegisterPrivatePractitionerRequest.RegisterPrivatePractitionerRequestBuilder;
 
 public class TestDataIntegration {
 
@@ -63,7 +63,7 @@ public class TestDataIntegration {
     public static final List<Code> DR_KRANSTEGE_LICENSED_HEALTHCARE_PROFESSIONS =
         List.of(new Code("LK", "Läkare"));
 
-    public static final RegisterPrivatePractitionerRequest DR_KRANSTEGE_REGISTREATION_REQUEST = registerPrivatePractitionerRequest().build();
+    public static final RegisterPrivatePractitionerRequest DR_KRANSTEGE_REGISTRATION_REQUEST = registerPrivatePractitionerRequest().build();
     public static final PrivatePractitionerConfiguration PRIVATE_PRACTITIONER_CONFIG = PrivatePractitionerConfiguration
         .builder()
         .positionCodes(POSITIONS)

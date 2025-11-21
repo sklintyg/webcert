@@ -20,7 +20,7 @@
 package se.inera.intyg.webcert.web.privatepractitioner;
 
 import java.util.List;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.Code;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.Code;
 
 public class TestDataConstants {
 

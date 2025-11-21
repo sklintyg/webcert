@@ -17,10 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.integration.privatepractitioner.model;
+package se.inera.intyg.webcert.integration.privatepractitioner.dto;
 
-public enum PrivatePractitionerValidationResultCode {
-    OK,
-    NO_ACCOUNT,
-    NOT_AUTHORIZED_IN_HOSP;
+public record GetHospInformationRequest(String personId) {
+
 }

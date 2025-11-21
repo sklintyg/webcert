@@ -18,8 +18,8 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions;
 
-import static se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerValidationResultCode.NOT_AUTHORIZED_IN_HOSP;
-import static se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerValidationResultCode.NO_ACCOUNT;
+import static se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationResultCode.NOT_AUTHORIZED_IN_HOSP;
+import static se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationResultCode.NO_ACCOUNT;
 
 import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerValidationResultCode;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationResultCode;
 import se.inera.intyg.webcert.integration.privatepractitioner.service.PrivatePractitionerIntegrationService;
 import se.inera.intyg.webcert.web.privatepractitioner.toggle.PrivatePractitionerServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.GetUserResourceLinks;

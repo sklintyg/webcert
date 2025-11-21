@@ -31,13 +31,14 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.GetHospInformationRequest;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.HospInformation;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitioner;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerConfiguration;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerValidationRequest;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerValidationResponse;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.RegisterPrivatePractitionerRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.GetHospInformationRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.HospInformation;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitioner;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerConfiguration;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationResponse;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.RegisterPrivatePractitionerRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.UpdatePrivatePractitionerRequest;
 import se.inera.intyg.webcert.logging.MdcHelper;
 
 @Service
@@ -107,6 +108,18 @@ public class PPSIntegrationService {
             .accept(MediaType.APPLICATION_JSON)
             .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
             .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
+            .retrieve()
+            .body(PrivatePractitioner.class);
+    }
+
+    public PrivatePractitioner updatePrivatePractitioner(UpdatePrivatePractitionerRequest privatePractitioner) {
+        return ppsRestClient
+            .put()
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+            .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
+            .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
+            .body(privatePractitioner)
             .retrieve()
             .body(PrivatePractitioner.class);
     }

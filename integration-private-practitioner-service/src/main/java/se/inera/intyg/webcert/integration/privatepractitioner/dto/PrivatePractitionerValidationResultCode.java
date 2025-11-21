@@ -17,29 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.integration.privatepractitioner.model;
+package se.inera.intyg.webcert.integration.privatepractitioner.dto;
 
-import lombok.Builder;
-import lombok.Value;
-
-@Value
-@Builder
-public class RegisterPrivatePractitionerRequest {
-
-    String personId;
-    String name;
-
-    String position;
-    String careUnitName;
-    String typeOfCare;
-    String healthcareServiceType;
-    String workplaceCode;
-
-    String phoneNumber;
-    String email;
-    String address;
-    String zipCode;
-    String city;
-    String municipality;
-    String county;
+public enum PrivatePractitionerValidationResultCode {
+    OK,
+    NO_ACCOUNT,
+    NOT_AUTHORIZED_IN_HOSP;
 }

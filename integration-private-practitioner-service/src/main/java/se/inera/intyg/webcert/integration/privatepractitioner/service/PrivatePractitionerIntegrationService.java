@@ -24,14 +24,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.GetHospInformationRequest;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.HospInformation;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitioner;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerConfiguration;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerValidationRequest;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerValidationResponse;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerValidationResultCode;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.RegisterPrivatePractitionerRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.GetHospInformationRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.HospInformation;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitioner;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerConfiguration;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationResponse;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationResultCode;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.RegisterPrivatePractitionerRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.UpdatePrivatePractitionerRequest;
 
 @Slf4j
 @Service
@@ -69,6 +70,10 @@ public class PrivatePractitionerIntegrationService {
     public PrivatePractitioner getPrivatePractitioner(String personId) {
         validateIdentifier(personId);
         return ppsIntegrationService.getPrivatePractitioner(personId);
+    }
+
+    public PrivatePractitioner updatePrivatePractitioner(UpdatePrivatePractitionerRequest privatePractitioner) {
+        return ppsIntegrationService.updatePrivatePractitioner(privatePractitioner);
     }
 
     private void validateIdentifier(String personalIdentityNumber) {

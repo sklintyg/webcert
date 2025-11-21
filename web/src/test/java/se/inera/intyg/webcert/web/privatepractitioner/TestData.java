@@ -40,12 +40,12 @@ import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.D
 
 import java.time.LocalDateTime;
 import java.util.List;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.Code;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.HospInformation;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitioner;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitioner.PrivatePractitionerBuilder;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerConfiguration;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.RegisterPrivatePractitionerRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.Code;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.HospInformation;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitioner;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitioner.PrivatePractitionerBuilder;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerConfiguration;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.RegisterPrivatePractitionerRequest;
 
 public class TestData {
 

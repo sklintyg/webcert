@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitioner;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitioner;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerResponse.PrivatePractitionerResponseBuilder;
 
 @Value
@@ -32,7 +32,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.Pri
 public class PrivatePractitionerResponse {
 
     String personId;
-    String name;
 
     String position;
     String careUnitName;
@@ -56,7 +55,6 @@ public class PrivatePractitionerResponse {
     public static PrivatePractitionerResponse convert(PrivatePractitioner privatePractitioner) {
         return PrivatePractitionerResponse.builder()
             .personId(privatePractitioner.getPersonId())
-            .name(privatePractitioner.getName())
             .position(privatePractitioner.getPosition())
             .careUnitName(privatePractitioner.getCareUnitName())
             .typeOfCare(privatePractitioner.getTypeOfCare())

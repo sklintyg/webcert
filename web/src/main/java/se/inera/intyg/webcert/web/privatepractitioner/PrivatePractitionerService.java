@@ -19,22 +19,22 @@
 
 package se.inera.intyg.webcert.web.privatepractitioner;
 
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.RegisterPrivatePractitionerRequest;
 import se.inera.intyg.webcert.integration.privatepractitioner.service.PrivatePractitionerIntegrationService;
+import se.inera.intyg.webcert.web.privatepractitioner.converter.RegisterPrivatePractitionerFactory;
+import se.inera.intyg.webcert.web.privatepractitioner.converter.UpdatePrivatePractitionerFactory;
 import se.inera.intyg.webcert.web.service.facade.GetUserResourceLinks;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.CodeDTO;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.HospInformationResponse;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerConfigResponse;
-import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerRegistrationRequest;
+import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerDetails;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerResponse;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
-
-import java.util.Arrays;
 
 @Service
 @Profile("private-practitioner-service-active")
@@ -43,32 +43,21 @@ public class PrivatePractitionerService {
 
     private final WebCertUserService webCertUserService;
     private final PrivatePractitionerIntegrationService privatePractitionerIntegrationService;
+    private final RegisterPrivatePractitionerFactory registerPrivatePractitionerFactory;
+    private final UpdatePrivatePractitionerFactory updatePrivatePractitionerFactory;
     private final GetUserResourceLinks getUserResourceLinks;
 
-    public void registerPrivatePractitioner(PrivatePractitionerRegistrationRequest privatePractitionerRegisterRequest) {
+    public void registerPrivatePractitioner(PrivatePractitionerDetails privatePractitionerRegisterRequest) {
         final var user = webCertUserService.getUser();
-
         if (hasNoAccessToRegister(user)) {
             throw new IllegalStateException("User is not authorized to register as private practitioner");
         }
 
-        privatePractitionerIntegrationService.registerPrivatePractitioner(RegisterPrivatePractitionerRequest
-            .builder()
-            .personId(user.getPersonId())
-            .name(user.getNamn())
-            .position(privatePractitionerRegisterRequest.getPosition())
-            .careUnitName(privatePractitionerRegisterRequest.getCareUnitName())
-            .typeOfCare(privatePractitionerRegisterRequest.getTypeOfCare())
-            .healthcareServiceType(privatePractitionerRegisterRequest.getHealthcareServiceType())
-            .workplaceCode(privatePractitionerRegisterRequest.getWorkplaceCode())
-            .phoneNumber(privatePractitionerRegisterRequest.getPhoneNumber())
-            .email(privatePractitionerRegisterRequest.getEmail())
-            .address(privatePractitionerRegisterRequest.getAddress())
-            .zipCode(privatePractitionerRegisterRequest.getZipCode())
-            .city(privatePractitionerRegisterRequest.getCity())
-            .municipality(privatePractitionerRegisterRequest.getMunicipality())
-            .county(privatePractitionerRegisterRequest.getCounty())
-            .build());
+        privatePractitionerIntegrationService.registerPrivatePractitioner(
+            registerPrivatePractitionerFactory.create(privatePractitionerRegisterRequest)
+                .withName(user.getNamn())
+                .withPersonId(user.getPersonId())
+        );
     }
 
     public PrivatePractitionerConfigResponse getPrivatePractitionerConfig() {
@@ -96,7 +85,17 @@ public class PrivatePractitionerService {
         return PrivatePractitionerResponse.convert(privatePractitionerIntegrationService.getPrivatePractitioner(personId));
     }
 
+    public PrivatePractitionerResponse updatePrivatePractitioner(PrivatePractitionerDetails updatePrivatePractitionerRequest) {
+        final var personId = webCertUserService.getUser().getPersonId();
+        return PrivatePractitionerResponse.convert(
+            privatePractitionerIntegrationService.updatePrivatePractitioner(
+                updatePrivatePractitionerFactory.create(updatePrivatePractitionerRequest).withPersonId(personId)
+            )
+        );
+    }
+
     private boolean hasNoAccessToRegister(WebCertUser user) {
-        return Arrays.stream(getUserResourceLinks.get(user)).noneMatch(link -> (link.getType().equals(ResourceLinkTypeDTO.ACCESS_REGISTER_PRIVATE_PRACTITIONER) && link.isEnabled()));
+        return Arrays.stream(getUserResourceLinks.get(user))
+            .noneMatch(link -> (link.getType().equals(ResourceLinkTypeDTO.ACCESS_REGISTER_PRIVATE_PRACTITIONER) && link.isEnabled()));
     }
 }

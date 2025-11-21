@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.integration.privatepractitioner.service.testdata.TestData.DR_KRANSTEGE;
 import static se.inera.intyg.webcert.integration.privatepractitioner.service.testdata.TestData.DR_KRANSTEGE_HOSP_INFO;
+import static se.inera.intyg.webcert.integration.privatepractitioner.service.testdata.TestData.DR_KRANSTEGE_UPDATE_REQUEST;
 import static se.inera.intyg.webcert.integration.privatepractitioner.service.testdata.TestData.PRIVATE_PRACTITIONER_CONFIG;
 import static se.inera.intyg.webcert.integration.privatepractitioner.service.testdata.TestData.kranstegeRegisterPractitionerRequest;
 import static se.inera.intyg.webcert.integration.privatepractitioner.service.testdata.TestDataConstants.DR_KRANSTEGE_PERSON_ID;
@@ -37,9 +38,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.client.RestClientException;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerValidationRequest;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerValidationResponse;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerValidationResultCode;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationResponse;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationResultCode;
 
 @ExtendWith(MockitoExtension.class)
 class PrivatePractitionerIntegrationServiceTest {
@@ -111,6 +112,14 @@ class PrivatePractitionerIntegrationServiceTest {
     void shallReturnPrivatePractitioner() {
         when(ppsIntegrationService.getPrivatePractitioner(DR_KRANSTEGE_PERSON_ID)).thenReturn(DR_KRANSTEGE);
         final var result = service.getPrivatePractitioner(DR_KRANSTEGE_PERSON_ID);
+        assertEquals(DR_KRANSTEGE, result);
+    }
+
+    @Test
+    void shallUpdateRegisteredPrivatePractitioner() {
+        when(ppsIntegrationService.updatePrivatePractitioner(DR_KRANSTEGE_UPDATE_REQUEST)).thenReturn(DR_KRANSTEGE);
+        final var result = service.updatePrivatePractitioner(DR_KRANSTEGE_UPDATE_REQUEST);
+
         assertEquals(DR_KRANSTEGE, result);
     }
 }

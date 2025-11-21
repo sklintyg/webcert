@@ -17,45 +17,47 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner;
+package se.inera.intyg.webcert.integration.privatepractitioner.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
+import java.util.List;
 import lombok.Builder;
-import lombok.NonNull;
 import lombok.Value;
-import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerRegistrationRequest.PrivatePractitionerRegistrationRequestBuilder;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitioner.PrivatePractitionerBuilder;
 
-@Builder
 @Value
-@JsonDeserialize(builder = PrivatePractitionerRegistrationRequestBuilder.class)
-public class PrivatePractitionerRegistrationRequest {
+@Builder
+@JsonDeserialize(builder = PrivatePractitionerBuilder.class)
+public class PrivatePractitioner {
 
-    @NonNull
+    String hsaId;
+    String personId;
+    String name;
+
     String position;
-    @NonNull
     String careUnitName;
-    @NonNull
+    String careProviderName;
     String typeOfCare;
-    @NonNull
     String healthcareServiceType;
     String workplaceCode;
 
-    @NonNull
     String phoneNumber;
-    @NonNull
     String email;
-    @NonNull
     String address;
-    @NonNull
     String zipCode;
     String city;
     String municipality;
     String county;
 
+    LocalDateTime registrationDate;
+    String personalPrescriptionCode;
+    List<Code> specialties;
+    List<Code> licensedHealthcareProfessions;
+
     @JsonPOJOBuilder(withPrefix = "")
-    public static class PrivatePractitionerRegistrationRequestBuilder {
+    public static class PrivatePractitionerBuilder {
 
     }
 }

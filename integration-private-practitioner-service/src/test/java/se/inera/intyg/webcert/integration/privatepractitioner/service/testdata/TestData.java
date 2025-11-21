@@ -40,12 +40,14 @@ import static se.inera.intyg.webcert.integration.privatepractitioner.service.tes
 
 import java.time.LocalDateTime;
 import java.util.List;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.Code;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.HospInformation;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitioner;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitioner.PrivatePractitionerBuilder;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitionerConfiguration;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.RegisterPrivatePractitionerRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.Code;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.HospInformation;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitioner;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitioner.PrivatePractitionerBuilder;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerConfiguration;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.RegisterPrivatePractitionerRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.UpdatePrivatePractitionerRequest;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.UpdatePrivatePractitionerRequest.UpdatePrivatePractitionerRequestBuilder;
 
 public class TestData {
 
@@ -68,6 +70,7 @@ public class TestData {
     );
 
     public static final PrivatePractitioner DR_KRANSTEGE = kranstegeBuilder().build();
+    public static final UpdatePrivatePractitionerRequest DR_KRANSTEGE_UPDATE_REQUEST = kranstegeUpdatePractitionerRequest().build();
 
     public static PrivatePractitionerBuilder kranstegeBuilder() {
         return PrivatePractitioner.builder()
@@ -120,5 +123,22 @@ public class TestData {
             .municipality(DR_KRANSTEGE_MUNICIPALITY)
             .county(DR_KRANSTEGE_COUNTY)
             .build();
+    }
+
+    public static UpdatePrivatePractitionerRequestBuilder kranstegeUpdatePractitionerRequest() {
+        return UpdatePrivatePractitionerRequest.builder()
+            .personId(DR_KRANSTEGE_PERSON_ID)
+            .position(DR_KRANSTEGE_POSITION)
+            .careUnitName(DR_KRANSTEGE_CARE_UNIT_NAME)
+            .typeOfCare(DR_KRANSTEGE_TYPE_OF_CARE)
+            .healthcareServiceType(DR_KRANSTEGE_HEALTHCARE_SERVICE_TYPE)
+            .workplaceCode(DR_KRANSTEGE_WORKPLACE_CODE)
+            .phoneNumber(DR_KRANSTEGE_PHONE_NUMBER)
+            .email(DR_KRANSTEGE_EMAIL)
+            .address(DR_KRANSTEGE_ADDRESS)
+            .zipCode(DR_KRANSTEGE_ZIP_CODE)
+            .city(DR_KRANSTEGE_CITY)
+            .municipality(DR_KRANSTEGE_MUNICIPALITY)
+            .county(DR_KRANSTEGE_COUNTY);
     }
 }

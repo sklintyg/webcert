@@ -17,28 +17,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.integration.privatepractitioner.model;
+package se.inera.intyg.webcert.integration.privatepractitioner.dto;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import java.time.LocalDateTime;
-import java.util.List;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.PrivatePractitioner.PrivatePractitionerBuilder;
+import lombok.With;
 
 @Value
 @Builder
-@JsonDeserialize(builder = PrivatePractitionerBuilder.class)
-public class PrivatePractitioner {
+public class RegisterPrivatePractitionerRequest {
 
-    String hsaId;
+    @With
     String personId;
+    @With
     String name;
 
     String position;
     String careUnitName;
-    String careProviderName;
     String typeOfCare;
     String healthcareServiceType;
     String workplaceCode;
@@ -50,14 +45,4 @@ public class PrivatePractitioner {
     String city;
     String municipality;
     String county;
-
-    LocalDateTime registrationDate;
-    String personalPrescriptionCode;
-    List<Code> specialties;
-    List<Code> licensedHealthcareProfessions;
-
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class PrivatePractitionerBuilder {
-
-    }
 }

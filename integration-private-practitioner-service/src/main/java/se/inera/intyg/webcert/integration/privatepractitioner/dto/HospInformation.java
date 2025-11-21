@@ -17,13 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.integration.privatepractitioner.model;
+package se.inera.intyg.webcert.integration.privatepractitioner.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.util.List;
 import lombok.Builder;
-import se.inera.intyg.webcert.integration.privatepractitioner.model.HospInformation.HospInformationBuilder;
+import se.inera.intyg.webcert.integration.privatepractitioner.dto.HospInformation.HospInformationBuilder;
 
 @Builder
 @JsonDeserialize(builder = HospInformationBuilder.class)
