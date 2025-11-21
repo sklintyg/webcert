@@ -137,5 +137,5 @@ public interface UtkastService {
 
     List<Utkast> findUtkastByPatientAndUnits(Personnummer patientId, List<String> unitIds);
 
-    int dispose(LocalDateTime createdBefore, Integer pageSize);
+    int dispose(LocalDateTime disposeObsoleteDraftsDate, Integer pageSize);
 }

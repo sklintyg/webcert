@@ -47,7 +47,7 @@ import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 @ExtendWith(MockitoExtension.class)
-class DeleteDraftsFromCertificateServiceTest {
+class DisposeObsoleteDraftsFromCertificateServiceTest {
 
     private static final LocalDateTime CUTOFF_DATE = LocalDateTime.of(2025, 1, 1, 0, 0);
     private static final long PERIOD = ChronoUnit.DAYS.between(CUTOFF_DATE.toLocalDate(), LocalDate.now());
@@ -67,13 +67,13 @@ class DeleteDraftsFromCertificateServiceTest {
     @Mock
     MonitoringLogService monitoringLogService;
     @InjectMocks
-    DeleteDraftsFromCertificateService deleteDraftsFromCertificateService;
+    DisposeObsoleteDraftsFromCertificateService disposeObsoleteDraftsFromCertificateService;
 
     @Test
     void shouldReturnZeroIfCertificateServiceProfileIsNotActive() {
         doReturn(false).when(certificateServiceProfile).active();
 
-        final var result = deleteDraftsFromCertificateService.delete(CUTOFF_DATE);
+        final var result = disposeObsoleteDraftsFromCertificateService.dispose(CUTOFF_DATE);
 
         assertEquals(0, result);
         verifyNoInteractions(csIntegrationService);
@@ -85,35 +85,35 @@ class DeleteDraftsFromCertificateServiceTest {
     @Test
     void shouldReturnZeroIfNoStaleDraftsFound() {
         doReturn(true).when(certificateServiceProfile).active();
-        doReturn(Collections.emptyList()).when(csIntegrationService).listStaleDrafts(any());
+        doReturn(Collections.emptyList()).when(csIntegrationService).listObsoleteDrafts(any());
 
-        final var result = deleteDraftsFromCertificateService.delete(CUTOFF_DATE);
+        final var result = disposeObsoleteDraftsFromCertificateService.dispose(CUTOFF_DATE);
 
         assertEquals(0, result);
-        verify(csIntegrationService).listStaleDrafts(any());
-        verify(csIntegrationService, never()).deleteStaleDraft(any());
+        verify(csIntegrationService).listObsoleteDrafts(any());
+        verify(csIntegrationService, never()).disposeObsoleteDraft(any());
         verifyNoInteractions(publishCertificateStatusUpdateService);
         verifyNoInteractions(monitoringLogService);
     }
 
     @Test
-    void shouldDeleteEachDraftIndividually() {
+    void shouldDisposeEachDraftIndividually() {
         final var staleDraftIds = List.of(CERTIFICATE_ID_1, CERTIFICATE_ID_2, CERTIFICATE_ID_3);
 
         doReturn(true).when(certificateServiceProfile).active();
-        doReturn(staleDraftIds).when(csIntegrationService).listStaleDrafts(any());
+        doReturn(staleDraftIds).when(csIntegrationService).listObsoleteDrafts(any());
 
         doReturn("xml1").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_1);
         doReturn("xml2").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_2);
         doReturn("xml3").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_3);
 
-        doReturn(getCertificate(CERTIFICATE_ID_1)).when(csIntegrationService).deleteStaleDraft(any());
+        doReturn(getCertificate(CERTIFICATE_ID_1)).when(csIntegrationService).disposeObsoleteDraft(any());
 
-        final var result = deleteDraftsFromCertificateService.delete(CUTOFF_DATE);
+        final var result = disposeObsoleteDraftsFromCertificateService.dispose(CUTOFF_DATE);
 
         assertEquals(3, result);
         verify(csIntegrationService, times(3)).getInternalCertificateXml(any());
-        verify(csIntegrationService, times(3)).deleteStaleDraft(any());
+        verify(csIntegrationService, times(3)).disposeObsoleteDraft(any());
     }
 
     @Test
@@ -123,14 +123,14 @@ class DeleteDraftsFromCertificateServiceTest {
         final var certificate2 = getCertificate(CERTIFICATE_ID_2);
 
         doReturn(true).when(certificateServiceProfile).active();
-        doReturn(staleDraftIds).when(csIntegrationService).listStaleDrafts(any());
+        doReturn(staleDraftIds).when(csIntegrationService).listObsoleteDrafts(any());
 
         doReturn("xml1").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_1);
         doReturn("xml2").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_2);
 
-        doReturn(certificate1, certificate2).when(csIntegrationService).deleteStaleDraft(any());
+        doReturn(certificate1, certificate2).when(csIntegrationService).disposeObsoleteDraft(any());
 
-        deleteDraftsFromCertificateService.delete(CUTOFF_DATE);
+        disposeObsoleteDraftsFromCertificateService.dispose(CUTOFF_DATE);
 
         verify(publishCertificateStatusUpdateService, times(2))
             .publish(any(Certificate.class), any(HandelsekodEnum.class), any(String.class));
@@ -141,25 +141,25 @@ class DeleteDraftsFromCertificateServiceTest {
         final var staleDraftIds = List.of(CERTIFICATE_ID_1, CERTIFICATE_ID_2);
 
         doReturn(true).when(certificateServiceProfile).active();
-        doReturn(staleDraftIds).when(csIntegrationService).listStaleDrafts(any());
+        doReturn(staleDraftIds).when(csIntegrationService).listObsoleteDrafts(any());
 
         doReturn("xml1").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_1);
         doReturn("xml2").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_2);
 
         doReturn(getCertificate(CERTIFICATE_ID_1), getCertificate(CERTIFICATE_ID_2))
-            .when(csIntegrationService).deleteStaleDraft(any());
+            .when(csIntegrationService).disposeObsoleteDraft(any());
 
-        deleteDraftsFromCertificateService.delete(CUTOFF_DATE);
+        disposeObsoleteDraftsFromCertificateService.dispose(CUTOFF_DATE);
 
         verify(monitoringLogService).logUtkastDisposed(CERTIFICATE_ID_1, TYPE, PERIOD);
         verify(monitoringLogService).logUtkastDisposed(CERTIFICATE_ID_2, TYPE, PERIOD);
     }
 
     @Test
-    void shouldContinueProcessingWhenOneDraftFailsToDelete() {
+    void shouldContinueProcessingWhenOneDraftFailsToDispose() {
         final var staleDraftIds = List.of(CERTIFICATE_ID_1, CERTIFICATE_ID_2, CERTIFICATE_ID_3);
         doReturn(true).when(certificateServiceProfile).active();
-        doReturn(staleDraftIds).when(csIntegrationService).listStaleDrafts(any());
+        doReturn(staleDraftIds).when(csIntegrationService).listObsoleteDrafts(any());
 
         doReturn("xml1").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_1);
         doThrow(new RuntimeException("Failed to get XML")).when(csIntegrationService)
@@ -167,13 +167,13 @@ class DeleteDraftsFromCertificateServiceTest {
         doReturn("xml3").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_3);
 
         doReturn(getCertificate(CERTIFICATE_ID_1), getCertificate(CERTIFICATE_ID_3))
-            .when(csIntegrationService).deleteStaleDraft(any());
+            .when(csIntegrationService).disposeObsoleteDraft(any());
 
-        final var result = deleteDraftsFromCertificateService.delete(CUTOFF_DATE);
+        final var result = disposeObsoleteDraftsFromCertificateService.dispose(CUTOFF_DATE);
 
         verify(csIntegrationService, times(3)).getInternalCertificateXml(any());
         assertEquals(2, result);
-        verify(csIntegrationService, times(2)).deleteStaleDraft(any());
+        verify(csIntegrationService, times(2)).disposeObsoleteDraft(any());
     }
 
     private static Certificate getCertificate(String id) {

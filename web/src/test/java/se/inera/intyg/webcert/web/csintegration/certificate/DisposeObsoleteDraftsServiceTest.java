@@ -18,7 +18,7 @@ class DisposeObsoleteDraftsServiceTest {
     @Mock
     UtkastService utkastService;
     @Mock
-    DeleteDraftsFromCertificateService deleteDraftsFromCertificateService;
+    DisposeObsoleteDraftsFromCertificateService disposeObsoleteDraftsFromCertificateService;
     @InjectMocks
     DisposeObsoleteDraftsService disposeObsoleteDraftsService;
 
@@ -31,6 +31,6 @@ class DisposeObsoleteDraftsServiceTest {
     @Test
     void shouldDisposeStaleAndLockedDraftsInCS() {
         disposeObsoleteDraftsService.dispose(STALE_DRAFTS_PERIOD, PAGE_SIZE);
-        verify(deleteDraftsFromCertificateService).delete(STALE_DRAFTS_PERIOD);
+        verify(disposeObsoleteDraftsFromCertificateService).dispose(STALE_DRAFTS_PERIOD);
     }
 }

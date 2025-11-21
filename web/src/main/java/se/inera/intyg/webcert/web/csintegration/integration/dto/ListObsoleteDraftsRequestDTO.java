@@ -24,17 +24,17 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.ListStaleDraftsRequestDTO.ListStaleDraftsRequestDTOBuilder;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ListObsoleteDraftsRequestDTO.ListObsoleteDraftsRequestDTOBuilder;
 
-@JsonDeserialize(builder = ListStaleDraftsRequestDTOBuilder.class)
+@JsonDeserialize(builder = ListObsoleteDraftsRequestDTOBuilder.class)
 @Value
 @Builder
-public class ListStaleDraftsRequestDTO {
+public class ListObsoleteDraftsRequestDTO {
 
     LocalDateTime cutoffDate;
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class ListStaleDraftsRequestDTOBuilder {
+    public static class ListObsoleteDraftsRequestDTOBuilder {
 
     }
 }

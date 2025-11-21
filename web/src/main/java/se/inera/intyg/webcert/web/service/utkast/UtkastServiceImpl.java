@@ -850,7 +850,7 @@ public class UtkastServiceImpl implements UtkastService {
     }
 
     @Override
-    public int dispose(LocalDateTime obsoleteDraftsPeriod, Integer pageSize) {
+    public int dispose(LocalDateTime disposeObsoleteDraftsDate, Integer pageSize) {
         final var statuses = List.of(
             UtkastStatus.DRAFT_LOCKED,
             UtkastStatus.DRAFT_INCOMPLETE,
@@ -862,11 +862,11 @@ public class UtkastServiceImpl implements UtkastService {
         Page<Utkast> page;
 
         do {
-            page = utkastRepository.findObsoleteDrafts(obsoleteDraftsPeriod, statuses, pageable);
+            page = utkastRepository.findObsoleteDrafts(disposeObsoleteDraftsDate, statuses, pageable);
             final var drafts = page.getContent();
 
             try {
-                handleObsoleteDraftsService.disposeAndNotify(drafts, obsoleteDraftsPeriod);
+                handleObsoleteDraftsService.disposeAndNotify(drafts, disposeObsoleteDraftsDate);
                 totalDisposed += drafts.size();
             } catch (Exception e) {
                 LOG.error("Error disposing obsolete drafts: {}", e.getMessage(), e);

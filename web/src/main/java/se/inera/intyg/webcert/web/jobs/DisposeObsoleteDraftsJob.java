@@ -32,15 +32,15 @@ public class DisposeObsoleteDraftsJob {
 
     @Scheduled(cron = "${dispose.obsolete.drafts.cron:-}")
     @SchedulerLock(name = JOB_NAME, lockAtLeastFor = LOCK_AT_LEAST, lockAtMostFor = LOCK_AT_MOST)
-    @PerformanceLogging(eventAction = "dispose-obsolete-drafts", eventType = MdcLogConstants.EVENT_TYPE_CHANGE,
+    @PerformanceLogging(eventAction = "dispose-obsolete-drafts-job", eventType = MdcLogConstants.EVENT_TYPE_CHANGE,
         eventCategory = MdcLogConstants.EVENT_CATEGORY_PROCESS)
     public void run() {
         try {
             MDC.put(MdcLogConstants.TRACE_ID_KEY, mdcHelper.traceId());
             MDC.put(MdcLogConstants.SPAN_ID_KEY, mdcHelper.spanId());
 
-            final var disposeObsoleteDraftsPeriod = LocalDateTime.now().minus(Period.parse(obsoleteDraftsPeriod));
-            disposeObsoleteDraftsService.dispose(disposeObsoleteDraftsPeriod, obsoleteDraftsPageSize);
+            final var disposeObsoleteDraftsDate = LocalDateTime.now().minus(Period.parse(obsoleteDraftsPeriod));
+            disposeObsoleteDraftsService.dispose(disposeObsoleteDraftsDate, obsoleteDraftsPageSize);
         } finally {
             MDC.clear();
         }

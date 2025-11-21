@@ -50,7 +50,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.CreateMessageReq
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteAnswerRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteMessageRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteStaleDraftsRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.DisposeObsoleteDraftsRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ForwardCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCandidateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCertificateEventsRequestDTO;
@@ -65,7 +65,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertifica
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitQuestionsRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.ListStaleDraftsRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ListObsoleteDraftsRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.LockDraftsRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageQueryCriteriaDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.PrefillXmlDTO;
@@ -610,14 +610,14 @@ public class CSIntegrationRequestFactory {
             .build();
     }
 
-    public ListStaleDraftsRequestDTO getListStaleDraftsRequestDTO(LocalDateTime cutoffDate) {
-        return ListStaleDraftsRequestDTO.builder()
+    public ListObsoleteDraftsRequestDTO getListObsoleteDraftsRequestDTO(LocalDateTime cutoffDate) {
+        return ListObsoleteDraftsRequestDTO.builder()
             .cutoffDate(cutoffDate)
             .build();
     }
 
-    public DeleteStaleDraftsRequestDTO getDeleteStaleDraftsRequestDTO(String certificateId) {
-        return DeleteStaleDraftsRequestDTO.builder()
+    public DisposeObsoleteDraftsRequestDTO getDeleteStaleDraftsRequestDTO(String certificateId) {
+        return DisposeObsoleteDraftsRequestDTO.builder()
             .certificateId(certificateId)
             .build();
     }

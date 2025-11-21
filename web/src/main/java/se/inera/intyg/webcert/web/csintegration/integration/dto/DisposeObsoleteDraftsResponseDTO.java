@@ -19,22 +19,24 @@
 
 package se.inera.intyg.webcert.web.csintegration.integration.dto;
 
-
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteStaleDraftsRequestDTO.DeleteStaleDraftsRequestDTOBuilder;
+import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.DisposeObsoleteDraftsResponseDTO.DisposeObsoleteDraftsResponseDTOBuilder;
 
-@JsonDeserialize(builder = DeleteStaleDraftsRequestDTOBuilder.class)
+@JsonDeserialize(builder = DisposeObsoleteDraftsResponseDTOBuilder.class)
 @Value
 @Builder
-public class DeleteStaleDraftsRequestDTO {
+public class DisposeObsoleteDraftsResponseDTO {
 
-    String certificateId;
+    Certificate certificate;
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class DeleteStaleDraftsRequestDTOBuilder {
+    public static class DisposeObsoleteDraftsResponseDTOBuilder {
 
     }
 }
+
+

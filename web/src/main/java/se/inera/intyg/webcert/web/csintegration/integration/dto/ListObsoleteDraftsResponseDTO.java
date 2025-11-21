@@ -24,17 +24,17 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.util.List;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.ListStaleDraftsResponseDTO.ListStaleDraftsResponseDTOBuilder;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ListObsoleteDraftsResponseDTO.ListObsoleteDraftsResponseDTOBuilder;
 
-@JsonDeserialize(builder = ListStaleDraftsResponseDTOBuilder.class)
+@JsonDeserialize(builder = ListObsoleteDraftsResponseDTOBuilder.class)
 @Value
 @Builder
-public class ListStaleDraftsResponseDTO {
+public class ListObsoleteDraftsResponseDTO {
 
     List<String> certificateIds;
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class ListStaleDraftsResponseDTOBuilder {
+    public static class ListObsoleteDraftsResponseDTOBuilder {
 
     }
 }

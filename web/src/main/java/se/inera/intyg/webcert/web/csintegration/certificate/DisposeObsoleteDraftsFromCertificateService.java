@@ -34,7 +34,7 @@ import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class DeleteDraftsFromCertificateService {
+public class DisposeObsoleteDraftsFromCertificateService {
 
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
@@ -42,43 +42,43 @@ public class DeleteDraftsFromCertificateService {
     private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
     private final MonitoringLogService monitoringLogService;
 
-    public int delete(LocalDateTime cutoffDate) {
+    public int dispose(LocalDateTime disposeObsoleteDraftsDate) {
         if (!certificateServiceProfile.active()) {
             return 0;
         }
 
-        final var staleDraftIds = csIntegrationService.listStaleDrafts(
-            csIntegrationRequestFactory.getListStaleDraftsRequestDTO(cutoffDate)
+        final var obsoleteDraftIds = csIntegrationService.listObsoleteDrafts(
+            csIntegrationRequestFactory.getListObsoleteDraftsRequestDTO(disposeObsoleteDraftsDate)
         );
 
-        if (staleDraftIds.isEmpty()) {
+        if (obsoleteDraftIds.isEmpty()) {
             return 0;
         }
 
-        return staleDraftIds.stream()
-            .mapToInt(certificateId -> deleteSingleDraft(certificateId, cutoffDate))
+        return obsoleteDraftIds.stream()
+            .mapToInt(certificateId -> disposeDraft(certificateId, disposeObsoleteDraftsDate))
             .sum();
     }
 
-    private int deleteSingleDraft(String certificateId, LocalDateTime cutoffDate) {
+    private int disposeDraft(String certificateId, LocalDateTime disposeObsoleteDraftsDate) {
         try {
             final var certificateXml = csIntegrationService.getInternalCertificateXml(certificateId);
 
-            final var deletedCertificate = csIntegrationService.deleteStaleDraft(
+            final var disposedCertificate = csIntegrationService.disposeObsoleteDraft(
                 csIntegrationRequestFactory.getDeleteStaleDraftsRequestDTO(certificateId)
             );
 
-            publishCertificateStatusUpdateService.publish(deletedCertificate, HandelsekodEnum.RADERA, certificateXml);
+            publishCertificateStatusUpdateService.publish(disposedCertificate, HandelsekodEnum.RADERA, certificateXml);
             
             monitoringLogService.logUtkastDisposed(
-                deletedCertificate.getMetadata().getId(),
-                deletedCertificate.getMetadata().getType(),
-                ChronoUnit.DAYS.between(cutoffDate.toLocalDate(), LocalDate.now())
+                disposedCertificate.getMetadata().getId(),
+                disposedCertificate.getMetadata().getType(),
+                ChronoUnit.DAYS.between(disposeObsoleteDraftsDate.toLocalDate(), LocalDate.now())
             );
 
             return 1;
         } catch (Exception e) {
-            log.error("Failed to delete stale draft with id: {}", certificateId, e);
+            log.error("Failed to dispose obsolete draft with id: {}", certificateId, e);
             return 0;
         }
     }

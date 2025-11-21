@@ -12,13 +12,13 @@ import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 public class DisposeObsoleteDraftsService {
 
     private final UtkastService utkastService;
-    private final DeleteDraftsFromCertificateService deleteDraftsFromCertificateService;
+    private final DisposeObsoleteDraftsFromCertificateService disposeObsoleteDraftsFromCertificateService;
 
-    public void dispose(LocalDateTime obsoleteDraftsPeriod, Integer pageSize) {
+    public void dispose(LocalDateTime disposeObsoleteDraftsDate, Integer pageSize) {
         log.info("Starting job to dispose obsolete drafts");
 
-        final var obsoleteDraftsWC = utkastService.dispose(obsoleteDraftsPeriod, pageSize);
-        final var obsoleteDraftsCS = deleteDraftsFromCertificateService.delete(obsoleteDraftsPeriod);
+        final var obsoleteDraftsWC = utkastService.dispose(disposeObsoleteDraftsDate, pageSize);
+        final var obsoleteDraftsCS = disposeObsoleteDraftsFromCertificateService.dispose(disposeObsoleteDraftsDate);
 
         log.info("Successfully disposed {} obsolete drafts - {} in Webcert - {} in CertificateService",
             obsoleteDraftsWC + obsoleteDraftsCS, obsoleteDraftsWC, obsoleteDraftsCS);

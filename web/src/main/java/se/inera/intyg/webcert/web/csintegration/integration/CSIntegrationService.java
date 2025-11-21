@@ -70,8 +70,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteAnswerResp
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteMessageRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteStaleDraftsRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.DeleteStaleDraftsResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.DisposeObsoleteDraftsRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.DisposeObsoleteDraftsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ForwardCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ForwardCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetCandidateCertificateRequestDTO;
@@ -102,8 +102,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitQuestions
 import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.HandleMessageResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.InternalCertificateXmlResponseDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.ListStaleDraftsRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.integration.dto.ListStaleDraftsResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ListObsoleteDraftsRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.ListObsoleteDraftsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.LockDraftsRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.LockDraftsResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.MessageExistsResponseDTO;
@@ -1159,8 +1159,8 @@ public class CSIntegrationService {
         return response.getCertificates();
     }
 
-    @PerformanceLogging(eventAction = "delete-stale-draft", eventType = EVENT_TYPE_DELETION)
-    public Certificate deleteStaleDraft(DeleteStaleDraftsRequestDTO request) {
+    @PerformanceLogging(eventAction = "internal-dispose-obsolete-draft", eventType = EVENT_TYPE_DELETION)
+    public Certificate disposeObsoleteDraft(DisposeObsoleteDraftsRequestDTO request) {
         final var url = baseUrl + INTERNAL_DRAFT_ENDPOINT_URL;
 
         final var response = restClient.method(HttpMethod.DELETE)
@@ -1170,7 +1170,7 @@ public class CSIntegrationService {
             .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
             .body(request)
             .retrieve()
-            .body(DeleteStaleDraftsResponseDTO.class);
+            .body(DisposeObsoleteDraftsResponseDTO.class);
 
         if (response == null) {
             throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
@@ -1178,8 +1178,8 @@ public class CSIntegrationService {
         return response.getCertificate();
     }
 
-    @PerformanceLogging(eventAction = "list-stale-drafts", eventType = EVENT_TYPE_ACCESS)
-    public List<String> listStaleDrafts(ListStaleDraftsRequestDTO request) {
+    @PerformanceLogging(eventAction = "internal-list-obsolete-drafts", eventType = EVENT_TYPE_ACCESS)
+    public List<String> listObsoleteDrafts(ListObsoleteDraftsRequestDTO request) {
         final var url = baseUrl + INTERNAL_DRAFT_ENDPOINT_URL + "/list";
 
         final var response = restClient.post()
@@ -1189,7 +1189,7 @@ public class CSIntegrationService {
             .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
             .body(request)
             .retrieve()
-            .body(ListStaleDraftsResponseDTO.class);
+            .body(ListObsoleteDraftsResponseDTO.class);
 
         if (response == null) {
             throw new IllegalStateException(NULL_RESPONSE_EXCEPTION);
@@ -1308,7 +1308,7 @@ public class CSIntegrationService {
             .retrieve()
             .body(GetSickLeaveCertificateInternalResponseDTO.class);
 
-        if (response == null || response.isAvailable() == false || response.getSickLeaveCertificate() == null) {
+        if (response == null || !response.isAvailable() || response.getSickLeaveCertificate() == null) {
             return Optional.empty();
         }
 
