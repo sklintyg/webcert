@@ -409,4 +409,10 @@ public class Utkast {
     public Boolean isTestIntyg() {
         return isTestIntyg;
     }
+
+    public boolean eligeableForPrune() {
+        return this.status.equals(UtkastStatus.DRAFT_LOCKED)
+            || this.status.equals(UtkastStatus.DRAFT_COMPLETE)
+            || this.status.equals(UtkastStatus.DRAFT_INCOMPLETE);
+    }
 }

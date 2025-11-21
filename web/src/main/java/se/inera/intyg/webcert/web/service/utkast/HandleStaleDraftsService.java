@@ -31,8 +31,13 @@ public class HandleStaleDraftsService {
     @Transactional
     public void deleteAndNotify(List<Utkast> drafts, LocalDateTime staleDraftsPeriod) {
         final var certificateIds = drafts.stream()
+            .filter(Utkast::eligeableForPrune)
             .map(Utkast::getIntygsId)
             .toList();
+
+        if (certificateIds.isEmpty()) {
+            return;
+        }
 
         handelseRepository.eraseHandelseByCertificateIds(certificateIds);
         certificateEventProcessedRepository.eraseEventsProcessedByCertificateIds(certificateIds);
