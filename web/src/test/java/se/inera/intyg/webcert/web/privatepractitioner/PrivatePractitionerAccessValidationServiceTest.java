@@ -1,5 +1,7 @@
 package se.inera.intyg.webcert.web.privatepractitioner;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_HSA_ID;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.DR_KRANSTEGE_NAME;
@@ -46,7 +48,8 @@ class PrivatePractitionerAccessValidationServiceTest {
                 new ResourceLinkDTO[]{
                     ResourceLinkDTO.create(ResourceLinkTypeDTO.ACCESS_EDIT_PRIVATE_PRACTITIONER, "", "", true)
                 });
-            accessValidationHelper.hasAccessToUpdate(user);
+            final var actual = accessValidationHelper.hasAccessToUpdate(user);
+            assertTrue(actual);
         }
 
         @Test
@@ -55,7 +58,8 @@ class PrivatePractitionerAccessValidationServiceTest {
                 new ResourceLinkDTO[]{
                     ResourceLinkDTO.create(ResourceLinkTypeDTO.ACCESS_EDIT_PRIVATE_PRACTITIONER, "", "", false)
                 });
-            accessValidationHelper.hasAccessToUpdate(user);
+            final var actual = accessValidationHelper.hasAccessToUpdate(user);
+            assertFalse(actual);
         }
     }
 
@@ -68,7 +72,8 @@ class PrivatePractitionerAccessValidationServiceTest {
                 new ResourceLinkDTO[]{
                     ResourceLinkDTO.create(ResourceLinkTypeDTO.ACCESS_REGISTER_PRIVATE_PRACTITIONER, "", "", true)
                 });
-            accessValidationHelper.hasAccessToRegister(user);
+            final var actual = accessValidationHelper.hasAccessToRegister(user);
+            assertTrue(actual);
         }
 
         @Test
@@ -77,7 +82,8 @@ class PrivatePractitionerAccessValidationServiceTest {
                 new ResourceLinkDTO[]{
                     ResourceLinkDTO.create(ResourceLinkTypeDTO.ACCESS_REGISTER_PRIVATE_PRACTITIONER, "", "", false)
                 });
-            accessValidationHelper.hasAccessToRegister(user);
+            final var actual = accessValidationHelper.hasAccessToRegister(user);
+            assertFalse(actual);
         }
     }
 
