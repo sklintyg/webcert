@@ -53,25 +53,12 @@ class CertificateInternalAggregatorTest {
     }
 
     @Test
-    void shouldReturnResponseFromCSIfProfileActiveAndResponseNotNull() {
+    void shouldReturnResponseFromCSIfResponseNotNull() {
         final var expectedResult = GetCertificateResponse.create(new Certificate());
         when(certificateInternalServiceFromCS.get(CERTIFICATE_ID, PERSON_ID)).thenReturn(expectedResult);
 
         final var response = certificateInternalAggregator.get(CERTIFICATE_ID, PERSON_ID);
         verify(certificateInternalServiceFromCS, times(1)).get(CERTIFICATE_ID, PERSON_ID);
-
-        assertEquals(expectedResult, response);
-    }
-
-    @Test
-    void shouldReturnResponseFromWCIfProfileIsNotActive() {
-        final var expectedResult = GetCertificateResponse.create(new Certificate());
-        when(cercertificateInternalServiceFromWC.get(CERTIFICATE_ID, PERSON_ID)).thenReturn(expectedResult);
-
-        final var response = certificateInternalAggregator.get(CERTIFICATE_ID, PERSON_ID);
-
-        verify(cercertificateInternalServiceFromWC, times(1)).get(CERTIFICATE_ID, PERSON_ID);
-        verify(certificateInternalServiceFromCS, times(0)).get(CERTIFICATE_ID, PERSON_ID);
 
         assertEquals(expectedResult, response);
     }

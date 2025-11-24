@@ -55,16 +55,7 @@ class HandleQuestionAggregatorTest {
     }
 
     @Test
-    void shallReturnQuestionsFromWebcertIfProfileIsInactive() {
-        final var question = Question.builder().build();
-
-        doReturn(question).when(handleQuestionFromWC).handle(QUESTION_ID, false);
-        handleQuestionAggregator.handle(QUESTION_ID, false);
-        verify(handleQuestionFromWC).handle(QUESTION_ID, false);
-    }
-
-    @Test
-    void shallReturnQuestionsFromCSIfProfileIsActiveAndResponseFromCSIsNotNull() {
+    void shallReturnQuestionsFromCSIfResponseFromCSIsNotNull() {
         doReturn(Question.builder().build()).when(handleQuestionFromCS).handle(QUESTION_ID, false);
         handleQuestionAggregator.handle(QUESTION_ID, false);
         verifyNoInteractions(handleQuestionFromWC);
@@ -72,7 +63,7 @@ class HandleQuestionAggregatorTest {
     }
 
     @Test
-    void shallReturnQuestionsFromWebcertIfProfileIsActiveAndResponseFromCSIsNull() {
+    void shallReturnQuestionsFromWebcertIfResponseFromCSIsNull() {
         final var expectedQuestion = Question.builder().build();
         doReturn(null).when(handleQuestionFromCS).handle(QUESTION_ID, false);
         doReturn(expectedQuestion).when(handleQuestionFromWC).handle(QUESTION_ID, false);

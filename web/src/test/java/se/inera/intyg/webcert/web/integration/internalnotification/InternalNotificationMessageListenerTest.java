@@ -89,7 +89,8 @@ public class InternalNotificationMessageListenerTest {
 
 
         @Test
-        void testOk() throws ModuleException, ModuleNotFoundException {            Utlatande utlatande = mock(Utlatande.class);
+        void testOk() throws ModuleException, ModuleNotFoundException {
+            Utlatande utlatande = mock(Utlatande.class);
             when(utlatande.getId()).thenReturn(INTYG_1);
             when(utlatande.getTyp()).thenReturn(LIJSP);
             CertificateResponse certificateResponse = mock(CertificateResponse.class);
@@ -128,29 +129,14 @@ public class InternalNotificationMessageListenerTest {
     class CertificateFromCS {
 
         @Test
-        void shallNotPublishStatusUpdateIfProfileIsInactive() throws ModuleException, ModuleNotFoundException {
-            Utlatande utlatande = mock(Utlatande.class);
-            ModuleApi moduleApi = mock(ModuleApi.class);
-            CertificateResponse certificateResponse = mock(CertificateResponse.class);
-
-            doReturn(true).when(integreradeEnheterRegistry).isEnhetIntegrerad(anyString(), anyString());            doReturn(INTYG_1).when(utlatande).getId();
-            doReturn(LIJSP).when(utlatande).getTyp();
-            doReturn(utlatande).when(certificateResponse).getUtlatande();
-            doReturn(certificateResponse).when(moduleApi).getCertificate(anyString(), anyString(), anyString());
-            doReturn(moduleApi).when(intygModuleRegistry).getModuleApi(anyString(), anyString());
-
-            testee.onMessage(createMessage());
-            verifyNoInteractions(publishCertificateStatusUpdateService);
-        }
-
-        @Test
-        void shallNotPublishStatusUpdateIfProfileIsActiveButCertificateDontExistInCertificateService()
+        void shallNotPublishStatusUpdateIfCertificateDontExistInCertificateService()
             throws ModuleException, ModuleNotFoundException {
             Utlatande utlatande = mock(Utlatande.class);
             ModuleApi moduleApi = mock(ModuleApi.class);
             CertificateResponse certificateResponse = mock(CertificateResponse.class);
 
-            doReturn(true).when(integreradeEnheterRegistry).isEnhetIntegrerad(anyString(), anyString());            doReturn(false).when(csIntegrationService).certificateExists(INTYG_1);
+            doReturn(true).when(integreradeEnheterRegistry).isEnhetIntegrerad(anyString(), anyString());
+            doReturn(false).when(csIntegrationService).certificateExists(INTYG_1);
 
             doReturn(INTYG_1).when(utlatande).getId();
             doReturn(LIJSP).when(utlatande).getTyp();
@@ -163,9 +149,10 @@ public class InternalNotificationMessageListenerTest {
         }
 
         @Test
-        void shallPublishStatusUpdateIfProfileIsActiveAndCertificateExistInCertificateService() {
+        void shallPublishStatusUpdateIfCertificateExistInCertificateService() {
             final var certificate = new Certificate();
-            doReturn(true).when(integreradeEnheterRegistry).isEnhetIntegrerad(anyString(), anyString());            doReturn(true).when(csIntegrationService).certificateExists(INTYG_1);
+            doReturn(true).when(integreradeEnheterRegistry).isEnhetIntegrerad(anyString(), anyString());
+            doReturn(true).when(csIntegrationService).certificateExists(INTYG_1);
             doReturn(certificate).when(csIntegrationService).getInternalCertificate(INTYG_1);
 
             testee.onMessage(createMessage());

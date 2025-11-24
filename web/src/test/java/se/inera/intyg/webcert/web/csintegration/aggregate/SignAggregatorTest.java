@@ -87,7 +87,7 @@ class SignAggregatorTest {
 
 
         @Test
-        void shallUseCertificateServiceImplementationIfProfileIsActiveAndSignatureBiljettIsReturned() {
+        void shallUseCertificateServiceImplementationIfSignatureBiljettIsReturned() {
             final var expectedResult = new SignaturBiljett();
             doReturn(expectedResult).when(signatureServiceForCS)
                 .startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, SignMethod.SIGN_SERVICE,
@@ -124,7 +124,7 @@ class SignAggregatorTest {
 
 
         @Test
-        void shallUseCertificateServiceImplementationIfProfileIsActiveAndSignatureBiljettIsReturned() {
+        void shallUseCertificateServiceImplementationIfSignatureBiljettIsReturned() {
             final var expectedResult = new SignaturBiljett();
             doReturn(expectedResult).when(signatureServiceForCS).fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, TICKED_ID);
 
@@ -156,7 +156,7 @@ class SignAggregatorTest {
 
 
         @Test
-        void shallUseCertificateServiceImplementationIfProfileIsActiveAndSignatureBiljettIsReturned() {
+        void shallUseCertificateServiceImplementationIfSignatureBiljettIsReturned() {
             final var expectedResult = new SignaturBiljett();
             doReturn(expectedResult).when(signatureServiceForCS).netidSignature(TICKED_ID, SIGN_BYTE, SIGN_CERTIFICATE);
 
@@ -188,7 +188,7 @@ class SignAggregatorTest {
 
 
         @Test
-        void shallUseCertificateServiceImplementationIfProfileIsActiveAndSignatureBiljettIsReturned() {
+        void shallUseCertificateServiceImplementationIfSignatureBiljettIsReturned() {
             final var expectedResult = new SignaturBiljett();
             doReturn(expectedResult).when(signatureServiceForCS).grpSignature(TICKED_ID, SIGN_BYTE);
 

@@ -48,8 +48,9 @@ class GetQuestionsAggregatorTest {
 
 
     @Test
-    void shallReturnQuestionsFromCSIfProfileIsActiveAndResponseIsNotNull() {
-        final var expectedResult = List.of(Question.builder().build());        doReturn(expectedResult).when(getQuestionsFromCertificateService).get(CERTIFICATE_ID);
+    void shallReturnQuestionsFromCSIfResponseIsNotNull() {
+        final var expectedResult = List.of(Question.builder().build());
+        doReturn(expectedResult).when(getQuestionsFromCertificateService).get(CERTIFICATE_ID);
 
         final var response = getQuestionsAggregator.getQuestions(CERTIFICATE_ID);
         verify(getQuestionsFromCertificateService, times(1)).get(CERTIFICATE_ID);
@@ -58,25 +59,14 @@ class GetQuestionsAggregatorTest {
     }
 
     @Test
-    void shallReturnQuestionsFromWCIfProfileIsActiveAndResponseIsNull() {
+    void shallReturnQuestionsFromWCIfResponseIsNull() {
         final var question = Question.builder().build();
-        final var expectedResult = List.of(question);        doReturn(null).when(getQuestionsFromCertificateService).get(CERTIFICATE_ID);
+        final var expectedResult = List.of(question);
+        doReturn(null).when(getQuestionsFromCertificateService).get(CERTIFICATE_ID);
         doReturn(List.of(question)).when(getQuestionsFromWebcert).getQuestions(CERTIFICATE_ID);
 
         final var response = getQuestionsAggregator.getQuestions(CERTIFICATE_ID);
         verify(getQuestionsFromCertificateService, times(1)).get(CERTIFICATE_ID);
-        verify(getQuestionsFromWebcert, times(1)).getQuestions(CERTIFICATE_ID);
-
-        assertEquals(expectedResult, response);
-    }
-
-    @Test
-    void shallReturnQuestionsFromWCIfProfileIsNotActive() {
-        final var question = Question.builder().build();
-        final var expectedResult = List.of(question);        doReturn(List.of(question)).when(getQuestionsFromWebcert).getQuestions(CERTIFICATE_ID);
-
-        final var response = getQuestionsAggregator.getQuestions(CERTIFICATE_ID);
-        verify(getQuestionsFromCertificateService, times(0)).get(CERTIFICATE_ID);
         verify(getQuestionsFromWebcert, times(1)).getQuestions(CERTIFICATE_ID);
 
         assertEquals(expectedResult, response);
@@ -97,7 +87,8 @@ class GetQuestionsAggregatorTest {
             Question.builder()
                 .type(QuestionType.COMPLEMENT)
                 .build()
-        );        doReturn(resultFromCS).when(getQuestionsFromCertificateService).get(CERTIFICATE_ID);
+        );
+        doReturn(resultFromCS).when(getQuestionsFromCertificateService).get(CERTIFICATE_ID);
 
         final var response = getQuestionsAggregator.getComplementQuestions(CERTIFICATE_ID);
         verify(getQuestionsFromCertificateService, times(1)).get(CERTIFICATE_ID);

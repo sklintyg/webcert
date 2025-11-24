@@ -36,23 +36,6 @@ class NotificationRedeliveryAggregatorTest {
     NotificationRedeliveryAggregator notificationRedeliveryAggregator;
 
     @Test
-    void shallSendNotificationWithNotificationRedeliveryService()
-        throws TemporaryException, ModuleNotFoundException, JAXBException, IOException, ModuleException {
-        final var notificationRedelivery = mock(NotificationRedelivery.class);
-        final var handelse = mock(Handelse.class);
-
-        doReturn(STATUS_UPDATE_XML).when(notificationRedeliveryStatusUpdateCreatorService).getCertificateStatusUpdateXml(
-            notificationRedelivery, handelse
-        );
-        notificationRedeliveryAggregator.resend(notificationRedelivery, handelse);
-
-        verify(notificationRedeliveryService).resend(
-            notificationRedelivery, handelse, STATUS_UPDATE_XML_BYTES
-        );
-        verifyNoInteractions(notificationRedeliveryForCertificateService);
-    }
-
-    @Test
     void shallSendNotificationWithNotificationRedeliveryServiceIfRedeliveryHandledIsFalse()
         throws TemporaryException, ModuleNotFoundException, JAXBException, IOException, ModuleException {
         final var notificationRedelivery = mock(NotificationRedelivery.class);
