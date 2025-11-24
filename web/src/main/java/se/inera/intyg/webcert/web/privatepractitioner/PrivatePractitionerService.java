@@ -22,6 +22,8 @@ package se.inera.intyg.webcert.web.privatepractitioner;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.integration.privatepractitioner.service.PrivatePractitionerIntegrationService;
 import se.inera.intyg.webcert.web.privatepractitioner.factory.RegisterPrivatePractitionerFactory;
 import se.inera.intyg.webcert.web.privatepractitioner.factory.UpdatePrivatePractitionerFactory;
@@ -46,7 +48,8 @@ public class PrivatePractitionerService {
     public void registerPrivatePractitioner(PrivatePractitionerDetails privatePractitionerRegisterRequest) {
         final var user = webCertUserService.getUser();
         if (!privatePractitionerAccessValidationService.hasAccessToRegister(user)) {
-            throw new IllegalStateException("User is not authorized to register as private practitioner");
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
+                "User is not authorized to register as private practitioner");
         }
 
         privatePractitionerIntegrationService.registerPrivatePractitioner(
@@ -84,7 +87,8 @@ public class PrivatePractitionerService {
     public PrivatePractitionerResponse updatePrivatePractitioner(PrivatePractitionerDetails updatePrivatePractitionerRequest) {
         final var user = webCertUserService.getUser();
         if (!privatePractitionerAccessValidationService.hasAccessToUpdate(user)) {
-            throw new IllegalStateException("User is not authorized to update private practitioner details");
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
+                "User is not authorized to update private practitioner details");
         }
         return PrivatePractitionerResponse.convert(
             privatePractitionerIntegrationService.updatePrivatePractitioner(
