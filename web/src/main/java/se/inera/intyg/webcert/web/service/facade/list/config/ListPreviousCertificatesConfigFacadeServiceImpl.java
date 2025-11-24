@@ -36,7 +36,7 @@ public class ListPreviousCertificatesConfigFacadeServiceImpl implements ListConf
     private static final String OPEN_CERTIFICATE_TOOLTIP = "Öppnar intyget/utkastet.";
     private static final String RENEW_BUTTON_TOOLTIP =
         "Skapar ett nytt intygsutkast för förlängning av sjukskrivning, där en del information från detta intyg följer med.";
-    private static final String DESCRIPTION = "Här ser du signerade intyg och ej signerade utkast för patienten. Ej signerade utkast raderas efter 3 månader.";
+    private static final String DESCRIPTION = "Nedan visas signerade intyg och ej signerade utkast för den patient du valt. Ej signerade utkast raderas efter 3 månader.";
     private static final String EMPTY_LIST_TEXT = "Det finns inga tidigare intyg för patienten.";
 
     @Override
