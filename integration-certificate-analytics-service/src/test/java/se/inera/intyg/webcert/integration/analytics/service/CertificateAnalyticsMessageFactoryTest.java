@@ -321,6 +321,10 @@ class CertificateAnalyticsMessageFactoryTest {
                     CertificateAnalyticsMessageType.DRAFT_DELETED
                 ),
                 Arguments.of(
+                    (Function<Certificate, CertificateAnalyticsMessage>) certificate -> factory.draftDisposed(certificate),
+                    CertificateAnalyticsMessageType.DRAFT_DISPOSED
+                ),
+                Arguments.of(
                     (Function<Certificate, CertificateAnalyticsMessage>) certificate -> factory.draftUpdated(certificate),
                     CertificateAnalyticsMessageType.DRAFT_UPDATED
                 ),
@@ -759,6 +763,10 @@ class CertificateAnalyticsMessageFactoryTest {
                 Arguments.of(
                     (Function<Utkast, CertificateAnalyticsMessage>) utkast -> factory.draftDeleted(utkast),
                     CertificateAnalyticsMessageType.DRAFT_DELETED
+                ),
+                Arguments.of(
+                    (Function<Utkast, CertificateAnalyticsMessage>) utkast -> factory.draftDisposed(utkast),
+                    CertificateAnalyticsMessageType.DRAFT_DISPOSED
                 ),
                 Arguments.of(
                     (Function<Utkast, CertificateAnalyticsMessage>) utkast -> factory.draftUpdated(utkast),

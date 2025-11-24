@@ -203,7 +203,7 @@ public class WebCertUserServiceImpl implements WebCertUserService, LoggedInWebce
 
     @Override
     public LoggedInWebcertUser getLoggedInWebcertUser() {
-        final var user = getUser();
+        final var user = hasAuthenticationContext() ? getUser() : null;
         if (user == null) {
             return LoggedInWebcertUser.builder().build();
         }

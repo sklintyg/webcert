@@ -363,6 +363,15 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
         assertEquals(expected, actual);
     }
 
+    @Test
+    public void shallReturnEmptyLoggedInWebcertUserWhenNoAuthenticationContextPresent() {
+        final var expected = LoggedInWebcertUser.builder()
+            .build();
+
+        final var actual = webcertUserService.getLoggedInWebcertUser();
+        assertEquals(expected, actual);
+    }
+
     private WebCertUser setupUserMottagningAccessTest() {
         WebCertUser user = createWebCertUser(true);
         ((Vardenhet) user.getValdVardenhet()).getMottagningar().add(buildMottagning1());

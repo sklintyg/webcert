@@ -26,6 +26,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
@@ -41,6 +43,8 @@ public class DisposeObsoleteDraftsFromCertificateService {
     private final CertificateServiceProfile certificateServiceProfile;
     private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
     private final MonitoringLogService monitoringLogService;
+    private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+    private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
     public int dispose(LocalDateTime disposeObsoleteDraftsDate) {
         if (!certificateServiceProfile.active()) {
@@ -76,6 +80,7 @@ public class DisposeObsoleteDraftsFromCertificateService {
                 ChronoUnit.DAYS.between(disposeObsoleteDraftsDate.toLocalDate(), LocalDate.now())
             );
 
+            publishCertificateAnalyticsMessage.publishEvent(certificateAnalyticsMessageFactory.draftDisposed(disposedCertificate));
             return 1;
         } catch (Exception e) {
             log.error("Failed to dispose obsolete draft with id: {}", certificateId, e);

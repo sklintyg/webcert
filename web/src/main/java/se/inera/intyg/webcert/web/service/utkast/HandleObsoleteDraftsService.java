@@ -7,6 +7,8 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.persistence.event.repository.CertificateEventFailedLoadRepository;
 import se.inera.intyg.webcert.persistence.event.repository.CertificateEventProcessedRepository;
 import se.inera.intyg.webcert.persistence.event.repository.CertificateEventRepository;
@@ -25,6 +27,8 @@ public class HandleObsoleteDraftsService {
     private final CertificateEventRepository certificateEventRepository;
     private final CertificateEventFailedLoadRepository certificateEventFailedLoadRepository;
     private final CertificateEventProcessedRepository certificateEventProcessedRepository;
+    private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+    private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
     @Transactional
     public void disposeAndNotify(List<Utkast> drafts, LocalDateTime obsoleteDraftsPeriod) {
@@ -46,5 +50,6 @@ public class HandleObsoleteDraftsService {
 
         final var period = ChronoUnit.DAYS.between(obsoleteDraftsPeriod.toLocalDate(), LocalDate.now());
         drafts.forEach(draft -> monitoringLogService.logUtkastDisposed(draft.getIntygsId(), draft.getIntygsTyp(), period));
+        drafts.forEach(draft -> publishCertificateAnalyticsMessage.publishEvent(certificateAnalyticsMessageFactory.draftDisposed(draft)));
     }
 }

@@ -32,6 +32,7 @@ import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnal
 import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.DRAFT_CREATED_FROM_CERTIFICATE;
 import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.DRAFT_CREATED_WITH_PREFILL;
 import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.DRAFT_DELETED;
+import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.DRAFT_DISPOSED;
 import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.DRAFT_READY_FOR_SIGN;
 import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.DRAFT_UPDATED;
 import static se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessageType.DRAFT_UPDATED_FROM_CERTIFICATE;
@@ -137,8 +138,16 @@ public class CertificateAnalyticsMessageFactory {
         return create(certificate, DRAFT_DELETED).build();
     }
 
+    public CertificateAnalyticsMessage draftDisposed(Certificate certificate) {
+        return create(certificate, DRAFT_DISPOSED).build();
+    }
+
     public CertificateAnalyticsMessage draftDeleted(Utkast utkast) {
         return create(utkast, DRAFT_DELETED).build();
+    }
+
+    public CertificateAnalyticsMessage draftDisposed(Utkast utkast) {
+        return create(utkast, DRAFT_DISPOSED).build();
     }
 
     public CertificateAnalyticsMessage draftUpdated(Utkast utkast) {
