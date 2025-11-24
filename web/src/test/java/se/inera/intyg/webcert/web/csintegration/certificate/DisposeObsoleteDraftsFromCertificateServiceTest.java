@@ -41,6 +41,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
+import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
@@ -55,7 +58,10 @@ class DisposeObsoleteDraftsFromCertificateServiceTest {
     private static final String CERTIFICATE_ID_2 = "cert-id-2";
     private static final String CERTIFICATE_ID_3 = "cert-id-3";
     private static final String TYPE = "lisjp";
-
+    @Mock
+    PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+    @Mock
+    CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
     @Mock
     CSIntegrationService csIntegrationService;
     @Mock
@@ -153,6 +159,31 @@ class DisposeObsoleteDraftsFromCertificateServiceTest {
 
         verify(monitoringLogService).logUtkastDisposed(CERTIFICATE_ID_1, TYPE, PERIOD);
         verify(monitoringLogService).logUtkastDisposed(CERTIFICATE_ID_2, TYPE, PERIOD);
+    }
+
+    @Test
+    void shouldPublishAnalyticsMessageForEachDeletedDraft() {
+        final var obsoleteDraftIds = List.of(CERTIFICATE_ID_1, CERTIFICATE_ID_2);
+
+        doReturn(true).when(certificateServiceProfile).active();
+        doReturn(obsoleteDraftIds).when(csIntegrationService).listObsoleteDrafts(any());
+
+        doReturn("xml1").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_1);
+        doReturn("xml2").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_2);
+
+        final var certificate1 = getCertificate(CERTIFICATE_ID_2);
+        final var certificate2 = getCertificate(CERTIFICATE_ID_1);
+
+        doReturn(certificate2, certificate1)
+            .when(csIntegrationService).disposeObsoleteDraft(any());
+
+        final var certificateAnalyticsMessage = CertificateAnalyticsMessage.builder().build();
+        doReturn(certificateAnalyticsMessage).when(certificateAnalyticsMessageFactory).draftDisposed(certificate1);
+        doReturn(certificateAnalyticsMessage).when(certificateAnalyticsMessageFactory).draftDisposed(certificate2);
+
+        disposeObsoleteDraftsFromCertificateService.dispose(CUTOFF_DATE);
+
+        verify(publishCertificateAnalyticsMessage, times(2)).publishEvent(certificateAnalyticsMessage);
     }
 
     @Test

@@ -1,7 +1,9 @@
 package se.inera.intyg.webcert.web.service.utkast;
 
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,6 +16,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.model.UtkastStatus;
+import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage;
+import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
+import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.persistence.event.repository.CertificateEventFailedLoadRepository;
 import se.inera.intyg.webcert.persistence.event.repository.CertificateEventProcessedRepository;
 import se.inera.intyg.webcert.persistence.event.repository.CertificateEventRepository;
@@ -28,25 +33,23 @@ class HandleObsoleteDraftsServiceTest {
     private static final String CERTIFICATE_TYPE = "certificateType";
     private static final LocalDateTime STALE_DRAFTS_PERIOD = LocalDateTime.now().minusMonths(3);
     private static final long PERIOD = ChronoUnit.DAYS.between(STALE_DRAFTS_PERIOD.toLocalDate(), LocalDate.now());
+
+    @Mock
+    PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
+    @Mock
+    CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
     @Mock
     private MonitoringLogService monitoringLogService;
     @Mock
     private NotificationService notificationService;
-
     @Mock
     private UtkastRepository utkastRepository;
-
-
-
     @Mock
     private CertificateEventRepository certificateEventRepository;
-
     @Mock
     private CertificateEventFailedLoadRepository certificateEventFailedLoadRepository;
-
     @Mock
     private CertificateEventProcessedRepository certificateEventProcessedRepository;
-
     @InjectMocks
     private HandleObsoleteDraftsService handleObsoleteDraftsService;
 
@@ -98,7 +101,7 @@ class HandleObsoleteDraftsServiceTest {
     }
 
     @Test
-    void shouldMonitorLogUtkastPruned() {
+    void shouldMonitorLogUtkastDisposed() {
         final var certificateId1 = "cert-id-1";
         final var certificateId2 = "cert-id-2";
         final var draft1 = createUtkast(certificateId1, UtkastStatus.DRAFT_COMPLETE);
@@ -165,6 +168,23 @@ class HandleObsoleteDraftsServiceTest {
         verifyNoInteractions(certificateEventProcessedRepository);
         verifyNoInteractions(certificateEventFailedLoadRepository);
         verifyNoInteractions(certificateEventRepository);
+    }
+
+    @Test
+    void shouldPublishAnalyticsMessageForDisposedDrafts() {
+        final var certificateId1 = "cert-id-1";
+        final var certificateId2 = "cert-id-2";
+        final var draft1 = createUtkast(certificateId1, UtkastStatus.DRAFT_COMPLETE);
+        final var draft2 = createUtkast(certificateId2, UtkastStatus.DRAFT_COMPLETE);
+        final var drafts = List.of(draft1, draft2);
+
+        final var certificateAnalyticsMessage = CertificateAnalyticsMessage.builder().build();
+        when(certificateAnalyticsMessageFactory.draftDisposed(draft1)).thenReturn(certificateAnalyticsMessage);
+        when(certificateAnalyticsMessageFactory.draftDisposed(draft2)).thenReturn(certificateAnalyticsMessage);
+
+        handleObsoleteDraftsService.disposeAndNotify(drafts, STALE_DRAFTS_PERIOD);
+
+        verify(publishCertificateAnalyticsMessage, times(2)).publishEvent(certificateAnalyticsMessage);
     }
 
     private Utkast createUtkast(String certificateId, UtkastStatus status) {
