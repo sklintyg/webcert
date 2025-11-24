@@ -43,14 +43,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.integration.privatepractitioner.service.PrivatePractitionerIntegrationService;
-import se.inera.intyg.webcert.web.privatepractitioner.converter.RegisterPrivatePractitionerFactory;
-import se.inera.intyg.webcert.web.privatepractitioner.converter.UpdatePrivatePractitionerFactory;
-import se.inera.intyg.webcert.web.service.facade.GetUserResourceLinks;
+import se.inera.intyg.webcert.web.privatepractitioner.factory.RegisterPrivatePractitionerFactory;
+import se.inera.intyg.webcert.web.privatepractitioner.factory.UpdatePrivatePractitionerFactory;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerConfigResponse;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
-import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkTypeDTO;
 
 @ExtendWith(MockitoExtension.class)
 class PrivatePractitionerServiceTest {
@@ -64,7 +61,7 @@ class PrivatePractitionerServiceTest {
     @Mock
     UpdatePrivatePractitionerFactory updatePrivatePractitionerFactory;
     @Mock
-    GetUserResourceLinks getUserResourceLinks;
+    PrivatePractitionerAccessValidationService privatePractitionerAccessValidationService;
     @InjectMocks
     PrivatePractitionerService service;
 
@@ -81,8 +78,7 @@ class PrivatePractitionerServiceTest {
     @Test
     void shouldThrowIfPrivatePractitionerIdNotUnauthorized() {
         mockUser();
-        when(getUserResourceLinks.get(user)).thenReturn(
-            new ResourceLinkDTO[]{ResourceLinkDTO.create(ResourceLinkTypeDTO.ACCESS_SIGNED_CERTIFICATES_LIST, "", "", true)});
+        when(privatePractitionerAccessValidationService.hasAccessToRegister(user)).thenReturn(false);
         assertThrows(IllegalStateException.class, () -> service.registerPrivatePractitioner(DR_KRANSTEGE_REGISTRATION_REQUEST_DTO));
     }
 
@@ -92,8 +88,8 @@ class PrivatePractitionerServiceTest {
         when(registerPrivatePractitionerFactory.create(DR_KRANSTEGE_REGISTRATION_REQUEST_DTO)).thenReturn(
             DR_KRANSTEGE_REGISTRATION_REQUEST);
 
-        when(getUserResourceLinks.get(user)).thenReturn(
-            new ResourceLinkDTO[]{ResourceLinkDTO.create(ResourceLinkTypeDTO.ACCESS_REGISTER_PRIVATE_PRACTITIONER, "", "", true)});
+        when(privatePractitionerAccessValidationService.hasAccessToRegister(user)).thenReturn(true);
+
         service.registerPrivatePractitioner(DR_KRANSTEGE_REGISTRATION_REQUEST_DTO);
         verify(privatePractitionerIntegrationService).registerPrivatePractitioner(DR_KRANSTEGE_REGISTRATION_REQUEST);
     }
@@ -122,8 +118,11 @@ class PrivatePractitionerServiceTest {
     }
 
     @Test
-    void shouldUpdatePrivatePractitioner() {
+    void shouldEditPrivatePractitioner() {
         mockUser();
+
+        when(privatePractitionerAccessValidationService.hasAccessToEdit(user)).thenReturn(true);
+
         when(updatePrivatePractitionerFactory.create(DR_KRANSTEGE_UPDATE_REQUEST_DTO)).thenReturn(
             kranstegeRequestUpdate().personId(DR_KRANSTEGE_PERSON_ID).build());
 
@@ -131,7 +130,7 @@ class PrivatePractitionerServiceTest {
             kranstegeRequestUpdate().personId(DR_KRANSTEGE_PERSON_ID).build())).thenReturn(
             DR_KRANSTEGE);
 
-        final var actual = service.updatePrivatePractitioner(DR_KRANSTEGE_UPDATE_REQUEST_DTO);
+        final var actual = service.editPrivatePractitioner(DR_KRANSTEGE_UPDATE_REQUEST_DTO);
 
         assertEquals(DR_KRANSTEGE_RESPONSE_DTO, actual);
     }

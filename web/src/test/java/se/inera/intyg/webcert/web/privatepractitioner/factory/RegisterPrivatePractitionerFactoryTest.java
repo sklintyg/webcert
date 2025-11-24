@@ -1,4 +1,4 @@
-package se.inera.intyg.webcert.web.privatepractitioner.converter;
+package se.inera.intyg.webcert.web.privatepractitioner.factory;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static se.inera.intyg.webcert.web.privatepractitioner.TestDataDTO.DR_KRANSTEGE_REGISTRATION_REQUEST_DTO;
