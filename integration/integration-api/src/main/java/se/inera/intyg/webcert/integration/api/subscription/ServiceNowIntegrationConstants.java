@@ -25,6 +25,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ServiceNowIntegrationConstants {
 
-    public static final String SERVICENOW_INTEGRATION_PROFILE = "servicenow-integration";
     public static final String SERVICENOW_INTEGRATION_PROFILE_V2 = "servicenow-integration-v2";
 }

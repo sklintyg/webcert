@@ -162,7 +162,6 @@
 			<property name="queueCapacity" value="25"/>
 		</bean>
 
-
 		<beans profile="pu-integration-intyg-proxy-service">
 			<import resource="classpath:/pu-integration-intyg-proxy-service-config.xml"/>
 		</beans>
