@@ -49,13 +49,6 @@ class ReadyForSignAggregatorTest {
     }
 
     @Test
-    void shallReturnResponseFromWCIfCertificateProfileIsInactive() {
-        readyForSignAggregator.readyForSign(CERTIFICATE_ID);
-        verify(readyForSignForWC, times(1)).readyForSign(CERTIFICATE_ID);
-        verify(readyForSignForCS, times(0)).readyForSign(CERTIFICATE_ID);
-    }
-
-    @Test
     void shallReturnResponseFromWCIfResponseFromCSReturnsNull() {
         final var expectedCertificate = new Certificate();
         doReturn(null).when(readyForSignForCS).readyForSign(CERTIFICATE_ID);

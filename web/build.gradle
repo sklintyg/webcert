@@ -116,7 +116,6 @@ dependencies {
     implementation "se.inera.intyg.infra:postnummerservice-integration:${infraVersion}"
     implementation "se.inera.intyg.infra:privatepractitioner:${infraVersion}"
     implementation "se.inera.intyg.infra:pu-integration-api:${infraVersion}"
-    implementation "se.inera.intyg.infra:pu-integration:${infraVersion}"
     implementation "se.inera.intyg.infra:security-authorities:${infraVersion}"
     implementation "se.inera.intyg.infra:security-common:${infraVersion}"
     implementation "se.inera.intyg.infra:security-filter:${infraVersion}"
