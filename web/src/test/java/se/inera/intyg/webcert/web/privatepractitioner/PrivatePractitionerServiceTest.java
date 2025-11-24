@@ -42,6 +42,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.integration.privatepractitioner.service.PrivatePractitionerIntegrationService;
 import se.inera.intyg.webcert.web.privatepractitioner.factory.RegisterPrivatePractitionerFactory;
 import se.inera.intyg.webcert.web.privatepractitioner.factory.UpdatePrivatePractitionerFactory;
@@ -76,10 +77,10 @@ class PrivatePractitionerServiceTest {
     }
 
     @Test
-    void shouldThrowIfPrivatePractitionerIdNotUnauthorized() {
+    void shouldThrowIfPrivatePractitionerIsNotUnauthorized() {
         mockUser();
         when(privatePractitionerAccessValidationService.hasAccessToRegister(user)).thenReturn(false);
-        assertThrows(IllegalStateException.class, () -> service.registerPrivatePractitioner(DR_KRANSTEGE_REGISTRATION_REQUEST_DTO));
+        assertThrows(WebCertServiceException.class, () -> service.registerPrivatePractitioner(DR_KRANSTEGE_REGISTRATION_REQUEST_DTO));
     }
 
     @Test
@@ -133,5 +134,12 @@ class PrivatePractitionerServiceTest {
         final var actual = service.editPrivatePractitioner(DR_KRANSTEGE_UPDATE_REQUEST_DTO);
 
         assertEquals(DR_KRANSTEGE_RESPONSE_DTO, actual);
+    }
+
+    @Test
+    void shouldThrowIfPrivatePractitionerIsNotAuthorizedToEdit() {
+        mockUser();
+        when(privatePractitionerAccessValidationService.hasAccessToEdit(user)).thenReturn(false);
+        assertThrows(WebCertServiceException.class, () -> service.editPrivatePractitioner(DR_KRANSTEGE_UPDATE_REQUEST_DTO));
     }
 }
