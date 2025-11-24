@@ -33,6 +33,7 @@ import org.springframework.stereotype.Component;
 public class ServiceNowStubState {
 
     private boolean subscriptionReturnValue = true;
+    private static final List<String> NOT_SUBSCRIBED = List.of("121212-1212", "770523-2382");
     private int httpErrorCode = 0;
     private Map<String, List<String>> activeSubscriptions = new HashMap<>();
 
@@ -48,6 +49,10 @@ public class ServiceNowStubState {
 
     public boolean getSubscriptionReturnValue() {
         return subscriptionReturnValue;
+    }
+
+    public boolean isNotSubscribed(String orgNumber) {
+        return NOT_SUBSCRIBED.contains(orgNumber);
     }
 
     public void clearActiveSubscriptions() {
