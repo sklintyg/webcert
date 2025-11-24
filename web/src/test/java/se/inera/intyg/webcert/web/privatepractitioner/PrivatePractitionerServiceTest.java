@@ -118,10 +118,10 @@ class PrivatePractitionerServiceTest {
     }
 
     @Test
-    void shouldUpdatePrivatePractitioner() {
+    void shouldEditPrivatePractitioner() {
         mockUser();
 
-        when(privatePractitionerAccessValidationService.hasAccessToUpdate(user)).thenReturn(true);
+        when(privatePractitionerAccessValidationService.hasAccessToEdit(user)).thenReturn(true);
 
         when(updatePrivatePractitionerFactory.create(DR_KRANSTEGE_UPDATE_REQUEST_DTO)).thenReturn(
             kranstegeRequestUpdate().personId(DR_KRANSTEGE_PERSON_ID).build());
@@ -130,7 +130,7 @@ class PrivatePractitionerServiceTest {
             kranstegeRequestUpdate().personId(DR_KRANSTEGE_PERSON_ID).build())).thenReturn(
             DR_KRANSTEGE);
 
-        final var actual = service.updatePrivatePractitioner(DR_KRANSTEGE_UPDATE_REQUEST_DTO);
+        final var actual = service.editPrivatePractitioner(DR_KRANSTEGE_UPDATE_REQUEST_DTO);
 
         assertEquals(DR_KRANSTEGE_RESPONSE_DTO, actual);
     }

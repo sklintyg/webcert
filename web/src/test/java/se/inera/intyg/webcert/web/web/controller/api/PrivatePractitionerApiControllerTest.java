@@ -79,7 +79,7 @@ class PrivatePractitionerApiControllerTest {
 
     @Test
     void shouldUpdatePrivatePractitioner() {
-        when(service.updatePrivatePractitioner(DR_KRANSTEGE_UPDATE_REQUEST_DTO)).thenReturn(DR_KRANSTEGE_RESPONSE_DTO);
+        when(service.editPrivatePractitioner(DR_KRANSTEGE_UPDATE_REQUEST_DTO)).thenReturn(DR_KRANSTEGE_RESPONSE_DTO);
 
         final var actual = controller.updatePrivatePractitioner(DR_KRANSTEGE_UPDATE_REQUEST_DTO);
 

@@ -64,6 +64,6 @@ public class PrivatePractitionerApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PerformanceLogging(eventAction = "update-private-practitioner", eventType = MdcLogConstants.EVENT_TYPE_CHANGE)
     public PrivatePractitionerResponse updatePrivatePractitioner(PrivatePractitionerDetails updatePrivatePractitionerRequest) {
-        return service.updatePrivatePractitioner(updatePrivatePractitionerRequest);
+        return service.editPrivatePractitioner(updatePrivatePractitionerRequest);
     }
 }

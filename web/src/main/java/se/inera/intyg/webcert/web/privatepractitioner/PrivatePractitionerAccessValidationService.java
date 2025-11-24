@@ -18,7 +18,7 @@ public class PrivatePractitionerAccessValidationService {
             .anyMatch(link -> (link.getType().equals(ResourceLinkTypeDTO.ACCESS_REGISTER_PRIVATE_PRACTITIONER) && link.isEnabled()));
     }
 
-    public boolean hasAccessToUpdate(WebCertUser user) {
+    public boolean hasAccessToEdit(WebCertUser user) {
         return Arrays.stream(getUserResourceLinks.get(user))
             .anyMatch(link -> (link.getType().equals(ResourceLinkTypeDTO.ACCESS_EDIT_PRIVATE_PRACTITIONER) && link.isEnabled()));
     }

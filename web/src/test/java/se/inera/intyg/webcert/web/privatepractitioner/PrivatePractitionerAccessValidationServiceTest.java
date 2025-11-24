@@ -48,7 +48,7 @@ class PrivatePractitionerAccessValidationServiceTest {
                 new ResourceLinkDTO[]{
                     ResourceLinkDTO.create(ResourceLinkTypeDTO.ACCESS_EDIT_PRIVATE_PRACTITIONER, "", "", true)
                 });
-            final var actual = accessValidationHelper.hasAccessToUpdate(user);
+            final var actual = accessValidationHelper.hasAccessToEdit(user);
             assertTrue(actual);
         }
 
@@ -58,7 +58,7 @@ class PrivatePractitionerAccessValidationServiceTest {
                 new ResourceLinkDTO[]{
                     ResourceLinkDTO.create(ResourceLinkTypeDTO.ACCESS_EDIT_PRIVATE_PRACTITIONER, "", "", false)
                 });
-            final var actual = accessValidationHelper.hasAccessToUpdate(user);
+            final var actual = accessValidationHelper.hasAccessToEdit(user);
             assertFalse(actual);
         }
     }

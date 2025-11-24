@@ -84,9 +84,9 @@ public class PrivatePractitionerService {
         return PrivatePractitionerResponse.convert(privatePractitionerIntegrationService.getPrivatePractitioner(personId));
     }
 
-    public PrivatePractitionerResponse updatePrivatePractitioner(PrivatePractitionerDetails updatePrivatePractitionerRequest) {
+    public PrivatePractitionerResponse editPrivatePractitioner(PrivatePractitionerDetails updatePrivatePractitionerRequest) {
         final var user = webCertUserService.getUser();
-        if (!privatePractitionerAccessValidationService.hasAccessToUpdate(user)) {
+        if (!privatePractitionerAccessValidationService.hasAccessToEdit(user)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.AUTHORIZATION_PROBLEM,
                 "User is not authorized to update private practitioner details");
         }
