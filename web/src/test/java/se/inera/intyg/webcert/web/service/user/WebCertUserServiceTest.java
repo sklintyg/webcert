@@ -368,6 +368,8 @@ public class WebCertUserServiceTest extends AuthoritiesConfigurationTestSetup {
         final var expected = LoggedInWebcertUser.builder()
             .build();
 
+        SecurityContextHolder.getContext().setAuthentication(null);
+
         final var actual = webcertUserService.getLoggedInWebcertUser();
         assertEquals(expected, actual);
     }
