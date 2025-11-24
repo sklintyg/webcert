@@ -22,7 +22,6 @@ package se.inera.intyg.webcert.web.csintegration.aggregate;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.modules.support.facade.dto.CertificateEventDTO;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateEventsFacadeService;
 
 @Service("getCertificateEventsAggregator")
@@ -30,25 +29,18 @@ public class GetCertificateEventsAggregator implements GetCertificateEventsFacad
 
     private final GetCertificateEventsFacadeService getCertificateEventsFromWC;
     private final GetCertificateEventsFacadeService getCertificateEventsFromCS;
-    private final CertificateServiceProfile certificateServiceProfile;
 
     public GetCertificateEventsAggregator(
         @Qualifier("getCertificateEventsFromWebcert")
         GetCertificateEventsFacadeService getCertificateEventsFromWC,
         @Qualifier("getCertificateEventsFromCertificateService")
-        GetCertificateEventsFacadeService replaceCertificateFromCertificateService,
-        CertificateServiceProfile certificateServiceProfile) {
+        GetCertificateEventsFacadeService replaceCertificateFromCertificateService) {
         this.getCertificateEventsFromWC = getCertificateEventsFromWC;
         this.getCertificateEventsFromCS = replaceCertificateFromCertificateService;
-        this.certificateServiceProfile = certificateServiceProfile;
     }
 
     @Override
     public CertificateEventDTO[] getCertificateEvents(String certificateId) {
-        if (!certificateServiceProfile.active()) {
-            return getCertificateEventsFromWC.getCertificateEvents(certificateId);
-        }
-
         final var responseFromCS = getCertificateEventsFromCS.getCertificateEvents(certificateId);
 
         return responseFromCS != null ? responseFromCS : getCertificateEventsFromWC.getCertificateEvents(certificateId);

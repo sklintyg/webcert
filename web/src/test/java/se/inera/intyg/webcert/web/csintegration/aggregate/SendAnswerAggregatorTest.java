@@ -21,8 +21,6 @@ package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,44 +28,29 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.question.Question;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.question.SendQuestionAnswerFacadeService;
 
 @ExtendWith(MockitoExtension.class)
 class SendAnswerAggregatorTest {
-    
+
     private static final String QUESTION_ID = "questionId";
     private static final String MESSAGE = "message";
     @Mock
     SendQuestionAnswerFacadeService sendAnswerFromWC;
     @Mock
     SendQuestionAnswerFacadeService sendAnswerFromCS;
-    @Mock
-    CertificateServiceProfile certificateServiceProfile;
     SendQuestionAnswerFacadeService sendQuestionFacadeService;
 
     @BeforeEach
     void setUp() {
         sendQuestionFacadeService = new SendAnswerAggregator(
-            sendAnswerFromWC, sendAnswerFromCS, certificateServiceProfile
+            sendAnswerFromWC, sendAnswerFromCS
         );
     }
 
     @Test
-    void shallReturnQuestionFromWCIfCertificateServiceProfileIsInactive() {
-        doReturn(false).when(certificateServiceProfile).active();
-
-        sendQuestionFacadeService.send(QUESTION_ID, MESSAGE);
-
-        verify(sendAnswerFromWC).send(QUESTION_ID, MESSAGE);
-        verifyNoInteractions(sendAnswerFromCS);
-    }
-
-    @Test
-    void shallReturnQuestionFromWCIfCertificateServiceProfileIsActiveButResponseFromCSIsNull() {
+    void shallReturnQuestionFromWCIfResponseFromCSIsNull() {
         final var expectedQuestion = Question.builder().build();
-
-        doReturn(true).when(certificateServiceProfile).active();
         doReturn(null).when(sendAnswerFromCS).send(QUESTION_ID, MESSAGE);
         doReturn(expectedQuestion).when(sendAnswerFromWC).send(QUESTION_ID, MESSAGE);
 
@@ -76,10 +59,8 @@ class SendAnswerAggregatorTest {
     }
 
     @Test
-    void shallReturnQuestionFromCSIfCertificateServiceProfileIsActiveAndResponseFromCSIsNotNull() {
+    void shallReturnQuestionFromCSIfResponseFromCSIsNotNull() {
         final var expectedQuestion = Question.builder().build();
-
-        doReturn(true).when(certificateServiceProfile).active();
         doReturn(expectedQuestion).when(sendAnswerFromCS).send(QUESTION_ID, MESSAGE);
 
         final var actualQuestion = sendQuestionFacadeService.send(QUESTION_ID, MESSAGE);

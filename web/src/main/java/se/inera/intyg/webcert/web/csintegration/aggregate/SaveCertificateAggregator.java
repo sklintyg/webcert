@@ -22,7 +22,6 @@ package se.inera.intyg.webcert.web.csintegration.aggregate;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.SaveCertificateFacadeService;
 
 @Service("saveCertificateAggregator")
@@ -30,25 +29,18 @@ public class SaveCertificateAggregator implements SaveCertificateFacadeService {
 
     private final SaveCertificateFacadeService saveCertificateFacadeServiceWC;
     private final SaveCertificateFacadeService saveCertificateFacadeServiceCS;
-    private final CertificateServiceProfile certificateServiceProfile;
 
     public SaveCertificateAggregator(
         @Qualifier("saveCertificateFacadeServiceWC") SaveCertificateFacadeService saveCertificateFacadeServiceWC,
-        @Qualifier("saveCertificateFacadeServiceCS") SaveCertificateFacadeService saveCertificateFacadeServiceCS,
-        CertificateServiceProfile certificateServiceProfile) {
+        @Qualifier("saveCertificateFacadeServiceCS") SaveCertificateFacadeService saveCertificateFacadeServiceCS) {
         this.saveCertificateFacadeServiceWC = saveCertificateFacadeServiceWC;
         this.saveCertificateFacadeServiceCS = saveCertificateFacadeServiceCS;
-        this.certificateServiceProfile = certificateServiceProfile;
     }
 
     @Override
     public long saveCertificate(Certificate certificate, boolean pdlLog) {
-        if (!certificateServiceProfile.active()) {
-            return saveCertificateFacadeServiceWC.saveCertificate(certificate, pdlLog);
-        }
-
         final var versionFromCS = saveCertificateFacadeServiceCS.saveCertificate(certificate, pdlLog);
-        
+
         return hasBeenSavedInCC(versionFromCS)
             ? versionFromCS
             : saveCertificateFacadeServiceWC.saveCertificate(certificate, pdlLog);

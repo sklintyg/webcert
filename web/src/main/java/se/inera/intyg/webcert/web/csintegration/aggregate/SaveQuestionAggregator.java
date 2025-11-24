@@ -22,7 +22,6 @@ package se.inera.intyg.webcert.web.csintegration.aggregate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.question.Question;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionFacadeService;
 
 @Service
@@ -31,14 +30,8 @@ public class SaveQuestionAggregator implements SaveQuestionFacadeService {
 
     private final SaveQuestionFacadeService saveQuestionFromWC;
     private final SaveQuestionFacadeService saveMessageFromCS;
-    private final CertificateServiceProfile certificateServiceProfile;
-
     @Override
     public Question save(Question question) {
-        if (!certificateServiceProfile.active()) {
-            return saveQuestionFromWC.save(question);
-        }
-
         final var responseFromCS = saveMessageFromCS.save(question);
 
         return responseFromCS != null ? responseFromCS : saveQuestionFromWC.save(question);

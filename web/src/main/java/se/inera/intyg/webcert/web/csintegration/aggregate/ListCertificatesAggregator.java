@@ -19,13 +19,11 @@
 
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
-import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
@@ -34,28 +32,18 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
 @RequiredArgsConstructor
 public class ListCertificatesAggregator {
 
-    private final CertificateServiceProfile certificateServiceProfile;
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
 
     public List<ListIntygEntry> listCertificatesForPatient(String patientId) {
-        if (!certificateServiceProfile.active()) {
-            return Collections.emptyList();
-        }
         return csIntegrationService.listCertificatesForPatient(csIntegrationRequestFactory.getPatientCertificatesRequest(patientId));
     }
 
     public List<ListIntygEntry> listCertificatesForUnit(ListFilter filter) {
-        if (!certificateServiceProfile.active()) {
-            return Collections.emptyList();
-        }
         return csIntegrationService.listCertificatesForUnit(csIntegrationRequestFactory.getUnitCertificatesRequest(filter));
     }
 
     public List<ListIntygEntry> listCertificatesForDoctor(QueryIntygParameter filter) {
-        if (!certificateServiceProfile.active()) {
-            return Collections.emptyList();
-        }
         return csIntegrationService.listCertificatesForUnit(csIntegrationRequestFactory.getUnitCertificatesRequest(filter));
     }
 }

@@ -30,7 +30,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.ComplementCertificateFacadeService;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,8 +38,7 @@ class ComplementCertificateAggregatorTest {
     private static final String CERTIFICATE_ID = "certificateId";
     private static final String MESSAGE = "message";
     private static final Certificate CERTIFICATE = new Certificate();
-    @Mock
-    CertificateServiceProfile certificateServiceProfile;
+
     @Mock
     ComplementCertificateFacadeService complementCertificateFromWC;
     @Mock
@@ -51,8 +49,7 @@ class ComplementCertificateAggregatorTest {
     void setUp() {
         complementCertificateAggregator = new ComplementCertificateAggregator(
             complementCertificateFromWC,
-            complementCertificateFromCS,
-            certificateServiceProfile
+            complementCertificateFromCS
         );
     }
 
@@ -60,40 +57,23 @@ class ComplementCertificateAggregatorTest {
     class ComplementTests {
 
         @Test
-        void shouldRevokeFromWebcertIfProfileIsInactive() {
+        void shouldGetComplementedCertificateFromCSIfResponseFromCSIsNotNull() {
+            when(complementCertificateFromCS.complement(CERTIFICATE_ID, MESSAGE))
+                .thenReturn(CERTIFICATE);
+
             complementCertificateAggregator.complement(CERTIFICATE_ID, MESSAGE);
 
-            verify(complementCertificateFromWC).complement(CERTIFICATE_ID, MESSAGE);
+            verify(complementCertificateFromWC, times(0)).complement(CERTIFICATE_ID, MESSAGE);
         }
 
-        @Nested
-        class ActiveProfile {
+        @Test
+        void shouldGetComplementedCertificateFromWCIfResponseFromCSIsNull() {
+            when(complementCertificateFromCS.complement(CERTIFICATE_ID, MESSAGE))
+                .thenReturn(null);
 
-            @BeforeEach
-            void setup() {
-                when(certificateServiceProfile.active())
-                    .thenReturn(true);
-            }
+            complementCertificateAggregator.complement(CERTIFICATE_ID, MESSAGE);
 
-            @Test
-            void shouldGetComplementedCertificateFromCSIfProfileIsActiveAndResponseFromCSIsNotNull() {
-                when(complementCertificateFromCS.complement(CERTIFICATE_ID, MESSAGE))
-                    .thenReturn(CERTIFICATE);
-
-                complementCertificateAggregator.complement(CERTIFICATE_ID, MESSAGE);
-
-                verify(complementCertificateFromWC, times(0)).complement(CERTIFICATE_ID, MESSAGE);
-            }
-
-            @Test
-            void shouldGetComplementedCertificateFromWCIfProfileIsActiveAndResponseFromCSIsNull() {
-                when(complementCertificateFromCS.complement(CERTIFICATE_ID, MESSAGE))
-                    .thenReturn(null);
-
-                complementCertificateAggregator.complement(CERTIFICATE_ID, MESSAGE);
-
-                verify(complementCertificateFromWC, times(1)).complement(CERTIFICATE_ID, MESSAGE);
-            }
+            verify(complementCertificateFromWC, times(1)).complement(CERTIFICATE_ID, MESSAGE);
         }
     }
 
@@ -101,40 +81,23 @@ class ComplementCertificateAggregatorTest {
     class AnswerComplementTests {
 
         @Test
-        void shouldRevokeFromWebcertIfProfileIsInactive() {
+        void shouldGetComplementedCertificateFromCSIfResponseFromCSIsNotNull() {
+            when(complementCertificateFromCS.answerComplement(CERTIFICATE_ID, MESSAGE))
+                .thenReturn(CERTIFICATE);
+
             complementCertificateAggregator.answerComplement(CERTIFICATE_ID, MESSAGE);
 
-            verify(complementCertificateFromWC).answerComplement(CERTIFICATE_ID, MESSAGE);
+            verify(complementCertificateFromWC, times(0)).answerComplement(CERTIFICATE_ID, MESSAGE);
         }
 
-        @Nested
-        class ActiveProfile {
+        @Test
+        void shouldGetComplementedCertificateFromWCIfResponseFromCSIsNull() {
+            when(complementCertificateFromCS.answerComplement(CERTIFICATE_ID, MESSAGE))
+                .thenReturn(null);
 
-            @BeforeEach
-            void setup() {
-                when(certificateServiceProfile.active())
-                    .thenReturn(true);
-            }
+            complementCertificateAggregator.answerComplement(CERTIFICATE_ID, MESSAGE);
 
-            @Test
-            void shouldGetComplementedCertificateFromCSIfProfileIsActiveAndResponseFromCSIsNotNull() {
-                when(complementCertificateFromCS.answerComplement(CERTIFICATE_ID, MESSAGE))
-                    .thenReturn(CERTIFICATE);
-
-                complementCertificateAggregator.answerComplement(CERTIFICATE_ID, MESSAGE);
-
-                verify(complementCertificateFromWC, times(0)).answerComplement(CERTIFICATE_ID, MESSAGE);
-            }
-
-            @Test
-            void shouldGetComplementedCertificateFromWCIfProfileIsActiveAndResponseFromCSIsNull() {
-                when(complementCertificateFromCS.answerComplement(CERTIFICATE_ID, MESSAGE))
-                    .thenReturn(null);
-
-                complementCertificateAggregator.answerComplement(CERTIFICATE_ID, MESSAGE);
-
-                verify(complementCertificateFromWC, times(1)).answerComplement(CERTIFICATE_ID, MESSAGE);
-            }
+            verify(complementCertificateFromWC, times(1)).answerComplement(CERTIFICATE_ID, MESSAGE);
         }
     }
 }

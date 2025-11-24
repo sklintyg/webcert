@@ -31,7 +31,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.ValidateCertificateFacadeService;
 
 @ExtendWith(MockitoExtension.class)
@@ -43,26 +42,21 @@ class ValidateCertificateAggregatorTest {
 
     ValidateCertificateFacadeService fromWC;
     ValidateCertificateFacadeService fromCS;
-    CertificateServiceProfile certificateServiceProfile;
     ValidateCertificateFacadeService aggregator;
 
     @BeforeEach
     void setup() {
         fromWC = mock(ValidateCertificateFacadeService.class);
         fromCS = mock(ValidateCertificateFacadeService.class);
-        certificateServiceProfile = mock(CertificateServiceProfile.class);
 
         aggregator = new ValidateCertificateAggregator(
             fromWC,
-            fromCS,
-            certificateServiceProfile
+            fromCS
         );
     }
 
     @Test
-    void shouldReturnValidationErrorsFromCSIIfCSProfileIsActiveAndCertificateExistsInCS() {
-        when(certificateServiceProfile.active())
-            .thenReturn(true);
+    void shouldReturnValidationErrorsFromCSIfExists() {
         when(fromCS.validate(CERTIFICATE))
             .thenReturn(VALIDATION_ERRORS_CS);
 
@@ -73,20 +67,7 @@ class ValidateCertificateAggregatorTest {
     }
 
     @Test
-    void shouldReturnValidationErrorsFromWCIfProfileIsActiveButCertificateDoesNotExistInCS() {
-        when(certificateServiceProfile.active())
-            .thenReturn(true);
-        when(fromWC.validate(CERTIFICATE))
-            .thenReturn(VALIDATION_ERRORS_WC);
-
-        final var response = aggregator.validate(CERTIFICATE);
-        verify(fromWC, times(1)).validate(CERTIFICATE);
-
-        assertEquals(VALIDATION_ERRORS_WC, response);
-    }
-
-    @Test
-    void shouldReturnValidationErrorsFromWCIfCSProfileIsNotActive() {
+    void shouldReturnValidationErrorsFromWCIfCertificateDoesNotExistInCS() {
         when(fromWC.validate(CERTIFICATE))
             .thenReturn(VALIDATION_ERRORS_WC);
 

@@ -29,7 +29,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.CreateCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.impl.CreateCertificateException;
 
@@ -43,26 +42,21 @@ class CreateCertificateAggregatorTest {
 
     CreateCertificateFacadeService createCertificateFromWC;
     CreateCertificateFacadeService createCertificateFromCS;
-    CertificateServiceProfile certificateServiceProfile;
     CreateCertificateFacadeService aggregator;
 
     @BeforeEach
     void setup() {
         createCertificateFromWC = mock(CreateCertificateFacadeService.class);
         createCertificateFromCS = mock(CreateCertificateFacadeService.class);
-        certificateServiceProfile = mock(CertificateServiceProfile.class);
 
         aggregator = new CreateCertificateAggregator(
             createCertificateFromWC,
-            createCertificateFromCS,
-            certificateServiceProfile
+            createCertificateFromCS
         );
     }
 
     @Test
-    void shouldReturnCertificateIdFromCSIIfCSProfileIsActive() throws CreateCertificateException {
-        when(certificateServiceProfile.active())
-            .thenReturn(true);
+    void shouldReturnCertificateIdFromCSIfExists() throws CreateCertificateException {
         when(createCertificateFromCS.create(TYPE, ORIGINAL_PATIENT_ID))
             .thenReturn(ID_FROM_CS);
 
@@ -73,20 +67,7 @@ class CreateCertificateAggregatorTest {
     }
 
     @Test
-    void shouldReturnCertificateIdFromWCIfCSProfileIsNotActive() throws CreateCertificateException {
-        when(createCertificateFromWC.create(TYPE, ORIGINAL_PATIENT_ID))
-            .thenReturn(ID_FROM_WC);
-
-        final var response = aggregator.create(TYPE, ORIGINAL_PATIENT_ID);
-        verify(createCertificateFromWC, times(1)).create(TYPE, ORIGINAL_PATIENT_ID);
-
-        assertEquals(ID_FROM_WC, response);
-    }
-
-    @Test
-    void shouldReturnCertificateIdFromWCIIfCSProfileIsActiveButReturnsNull() throws CreateCertificateException {
-        when(certificateServiceProfile.active())
-            .thenReturn(true);
+    void shouldReturnCertificateIdFromWCIfCertificateDoesNotExistInCS() throws CreateCertificateException {
         when(createCertificateFromCS.create(TYPE, ORIGINAL_PATIENT_ID))
             .thenReturn(null);
         when(createCertificateFromWC.create(TYPE, ORIGINAL_PATIENT_ID))

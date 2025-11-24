@@ -31,7 +31,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.webcert.web.csintegration.certificate.HandleQuestionFromCertificateService;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsResourceLinkService;
 import se.inera.intyg.webcert.web.service.facade.question.HandleQuestionFacadeService;
 
@@ -44,8 +43,6 @@ class HandleQuestionAggregatorTest {
     @Mock
     private HandleQuestionFromCertificateService handleQuestionFromCS;
     @Mock
-    private CertificateServiceProfile certificateServiceProfile;
-    @Mock
     private GetQuestionsResourceLinkService getQuestionsResourceLinkService;
 
     private HandleQuestionAggregator handleQuestionAggregator;
@@ -53,7 +50,7 @@ class HandleQuestionAggregatorTest {
     @BeforeEach
     void setUp() {
         handleQuestionAggregator = new HandleQuestionAggregator(
-            handleQuestionFromWC, handleQuestionFromCS, certificateServiceProfile
+            handleQuestionFromWC, handleQuestionFromCS
         );
     }
 
@@ -62,15 +59,12 @@ class HandleQuestionAggregatorTest {
         final var question = Question.builder().build();
 
         doReturn(question).when(handleQuestionFromWC).handle(QUESTION_ID, false);
-        doReturn(false).when(certificateServiceProfile).active();
-
         handleQuestionAggregator.handle(QUESTION_ID, false);
         verify(handleQuestionFromWC).handle(QUESTION_ID, false);
     }
 
     @Test
     void shallReturnQuestionsFromCSIfProfileIsActiveAndResponseFromCSIsNotNull() {
-        doReturn(true).when(certificateServiceProfile).active();
         doReturn(Question.builder().build()).when(handleQuestionFromCS).handle(QUESTION_ID, false);
         handleQuestionAggregator.handle(QUESTION_ID, false);
         verifyNoInteractions(handleQuestionFromWC);
@@ -80,8 +74,6 @@ class HandleQuestionAggregatorTest {
     @Test
     void shallReturnQuestionsFromWebcertIfProfileIsActiveAndResponseFromCSIsNull() {
         final var expectedQuestion = Question.builder().build();
-
-        doReturn(true).when(certificateServiceProfile).active();
         doReturn(null).when(handleQuestionFromCS).handle(QUESTION_ID, false);
         doReturn(expectedQuestion).when(handleQuestionFromWC).handle(QUESTION_ID, false);
 

@@ -41,7 +41,6 @@ import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.CertificatesWithQARequestDTO;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.List;
 import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.ListCertificatesForCareWithQAResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.ListItem;
@@ -56,8 +55,6 @@ class GetCertificatesWithQAFromCertificateServiceTest {
     @Mock
     ListItemNotificationDecorator listItemNotificationDecorator;
     @Mock
-    CertificateServiceProfile certificateServiceProfile;
-    @Mock
     CSIntegrationService csIntegrationService;
     @Mock
     CSIntegrationRequestFactory csIntegrationRequestFactory;
@@ -65,27 +62,17 @@ class GetCertificatesWithQAFromCertificateServiceTest {
     GetCertificatesWithQAFromCertificateService getCertificatesWithQAFromCertificateService;
 
     @Test
-    void shallReturnEmptyListIfCertificateServiceProfileIsNotActive() {
-        final var notifications = Collections.singletonList(new Handelse());
-        doReturn(false).when(certificateServiceProfile).active();
-        assertEquals(Collections.emptyList(), getCertificatesWithQAFromCertificateService.get(notifications));
-    }
-
-    @Test
     void shallReturnEmptyListIfNotificationsIsEmpty() {
-        doReturn(true).when(certificateServiceProfile).active();
         assertEquals(Collections.emptyList(), getCertificatesWithQAFromCertificateService.get(Collections.emptyList()));
     }
 
     @Test
-    void shallReturnListOfListItemIfCertificateServiceProfileIsActive() {
+    void shallReturnListOfListItemFromCS() {
         final var notification = new Handelse();
         notification.setIntygsId(CERTIFICATE_ID);
         final var notifications = Collections.singletonList(notification);
         final var certificatesWithQARequestDTO = CertificatesWithQARequestDTO.builder().build();
         final var encodedXml = "encodedXml";
-
-        doReturn(true).when(certificateServiceProfile).active();
         doReturn(certificatesWithQARequestDTO).when(csIntegrationRequestFactory)
             .getCertificatesWithQARequestDTO(java.util.List.of(CERTIFICATE_ID));
         doReturn(encodedXml).when(csIntegrationService).getCertificatesWithQA(certificatesWithQARequestDTO);
@@ -124,8 +111,6 @@ class GetCertificatesWithQAFromCertificateServiceTest {
         final var notifications = java.util.List.of(notification1, notification2);
         final var encodedXml = "encodedXml";
         final var listArgumentCaptor = ArgumentCaptor.forClass(java.util.List.class);
-
-        doReturn(true).when(certificateServiceProfile).active();
         doReturn(encodedXml).when(csIntegrationService).getCertificatesWithQA(any());
 
         final var listCertificatesForCareWithQAResponseType = new ListCertificatesForCareWithQAResponseType();
@@ -162,8 +147,6 @@ class GetCertificatesWithQAFromCertificateServiceTest {
         final var notifications = java.util.List.of(notification1, notification2);
         final var certificatesWithQARequestDTO = CertificatesWithQARequestDTO.builder().build();
         final var encodedXml = "encodedXml";
-
-        doReturn(true).when(certificateServiceProfile).active();
         doReturn(certificatesWithQARequestDTO).when(csIntegrationRequestFactory)
             .getCertificatesWithQARequestDTO(java.util.List.of(CERTIFICATE_ID, CERTIFICATE_ID_FROM_WC));
         doReturn(encodedXml).when(csIntegrationService).getCertificatesWithQA(certificatesWithQARequestDTO);

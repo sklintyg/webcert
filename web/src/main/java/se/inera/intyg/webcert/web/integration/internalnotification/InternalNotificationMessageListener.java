@@ -40,7 +40,6 @@ import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.web.csintegration.certificate.PublishCertificateStatusUpdateService;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 
@@ -68,9 +67,6 @@ public class InternalNotificationMessageListener implements MessageListener {
 
     @Value("${intygstjanst.logicaladdress}")
     private String logicalAddress;
-
-    @Autowired
-    private CertificateServiceProfile certificateServiceProfile;
 
     @Autowired
     private CSIntegrationService csIntegrationService;
@@ -103,7 +99,7 @@ public class InternalNotificationMessageListener implements MessageListener {
                     return;
                 }
 
-                if (profileActiveAndCertificateExistsInCertificateService(intygsId)) {
+                if (certificateExistsInCertificateService(intygsId)) {
                     final var certificate = csIntegrationService.getInternalCertificate(intygsId);
                     publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKICKA);
                     return;
@@ -123,8 +119,7 @@ public class InternalNotificationMessageListener implements MessageListener {
         }
     }
 
-    private boolean profileActiveAndCertificateExistsInCertificateService(String intygsId) {
-        return Boolean.TRUE.equals(certificateServiceProfile.active())
-            && Boolean.TRUE.equals(csIntegrationService.certificateExists(intygsId));
+    private boolean certificateExistsInCertificateService(String intygsId) {
+        return Boolean.TRUE.equals(csIntegrationService.certificateExists(intygsId));
     }
 }

@@ -31,7 +31,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.infra.intyginfo.dto.WcIntygInfo;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.intyginfo.IntygInfoServiceInterface;
 
 @ExtendWith(MockitoExtension.class)
@@ -43,26 +42,21 @@ class IntygInfoAggregatorTest {
 
     IntygInfoServiceInterface getCertificateFromWC;
     IntygInfoServiceInterface getCertificateFromCS;
-    CertificateServiceProfile certificateServiceProfile;
     IntygInfoServiceInterface aggregator;
 
     @BeforeEach
     void setup() {
         getCertificateFromWC = mock(IntygInfoServiceInterface.class);
         getCertificateFromCS = mock(IntygInfoServiceInterface.class);
-        certificateServiceProfile = mock(CertificateServiceProfile.class);
 
         aggregator = new IntygInfoAggregator(
             getCertificateFromWC,
-            getCertificateFromCS,
-            certificateServiceProfile
+            getCertificateFromCS
         );
     }
 
     @Test
-    void shouldReturnCertificateFromCSIIfCSProfileIsActiveAndCertificateExistsInCS() {
-        when(certificateServiceProfile.active())
-            .thenReturn(true);
+    void shouldReturnCertificateFromCSIIfCertificateExistsInCS() {
         when(getCertificateFromCS.getIntygInfo(ID))
             .thenReturn(Optional.of(CERTIFICATE_FROM_CS));
 
@@ -74,19 +68,6 @@ class IntygInfoAggregatorTest {
 
     @Test
     void shouldReturnCertificateFromWCIfCertificateDoesNotExistInCS() {
-        when(certificateServiceProfile.active())
-            .thenReturn(true);
-        when(getCertificateFromWC.getIntygInfo(ID))
-            .thenReturn(Optional.of(CERTIFICATE_FROM_WC));
-
-        final var response = aggregator.getIntygInfo(ID);
-        verify(getCertificateFromWC, times(1)).getIntygInfo(ID);
-
-        assertEquals(CERTIFICATE_FROM_WC, response.get());
-    }
-
-    @Test
-    void shouldReturnCertificateFromWCIfCSProfileIsNotActive() {
         when(getCertificateFromWC.getIntygInfo(ID))
             .thenReturn(Optional.of(CERTIFICATE_FROM_WC));
 

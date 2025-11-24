@@ -30,7 +30,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.web.controller.internalapi.GetCertificateInteralApi;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetCertificateResponse;
 
@@ -43,14 +42,11 @@ class CertificateInternalAggregatorTest {
     private GetCertificateInteralApi cercertificateInternalServiceFromWC;
     @Mock
     private GetCertificateInteralApi certificateInternalServiceFromCS;
-    @Mock
-    private CertificateServiceProfile certificateServiceProfile;
     private GetCertificateInternalAggregator certificateInternalAggregator;
 
     @BeforeEach
     void setUp() {
         certificateInternalAggregator = new GetCertificateInternalAggregator(
-            certificateServiceProfile,
             cercertificateInternalServiceFromWC,
             certificateInternalServiceFromCS
         );
@@ -59,7 +55,6 @@ class CertificateInternalAggregatorTest {
     @Test
     void shouldReturnResponseFromCSIfProfileActiveAndResponseNotNull() {
         final var expectedResult = GetCertificateResponse.create(new Certificate());
-        when(certificateServiceProfile.active()).thenReturn(true);
         when(certificateInternalServiceFromCS.get(CERTIFICATE_ID, PERSON_ID)).thenReturn(expectedResult);
 
         final var response = certificateInternalAggregator.get(CERTIFICATE_ID, PERSON_ID);
@@ -71,7 +66,6 @@ class CertificateInternalAggregatorTest {
     @Test
     void shouldReturnResponseFromWCIfProfileIsNotActive() {
         final var expectedResult = GetCertificateResponse.create(new Certificate());
-        when(certificateServiceProfile.active()).thenReturn(false);
         when(cercertificateInternalServiceFromWC.get(CERTIFICATE_ID, PERSON_ID)).thenReturn(expectedResult);
 
         final var response = certificateInternalAggregator.get(CERTIFICATE_ID, PERSON_ID);
@@ -83,9 +77,8 @@ class CertificateInternalAggregatorTest {
     }
 
     @Test
-    void shouldReturnCertificateIdFromWCIIfCSProfileIsActiveButReturnsNull() {
+    void shouldReturnCertificateIdFromWCIIfReturnsNull() {
         final var expectedResult = GetCertificateResponse.create(new Certificate());
-        when(certificateServiceProfile.active()).thenReturn(true);
         when(cercertificateInternalServiceFromWC.get(CERTIFICATE_ID, PERSON_ID)).thenReturn(expectedResult);
 
         final var response = certificateInternalAggregator.get(CERTIFICATE_ID, PERSON_ID);

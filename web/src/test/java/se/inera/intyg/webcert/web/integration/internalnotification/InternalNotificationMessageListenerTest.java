@@ -53,7 +53,6 @@ import se.inera.intyg.common.support.modules.support.api.dto.CertificateResponse
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
 import se.inera.intyg.webcert.web.csintegration.certificate.PublishCertificateStatusUpdateService;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 
@@ -62,9 +61,6 @@ public class InternalNotificationMessageListenerTest {
 
     private static final String INTYG_1 = "intyg-1";
     private static final String LIJSP = "lijsp";
-    @Mock
-    private CertificateServiceProfile certificateServiceProfile;
-
     @Mock
     private CSIntegrationService csIntegrationService;
 
@@ -93,9 +89,7 @@ public class InternalNotificationMessageListenerTest {
 
 
         @Test
-        void testOk() throws ModuleException, ModuleNotFoundException {
-            when(certificateServiceProfile.active()).thenReturn(false);
-            Utlatande utlatande = mock(Utlatande.class);
+        void testOk() throws ModuleException, ModuleNotFoundException {            Utlatande utlatande = mock(Utlatande.class);
             when(utlatande.getId()).thenReturn(INTYG_1);
             when(utlatande.getTyp()).thenReturn(LIJSP);
             CertificateResponse certificateResponse = mock(CertificateResponse.class);
@@ -139,10 +133,7 @@ public class InternalNotificationMessageListenerTest {
             ModuleApi moduleApi = mock(ModuleApi.class);
             CertificateResponse certificateResponse = mock(CertificateResponse.class);
 
-            doReturn(true).when(integreradeEnheterRegistry).isEnhetIntegrerad(anyString(), anyString());
-            doReturn(false).when(certificateServiceProfile).active();
-
-            doReturn(INTYG_1).when(utlatande).getId();
+            doReturn(true).when(integreradeEnheterRegistry).isEnhetIntegrerad(anyString(), anyString());            doReturn(INTYG_1).when(utlatande).getId();
             doReturn(LIJSP).when(utlatande).getTyp();
             doReturn(utlatande).when(certificateResponse).getUtlatande();
             doReturn(certificateResponse).when(moduleApi).getCertificate(anyString(), anyString(), anyString());
@@ -159,9 +150,7 @@ public class InternalNotificationMessageListenerTest {
             ModuleApi moduleApi = mock(ModuleApi.class);
             CertificateResponse certificateResponse = mock(CertificateResponse.class);
 
-            doReturn(true).when(integreradeEnheterRegistry).isEnhetIntegrerad(anyString(), anyString());
-            doReturn(true).when(certificateServiceProfile).active();
-            doReturn(false).when(csIntegrationService).certificateExists(INTYG_1);
+            doReturn(true).when(integreradeEnheterRegistry).isEnhetIntegrerad(anyString(), anyString());            doReturn(false).when(csIntegrationService).certificateExists(INTYG_1);
 
             doReturn(INTYG_1).when(utlatande).getId();
             doReturn(LIJSP).when(utlatande).getTyp();
@@ -176,9 +165,7 @@ public class InternalNotificationMessageListenerTest {
         @Test
         void shallPublishStatusUpdateIfProfileIsActiveAndCertificateExistInCertificateService() {
             final var certificate = new Certificate();
-            doReturn(true).when(integreradeEnheterRegistry).isEnhetIntegrerad(anyString(), anyString());
-            doReturn(true).when(certificateServiceProfile).active();
-            doReturn(true).when(csIntegrationService).certificateExists(INTYG_1);
+            doReturn(true).when(integreradeEnheterRegistry).isEnhetIntegrerad(anyString(), anyString());            doReturn(true).when(csIntegrationService).certificateExists(INTYG_1);
             doReturn(certificate).when(csIntegrationService).getInternalCertificate(INTYG_1);
 
             testee.onMessage(createMessage());

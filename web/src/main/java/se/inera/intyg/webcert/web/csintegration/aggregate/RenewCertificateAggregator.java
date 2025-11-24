@@ -23,7 +23,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.csintegration.certificate.RenewLegacyCertificateFromCertificateService;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.RenewCertificateFacadeService;
 
 @Service("renewCertificateAggregator")
@@ -31,7 +30,6 @@ public class RenewCertificateAggregator implements RenewCertificateFacadeService
 
     private final RenewCertificateFacadeService renewCertificateFromWebcert;
     private final RenewCertificateFacadeService renewCertificateFromCertificateService;
-    private final CertificateServiceProfile certificateServiceProfile;
     private final CSIntegrationService csIntegrationService;
     private final GetCertificateAggregator getCertificateAggregator;
     private final RenewLegacyCertificateFromCertificateService renewLegacyCertificateFromCertificateService;
@@ -41,24 +39,17 @@ public class RenewCertificateAggregator implements RenewCertificateFacadeService
         RenewCertificateFacadeService renewCertificateFromWebcert,
         @Qualifier("renewCertificateFromCertificateService")
         RenewCertificateFacadeService renewCertificateFromCertificateService,
-        CertificateServiceProfile certificateServiceProfile,
         CSIntegrationService csIntegrationService,
         GetCertificateAggregator getCertificateAggregator,
         RenewLegacyCertificateFromCertificateService renewLegacyCertificateFromCertificateService) {
         this.renewCertificateFromWebcert = renewCertificateFromWebcert;
-        this.renewCertificateFromCertificateService = renewCertificateFromCertificateService;
-        this.certificateServiceProfile = certificateServiceProfile;
-        this.getCertificateAggregator = getCertificateAggregator;
+        this.renewCertificateFromCertificateService = renewCertificateFromCertificateService;        this.getCertificateAggregator = getCertificateAggregator;
         this.csIntegrationService = csIntegrationService;
         this.renewLegacyCertificateFromCertificateService = renewLegacyCertificateFromCertificateService;
     }
 
     @Override
     public String renewCertificate(String certificateId) {
-        if (!certificateServiceProfile.active()) {
-            return renewCertificateFromWebcert.renewCertificate(certificateId);
-        }
-
         final var responseFromCS = renewCertificateFromCertificateService.renewCertificate(
             certificateId);
 

@@ -24,13 +24,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.ForwardCertificateFacadeService;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,51 +40,32 @@ class ForwardCertificateAggregatorTest {
 
     ForwardCertificateFacadeService forwardCertificateFromWC;
     ForwardCertificateFacadeService forwardCertificateFromCS;
-    CertificateServiceProfile certificateServiceProfile;
     ForwardCertificateFacadeService aggregator;
 
     @BeforeEach
     void setup() {
         forwardCertificateFromWC = mock(ForwardCertificateFacadeService.class);
         forwardCertificateFromCS = mock(ForwardCertificateFacadeService.class);
-        certificateServiceProfile = mock(CertificateServiceProfile.class);
 
         aggregator = new ForwardCertificateAggregator(
             forwardCertificateFromWC,
-            forwardCertificateFromCS,
-            certificateServiceProfile);
+            forwardCertificateFromCS
+        );
     }
 
     @Test
-    void shouldForwardFromWebcertIfProfileIsInactive() {
+    void shouldForwardFromCSIfExists() {
+        when(forwardCertificateFromCS.forwardCertificate(ID, FORWARDED))
+            .thenReturn(CERTIFICATE);
         aggregator.forwardCertificate(ID, FORWARDED);
 
-        Mockito.verify(forwardCertificateFromWC).forwardCertificate(ID, FORWARDED);
+        Mockito.verify(forwardCertificateFromWC, times(0)).forwardCertificate(ID, FORWARDED);
     }
 
-    @Nested
-    class ActiveProfile {
+    @Test
+    void shouldForwardFromWCIfCertificateDoesNotExistInCS() {
+        aggregator.forwardCertificate(ID, FORWARDED);
 
-        @BeforeEach
-        void setup() {
-            when(certificateServiceProfile.active())
-                .thenReturn(true);
-        }
-
-        @Test
-        void shouldForwardFromCSIfProfileIsActiveAndCertificateExistsInCS() {
-            when(forwardCertificateFromCS.forwardCertificate(ID, FORWARDED))
-                .thenReturn(CERTIFICATE);
-            aggregator.forwardCertificate(ID, FORWARDED);
-
-            Mockito.verify(forwardCertificateFromWC, times(0)).forwardCertificate(ID, FORWARDED);
-        }
-
-        @Test
-        void shouldForwardFromWCIfProfileIsInactiveAndCertificateDoesNotExistInCS() {
-            aggregator.forwardCertificate(ID, FORWARDED);
-
-            Mockito.verify(forwardCertificateFromWC, times(1)).forwardCertificate(ID, FORWARDED);
-        }
+        Mockito.verify(forwardCertificateFromWC, times(1)).forwardCertificate(ID, FORWARDED);
     }
 }

@@ -23,7 +23,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.question.CreateQuestionFacadeService;
 
 @Service
@@ -31,21 +30,15 @@ public class CreateQuestionAggregator implements CreateQuestionFacadeService {
 
     private final CreateQuestionFacadeService createQuestionFromWC;
     private final CreateQuestionFacadeService createMessageFromCS;
-    private final CertificateServiceProfile certificateServiceProfile;
 
     public CreateQuestionAggregator(@Qualifier("createQuestionFromWC") CreateQuestionFacadeService createQuestionFromWC,
-        @Qualifier("createMessageFromCS") CreateQuestionFacadeService createMessageFromCS,
-        CertificateServiceProfile certificateServiceProfile) {
+        @Qualifier("createMessageFromCS") CreateQuestionFacadeService createMessageFromCS) {
         this.createQuestionFromWC = createQuestionFromWC;
         this.createMessageFromCS = createMessageFromCS;
-        this.certificateServiceProfile = certificateServiceProfile;
     }
 
     @Override
     public Question create(String certificateId, QuestionType type, String message) {
-        if (!certificateServiceProfile.active()) {
-            return createQuestionFromWC.create(certificateId, type, message);
-        }
 
         final var responseFromCS = createMessageFromCS.create(certificateId, type, message);
 
