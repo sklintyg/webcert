@@ -17,13 +17,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.integration.api.subscription;
+package se.inera.intyg.webcert.integration.servicenow.config;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ServiceNowIntegrationConstants {
+@Configuration
+@Slf4j
+@ComponentScan(basePackages = {
+    "se.inera.intyg.webcert.integration.servicenow.v2",
+    "se.inera.intyg.webcert.integration.servicenow.service"})
+public class ServiceNowIntegrationConfig {
 
-    public static final String SERVICENOW_INTEGRATION_PROFILE_V2 = "servicenow-integration-v2";
+    public ServiceNowIntegrationConfig() {
+        log.info("ServiceNow integration configured for subscription queries to kundportal.inera.se.");
+    }
 }

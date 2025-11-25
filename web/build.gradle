@@ -27,7 +27,7 @@ gretty {
     serverConfigFile = "tomcat-gretty.xml"
 
     jvmArgs = ["-Dcatalina.base=${buildDirectory}/catalina.base",
-               "-Dspring.profiles.active=dev,private-practitioner-service-active,caching-enabled,wc-security-test,ia-stub,certificate-service-active,servicenow-integration-v2,pu-integration-intyg-proxy-service,grp-rest-api,certificate-analytics-service-active",
+               "-Dspring.profiles.active=dev,private-practitioner-service-active,caching-enabled,wc-security-test,ia-stub",
                "-Dlogback.file=${applicationDir}/config/logback-spring.xml",
                "-Djava.awt.headless=true",
                "-Dfile.encoding=UTF-8",
@@ -147,7 +147,6 @@ dependencies {
     implementation "se.inera.intyg.common:tstrk1009:${commonVersion}"
     implementation "se.inera.intyg.common:tstrk1062:${commonVersion}"
 
-    implementation "se.funktionstjanster.grp:funktionstjanster-grp-schemas:${funktionstjansterGrpSchemasVersion}"
     implementation "se.inera.intyg.clinicalprocess.healthcond.certificate:intyg-clinicalprocess-healthcond-certificate-schemas:${intygClinicalprocessSchemasVersion}"
     implementation "se.inera.intyg.clinicalprocess.healthcond.rehabilitation:intyg-clinicalprocess-healthcond-rehabilitation-schemas:${intygHealthcondRehabilitationSchemasVersion}"
     implementation "se.inera.intyg.clinicalprocess.healthcond.srs:intyg-clinicalprocess-healthcond-srs-schemas:${srsSchemasVersion}"

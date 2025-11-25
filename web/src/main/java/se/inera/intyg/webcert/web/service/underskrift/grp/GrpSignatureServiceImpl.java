@@ -28,7 +28,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 import org.slf4j.MDC;
-import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -49,7 +48,6 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Profile("grp-rest-api")
 public class GrpSignatureServiceImpl extends BaseSignatureService implements GrpSignatureService {
 
     private final ThreadPoolTaskExecutor taskExecutor;
@@ -111,7 +109,7 @@ public class GrpSignatureServiceImpl extends BaseSignatureService implements Grp
             ticket.getTicketId(),
             ticket.getStatus()
         );
-        
+
         return FinalizedCertificateSignature.builder()
             .certificate(certificate)
             .signaturBiljett(ticket)

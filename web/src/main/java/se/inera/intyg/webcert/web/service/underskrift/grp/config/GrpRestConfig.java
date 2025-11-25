@@ -21,11 +21,9 @@ package se.inera.intyg.webcert.web.service.underskrift.grp.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.web.client.RestClient;
 
 @Configuration
-@Profile("grp-rest-api")
 public class GrpRestConfig {
 
     @Bean(name = "grpRestClient")

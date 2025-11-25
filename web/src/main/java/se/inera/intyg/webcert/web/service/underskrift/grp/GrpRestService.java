@@ -23,7 +23,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -43,7 +42,6 @@ import se.inera.intyg.webcert.web.service.underskrift.tracker.RedisTicketTracker
 
 @Slf4j
 @Service
-@Profile("grp-rest-api")
 public class GrpRestService {
 
     @Value("${cgi.grp.rest.url}")
