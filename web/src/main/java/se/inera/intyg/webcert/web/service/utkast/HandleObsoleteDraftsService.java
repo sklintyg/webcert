@@ -3,7 +3,6 @@ package se.inera.intyg.webcert.web.service.utkast;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,25 +30,20 @@ public class HandleObsoleteDraftsService {
     private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
     @Transactional
-    public void disposeAndNotify(List<Utkast> drafts, LocalDateTime obsoleteDraftsPeriod) {
-        final var certificateIds = drafts.stream()
-            .filter(Utkast::eligeableForDisposal)
-            .map(Utkast::getIntygsId)
-            .toList();
-
-        if (certificateIds.isEmpty()) {
+    public void disposeAndNotify(Utkast draft, LocalDateTime obsoleteDraftsPeriod) {
+        if (!draft.eligeableForDisposal()) {
             return;
         }
+        certificateEventProcessedRepository.eraseEventsProcessedByCertificateId(draft.getIntygsId());
+        certificateEventFailedLoadRepository.eraseEventsFailedByCertificateId(draft.getIntygsId());
+        certificateEventRepository.eraseCertificateEventsByCertificateId(draft.getIntygsId());
+        utkastRepository.deleteById(draft.getIntygsId());
 
-        certificateEventProcessedRepository.eraseEventsProcessedByCertificateIds(certificateIds);
-        certificateEventFailedLoadRepository.eraseEventsFailedByCertificateIds(certificateIds);
-        certificateEventRepository.eraseCertificateEventsByCertificateIds(certificateIds);
-        utkastRepository.deleteAllById(certificateIds);
-
-        drafts.forEach(notificationService::sendNotificationForDraftDeleted);
+        notificationService.sendNotificationForDraftDeleted(draft);
 
         final var period = ChronoUnit.DAYS.between(obsoleteDraftsPeriod.toLocalDate(), LocalDate.now());
-        drafts.forEach(draft -> monitoringLogService.logUtkastDisposed(draft.getIntygsId(), draft.getIntygsTyp(), period));
-        drafts.forEach(draft -> publishCertificateAnalyticsMessage.publishEvent(certificateAnalyticsMessageFactory.draftDisposed(draft)));
+        monitoringLogService.logUtkastDisposed(draft.getIntygsId(), draft.getIntygsTyp(), period);
+        publishCertificateAnalyticsMessage.publishEvent(certificateAnalyticsMessageFactory.draftDisposed(draft));
+
     }
 }
