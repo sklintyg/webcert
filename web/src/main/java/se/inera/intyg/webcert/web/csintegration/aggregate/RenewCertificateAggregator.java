@@ -43,7 +43,8 @@ public class RenewCertificateAggregator implements RenewCertificateFacadeService
         GetCertificateAggregator getCertificateAggregator,
         RenewLegacyCertificateFromCertificateService renewLegacyCertificateFromCertificateService) {
         this.renewCertificateFromWebcert = renewCertificateFromWebcert;
-        this.renewCertificateFromCertificateService = renewCertificateFromCertificateService;        this.getCertificateAggregator = getCertificateAggregator;
+        this.renewCertificateFromCertificateService = renewCertificateFromCertificateService;
+        this.getCertificateAggregator = getCertificateAggregator;
         this.csIntegrationService = csIntegrationService;
         this.renewLegacyCertificateFromCertificateService = renewLegacyCertificateFromCertificateService;
     }
