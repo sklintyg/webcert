@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -870,23 +871,27 @@ public class UtkastServiceImpl implements UtkastService {
         );
 
         final var pageable = PageRequest.of(0, pageSize, Sort.by(Direction.ASC, "skapad"));
-        var totalDisposed = 0;
+        var totalDisposed = new AtomicInteger(0);
         Page<Utkast> page;
 
         do {
             page = utkastRepository.findObsoleteDrafts(disposeObsoleteDraftsDate, statuses, pageable);
             final var drafts = page.getContent();
 
-            try {
-                handleObsoleteDraftsService.disposeAndNotify(drafts, disposeObsoleteDraftsDate);
-                totalDisposed += drafts.size();
-            } catch (Exception e) {
-                LOG.error("Error disposing obsolete drafts: {}", e.getMessage(), e);
-            }
+            drafts.forEach(draft -> {
+                try {
+                    handleObsoleteDraftsService.disposeAndNotify(draft, disposeObsoleteDraftsDate);
+                    totalDisposed.incrementAndGet();
+                } catch (Exception e) {
+                    LOG.error("Error disposing obsolete draft with certificateId: {}, with error: {}",
+                        draft.getIntygsId(), e.getMessage(), e);
+                }
+
+            });
 
         } while (page.hasNext());
 
-        return totalDisposed;
+        return totalDisposed.get();
     }
 
     /**
