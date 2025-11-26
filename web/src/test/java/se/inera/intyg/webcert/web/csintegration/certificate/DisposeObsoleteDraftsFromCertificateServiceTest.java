@@ -71,8 +71,10 @@ class DisposeObsoleteDraftsFromCertificateServiceTest {
     MonitoringLogService monitoringLogService;
     @InjectMocks
     DisposeObsoleteDraftsFromCertificateService disposeObsoleteDraftsFromCertificateService;
+
     @Test
-    void shouldReturnZeroIfNoObsoleteDraftsFound() {        doReturn(Collections.emptyList()).when(csIntegrationService).listObsoleteDrafts(any());
+    void shouldReturnZeroIfNoObsoleteDraftsFound() {
+        doReturn(Collections.emptyList()).when(csIntegrationService).listObsoleteDrafts(any());
 
         final var result = disposeObsoleteDraftsFromCertificateService.dispose(CUTOFF_DATE);
 
@@ -85,7 +87,8 @@ class DisposeObsoleteDraftsFromCertificateServiceTest {
 
     @Test
     void shouldDisposeEachDraftIndividually() {
-        final var obsoleteDraftIds = List.of(CERTIFICATE_ID_1, CERTIFICATE_ID_2, CERTIFICATE_ID_3);        doReturn(obsoleteDraftIds).when(csIntegrationService).listObsoleteDrafts(any());
+        final var obsoleteDraftIds = List.of(CERTIFICATE_ID_1, CERTIFICATE_ID_2, CERTIFICATE_ID_3);
+        doReturn(obsoleteDraftIds).when(csIntegrationService).listObsoleteDrafts(any());
 
         doReturn("xml1").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_1);
         doReturn("xml2").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_2);
@@ -104,7 +107,8 @@ class DisposeObsoleteDraftsFromCertificateServiceTest {
     void shouldPublishStatusUpdateWithXmlForEachDeletedDraft() {
         final var obsoleteDraftIds = List.of(CERTIFICATE_ID_1, CERTIFICATE_ID_2);
         final var certificate1 = getCertificate(CERTIFICATE_ID_1);
-        final var certificate2 = getCertificate(CERTIFICATE_ID_2);        doReturn(obsoleteDraftIds).when(csIntegrationService).listObsoleteDrafts(any());
+        final var certificate2 = getCertificate(CERTIFICATE_ID_2);
+        doReturn(obsoleteDraftIds).when(csIntegrationService).listObsoleteDrafts(any());
 
         doReturn("xml1").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_1);
         doReturn("xml2").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_2);
@@ -119,7 +123,8 @@ class DisposeObsoleteDraftsFromCertificateServiceTest {
 
     @Test
     void shouldLogMonitoringForEachDeletedDraft() {
-        final var obsoleteDraftIds = List.of(CERTIFICATE_ID_1, CERTIFICATE_ID_2);        doReturn(obsoleteDraftIds).when(csIntegrationService).listObsoleteDrafts(any());
+        final var obsoleteDraftIds = List.of(CERTIFICATE_ID_1, CERTIFICATE_ID_2);
+        doReturn(obsoleteDraftIds).when(csIntegrationService).listObsoleteDrafts(any());
 
         doReturn("xml1").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_1);
         doReturn("xml2").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_2);
@@ -135,7 +140,8 @@ class DisposeObsoleteDraftsFromCertificateServiceTest {
 
     @Test
     void shouldPublishAnalyticsMessageForEachDeletedDraft() {
-        final var obsoleteDraftIds = List.of(CERTIFICATE_ID_1, CERTIFICATE_ID_2);        doReturn(obsoleteDraftIds).when(csIntegrationService).listObsoleteDrafts(any());
+        final var obsoleteDraftIds = List.of(CERTIFICATE_ID_1, CERTIFICATE_ID_2);
+        doReturn(obsoleteDraftIds).when(csIntegrationService).listObsoleteDrafts(any());
 
         doReturn("xml1").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_1);
         doReturn("xml2").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_2);
@@ -157,7 +163,8 @@ class DisposeObsoleteDraftsFromCertificateServiceTest {
 
     @Test
     void shouldContinueProcessingWhenOneDraftFailsToDispose() {
-        final var obsoleteDraftIds = List.of(CERTIFICATE_ID_1, CERTIFICATE_ID_2, CERTIFICATE_ID_3);        doReturn(obsoleteDraftIds).when(csIntegrationService).listObsoleteDrafts(any());
+        final var obsoleteDraftIds = List.of(CERTIFICATE_ID_1, CERTIFICATE_ID_2, CERTIFICATE_ID_3);
+        doReturn(obsoleteDraftIds).when(csIntegrationService).listObsoleteDrafts(any());
 
         doReturn("xml1").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_1);
         doThrow(new RuntimeException("Failed to get XML")).when(csIntegrationService)
