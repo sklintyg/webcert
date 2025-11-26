@@ -1289,7 +1289,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
             setupVardperson(hoSPerson),
             PERSONNUMMER);
 
-        final var utkast2 = createUtkast(INTYG_ID, UTKAST_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_LOCKED,
+        final var utkast2 = createUtkast(INTYG_ID_COPY, UTKAST_VERSION, INTYG_TYPE, UtkastStatus.DRAFT_LOCKED,
             null, INTYG_JSON,
             setupVardperson(hoSPerson),
             PERSONNUMMER);
@@ -1304,7 +1304,9 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         final var createdBefore = LocalDateTime.now();
         utkastService.dispose(createdBefore, 10);
 
-        verify(handleObsoleteDraftsService, times(1)).disposeAndNotify(List.of(utkast1, utkast2), createdBefore);
+        verify(handleObsoleteDraftsService, times(1)).disposeAndNotify(utkast1, createdBefore);
+        verify(handleObsoleteDraftsService, times(1)).disposeAndNotify(utkast2, createdBefore);
+
     }
 
     private CreateNewDraftRequest buildCreateNewDraftRequest() {
