@@ -30,8 +30,6 @@ public interface CertificateEventProcessedRepository extends JpaRepository<Certi
     @Query("select ce from CertificateEventProcessed ce where ce.certificateId in :certificateIds")
     List<CertificateEventProcessed> getEventsProcessedByCertificateIds(@Param("certificateIds") List<String> certificateIds);
 
-    CertificateEventProcessed getEventsProcessedByCertificateId(@Param("certificateId") String certificateId);
-
 
     default int eraseEventsProcessedByCertificateIds(List<String> certificateIds) {
         final var eventsProcessed = getEventsProcessedByCertificateIds(certificateIds);
@@ -39,8 +37,4 @@ public interface CertificateEventProcessedRepository extends JpaRepository<Certi
         return eventsProcessed.size();
     }
 
-    default void eraseEventsProcessedByCertificateId(String certificateId) {
-        final var eventProcessed = getEventsProcessedByCertificateId(certificateId);
-        delete(eventProcessed);
-    }
 }
