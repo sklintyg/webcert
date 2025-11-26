@@ -29,16 +29,9 @@ public interface CertificateEventFailedLoadRepository extends JpaRepository<Cert
     @Query("select ce from CertificateEventFailedLoad ce where ce.certificateId in :certificateIds")
     List<CertificateEventFailedLoad> getEventsFailedByCertificateIds(@Param("certificateIds") List<String> certificateIds);
 
-    CertificateEventFailedLoad getCertificateEventFailedLoadByCertificateId(@Param("certificateId") String certificateId);
-
     default int eraseEventsFailedByCertificateIds(List<String> certificateIds) {
         final var eventsFailed = getEventsFailedByCertificateIds(certificateIds);
         deleteAll(eventsFailed);
         return eventsFailed.size();
-    }
-
-    default void eraseEventsFailedByCertificateId(String certificateId) {
-        final var eventFailed = getCertificateEventFailedLoadByCertificateId(certificateId);
-        delete(eventFailed);
     }
 }

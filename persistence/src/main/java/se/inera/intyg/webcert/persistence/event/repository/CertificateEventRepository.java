@@ -31,16 +31,9 @@ public interface CertificateEventRepository extends JpaRepository<CertificateEve
     @Query("select ce from CertificateEvent ce where ce.certificateId in :certificateIds")
     List<CertificateEvent> getCertificateEventsByCertificateIds(@Param("certificateIds") List<String> certificateIds);
 
-    CertificateEvent getCertificateEventByCertificateId(String certificateId);
-
     default int eraseCertificateEventsByCertificateIds(List<String> certificateIds) {
         final var eventsProcessed = getCertificateEventsByCertificateIds(certificateIds);
         deleteAll(eventsProcessed);
         return eventsProcessed.size();
-    }
-
-    default void eraseCertificateEventsByCertificateId(String certificateId) {
-        final var eventProcessed = getCertificateEventByCertificateId(certificateId);
-        delete(eventProcessed);
     }
 }

@@ -3,6 +3,7 @@ package se.inera.intyg.webcert.web.service.utkast;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,9 +35,11 @@ public class HandleObsoleteDraftsService {
         if (!draft.eligeableForDisposal()) {
             return;
         }
-        certificateEventProcessedRepository.eraseEventsProcessedByCertificateId(draft.getIntygsId());
-        certificateEventFailedLoadRepository.eraseEventsFailedByCertificateId(draft.getIntygsId());
-        certificateEventRepository.eraseCertificateEventsByCertificateId(draft.getIntygsId());
+
+        certificateEventProcessedRepository.eraseEventsProcessedByCertificateIds(Collections.singletonList(draft.getIntygsId()));
+        certificateEventFailedLoadRepository.eraseEventsFailedByCertificateIds(Collections.singletonList(draft.getIntygsId()));
+        certificateEventRepository.eraseCertificateEventsByCertificateIds(Collections.singletonList(draft.getIntygsId()));
+
         utkastRepository.deleteById(draft.getIntygsId());
 
         notificationService.sendNotificationForDraftDeleted(draft);

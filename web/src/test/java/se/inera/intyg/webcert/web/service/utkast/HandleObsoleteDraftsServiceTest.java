@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -80,7 +81,7 @@ class HandleObsoleteDraftsServiceTest {
 
         handleObsoleteDraftsService.disposeAndNotify(draft1, STALE_DRAFTS_PERIOD);
 
-        verify(certificateEventProcessedRepository).eraseEventsProcessedByCertificateId(certificateId1);
+        verify(certificateEventProcessedRepository).eraseEventsProcessedByCertificateIds(Collections.singletonList(certificateId1));
     }
 
     @Test
@@ -90,7 +91,7 @@ class HandleObsoleteDraftsServiceTest {
 
         handleObsoleteDraftsService.disposeAndNotify(draft1, STALE_DRAFTS_PERIOD);
 
-        verify(certificateEventFailedLoadRepository).eraseEventsFailedByCertificateId(certificateId1);
+        verify(certificateEventFailedLoadRepository).eraseEventsFailedByCertificateIds(Collections.singletonList(certificateId1));
     }
 
     @Test
@@ -100,7 +101,7 @@ class HandleObsoleteDraftsServiceTest {
 
         handleObsoleteDraftsService.disposeAndNotify(draft1, STALE_DRAFTS_PERIOD);
 
-        verify(certificateEventRepository).eraseCertificateEventsByCertificateId(certificateId1);
+        verify(certificateEventRepository).eraseCertificateEventsByCertificateIds(Collections.singletonList(certificateId1));
     }
 
     @Test
