@@ -25,9 +25,9 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.util.List;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationRequest.OrganizationRequestV2Builder;
+import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationRequest.OrganizationRequestBuilder;
 
-@JsonDeserialize(builder = OrganizationRequestV2Builder.class)
+@JsonDeserialize(builder = OrganizationRequestBuilder.class)
 @Value
 @Builder
 public class OrganizationRequest {
@@ -38,7 +38,7 @@ public class OrganizationRequest {
     List<String> customers;
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class OrganizationRequestV2Builder {
+    public static class OrganizationRequestBuilder {
 
     }
 }
