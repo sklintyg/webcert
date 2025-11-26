@@ -25,9 +25,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @Slf4j
-@ComponentScan(basePackages = {
-    "se.inera.intyg.webcert.integration.servicenow.v2",
-    "se.inera.intyg.webcert.integration.servicenow.service"})
+@ComponentScan(basePackages = "se.inera.intyg.webcert.integration.servicenow")
 public class ServiceNowIntegrationConfig {
 
     public ServiceNowIntegrationConfig() {

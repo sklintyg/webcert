@@ -29,19 +29,19 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import se.inera.intyg.webcert.integration.servicenow.stub.api.ServiceNowStubRestApi;
 import se.inera.intyg.webcert.integration.servicenow.stub.settings.api.ServiceNowStubSettingsApi;
-import se.inera.intyg.webcert.integration.servicenow.stub.v2.api.ServiceNowStubRestApiV2;
 
 @Configuration
 @Slf4j
 @RequiredArgsConstructor
 @Profile("(dev | wc-all-stubs | servicenow-integration-stub-v2) & !servicenow-integration-stub")
 @ComponentScan(basePackages = {
-    "se.inera.intyg.webcert.integration.servicenow.stub.v2",
+    "se.inera.intyg.webcert.integration.servicenow.stub",
     "se.inera.intyg.webcert.integration.servicenow.stub.settings"})
-public class ServiceNowStubConfigV2 {
+public class ServiceNowStubConfig {
 
-    private final ServiceNowStubRestApiV2 servicenowStubRestApiV2;
+    private final ServiceNowStubRestApi servicenowStubRestApi;
     private final ServiceNowStubSettingsApi servicenowStubSettingsApi;
 
     @Bean
@@ -51,7 +51,7 @@ public class ServiceNowStubConfigV2 {
         endpoint.setProviders(providers);
         endpoint.setBus(springBus);
         endpoint.setAddress("/stubs/servicenowstub");
-        endpoint.setServiceBeans(List.of(servicenowStubRestApiV2, servicenowStubSettingsApi));
+        endpoint.setServiceBeans(List.of(servicenowStubRestApi, servicenowStubSettingsApi));
         log.info("Activating servicenow-integration-v2-stub for subscription queries");
         return endpoint.create();
     }

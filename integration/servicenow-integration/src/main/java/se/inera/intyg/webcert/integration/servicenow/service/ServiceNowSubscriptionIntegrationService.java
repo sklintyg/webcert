@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.integration.servicenow.v2.service;
+package se.inera.intyg.webcert.integration.servicenow.service;
 
 import java.util.List;
 import java.util.Map;
@@ -25,24 +25,22 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.integration.api.subscription.AuthenticationMethodEnum;
 import se.inera.intyg.webcert.integration.api.subscription.SubscriptionIntegrationService;
-import se.inera.intyg.webcert.integration.servicenow.service.CheckSubscriptionService;
-import se.inera.intyg.webcert.integration.servicenow.service.GetCareProvidersMissingSubscriptionService;
-import se.inera.intyg.webcert.integration.servicenow.v2.client.SubscriptionRestClientV2;
+import se.inera.intyg.webcert.integration.servicenow.client.SubscriptionRestClient;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 
 @Service
 @RequiredArgsConstructor
-public class ServiceNowSubscriptionIntegrationServiceV2 implements SubscriptionIntegrationService {
+public class ServiceNowSubscriptionIntegrationService implements SubscriptionIntegrationService {
 
-    private final SubscriptionRestClientV2 subscriptionRestClientV2;
+    private final SubscriptionRestClient subscriptionRestClient;
     private final GetCareProvidersMissingSubscriptionService getCareProvidersMissingSubscriptionService;
     private final CheckSubscriptionService checkSubscriptionService;
 
     @Override
     @PerformanceLogging(eventAction = "get-missing-subscriptions-v2", eventType = MdcLogConstants.EVENT_TYPE_INFO)
     public List<String> getMissingSubscriptions(Map<String, List<String>> organizationNumberHsaIdMap, AuthenticationMethodEnum authMethod) {
-        final var organizationResponse = subscriptionRestClientV2.getSubscriptionServiceResponse(
+        final var organizationResponse = subscriptionRestClient.getSubscriptionServiceResponse(
             organizationNumberHsaIdMap.keySet()
         );
         return getCareProvidersMissingSubscriptionService.get(organizationResponse.getResult(), organizationNumberHsaIdMap, authMethod);
@@ -51,7 +49,7 @@ public class ServiceNowSubscriptionIntegrationServiceV2 implements SubscriptionI
     @Override
     @PerformanceLogging(eventAction = "is-missing-subscriptions-eleg-user-v2", eventType = MdcLogConstants.EVENT_TYPE_INFO)
     public boolean isMissingSubscriptionUnregisteredElegUser(String organizationNumber) {
-        final var organizationResponse = subscriptionRestClientV2.getSubscriptionServiceResponse(
+        final var organizationResponse = subscriptionRestClient.getSubscriptionServiceResponse(
             Set.of(organizationNumber)
         );
         final var serviceCodes = organizationResponse.getResult().getFirst().getServiceCodes();

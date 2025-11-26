@@ -25,12 +25,12 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.util.List;
 import lombok.Builder;
 import lombok.Value;
-import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationRequestV2.OrganizationRequestV2Builder;
+import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationRequest.OrganizationRequestV2Builder;
 
 @JsonDeserialize(builder = OrganizationRequestV2Builder.class)
 @Value
 @Builder
-public class OrganizationRequestV2 {
+public class OrganizationRequest {
 
     @JsonProperty("service")
     List<String> services;

@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.integration.servicenow.stub.v2.service;
+package se.inera.intyg.webcert.integration.servicenow.stub.service;
 
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
@@ -27,17 +27,17 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.integration.servicenow.dto.Organization;
-import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationRequestV2;
+import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationRequest;
 import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationResponse;
 import se.inera.intyg.webcert.integration.servicenow.stub.settings.state.ServiceNowStubState;
 
 @Service
 @RequiredArgsConstructor
-public class ServiceNowStubRestApiServiceV2 {
+public class ServiceNowStubRestApiService {
 
     private final ServiceNowStubState stubState;
 
-    public Response createSubscriptionResponse(String basicAuth, OrganizationRequestV2 request) {
+    public Response createSubscriptionResponse(String basicAuth, OrganizationRequest request) {
         if (basicAuth == null) {
             return Response.status(Status.BAD_REQUEST).entity("Authorization header required by ServiceNow stub.").build();
         } else if (stubState.getHttpErrorCode() != 0) {
