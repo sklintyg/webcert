@@ -70,6 +70,11 @@ public class ServiceNowStubRestApiServiceV2 {
         if (!activeSubscriptions.isEmpty() && activeSubscriptions.containsKey(orgNumber)) {
             return activeSubscriptions.get(orgNumber);
         }
+
+        if (stubState.isNotSubscribed(orgNumber)) {
+            return Collections.emptyList();
+        }
+
         if (activeSubscriptions.isEmpty() && stubState.getSubscriptionReturnValue()) {
             return stubState.getServiceCodeList();
         }
