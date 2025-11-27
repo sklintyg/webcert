@@ -25,7 +25,7 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import se.inera.intyg.infra.integration.pu.services.PUResponseValidator;
+import se.inera.intyg.infra.integration.pu.services.validator.PUResponseValidator;
 import se.inera.intyg.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.riv.strategicresourcemanagement.persons.person.v3.PersonRecordType;
