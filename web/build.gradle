@@ -157,7 +157,6 @@ dependencies {
     implementation "se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:${rivtaClinicalprocessSchemasVersion}"
     implementation "se.riv.insuranceprocess.healthreporting:insuranceprocess-healthreporting-schemas:${rivtaInsuranceprocessSchemasVersion}"
     implementation "se.riv.itintegration.monitoring:itintegration-monitoring-schemas:${rivtaItintegrationMonitoringSchemasVersion}"
-    implementation "se.riv.strategicresourcemanagement.persons.person:strategicresourcemanagement-persons-person-schemas:${rivtaGetPersonsPersonSchemasVersion}"
 
     implementation "co.elastic.logging:logback-ecs-encoder:${logbackEcsEncoderVersion}"
     implementation "codes.rafael.jaxb2_commons:jaxb2-basics:${jaxb2Version}"
