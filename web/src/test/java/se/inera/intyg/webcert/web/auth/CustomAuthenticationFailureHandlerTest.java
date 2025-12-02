@@ -37,6 +37,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.saml2.core.Saml2Error;
+import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticationException;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationException;
 import se.inera.intyg.infra.security.exception.HsaServiceException;
@@ -124,6 +126,13 @@ class CustomAuthenticationFailureHandlerTest {
 
         verify(redirectStrategy, times(ONE)).sendRedirect(eq(request), eq(response), urlCaptor.capture());
         assertEquals("/error?reason=login.failed", urlCaptor.getValue());
+    }
+
+    @Test
+    void shouldRedirectToMissingSubscriptionFromSamlException() throws IOException {
+        handler.onAuthenticationFailure(request, response, new Saml2AuthenticationException(new Saml2Error("auth-exception-subscription", "Authentication error"), "Private practitioner was denied access to Webcert due to missing subscription.", MISSING_SUBSCRIPTION));
+        verify(redirectStrategy, times(ONE)).sendRedirect(eq(request), eq(response), urlCaptor.capture());
+        assertEquals("/error?reason=auth-exception-subscription", urlCaptor.getValue());
     }
 
 }

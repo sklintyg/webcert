@@ -62,6 +62,8 @@ public class CustomAuthenticationFailureHandler extends ExceptionMappingAuthenti
         String url;
         if (failureUrlMap.containsKey(exceptionName)) {
             url = failureUrlMap.get(exceptionName);
+        } else if (exception.getCause() != null && failureUrlMap.containsKey(exception.getCause().getClass().getName())) {
+            url = failureUrlMap.get(exception.getCause().getClass().getName());
         } else {
             saveException(request, exception);
             url = WC_DEFAULT_FAILURE_URL;
