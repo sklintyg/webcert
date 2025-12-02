@@ -49,13 +49,7 @@ public class CertificateRelationsToIntygInfoEventsConverter {
 
         if (certificate.getMetadata().getRelations().getParent() != null) {
             final var parentId = certificate.getMetadata().getRelations().getParent().getCertificateId();
-            final Certificate relatedCertificate;
-            if (Boolean.TRUE.equals(csIntegrationService.certificateExists(parentId))) {
-                relatedCertificate = csIntegrationService.getInternalCertificate(parentId);
-            }
-            else {
-                relatedCertificate = getCertificateInternalServiceFromWC.get(parentId, null).getCertificate();
-            }
+            final var relatedCertificate = getRelatedCertificate(parentId);
             final var parentRelation = certificateRelationToIntygEventInfoConverter
                 .convert(certificate.getMetadata().getRelations().getParent(), relatedCertificate, false);
             events.add(parentRelation);
@@ -71,6 +65,13 @@ public class CertificateRelationsToIntygInfoEventsConverter {
         }
 
         return events;
+    }
+
+    private Certificate getRelatedCertificate(String parentId) {
+        if (Boolean.TRUE.equals(csIntegrationService.certificateExists(parentId))) {
+            return csIntegrationService.getInternalCertificate(parentId);
+        }
+        return getCertificateInternalServiceFromWC.get(parentId, null).getCertificate();
     }
 
     private IntygInfoEvent convertChildRelation(CertificateRelation childRelation) {
