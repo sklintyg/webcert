@@ -30,6 +30,7 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.facade.model.metadata.CertificateRelation;
 import se.inera.intyg.infra.intyginfo.dto.IntygInfoEvent;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
+import se.inera.intyg.webcert.web.web.controller.internalapi.GetCertificateInternalServiceFromWC;
 
 @RequiredArgsConstructor
 @Component
@@ -37,6 +38,7 @@ public class CertificateRelationsToIntygInfoEventsConverter {
 
     private final CertificateRelationToIntygEventInfoConverter certificateRelationToIntygEventInfoConverter;
     private final CSIntegrationService csIntegrationService;
+    private final GetCertificateInternalServiceFromWC getCertificateInternalServiceFromWC;
 
     public List<IntygInfoEvent> convert(Certificate certificate) {
         if (certificate.getMetadata().getRelations() == null) {
@@ -46,9 +48,8 @@ public class CertificateRelationsToIntygInfoEventsConverter {
         List<IntygInfoEvent> events = new ArrayList<>();
 
         if (certificate.getMetadata().getRelations().getParent() != null) {
-            final var relatedCertificate = csIntegrationService.getInternalCertificate(
-                certificate.getMetadata().getRelations().getParent().getCertificateId()
-            );
+            final var parentId = certificate.getMetadata().getRelations().getParent().getCertificateId();
+            final var relatedCertificate = getRelatedCertificate(parentId);
             final var parentRelation = certificateRelationToIntygEventInfoConverter
                 .convert(certificate.getMetadata().getRelations().getParent(), relatedCertificate, false);
             events.add(parentRelation);
@@ -64,6 +65,13 @@ public class CertificateRelationsToIntygInfoEventsConverter {
         }
 
         return events;
+    }
+
+    private Certificate getRelatedCertificate(String parentId) {
+        if (Boolean.TRUE.equals(csIntegrationService.certificateExists(parentId))) {
+            return csIntegrationService.getInternalCertificate(parentId);
+        }
+        return getCertificateInternalServiceFromWC.get(parentId, null).getCertificate();
     }
 
     private IntygInfoEvent convertChildRelation(CertificateRelation childRelation) {

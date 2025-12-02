@@ -37,6 +37,8 @@ import se.inera.intyg.common.support.facade.model.metadata.CertificateRelations;
 import se.inera.intyg.infra.intyginfo.dto.IntygInfoEvent;
 import se.inera.intyg.infra.intyginfo.dto.IntygInfoEvent.Source;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
+import se.inera.intyg.webcert.web.web.controller.internalapi.GetCertificateInternalServiceFromWC;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetCertificateResponse;
 
 @ExtendWith(MockitoExtension.class)
 class CertificateRelationsToIntygInfoEventsConverterTest {
@@ -45,6 +47,8 @@ class CertificateRelationsToIntygInfoEventsConverterTest {
     private CertificateRelationToIntygEventInfoConverter certificateRelationToIntygEventInfoConverter;
     @Mock
     private CSIntegrationService csIntegrationService;
+    @Mock
+    private GetCertificateInternalServiceFromWC getCertificateInternalServiceFromWC;
 
     @InjectMocks
     private CertificateRelationsToIntygInfoEventsConverter certificateRelationsToIntygInfoEventsConverter;
@@ -150,8 +154,45 @@ class CertificateRelationsToIntygInfoEventsConverterTest {
             )
             .build();
         certificate.setMetadata(metadata);
+        when(csIntegrationService.certificateExists("ID"))
+            .thenReturn(true);
         when(csIntegrationService.getInternalCertificate("ID"))
             .thenReturn(parentRelatedCertificate);
+        when(certificateRelationToIntygEventInfoConverter.convert(parentRelation, parentRelatedCertificate, false))
+            .thenReturn(parentEvent);
+
+        final var response = certificateRelationsToIntygInfoEventsConverter.convert(certificate);
+
+        assertEquals(
+            List.of(parentEvent),
+            response
+        );
+    }
+
+    @Test
+    void shouldReturnParentRelationFromWebcert() {
+        final var certificate = new Certificate();
+        final var parentRelatedCertificate = new Certificate();
+        final var parentRelation = CertificateRelation.builder().certificateId("ID").build();
+        final var parentEvent = new IntygInfoEvent(Source.WEBCERT);
+        final var metadata = CertificateMetadata.builder()
+            .id("ORIGINAL_ID")
+            .relations(
+                CertificateRelations.builder()
+                    .parent(parentRelation)
+                    .children(new CertificateRelation[0])
+                    .build()
+            )
+            .build();
+        certificate.setMetadata(metadata);
+
+        final var getCertificateResponse = new GetCertificateResponse();
+        getCertificateResponse.setCertificate(parentRelatedCertificate);
+
+        when(csIntegrationService.certificateExists("ID"))
+            .thenReturn(false);
+        when(getCertificateInternalServiceFromWC.get("ID", null))
+            .thenReturn(getCertificateResponse);
         when(certificateRelationToIntygEventInfoConverter.convert(parentRelation, parentRelatedCertificate, false))
             .thenReturn(parentEvent);
 
@@ -187,10 +228,58 @@ class CertificateRelationsToIntygInfoEventsConverterTest {
             .build();
         certificate.setMetadata(metadata);
 
+        when(csIntegrationService.certificateExists("PARENT_ID"))
+            .thenReturn(true);
         when(csIntegrationService.getInternalCertificate("CHILD_ID"))
             .thenReturn(relatedCertificate);
         when(csIntegrationService.getInternalCertificate("PARENT_ID"))
             .thenReturn(parentRelatedCertificate);
+        when(certificateRelationToIntygEventInfoConverter.convert(childRelation, relatedCertificate, true))
+            .thenReturn(childEvent);
+        when(certificateRelationToIntygEventInfoConverter.convert(parentRelation, parentRelatedCertificate, false))
+            .thenReturn(parentEvent);
+
+        final var response = certificateRelationsToIntygInfoEventsConverter.convert(certificate);
+
+        assertEquals(
+            List.of(parentEvent, childEvent),
+            response
+        );
+    }
+
+    @Test
+    void shouldReturnChildAndParentRelationWhenParentFromWebcert() {
+        final var certificate = new Certificate();
+        final var relatedCertificate = new Certificate();
+        final var parentRelatedCertificate = new Certificate();
+        final var childRelation = CertificateRelation.builder().certificateId("CHILD_ID").build();
+        final var parentRelation = CertificateRelation.builder().certificateId("PARENT_ID").build();
+        final var childEvent = new IntygInfoEvent(Source.WEBCERT);
+        final var parentEvent = new IntygInfoEvent(Source.WEBCERT);
+        final var metadata = CertificateMetadata.builder()
+            .id("ORIGINAL_ID")
+            .relations(
+                CertificateRelations.builder()
+                    .parent(parentRelation)
+                    .children(
+                        Array.of(
+                            childRelation
+                        ).toJavaArray(CertificateRelation[]::new)
+                    )
+                    .build()
+            )
+            .build();
+        certificate.setMetadata(metadata);
+
+        final var getCertificateResponse = new GetCertificateResponse();
+        getCertificateResponse.setCertificate(parentRelatedCertificate);
+
+        when(csIntegrationService.certificateExists("PARENT_ID"))
+            .thenReturn(false);
+        when(getCertificateInternalServiceFromWC.get("PARENT_ID", null))
+            .thenReturn(getCertificateResponse);
+        when(csIntegrationService.getInternalCertificate("CHILD_ID"))
+            .thenReturn(relatedCertificate);
         when(certificateRelationToIntygEventInfoConverter.convert(childRelation, relatedCertificate, true))
             .thenReturn(childEvent);
         when(certificateRelationToIntygEventInfoConverter.convert(parentRelation, parentRelatedCertificate, false))
