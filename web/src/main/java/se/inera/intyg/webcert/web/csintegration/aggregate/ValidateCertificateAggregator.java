@@ -23,7 +23,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.modules.support.facade.dto.ValidationErrorDTO;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.ValidateCertificateFacadeService;
 
 @Service("validateCertificateAggregator")
@@ -31,23 +30,16 @@ public class ValidateCertificateAggregator implements ValidateCertificateFacadeS
 
     private final ValidateCertificateFacadeService validateCertificateFromWC;
     private final ValidateCertificateFacadeService validateCertificateFromCS;
-    private final CertificateServiceProfile certificateServiceProfile;
 
     public ValidateCertificateAggregator(
         @Qualifier("validateCertificateFromWC") ValidateCertificateFacadeService validateCertificateFromWC,
-        @Qualifier("validateCertificateFromCS") ValidateCertificateFacadeService validateCertificateFromCS,
-        CertificateServiceProfile certificateServiceProfile) {
+        @Qualifier("validateCertificateFromCS") ValidateCertificateFacadeService validateCertificateFromCS) {
         this.validateCertificateFromWC = validateCertificateFromWC;
         this.validateCertificateFromCS = validateCertificateFromCS;
-        this.certificateServiceProfile = certificateServiceProfile;
     }
 
     @Override
     public ValidationErrorDTO[] validate(Certificate certificate) {
-        if (!certificateServiceProfile.active()) {
-            return validateCertificateFromWC.validate(certificate);
-        }
-
         final var responseFromCS = validateCertificateFromCS.validate(certificate);
 
         return responseFromCS != null ? responseFromCS : validateCertificateFromWC.validate(certificate);

@@ -16,7 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.integration.servicenow.v1.service;
+
+package se.inera.intyg.webcert.integration.servicenow.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -35,11 +36,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import se.inera.intyg.webcert.integration.servicenow.client.SubscriptionRestClient;
 import se.inera.intyg.webcert.integration.servicenow.dto.Organization;
 import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationResponse;
-import se.inera.intyg.webcert.integration.servicenow.service.CheckSubscriptionService;
-import se.inera.intyg.webcert.integration.servicenow.service.GetCareProvidersMissingSubscriptionService;
-import se.inera.intyg.webcert.integration.servicenow.v1.client.SubscriptionRestClient;
 
 @ExtendWith(MockitoExtension.class)
 class ServiceNowSubscriptionIntegrationServiceTest {
@@ -52,7 +51,7 @@ class ServiceNowSubscriptionIntegrationServiceTest {
     private CheckSubscriptionService checkSubscriptionService;
 
     @InjectMocks
-    private ServiceNowSubscriptionIntegrationService subscriptionRestService;
+    private ServiceNowSubscriptionIntegrationService serviceNowSubscriptionIntegrationService;
 
     private static final String HSA_ID = "hsaId";
     private static final String ORG_NUMBER = "org_number";
@@ -72,7 +71,7 @@ class ServiceNowSubscriptionIntegrationServiceTest {
             doReturn(expectedResult).when(getCareProvidersMissingSubscriptionService)
                 .get(organizationResponse.getResult(), organizationNumberHsaIdMap, SITHS);
 
-            final var actualResult = subscriptionRestService.getMissingSubscriptions(organizationNumberHsaIdMap, SITHS);
+            final var actualResult = serviceNowSubscriptionIntegrationService.getMissingSubscriptions(organizationNumberHsaIdMap, SITHS);
             assertEquals(expectedResult, actualResult);
         }
     }
@@ -97,7 +96,7 @@ class ServiceNowSubscriptionIntegrationServiceTest {
             doReturn(true).when(checkSubscriptionService).isMissing(
                 organizationResponse.getResult().getFirst().getServiceCodes(), ELEG);
 
-            assertTrue(subscriptionRestService.isMissingSubscriptionUnregisteredElegUser(ORG_NUMBER));
+            assertTrue(serviceNowSubscriptionIntegrationService.isMissingSubscriptionUnregisteredElegUser(ORG_NUMBER));
         }
 
         @Test
@@ -108,7 +107,7 @@ class ServiceNowSubscriptionIntegrationServiceTest {
             doReturn(false).when(checkSubscriptionService).isMissing(
                 organizationResponse.getResult().getFirst().getServiceCodes(), ELEG);
 
-            assertFalse(subscriptionRestService.isMissingSubscriptionUnregisteredElegUser(ORG_NUMBER));
+            assertFalse(serviceNowSubscriptionIntegrationService.isMissingSubscriptionUnregisteredElegUser(ORG_NUMBER));
         }
     }
 }

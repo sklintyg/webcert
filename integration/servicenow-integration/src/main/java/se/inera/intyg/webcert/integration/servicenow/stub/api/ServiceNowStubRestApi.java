@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.integration.servicenow.stub.v1.api;
+package se.inera.intyg.webcert.integration.servicenow.stub.api;
 
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.HeaderParam;
@@ -28,11 +28,11 @@ import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationRequest;
-import se.inera.intyg.webcert.integration.servicenow.stub.v1.service.ServiceNowStubRestApiService;
+import se.inera.intyg.webcert.integration.servicenow.stub.service.ServiceNowStubRestApiService;
 
 @Controller
 @RequiredArgsConstructor
-@Path("/api/nabia/v1/inera_services/services")
+@Path("/api/nabia/v2/inera_services/services")
 public class ServiceNowStubRestApi {
 
     private final ServiceNowStubRestApiService serviceNowStubRestApiService;

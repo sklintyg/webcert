@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.integration.servicenow.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import java.util.List;
@@ -31,7 +32,9 @@ import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationRequest.Org
 @Builder
 public class OrganizationRequest {
 
-    String service;
+    @JsonProperty("service")
+    List<String> services;
+
     List<String> customers;
 
     @JsonPOJOBuilder(withPrefix = "")

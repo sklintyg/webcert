@@ -16,7 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package se.inera.intyg.webcert.integration.servicenow.stub.v1.service;
+
+package se.inera.intyg.webcert.integration.servicenow.stub.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -47,7 +48,7 @@ class ServiceNowStubRestApiServiceTest {
     ServiceNowStubRestApiService serviceNowStubRestApiService;
 
     private static final String BASIC_AUTH = "Basic ";
-    private static final String SERVICE = "Webcert-tj";
+    private static final List<String> SERVICES = List.of("Webcert-tj", "Webcert-int");
     private static final String SERVICE_CODE_1 = "SERVICE_CODE_1";
     private static final String SERVICE_CODE_2 = "SERVICE_CODE_2";
     private static final String ORGANIZATION_NUMBER_1 = "ORGANIZATION_NUMBER_1";
@@ -68,7 +69,7 @@ class ServiceNowStubRestApiServiceTest {
     void shouldReturnOneServiceCodeWhenOneSubscriptionExists() {
         final var activeSubscriptions = createActiveSubscriptions();
         final var organizationRequest = OrganizationRequest.builder()
-            .service(SERVICE)
+            .services(SERVICES)
             .customers(List.of(ORGANIZATION_NUMBER_1))
             .build();
         when(stubState.getHttpErrorCode()).thenReturn(0);
@@ -89,7 +90,7 @@ class ServiceNowStubRestApiServiceTest {
     void shouldReturnTwoServiceCodesWhenTwoSubscriptionsExists() {
         final var activeSubscriptions = createActiveSubscriptions();
         final var organizationRequest = OrganizationRequest.builder()
-            .service(SERVICE)
+            .services(SERVICES)
             .customers(List.of(ORGANIZATION_NUMBER_2))
             .build();
         when(stubState.getHttpErrorCode()).thenReturn(0);
@@ -111,7 +112,7 @@ class ServiceNowStubRestApiServiceTest {
     void shouldReturnEmptyServiceCodeListWhenNoSubscriptionExists() {
         final var activeSubscriptions = createActiveSubscriptions();
         final var organizationRequest = OrganizationRequest.builder()
-            .service(SERVICE)
+            .services(SERVICES)
             .customers(List.of("ORGANIZATION_NUMBER_3"))
             .build();
         when(stubState.getHttpErrorCode()).thenReturn(0);
@@ -131,7 +132,7 @@ class ServiceNowStubRestApiServiceTest {
     void shouldReturnTwoOrganizationsWithServiceCodesWhenBothHaveSubscription() {
         final var activeSubscriptions = createActiveSubscriptions();
         final var organizationRequest = OrganizationRequest.builder()
-            .service(SERVICE)
+            .services(SERVICES)
             .customers(List.of(ORGANIZATION_NUMBER_1, ORGANIZATION_NUMBER_2))
             .build();
         when(stubState.getHttpErrorCode()).thenReturn(0);
@@ -141,10 +142,10 @@ class ServiceNowStubRestApiServiceTest {
             organizationRequest)) {
             final var organizations = response.readEntity(OrganizationResponse.class).getResult();
 
-            final var serviceCodeList1 = organizations.get(0).getServiceCodes();
+            final var serviceCodeList1 = organizations.getFirst().getServiceCodes();
             final var serviceCodeList2 = organizations.get(1).getServiceCodes();
             assertEquals(2, organizations.size());
-            assertEquals(ORGANIZATION_NUMBER_1, organizations.get(0).getOrganizationNumber());
+            assertEquals(ORGANIZATION_NUMBER_1, organizations.getFirst().getOrganizationNumber());
             assertEquals(ORGANIZATION_NUMBER_2, organizations.get(1).getOrganizationNumber());
             assertEquals(1, serviceCodeList1.size());
             assertEquals(2, serviceCodeList2.size());
@@ -155,7 +156,7 @@ class ServiceNowStubRestApiServiceTest {
     void shouldReturnTwoOrganizationsWhenOneHaveSubscription() {
         final var activeSubscriptions = createActiveSubscriptions();
         final var organizationRequest = OrganizationRequest.builder()
-            .service(SERVICE)
+            .services(SERVICES)
             .customers(List.of(ORGANIZATION_NUMBER_2, "ORGANIZATION_NUMBER_3"))
             .build();
         when(stubState.getHttpErrorCode()).thenReturn(0);
@@ -166,9 +167,9 @@ class ServiceNowStubRestApiServiceTest {
             final var organizations = response.readEntity(OrganizationResponse.class).getResult();
 
             assertEquals(2, organizations.size());
-            assertEquals(ORGANIZATION_NUMBER_2, organizations.get(0).getOrganizationNumber());
+            assertEquals(ORGANIZATION_NUMBER_2, organizations.getFirst().getOrganizationNumber());
             assertEquals("ORGANIZATION_NUMBER_3", organizations.get(1).getOrganizationNumber());
-            assertEquals(2, organizations.get(0).getServiceCodes().size());
+            assertEquals(2, organizations.getFirst().getServiceCodes().size());
             assertTrue(organizations.get(1).getServiceCodes().isEmpty());
         }
     }
@@ -178,7 +179,7 @@ class ServiceNowStubRestApiServiceTest {
         final var activeSubscriptions = new HashMap<String, List<String>>();
         final var setReturnValue = true;
         final var organizationRequest = OrganizationRequest.builder()
-            .service(SERVICE)
+            .services(SERVICES)
             .customers(List.of(ORGANIZATION_NUMBER_1))
             .build();
         when(stubState.getHttpErrorCode()).thenReturn(0);
@@ -200,7 +201,7 @@ class ServiceNowStubRestApiServiceTest {
         final var activeSubscriptions = new HashMap<String, List<String>>();
         final var setReturnValue = false;
         final var organizationRequest = OrganizationRequest.builder()
-            .service(SERVICE)
+            .services(SERVICES)
             .customers(List.of(ORGANIZATION_NUMBER_1))
             .build();
         when(stubState.getHttpErrorCode()).thenReturn(0);
@@ -219,7 +220,7 @@ class ServiceNowStubRestApiServiceTest {
     @Test
     void shouldReturnNullErrorResponseWhenErrorSet() {
         final var organizationRequest = OrganizationRequest.builder()
-            .service(SERVICE)
+            .services(SERVICES)
             .customers(List.of(ORGANIZATION_NUMBER_1))
             .build();
         when(stubState.getHttpErrorCode()).thenReturn(403);
@@ -234,7 +235,7 @@ class ServiceNowStubRestApiServiceTest {
     @Test
     void shouldReturnError500WhenHttpErrorSetToUnknown() {
         final var organizationRequest = OrganizationRequest.builder()
-            .service(SERVICE)
+            .services(SERVICES)
             .customers(List.of(ORGANIZATION_NUMBER_1))
             .build();
         when(stubState.getHttpErrorCode()).thenReturn(777);
@@ -249,7 +250,7 @@ class ServiceNowStubRestApiServiceTest {
     @Test
     void shouldReturnBadRequestIfNoAuthorizationHeader() {
         final var organizationRequest = OrganizationRequest.builder()
-            .service(SERVICE)
+            .services(SERVICES)
             .customers(List.of(ORGANIZATION_NUMBER_1))
             .build();
 

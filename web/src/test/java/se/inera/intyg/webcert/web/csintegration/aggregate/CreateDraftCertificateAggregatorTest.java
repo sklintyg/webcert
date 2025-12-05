@@ -30,7 +30,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.infra.security.common.model.IntygUser;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3.CreateDraftCertificate;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.CreateDraftCertificateResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.createdraftcertificateresponder.v3.Intyg;
@@ -46,23 +45,19 @@ class CreateDraftCertificateAggregatorTest {
     @Mock
     private CreateDraftCertificate createDraftCertificateFromCS;
     @Mock
-    private CertificateServiceProfile certificateServiceProfile;
     private CreateDraftCertificate createDraftCertificateAggregator;
 
     @BeforeEach
     void setUp() {
         createDraftCertificateAggregator = new CreateDraftCertificateAggregator(
             createDraftCertificateFromWC,
-            createDraftCertificateFromCS,
-            certificateServiceProfile
+            createDraftCertificateFromCS
         );
     }
 
     @Test
-    void shouldReturnResponseFromCSIfProfileActiveAndSupportsType() {
+    void shouldReturnResponseFromCSSupportsType() {
         final var expectedResult = new CreateDraftCertificateResponseType();
-        when(certificateServiceProfile.active())
-            .thenReturn(true);
         when(createDraftCertificateFromCS.create(UTKAST_PARAMS, USER))
             .thenReturn(expectedResult);
 
@@ -73,25 +68,8 @@ class CreateDraftCertificateAggregatorTest {
     }
 
     @Test
-    void shouldReturnCertificateIdFromWCIfCSProfileIsNotActive() {
+    void shouldReturnCertificateIdFromWCIIfCSReturnsNull() {
         final var expectedResult = new CreateDraftCertificateResponseType();
-        when(certificateServiceProfile.active())
-            .thenReturn(false);
-        when(createDraftCertificateFromWC.create(UTKAST_PARAMS, USER))
-            .thenReturn(expectedResult);
-
-        final var response = createDraftCertificateAggregator.create(UTKAST_PARAMS, USER);
-        verify(createDraftCertificateFromWC, times(1)).create(UTKAST_PARAMS, USER);
-        verify(createDraftCertificateFromCS, times(0)).create(UTKAST_PARAMS, USER);
-
-        assertEquals(expectedResult, response);
-    }
-
-    @Test
-    void shouldReturnCertificateIdFromWCIIfCSProfileIsActiveButReturnsNull() {
-        final var expectedResult = new CreateDraftCertificateResponseType();
-        when(certificateServiceProfile.active())
-            .thenReturn(true);
         when(createDraftCertificateFromWC.create(UTKAST_PARAMS, USER))
             .thenReturn(expectedResult);
 

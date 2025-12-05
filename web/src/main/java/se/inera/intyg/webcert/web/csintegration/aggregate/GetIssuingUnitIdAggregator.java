@@ -22,22 +22,15 @@ package se.inera.intyg.webcert.web.csintegration.aggregate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.csintegration.certificate.GetIssuingUnitIdFromCertificateService;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.certificate.GetIssuingUnitIdFromWebcert;
 
 @Service
 @RequiredArgsConstructor
 public class GetIssuingUnitIdAggregator {
-
-    private final CertificateServiceProfile certificateServiceProfile;
     private final GetIssuingUnitIdFromWebcert getUnitIdFromWC;
     private final GetIssuingUnitIdFromCertificateService getUnitIdFromCS;
 
     public String get(String certificateId) {
-        if (!certificateServiceProfile.active()) {
-            return getUnitIdFromWC.get(certificateId);
-        }
-
         final var unitIdFromCS = getUnitIdFromCS.get(certificateId);
 
         return unitIdFromCS != null ? unitIdFromCS : getUnitIdFromWC.get(certificateId);

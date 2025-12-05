@@ -34,7 +34,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.csintegration.certificate.IntegrationServiceForCS;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.IntegrationService;
 import se.inera.intyg.webcert.web.web.controller.integration.IntegrationServiceImpl;
@@ -51,27 +50,21 @@ class IntegrationCertificateAggregatorTest {
 
     IntegrationService integrationServiceFromWC;
     IntegrationService integrationServiceFromCS;
-
-    CertificateServiceProfile certificateServiceProfile;
     IntegrationCertificateAggregator aggregator;
 
     @BeforeEach
     void setup() {
         integrationServiceFromWC = mock(IntegrationServiceImpl.class);
         integrationServiceFromCS = mock(IntegrationServiceForCS.class);
-        certificateServiceProfile = mock(CertificateServiceProfile.class);
 
         aggregator = new IntegrationCertificateAggregator(
-            certificateServiceProfile,
             integrationServiceFromWC,
             integrationServiceFromCS
         );
     }
 
     @Test
-    void shouldReturnPrepareRedirectToIntygFromCSIfCSProfileIsActiveAndResponseFromCSNotNull() {
-        when(certificateServiceProfile.active())
-            .thenReturn(true);
+    void shouldReturnPrepareRedirectToIntygFromCSResponseFromCSNotNull() {
         when(integrationServiceFromCS.prepareRedirectToIntyg(ID, USER, ALTERNATE_SSN))
             .thenReturn(PREPARE_REDIRECT_TO_INTYG_FROM_CS);
 
@@ -82,9 +75,7 @@ class IntegrationCertificateAggregatorTest {
     }
 
     @Test
-    void shouldReturnPrepareRedirectToIntygFromWCIfCSProfileIsActiveAndResponseFromCSIsNull() {
-        when(certificateServiceProfile.active())
-            .thenReturn(true);
+    void shouldReturnPrepareRedirectToIntygFromWCIfResponseFromCSIsNull() {
         when(integrationServiceFromWC.prepareRedirectToIntyg(ID, USER, ALTERNATE_SSN))
             .thenReturn(PREPARE_REDIRECT_TO_INTYG_FROM_CS);
 
@@ -95,21 +86,8 @@ class IntegrationCertificateAggregatorTest {
     }
 
     @Test
-    void shouldReturnPrepareRedirectToIntygFromWCIfCSProfileIsNotActive() {
-        when(integrationServiceFromWC.prepareRedirectToIntyg(ID, USER, ALTERNATE_SSN))
-            .thenReturn(PREPARE_REDIRECT_TO_INTYG_FROM_WC);
-
-        final var response = aggregator.prepareRedirectToIntyg(ID, USER, ALTERNATE_SSN);
-        verify(integrationServiceFromWC, times(1)).prepareRedirectToIntyg(ID, USER, ALTERNATE_SSN);
-
-        assertEquals(PREPARE_REDIRECT_TO_INTYG_FROM_WC, response);
-    }
-
-    @Test
     void shouldSetPrepareBeforeAlternateSsnToNull() {
         final var argumentCaptor = ArgumentCaptor.forClass(Personnummer.class);
-        when(certificateServiceProfile.active())
-            .thenReturn(true);
         when(integrationServiceFromCS.prepareRedirectToIntyg(ID, USER, null))
             .thenReturn(PREPARE_REDIRECT_TO_INTYG_FROM_CS);
 

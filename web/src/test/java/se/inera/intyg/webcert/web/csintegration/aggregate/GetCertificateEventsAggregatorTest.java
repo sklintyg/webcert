@@ -24,11 +24,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import se.inera.intyg.common.support.modules.support.facade.dto.CertificateEventDTO;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateEventsFacadeService;
 
 class GetCertificateEventsAggregatorTest {
@@ -38,51 +36,32 @@ class GetCertificateEventsAggregatorTest {
 
     GetCertificateEventsFacadeService getCertificateEventsFromWC;
     GetCertificateEventsFacadeService getCertificateEventsFromCS;
-    CertificateServiceProfile certificateServiceProfile;
     GetCertificateEventsFacadeService aggregator;
 
     @BeforeEach
     void setup() {
         getCertificateEventsFromWC = mock(GetCertificateEventsFacadeService.class);
         getCertificateEventsFromCS = mock(GetCertificateEventsFacadeService.class);
-        certificateServiceProfile = mock(CertificateServiceProfile.class);
 
         aggregator = new GetCertificateEventsAggregator(
             getCertificateEventsFromWC,
-            getCertificateEventsFromCS,
-            certificateServiceProfile);
+            getCertificateEventsFromCS
+        );
     }
 
     @Test
-    void shouldForwardFromWebcertIfProfileIsInactive() {
+    void shouldReturnResponseFromCSIfExists() {
+        when(getCertificateEventsFromCS.getCertificateEvents(ID))
+            .thenReturn(EVENTS);
         aggregator.getCertificateEvents(ID);
 
-        Mockito.verify(getCertificateEventsFromWC).getCertificateEvents(ID);
+        Mockito.verify(getCertificateEventsFromWC, times(0)).getCertificateEvents(ID);
     }
 
-    @Nested
-    class ActiveProfile {
+    @Test
+    void shouldForwardFromWCIfCertificateDoesNotExistInCS() {
+        aggregator.getCertificateEvents(ID);
 
-        @BeforeEach
-        void setup() {
-            when(certificateServiceProfile.active())
-                .thenReturn(true);
-        }
-
-        @Test
-        void shouldForwardFromCSIfProfileIsActiveAndCertificateExistsInCS() {
-            when(getCertificateEventsFromCS.getCertificateEvents(ID))
-                .thenReturn(EVENTS);
-            aggregator.getCertificateEvents(ID);
-
-            Mockito.verify(getCertificateEventsFromWC, times(0)).getCertificateEvents(ID);
-        }
-
-        @Test
-        void shouldForwardFromWCIfProfileIsInactiveAndCertificateDoesNotExistInCS() {
-            aggregator.getCertificateEvents(ID);
-
-            Mockito.verify(getCertificateEventsFromWC, times(1)).getCertificateEvents(ID);
-        }
+        Mockito.verify(getCertificateEventsFromWC, times(1)).getCertificateEvents(ID);
     }
 }

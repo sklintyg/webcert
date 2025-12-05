@@ -19,10 +19,8 @@
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,14 +30,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
 
 @ExtendWith(MockitoExtension.class)
 class ListCertificatesInfoAggregatorTest {
 
-    @Mock
-    private CertificateServiceProfile certificateServiceProfile;
     @Mock
     private CSIntegrationService csIntegrationService;
     @Mock
@@ -51,18 +46,9 @@ class ListCertificatesInfoAggregatorTest {
     private static final List<StaffListInfo> STAFF_LIST_INFOS = List.of(StaffListInfo.builder().build());
 
     @Test
-    void shouldReturnEmptyListIfProfileIsNotActive() {
-        final var response = listCertificatesInfoAggregator.listCertificatesInfoForUnit();
-        assertEquals(Collections.emptyList(), response);
-        verifyNoInteractions(csIntegrationService);
-    }
-
-    @Test
-    void shouldReturnListFromAPIIfProfileIsActive() {
+    void shouldReturnListFromAPI() {
         when(csIntegrationRequestFactory.getUnitCertificatesInfoRequest())
             .thenReturn(UNIT_REQUEST);
-        when(certificateServiceProfile.active())
-            .thenReturn(true);
         when(csIntegrationService.listCertificatesInfoForUnit(UNIT_REQUEST))
             .thenReturn(STAFF_LIST_INFOS);
 

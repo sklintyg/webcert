@@ -22,7 +22,6 @@ package se.inera.intyg.webcert.web.csintegration.aggregate;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.ForwardCertificateFacadeService;
 
 @Service("forwardCertificateAggregator")
@@ -30,25 +29,18 @@ public class ForwardCertificateAggregator implements ForwardCertificateFacadeSer
 
     private final ForwardCertificateFacadeService forwardCertificateFromWC;
     private final ForwardCertificateFacadeService forwardCertificateFromCS;
-    private final CertificateServiceProfile certificateServiceProfile;
 
     public ForwardCertificateAggregator(
         @Qualifier("forwardCertificateFromWC")
         ForwardCertificateFacadeService forwardCertificateFromWC,
         @Qualifier("forwardCertificateFromCS")
-        ForwardCertificateFacadeService forwardCertificateFromCS,
-        CertificateServiceProfile certificateServiceProfile) {
+        ForwardCertificateFacadeService forwardCertificateFromCS) {
         this.forwardCertificateFromWC = forwardCertificateFromWC;
         this.forwardCertificateFromCS = forwardCertificateFromCS;
-        this.certificateServiceProfile = certificateServiceProfile;
     }
 
     @Override
     public Certificate forwardCertificate(String certificateId, boolean forwarded) {
-        if (!certificateServiceProfile.active()) {
-            return forwardCertificateFromWC.forwardCertificate(certificateId, forwarded);
-        }
-
         final var responseFromCS = forwardCertificateFromCS.forwardCertificate(certificateId, forwarded);
 
         return responseFromCS != null ? responseFromCS : forwardCertificateFromWC.forwardCertificate(certificateId, forwarded);

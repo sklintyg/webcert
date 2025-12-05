@@ -22,7 +22,6 @@ package se.inera.intyg.webcert.web.csintegration.aggregate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.question.Question;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.question.SendQuestionAnswerFacadeService;
 
 @Service
@@ -31,14 +30,8 @@ public class SendAnswerAggregator implements SendQuestionAnswerFacadeService {
 
     private final SendQuestionAnswerFacadeService sendAnswerFromWC;
     private final SendQuestionAnswerFacadeService sendAnswerFromCS;
-    private final CertificateServiceProfile certificateServiceProfile;
-
     @Override
     public Question send(String questionId, String message) {
-        if (!certificateServiceProfile.active()) {
-            return sendAnswerFromWC.send(questionId, message);
-        }
-
         final var responseFromCS = sendAnswerFromCS.send(questionId, message);
 
         return responseFromCS != null ? responseFromCS : sendAnswerFromWC.send(questionId, message);

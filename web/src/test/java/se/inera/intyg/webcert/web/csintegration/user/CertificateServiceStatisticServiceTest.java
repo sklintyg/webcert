@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.csintegration.user;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 
 import java.util.Collections;
@@ -41,7 +40,6 @@ import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequest
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.StatisticsForUnitDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.UnitStatisticsRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.user.UnitStatisticsDTO;
 import se.inera.intyg.webcert.web.service.facade.user.UserStatisticsDTO;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -56,27 +54,11 @@ class CertificateServiceStatisticServiceTest {
     @Mock
     private WebCertUser user;
     @Mock
-    private CertificateServiceProfile certificateServiceProfile;
-    @Mock
     private CSIntegrationService csIntegrationService;
     @Mock
     private CSIntegrationRequestFactory csIntegrationRequestFactory;
     @InjectMocks
     private CertificateServiceStatisticService certificateServiceStatisticService;
-
-
-    @Test
-    void shallNotAddAnythingIfCertificateServiceProfileIsNotActive() {
-        final var userStatisticsDTO = new UserStatisticsDTO();
-        doReturn(false).when(certificateServiceProfile).active();
-        certificateServiceStatisticService.add(userStatisticsDTO, Collections.emptyList(), user, false);
-        assertAll(
-            () -> assertEquals(0, userStatisticsDTO.getNbrOfDraftsOnSelectedUnit()),
-            () -> assertEquals(0, userStatisticsDTO.getTotalDraftsAndUnhandledQuestionsOnOtherUnits()),
-            () -> assertEquals(0, userStatisticsDTO.getNbrOfUnhandledQuestionsOnSelectedUnit()),
-            () -> assertTrue(userStatisticsDTO.getUnitStatistics().isEmpty())
-        );
-    }
 
     @Nested
     class UserHasSelectedVardenhet {
@@ -90,7 +72,6 @@ class CertificateServiceStatisticServiceTest {
             final var statistics = buildStatisticsForUnitDTO();
             doReturn(statisticsRequestDTO).when(csIntegrationRequestFactory).getStatisticsRequest(UNIT_IDS);
             doReturn(statistics).when(csIntegrationService).getStatistics(statisticsRequestDTO);
-            doReturn(true).when(certificateServiceProfile).active();
             doReturn(vardenhet).when(user).getValdVardenhet();
             doReturn(SELECTED_UNIT_IDS).when(user).getIdsOfSelectedVardenhet();
         }
@@ -130,7 +111,6 @@ class CertificateServiceStatisticServiceTest {
 
         doReturn(statisticsRequestDTO).when(csIntegrationRequestFactory).getStatisticsRequest(UNIT_IDS);
         doReturn(statistics).when(csIntegrationService).getStatistics(statisticsRequestDTO);
-        doReturn(true).when(certificateServiceProfile).active();
         doReturn(List.of(vardgivare)).when(user).getVardgivare();
         doReturn(vardenhet).when(user).getValdVardenhet();
         doReturn(SELECTED_UNIT_IDS).when(user).getIdsOfSelectedVardenhet();
@@ -160,7 +140,6 @@ class CertificateServiceStatisticServiceTest {
 
         doReturn(statisticsRequestDTO).when(csIntegrationRequestFactory).getStatisticsRequest(UNIT_IDS);
         doReturn(statistics).when(csIntegrationService).getStatistics(statisticsRequestDTO);
-        doReturn(true).when(certificateServiceProfile).active();
         doReturn(List.of(vardgivare)).when(user).getVardgivare();
         doReturn(vardenhet).when(user).getValdVardenhet();
         doReturn(SELECTED_UNIT_IDS).when(user).getIdsOfSelectedVardenhet();

@@ -27,7 +27,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.SaveCertificateFacadeService;
 
 @ExtendWith(MockitoExtension.class)
@@ -37,8 +36,6 @@ class SaveCertificateAggregatorTest {
     SaveCertificateFacadeService saveCertificateFacadeServiceInWC;
     @Mock
     SaveCertificateFacadeService saveCertificateFacadeServiceInCS;
-    @Mock
-    CertificateServiceProfile certificateServiceProfile;
     SaveCertificateAggregator aggregator;
 
     private static final Certificate CERTIFICATE = new Certificate();
@@ -50,14 +47,12 @@ class SaveCertificateAggregatorTest {
     void setup() {
         aggregator = new SaveCertificateAggregator(
             saveCertificateFacadeServiceInWC,
-            saveCertificateFacadeServiceInCS,
-            certificateServiceProfile
+            saveCertificateFacadeServiceInCS
         );
     }
 
     @Test
     void shallSaveCertificateInWebcertIfCertificateServiceIsNotActive() {
-        doReturn(false).when(certificateServiceProfile).active();
         doReturn(VERSION_FROM_WC).when(saveCertificateFacadeServiceInWC).saveCertificate(CERTIFICATE, PDL_LOG);
         assertEquals(VERSION_FROM_WC,
             aggregator.saveCertificate(CERTIFICATE, PDL_LOG)
@@ -66,7 +61,6 @@ class SaveCertificateAggregatorTest {
 
     @Test
     void shallSaveCertificateInCSIfCertificateServiceIsActive() {
-        doReturn(true).when(certificateServiceProfile).active();
         doReturn(VERSION_FROM_CS).when(saveCertificateFacadeServiceInCS).saveCertificate(CERTIFICATE, PDL_LOG);
         assertEquals(VERSION_FROM_CS,
             aggregator.saveCertificate(CERTIFICATE, PDL_LOG)
@@ -75,7 +69,6 @@ class SaveCertificateAggregatorTest {
 
     @Test
     void shallSaveCertificateInWCIfCertificateServiceIsActiveButCSReturnsNegativeVersion() {
-        doReturn(true).when(certificateServiceProfile).active();
         doReturn(-1L).when(saveCertificateFacadeServiceInCS).saveCertificate(CERTIFICATE, PDL_LOG);
         doReturn(VERSION_FROM_WC).when(saveCertificateFacadeServiceInWC).saveCertificate(CERTIFICATE, PDL_LOG);
         assertEquals(VERSION_FROM_WC,

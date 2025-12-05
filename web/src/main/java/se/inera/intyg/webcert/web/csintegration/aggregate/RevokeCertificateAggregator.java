@@ -22,7 +22,6 @@ package se.inera.intyg.webcert.web.csintegration.aggregate;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.RevokeCertificateFacadeService;
 
 @Service("revokeCertificateAggregator")
@@ -30,23 +29,16 @@ public class RevokeCertificateAggregator implements RevokeCertificateFacadeServi
 
     private final RevokeCertificateFacadeService revokeCertificateFromWC;
     private final RevokeCertificateFacadeService revokeCertificateFromCS;
-    private final CertificateServiceProfile certificateServiceProfile;
 
     public RevokeCertificateAggregator(
         @Qualifier("revokeCertificateFromWC") RevokeCertificateFacadeService revokeCertificateFromWC,
-        @Qualifier("revokeCertificateFromCS") RevokeCertificateFacadeService revokeCertificateFromCS,
-        CertificateServiceProfile certificateServiceProfile) {
+        @Qualifier("revokeCertificateFromCS") RevokeCertificateFacadeService revokeCertificateFromCS) {
         this.revokeCertificateFromWC = revokeCertificateFromWC;
         this.revokeCertificateFromCS = revokeCertificateFromCS;
-        this.certificateServiceProfile = certificateServiceProfile;
     }
 
     @Override
     public Certificate revokeCertificate(String certificateId, String reason, String message) {
-        if (!certificateServiceProfile.active()) {
-            return revokeCertificateFromWC.revokeCertificate(certificateId, reason, message);
-        }
-
         final var responseFromCS = revokeCertificateFromCS.revokeCertificate(certificateId, reason, message);
 
         return responseFromCS != null
