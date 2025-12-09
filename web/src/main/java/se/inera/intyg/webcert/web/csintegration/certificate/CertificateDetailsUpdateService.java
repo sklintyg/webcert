@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
+import se.inera.intyg.common.support.facade.model.CertificateStatus;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
@@ -43,7 +44,7 @@ public class CertificateDetailsUpdateService {
         final var shouldUpdatePatientDetails = alternateSsnEvaluator.shouldUpdate(certificate, user);
         final var shouldSetExternalReference = shouldSetExternalReference(user, certificate);
 
-        if (!shouldSetExternalReference && !shouldUpdatePatientDetails) {
+        if ((!shouldSetExternalReference && !shouldUpdatePatientDetails) || isNotDraft(certificate)) {
             return;
         }
 
@@ -68,6 +69,10 @@ public class CertificateDetailsUpdateService {
             user.getParameters().setBeforeAlternateSsn(beforeAlternateSsn != null ? beforeAlternateSsn.getOriginalPnr()
                 : certificate.getMetadata().getPatient().getPersonId().getId());
         }
+    }
+
+    private static boolean isNotDraft(Certificate certificate) {
+        return !CertificateStatus.UNSIGNED.equals(certificate.getMetadata().getStatus());
     }
 
     private static boolean shouldSetExternalReference(WebCertUser user, Certificate certificate) {
