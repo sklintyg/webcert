@@ -33,7 +33,7 @@ ext {
     guavaVersion = "33.3.1-jre"
     jakartaJwsApiVersion = "3.0.0"
     jaxb2Version = "3.0.0"
-    jexcelVersion = "1.0.9"
+    jexcelVersion = "3.0.0"
     jodaTimeVersion = "2.13.0"
     logbackEcsEncoderVersion = "1.6.0"
     luceneAnalyzersCommonVersion = "9.12.0"

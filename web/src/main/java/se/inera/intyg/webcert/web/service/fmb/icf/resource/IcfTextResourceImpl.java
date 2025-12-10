@@ -25,13 +25,16 @@ import io.vavr.collection.HashMap;
 import io.vavr.control.Try;
 import jakarta.annotation.PostConstruct;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.Optional;
-import jxl.Sheet;
-import jxl.Workbook;
-import jxl.WorkbookSettings;
-import jxl.read.biff.BiffException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,51 +89,88 @@ public class IcfTextResourceImpl implements IcfTextResource {
         return icfKoder.get(lowerCase(icfKod)).toJavaOptional();
     }
 
-    private void initIcfTextResources() throws IOException, BiffException {
+    private void initIcfTextResources() throws IOException {
         final HashMap<Integer, HashMap<Integer, String>> rowsContent = getRowContent();
         parseIcfKodInfo(rowsContent);
     }
 
-    private HashMap<Integer, HashMap<Integer, String>> getRowContent() throws IOException, BiffException {
+    private HashMap<Integer, HashMap<Integer, String>> getRowContent() throws IOException {
 
-        WorkbookSettings settings = new WorkbookSettings();
-        settings.setEncoding("Cp1252");
+        try (InputStream is = resourceLoader.getResource(location).getInputStream();
+            Workbook workbook = WorkbookFactory.create(is)) {
 
-        final Workbook workbook = Workbook.getWorkbook(resourceLoader.getResource(location).getInputStream(), settings);
+            //Sheet 1 är det sheet som innehåller diagnoskoder + texter
+            final Sheet sheet = workbook.getSheetAt(1);
 
-        //Sheet 1 är det sheet som innehåller diagnoskoder + texter
-        final Sheet sheet = workbook.getSheet(1);
+            final int lastRowNum = sheet.getLastRowNum();
+            final int rows = lastRowNum + 1;
 
-        final int rows = sheet.getRows();
-        final int columns = sheet.getColumns();
+            //Starta inläsning från row 1, row 0 innehåller endast headers
+            final int startRow = 1;
 
-        //Starta inläsning från row 1, row 0 innehåller endast headers
-        final int startRow = 1;
+            //Starta inläsning från column 1, column 0 innehåller endast radindex
+            final int startColumn = 1;
 
-        //Starta inläsning från column 1, column 0 innehåller endast radindex
-        final int startColumn = 1;
+            HashMap<Integer, HashMap<Integer, String>> data = HashMap.empty();
+            for (int rowNum = startRow; rowNum < rows; rowNum++) {
+                final Row row = sheet.getRow(rowNum);
+                if (row == null) {
+                    continue;
+                }
 
-        HashMap<Integer, HashMap<Integer, String>> data = HashMap.empty();
-        for (int row = startRow; row < rows; row++) {
-            HashMap<Integer, String> rowContent = HashMap.empty();
-            for (int column = startColumn; column < columns; column++) {
-                rowContent = rowContent.put(column, sheet.getCell(column, row).getContents());
+                // Check if row has any data in the ICF_KODER_COLUMN (column 8) - skip empty rows
+                final Cell icfKodCell = row.getCell(ICF_KODER_COLUMN);
+                if (icfKodCell == null || StringUtils.isBlank(getCellValueAsString(icfKodCell))) {
+                    continue;
+                }
+
+                HashMap<Integer, String> rowContent = HashMap.empty();
+                final int lastCellNum = row.getLastCellNum();
+
+                for (int column = startColumn; column < lastCellNum; column++) {
+                    final Cell cell = row.getCell(column);
+                    final String cellValue = getCellValueAsString(cell);
+                    rowContent = rowContent.put(column, cellValue);
+                }
+                data = data.put(rowNum, rowContent);
             }
-            data = data.put(row, rowContent);
+            return data;
         }
-        return data;
+    }
+
+    private String getCellValueAsString(Cell cell) {
+        if (cell == null) {
+            return "";
+        }
+
+        CellType cellType = cell.getCellType();
+        if (cellType == CellType.FORMULA) {
+            cellType = cell.getCachedFormulaResultType();
+        }
+
+        switch (cellType) {
+            case STRING:
+                return cell.getStringCellValue();
+            case NUMERIC:
+                return String.valueOf(cell.getNumericCellValue());
+            case BOOLEAN:
+                return String.valueOf(cell.getBooleanCellValue());
+            case BLANK:
+                return "";
+            default:
+                return "";
+        }
     }
 
     private void parseIcfKodInfo(final HashMap<Integer, HashMap<Integer, String>> rowsContent) {
-
         rowsContent.forEach(rowContent -> {
             final HashMap<Integer, String> rowColumns = rowContent._2;
 
-            final String icfKod = StringUtils.trim(lowerCase(rowColumns.get(ICF_KODER_COLUMN).get()));
-            final String benamning = StringUtils.trim(rowColumns.get(BENAMNING_COLUMN).get());
-            final String alternativTerm = StringUtils.trim(rowColumns.get(ALTERNATIV_TERM_COLUMN).get());
-            final String beskrivning = StringUtils.trim(rowColumns.get(BESKRIVNING_COLUMN).get());
-            final String innefattar = StringUtils.trim(rowColumns.get(INNEFATTAR_COLUMN).get());
+            final String icfKod = StringUtils.trim(lowerCase(rowColumns.get(ICF_KODER_COLUMN).getOrElse("")));
+            final String benamning = StringUtils.trim(rowColumns.get(BENAMNING_COLUMN).getOrElse(""));
+            final String alternativTerm = StringUtils.trim(rowColumns.get(ALTERNATIV_TERM_COLUMN).getOrElse(""));
+            final String beskrivning = StringUtils.trim(rowColumns.get(BESKRIVNING_COLUMN).getOrElse(""));
+            final String innefattar = StringUtils.trim(rowColumns.get(INNEFATTAR_COLUMN).getOrElse(""));
 
             //om alternativTerm finns ska den alltid trumfa vanlig benämning
             final String benamningToReturn = StringUtils.isNotEmpty(alternativTerm)

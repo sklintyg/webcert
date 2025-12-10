@@ -178,7 +178,7 @@ dependencies {
     implementation "org.apache.httpcomponents.client5:httpclient5"
     implementation "org.apache.lucene:lucene-analysis-common:${luceneAnalyzersCommonVersion}"
     implementation "org.hibernate.orm:hibernate-core"
-    implementation "org.jxls:jxls-jexcel:${jexcelVersion}"
+    implementation "org.jxls:jxls-poi:${jexcelVersion}"
     implementation "org.springframework.data:spring-data-jpa"
     implementation 'org.springframework.security:spring-security-config'
     implementation 'org.springframework.security:spring-security-saml2-service-provider'
