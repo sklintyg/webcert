@@ -24,13 +24,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.RevokeCertificateFacadeService;
 
 @ExtendWith(MockitoExtension.class)
@@ -43,51 +41,31 @@ class RevokeCertificateAggregatorTest {
 
     RevokeCertificateFacadeService revokeCertificateFromWC;
     RevokeCertificateFacadeService revokeCertificateFromCS;
-    CertificateServiceProfile certificateServiceProfile;
     RevokeCertificateFacadeService aggregator;
 
     @BeforeEach
     void setup() {
         revokeCertificateFromWC = mock(RevokeCertificateFacadeService.class);
         revokeCertificateFromCS = mock(RevokeCertificateFacadeService.class);
-        certificateServiceProfile = mock(CertificateServiceProfile.class);
 
         aggregator = new RevokeCertificateAggregator(
             revokeCertificateFromWC,
-            revokeCertificateFromCS,
-            certificateServiceProfile);
+            revokeCertificateFromCS);
     }
 
     @Test
-    void shouldRevokeFromWebcertIfProfileIsInactive() {
+    void shouldRevokeFromCSIfExists() {
+        when(revokeCertificateFromCS.revokeCertificate(ID, REASON, MESSAGE))
+            .thenReturn(CERTIFICATE);
         aggregator.revokeCertificate(ID, REASON, MESSAGE);
 
-        Mockito.verify(revokeCertificateFromWC).revokeCertificate(ID, REASON, MESSAGE);
+        Mockito.verify(revokeCertificateFromWC, times(0)).revokeCertificate(ID, REASON, MESSAGE);
     }
 
-    @Nested
-    class ActiveProfile {
+    @Test
+    void shouldRevokeFromWCIfCertificateDoesNotExistInCS() {
+        aggregator.revokeCertificate(ID, REASON, MESSAGE);
 
-        @BeforeEach
-        void setup() {
-            when(certificateServiceProfile.active())
-                .thenReturn(true);
-        }
-
-        @Test
-        void shouldRevokeFromCSIfProfileIsActiveAndCertificateExistsInCS() {
-            when(revokeCertificateFromCS.revokeCertificate(ID, REASON, MESSAGE))
-                .thenReturn(CERTIFICATE);
-            aggregator.revokeCertificate(ID, REASON, MESSAGE);
-
-            Mockito.verify(revokeCertificateFromWC, times(0)).revokeCertificate(ID, REASON, MESSAGE);
-        }
-
-        @Test
-        void shouldRevokeFromWCIfProfileIsInactiveAndCertificateDoesNotExistInCS() {
-            aggregator.revokeCertificate(ID, REASON, MESSAGE);
-
-            Mockito.verify(revokeCertificateFromWC, times(1)).revokeCertificate(ID, REASON, MESSAGE);
-        }
+        Mockito.verify(revokeCertificateFromWC, times(1)).revokeCertificate(ID, REASON, MESSAGE);
     }
 }

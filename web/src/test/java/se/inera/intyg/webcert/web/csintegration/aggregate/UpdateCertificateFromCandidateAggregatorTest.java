@@ -51,14 +51,7 @@ class UpdateCertificateFromCandidateAggregatorTest {
     }
 
     @Test
-    void shouldSendFromWebcertIfProfileIsInactive() {
-        aggregator.update(ID);
-
-        Mockito.verify(updateCertificateFromCandidateFromWC).update(ID);
-    }
-
-    @Test
-    void shouldSendFromCSIfProfileIsActiveAndCertificateExistsInCS() {
+    void shouldSendFromCSIfCertificateExistsInCS() {
         when(updateCertificateFromCandidateFromCS.update(ID)).thenReturn(ID);
         aggregator.update(ID);
 
@@ -66,7 +59,7 @@ class UpdateCertificateFromCandidateAggregatorTest {
     }
 
     @Test
-    void shouldSendFromWCIfProfileIsInactiveAndCertificateDoesNotExistInCS() {
+    void shouldSendFromWCIfCertificateDoesNotExistInCS() {
         aggregator.update(ID);
 
         Mockito.verify(updateCertificateFromCandidateFromWC, times(1)).update(ID);

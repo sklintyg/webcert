@@ -21,8 +21,6 @@ package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,7 +28,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.question.Question;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.question.SaveQuestionFacadeService;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,32 +38,18 @@ class SaveQuestionAggregatorTest {
     SaveQuestionFacadeService saveQuestionFromWC;
     @Mock
     SaveQuestionFacadeService saveQuestionFromCS;
-    @Mock
-    CertificateServiceProfile certificateServiceProfile;
     SaveQuestionFacadeService saveQuestionFacadeService;
 
     @BeforeEach
     void setUp() {
         saveQuestionFacadeService = new SaveQuestionAggregator(
-            saveQuestionFromWC, saveQuestionFromCS, certificateServiceProfile
+            saveQuestionFromWC, saveQuestionFromCS
         );
     }
 
     @Test
-    void shallReturnQuestionFromWCIfCertificateServiceProfileIsInactive() {
-        doReturn(false).when(certificateServiceProfile).active();
-
-        saveQuestionFacadeService.save(QUESTION);
-
-        verify(saveQuestionFromWC).save(QUESTION);
-        verifyNoInteractions(saveQuestionFromCS);
-    }
-
-    @Test
-    void shallReturnQuestionFromWCIfCertificateServiceProfileIsActiveButResponseFromCSIsNull() {
+    void shallReturnQuestionFromWCIfResponseFromCSIsNull() {
         final var expectedQuestion = Question.builder().build();
-
-        doReturn(true).when(certificateServiceProfile).active();
         doReturn(null).when(saveQuestionFromCS).save(QUESTION);
         doReturn(expectedQuestion).when(saveQuestionFromWC).save(QUESTION);
 
@@ -75,10 +58,8 @@ class SaveQuestionAggregatorTest {
     }
 
     @Test
-    void shallReturnQuestionFromCSIfCertificateServiceProfileIsActiveAndResponseFromCSIsNotNull() {
+    void shallReturnQuestionFromCSIfResponseFromCSIsNotNull() {
         final var expectedQuestion = Question.builder().build();
-
-        doReturn(true).when(certificateServiceProfile).active();
         doReturn(expectedQuestion).when(saveQuestionFromCS).save(QUESTION);
 
         final var actualQuestion = saveQuestionFacadeService.save(QUESTION);

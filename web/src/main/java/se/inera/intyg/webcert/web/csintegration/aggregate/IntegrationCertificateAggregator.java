@@ -22,7 +22,6 @@ package se.inera.intyg.webcert.web.csintegration.aggregate;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.schemas.contract.Personnummer;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.integration.IntegrationService;
 import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirectToIntyg;
@@ -30,14 +29,12 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.PrepareRedirect
 @Service("integrationCertificateAggregator")
 public class IntegrationCertificateAggregator implements IntegrationService {
 
-    private final CertificateServiceProfile certificateServiceProfile;
     private final IntegrationService integrationServiceForWC;
     private final IntegrationService integrationServiceForCS;
 
-    public IntegrationCertificateAggregator(CertificateServiceProfile certificateServiceProfile,
+    public IntegrationCertificateAggregator(
         @Qualifier("integrationServiceForWC") IntegrationService integrationServiceForWC,
         @Qualifier("integrationServiceForCS") IntegrationService integrationServiceForCS) {
-        this.certificateServiceProfile = certificateServiceProfile;
         this.integrationServiceForWC = integrationServiceForWC;
         this.integrationServiceForCS = integrationServiceForCS;
     }
@@ -50,10 +47,6 @@ public class IntegrationCertificateAggregator implements IntegrationService {
     @Override
     public PrepareRedirectToIntyg prepareRedirectToIntyg(String intygId, WebCertUser user,
         Personnummer prepareBeforeAlternateSsn) {
-        if (!certificateServiceProfile.active()) {
-            return integrationServiceForWC.prepareRedirectToIntyg(intygId, user, prepareBeforeAlternateSsn);
-        }
-
         final var responseFromCS = integrationServiceForCS.prepareRedirectToIntyg(intygId, user,
             prepareBeforeAlternateSsn);
 

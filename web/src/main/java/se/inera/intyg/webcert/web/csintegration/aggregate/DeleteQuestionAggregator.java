@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionFacadeService;
 
 @Service("deleteQuestionAggregator")
@@ -29,24 +28,16 @@ public class DeleteQuestionAggregator implements DeleteQuestionFacadeService {
 
     private final DeleteQuestionFacadeService deleteQuestionFromWC;
     private final DeleteQuestionFacadeService deleteQuestionFromCS;
-    private final CertificateServiceProfile certificateServiceProfile;
     private final CSIntegrationService csIntegrationService;
 
     public DeleteQuestionAggregator(
-        DeleteQuestionFacadeService deleteQuestionFromWC, DeleteQuestionFacadeService deleteQuestionFromCS,
-        CertificateServiceProfile certificateServiceProfile, CSIntegrationService csIntegrationService) {
+        DeleteQuestionFacadeService deleteQuestionFromWC, DeleteQuestionFacadeService deleteQuestionFromCS, CSIntegrationService csIntegrationService) {
         this.deleteQuestionFromWC = deleteQuestionFromWC;
-        this.deleteQuestionFromCS = deleteQuestionFromCS;
-        this.certificateServiceProfile = certificateServiceProfile;
-        this.csIntegrationService = csIntegrationService;
+        this.deleteQuestionFromCS = deleteQuestionFromCS;        this.csIntegrationService = csIntegrationService;
     }
 
     @Override
     public void delete(String questionId) {
-        if (!certificateServiceProfile.active()) {
-            deleteQuestionFromWC.delete(questionId);
-            return;
-        }
 
         if (Boolean.TRUE.equals(csIntegrationService.messageExists(questionId))) {
             deleteQuestionFromCS.delete(questionId);

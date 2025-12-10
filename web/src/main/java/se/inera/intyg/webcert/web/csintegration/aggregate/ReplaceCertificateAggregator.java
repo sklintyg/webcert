@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.ReplaceCertificateFacadeService;
 
 @Service("replaceCertificateAggregator")
@@ -29,25 +28,18 @@ public class ReplaceCertificateAggregator implements ReplaceCertificateFacadeSer
 
     private final ReplaceCertificateFacadeService replaceCertificateFromWebcert;
     private final ReplaceCertificateFacadeService replaceCertificateFromCertificateService;
-    private final CertificateServiceProfile certificateServiceProfile;
 
     public ReplaceCertificateAggregator(
         @Qualifier("replaceCertificateFromWebcert")
         ReplaceCertificateFacadeService replaceCertificateFromWebcert,
         @Qualifier("replaceCertificateFromCertificateService")
-        ReplaceCertificateFacadeService replaceCertificateFromCertificateService,
-        CertificateServiceProfile certificateServiceProfile) {
+        ReplaceCertificateFacadeService replaceCertificateFromCertificateService) {
         this.replaceCertificateFromWebcert = replaceCertificateFromWebcert;
         this.replaceCertificateFromCertificateService = replaceCertificateFromCertificateService;
-        this.certificateServiceProfile = certificateServiceProfile;
     }
 
     @Override
     public String replaceCertificate(String certificateId) {
-        if (!certificateServiceProfile.active()) {
-            return replaceCertificateFromWebcert.replaceCertificate(certificateId);
-        }
-
         final var responseFromCS = replaceCertificateFromCertificateService.replaceCertificate(certificateId);
 
         return responseFromCS != null ? responseFromCS : replaceCertificateFromWebcert.replaceCertificate(certificateId);

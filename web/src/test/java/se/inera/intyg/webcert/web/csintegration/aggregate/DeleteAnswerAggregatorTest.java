@@ -23,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,7 +31,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionAnswerFacadeService;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,8 +39,6 @@ class DeleteAnswerAggregatorTest {
     private static final String QUESTION_ID = "questionId";
     @Mock
     CSIntegrationService csIntegrationService;
-    @Mock
-    CertificateServiceProfile certificateServiceProfile;
     @Mock
     DeleteQuestionAnswerFacadeService deleteAnswerFromWC;
     @Mock
@@ -53,25 +49,13 @@ class DeleteAnswerAggregatorTest {
     @BeforeEach
     void setUp() {
         deleteAnswerAggregator = new DeleteAnswerAggregator(
-            deleteAnswerFromWC, deleteAnswerFromCS, certificateServiceProfile
+            deleteAnswerFromWC, deleteAnswerFromCS
         );
-    }
-
-    @Test
-    void shallCallDeleteQuestionsFromWCIfCertificateServiceProfileIsInactive() {
-        doReturn(false).when(certificateServiceProfile).active();
-
-        deleteAnswerAggregator.delete(QUESTION_ID);
-
-        verify(deleteAnswerFromWC).delete(QUESTION_ID);
-
-        verifyNoInteractions(deleteAnswerFromCS);
     }
 
     @Test
     void shallReturnResponseFromCSIfResponseIsNotNull() {
         final var expectedResult = Question.builder().build();
-        doReturn(true).when(certificateServiceProfile).active();
         doReturn(expectedResult).when(deleteAnswerFromCS).delete(QUESTION_ID);
 
         final var actualResult = deleteAnswerAggregator.delete(QUESTION_ID);
@@ -84,7 +68,6 @@ class DeleteAnswerAggregatorTest {
     @Test
     void shallReturnResponseFromWCIfResponseIsFromCSIsNull() {
         final var expectedResult = Question.builder().build();
-        doReturn(true).when(certificateServiceProfile).active();
         doReturn(null).when(deleteAnswerFromCS).delete(QUESTION_ID);
         doReturn(expectedResult).when(deleteAnswerFromWC).delete(QUESTION_ID);
 

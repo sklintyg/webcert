@@ -31,7 +31,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.underskrift.UnderskriftService;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignMethod;
 import se.inera.intyg.webcert.web.service.underskrift.model.SignaturBiljett;
@@ -47,8 +46,6 @@ class SignAggregatorTest {
     private static final String SIGN_CERTIFICATE = "sign-certificate";
     private static final String USER_IP_ADDRESS = "user-ip-address";
     @Mock
-    private CertificateServiceProfile certificateServiceProfile;
-    @Mock
     private UnderskriftService signatureServiceForWC;
     @Mock
     private UnderskriftService signatureServiceForCS;
@@ -58,7 +55,7 @@ class SignAggregatorTest {
     @BeforeEach
     void setUp() {
         signCertificateAggregator = new SignAggregator(
-            certificateServiceProfile,
+
             signatureServiceForWC,
             signatureServiceForCS
         );
@@ -69,9 +66,8 @@ class SignAggregatorTest {
 
         @Test
         void shallUseWebcertImplementationIfProfileNotActive() {
-            doReturn(false).when(certificateServiceProfile).active();
-
-            signCertificateAggregator.startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, SignMethod.SIGN_SERVICE, TICKED_ID, USER_IP_ADDRESS);
+            signCertificateAggregator.startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, SignMethod.SIGN_SERVICE, TICKED_ID,
+                USER_IP_ADDRESS);
 
             verify(signatureServiceForWC, times(1)).startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, SignMethod.SIGN_SERVICE,
                 TICKED_ID, USER_IP_ADDRESS);
@@ -79,11 +75,11 @@ class SignAggregatorTest {
 
         @Test
         void shallUseWebcertImplementationIfCSReturnsNull() {
-            doReturn(true).when(certificateServiceProfile).active();
             doReturn(null).when(signatureServiceForCS).startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, SignMethod.SIGN_SERVICE,
                 TICKED_ID, USER_IP_ADDRESS);
 
-            signCertificateAggregator.startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, SignMethod.SIGN_SERVICE, TICKED_ID, USER_IP_ADDRESS);
+            signCertificateAggregator.startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, SignMethod.SIGN_SERVICE, TICKED_ID,
+                USER_IP_ADDRESS);
 
             verify(signatureServiceForWC, times(1)).startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, SignMethod.SIGN_SERVICE,
                 TICKED_ID, USER_IP_ADDRESS);
@@ -91,9 +87,8 @@ class SignAggregatorTest {
 
 
         @Test
-        void shallUseCertificateServiceImplementationIfProfileIsActiveAndSignatureBiljettIsReturned() {
+        void shallUseCertificateServiceImplementationIfSignatureBiljettIsReturned() {
             final var expectedResult = new SignaturBiljett();
-            doReturn(true).when(certificateServiceProfile).active();
             doReturn(expectedResult).when(signatureServiceForCS)
                 .startSigningProcess(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, SignMethod.SIGN_SERVICE,
                     TICKED_ID, USER_IP_ADDRESS);
@@ -114,8 +109,6 @@ class SignAggregatorTest {
 
         @Test
         void shallUseWebcertImplementationIfProfileNotActive() {
-            doReturn(false).when(certificateServiceProfile).active();
-
             signCertificateAggregator.fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, TICKED_ID);
 
             verify(signatureServiceForWC, times(1)).fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, TICKED_ID);
@@ -123,7 +116,6 @@ class SignAggregatorTest {
 
         @Test
         void shallUseWebcertImplementationIfCSReturnsNull() {
-            doReturn(true).when(certificateServiceProfile).active();
             doReturn(null).when(signatureServiceForCS).fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, TICKED_ID);
 
             signCertificateAggregator.fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, TICKED_ID);
@@ -132,9 +124,8 @@ class SignAggregatorTest {
 
 
         @Test
-        void shallUseCertificateServiceImplementationIfProfileIsActiveAndSignatureBiljettIsReturned() {
+        void shallUseCertificateServiceImplementationIfSignatureBiljettIsReturned() {
             final var expectedResult = new SignaturBiljett();
-            doReturn(true).when(certificateServiceProfile).active();
             doReturn(expectedResult).when(signatureServiceForCS).fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, TICKED_ID);
 
             final var actualResult = signCertificateAggregator.fakeSignature(CERTIFICATE_ID, CERTIFICATE_TYPE, 1L, TICKED_ID);
@@ -150,8 +141,6 @@ class SignAggregatorTest {
 
         @Test
         void shallUseWebcertImplementationIfProfileNotActive() {
-            doReturn(false).when(certificateServiceProfile).active();
-
             signCertificateAggregator.netidSignature(TICKED_ID, SIGN_BYTE, SIGN_CERTIFICATE);
 
             verify(signatureServiceForWC, times(1)).netidSignature(TICKED_ID, SIGN_BYTE, SIGN_CERTIFICATE);
@@ -159,7 +148,6 @@ class SignAggregatorTest {
 
         @Test
         void shallUseWebcertImplementationIfCSReturnsNull() {
-            doReturn(true).when(certificateServiceProfile).active();
             doReturn(null).when(signatureServiceForCS).netidSignature(TICKED_ID, SIGN_BYTE, SIGN_CERTIFICATE);
 
             signCertificateAggregator.netidSignature(TICKED_ID, SIGN_BYTE, SIGN_CERTIFICATE);
@@ -168,9 +156,8 @@ class SignAggregatorTest {
 
 
         @Test
-        void shallUseCertificateServiceImplementationIfProfileIsActiveAndSignatureBiljettIsReturned() {
+        void shallUseCertificateServiceImplementationIfSignatureBiljettIsReturned() {
             final var expectedResult = new SignaturBiljett();
-            doReturn(true).when(certificateServiceProfile).active();
             doReturn(expectedResult).when(signatureServiceForCS).netidSignature(TICKED_ID, SIGN_BYTE, SIGN_CERTIFICATE);
 
             final var actualResult = signCertificateAggregator.netidSignature(TICKED_ID, SIGN_BYTE, SIGN_CERTIFICATE);
@@ -186,8 +173,6 @@ class SignAggregatorTest {
 
         @Test
         void shallUseWebcertImplementationIfProfileNotActive() {
-            doReturn(false).when(certificateServiceProfile).active();
-
             signCertificateAggregator.grpSignature(TICKED_ID, SIGN_BYTE);
 
             verify(signatureServiceForWC, times(1)).grpSignature(TICKED_ID, SIGN_BYTE);
@@ -195,7 +180,6 @@ class SignAggregatorTest {
 
         @Test
         void shallUseWebcertImplementationIfCSReturnsNull() {
-            doReturn(true).when(certificateServiceProfile).active();
             doReturn(null).when(signatureServiceForCS).grpSignature(TICKED_ID, SIGN_BYTE);
 
             signCertificateAggregator.grpSignature(TICKED_ID, SIGN_BYTE);
@@ -204,9 +188,8 @@ class SignAggregatorTest {
 
 
         @Test
-        void shallUseCertificateServiceImplementationIfProfileIsActiveAndSignatureBiljettIsReturned() {
+        void shallUseCertificateServiceImplementationIfSignatureBiljettIsReturned() {
             final var expectedResult = new SignaturBiljett();
-            doReturn(true).when(certificateServiceProfile).active();
             doReturn(expectedResult).when(signatureServiceForCS).grpSignature(TICKED_ID, SIGN_BYTE);
 
             final var actualResult = signCertificateAggregator.grpSignature(TICKED_ID, SIGN_BYTE);

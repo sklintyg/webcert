@@ -27,7 +27,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -41,7 +40,6 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 @Slf4j
 @Component(value = "grpCollectPoller")
 @Scope(value = "prototype")
-@Profile("grp-rest-api")
 public class GrpRestCollectPollerImpl implements GrpCollectPoller {
 
     @Value("${cgi.grp.polling.interval:2000}")
@@ -63,7 +61,8 @@ public class GrpRestCollectPollerImpl implements GrpCollectPoller {
     public static final String STATUS_COMPLETE = "COMPLETE";
     public static final String STATUS_CANCELLED = "CANCELLED";
 
-    public GrpRestCollectPollerImpl(RedisTicketTracker redisTicketTracker, @Qualifier("signAggregator") UnderskriftService underskriftService,
+    public GrpRestCollectPollerImpl(RedisTicketTracker redisTicketTracker,
+        @Qualifier("signAggregator") UnderskriftService underskriftService,
         GrpRestService grpRestService) {
         this.redisTicketTracker = redisTicketTracker;
         this.underskriftService = underskriftService;

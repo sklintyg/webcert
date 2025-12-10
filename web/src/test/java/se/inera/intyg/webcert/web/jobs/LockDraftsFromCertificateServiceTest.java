@@ -35,7 +35,6 @@ import se.inera.intyg.common.support.facade.model.metadata.CertificateMetadata;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.LockDraftsRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 @ExtendWith(MockitoExtension.class)
@@ -51,24 +50,12 @@ class LockDraftsFromCertificateServiceTest {
     CSIntegrationService csIntegrationService;
     @Mock
     CSIntegrationRequestFactory csIntegrationRequestFactory;
-    @Mock
-    CertificateServiceProfile certificateServiceProfile;
     @InjectMocks
     LockDraftsFromCertificateService lockDraftsFromCertificateService;
-
-    @Test
-    void shallReturnZeroIfCertificateServiceProfileIsNotActive() {
-        doReturn(false).when(certificateServiceProfile).active();
-        assertEquals(0, lockDraftsFromCertificateService.lock(LOCKED_AFTER_DAY));
-    }
-
     @Test
     void shallReturnNumberOfLockedDraftsFromCertificateServiceIsProfileIsActive() {
         final var expectedResult = List.of(getCertificate(), getCertificate(), getCertificate());
-        final var lockOldDraftsRequestDTO = LockDraftsRequestDTO.builder().build();
-
-        doReturn(true).when(certificateServiceProfile).active();
-        doReturn(lockOldDraftsRequestDTO).when(csIntegrationRequestFactory).getLockDraftsRequestDTO(LOCKED_AFTER_DAY);
+        final var lockOldDraftsRequestDTO = LockDraftsRequestDTO.builder().build();        doReturn(lockOldDraftsRequestDTO).when(csIntegrationRequestFactory).getLockDraftsRequestDTO(LOCKED_AFTER_DAY);
         doReturn(expectedResult).when(csIntegrationService).lockDrafts(lockOldDraftsRequestDTO);
 
         assertEquals(expectedResult.size(), lockDraftsFromCertificateService.lock(LOCKED_AFTER_DAY));
@@ -77,10 +64,7 @@ class LockDraftsFromCertificateServiceTest {
     @Test
     void shallMonitorLogLockedDraftsIdsAndType() {
         final var certificates = List.of(getCertificate(), getCertificate(), getCertificate());
-        final var lockOldDraftsRequestDTO = LockDraftsRequestDTO.builder().build();
-
-        doReturn(true).when(certificateServiceProfile).active();
-        doReturn(lockOldDraftsRequestDTO).when(csIntegrationRequestFactory).getLockDraftsRequestDTO(LOCKED_AFTER_DAY);
+        final var lockOldDraftsRequestDTO = LockDraftsRequestDTO.builder().build();        doReturn(lockOldDraftsRequestDTO).when(csIntegrationRequestFactory).getLockDraftsRequestDTO(LOCKED_AFTER_DAY);
         doReturn(certificates).when(csIntegrationService).lockDrafts(lockOldDraftsRequestDTO);
 
         lockDraftsFromCertificateService.lock(LOCKED_AFTER_DAY);

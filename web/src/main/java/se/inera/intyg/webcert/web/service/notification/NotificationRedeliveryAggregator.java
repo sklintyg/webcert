@@ -12,15 +12,10 @@ import se.inera.intyg.webcert.common.sender.exception.TemporaryException;
 import se.inera.intyg.webcert.notification_sender.notifications.services.redelivery.NotificationRedeliveryService;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
-
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class NotificationRedeliveryAggregator {
-
-
-    private final CertificateServiceProfile certificateServiceProfile;
     private final NotificationRedeliveryStatusUpdateCreatorService notificationRedeliveryStatusUpdateCreatorService;
     private final NotificationRedeliveryService notificationRedeliveryService;
     private final NotificationRedeliveryForCertificateService notificationRedeliveryForCertificateService;
@@ -28,17 +23,6 @@ public class NotificationRedeliveryAggregator {
 
     public boolean resend(NotificationRedelivery notificationRedelivery, Handelse event)
         throws TemporaryException, ModuleNotFoundException, JAXBException, IOException, ModuleException {
-        if (!certificateServiceProfile.active()) {
-            notificationRedeliveryService.resend(
-                notificationRedelivery,
-                event,
-                getCertificateStatusUpdateXmlABytes(
-                    notificationRedelivery,
-                    event
-                )
-            );
-            return true;
-        }
 
         final var redeliveryHandled = notificationRedeliveryForCertificateService.resend(notificationRedelivery, event);
 

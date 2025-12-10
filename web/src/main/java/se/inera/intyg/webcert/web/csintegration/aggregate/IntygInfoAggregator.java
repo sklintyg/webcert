@@ -23,7 +23,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.intyginfo.dto.WcIntygInfo;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.intyginfo.IntygInfoServiceInterface;
 
 @Service("intygInfoAggregator")
@@ -31,25 +30,18 @@ public class IntygInfoAggregator implements IntygInfoServiceInterface {
 
     private final IntygInfoServiceInterface getIntygInfoFromWC;
     private final IntygInfoServiceInterface getIntygInfoFromCS;
-    private final CertificateServiceProfile certificateServiceProfile;
 
     public IntygInfoAggregator(
         @Qualifier("getIntygInfoFromWC")
-        IntygInfoServiceInterface getCertificateInfoFromWebcert,
+        IntygInfoServiceInterface getIntygInfoFromWC,
         @Qualifier("getIntygInfoFromCS")
-        IntygInfoServiceInterface getCertificateInfoFromCertificateService,
-        CertificateServiceProfile certificateServiceProfile) {
-        this.getIntygInfoFromWC = getCertificateInfoFromWebcert;
+        IntygInfoServiceInterface getCertificateInfoFromCertificateService) {
+        this.getIntygInfoFromWC = getIntygInfoFromWC;
         this.getIntygInfoFromCS = getCertificateInfoFromCertificateService;
-        this.certificateServiceProfile = certificateServiceProfile;
     }
 
     @Override
     public Optional<WcIntygInfo> getIntygInfo(String intygId) {
-        if (!certificateServiceProfile.active()) {
-            return getIntygInfoFromWC.getIntygInfo(intygId);
-        }
-
         final var certificateFromCertificateService = getIntygInfoFromCS.getIntygInfo(intygId);
 
         return certificateFromCertificateService.isEmpty() ? getIntygInfoFromWC.getIntygInfo(intygId)

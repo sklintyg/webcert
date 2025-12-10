@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.DeleteCertificateFacadeService;
 
 @Service("deleteCertificateAggregator")
@@ -29,25 +28,18 @@ public class DeleteCertificateAggregator implements DeleteCertificateFacadeServi
 
     private final DeleteCertificateFacadeService deleteCertificateFromWebcert;
     private final DeleteCertificateFacadeService deleteCertificateFromCertificateService;
-    private final CertificateServiceProfile certificateServiceProfile;
 
     public DeleteCertificateAggregator(
         @Qualifier("deleteCertificateFromWebcert")
         DeleteCertificateFacadeService deleteCertificateFromWebcert,
         @Qualifier("deleteCertificateFromCertificateService")
-        DeleteCertificateFacadeService deleteCertificateFromCertificateService,
-        CertificateServiceProfile certificateServiceProfile) {
+        DeleteCertificateFacadeService deleteCertificateFromCertificateService) {
         this.deleteCertificateFromWebcert = deleteCertificateFromWebcert;
         this.deleteCertificateFromCertificateService = deleteCertificateFromCertificateService;
-        this.certificateServiceProfile = certificateServiceProfile;
     }
 
     @Override
     public boolean deleteCertificate(String certificateId, long version) {
-        if (!certificateServiceProfile.active()) {
-            return deleteCertificateFromWebcert.deleteCertificate(certificateId, version);
-        }
-
         final var responseFromCS = deleteCertificateFromCertificateService.deleteCertificate(certificateId, version);
 
         return responseFromCS || deleteCertificateFromWebcert.deleteCertificate(certificateId, version);

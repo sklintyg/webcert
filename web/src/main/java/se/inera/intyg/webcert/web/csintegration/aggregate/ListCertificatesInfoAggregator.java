@@ -18,27 +18,21 @@
  */
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
-import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
 
 @Service
 @RequiredArgsConstructor
 public class ListCertificatesInfoAggregator {
 
-    private final CertificateServiceProfile certificateServiceProfile;
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
 
     public List<StaffListInfo> listCertificatesInfoForUnit() {
-        if (!certificateServiceProfile.active()) {
-            return Collections.emptyList();
-        }
         return csIntegrationService.listCertificatesInfoForUnit(csIntegrationRequestFactory.getUnitCertificatesInfoRequest());
     }
 }

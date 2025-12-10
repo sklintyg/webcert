@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.SendCertificateFacadeService;
 
 @Service("sendCertificateAggregator")
@@ -29,25 +28,18 @@ public class SendCertificateAggregator implements SendCertificateFacadeService {
 
     private final SendCertificateFacadeService sendCertificateFromWebcert;
     private final SendCertificateFacadeService sendCertificateFromCertificateService;
-    private final CertificateServiceProfile certificateServiceProfile;
 
     public SendCertificateAggregator(
         @Qualifier("sendCertificateFromWebcert")
         SendCertificateFacadeService sendCertificateFromWebcert,
         @Qualifier("sendCertificateFromCertificateService")
-        SendCertificateFacadeService sendCertificateFromCertificateService,
-        CertificateServiceProfile certificateServiceProfile) {
+        SendCertificateFacadeService sendCertificateFromCertificateService) {
         this.sendCertificateFromWebcert = sendCertificateFromWebcert;
         this.sendCertificateFromCertificateService = sendCertificateFromCertificateService;
-        this.certificateServiceProfile = certificateServiceProfile;
     }
 
     @Override
     public String sendCertificate(String certificateId) {
-        if (!certificateServiceProfile.active()) {
-            return sendCertificateFromWebcert.sendCertificate(certificateId);
-        }
-
         final var responseFromCS = sendCertificateFromCertificateService.sendCertificate(certificateId);
 
         return responseFromCS != null ? responseFromCS : sendCertificateFromWebcert.sendCertificate(certificateId);

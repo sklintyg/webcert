@@ -22,31 +22,24 @@ package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.web.controller.internalapi.GetCertificateInteralApi;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.GetCertificateResponse;
 
 @Service("getCertificateInternalAggregator")
 public class GetCertificateInternalAggregator implements GetCertificateInteralApi {
 
-    private final CertificateServiceProfile certificateServiceProfile;
     private final GetCertificateInteralApi certificateInternalServiceFromWC;
     private final GetCertificateInteralApi certificateInternalServiceFromCS;
 
-    public GetCertificateInternalAggregator(CertificateServiceProfile certificateServiceProfile,
+    public GetCertificateInternalAggregator(
         @Qualifier("getCertificateInternalServiceFromWC") GetCertificateInteralApi getCertificateInteralServiceFromWC,
         @Qualifier("getCertificateInternalServiceFromCS") GetCertificateInteralApi getCertificateInternalServiceFromCS) {
-        this.certificateServiceProfile = certificateServiceProfile;
         this.certificateInternalServiceFromWC = getCertificateInteralServiceFromWC;
         this.certificateInternalServiceFromCS = getCertificateInternalServiceFromCS;
     }
 
     @Override
     public GetCertificateResponse get(String certificateId, String personId) {
-        if (!certificateServiceProfile.active()) {
-            return certificateInternalServiceFromWC.get(certificateId, personId);
-        }
-
         final var responseFromCS = certificateInternalServiceFromCS.get(certificateId, personId);
 
         return responseFromCS != null ? responseFromCS : certificateInternalServiceFromWC.get(certificateId, personId);

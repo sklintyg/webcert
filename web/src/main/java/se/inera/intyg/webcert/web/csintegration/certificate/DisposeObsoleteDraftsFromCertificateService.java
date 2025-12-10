@@ -30,7 +30,6 @@ import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalytics
 import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 @Slf4j
@@ -40,16 +39,12 @@ public class DisposeObsoleteDraftsFromCertificateService {
 
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
-    private final CertificateServiceProfile certificateServiceProfile;
     private final PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
     private final MonitoringLogService monitoringLogService;
     private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
     private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
     public int dispose(LocalDateTime disposeObsoleteDraftsDate) {
-        if (!certificateServiceProfile.active()) {
-            return 0;
-        }
 
         final var obsoleteDraftIds = csIntegrationService.listObsoleteDrafts(
             csIntegrationRequestFactory.getListObsoleteDraftsRequestDTO(disposeObsoleteDraftsDate)

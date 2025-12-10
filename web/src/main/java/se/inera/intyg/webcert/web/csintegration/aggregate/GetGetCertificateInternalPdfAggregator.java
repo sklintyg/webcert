@@ -22,21 +22,18 @@ package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.web.controller.internalapi.GetCertificatePdfService;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfResponseDTO;
 
 @Service("getCertificateInternalPdfAggregator")
 public class GetGetCertificateInternalPdfAggregator implements GetCertificatePdfService {
 
-    private final CertificateServiceProfile certificateServiceProfile;
     private final GetCertificatePdfService getCertificateInternalPdfFromWC;
     private final GetCertificatePdfService getCertificateInternalPdfFromCS;
 
-    public GetGetCertificateInternalPdfAggregator(CertificateServiceProfile certificateServiceProfile,
+    public GetGetCertificateInternalPdfAggregator(
         @Qualifier("getCertificateInternalPdfFromWC") GetCertificatePdfService getCertificateInternalPdfFromWC,
         @Qualifier("getCertificateInternalPdfFromCS") GetCertificatePdfService getCertificateInternalPdfFromCS) {
-        this.certificateServiceProfile = certificateServiceProfile;
         this.getCertificateInternalPdfFromWC = getCertificateInternalPdfFromWC;
         this.getCertificateInternalPdfFromCS = getCertificateInternalPdfFromCS;
     }
@@ -44,10 +41,6 @@ public class GetGetCertificateInternalPdfAggregator implements GetCertificatePdf
 
     @Override
     public CertificatePdfResponseDTO get(String customizationId, String certificateId, String personId) {
-        if (!certificateServiceProfile.active()) {
-            return getCertificateInternalPdfFromWC.get(customizationId, certificateId, personId);
-        }
-
         final var responseFromCS = getCertificateInternalPdfFromCS.get(customizationId, certificateId, personId);
 
         return responseFromCS != null ? responseFromCS : getCertificateInternalPdfFromWC.get(customizationId, certificateId, personId);
