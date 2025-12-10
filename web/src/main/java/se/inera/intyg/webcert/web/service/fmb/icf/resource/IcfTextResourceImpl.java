@@ -68,7 +68,6 @@ public class IcfTextResourceImpl implements IcfTextResource {
     void init() {
         LOG.info(MessageFormat.format("Starting: {0}", ACTION));
 
-        // FIXME: Legacy support, can be removed when local config has been substituted by refdata (INTYG-7701)
         if (!ResourceUtils.isUrl(location)) {
             location = "file:" + location;
         }
@@ -99,21 +98,17 @@ public class IcfTextResourceImpl implements IcfTextResource {
         try (InputStream is = resourceLoader.getResource(location).getInputStream();
             Workbook workbook = WorkbookFactory.create(is)) {
 
-            //Sheet 1 är det sheet som innehåller diagnoskoder + texter
-            final Sheet sheet = workbook.getSheetAt(1);
+            final Sheet diagnoseCodesSheet = workbook.getSheetAt(1);
 
-            final int lastRowNum = sheet.getLastRowNum();
+            final int lastRowNum = diagnoseCodesSheet.getLastRowNum();
             final int rows = lastRowNum + 1;
 
-            //Starta inläsning från row 1, row 0 innehåller endast headers
             final int startRow = 1;
-
-            //Starta inläsning från column 1, column 0 innehåller endast radindex
             final int startColumn = 1;
 
             HashMap<Integer, HashMap<Integer, String>> data = HashMap.empty();
             for (int rowNum = startRow; rowNum < rows; rowNum++) {
-                final Row row = sheet.getRow(rowNum);
+                final Row row = diagnoseCodesSheet.getRow(rowNum);
                 if (row == null) {
                     continue;
                 }
@@ -172,7 +167,6 @@ public class IcfTextResourceImpl implements IcfTextResource {
             final String beskrivning = StringUtils.trim(rowColumns.get(BESKRIVNING_COLUMN).getOrElse(""));
             final String innefattar = StringUtils.trim(rowColumns.get(INNEFATTAR_COLUMN).getOrElse(""));
 
-            //om alternativTerm finns ska den alltid trumfa vanlig benämning
             final String benamningToReturn = StringUtils.isNotEmpty(alternativTerm)
                 ? alternativTerm
                 : benamning;
