@@ -22,7 +22,6 @@ package se.inera.intyg.webcert.web.csintegration.aggregate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.question.Question;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionAnswerFacadeService;
 
 @Service
@@ -31,13 +30,9 @@ public class DeleteAnswerAggregator implements DeleteQuestionAnswerFacadeService
 
     private final DeleteQuestionAnswerFacadeService deleteAnswerFromWC;
     private final DeleteQuestionAnswerFacadeService deleteAnswerFromCS;
-    private final CertificateServiceProfile certificateServiceProfile;
 
     @Override
     public Question delete(String questionId) {
-        if (!certificateServiceProfile.active()) {
-            return deleteAnswerFromWC.delete(questionId);
-        }
 
         final var responseFromCS = deleteAnswerFromCS.delete(questionId);
 

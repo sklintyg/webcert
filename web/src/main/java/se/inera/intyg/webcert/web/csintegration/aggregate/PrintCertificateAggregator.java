@@ -22,23 +22,16 @@ package se.inera.intyg.webcert.web.csintegration.aggregate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.csintegration.certificate.PrintCertificateFromCertificateService;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 
 @Service
 @RequiredArgsConstructor
 public class PrintCertificateAggregator {
-
-    private final CertificateServiceProfile certificateServiceProfile;
     private final IntygService intygService;
     private final PrintCertificateFromCertificateService printCertificateFromCertificateService;
 
     public IntygPdf get(String certificateId, String certificateType, boolean isEmployerCopy) {
-        if (!certificateServiceProfile.active()) {
-            return intygService.fetchIntygAsPdf(certificateId, certificateType, isEmployerCopy);
-        }
-
         final var response = printCertificateFromCertificateService.print(certificateId, certificateType, isEmployerCopy);
 
         return response != null

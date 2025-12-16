@@ -34,7 +34,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.message.ProcessIncomingMessageService;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareType;
@@ -55,8 +54,6 @@ class ProcessIncomingMessageAggregatorTest {
     @Mock
     ArendeService arendeService;
     @Mock
-    CertificateServiceProfile certificateServiceProfile;
-    @Mock
     CSIntegrationService csIntegrationService;
     @Mock
     ProcessIncomingMessageService processIncomingMessageService;
@@ -67,27 +64,15 @@ class ProcessIncomingMessageAggregatorTest {
     void setUp() {
         sendMessageToCareType = getSendMessageToCareTypeRequest();
     }
-
     @Test
-    void shallProcessIncomingMessageInArandeServiceIfCertificateServiceProfileIsNotActive() {
-        doReturn(false).when(certificateServiceProfile).active();
-        processIncomingMessageAggregator.process(sendMessageToCareType);
-        verify(arendeService, times(1)).processIncomingMessage(any());
-    }
-
-    @Test
-    void shallProcessIncomingMessageInArandeServiceIfCertificateNotFoundInCertificateService() {
-        doReturn(true).when(certificateServiceProfile).active();
-        doReturn(false).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
+    void shallProcessIncomingMessageInArandeServiceIfCertificateNotFoundInCertificateService() {        doReturn(false).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
         processIncomingMessageAggregator.process(sendMessageToCareType);
         verify(arendeService, times(1)).processIncomingMessage(any());
     }
 
     @Test
     void shallReturnSendMessageToCareResponseTypeFromProcessIncomingMessageService() {
-        final var expectedResult = new SendMessageToCareResponseType();
-        doReturn(true).when(certificateServiceProfile).active();
-        doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
+        final var expectedResult = new SendMessageToCareResponseType();        doReturn(true).when(csIntegrationService).certificateExists(CERTIFICATE_ID);
         doReturn(expectedResult).when(processIncomingMessageService).process(sendMessageToCareType);
 
         final var actualResult = processIncomingMessageAggregator.process(sendMessageToCareType);

@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.CreateCertificateFacadeService;
 import se.inera.intyg.webcert.web.service.facade.impl.CreateCertificateException;
 
@@ -30,23 +29,16 @@ public class CreateCertificateAggregator implements CreateCertificateFacadeServi
 
     private final CreateCertificateFacadeService createCertificateFromWC;
     private final CreateCertificateFacadeService createCertificateFromCS;
-    private final CertificateServiceProfile certificateServiceProfile;
 
     public CreateCertificateAggregator(
         @Qualifier("createCertificateFromWC") CreateCertificateFacadeService createCertificateFromWC,
-        @Qualifier("createCertificateFromCS") CreateCertificateFacadeService createCertificateFromCS,
-        CertificateServiceProfile certificateServiceProfile) {
+        @Qualifier("createCertificateFromCS") CreateCertificateFacadeService createCertificateFromCS) {
         this.createCertificateFromWC = createCertificateFromWC;
         this.createCertificateFromCS = createCertificateFromCS;
-        this.certificateServiceProfile = certificateServiceProfile;
     }
 
     @Override
     public String create(String certificateType, String patientId) throws CreateCertificateException {
-        if (!certificateServiceProfile.active()) {
-            return createCertificateFromWC.create(certificateType, patientId);
-        }
-
         final var responseFromCS = createCertificateFromCS.create(certificateType, patientId);
 
         return responseFromCS != null

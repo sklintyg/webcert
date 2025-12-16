@@ -19,10 +19,8 @@
 package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -34,7 +32,6 @@ import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequest
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.api.dto.QueryIntygParameter;
@@ -48,10 +45,6 @@ class ListCertificatesAggregatorTest {
     private static final QueryIntygParameter QUERY_INTYG_PARAMETER = new QueryIntygParameter();
     private static final GetPatientCertificatesRequestDTO REQUEST = GetPatientCertificatesRequestDTO.builder().build();
     private static final GetUnitCertificatesRequestDTO UNIT_REQUEST = GetUnitCertificatesRequestDTO.builder().build();
-
-    @Mock
-    CertificateServiceProfile certificateServiceProfile;
-
     @Mock
     CSIntegrationRequestFactory csIntegrationRequestFactory;
 
@@ -64,19 +57,11 @@ class ListCertificatesAggregatorTest {
     @Nested
     class PatientCertificatesList {
 
-        @Test
-        void shouldReturnEmptyListIfProfileIsNotActive() {
-            final var response = listCertificatesAggregator.listCertificatesForPatient(PATIENT_ID);
-            assertEquals(Collections.emptyList(), response);
-            verifyNoInteractions(csIntegrationService);
-        }
 
         @Test
-        void shouldReturnListFromAPIIfProfileIsActive() {
+        void shouldReturnListFromAPI() {
             when(csIntegrationRequestFactory.getPatientCertificatesRequest(PATIENT_ID))
                 .thenReturn(REQUEST);
-            when(certificateServiceProfile.active())
-                .thenReturn(true);
             when(csIntegrationService.listCertificatesForPatient(REQUEST))
                 .thenReturn(LIST_INTYG_ENTRIES_FROM_CS);
 
@@ -90,18 +75,9 @@ class ListCertificatesAggregatorTest {
     class UnitCertificatesList {
 
         @Test
-        void shouldReturnEmptyListIfProfileIsNotActive() {
-            final var response = listCertificatesAggregator.listCertificatesForUnit(LIST_FILTER);
-            assertEquals(Collections.emptyList(), response);
-            verifyNoInteractions(csIntegrationService);
-        }
-
-        @Test
-        void shouldReturnListFromAPIIfProfileIsActive() {
+        void shouldReturnListFromAPI() {
             when(csIntegrationRequestFactory.getUnitCertificatesRequest(LIST_FILTER))
                 .thenReturn(UNIT_REQUEST);
-            when(certificateServiceProfile.active())
-                .thenReturn(true);
             when(csIntegrationService.listCertificatesForUnit(UNIT_REQUEST))
                 .thenReturn(LIST_INTYG_ENTRIES_FROM_CS);
 
@@ -115,18 +91,9 @@ class ListCertificatesAggregatorTest {
     class DoctorCertificateList {
 
         @Test
-        void shouldReturnEmptyListIfProfileIsNotActive() {
-            final var response = listCertificatesAggregator.listCertificatesForDoctor(QUERY_INTYG_PARAMETER);
-            assertEquals(Collections.emptyList(), response);
-            verifyNoInteractions(csIntegrationService);
-        }
-
-        @Test
-        void shouldReturnListFromAPIIfProfileIsActive() {
+        void shouldReturnListFromAPI() {
             when(csIntegrationRequestFactory.getUnitCertificatesRequest(QUERY_INTYG_PARAMETER))
                 .thenReturn(UNIT_REQUEST);
-            when(certificateServiceProfile.active())
-                .thenReturn(true);
             when(csIntegrationService.listCertificatesForUnit(UNIT_REQUEST))
                 .thenReturn(LIST_INTYG_ENTRIES_FROM_CS);
 

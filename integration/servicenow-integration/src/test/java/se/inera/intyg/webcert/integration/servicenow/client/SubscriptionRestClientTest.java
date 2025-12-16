@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.integration.servicenow.v1.client;
+package se.inera.intyg.webcert.integration.servicenow.client;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -59,7 +59,7 @@ class SubscriptionRestClientTest {
 
     private static final String ORG_NO_1 = "ORG_NO_1";
     private static final String SUBSCRIPTION_URL = "https://servicenow.test";
-    private static final String SUBSCRIPTION_SERVICE_NAME = "Webcert-tj";
+    private static final List<String> SUBSCRIPTION_SERVICE_NAMES = List.of("Webcert-tj", "Webcert-int");
     private static final String SERVICENOW_USERNAME = "serviceNowUsername";
     private static final String SERVICENOW_PASSWORD = "serviceNowPassword";
 
@@ -68,7 +68,7 @@ class SubscriptionRestClientTest {
         ReflectionTestUtils.setField(subscriptionRestClient, SERVICENOW_USERNAME, SERVICENOW_USERNAME);
         ReflectionTestUtils.setField(subscriptionRestClient, SERVICENOW_PASSWORD, SERVICENOW_PASSWORD);
         ReflectionTestUtils.setField(subscriptionRestClient, "serviceNowSubscriptionServiceUrl", SUBSCRIPTION_URL);
-        ReflectionTestUtils.setField(subscriptionRestClient, "serviceNowSubscriptionServiceName", SUBSCRIPTION_SERVICE_NAME);
+        ReflectionTestUtils.setField(subscriptionRestClient, "serviceNowSubscriptionServiceNames", SUBSCRIPTION_SERVICE_NAMES);
     }
 
     @Nested
@@ -122,8 +122,8 @@ class SubscriptionRestClientTest {
                 eq(OrganizationResponse.class));
 
             final var actualServiceName = ((OrganizationRequest) Objects.requireNonNull(
-                captureHttpEntity.getValue().getBody())).getService();
-            assertEquals(SUBSCRIPTION_SERVICE_NAME, actualServiceName);
+                captureHttpEntity.getValue().getBody())).getServices();
+            assertEquals(SUBSCRIPTION_SERVICE_NAMES, actualServiceName);
         }
 
         @Test

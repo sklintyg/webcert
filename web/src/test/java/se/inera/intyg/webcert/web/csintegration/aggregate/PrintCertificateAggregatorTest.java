@@ -22,15 +22,12 @@ package se.inera.intyg.webcert.web.csintegration.aggregate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.web.csintegration.certificate.PrintCertificateFromCertificateService;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.intyg.IntygService;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 
@@ -46,10 +43,6 @@ class PrintCertificateAggregatorTest {
 
     @Mock
     PrintCertificateFromCertificateService printCertificateFromCertificateService;
-
-    @Mock
-    CertificateServiceProfile certificateServiceProfile;
-
     @Mock
     IntygPdf responseFromWC;
 
@@ -60,43 +53,23 @@ class PrintCertificateAggregatorTest {
     PrintCertificateAggregator printCertificateAggregator;
 
     @Test
-    void shouldReturnResponseFromIntygServiceIfProfileIsNotActive() {
+    void shouldReturnPDFFromCSIfExists() {
+        when(printCertificateFromCertificateService.print(ID, TYPE, IS_EMPLOYER))
+            .thenReturn(responseFromCS);
+
+        final var response = printCertificateAggregator.get(ID, TYPE, IS_EMPLOYER);
+
+        assertEquals(responseFromCS, response);
+    }
+
+    @Test
+    void shouldReturnResponseFromWCIfCertificateDoesNotExistInCS() {
         when(intygService.fetchIntygAsPdf(ID, TYPE, IS_EMPLOYER))
             .thenReturn(responseFromWC);
 
         final var response = printCertificateAggregator.get(ID, TYPE, IS_EMPLOYER);
 
         assertEquals(responseFromWC, response);
-    }
-
-    @Nested
-    class ActiveProfile {
-
-        @BeforeEach
-        void setup() {
-            when(certificateServiceProfile.active())
-                .thenReturn(true);
-        }
-
-        @Test
-        void shouldReturnResponseFromIntygServiceIfCertificateDoesNotExistInCS() {
-            when(intygService.fetchIntygAsPdf(ID, TYPE, IS_EMPLOYER))
-                .thenReturn(responseFromWC);
-
-            final var response = printCertificateAggregator.get(ID, TYPE, IS_EMPLOYER);
-
-            assertEquals(responseFromWC, response);
-        }
-
-        @Test
-        void shouldReturnResponseFromCSIfCertificateDoesNotExistInCS() {
-            when(printCertificateFromCertificateService.print(ID, TYPE, IS_EMPLOYER))
-                .thenReturn(responseFromCS);
-
-            final var response = printCertificateAggregator.get(ID, TYPE, IS_EMPLOYER);
-
-            assertEquals(responseFromCS, response);
-        }
     }
 
 }

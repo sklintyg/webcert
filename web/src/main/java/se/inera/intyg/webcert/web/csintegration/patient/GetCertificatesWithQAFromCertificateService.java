@@ -31,21 +31,18 @@ import se.inera.intyg.common.support.xml.XmlMarshallerHelper;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.ListCertificatesForCareWithQAResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.listCertificatesForCareWithQA.v3.ListItem;
 
 @Component
 @RequiredArgsConstructor
 public class GetCertificatesWithQAFromCertificateService {
-
-    private final CertificateServiceProfile certificateServiceProfile;
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
     private final ListItemNotificationDecorator listItemNotificationDecorator;
 
     public List<ListItem> get(List<Handelse> notifications) {
-        if (!certificateServiceProfile.active() || notifications.isEmpty()) {
+        if (notifications.isEmpty()) {
             return Collections.emptyList();
         }
 

@@ -23,12 +23,10 @@
     xmlns:sec="http://cxf.apache.org/configuration/security"
     xmlns:jaxws="http://cxf.apache.org/jaxws"
     xmlns:http="http://cxf.apache.org/transports/http/configuration"
-    xmlns:soap="http://cxf.apache.org/bindings/soap"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
         http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
-        http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/configuration/security.xsd
-        http://cxf.apache.org/bindings/soap http://cxf.apache.org/schemas/configuration/soap.xsd">
+        http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/configuration/security.xsd">
 
   <!-- Clients using NTJP -->
   <beans>
@@ -64,13 +62,6 @@
         serviceClass="se.riv.itintegration.monitoring.rivtabp21.v1.PingForConfigurationResponderInterface"
         address="${privatepractitioner.pingforconfiguration.endpoint.url}"/>
 
-    <jaxws:client id="grpServicePortTypeClient"
-        serviceClass="se.funktionstjanster.grp.v2.GrpServicePortType"
-        address="${cgi.funktionstjanster.grp.url}">
-      <jaxws:binding>
-        <soap:soapBinding version="1.2"/>
-      </jaxws:binding>
-    </jaxws:client>
 
     <jaxws:client id="registerCertificateClient"
         serviceClass="se.riv.clinicalprocess.healthcond.certificate.registerCertificate.v3.RegisterCertificateResponderInterface"
@@ -117,37 +108,6 @@
 
 
 
-  <beans profile="!dev,wc-security-test">
-    <!-- GRP API conduit (signering av utkast när inloggad med BanKID-varianterna) -->
-    <http:conduit
-        name="\{http://funktionstjanster.se/grp/service/v1.0.0/.*.http-conduit">
-      <http:client AllowChunking="false" AutoRedirect="true"
-          Connection="Keep-Alive"/>
-
-      <http:tlsClientParameters disableCNCheck="true">
-        <sec:keyManagers keyPassword="${cgi.grp.ws.key.manager.password}">
-          <sec:keyStore file="${cgi.grp.ws.certificate.file}"
-              password="${cgi.grp.ws.certificate.password}" type="${cgi.grp.ws.certificate.type}"/>
-        </sec:keyManagers>
-        <sec:trustManagers>
-          <sec:keyStore file="${cgi.grp.ws.truststore.file}"
-              password="${cgi.grp.ws.truststore.password}" type="${cgi.grp.ws.truststore.type}"/>
-        </sec:trustManagers>
-
-        <sec:cipherSuitesFilter>
-          <!-- these filters ensure that a cipher suite with export-suitable
-            or null encryption is used, but exclude anonymous Diffie-Hellman key change
-            as this is vulnerable to man-in-the-middle attacks -->
-          <sec:include>.*_EXPORT_.*</sec:include>
-          <sec:include>.*_EXPORT1024_.*</sec:include>
-          <sec:include>.*_WITH_DES_.*</sec:include>
-          <sec:include>.*_WITH_AES_.*</sec:include>
-          <sec:include>.*_WITH_NULL_.*</sec:include>
-          <sec:exclude>.*_DH_anon_.*</sec:exclude>
-        </sec:cipherSuitesFilter>
-      </http:tlsClientParameters>
-    </http:conduit>
-  </beans>
 
   <beans profile="!dev">
     <http:conduit

@@ -23,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,7 +30,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.web.csintegration.certificate.GetIssuingUnitIdFromCertificateService;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.certificate.GetIssuingUnitIdFromWebcert;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,8 +38,6 @@ class GetIssuingUnitIdAggregatorTest {
     private static final String CERTIFICATE_ID = "certificateId";
     private static final String UNIT_ID = "unitId";
     @Mock
-    CertificateServiceProfile certificateServiceProfile;
-    @Mock
     GetIssuingUnitIdFromWebcert getUnitIdFromWC;
     @Mock
     GetIssuingUnitIdFromCertificateService getUnitIdFromCS;
@@ -49,18 +45,8 @@ class GetIssuingUnitIdAggregatorTest {
     GetIssuingUnitIdAggregator getIssuingUnitIdAggregator;
 
     @Test
-    void shallReturnResponseFromWCIfCertificateServiceProfileIsInactive() {
-        doReturn(false).when(certificateServiceProfile).active();
-        getIssuingUnitIdAggregator.get(CERTIFICATE_ID);
-
-        verify(getUnitIdFromWC, times(1)).get(CERTIFICATE_ID);
-        verifyNoInteractions(getUnitIdFromCS);
-    }
-
-    @Test
     void shallReturnResponseFromWCIfResponseFromCSIsNull() {
         doReturn(UNIT_ID).when(getUnitIdFromWC).get(CERTIFICATE_ID);
-        doReturn(true).when(certificateServiceProfile).active();
         doReturn(null).when(getUnitIdFromCS).get(CERTIFICATE_ID);
         final var actualUnitId = getIssuingUnitIdAggregator.get(CERTIFICATE_ID);
 
@@ -71,7 +57,6 @@ class GetIssuingUnitIdAggregatorTest {
 
     @Test
     void shallReturnResponseFromCS() {
-        doReturn(true).when(certificateServiceProfile).active();
         doReturn(UNIT_ID).when(getUnitIdFromCS).get(CERTIFICATE_ID);
         final var actualUnitId = getIssuingUnitIdAggregator.get(CERTIFICATE_ID);
 

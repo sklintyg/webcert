@@ -26,21 +26,17 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.question.Question;
 import se.inera.intyg.common.support.facade.model.question.QuestionType;
 import se.inera.intyg.webcert.web.csintegration.message.GetQuestionsFromCertificateService;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.question.GetQuestionsFacadeService;
 
 @Service
 public class GetQuestionsAggregator implements GetQuestionsFacadeService {
 
-    private final CertificateServiceProfile certificateServiceProfile;
     private final GetQuestionsFacadeService getQuestionsFromWebcert;
     private final GetQuestionsFromCertificateService getQuestionsFromCertificateService;
 
     public GetQuestionsAggregator(
-        CertificateServiceProfile certificateServiceProfile,
         @Qualifier(value = "GetQuestionsFacadeServiceImpl") GetQuestionsFacadeService getQuestionsFromWebcert,
         @Qualifier("getQuestionsFromCertificateService") GetQuestionsFromCertificateService getQuestionsFromCertificateService) {
-        this.certificateServiceProfile = certificateServiceProfile;
         this.getQuestionsFromWebcert = getQuestionsFromWebcert;
         this.getQuestionsFromCertificateService = getQuestionsFromCertificateService;
     }
@@ -54,10 +50,6 @@ public class GetQuestionsAggregator implements GetQuestionsFacadeService {
 
     @Override
     public List<Question> getQuestions(String certificateId) {
-        if (!certificateServiceProfile.active()) {
-            return getQuestionsFromWebcert.getQuestions(certificateId);
-        }
-
         final var responseFromCS = getQuestionsFromCertificateService.get(certificateId);
 
         return responseFromCS != null ? responseFromCS : getQuestionsFromWebcert.getQuestions(certificateId);

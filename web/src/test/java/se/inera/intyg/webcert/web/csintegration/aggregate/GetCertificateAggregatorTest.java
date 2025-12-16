@@ -30,7 +30,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.GetCertificateFacadeService;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,26 +41,21 @@ class GetCertificateAggregatorTest {
 
     GetCertificateFacadeService getCertificateFromWC;
     GetCertificateFacadeService getCertificateFromCS;
-    CertificateServiceProfile certificateServiceProfile;
     GetCertificateFacadeService aggregator;
 
     @BeforeEach
     void setup() {
         getCertificateFromWC = mock(GetCertificateFacadeService.class);
         getCertificateFromCS = mock(GetCertificateFacadeService.class);
-        certificateServiceProfile = mock(CertificateServiceProfile.class);
 
         aggregator = new GetCertificateAggregator(
             getCertificateFromWC,
-            getCertificateFromCS,
-            certificateServiceProfile
+            getCertificateFromCS
         );
     }
 
     @Test
-    void shouldReturnCertificateFromCSIIfCSProfileIsActiveAndCertificateExistsInCS() {
-        when(certificateServiceProfile.active())
-            .thenReturn(true);
+    void shouldReturnCertificateFromCSIfExists() {
         when(getCertificateFromCS.getCertificate(ID, false, true))
             .thenReturn(CERTIFICATE_FROM_CS);
 
@@ -73,24 +67,11 @@ class GetCertificateAggregatorTest {
 
     @Test
     void shouldReturnCertificateFromWCIfCertificateDoesNotExistInCS() {
-        when(certificateServiceProfile.active())
-            .thenReturn(true);
         when(getCertificateFromWC.getCertificate(ID, true, false))
             .thenReturn(CERTIFICATE_FROM_WC);
 
         final var response = aggregator.getCertificate(ID, true, false);
         verify(getCertificateFromWC, times(1)).getCertificate(ID, true, false);
-
-        assertEquals(CERTIFICATE_FROM_WC, response);
-    }
-
-    @Test
-    void shouldReturnCertificateFromWCIfCSProfileIsNotActive() {
-        when(getCertificateFromWC.getCertificate(ID, true, true))
-            .thenReturn(CERTIFICATE_FROM_WC);
-
-        final var response = aggregator.getCertificate(ID, true, true);
-        verify(getCertificateFromWC, times(1)).getCertificate(ID, true, true);
 
         assertEquals(CERTIFICATE_FROM_WC, response);
     }

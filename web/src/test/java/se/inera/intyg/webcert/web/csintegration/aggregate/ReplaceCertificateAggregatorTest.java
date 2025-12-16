@@ -24,12 +24,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.ReplaceCertificateFacadeService;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,51 +38,31 @@ class ReplaceCertificateAggregatorTest {
 
     ReplaceCertificateFacadeService replaceCertificateFromWC;
     ReplaceCertificateFacadeService replaceCertificateFromCS;
-    CertificateServiceProfile certificateServiceProfile;
     ReplaceCertificateFacadeService aggregator;
 
     @BeforeEach
     void setup() {
         replaceCertificateFromWC = mock(ReplaceCertificateFacadeService.class);
         replaceCertificateFromCS = mock(ReplaceCertificateFacadeService.class);
-        certificateServiceProfile = mock(CertificateServiceProfile.class);
 
         aggregator = new ReplaceCertificateAggregator(
             replaceCertificateFromWC,
-            replaceCertificateFromCS,
-            certificateServiceProfile);
+            replaceCertificateFromCS);
     }
 
     @Test
-    void shouldReplaceFromWebcertIfProfileIsInactive() {
+    void shouldReplaceFromCSIfExists() {
+        when(replaceCertificateFromCS.replaceCertificate(ID))
+            .thenReturn(NEW_ID);
         aggregator.replaceCertificate(ID);
 
-        Mockito.verify(replaceCertificateFromWC).replaceCertificate(ID);
+        Mockito.verify(replaceCertificateFromWC, times(0)).replaceCertificate(ID);
     }
 
-    @Nested
-    class ActiveProfile {
+    @Test
+    void shouldReplaceFromWCIfCertificateDoesNotExistInCS() {
+        aggregator.replaceCertificate(ID);
 
-        @BeforeEach
-        void setup() {
-            when(certificateServiceProfile.active())
-                .thenReturn(true);
-        }
-
-        @Test
-        void shouldReplaceFromCSIfProfileIsActiveAndCertificateExistsInCS() {
-            when(replaceCertificateFromCS.replaceCertificate(ID))
-                .thenReturn(NEW_ID);
-            aggregator.replaceCertificate(ID);
-
-            Mockito.verify(replaceCertificateFromWC, times(0)).replaceCertificate(ID);
-        }
-
-        @Test
-        void shouldReplaceFromWCIfProfileIsInactiveAndCertificateDoesNotExistInCS() {
-            aggregator.replaceCertificate(ID);
-
-            Mockito.verify(replaceCertificateFromWC, times(1)).replaceCertificate(ID);
-        }
+        Mockito.verify(replaceCertificateFromWC, times(1)).replaceCertificate(ID);
     }
 }

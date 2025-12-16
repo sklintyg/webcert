@@ -29,7 +29,6 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.StatisticsForUnitDTO;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.user.UnitStatisticsDTO;
 import se.inera.intyg.webcert.web.service.facade.user.UserStatisticsDTO;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
@@ -37,15 +36,10 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 @Service
 @RequiredArgsConstructor
 public class CertificateServiceStatisticService {
-
-    private final CertificateServiceProfile certificateServiceProfile;
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
 
     public void add(UserStatisticsDTO statisticsFromWC, List<String> unitIds, WebCertUser user, boolean maxCommissionsExceeded) {
-        if (!certificateServiceProfile.active()) {
-            return;
-        }
 
         final var statisticsFromCS = csIntegrationService.getStatistics(
             csIntegrationRequestFactory.getStatisticsRequest(unitIds)

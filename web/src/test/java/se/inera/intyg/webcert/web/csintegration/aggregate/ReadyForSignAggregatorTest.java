@@ -31,7 +31,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.webcert.web.csintegration.certificate.ReadyForSignForCertificateService;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.impl.ReadyForSignFacadeServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,28 +41,16 @@ class ReadyForSignAggregatorTest {
     private ReadyForSignFacadeServiceImpl readyForSignForWC;
     @Mock
     private ReadyForSignForCertificateService readyForSignForCS;
-    @Mock
-    private CertificateServiceProfile certificateServiceProfile;
-
     private ReadyForSignAggregator readyForSignAggregator;
 
     @BeforeEach
     void setUp() {
-        readyForSignAggregator = new ReadyForSignAggregator(certificateServiceProfile, readyForSignForWC, readyForSignForCS);
-    }
-
-    @Test
-    void shallReturnResponseFromWCIfCertificateProfileIsInactive() {
-        doReturn(false).when(certificateServiceProfile).active();
-        readyForSignAggregator.readyForSign(CERTIFICATE_ID);
-        verify(readyForSignForWC, times(1)).readyForSign(CERTIFICATE_ID);
-        verify(readyForSignForCS, times(0)).readyForSign(CERTIFICATE_ID);
+        readyForSignAggregator = new ReadyForSignAggregator(readyForSignForWC, readyForSignForCS);
     }
 
     @Test
     void shallReturnResponseFromWCIfResponseFromCSReturnsNull() {
         final var expectedCertificate = new Certificate();
-        doReturn(true).when(certificateServiceProfile).active();
         doReturn(null).when(readyForSignForCS).readyForSign(CERTIFICATE_ID);
         doReturn(expectedCertificate).when(readyForSignForWC).readyForSign(CERTIFICATE_ID);
         final var actualCertificate = readyForSignAggregator.readyForSign(CERTIFICATE_ID);
@@ -76,7 +63,6 @@ class ReadyForSignAggregatorTest {
     @Test
     void shallReturnResponseFromCS() {
         final var expectedCertificate = new Certificate();
-        doReturn(true).when(certificateServiceProfile).active();
         doReturn(expectedCertificate).when(readyForSignForCS).readyForSign(CERTIFICATE_ID);
         final var actualCertificate = readyForSignAggregator.readyForSign(CERTIFICATE_ID);
 

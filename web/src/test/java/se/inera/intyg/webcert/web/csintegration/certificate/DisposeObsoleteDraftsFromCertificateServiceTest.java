@@ -46,7 +46,6 @@ import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalytics
 import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 @ExtendWith(MockitoExtension.class)
@@ -67,8 +66,6 @@ class DisposeObsoleteDraftsFromCertificateServiceTest {
     @Mock
     CSIntegrationRequestFactory csIntegrationRequestFactory;
     @Mock
-    CertificateServiceProfile certificateServiceProfile;
-    @Mock
     PublishCertificateStatusUpdateService publishCertificateStatusUpdateService;
     @Mock
     MonitoringLogService monitoringLogService;
@@ -76,21 +73,7 @@ class DisposeObsoleteDraftsFromCertificateServiceTest {
     DisposeObsoleteDraftsFromCertificateService disposeObsoleteDraftsFromCertificateService;
 
     @Test
-    void shouldReturnZeroIfCertificateServiceProfileIsNotActive() {
-        doReturn(false).when(certificateServiceProfile).active();
-
-        final var result = disposeObsoleteDraftsFromCertificateService.dispose(CUTOFF_DATE);
-
-        assertEquals(0, result);
-        verifyNoInteractions(csIntegrationService);
-        verifyNoInteractions(csIntegrationRequestFactory);
-        verifyNoInteractions(publishCertificateStatusUpdateService);
-        verifyNoInteractions(monitoringLogService);
-    }
-
-    @Test
     void shouldReturnZeroIfNoObsoleteDraftsFound() {
-        doReturn(true).when(certificateServiceProfile).active();
         doReturn(Collections.emptyList()).when(csIntegrationService).listObsoleteDrafts(any());
 
         final var result = disposeObsoleteDraftsFromCertificateService.dispose(CUTOFF_DATE);
@@ -105,8 +88,6 @@ class DisposeObsoleteDraftsFromCertificateServiceTest {
     @Test
     void shouldDisposeEachDraftIndividually() {
         final var obsoleteDraftIds = List.of(CERTIFICATE_ID_1, CERTIFICATE_ID_2, CERTIFICATE_ID_3);
-
-        doReturn(true).when(certificateServiceProfile).active();
         doReturn(obsoleteDraftIds).when(csIntegrationService).listObsoleteDrafts(any());
 
         doReturn("xml1").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_1);
@@ -127,8 +108,6 @@ class DisposeObsoleteDraftsFromCertificateServiceTest {
         final var obsoleteDraftIds = List.of(CERTIFICATE_ID_1, CERTIFICATE_ID_2);
         final var certificate1 = getCertificate(CERTIFICATE_ID_1);
         final var certificate2 = getCertificate(CERTIFICATE_ID_2);
-
-        doReturn(true).when(certificateServiceProfile).active();
         doReturn(obsoleteDraftIds).when(csIntegrationService).listObsoleteDrafts(any());
 
         doReturn("xml1").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_1);
@@ -145,8 +124,6 @@ class DisposeObsoleteDraftsFromCertificateServiceTest {
     @Test
     void shouldLogMonitoringForEachDeletedDraft() {
         final var obsoleteDraftIds = List.of(CERTIFICATE_ID_1, CERTIFICATE_ID_2);
-
-        doReturn(true).when(certificateServiceProfile).active();
         doReturn(obsoleteDraftIds).when(csIntegrationService).listObsoleteDrafts(any());
 
         doReturn("xml1").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_1);
@@ -164,8 +141,6 @@ class DisposeObsoleteDraftsFromCertificateServiceTest {
     @Test
     void shouldPublishAnalyticsMessageForEachDeletedDraft() {
         final var obsoleteDraftIds = List.of(CERTIFICATE_ID_1, CERTIFICATE_ID_2);
-
-        doReturn(true).when(certificateServiceProfile).active();
         doReturn(obsoleteDraftIds).when(csIntegrationService).listObsoleteDrafts(any());
 
         doReturn("xml1").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_1);
@@ -189,7 +164,6 @@ class DisposeObsoleteDraftsFromCertificateServiceTest {
     @Test
     void shouldContinueProcessingWhenOneDraftFailsToDispose() {
         final var obsoleteDraftIds = List.of(CERTIFICATE_ID_1, CERTIFICATE_ID_2, CERTIFICATE_ID_3);
-        doReturn(true).when(certificateServiceProfile).active();
         doReturn(obsoleteDraftIds).when(csIntegrationService).listObsoleteDrafts(any());
 
         doReturn("xml1").when(csIntegrationService).getInternalCertificateXml(CERTIFICATE_ID_1);

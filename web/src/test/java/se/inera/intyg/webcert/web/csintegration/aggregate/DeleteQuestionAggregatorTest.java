@@ -29,7 +29,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.question.DeleteQuestionFacadeService;
 
 @ExtendWith(MockitoExtension.class)
@@ -38,8 +37,6 @@ class DeleteQuestionAggregatorTest {
     private static final String QUESTION_ID = "questionId";
     @Mock
     CSIntegrationService csIntegrationService;
-    @Mock
-    CertificateServiceProfile certificateServiceProfile;
     @Mock
     DeleteQuestionFacadeService deleteQuestionFromWC;
     @Mock
@@ -50,24 +47,12 @@ class DeleteQuestionAggregatorTest {
     @BeforeEach
     void setUp() {
         deleteQuestionAggregator = new DeleteQuestionAggregator(
-            deleteQuestionFromWC, deleteQuestionFromCS, certificateServiceProfile, csIntegrationService
+            deleteQuestionFromWC, deleteQuestionFromCS, csIntegrationService
         );
     }
 
     @Test
-    void shallCallDeleteQuestionsFromWCIfCertificateServiceProfileIsInactive() {
-        doReturn(false).when(certificateServiceProfile).active();
-
-        deleteQuestionAggregator.delete(QUESTION_ID);
-
-        verify(deleteQuestionFromWC).delete(QUESTION_ID);
-
-        verifyNoInteractions(deleteQuestionFromCS);
-    }
-
-    @Test
-    void shallCallDeleteQuestionsFromWCIfCertificateServiceProfileIsActiveButMessageDontExistInCertificateService() {
-        doReturn(true).when(certificateServiceProfile).active();
+    void shallCallDeleteQuestionsFromWCIfMessageDontExistInCertificateService() {
         doReturn(false).when(csIntegrationService).messageExists(QUESTION_ID);
 
         deleteQuestionAggregator.delete(QUESTION_ID);
@@ -78,8 +63,7 @@ class DeleteQuestionAggregatorTest {
     }
 
     @Test
-    void shallCallDeleteQuestionsFromCSIfCertificateServiceProfileIsActiveAndMessageExistInCertificateService() {
-        doReturn(true).when(certificateServiceProfile).active();
+    void shallCallDeleteQuestionsFromCSIfMessageExistInCertificateService() {
         doReturn(true).when(csIntegrationService).messageExists(QUESTION_ID);
 
         deleteQuestionAggregator.delete(QUESTION_ID);

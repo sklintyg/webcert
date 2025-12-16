@@ -30,7 +30,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.web.controller.internalapi.GetCertificatePdfService;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.CertificatePdfResponseDTO;
 
@@ -46,23 +45,19 @@ class GetCertificateInternalPdfAggregatorTest {
     private GetCertificatePdfService getCertificatePdfServiceFromWC;
     @Mock
     private GetCertificatePdfService getCertificatePdfServiceFromCS;
-    @Mock
-    private CertificateServiceProfile certificateServiceProfile;
     private GetGetCertificateInternalPdfAggregator getCertificateInternalPdfAggregator;
 
     @BeforeEach
     void setUp() {
         getCertificateInternalPdfAggregator = new GetGetCertificateInternalPdfAggregator(
-            certificateServiceProfile,
             getCertificatePdfServiceFromWC,
             getCertificatePdfServiceFromCS
         );
     }
 
     @Test
-    void shouldReturnResponseFromCSIfProfileActiveAndResponseNotNull() {
+    void shouldReturnResponseFromCSIfResponseNotNull() {
         final var expectedResult = CertificatePdfResponseDTO.create(FILE_NAME, BYTES);
-        when(certificateServiceProfile.active()).thenReturn(true);
         when(getCertificatePdfServiceFromCS.get(CUSTOMIZATION_ID, CERTIFICATE_ID, PERSON_ID)).thenReturn(expectedResult);
 
         final var response = getCertificateInternalPdfAggregator.get(CUSTOMIZATION_ID, CERTIFICATE_ID, PERSON_ID);
@@ -72,23 +67,8 @@ class GetCertificateInternalPdfAggregatorTest {
     }
 
     @Test
-    void shouldReturnResponseFromWCIfProfileIsNotActive() {
+    void shouldReturnCertificateIdFromWCIIfReturnsNull() {
         final var expectedResult = CertificatePdfResponseDTO.create(FILE_NAME, BYTES);
-        when(certificateServiceProfile.active()).thenReturn(false);
-        when(getCertificatePdfServiceFromWC.get(CUSTOMIZATION_ID, CERTIFICATE_ID, PERSON_ID)).thenReturn(expectedResult);
-
-        final var response = getCertificateInternalPdfAggregator.get(CUSTOMIZATION_ID, CERTIFICATE_ID, PERSON_ID);
-
-        verify(getCertificatePdfServiceFromWC, times(1)).get(CUSTOMIZATION_ID, CERTIFICATE_ID, PERSON_ID);
-        verify(getCertificatePdfServiceFromCS, times(0)).get(CUSTOMIZATION_ID, CERTIFICATE_ID, PERSON_ID);
-
-        assertEquals(expectedResult, response);
-    }
-
-    @Test
-    void shouldReturnCertificateIdFromWCIIfCSProfileIsActiveButReturnsNull() {
-        final var expectedResult = CertificatePdfResponseDTO.create(FILE_NAME, BYTES);
-        when(certificateServiceProfile.active()).thenReturn(true);
         when(getCertificatePdfServiceFromWC.get(CUSTOMIZATION_ID, CERTIFICATE_ID, PERSON_ID)).thenReturn(expectedResult);
 
         final var response = getCertificateInternalPdfAggregator.get(CUSTOMIZATION_ID, CERTIFICATE_ID, PERSON_ID);

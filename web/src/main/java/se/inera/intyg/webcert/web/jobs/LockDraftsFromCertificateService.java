@@ -23,7 +23,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationRequestFactory;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 
 @Service
@@ -32,13 +31,9 @@ public class LockDraftsFromCertificateService {
 
     private final CSIntegrationService csIntegrationService;
     private final CSIntegrationRequestFactory csIntegrationRequestFactory;
-    private final CertificateServiceProfile certificateServiceProfile;
     private final MonitoringLogService monitoringService;
 
     public int lock(int lockedAfterDay) {
-        if (!certificateServiceProfile.active()) {
-            return 0;
-        }
 
         final var certificates = csIntegrationService.lockDrafts(
             csIntegrationRequestFactory.getLockDraftsRequestDTO(lockedAfterDay)

@@ -21,29 +21,22 @@ package se.inera.intyg.webcert.web.csintegration.aggregate;
 
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.ReadyForSignFacadeService;
 
 @Service
 public class ReadyForSignAggregator implements ReadyForSignFacadeService {
 
-    private final CertificateServiceProfile certificateServiceProfile;
     private final ReadyForSignFacadeService readyForSignForWC;
     private final ReadyForSignFacadeService readyForSignForCS;
 
-    public ReadyForSignAggregator(CertificateServiceProfile certificateServiceProfile,
+    public ReadyForSignAggregator(
         ReadyForSignFacadeService readyForSignForWC, ReadyForSignFacadeService readyForSignForCS) {
-        this.certificateServiceProfile = certificateServiceProfile;
         this.readyForSignForWC = readyForSignForWC;
         this.readyForSignForCS = readyForSignForCS;
     }
 
     @Override
     public Certificate readyForSign(String certificateId) {
-        if (!certificateServiceProfile.active()) {
-            return readyForSignForWC.readyForSign(certificateId);
-        }
-        
         final var responseFromCS = readyForSignForCS.readyForSign(certificateId);
         return responseFromCS != null ? responseFromCS : readyForSignForWC.readyForSign(certificateId);
     }

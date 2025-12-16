@@ -24,12 +24,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.SendCertificateFacadeService;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,51 +37,31 @@ class SendCertificateAggregatorTest {
 
     SendCertificateFacadeService sendCertificateFromWC;
     SendCertificateFacadeService sendCertificateFromCS;
-    CertificateServiceProfile certificateServiceProfile;
     SendCertificateFacadeService aggregator;
 
     @BeforeEach
     void setup() {
         sendCertificateFromWC = mock(SendCertificateFacadeService.class);
         sendCertificateFromCS = mock(SendCertificateFacadeService.class);
-        certificateServiceProfile = mock(CertificateServiceProfile.class);
 
         aggregator = new SendCertificateAggregator(
             sendCertificateFromWC,
-            sendCertificateFromCS,
-            certificateServiceProfile);
+            sendCertificateFromCS);
     }
 
     @Test
-    void shouldSendFromWebcertIfProfileIsInactive() {
+    void shouldSendFromCSIfExists() {
+        when(sendCertificateFromCS.sendCertificate(ID))
+            .thenReturn(ID);
         aggregator.sendCertificate(ID);
 
-        Mockito.verify(sendCertificateFromWC).sendCertificate(ID);
+        Mockito.verify(sendCertificateFromWC, times(0)).sendCertificate(ID);
     }
 
-    @Nested
-    class ActiveProfile {
+    @Test
+    void shouldSendFromWCIfCertificateDoesNotExistInCS() {
+        aggregator.sendCertificate(ID);
 
-        @BeforeEach
-        void setup() {
-            when(certificateServiceProfile.active())
-                .thenReturn(true);
-        }
-
-        @Test
-        void shouldSendFromCSIfProfileIsActiveAndCertificateExistsInCS() {
-            when(sendCertificateFromCS.sendCertificate(ID))
-                .thenReturn(ID);
-            aggregator.sendCertificate(ID);
-
-            Mockito.verify(sendCertificateFromWC, times(0)).sendCertificate(ID);
-        }
-
-        @Test
-        void shouldSendFromWCIfProfileIsInactiveAndCertificateDoesNotExistInCS() {
-            aggregator.sendCertificate(ID);
-
-            Mockito.verify(sendCertificateFromWC, times(1)).sendCertificate(ID);
-        }
+        Mockito.verify(sendCertificateFromWC, times(1)).sendCertificate(ID);
     }
 }

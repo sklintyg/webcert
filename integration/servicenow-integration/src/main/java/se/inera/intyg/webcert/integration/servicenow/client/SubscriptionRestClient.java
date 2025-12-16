@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package se.inera.intyg.webcert.integration.servicenow.v2.client;
+package se.inera.intyg.webcert.integration.servicenow.client;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,11 +30,11 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationRequestV2;
+import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationRequest;
 import se.inera.intyg.webcert.integration.servicenow.dto.OrganizationResponse;
 
 @Service
-public class SubscriptionRestClientV2 {
+public class SubscriptionRestClient {
 
     @Value("${servicenow.username}")
     private String serviceNowUsername;
@@ -50,7 +50,7 @@ public class SubscriptionRestClientV2 {
 
     private final RestTemplate serviceNowRestTemplate;
 
-    public SubscriptionRestClientV2(@Qualifier("serviceNowRestTemplate") RestTemplate serviceNowRestTemplate) {
+    public SubscriptionRestClient(@Qualifier("serviceNowRestTemplate") RestTemplate serviceNowRestTemplate) {
         this.serviceNowRestTemplate = serviceNowRestTemplate;
     }
 
@@ -66,8 +66,8 @@ public class SubscriptionRestClientV2 {
         return response.getBody();
     }
 
-    private HttpEntity<OrganizationRequestV2> getRequestEntity(Set<String> organizationNumbers) {
-        final var requestBody = OrganizationRequestV2.builder()
+    private HttpEntity<OrganizationRequest> getRequestEntity(Set<String> organizationNumbers) {
+        final var requestBody = OrganizationRequest.builder()
             .services(serviceNowSubscriptionServiceNames)
             .customers(new ArrayList<>(organizationNumbers))
             .build();

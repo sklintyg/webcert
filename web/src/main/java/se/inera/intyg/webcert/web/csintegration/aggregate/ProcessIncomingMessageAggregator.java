@@ -25,7 +25,6 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.web.converter.ArendeConverter;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.csintegration.message.ProcessIncomingMessageService;
-import se.inera.intyg.webcert.web.csintegration.util.CertificateServiceProfile;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.sendMessageToCare.v2.SendMessageToCareType;
@@ -38,16 +37,11 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 public class ProcessIncomingMessageAggregator {
 
     private final ArendeService arendeService;
-    private final CertificateServiceProfile certificateServiceProfile;
     private final CSIntegrationService csIntegrationService;
     private final ProcessIncomingMessageService processIncomingMessageService;
 
 
     public SendMessageToCareResponseType process(SendMessageToCareType sendMessageToCareType) {
-        if (!certificateServiceProfile.active()) {
-            return processMessageForWebcert(sendMessageToCareType);
-        }
-
         final var certificateId = sendMessageToCareType.getIntygsId().getExtension();
         final var exists = csIntegrationService.certificateExists(certificateId);
         if (Boolean.FALSE.equals(exists)) {
