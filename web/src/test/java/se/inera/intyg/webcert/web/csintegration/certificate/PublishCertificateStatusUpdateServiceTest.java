@@ -127,7 +127,8 @@ class PublishCertificateStatusUpdateServiceTest {
         void shallGetCertificateXmlWithCertificateId() {
             final var argumentCaptor = ArgumentCaptor.forClass(String.class);
 
-            publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKAPAT, Optional.empty(), Optional.empty()
+            publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKAPAT,
+                Optional.empty(), Optional.empty(), null, null
             );
 
             verify(csIntegrationService).getInternalCertificateXml(argumentCaptor.capture());
@@ -148,15 +149,16 @@ class PublishCertificateStatusUpdateServiceTest {
         @Test
         void shallCallNotificationMessageFactoryWithHsaIdFromIntygUserIfPresent() {
             doReturn(new NotificationMessage()).when(notificationMessageFactory)
-                .create(certificate, xml, HandelsekodEnum.SKAPAT, INTYG_USER_HSA_ID);
+                .create(certificate, xml, HandelsekodEnum.SKAPAT, INTYG_USER_HSA_ID, null, null);
             doReturn(xml).when(csIntegrationService)
                 .getInternalCertificateXml(CERTIFICATE_ID);
 
-            publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKAPAT, Optional.of(intygUser), Optional.empty()
+            publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKAPAT,
+                Optional.of(intygUser), Optional.empty(), null, null
             );
 
             verify(notificationMessageFactory).create(certificate, xml, HandelsekodEnum.SKAPAT,
-                INTYG_USER_HSA_ID);
+                INTYG_USER_HSA_ID, null, null);
         }
 
         @Test
@@ -164,28 +166,28 @@ class PublishCertificateStatusUpdateServiceTest {
             doReturn(true).when(webCertUserService).hasAuthenticationContext();
             doReturn(webCertUser).when(webCertUserService).getUser();
             doReturn(new NotificationMessage()).when(notificationMessageFactory)
-                .create(certificate, xml, HandelsekodEnum.SKAPAT, WEBCERT_HSA_ID);
+                .create(certificate, xml, HandelsekodEnum.SKAPAT, WEBCERT_HSA_ID, null, null);
             doReturn(xml).when(csIntegrationService)
                 .getInternalCertificateXml(CERTIFICATE_ID);
 
             publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKAPAT);
 
             verify(notificationMessageFactory).create(certificate, xml, HandelsekodEnum.SKAPAT,
-                WEBCERT_HSA_ID);
+                WEBCERT_HSA_ID, null, null);
         }
 
         @Test
         void shallCallNotificationMessageFactoryWithoutHsaIdIfHasAuthenticationContextReturnsFalse() {
             doReturn(false).when(webCertUserService).hasAuthenticationContext();
             doReturn(new NotificationMessage()).when(notificationMessageFactory)
-                .create(certificate, xml, HandelsekodEnum.SKAPAT, null);
+                .create(certificate, xml, HandelsekodEnum.SKAPAT, null, null, null);
             doReturn(xml).when(csIntegrationService)
                 .getInternalCertificateXml(CERTIFICATE_ID);
 
             publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKAPAT);
 
             verify(notificationMessageFactory).create(certificate, xml, HandelsekodEnum.SKAPAT,
-                null);
+                null, null, null);
         }
 
         @Test
@@ -193,11 +195,14 @@ class PublishCertificateStatusUpdateServiceTest {
             doReturn(true).when(webCertUserService).hasAuthenticationContext();
             doReturn(webCertUser).when(webCertUserService).getUser();
             doReturn(new NotificationMessage()).when(notificationMessageFactory)
-                .create(certificate, XML_DATA, HandelsekodEnum.SKAPAT, WEBCERT_HSA_ID);
+                .create(certificate, XML_DATA, HandelsekodEnum.SKAPAT, WEBCERT_HSA_ID,
+                    null, null);
 
             publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKAPAT, XML_DATA);
 
-            verify(notificationMessageFactory).create(certificate, XML_DATA, HandelsekodEnum.SKAPAT, WEBCERT_HSA_ID);
+            verify(notificationMessageFactory).create(certificate, XML_DATA, HandelsekodEnum.SKAPAT,
+                WEBCERT_HSA_ID,
+                null, null);
         }
     }
 
@@ -219,7 +224,7 @@ class PublishCertificateStatusUpdateServiceTest {
             final var argumentCaptor = ArgumentCaptor.forClass(NotificationMessage.class);
 
             doReturn(expectedMessage).when(notificationMessageFactory)
-                .create(certificate, xml, HandelsekodEnum.SKAPAT, WEBCERT_HSA_ID);
+                .create(certificate, xml, HandelsekodEnum.SKAPAT, WEBCERT_HSA_ID, null, null);
 
             publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKAPAT);
             verify(notificationService).send(argumentCaptor.capture(), eq(UNIT_ID), eq(TYPE_VERSION));
@@ -231,10 +236,11 @@ class PublishCertificateStatusUpdateServiceTest {
         void shallCallNotificationServiceWithUnitIdFromIssuingUnit() {
             final var argumentCaptor = ArgumentCaptor.forClass(String.class);
             doReturn(new NotificationMessage()).when(notificationMessageFactory)
-                .create(certificate, xml, HandelsekodEnum.SKAPAT, WEBCERT_HSA_ID);
+                .create(certificate, xml, HandelsekodEnum.SKAPAT, WEBCERT_HSA_ID, null, null);
 
             publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKAPAT);
-            verify(notificationService).send(any(NotificationMessage.class), argumentCaptor.capture(), eq(TYPE_VERSION));
+            verify(notificationService).send(any(NotificationMessage.class), argumentCaptor.capture(),
+                eq(TYPE_VERSION));
 
             assertEquals(UNIT_ID, argumentCaptor.getValue());
         }
@@ -243,10 +249,11 @@ class PublishCertificateStatusUpdateServiceTest {
         void shallCallNotificationServiceWithTypeVersionFromCertificate() {
             final var argumentCaptor = ArgumentCaptor.forClass(String.class);
             doReturn(new NotificationMessage()).when(notificationMessageFactory)
-                .create(certificate, xml, HandelsekodEnum.SKAPAT, WEBCERT_HSA_ID);
+                .create(certificate, xml, HandelsekodEnum.SKAPAT, WEBCERT_HSA_ID, null, null);
 
             publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKAPAT);
-            verify(notificationService).send(any(NotificationMessage.class), eq(UNIT_ID), argumentCaptor.capture());
+            verify(notificationService).send(any(NotificationMessage.class), eq(UNIT_ID),
+                argumentCaptor.capture());
 
             assertEquals(TYPE_VERSION, argumentCaptor.getValue());
         }
@@ -280,13 +287,14 @@ class PublishCertificateStatusUpdateServiceTest {
             doReturn(expectedHsaId).when(event).getHanteratAv();
             doReturn(HandelsekodEnum.SKAPAT).when(event).getCode();
             doReturn(notificationMessage).when(notificationMessageFactory)
-                .create(certificate, xml, HandelsekodEnum.SKAPAT, expectedHsaId);
+                .create(certificate, xml, HandelsekodEnum.SKAPAT, expectedHsaId, null, null);
             doReturn(xml).when(csIntegrationService)
                 .getInternalCertificateXml(CERTIFICATE_ID);
 
             publishCertificateStatusUpdateService.resend(certificate, event, notificationRedelivery);
 
-            verify(notificationRedeliveryService).resend(notificationRedelivery, event, expectedStatusUpdate);
+            verify(notificationRedeliveryService).resend(notificationRedelivery, event,
+                expectedStatusUpdate);
         }
 
     }

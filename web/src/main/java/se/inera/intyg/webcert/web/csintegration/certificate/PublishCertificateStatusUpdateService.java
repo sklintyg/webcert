@@ -19,12 +19,14 @@
 
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
+import java.time.LocalDate;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.infra.security.common.model.IntygUser;
+import se.inera.intyg.webcert.common.service.notification.AmneskodCreator;
 import se.inera.intyg.webcert.notification_sender.notifications.services.redelivery.NotificationRedeliveryService;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
@@ -32,6 +34,7 @@ import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
 
 @Service
 @RequiredArgsConstructor
@@ -45,18 +48,19 @@ public class PublishCertificateStatusUpdateService {
     private final WebCertUserService webCertUserService;
 
     public void publish(Certificate certificate, HandelsekodEnum eventType, String xml) {
-        publish(certificate, eventType, Optional.empty(), Optional.of(xml));
+        publish(certificate, eventType, Optional.empty(), Optional.of(xml), null, null);
     }
 
     public void publish(Certificate certificate, HandelsekodEnum eventType) {
-        publish(certificate, eventType, Optional.empty(), Optional.empty());
+        publish(certificate, eventType, Optional.empty(), Optional.empty(), null, null);
     }
 
-    public void resend(Certificate certificate, Handelse event, NotificationRedelivery notificationRedelivery) {
-        resendEvent(certificate, event, notificationRedelivery);
+    public void publish(Certificate certificate, HandelsekodEnum eventType, Amneskod subjectCode, LocalDate lastDateToAnswer) {
+        publish(certificate, eventType, Optional.empty(), Optional.empty(), subjectCode, lastDateToAnswer);
     }
 
-    public void publish(Certificate certificate, HandelsekodEnum eventType, Optional<IntygUser> intygUser, Optional<String> xml) {
+    public void publish(Certificate certificate, HandelsekodEnum eventType, Optional<IntygUser> intygUser, Optional<String> xml,
+        Amneskod subjectCode, LocalDate lastDateToAnswer) {
         if (unitIsNotIntegrated(certificate)) {
             return;
         }
@@ -66,13 +70,16 @@ public class PublishCertificateStatusUpdateService {
         );
 
         final var handledByUserHsaId = intygUser.map(IntygUser::getHsaId).orElseGet(
-            () -> webCertUserService.hasAuthenticationContext() ? webCertUserService.getUser().getHsaId() : null);
+            () -> webCertUserService.hasAuthenticationContext() ? webCertUserService.getUser()
+                .getHsaId() : null);
 
         final var notificationMessage = notificationMessageFactory.create(
             certificate,
             certificateXml,
             eventType,
-            handledByUserHsaId
+            handledByUserHsaId,
+            subjectCode,
+            lastDateToAnswer
         );
 
         notificationService.send(
@@ -82,18 +89,26 @@ public class PublishCertificateStatusUpdateService {
         );
     }
 
-    private void resendEvent(Certificate certificate, Handelse event, NotificationRedelivery notificationRedelivery) {
+    public void resend(Certificate certificate, Handelse event, NotificationRedelivery notificationRedelivery) {
+        resendEvent(certificate, event, notificationRedelivery);
+    }
+
+    private void resendEvent(Certificate certificate, Handelse event,
+        NotificationRedelivery notificationRedelivery) {
         if (unitIsNotIntegrated(certificate)) {
             return;
         }
 
-        final var certificateXml = csIntegrationService.getInternalCertificateXml(certificate.getMetadata().getId());
+        final var certificateXml = csIntegrationService.getInternalCertificateXml(
+            certificate.getMetadata().getId());
 
         final var notificationMessage = notificationMessageFactory.create(
             certificate,
             certificateXml,
             event.getCode(),
-            event.getHanteratAv()
+            event.getHanteratAv(),
+            getSubjectCode(event),
+            event.getSistaDatumForSvar()
         );
 
         notificationRedeliveryService.resend(
@@ -104,6 +119,11 @@ public class PublishCertificateStatusUpdateService {
     }
 
     private boolean unitIsNotIntegrated(Certificate certificate) {
-        return integreradeEnheterRegistry.getIntegreradEnhet(certificate.getMetadata().getUnit().getUnitId()) == null;
+        return integreradeEnheterRegistry.getIntegreradEnhet(
+            certificate.getMetadata().getUnit().getUnitId()) == null;
+    }
+
+    private static Amneskod getSubjectCode(Handelse event) {
+        return event.getAmne() != null ? AmneskodCreator.create(event.getAmne().name(), event.getAmne().getDescription()) : null;
     }
 }
