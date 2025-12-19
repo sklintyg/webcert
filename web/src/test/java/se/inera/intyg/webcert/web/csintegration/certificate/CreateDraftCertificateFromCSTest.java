@@ -278,7 +278,10 @@ class CreateDraftCertificateFromCSTest {
             CERTIFICATE,
             HandelsekodEnum.SKAPAT,
             Optional.of(user),
-            Optional.empty());
+            Optional.empty(),
+            null,
+            null
+        );
     }
 
     @Test

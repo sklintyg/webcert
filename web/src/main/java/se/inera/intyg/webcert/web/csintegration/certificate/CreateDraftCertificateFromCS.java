@@ -99,7 +99,8 @@ public class CreateDraftCertificateFromCS implements CreateDraftCertificate {
                 NO_PREFILL_ELEMENTS
             );
 
-            publishCertificateStatusUpdateService.publish(createdCertificate, HandelsekodEnum.SKAPAT, Optional.of(user), Optional.empty());
+            publishCertificateStatusUpdateService.publish(createdCertificate, HandelsekodEnum.SKAPAT, Optional.of(user), Optional.empty(),
+                null, null);
 
             final var loggedInWebcertUser = loggedInWebcertUserFactory.create(user);
             publishCertificateAnalyticsMessage.publishEvent(
