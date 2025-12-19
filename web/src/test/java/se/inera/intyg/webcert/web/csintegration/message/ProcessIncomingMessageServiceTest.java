@@ -21,12 +21,14 @@ package se.inera.intyg.webcert.web.csintegration.message;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,7 +65,9 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
 @ExtendWith(MockitoExtension.class)
 class ProcessIncomingMessageServiceTest {
 
+    private static final LocalDate SISTA_DATUM_FOR_SVAR = LocalDate.now();
     private static final IncomingMessageRequestDTO INCOMING_MESSAGE_REQUEST_DTO = IncomingMessageRequestDTO.builder()
+        .lastDateToAnswer(SISTA_DATUM_FOR_SVAR)
         .build();
     private static final String CERTIFICATE_ID = "certificateId";
     private static final String CERTIFICATE_TYPE = "certificateType";
@@ -127,6 +131,7 @@ class ProcessIncomingMessageServiceTest {
         intygId.setExtension(CERTIFICATE_ID);
         sendMessageToCareType.setIntygsId(intygId);
         sendMessageToCareType.setMeddelandeId(MESSAGE_ID);
+        sendMessageToCareType.setSistaDatumForSvar(SISTA_DATUM_FOR_SVAR);
     }
 
     @Test
@@ -168,7 +173,8 @@ class ProcessIncomingMessageServiceTest {
     void shallPublishEventForQuestionIfUnitShouldNotRecieveMailNotificationAndIsIntegrated() {
         doReturn(new IntegreradEnhet()).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
         processIncomingMessageService.process(sendMessageToCareType);
-        verify(publishCertificateStatusUpdateService).publish(certificate, HandelsekodEnum.NYFRFM);
+        verify(publishCertificateStatusUpdateService).publish(eq(certificate), eq(HandelsekodEnum.NYFRFM), any(Amneskod.class),
+            eq(SISTA_DATUM_FOR_SVAR));
     }
 
     @Test
@@ -176,7 +182,8 @@ class ProcessIncomingMessageServiceTest {
         doReturn(new IntegreradEnhet()).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
         sendMessageToCareType.setSvarPa(new MeddelandeReferens());
         processIncomingMessageService.process(sendMessageToCareType);
-        verify(publishCertificateStatusUpdateService).publish(certificate, HandelsekodEnum.NYSVFM);
+        verify(publishCertificateStatusUpdateService).publish(eq(certificate), eq(HandelsekodEnum.NYSVFM), any(Amneskod.class),
+            eq(SISTA_DATUM_FOR_SVAR));
     }
 
     @Test

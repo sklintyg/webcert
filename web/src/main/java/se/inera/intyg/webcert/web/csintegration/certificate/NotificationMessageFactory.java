@@ -19,6 +19,7 @@
 
 package se.inera.intyg.webcert.web.csintegration.certificate;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,7 @@ import se.inera.intyg.common.support.modules.support.api.notification.Notificati
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
+import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
 
 @Component
 @RequiredArgsConstructor
@@ -38,8 +40,8 @@ public class NotificationMessageFactory {
     private final CSIntegrationService csIntegrationService;
     private final QuestionCounter questionCounter;
 
-    public NotificationMessage create(Certificate certificate, String encodedXmlRepresentation, HandelsekodEnum eventType,
-        String handledByHsaId) {
+    public NotificationMessage create(Certificate certificate, String encodedXmlRepresentation,
+        HandelsekodEnum eventType, String handledByHsaId, Amneskod subjectCode, LocalDate lastDateToAnswer) {
         final var questions = csIntegrationService.getQuestions(
             certificate.getMetadata().getId()
         );
@@ -54,16 +56,20 @@ public class NotificationMessageFactory {
             FragorOchSvar.getEmpty(),
             questionCounter.calculateArendeCount(
                 questions.stream()
-                    .filter(question -> !FrageStallare.FORSAKRINGSKASSAN.isNameEqual(question.getAuthor()))
+                    .filter(
+                        question -> !FrageStallare.FORSAKRINGSKASSAN.isNameEqual(question.getAuthor()))
                     .collect(Collectors.toList())
             ),
             questionCounter.calculateArendeCount(
                 questions.stream()
-                    .filter(question -> FrageStallare.FORSAKRINGSKASSAN.isNameEqual(question.getAuthor()))
+                    .filter(
+                        question -> FrageStallare.FORSAKRINGSKASSAN.isNameEqual(question.getAuthor()))
                     .collect(Collectors.toList())
             ),
             SchemaVersion.VERSION_3,
-            certificate.getMetadata().getExternalReference()
+            certificate.getMetadata().getExternalReference(),
+            subjectCode,
+            lastDateToAnswer
         );
 
         notificationMessage.setStatusUpdateXml(
