@@ -752,6 +752,10 @@ public class ArendeServiceImpl implements ArendeService {
 
     @Override
     public List<Arende> getArendenInternal(String intygsId) {
+        if (messageImportService.isImportNeeded(intygsId)) {
+            messageImportService.importMessages(intygsId);
+        }
+
         return arendeRepository.findByIntygsId(intygsId);
     }
 
