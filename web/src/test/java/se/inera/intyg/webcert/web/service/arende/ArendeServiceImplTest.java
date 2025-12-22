@@ -22,6 +22,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -31,6 +33,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -50,6 +53,7 @@ import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarParameter;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.QueryFragaSvarResponse;
 import se.inera.intyg.webcert.web.service.log.LogService;
+import se.inera.intyg.webcert.web.service.message.MessageImportService;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolver;
 import se.inera.intyg.webcert.web.service.patient.PatientDetailsResolverResponse;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
@@ -60,6 +64,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 class ArendeServiceImplTest {
 
     private static final String PATIENT_PERSON_ID = "191212121212";
+    private static final String CERTIFICATE_ID = "certificateId";
 
     @InjectMocks
     private ArendeServiceImpl arendeServiceReal = new ArendeServiceImpl();
@@ -85,6 +90,9 @@ class ArendeServiceImplTest {
     @Mock
     private PaginationAndLoggingService paginationAndLoggingService;
 
+    @Mock
+    private MessageImportService messageImportService;
+
     @Test
     void filterArende() {
         //Given
@@ -98,8 +106,8 @@ class ArendeServiceImplTest {
 
         Mockito.doReturn(hsaNames).when(arendeService).getNamesByHsaIds(any());
         WebCertUser user = Mockito.mock(WebCertUser.class);
-        Mockito.when(webcertUserService.getUser()).thenReturn(user);
-        Mockito.when(authoritiesHelper.getIntygstyperForPrivilege(eq(user), anyString()))
+        when(webcertUserService.getUser()).thenReturn(user);
+        when(authoritiesHelper.getIntygstyperForPrivilege(eq(user), anyString()))
             .thenReturn(new HashSet<>(Arrays.asList("a", "b")));
 
         //Names in arende
@@ -107,17 +115,17 @@ class ArendeServiceImplTest {
         final Arende arende2 = buildArende("sign2", "C", "enhet");
         final Arende arende3 = buildArende("sign3", "A", "enhet");
 
-        Mockito.when(arendeRepository.filterArende(any())).thenReturn(Arrays.asList(arende1, arende3, arende2));
+        when(arendeRepository.filterArende(any())).thenReturn(Arrays.asList(arende1, arende3, arende2));
         final Map<Personnummer, PatientDetailsResolverResponse> statusMap = Mockito.mock(Map.class);
         PatientDetailsResolverResponse response = new PatientDetailsResolverResponse();
         response.setTestIndicator(false);
         response.setDeceased(false);
         response.setProtectedPerson((SekretessStatus.FALSE));
-        Mockito.when(statusMap.get(any(Personnummer.class))).thenReturn(response);
-        Mockito.when(patientDetailsResolver.getPersonStatusesForList(any())).thenReturn(statusMap);
+        when(statusMap.get(any(Personnummer.class))).thenReturn(response);
+        when(patientDetailsResolver.getPersonStatusesForList(any())).thenReturn(statusMap);
         final QueryFragaSvarResponse qfsr = new QueryFragaSvarResponse();
         qfsr.setResults(List.of());
-        Mockito.when(fragaSvarService.filterFragaSvar(any())).thenReturn(qfsr);
+        when(fragaSvarService.filterFragaSvar(any())).thenReturn(qfsr);
         final QueryFragaSvarParameter filterParameters = new QueryFragaSvarParameter();
 
         final var arendeListItem1 = new ArendeListItem();
@@ -128,7 +136,7 @@ class ArendeServiceImplTest {
         arendeListItem3.setSigneratAv(arende3.getSigneratAv());
 
         final var arendeListItems = List.of(arendeListItem1, arendeListItem2, arendeListItem3);
-        Mockito.when(paginationAndLoggingService.get(eq(filterParameters), any(), eq(user))).thenReturn(arendeListItems);
+        when(paginationAndLoggingService.get(eq(filterParameters), any(), eq(user))).thenReturn(arendeListItems);
 
         //When
         final QueryFragaSvarResponse queryFragaSvarResponse = arendeService.filterArende(filterParameters);
@@ -139,6 +147,20 @@ class ArendeServiceImplTest {
         assertEquals(arende1.getSigneratAv(), results.get(0).getSigneratAv());
         assertEquals(arende2.getSigneratAv(), results.get(1).getSigneratAv());
         assertEquals(arende3.getSigneratAv(), results.get(2).getSigneratAv());
+    }
+
+    @Nested
+    class GetArendeInternalTests {
+
+
+        @Test
+        void shouldImportMessageIfNeeded() {
+            when(messageImportService.isImportNeeded(CERTIFICATE_ID)).thenReturn(true);
+
+            arendeServiceReal.getArendenInternal(CERTIFICATE_ID);
+
+            verify(messageImportService).importMessages(CERTIFICATE_ID);
+        }
     }
 
     private Arende buildArende(String signeratAv, String signeratAvName, String enhet) {
