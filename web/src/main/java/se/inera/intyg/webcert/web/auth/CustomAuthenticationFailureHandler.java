@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
@@ -41,7 +42,7 @@ public class CustomAuthenticationFailureHandler extends ExceptionMappingAuthenti
 
     private static final String WC_DEFAULT_FAILURE_URL = "/error?reason=login.failed";
     private final String privatePractitionerPortalRegistrationUrl;
-    private  Map<String, String> failureUrlMap = new HashMap<>();
+    private Map<String, String> failureUrlMap = new HashMap<>();
 
     public CustomAuthenticationFailureHandler(
         @Value("${privatepractitioner.portal.registration.url}") String privatePractitionerPortalRegistrationUrl) {
@@ -56,7 +57,7 @@ public class CustomAuthenticationFailureHandler extends ExceptionMappingAuthenti
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception)
         throws IOException {
-        final var exceptionName = exception.getClass().getName();
+        final var exceptionName = getCauseExceptionName(exception);
         log.error("Failure on authentication.", exception);
 
         String url;
@@ -68,6 +69,13 @@ public class CustomAuthenticationFailureHandler extends ExceptionMappingAuthenti
         }
 
         getRedirectStrategy().sendRedirect(request, response, url);
+    }
+
+    private static @NonNull String getCauseExceptionName(AuthenticationException exception) {
+        if (exception.getCause() != null) {
+            return exception.getCause().getClass().getName();
+        }
+        return exception.getClass().getName();
     }
 
     private Map<String, String> getFalureUrlMap() {

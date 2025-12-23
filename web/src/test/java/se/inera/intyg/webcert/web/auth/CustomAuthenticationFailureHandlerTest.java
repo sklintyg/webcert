@@ -37,6 +37,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.saml2.core.Saml2Error;
+import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticationException;
 import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationException;
 import se.inera.intyg.infra.security.exception.HsaServiceException;
@@ -78,7 +80,9 @@ class CustomAuthenticationFailureHandlerTest {
 
     @Test
     void shouldRedirectToLoginFailed() throws IOException {
-        handler.onAuthenticationFailure(request, response, BAD_CREDENTIALS);
+        handler.onAuthenticationFailure(request, response,
+            new Saml2AuthenticationException(new Saml2Error("error", "description"), BAD_CREDENTIALS)
+        );
 
         verify(redirectStrategy, times(ONE)).sendRedirect(eq(request), eq(response), urlCaptor.capture());
         assertEquals("/error?reason=login.failed", urlCaptor.getValue());
@@ -86,7 +90,9 @@ class CustomAuthenticationFailureHandlerTest {
 
     @Test
     void shouldRedirectToHsaError() throws IOException {
-        handler.onAuthenticationFailure(request, response, HSA_SERVICE);
+        handler.onAuthenticationFailure(request, response,
+            new Saml2AuthenticationException(new Saml2Error("error", "description"), HSA_SERVICE)
+        );
 
         verify(redirectStrategy, times(ONE)).sendRedirect(eq(request), eq(response), urlCaptor.capture());
         assertEquals("/error?reason=login.hsaerror", urlCaptor.getValue());
@@ -94,7 +100,9 @@ class CustomAuthenticationFailureHandlerTest {
 
     @Test
     void shouldRedirectToLoginMedarbetaruppdragError() throws IOException {
-        handler.onAuthenticationFailure(request, response, MISSING_ASSIGNMENT);
+        handler.onAuthenticationFailure(request, response,
+            new Saml2AuthenticationException(new Saml2Error("error", "description"), MISSING_ASSIGNMENT)
+        );
 
         verify(redirectStrategy, times(ONE)).sendRedirect(eq(request), eq(response), urlCaptor.capture());
         assertEquals("/error?reason=login.medarbetaruppdrag", urlCaptor.getValue());
@@ -102,7 +110,9 @@ class CustomAuthenticationFailureHandlerTest {
 
     @Test
     void shouldRedirectToSubscriptionError() throws IOException {
-        handler.onAuthenticationFailure(request, response, MISSING_SUBSCRIPTION);
+        handler.onAuthenticationFailure(request, response,
+            new Saml2AuthenticationException(new Saml2Error("error", "description"), MISSING_SUBSCRIPTION)
+        );
 
         verify(redirectStrategy, times(ONE)).sendRedirect(eq(request), eq(response), urlCaptor.capture());
         assertEquals("/error?reason=auth-exception-subscription", urlCaptor.getValue());
