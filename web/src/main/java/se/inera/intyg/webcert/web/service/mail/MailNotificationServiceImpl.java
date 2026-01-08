@@ -312,7 +312,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
                 return new MailNotificationEnhet(hsaId, enhet.getEnhetsnamn(), enhet.getEpost());
             }
         } catch (Exception e) {
-            log.error("Failed to contact ppService to get HSA Id '{}'", hsaId);
+            log.error("Failed to contact ppService to get HSA Id '{}'", hsaId, e);
         }
         return null;
     }
