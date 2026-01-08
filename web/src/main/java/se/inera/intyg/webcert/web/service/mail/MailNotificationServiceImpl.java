@@ -25,9 +25,9 @@ import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.xml.ws.WebServiceException;
 import java.util.Locale;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -49,9 +49,10 @@ import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
  * @author andreaskaltenbach
  */
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class MailNotificationServiceImpl implements MailNotificationService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MailNotificationServiceImpl.class);
 
     private static final String QA_NOTIFICATION_UTHOPP_PATH_SEGMENT = "certificate";
     private static final String QA_NOTIFICATION_DEFAULT_PATH_SEGMENT = "basic-certificate";
@@ -71,40 +72,40 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     @Value("${mail.webcert.host.url}")
     private String webCertHostUrl;
 
-    @Autowired
-    private JavaMailSender mailSender;
+    private final JavaMailSender mailSender;
 
-    @Autowired
-    private MonitoringLogService monitoringService;
 
-    @Autowired
-    private PPService ppService;
+    private final MonitoringLogService monitoringService;
+
+
+    private final PPService ppService;
+
+
+    private final PrivatePractitionerService privatePractitionerService;
+
+
+    private final PrivatePractitionerServiceProfile privatePractitionerServiceProfile;
 
     @Value("${privatepractitioner.logicaladdress}")
     private String ppLogicalAddress;
 
-    @Autowired
-    private UtkastRepository utkastRepository;
 
-    @Autowired
-    private HsaOrganizationsService hsaOrganizationsService;
+    private final UtkastRepository utkastRepository;
 
-    @Autowired
-    private EmployeeNameService employeeNameService;
+
+    private final HsaOrganizationsService hsaOrganizationsService;
+
+
+    private final EmployeeNameService employeeNameService;
 
     private void logError(String type, MailNotification mailNotification, Exception ex) {
-        LOG.error(String.format(
-                "Notification mail for %s '%s' concerning certificate '%s' couldn't be sent to %s (%s) due to reason '%s'",
-                type, mailNotification.getQaId(), mailNotification.getCertificateId(),
-                mailNotification.getCareUnitId(),
-                mailNotification.getCareUnitName(), ex.getMessage()
-            ),
-            ex
-        );
+        log.error("Notification mail for {} '{}' concerning certificate '{}' couldn't be sent to {} ({}) due to reason '{}'", type,
+            mailNotification.getQaId(), mailNotification.getCertificateId(), mailNotification.getCareUnitId(),
+            mailNotification.getCareUnitName(), ex.getMessage(), ex);
     }
 
     private void logError(String type, MailNotification mailNotification, String reason) {
-        LOG.error(
+        log.error(
             "Notification mail for {} '{}' concerning certificate '{}' couldn't be sent to {} ({}) due to reason '{}'",
             type, mailNotification.getQaId(), mailNotification.getCertificateId(),
             mailNotification.getCareUnitId(),
@@ -188,7 +189,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
         try {
             parent = hsaOrganizationsService.getParentUnit(mottagningsId);
         } catch (HsaServiceCallException ex) {
-            LOG.warn(
+            log.warn(
                 String.format("Could not call HSA for '%s', cause: '%s'", mottagningsId, ex.getMessage()),
                 ex);
             return null;
@@ -272,7 +273,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
             return new MailNotificationEnhet(enhetData.getId(), enhetData.getNamn(),
                 enhetData.getEpost());
         } catch (WebServiceException ex) {
-            LOG.error(String.format("Failed to contact HSA to get HSA Id '%s' : '%s'", careUnitId,
+            log.error(String.format("Failed to contact HSA to get HSA Id '%s' : '%s'", careUnitId,
                 ex.getMessage()), ex);
             return null;
         }
@@ -290,7 +291,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
             }
             LOG.error("Failed to lookup privatepractitioner with HSA Id '{}'", hsaId);
         } catch (Exception e) {
-            LOG.error(String.format("Failed to contact ppService to get HSA Id '%s'", hsaId), e);
+            log.error("Failed to contact ppService to get HSA Id '{}'", hsaId);
         }
         return null;
     }
@@ -309,7 +310,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
             url += "?enhet=" + mailNotification.getCareUnitId();
         }
 
-        LOG.debug("Intygsurl: {}", url);
+        log.debug("Intygsurl: {}", url);
         return url;
     }
 
