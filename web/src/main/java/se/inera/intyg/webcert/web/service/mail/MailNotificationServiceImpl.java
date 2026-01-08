@@ -40,6 +40,8 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
 import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
+import se.inera.intyg.webcert.web.privatepractitioner.PrivatePractitionerService;
+import se.inera.intyg.webcert.web.privatepractitioner.toggle.PrivatePractitionerServiceProfile;
 import se.inera.intyg.webcert.web.service.employee.EmployeeNameService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
@@ -280,16 +282,35 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     }
 
     private MailNotificationEnhet getPrivatePractitionerEnhet(String hsaId) {
+        return privatePractitionerServiceProfile.isEnabled()
+            ? getMailNotificationEnhetFromPPS(hsaId)
+            : getMailNotificationEnhetFromPP(hsaId);
+    }
+
+    private @Nullable MailNotificationEnhet getMailNotificationEnhetFromPPS(String hsaId) {
+        try {
+            final var privatePractitioner = privatePractitionerService.getPrivatePractitioner();
+            if (privatePractitioner != null) {
+                return new MailNotificationEnhet(
+                    hsaId,
+                    privatePractitioner.getCareUnitName(),
+                    privatePractitioner.getEmail()
+                );
+            }
+        } catch (Exception e) {
+            log.error("Failed to contact PrivatePractitionerService to get HSA Id '{}'", hsaId, e);
+        }
+        return null;
+    }
+
+    private @Nullable MailNotificationEnhet getMailNotificationEnhetFromPP(String hsaId) {
         try {
             HoSPersonType privatePractitioner = ppService.getPrivatePractitioner(ppLogicalAddress, hsaId,
                 null);
-            if (privatePractitioner != null) {
+            if (privatePractitioner != null && privatePractitioner.getEnhet() != null) {
                 EnhetType enhet = privatePractitioner.getEnhet();
-                if (enhet != null) {
-                    return new MailNotificationEnhet(hsaId, enhet.getEnhetsnamn(), enhet.getEpost());
-                }
+                return new MailNotificationEnhet(hsaId, enhet.getEnhetsnamn(), enhet.getEpost());
             }
-            LOG.error("Failed to lookup privatepractitioner with HSA Id '{}'", hsaId);
         } catch (Exception e) {
             log.error("Failed to contact ppService to get HSA Id '{}'", hsaId);
         }
