@@ -488,4 +488,28 @@ class MailNotificationServiceImplTest {
         verify(mailSender, times(1)).send(mimeCaptor.capture());
         assertEquals(expectedContent, mimeCaptor.getValue().getContent());
     }
+
+    @Test
+    void shouldUsePrivatePractitionerServiceToGetRecipientWhenProfileIsActive() {
+        final var mailNotification = mailNotification("intygsId",
+            MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "1234");
+
+        when(privatePractitionerServiceProfile.isEnabled()).thenReturn(true);
+
+        mailNotificationService.sendMailForIncomingQuestion(mailNotification);
+
+        verify(privatePractitionerService).getPrivatePractitioner();
+    }
+
+    @Test
+    void shouldUsePPServiceToGetRecipientWhenProfileIsNotActive() {
+        final var mailNotification = mailNotification("intygsId",
+            MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "1234");
+
+        when(privatePractitionerServiceProfile.isEnabled()).thenReturn(false);
+
+        mailNotificationService.sendMailForIncomingQuestion(mailNotification);
+
+        verify(ppService).getPrivatePractitioner(anyString(), eq(SIGNED_BY_HSA_ID), isNull());
+    }
 }
