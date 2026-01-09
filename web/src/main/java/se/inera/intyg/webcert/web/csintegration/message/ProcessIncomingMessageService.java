@@ -23,7 +23,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
-import se.inera.intyg.webcert.common.service.notification.AmneskodCreator;
 import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
 import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
@@ -65,8 +64,6 @@ public class ProcessIncomingMessageService {
         );
 
         final var questionType = ArendeAmne.valueOf(sendMessageToCare.getAmne().getCode());
-        final var subjectCode = AmneskodCreator.create(questionType.name(),
-            questionType.getDescription());
         final var isAnswer = sendMessageToCare.getSvarPa() != null;
 
         monitoringLogService.logArendeReceived(
@@ -87,7 +84,7 @@ public class ProcessIncomingMessageService {
             publishCertificateStatusUpdateService.publish(
                 certificate,
                 getEventType(questionType, isAnswer),
-                subjectCode,
+                questionType,
                 incomingMessageRequest.getLastDateToAnswer()
             );
         }

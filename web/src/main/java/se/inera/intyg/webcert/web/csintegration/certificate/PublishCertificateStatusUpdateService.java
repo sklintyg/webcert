@@ -26,15 +26,14 @@ import org.springframework.stereotype.Service;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.infra.security.common.model.IntygUser;
-import se.inera.intyg.webcert.common.service.notification.AmneskodCreator;
 import se.inera.intyg.webcert.notification_sender.notifications.services.redelivery.NotificationRedeliveryService;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.service.notification.NotificationService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
-import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
 
 @Service
 @RequiredArgsConstructor
@@ -55,12 +54,12 @@ public class PublishCertificateStatusUpdateService {
         publish(certificate, eventType, Optional.empty(), Optional.empty(), null, null);
     }
 
-    public void publish(Certificate certificate, HandelsekodEnum eventType, Amneskod subjectCode, LocalDate lastDateToAnswer) {
-        publish(certificate, eventType, Optional.empty(), Optional.empty(), subjectCode, lastDateToAnswer);
+    public void publish(Certificate certificate, HandelsekodEnum eventType, ArendeAmne questionType, LocalDate lastDateToAnswer) {
+        publish(certificate, eventType, Optional.empty(), Optional.empty(), questionType, lastDateToAnswer);
     }
 
     public void publish(Certificate certificate, HandelsekodEnum eventType, Optional<IntygUser> intygUser, Optional<String> xml,
-        Amneskod subjectCode, LocalDate lastDateToAnswer) {
+        ArendeAmne questionType, LocalDate lastDateToAnswer) {
         if (unitIsNotIntegrated(certificate)) {
             return;
         }
@@ -78,7 +77,7 @@ public class PublishCertificateStatusUpdateService {
             certificateXml,
             eventType,
             handledByUserHsaId,
-            subjectCode,
+            questionType,
             lastDateToAnswer
         );
 
@@ -107,7 +106,7 @@ public class PublishCertificateStatusUpdateService {
             certificateXml,
             event.getCode(),
             event.getHanteratAv(),
-            getSubjectCode(event),
+            event.getAmne(),
             event.getSistaDatumForSvar()
         );
 
@@ -121,9 +120,5 @@ public class PublishCertificateStatusUpdateService {
     private boolean unitIsNotIntegrated(Certificate certificate) {
         return integreradeEnheterRegistry.getIntegreradEnhet(
             certificate.getMetadata().getUnit().getUnitId()) == null;
-    }
-
-    private static Amneskod getSubjectCode(Handelse event) {
-        return event.getAmne() != null ? AmneskodCreator.create(event.getAmne().name(), event.getAmne().getDescription()) : null;
     }
 }
