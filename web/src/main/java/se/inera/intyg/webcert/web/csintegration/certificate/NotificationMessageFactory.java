@@ -29,6 +29,8 @@ import se.inera.intyg.common.support.facade.model.Certificate;
 import se.inera.intyg.common.support.modules.support.api.notification.FragorOchSvar;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
+import se.inera.intyg.webcert.common.service.notification.AmneskodCreator;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.web.csintegration.integration.CSIntegrationService;
 import se.inera.intyg.webcert.web.service.fragasvar.dto.FrageStallare;
 import se.riv.clinicalprocess.healthcond.certificate.types.v3.Amneskod;
@@ -41,7 +43,7 @@ public class NotificationMessageFactory {
     private final QuestionCounter questionCounter;
 
     public NotificationMessage create(Certificate certificate, String encodedXmlRepresentation,
-        HandelsekodEnum eventType, String handledByHsaId, Amneskod subjectCode, LocalDate lastDateToAnswer) {
+        HandelsekodEnum eventType, String handledByHsaId, ArendeAmne questionType, LocalDate lastDateToAnswer) {
         final var questions = csIntegrationService.getQuestions(
             certificate.getMetadata().getId()
         );
@@ -68,7 +70,7 @@ public class NotificationMessageFactory {
             ),
             SchemaVersion.VERSION_3,
             certificate.getMetadata().getExternalReference(),
-            subjectCode,
+            getSubjectCode(questionType),
             lastDateToAnswer
         );
 
@@ -80,10 +82,16 @@ public class NotificationMessageFactory {
                 handledByHsaId,
                 certificate.getMetadata().getExternalReference(),
                 notificationMessage.getSkickadeFragor(),
-                notificationMessage.getMottagnaFragor()
+                notificationMessage.getMottagnaFragor(),
+                notificationMessage.getSistaSvarsDatum(),
+                questionType
             )
         );
 
         return notificationMessage;
+    }
+
+    private static Amneskod getSubjectCode(ArendeAmne subject) {
+        return subject != null ? AmneskodCreator.create(subject.name(), subject.getDescription()) : null;
     }
 }

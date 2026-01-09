@@ -27,6 +27,7 @@ import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import org.w3._2002._06.xmldsig_filter2.XPathType;
@@ -35,6 +36,7 @@ import se.inera.intyg.common.support.modules.support.api.notification.ArendeCoun
 import se.inera.intyg.common.support.xml.XmlMarshallerHelper;
 import se.inera.intyg.webcert.notification_sender.notifications.services.NotificationTypeConverter;
 import se.inera.intyg.webcert.notification_sender.notifications.util.NotificationRedeliveryUtil;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.CertificateStatusUpdateForCareType;
 import se.riv.clinicalprocess.healthcond.certificate.certificatestatusupdateforcareresponder.v3.ObjectFactory;
 import se.riv.clinicalprocess.healthcond.certificate.registerCertificate.v3.RegisterCertificateType;
@@ -50,13 +52,14 @@ public class CertificateStatusUpdateFactory {
     }
 
     public static byte[] create(String encodedXmlRepresentation, HandelsekodEnum eventType,
-        LocalDateTime now, String handledByHsaId, String reference, ArendeCount sentQuestions, ArendeCount recievedQuestions) {
+        LocalDateTime now, String handledByHsaId, String reference, ArendeCount sentQuestions, ArendeCount recievedQuestions,
+        LocalDate lastDateToAnswer, ArendeAmne subject) {
         final var request = getRegisterCertificateType(encodedXmlRepresentation);
 
         final var certificateStatusUpdateForCareType = new CertificateStatusUpdateForCareType();
         certificateStatusUpdateForCareType.setIntyg(request.getIntyg());
         certificateStatusUpdateForCareType.setHandelse(
-            NotificationRedeliveryUtil.getEventV3(eventType, now, null, null)
+            NotificationRedeliveryUtil.getEventV3(eventType, now, subject, lastDateToAnswer)
         );
         certificateStatusUpdateForCareType.setSkickadeFragor(NotificationTypeConverter.toArenden(sentQuestions));
         certificateStatusUpdateForCareType.setMottagnaFragor(NotificationTypeConverter.toArenden(recievedQuestions));
