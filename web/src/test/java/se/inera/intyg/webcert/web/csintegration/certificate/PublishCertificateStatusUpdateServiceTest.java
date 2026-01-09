@@ -28,6 +28,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -44,6 +45,7 @@ import se.inera.intyg.common.support.facade.model.metadata.Unit;
 import se.inera.intyg.common.support.modules.support.api.notification.NotificationMessage;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.notification_sender.notifications.services.redelivery.NotificationRedeliveryService;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
 import se.inera.intyg.webcert.persistence.integreradenhet.model.IntegreradEnhet;
 import se.inera.intyg.webcert.persistence.notification.model.NotificationRedelivery;
@@ -61,6 +63,7 @@ class PublishCertificateStatusUpdateServiceTest {
     private static final String TYPE_VERSION = "typeVersion";
     private static final String INTYG_USER_HSA_ID = "hsaId";
     private static final String WEBCERT_HSA_ID = "webcertHsaId";
+    private static final LocalDate LAST_DATE_TO_ANSWER = LocalDate.now();
     private final IntygUser intygUser = new IntygUser(INTYG_USER_HSA_ID);
     private final WebCertUser webCertUser = new WebCertUser();
 
@@ -201,8 +204,22 @@ class PublishCertificateStatusUpdateServiceTest {
             publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKAPAT, XML_DATA);
 
             verify(notificationMessageFactory).create(certificate, XML_DATA, HandelsekodEnum.SKAPAT,
-                WEBCERT_HSA_ID,
-                null, null);
+                WEBCERT_HSA_ID, null, null);
+        }
+
+        @Test
+        void shallCallNotificationMessageFactoryWithProvidedQuestionTypeAndLastDateToAnswer() {
+            doReturn(new NotificationMessage()).when(notificationMessageFactory)
+                .create(certificate, xml, HandelsekodEnum.SKAPAT, INTYG_USER_HSA_ID, ArendeAmne.KOMPLT, LAST_DATE_TO_ANSWER);
+            doReturn(xml).when(csIntegrationService)
+                .getInternalCertificateXml(CERTIFICATE_ID);
+
+            publishCertificateStatusUpdateService.publish(certificate, HandelsekodEnum.SKAPAT,
+                Optional.of(intygUser), Optional.empty(), ArendeAmne.KOMPLT, LAST_DATE_TO_ANSWER
+            );
+
+            verify(notificationMessageFactory).create(certificate, xml, HandelsekodEnum.SKAPAT,
+                INTYG_USER_HSA_ID, ArendeAmne.KOMPLT, LAST_DATE_TO_ANSWER);
         }
     }
 

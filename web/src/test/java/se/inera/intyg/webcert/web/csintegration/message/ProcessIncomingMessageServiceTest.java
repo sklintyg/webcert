@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.csintegration.message;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -173,8 +172,8 @@ class ProcessIncomingMessageServiceTest {
     void shallPublishEventForQuestionIfUnitShouldNotRecieveMailNotificationAndIsIntegrated() {
         doReturn(new IntegreradEnhet()).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
         processIncomingMessageService.process(sendMessageToCareType);
-        verify(publishCertificateStatusUpdateService).publish(eq(certificate), eq(HandelsekodEnum.NYFRFM), any(Amneskod.class),
-            eq(SISTA_DATUM_FOR_SVAR));
+        verify(publishCertificateStatusUpdateService).publish(certificate, HandelsekodEnum.NYFRFM, ArendeAmne.KOMPLT,
+            SISTA_DATUM_FOR_SVAR);
     }
 
     @Test
@@ -182,8 +181,8 @@ class ProcessIncomingMessageServiceTest {
         doReturn(new IntegreradEnhet()).when(integreradeEnheterRegistry).getIntegreradEnhet(UNIT_ID);
         sendMessageToCareType.setSvarPa(new MeddelandeReferens());
         processIncomingMessageService.process(sendMessageToCareType);
-        verify(publishCertificateStatusUpdateService).publish(eq(certificate), eq(HandelsekodEnum.NYSVFM), any(Amneskod.class),
-            eq(SISTA_DATUM_FOR_SVAR));
+        verify(publishCertificateStatusUpdateService).publish(certificate, HandelsekodEnum.NYSVFM, ArendeAmne.KOMPLT,
+            SISTA_DATUM_FOR_SVAR);
     }
 
     @Test
