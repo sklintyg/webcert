@@ -27,7 +27,6 @@ import jakarta.xml.ws.WebServiceException;
 import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -287,7 +286,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
             : getMailNotificationEnhetFromPP(hsaId);
     }
 
-    private @Nullable MailNotificationEnhet getMailNotificationEnhetFromPPS(String hsaId) {
+    private MailNotificationEnhet getMailNotificationEnhetFromPPS(String hsaId) {
         try {
             final var privatePractitioner = privatePractitionerService.getPrivatePractitioner();
             if (privatePractitioner != null) {
@@ -303,7 +302,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
         return null;
     }
 
-    private @Nullable MailNotificationEnhet getMailNotificationEnhetFromPP(String hsaId) {
+    private MailNotificationEnhet getMailNotificationEnhetFromPP(String hsaId) {
         try {
             HoSPersonType privatePractitioner = ppService.getPrivatePractitioner(ppLogicalAddress, hsaId,
                 null);
