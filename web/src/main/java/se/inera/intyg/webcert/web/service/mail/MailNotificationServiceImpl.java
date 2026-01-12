@@ -28,6 +28,7 @@ import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.Nullable;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
@@ -81,7 +82,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
     private final PPService ppService;
 
-
+    @Nullable
     private final PrivatePractitionerService privatePractitionerService;
 
 
