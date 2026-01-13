@@ -288,6 +288,10 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     }
 
     private MailNotificationEnhet getMailNotificationEnhetFromPPS(String hsaId) {
+        if (privatePractitionerService == null) {
+            throw new IllegalStateException("PrivatePractitionerIntegrationService is not available");
+        }
+        
         try {
             final var privatePractitioner = privatePractitionerService.getPrivatePractitioner();
             if (privatePractitioner != null) {
