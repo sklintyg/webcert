@@ -194,24 +194,19 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
         final var statistics = userStatisticsService.getUserStatistics();
         final var subUnits = hsaOrganizationsService.getVardenhet(loggedInUnit.getId()).getMottagningar();
 
-        final var validUnitIds = subUnits.stream()
-            .map(AbstractVardenhet::getId)
-            .collect(Collectors.toSet());
-        validUnitIds.add(loggedInUnit.getId());
-
-        final var unitNamesMap = statistics.getUnitStatistics().keySet().stream()
-            .filter(validUnitIds::contains)
+        var unitIdAndNamesMap = subUnits.stream()
             .collect(Collectors.toMap(
-                unitId -> unitId,
-                unitId -> hsaOrganizationsService.getVardenhet(unitId).getNamn()
+                AbstractVardenhet::getId,
+                AbstractVardenhet::getNamn
             ));
+        unitIdAndNamesMap.put(loggedInUnit.getId(), loggedInUnit.getNamn());
 
         final var list = statistics.getUnitStatistics()
             .entrySet()
             .stream()
-            .filter(unit -> validUnitIds.contains(unit.getKey()))
-            .sorted(sortUnitFirstAndSubUnitsAlphabetical(loggedInUnit.getId(), unitNamesMap))
-            .map(unit -> getUnitSelectOption(unit.getKey(), unit.getValue(), loggedInUnit.getId(), unitNamesMap))
+            .filter(unit -> unitIdAndNamesMap.containsKey(unit.getKey()))
+            .sorted(sortUnitFirstAndSubUnitsAlphabetical(loggedInUnit.getId(), unitIdAndNamesMap))
+            .map(unit -> getUnitSelectOption(unit.getKey(), unit.getValue(), loggedInUnit.getId(), unitIdAndNamesMap))
             .collect(Collectors.toList());
 
         list.addFirst(ListFilterConfigValue.create("", getShowAllText(loggedInUnit.getId(), statistics), true));
@@ -229,10 +224,10 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
     }
 
     private Comparator<Map.Entry<String, UnitStatisticsDTO>> sortUnitFirstAndSubUnitsAlphabetical(String unitId,
-        Map<String, String> unitNamesMap) {
+        Map<String, String> unitIdAndNamesMap) {
         return Comparator
             .comparing((Map.Entry<String, UnitStatisticsDTO> entry) -> isNotMatchedUnit(entry.getKey(), unitId))
-            .thenComparing(entry -> unitNamesMap.get(entry.getKey()));
+            .thenComparing(entry -> unitIdAndNamesMap.get(entry.getKey()));
     }
 
     private boolean isNotMatchedUnit(String subUnitId, String unitId) {
@@ -241,13 +236,14 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
 
 
     private ListFilterConfigValue getUnitSelectOption(String unitId, UnitStatisticsDTO unit, String loggedInUnitId,
-        Map<String, String> unitNamesCache) {
-        return ListFilterConfigValue.create(unitId, getUnitText(unitId, unit.getQuestionsOnUnit(), loggedInUnitId, unitNamesCache), false);
+        Map<String, String> unitIdAndNamesMap) {
+        return ListFilterConfigValue.create(unitId, getUnitText(unitId, unit.getQuestionsOnUnit(), loggedInUnitId, unitIdAndNamesMap),
+            false);
     }
 
-    private String getUnitText(String unitId, long nbrOfQuestions, String loggedInUnitId, Map<String, String> unitNamesCache) {
+    private String getUnitText(String unitId, long nbrOfQuestions, String loggedInUnitId, Map<String, String> unitIdAndNamesMap) {
         final var isSubUnit = isNotMatchedUnit(unitId, loggedInUnitId);
-        final var text = unitNamesCache.get(unitId) + " (" + nbrOfQuestions + ')';
+        final var text = unitIdAndNamesMap.get(unitId) + " (" + nbrOfQuestions + ')';
         return isSubUnit ? "&emsp; " + text : text;
     }
 
