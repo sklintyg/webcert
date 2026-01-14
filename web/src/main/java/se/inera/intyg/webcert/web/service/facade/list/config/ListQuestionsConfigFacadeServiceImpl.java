@@ -194,26 +194,27 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
         final var statistics = userStatisticsService.getUserStatistics();
         final var subUnits = hsaOrganizationsService.getVardenhet(loggedInUnit.getId()).getMottagningar();
 
+        final var validUnitIds = subUnits.stream()
+            .map(AbstractVardenhet::getId)
+            .collect(Collectors.toSet());
+        validUnitIds.add(loggedInUnit.getId());
+
+        final var unitNamesMap = statistics.getUnitStatistics().keySet().stream()
+            .filter(validUnitIds::contains)
+            .collect(Collectors.toMap(
+                unitId -> unitId,
+                unitId -> hsaOrganizationsService.getVardenhet(unitId).getNamn()
+            ));
+
         final var list = statistics.getUnitStatistics()
             .entrySet()
             .stream()
-            .filter(
-                (unit) -> subUnits
-                    .stream()
-                    .map(AbstractVardenhet::getId)
-                    .anyMatch(
-                        (subUnitId) -> isMatchedUnit(
-                            subUnitId, unit.getKey()) || isMatchedUnit(loggedInUnit.getId(), unit.getKey()
-                        )
-                    )
-            )
-            .sorted(sortUnitFirstAndSubUnitsAlphabetical(loggedInUnit.getId()))
-            .map(
-                (unit) -> getUnitSelectOption(unit.getKey(), unit.getValue())
-            )
+            .filter(unit -> validUnitIds.contains(unit.getKey()))
+            .sorted(sortUnitFirstAndSubUnitsAlphabetical(loggedInUnit.getId(), unitNamesMap))
+            .map(unit -> getUnitSelectOption(unit.getKey(), unit.getValue(), loggedInUnit.getId(), unitNamesMap))
             .collect(Collectors.toList());
 
-        list.add(0, ListFilterConfigValue.create("", getShowAllText(loggedInUnit.getId(), statistics), true));
+        list.addFirst(ListFilterConfigValue.create("", getShowAllText(loggedInUnit.getId(), statistics), true));
 
         return list;
     }
@@ -227,27 +228,26 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
         return "Visa alla (" + totalQuestions + ")";
     }
 
-    private Comparator<Map.Entry<String, UnitStatisticsDTO>> sortUnitFirstAndSubUnitsAlphabetical(String unitId) {
-        return (o1, o2) -> isMatchedUnit(o1.getKey(), unitId) ? -1
-            : isMatchedUnit(o2.getKey(), unitId) ? 1 :
-                hsaOrganizationsService.getVardenhet(o1.getKey()).getNamn()
-                    .compareTo(hsaOrganizationsService.getVardenhet(o2.getKey()).getNamn());
+    private Comparator<Map.Entry<String, UnitStatisticsDTO>> sortUnitFirstAndSubUnitsAlphabetical(String unitId,
+        Map<String, String> unitNamesMap) {
+        return Comparator
+            .comparing((Map.Entry<String, UnitStatisticsDTO> entry) -> isNotMatchedUnit(entry.getKey(), unitId))
+            .thenComparing(entry -> unitNamesMap.get(entry.getKey()));
     }
 
-    private boolean isMatchedUnit(String subUnitId, String unitId) {
-        return subUnitId.equals(unitId);
+    private boolean isNotMatchedUnit(String subUnitId, String unitId) {
+        return !subUnitId.equals(unitId);
     }
 
 
-    private ListFilterConfigValue getUnitSelectOption(String unitId, UnitStatisticsDTO unit) {
-        return ListFilterConfigValue.create(unitId, getUnitText(unitId, unit.getQuestionsOnUnit()), false);
+    private ListFilterConfigValue getUnitSelectOption(String unitId, UnitStatisticsDTO unit, String loggedInUnitId,
+        Map<String, String> unitNamesCache) {
+        return ListFilterConfigValue.create(unitId, getUnitText(unitId, unit.getQuestionsOnUnit(), loggedInUnitId, unitNamesCache), false);
     }
 
-    private String getUnitText(String unitId, long nbrOfQuestions) {
-        final var user = webCertUserService.getUser();
-        final var selectedUnit = user.getValdVardenhet().getId();
-        final var isSubUnit = !isMatchedUnit(unitId, selectedUnit);
-        final var text = hsaOrganizationsService.getVardenhet(unitId).getNamn() + " (" + nbrOfQuestions + ')';
+    private String getUnitText(String unitId, long nbrOfQuestions, String loggedInUnitId, Map<String, String> unitNamesCache) {
+        final var isSubUnit = isNotMatchedUnit(unitId, loggedInUnitId);
+        final var text = unitNamesCache.get(unitId) + " (" + nbrOfQuestions + ')';
         return isSubUnit ? "&emsp; " + text : text;
     }
 
