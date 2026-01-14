@@ -194,26 +194,22 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
         final var statistics = userStatisticsService.getUserStatistics();
         final var subUnits = hsaOrganizationsService.getVardenhet(loggedInUnit.getId()).getMottagningar();
 
+        var unitIdAndNamesMap = subUnits.stream()
+            .collect(Collectors.toMap(
+                AbstractVardenhet::getId,
+                AbstractVardenhet::getNamn
+            ));
+        unitIdAndNamesMap.put(loggedInUnit.getId(), loggedInUnit.getNamn());
+
         final var list = statistics.getUnitStatistics()
             .entrySet()
             .stream()
-            .filter(
-                (unit) -> subUnits
-                    .stream()
-                    .map(AbstractVardenhet::getId)
-                    .anyMatch(
-                        (subUnitId) -> isMatchedUnit(
-                            subUnitId, unit.getKey()) || isMatchedUnit(loggedInUnit.getId(), unit.getKey()
-                        )
-                    )
-            )
-            .sorted(sortUnitFirstAndSubUnitsAlphabetical(loggedInUnit.getId()))
-            .map(
-                (unit) -> getUnitSelectOption(unit.getKey(), unit.getValue())
-            )
+            .filter(unit -> unitIdAndNamesMap.containsKey(unit.getKey()))
+            .sorted(sortUnitFirstAndSubUnitsAlphabetical(loggedInUnit.getId(), unitIdAndNamesMap))
+            .map(unit -> getUnitSelectOption(unit.getKey(), unit.getValue(), loggedInUnit.getId(), unitIdAndNamesMap))
             .collect(Collectors.toList());
 
-        list.add(0, ListFilterConfigValue.create("", getShowAllText(loggedInUnit.getId(), statistics), true));
+        list.addFirst(ListFilterConfigValue.create("", getShowAllText(loggedInUnit.getId(), statistics), true));
 
         return list;
     }
@@ -227,27 +223,27 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
         return "Visa alla (" + totalQuestions + ")";
     }
 
-    private Comparator<Map.Entry<String, UnitStatisticsDTO>> sortUnitFirstAndSubUnitsAlphabetical(String unitId) {
-        return (o1, o2) -> isMatchedUnit(o1.getKey(), unitId) ? -1
-            : isMatchedUnit(o2.getKey(), unitId) ? 1 :
-                hsaOrganizationsService.getVardenhet(o1.getKey()).getNamn()
-                    .compareTo(hsaOrganizationsService.getVardenhet(o2.getKey()).getNamn());
+    private Comparator<Map.Entry<String, UnitStatisticsDTO>> sortUnitFirstAndSubUnitsAlphabetical(String unitId,
+        Map<String, String> unitIdAndNamesMap) {
+        return Comparator
+            .comparing((Map.Entry<String, UnitStatisticsDTO> entry) -> isNotMatchedUnit(entry.getKey(), unitId))
+            .thenComparing(entry -> unitIdAndNamesMap.get(entry.getKey()));
     }
 
-    private boolean isMatchedUnit(String subUnitId, String unitId) {
-        return subUnitId.equals(unitId);
+    private boolean isNotMatchedUnit(String subUnitId, String unitId) {
+        return !subUnitId.equals(unitId);
     }
 
 
-    private ListFilterConfigValue getUnitSelectOption(String unitId, UnitStatisticsDTO unit) {
-        return ListFilterConfigValue.create(unitId, getUnitText(unitId, unit.getQuestionsOnUnit()), false);
+    private ListFilterConfigValue getUnitSelectOption(String unitId, UnitStatisticsDTO unit, String loggedInUnitId,
+        Map<String, String> unitIdAndNamesMap) {
+        return ListFilterConfigValue.create(unitId, getUnitText(unitId, unit.getQuestionsOnUnit(), loggedInUnitId, unitIdAndNamesMap),
+            false);
     }
 
-    private String getUnitText(String unitId, long nbrOfQuestions) {
-        final var user = webCertUserService.getUser();
-        final var selectedUnit = user.getValdVardenhet().getId();
-        final var isSubUnit = !isMatchedUnit(unitId, selectedUnit);
-        final var text = hsaOrganizationsService.getVardenhet(unitId).getNamn() + " (" + nbrOfQuestions + ')';
+    private String getUnitText(String unitId, long nbrOfQuestions, String loggedInUnitId, Map<String, String> unitIdAndNamesMap) {
+        final var isSubUnit = isNotMatchedUnit(unitId, loggedInUnitId);
+        final var text = unitIdAndNamesMap.get(unitId) + " (" + nbrOfQuestions + ')';
         return isSubUnit ? "&emsp; " + text : text;
     }
 
