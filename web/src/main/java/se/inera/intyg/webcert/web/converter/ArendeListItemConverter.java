@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.converter;
 
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeListItemProjection;
 import se.inera.intyg.webcert.persistence.fragasvar.model.FragaSvar;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 
@@ -64,6 +65,28 @@ public final class ArendeListItemConverter {
         res.setVidarebefordrad(getSafeBooleanValue(arende.getVidarebefordrad()));
         res.setEnhetsnamn(arende.getEnhetName());
         res.setVardgivarnamn(arende.getVardgivareName());
+        return res;
+    }
+
+    /**
+     * Convert from optimized projection to ArendeListItem.
+     * This is much faster than converting from full Arende entity as it avoids EAGER fetch of collections.
+     */
+    public static ArendeListItem convert(ArendeListItemProjection projection) {
+        ArendeListItem res = new ArendeListItem();
+        res.setAmne(projection.getAmne().name());
+        res.setFragestallare(projection.getSkickatAv());
+        res.setIntygId(projection.getIntygId());
+        res.setIntygTyp(projection.getIntygTyp());
+        res.setMeddelandeId(projection.getMeddelandeId());
+        res.setPatientId(projection.getPatientPersonId());
+        res.setReceivedDate(projection.getSenasteHandelse());
+        res.setSigneratAvNamn(projection.getSigneratAvName());
+        res.setSigneratAv(projection.getSigneratAv());
+        res.setStatus(projection.getStatus());
+        res.setVidarebefordrad(getSafeBooleanValue(projection.getVidarebefordrad()));
+        res.setEnhetsnamn(projection.getEnhetName());
+        res.setVardgivarnamn(projection.getVardgivareName());
         return res;
     }
 

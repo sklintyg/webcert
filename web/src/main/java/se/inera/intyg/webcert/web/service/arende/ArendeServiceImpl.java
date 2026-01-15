@@ -26,6 +26,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -545,7 +546,8 @@ public class ArendeServiceImpl implements ArendeService {
         Filter filter;
         if (!Strings.isNullOrEmpty(filterParameters.getEnhetId())) {
             verifyEnhetsAuth(filterParameters.getEnhetId(), true);
-            filter = FilterConverter.convert(filterParameters, Arrays.asList(filterParameters.getEnhetId()), intygstyperForPrivilege);
+            filter = FilterConverter.convert(filterParameters, Collections.singletonList(filterParameters.getEnhetId()),
+                intygstyperForPrivilege);
         } else {
             filter = FilterConverter.convert(filterParameters, user.getIdsOfSelectedVardenhet(), intygstyperForPrivilege);
         }
@@ -555,12 +557,21 @@ public class ArendeServiceImpl implements ArendeService {
         filter.setStartFrom(null);
         filter.setPageSize(null);
 
-        List<ArendeListItem> results = arendeRepository.filterArende(filter).stream()
+        final var filteredArende = arendeRepository.filterArendeForList(filter).stream()
             .map(ArendeListItemConverter::convert)
+            .toList();
+
+        final var reminderIds = arendeRepository.findPaminnelseMeddelandeIdByMeddelandeIdIn(
+            filteredArende.stream()
+                .map(ArendeListItem::getMeddelandeId)
+                .toList()
+        );
+
+        List<ArendeListItem> results = filteredArende.stream()
             // We need to decorate the ArendeListItem with information whether there exist a reminder or not because
             // they want to display this information to the user. We cannot do this without a database access, hence
             // we do it after the convertToDto
-            .peek(item -> item.setPaminnelse(!arendeRepository.findByPaminnelseMeddelandeId(item.getMeddelandeId()).isEmpty()))
+            .peek(item -> item.setPaminnelse(reminderIds.contains(item.getMeddelandeId())))
             .collect(Collectors.toList());
 
         QueryFragaSvarResponse fsResults = fragaSvarService.filterFragaSvar(filter);
@@ -569,7 +580,7 @@ public class ArendeServiceImpl implements ArendeService {
 
         Map<Personnummer, PatientDetailsResolverResponse> statusMap = patientDetailsResolver.getPersonStatusesForList(results.stream()
             .map(ali -> Personnummer.createPersonnummer(ali.getPatientId()).orElseThrow())
-            .collect(Collectors.toList()));
+            .toList());
 
         // INTYG-4086, INTYG-4486: Filter out any items that doesn't pass sekretessmarkering rules
         results = results.stream()

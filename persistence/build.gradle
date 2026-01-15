@@ -19,5 +19,8 @@ dependencies {
   implementation "se.inera.intyg.schemas:schemas-contract:${schemasContractVersion}"
   implementation "se.inera.intyg.common:common-support:${commonVersion}"
 
+  compileOnly "org.projectlombok:lombok"
+  annotationProcessor "org.projectlombok:lombok"
+
   testImplementation "org.springframework:spring-test"
 }

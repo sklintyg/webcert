@@ -594,6 +594,19 @@ public class ArendeRepositoryTest {
 //        assertEquals(new Long(1), res.get(1)[1]);
     }
 
+    @Test
+    public void testFilterArendeForList() {
+        final var enhet = "enhet";
+        repo.save(buildArende("signeratAv", enhet, Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV", LocalDate.now().minusDays(3)));
+        repo.save(buildArende("signeratAv", "annan enhet", Status.PENDING_INTERNAL_ACTION, null, null, "SKICKAT_AV",
+            LocalDate.now().minusDays(3)));
+
+        final var filter = buildDefaultFilter(enhet);
+
+        final var result = repo.filterArendeForList(filter);
+        assertEquals(1, result.size());
+    }
+
     private Arende buildArende() {
         return buildArende("SIGNERAT_AV", "SIGNERAT_AV_NAMN", "ENHET");
     }

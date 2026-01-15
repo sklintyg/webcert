@@ -35,6 +35,7 @@ import se.inera.intyg.webcert.web.service.facade.list.dto.ListFilter;
 import se.inera.intyg.webcert.web.service.facade.list.dto.ListInfo;
 import se.inera.intyg.webcert.web.service.facade.list.filter.QuestionFilterConverter;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
+import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLink;
 import se.inera.intyg.webcert.web.web.util.resourcelinks.dto.ActionLinkType;
@@ -77,25 +78,39 @@ public class ListQuestionsFacadeServiceImpl implements ListSignedCertificatesFac
 
         final var listResponseFromWC = arendeService.filterArende(convertedFilter, true);
         final var listResponseFromCS = listCertificateQuestionsFromCS.list(convertedFilter);
-        final var questionsFromWC = listResponseFromWC.getResults().stream()
-            .map(this::decorateWithResourceLinks)
-            .collect(Collectors.toList());
 
-        final var aggregatedList = Stream.concat(questionsFromWC.stream(), listResponseFromCS.getResults().stream())
-            .collect(Collectors.toList());
+        final var aggregatedList = Stream.concat(
+                listResponseFromWC.getResults().stream(),
+                listResponseFromCS.getResults().stream())
+            .toList();
 
-        final var paginatedList = paginationAndLoggingService.get(convertedFilter, aggregatedList, webCertUserService.getUser());
+        final var user = webCertUserService.getUser();
+        final var paginatedList = paginationAndLoggingService.get(convertedFilter, aggregatedList, user);
 
-        final var convertedList = paginatedList
+        final var unit = getUnit(user);
+        final var wcItemIds = listResponseFromWC.getResults().stream()
+            .map(ArendeListItem::getMeddelandeId)
+            .collect(Collectors.toSet());
+
+        final var decoratedList = paginatedList.stream()
+            .map(item -> {
+                // Only decorate items from WC, not from CS
+                if (wcItemIds.contains(item.getMeddelandeId())) {
+                    return decorateWithResourceLinks(item, unit);
+                }
+                return item;
+            })
+            .toList();
+
+        final var convertedList = decoratedList
             .stream()
             .map(certificateListItemConverter::convert)
-            .collect(Collectors.toList());
+            .toList();
 
         return new ListInfo(listResponseFromWC.getTotalCount() + listResponseFromCS.getTotalCount(), convertedList);
     }
 
-    private Vardenhet getUnit() {
-        final var user = webCertUserService.getUser();
+    private Vardenhet getUnit(WebCertUser user) {
         final var unit = user.getValdVardenhet();
         final var careProvider = user.getValdVardgivare();
 
@@ -109,11 +124,11 @@ public class ListQuestionsFacadeServiceImpl implements ListSignedCertificatesFac
         return convertedUnit;
     }
 
-    private ArendeListItem decorateWithResourceLinks(ArendeListItem item) {
+    private ArendeListItem decorateWithResourceLinks(ArendeListItem item, Vardenhet unit) {
         final AccessEvaluationParameters accessEvaluationParameters = AccessEvaluationParameters.create(
             item.getIntygTyp(),
             null,
-            getUnit(),
+            unit,
             Personnummer.createPersonnummer(item.getPatientId()).orElseThrow(),
             item.isTestIntyg());
 
