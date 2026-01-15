@@ -58,7 +58,6 @@ public class ArendeRepositoryImpl implements ArendeFilteredRepositoryCustom {
 
         Root<Arende> root = cq.from(Arende.class);
 
-        // Select only the fields needed for list display - avoids EAGER fetch of collections
         cq.select(builder.construct(
             ArendeListItemProjection.class,
             root.get("meddelandeId"),
