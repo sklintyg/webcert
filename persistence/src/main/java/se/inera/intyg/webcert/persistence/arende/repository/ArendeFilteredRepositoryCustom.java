@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.persistence.arende.repository;
 
 import java.util.List;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeListItemProjection;
 import se.inera.intyg.webcert.persistence.model.Filter;
 
 /**
@@ -28,6 +29,12 @@ import se.inera.intyg.webcert.persistence.model.Filter;
 public interface ArendeFilteredRepositoryCustom {
 
     List<Arende> filterArende(Filter filter);
+
+    /**
+     * Optimized query that returns only fields needed for list display.
+     * Avoids EAGER fetch of collections (kontaktInfo, komplettering).
+     */
+    List<ArendeListItemProjection> filterArendeForList(Filter filter);
 
     int filterArendeCount(Filter filter);
 }

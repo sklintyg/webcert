@@ -91,11 +91,21 @@ class ListQuestionsFacadeServiceImplTest {
         WEBCERT_USER.setValdVardenhet(valdVardenhet);
         WEBCERT_USER.setValdVardgivare(valdVardgivare);
 
+        // Set meddelandeId on items so we can identify which come from WC
         ARENDE_LIST_ITEM_WC.setPatientId(PATIENT_ID);
+        ARENDE_LIST_ITEM_WC.setMeddelandeId("WC-ID");
+        ARENDE_LIST_ITEM_CS.setMeddelandeId("CS-ID");
+
         QUERY_FRAGA_SVAR_RESPONSE_WC.setResults(ARENDE_LIST_WC);
         QUERY_FRAGA_SVAR_RESPONSE_WC.setTotalCount(1);
         QUERY_FRAGA_SVAR_RESPONSE_CS.setResults(ARENDE_LIST_CS);
         QUERY_FRAGA_SVAR_RESPONSE_CS.setTotalCount(1);
+
+        PAGINATED_ITEM_1.setMeddelandeId("WC-ID"); // From WC - will be decorated
+        PAGINATED_ITEM_1.setPatientId(PATIENT_ID);
+        PAGINATED_ITEM_1.setTestIntyg(false);
+
+        PAGINATED_ITEM_2.setMeddelandeId("CS-ID"); // From CS - will NOT be decorated
 
         when(questionFilterConverter.convert(LIST_FILTER))
             .thenReturn(QUERY_FRAGA_SVAR_PARAMETER);

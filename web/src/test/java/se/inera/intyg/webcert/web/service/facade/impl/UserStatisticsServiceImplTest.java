@@ -50,7 +50,6 @@ import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceStatistic
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.facade.user.UserStatisticsDTO;
 import se.inera.intyg.webcert.web.service.facade.user.UserStatisticsServiceImpl;
-import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
@@ -73,9 +72,6 @@ class UserStatisticsServiceImplTest {
 
     @Mock
     private AuthoritiesHelper authoritiesHelper;
-
-    @Mock
-    private FragaSvarService fragaSvarService;
 
     @Mock
     private ArendeService arendeService;
@@ -214,11 +210,10 @@ class UserStatisticsServiceImplTest {
         void shouldReturnNbrOfQuestionsForSelectedUnit() {
             setUpUnit();
             doReturn(map).when(arendeService).getNbrOfUnhandledArendenForCareUnits(any(), any());
-            doReturn(map).when(fragaSvarService).getNbrOfUnhandledFragaSvarForCareUnits(any(), any());
 
             final var result = userStatisticsService.getUserStatistics().getNbrOfUnhandledQuestionsOnSelectedUnit();
 
-            assertEquals(expectedValue * 2, result);
+            assertEquals(expectedValue, result);
         }
 
         @Nested
@@ -365,7 +360,6 @@ class UserStatisticsServiceImplTest {
             @Test
             void shouldReturn0IfOnlySelectedUnitStatisticsInMap() {
                 doReturn(map).when(arendeService).getNbrOfUnhandledArendenForCareUnits(any(), any());
-                doReturn(map).when(fragaSvarService).getNbrOfUnhandledFragaSvarForCareUnits(any(), any());
                 doReturn(map).when(utkastService).getNbrOfUnsignedDraftsByCareUnits(any());
 
                 final var result = userStatisticsService.getUserStatistics().getTotalDraftsAndUnhandledQuestionsOnOtherUnits();
@@ -386,24 +380,22 @@ class UserStatisticsServiceImplTest {
             @Test
             void shouldReturnNbrOfQuestions() {
                 map.put(NOT_SELECTED_UNIT_ID, expectedValue);
-                doReturn(map).when(fragaSvarService).getNbrOfUnhandledFragaSvarForCareUnits(any(), any());
                 doReturn(map).when(arendeService).getNbrOfUnhandledArendenForCareUnits(any(), any());
 
                 final var result = userStatisticsService.getUserStatistics().getTotalDraftsAndUnhandledQuestionsOnOtherUnits();
 
-                assertEquals(expectedValue * 2, result);
+                assertEquals(expectedValue, result);
             }
 
             @Test
             void shouldReturnNbrOfQuestionsPlusDrafts() {
                 map.put(NOT_SELECTED_UNIT_ID, expectedValue);
-                doReturn(map).when(fragaSvarService).getNbrOfUnhandledFragaSvarForCareUnits(any(), any());
                 doReturn(map).when(arendeService).getNbrOfUnhandledArendenForCareUnits(any(), any());
                 doReturn(map).when(utkastService).getNbrOfUnsignedDraftsByCareUnits(any());
 
                 final var result = userStatisticsService.getUserStatistics().getTotalDraftsAndUnhandledQuestionsOnOtherUnits();
 
-                assertEquals(expectedValue * 3, result);
+                assertEquals(expectedValue * 2, result);
             }
         }
 

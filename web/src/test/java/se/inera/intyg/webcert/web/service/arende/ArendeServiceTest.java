@@ -102,6 +102,7 @@ import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalytics
 import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeListItemProjection;
 import se.inera.intyg.webcert.persistence.arende.model.MedicinsktArende;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
 import se.inera.intyg.webcert.persistence.model.Filter;
@@ -165,6 +166,16 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
     private static final Personnummer PNR = Personnummer.createPersonnummer(PERSON_ID).orElseThrow();
     private static final String CARE_PROVIDER_ID = "CARE_PROVIDER_ID";
     private static final LocalDateTime ISSUING_DATE = LocalDateTime.now();
+
+    private static final String SIGNERAT_AV = "HSA123456";
+    private static final String SIGNERAT_AV_NAME = "Dr. Test Testsson";
+    private static final Status STATUS = Status.PENDING_INTERNAL_ACTION;
+    private static final String PATIENT_PERSON_ID = "191212121212";
+    private static final Boolean VIDAREBEFORDRAD = true;
+    private static final ArendeAmne AMNE = ArendeAmne.KOMPLT;
+    private static final String ENHET_NAME = "Testenheten";
+    private static final String VARDGIVARE_NAME = "Testvårdgivaren";
+
     @Mock
     private EmployeeNameService employeeNameService;
     @Mock
@@ -1347,17 +1358,11 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         when(webcertUserService.getUser()).thenReturn(user);
         when(webcertUserService.isAuthorizedForUnit(any(String.class), eq(true))).thenReturn(true);
 
-        List<Arende> queryResults = new ArrayList<>();
-        queryResults.add(buildArende(UUID.randomUUID().toString(), LocalDateTime.now(), null));
-        queryResults.add(buildArende(UUID.randomUUID().toString(), LocalDateTime.now().minusDays(1), null));
+        List<ArendeListItemProjection> queryResults = new ArrayList<>();
+        queryResults.add(createProjection(UUID.randomUUID().toString(), LocalDateTime.now()));
+        queryResults.add(createProjection(UUID.randomUUID().toString(), LocalDateTime.now().minusDays(1)));
 
-        when(arendeRepository.filterArende(any(Filter.class))).thenReturn(queryResults);
-
-        QueryFragaSvarResponse fsResponse = new QueryFragaSvarResponse();
-        fsResponse.setResults(new ArrayList<>());
-        fsResponse.setTotalCount(0);
-
-        when(fragaSvarService.filterFragaSvar(any(Filter.class))).thenReturn(fsResponse);
+        when(arendeRepository.filterArendeForList(any(Filter.class))).thenReturn(queryResults);
 
         QueryFragaSvarParameter params = new QueryFragaSvarParameter();
         params.setEnhetId(user.getValdVardenhet().getId());
@@ -1376,8 +1381,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         verify(webcertUserService).isAuthorizedForUnit(anyString(), eq(true));
 
-        verify(arendeRepository).filterArende(any(Filter.class));
-        verify(fragaSvarService).filterFragaSvar(any(Filter.class));
+        verify(arendeRepository).filterArendeForList(any(Filter.class));
 
         assertEquals(2, response.getResults().size());
         assertEquals(2, response.getTotalCount());
@@ -1390,17 +1394,11 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         when(webcertUserService.getUser()).thenReturn(user);
         when(webcertUserService.isAuthorizedForUnit(any(String.class), eq(true))).thenReturn(true);
 
-        List<Arende> queryResults = new ArrayList<>();
-        queryResults.add(buildArende(UUID.randomUUID().toString(), LocalDateTime.now(), null));
-        queryResults.add(buildArende(UUID.randomUUID().toString(), LocalDateTime.now().minusDays(1), null));
+        List<ArendeListItemProjection> queryResults = new ArrayList<>();
+        queryResults.add(createProjection(UUID.randomUUID().toString(), LocalDateTime.now()));
+        queryResults.add(createProjection(UUID.randomUUID().toString(), LocalDateTime.now().minusDays(1)));
 
-        when(arendeRepository.filterArende(any(Filter.class))).thenReturn(queryResults);
-
-        QueryFragaSvarResponse fsResponse = new QueryFragaSvarResponse();
-        fsResponse.setResults(new ArrayList<>());
-        fsResponse.setTotalCount(0);
-
-        when(fragaSvarService.filterFragaSvar(any(Filter.class))).thenReturn(fsResponse);
+        when(arendeRepository.filterArendeForList(any(Filter.class))).thenReturn(queryResults);
 
         when(hsaEmployeeService.getEmployee(anyString(), any())).thenThrow(WebServiceException.class);
 
@@ -1416,8 +1414,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         verify(paginationAndLoggingService, times(1)).get(eq(params), captor.capture(), eq(user));
         verify(webcertUserService, times(2)).getUser();
-        verify(arendeRepository).filterArende(any(Filter.class));
-        verify(fragaSvarService).filterFragaSvar(any(Filter.class));
+        verify(arendeRepository).filterArendeForList(any(Filter.class));
 
         assertEquals(2, response.getResults().size());
         assertEquals(2, captor.getValue().size());
@@ -1439,17 +1436,11 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         when(webcertUserService.getUser()).thenReturn(webCertUser);
         when(webcertUserService.isAuthorizedForUnit(any(), eq(true))).thenReturn(true);
 
-        List<Arende> queryResults = new ArrayList<>();
-        queryResults.add(buildArende(UUID.randomUUID().toString(), LocalDateTime.now(), null));
-        queryResults.add(buildArende(UUID.randomUUID().toString(), LocalDateTime.now().minusDays(1), null));
+        List<ArendeListItemProjection> queryResults = new ArrayList<>();
+        queryResults.add(createProjection(UUID.randomUUID().toString(), LocalDateTime.now()));
+        queryResults.add(createProjection(UUID.randomUUID().toString(), LocalDateTime.now().minusDays(1)));
 
-        when(arendeRepository.filterArende(any(Filter.class))).thenReturn(queryResults);
-
-        QueryFragaSvarResponse fsResponse = new QueryFragaSvarResponse();
-        fsResponse.setResults(new ArrayList<>());
-        fsResponse.setTotalCount(0);
-
-        when(fragaSvarService.filterFragaSvar(any(Filter.class))).thenReturn(fsResponse);
+        when(arendeRepository.filterArendeForList(any(Filter.class))).thenReturn(queryResults);
 
         QueryFragaSvarParameter params = new QueryFragaSvarParameter();
         params.setEnhetId(webCertUser.getValdVardenhet().getId());
@@ -1459,8 +1450,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         verify(patientDetailsResolver, times(1)).getPersonStatusesForList(anyList());
         verify(webcertUserService).isAuthorizedForUnit(anyString(), eq(true));
 
-        verify(arendeRepository).filterArende(any(Filter.class));
-        verify(fragaSvarService).filterFragaSvar(any(Filter.class));
+        verify(arendeRepository).filterArendeForList(any(Filter.class));
 
         assertEquals(0, response.getResults().size());
     }
@@ -1470,11 +1460,11 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         final var user = createUser();
         when(webcertUserService.getUser()).thenReturn(user);
 
-        List<Arende> queryResults = new ArrayList<>();
-        queryResults.add(buildArende(UUID.randomUUID().toString(), LocalDateTime.now(), null));
-        queryResults.add(buildArende(UUID.randomUUID().toString(), LocalDateTime.now().plusDays(1), null));
+        List<ArendeListItemProjection> queryResults = new ArrayList<>();
+        queryResults.add(createProjection(UUID.randomUUID().toString(), LocalDateTime.now()));
+        queryResults.add(createProjection(UUID.randomUUID().toString(), LocalDateTime.now().plusDays(1)));
 
-        when(arendeRepository.filterArende(any(Filter.class))).thenReturn(queryResults);
+        when(arendeRepository.filterArendeForList(any(Filter.class))).thenReturn(queryResults);
 
         QueryFragaSvarResponse fsResponse = new QueryFragaSvarResponse();
         fsResponse.setResults(new ArrayList<>());
@@ -1494,8 +1484,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         QueryFragaSvarResponse response = service.filterArende(params);
 
         verify(paginationAndLoggingService, times(1)).get(eq(params), captor.capture(), eq(user));
-        verify(arendeRepository).filterArende(any(Filter.class));
-        verify(fragaSvarService).filterFragaSvar(any(Filter.class));
+        verify(arendeRepository).filterArendeForList(any(Filter.class));
 
         assertEquals(2, response.getResults().size());
         assertEquals(2, response.getTotalCount());
@@ -1506,18 +1495,11 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         final var user = createUser();
         when(webcertUserService.getUser()).thenReturn(user);
 
-        List<Arende> queryResults = new ArrayList<>();
-        queryResults.add(buildArende(UUID.randomUUID().toString(), LocalDateTime.now(), null));
-        queryResults.add(buildArende(UUID.randomUUID().toString(), LocalDateTime.now().plusDays(1), null));
+        List<ArendeListItemProjection> queryResults = new ArrayList<>();
+        queryResults.add(createProjection(UUID.randomUUID().toString(), LocalDateTime.now()));
+        queryResults.add(createProjection(UUID.randomUUID().toString(), LocalDateTime.now().plusDays(1)));
 
-        when(arendeRepository.filterArende(any(Filter.class))).thenReturn(queryResults);
-
-        QueryFragaSvarResponse fsResponse = new QueryFragaSvarResponse();
-        fsResponse.setResults(new ArrayList<>());
-        fsResponse.getResults().add(buildArendeListItem("intyg1", LocalDateTime.now().minusDays(1)));
-        fsResponse.setTotalCount(1);
-
-        when(fragaSvarService.filterFragaSvar(any(Filter.class))).thenReturn(fsResponse);
+        when(arendeRepository.filterArendeForList(any(Filter.class))).thenReturn(queryResults);
 
         QueryFragaSvarParameter params = new QueryFragaSvarParameter();
         final var arendeListItem1 = new ArendeListItem();
@@ -1531,12 +1513,11 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         verify(paginationAndLoggingService, times(1)).get(eq(params), captor.capture(), eq(user));
         verify(webcertUserService, times(2)).getUser();
-        verify(arendeRepository).filterArende(any(Filter.class));
-        verify(fragaSvarService).filterFragaSvar(any(Filter.class));
+        verify(arendeRepository).filterArendeForList(any(Filter.class));
 
         assertEquals(2, response.getResults().size());
-        assertEquals(3, response.getTotalCount());
-        assertEquals(3, captor.getValue().size());
+        assertEquals(2, response.getTotalCount());
+        assertEquals(2, captor.getValue().size());
     }
 
     @Test
@@ -1544,18 +1525,11 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         final var user = createUser();
         when(webcertUserService.getUser()).thenReturn(user);
 
-        List<Arende> queryResults = new ArrayList<>();
-        queryResults.add(buildArende(UUID.randomUUID().toString(), LocalDateTime.now(), null));
-        queryResults.add(buildArende(UUID.randomUUID().toString(), LocalDateTime.now().plusDays(1), null));
+        List<ArendeListItemProjection> queryResults = new ArrayList<>();
+        queryResults.add(createProjection(UUID.randomUUID().toString(), LocalDateTime.now()));
+        queryResults.add(createProjection(UUID.randomUUID().toString(), LocalDateTime.now().plusDays(1)));
 
-        when(arendeRepository.filterArende(any(Filter.class))).thenReturn(queryResults);
-
-        QueryFragaSvarResponse fsResponse = new QueryFragaSvarResponse();
-        fsResponse.setResults(new ArrayList<>());
-        fsResponse.getResults().add(buildArendeListItem("intyg1", LocalDateTime.now().minusDays(1)));
-        fsResponse.setTotalCount(1);
-
-        when(fragaSvarService.filterFragaSvar(any(Filter.class))).thenReturn(fsResponse);
+        when(arendeRepository.filterArendeForList(any(Filter.class))).thenReturn(queryResults);
 
         QueryFragaSvarParameter params = new QueryFragaSvarParameter();
         params.setStartFrom(5);
@@ -1567,8 +1541,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         verify(webcertUserService, times(2)).getUser();
 
-        verify(arendeRepository).filterArende(any(Filter.class));
-        verify(fragaSvarService).filterFragaSvar(any(Filter.class));
+        verify(arendeRepository).filterArendeForList(any(Filter.class));
 
         assertEquals(0, response.getResults().size());
     }
@@ -1579,18 +1552,11 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         when(webcertUserService.getUser()).thenReturn(user);
         when(authoritiesHelper.getIntygstyperForPrivilege(any(UserDetails.class), any())).thenReturn(new HashSet<>());
 
-        List<Arende> queryResults = new ArrayList<>();
-        queryResults.add(buildArende(UUID.randomUUID().toString(), LocalDateTime.now(), null));
-        queryResults.add(buildArende(UUID.randomUUID().toString(), LocalDateTime.now().plusDays(1), null));
+        List<ArendeListItemProjection> queryResults = new ArrayList<>();
+        queryResults.add(createProjection(UUID.randomUUID().toString(), LocalDateTime.now()));
+        queryResults.add(createProjection(UUID.randomUUID().toString(), LocalDateTime.now().plusDays(1)));
 
-        when(arendeRepository.filterArende(any(Filter.class))).thenReturn(queryResults);
-
-        QueryFragaSvarResponse fsResponse = new QueryFragaSvarResponse();
-        fsResponse.setResults(new ArrayList<>());
-        fsResponse.getResults().add(buildArendeListItem("intyg1", LocalDateTime.now().minusDays(1)));
-        fsResponse.setTotalCount(1);
-
-        when(fragaSvarService.filterFragaSvar(any(Filter.class))).thenReturn(fsResponse);
+        when(arendeRepository.filterArendeForList(any(Filter.class))).thenReturn(queryResults);
 
         QueryFragaSvarParameter params = new QueryFragaSvarParameter();
         params.setStartFrom(2);
@@ -1608,39 +1574,28 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         verify(paginationAndLoggingService, times(1)).get(eq(params), captor.capture(), eq(user));
         verify(webcertUserService, times(2)).getUser();
 
-        verify(arendeRepository, atLeastOnce()).filterArende(any(Filter.class));
-        verify(fragaSvarService).filterFragaSvar(any());
+        verify(arendeRepository, atLeastOnce()).filterArendeForList(any(Filter.class));
 
         assertEquals(2, response.getResults().size());
-        assertEquals(3, captor.getValue().size());
-        assertEquals(3, response.getTotalCount());
+        assertEquals(2, captor.getValue().size());
+        assertEquals(2, response.getTotalCount());
     }
 
     @Test
     public void testFilterArendeSortsArendeListItemsByReceivedDate() {
         final String intygId1 = "intygId1";
         final String intygId2 = "intygId2";
-        final String intygId3 = "intygId3";
-        final String messageId = "arendeWithPaminnelseMEDDELANDE_ID";
 
         final var user = createUser();
         when(webcertUserService.getUser()).thenReturn(user);
 
-        List<Arende> queryResults = new ArrayList<>();
-        queryResults.add(buildArende(UUID.randomUUID().toString(), intygId3, LocalDateTime.now().plusDays(2), null, ENHET_ID));
+        List<ArendeListItemProjection> queryResults = new ArrayList<>();
+        queryResults.add(createProjection(UUID.randomUUID().toString(), intygId1, LocalDateTime.now().plusDays(2)));
 
-        Arende arendeWithPaminnelse = buildArende(UUID.randomUUID().toString(), intygId2, LocalDateTime.now(), null, ENHET_ID);
-        arendeWithPaminnelse.setMeddelandeId(messageId);
+        ArendeListItemProjection arendeWithPaminnelse = createProjection(UUID.randomUUID().toString(), intygId2, LocalDateTime.now());
         queryResults.add(arendeWithPaminnelse);
 
-        when(arendeRepository.filterArende(any(Filter.class))).thenReturn(queryResults);
-
-        QueryFragaSvarResponse fsResponse = new QueryFragaSvarResponse();
-        fsResponse.setResults(new ArrayList<>());
-        fsResponse.getResults().add(buildArendeListItem(intygId1, LocalDateTime.now().minusDays(1)));
-        fsResponse.setTotalCount(1);
-
-        when(fragaSvarService.filterFragaSvar(any(Filter.class))).thenReturn(fsResponse);
+        when(arendeRepository.filterArendeForList(any(Filter.class))).thenReturn(queryResults);
 
         QueryFragaSvarParameter params = new QueryFragaSvarParameter();
         final var arendeListItem1 = new ArendeListItem();
@@ -1650,7 +1605,7 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
         when(paginationAndLoggingService.get(eq(params), any(), eq(user)))
             .thenReturn(List.of(arendeListItem1, arendeListItem2));
 
-        QueryFragaSvarResponse response = service.filterArende(params);
+        service.filterArende(params);
 
         verify(paginationAndLoggingService, times(1)).get(eq(params), captor.capture(), eq(user));
         verify(webcertUserService, times(2)).getUser();
@@ -1659,10 +1614,9 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
         final var arendeListCaptor = (List<ArendeListItem>) captor.getValue();
 
-        assertEquals(3, arendeListCaptor.size());
-        assertEquals(intygId3, arendeListCaptor.get(0).getIntygId());
+        assertEquals(2, arendeListCaptor.size());
+        assertEquals(intygId1, arendeListCaptor.get(0).getIntygId());
         assertEquals(intygId2, arendeListCaptor.get(1).getIntygId());
-        assertEquals(intygId1, arendeListCaptor.get(2).getIntygId());
     }
 
     @Test
@@ -1839,6 +1793,42 @@ public class ArendeServiceTest extends AuthoritiesConfigurationTestSetup {
 
     private Arende buildArende(String meddelandeId, LocalDateTime senasteHandelse, LocalDateTime timestamp) {
         return buildArende(meddelandeId, INTYG_ID, senasteHandelse, timestamp, ENHET_ID);
+    }
+
+    private ArendeListItemProjection createProjection(String meddelandeId, String certId, LocalDateTime senasteHandelse) {
+        return new ArendeListItemProjection(
+            meddelandeId,
+            certId,
+            INTYG_TYP,
+            SIGNERAT_AV,
+            SIGNERAT_AV_NAME,
+            STATUS,
+            PATIENT_PERSON_ID,
+            senasteHandelse,
+            VIDAREBEFORDRAD,
+            SKICKAT_AV,
+            AMNE,
+            ENHET_NAME,
+            VARDGIVARE_NAME
+        );
+    }
+
+    private ArendeListItemProjection createProjection(String meddelandeId, LocalDateTime senasteHandelse) {
+        return new ArendeListItemProjection(
+            meddelandeId,
+            INTYG_ID,
+            INTYG_TYP,
+            SIGNERAT_AV,
+            SIGNERAT_AV_NAME,
+            STATUS,
+            PATIENT_PERSON_ID,
+            senasteHandelse,
+            VIDAREBEFORDRAD,
+            SKICKAT_AV,
+            AMNE,
+            ENHET_NAME,
+            VARDGIVARE_NAME
+        );
     }
 
     private Arende buildArende(String meddelandeId, String intygId, LocalDateTime senasteHandelse, LocalDateTime timestamp,

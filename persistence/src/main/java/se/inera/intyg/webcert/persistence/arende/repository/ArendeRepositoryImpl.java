@@ -29,6 +29,7 @@ import jakarta.persistence.criteria.Root;
 import java.util.List;
 import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeListItemProjection;
 import se.inera.intyg.webcert.persistence.model.Filter;
 import se.inera.intyg.webcert.persistence.model.Status;
 
@@ -43,6 +44,36 @@ public class ArendeRepositoryImpl implements ArendeFilteredRepositoryCustom {
         CriteriaQuery<Arende> cq = builder.createQuery(Arende.class);
 
         Root<Arende> root = cq.from(Arende.class);
+
+        cq.where(createPredicate(filter, builder, root));
+        cq.orderBy(builder.desc(root.get("senasteHandelse")));
+
+        return entityManager.createQuery(cq).getResultList();
+    }
+
+    @Override
+    public List<ArendeListItemProjection> filterArendeForList(Filter filter) {
+        final var builder = entityManager.getCriteriaBuilder();
+        final var cq = builder.createQuery(ArendeListItemProjection.class);
+
+        final var root = cq.from(Arende.class);
+
+        cq.select(builder.construct(
+            ArendeListItemProjection.class,
+            root.get("meddelandeId"),
+            root.get("intygsId"),
+            root.get("intygTyp"),
+            root.get("signeratAv"),
+            root.get("signeratAvName"),
+            root.get("status"),
+            root.get("patientPersonId"),
+            root.get("senasteHandelse"),
+            root.get("vidarebefordrad"),
+            root.get("skickatAv"),
+            root.get("amne"),
+            root.get("enhetName"),
+            root.get("vardgivareName")
+        ));
 
         cq.where(createPredicate(filter, builder, root));
         cq.orderBy(builder.desc(root.get("senasteHandelse")));

@@ -25,14 +25,12 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,9 +41,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
-import se.inera.intyg.webcert.persistence.arende.model.Arende;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
-import se.inera.intyg.webcert.persistence.arende.model.MedicinsktArende;
+import se.inera.intyg.webcert.persistence.arende.model.ArendeListItemProjection;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
 import se.inera.intyg.webcert.persistence.model.Status;
 import se.inera.intyg.webcert.web.service.facade.list.PaginationAndLoggingService;
@@ -110,12 +107,16 @@ class ArendeServiceImplTest {
         when(authoritiesHelper.getIntygstyperForPrivilege(eq(user), anyString()))
             .thenReturn(new HashSet<>(Arrays.asList("a", "b")));
 
-        //Names in arende
-        final Arende arende1 = buildArende("sign1", "B", "enhet");
-        final Arende arende2 = buildArende("sign2", "C", "enhet");
-        final Arende arende3 = buildArende("sign3", "A", "enhet");
+        final var projection1 = buildArendeListItemProjection("sign1", "B", Status.PENDING_INTERNAL_ACTION,
+            "SKICKAT_AV", ArendeAmne.OVRIGT, true, LocalDateTime.now(), "meddelande1");
+        final var projection2 = buildArendeListItemProjection("sign2", "C", Status.PENDING_INTERNAL_ACTION,
+            "SKICKAT_AV", ArendeAmne.OVRIGT, true, LocalDateTime.now(), "meddelande2");
+        final var projection3 = buildArendeListItemProjection("sign3", "A", Status.PENDING_INTERNAL_ACTION,
+            "SKICKAT_AV", ArendeAmne.OVRIGT, true, LocalDateTime.now(), "meddelande3");
 
-        when(arendeRepository.filterArende(any())).thenReturn(Arrays.asList(arende1, arende3, arende2));
+        when(arendeRepository.filterArendeForList(any())).thenReturn(List.of(projection1, projection3, projection2));
+        when(arendeRepository.findPaminnelseMeddelandeIdByMeddelandeIdIn(any())).thenReturn(List.of());
+
         final Map<Personnummer, PatientDetailsResolverResponse> statusMap = Mockito.mock(Map.class);
         PatientDetailsResolverResponse response = new PatientDetailsResolverResponse();
         response.setTestIndicator(false);
@@ -123,17 +124,15 @@ class ArendeServiceImplTest {
         response.setProtectedPerson((SekretessStatus.FALSE));
         when(statusMap.get(any(Personnummer.class))).thenReturn(response);
         when(patientDetailsResolver.getPersonStatusesForList(any())).thenReturn(statusMap);
-        final QueryFragaSvarResponse qfsr = new QueryFragaSvarResponse();
-        qfsr.setResults(List.of());
-        when(fragaSvarService.filterFragaSvar(any())).thenReturn(qfsr);
+        
         final QueryFragaSvarParameter filterParameters = new QueryFragaSvarParameter();
 
         final var arendeListItem1 = new ArendeListItem();
-        arendeListItem1.setSigneratAv(arende1.getSigneratAv());
+        arendeListItem1.setSigneratAv(projection1.getSigneratAv());
         final var arendeListItem2 = new ArendeListItem();
-        arendeListItem2.setSigneratAv(arende2.getSigneratAv());
+        arendeListItem2.setSigneratAv(projection2.getSigneratAv());
         final var arendeListItem3 = new ArendeListItem();
-        arendeListItem3.setSigneratAv(arende3.getSigneratAv());
+        arendeListItem3.setSigneratAv(projection3.getSigneratAv());
 
         final var arendeListItems = List.of(arendeListItem1, arendeListItem2, arendeListItem3);
         when(paginationAndLoggingService.get(eq(filterParameters), any(), eq(user))).thenReturn(arendeListItems);
@@ -144,9 +143,9 @@ class ArendeServiceImplTest {
         //Then
         final List<ArendeListItem> results = queryFragaSvarResponse.getResults();
         assertEquals(3, results.size());
-        assertEquals(arende1.getSigneratAv(), results.get(0).getSigneratAv());
-        assertEquals(arende2.getSigneratAv(), results.get(1).getSigneratAv());
-        assertEquals(arende3.getSigneratAv(), results.get(2).getSigneratAv());
+        assertEquals(projection1.getSigneratAv(), results.get(0).getSigneratAv());
+        assertEquals(projection2.getSigneratAv(), results.get(1).getSigneratAv());
+        assertEquals(projection3.getSigneratAv(), results.get(2).getSigneratAv());
     }
 
     @Nested
@@ -163,71 +162,24 @@ class ArendeServiceImplTest {
         }
     }
 
-    private Arende buildArende(String signeratAv, String signeratAvName, String enhet) {
-        return buildArende(signeratAv, signeratAvName, enhet, Status.PENDING_INTERNAL_ACTION, UUID.randomUUID().toString());
-    }
-
-    private Arende buildArende(String signeratAv, String signeratAvName, String enhet, Status status, String meddelandeId) {
-        return buildArende(signeratAv, signeratAvName, enhet, status, "PAMINNELSE_MEDDELANDE_ID", "SVAR_PA_ID", "SKICKAT_AV",
-            LocalDate.now(),
-            ArendeAmne.OVRIGT, Boolean.TRUE, LocalDateTime.now(), meddelandeId);
-    }
-
-    private Arende buildArende(String signeratAv, String signeratAvName, String enhet, Status status, String paminnelseMeddelandeId,
-        String svarPaId,
-        String skickatAv, LocalDate sistaDatumForSvar, ArendeAmne amne, Boolean vidarebefordrad, LocalDateTime senasteHandelse,
+    private ArendeListItemProjection buildArendeListItemProjection(
+        String signeratAv, String signeratAvName, Status status,
+        String skickatAv, ArendeAmne amne, Boolean vidarebefordrad, LocalDateTime senasteHandelse,
         String meddelandeId) {
-        return buildArende(signeratAv, signeratAvName, enhet, status, paminnelseMeddelandeId, svarPaId, skickatAv, sistaDatumForSvar, amne,
-            vidarebefordrad, senasteHandelse, meddelandeId, "vardaktorName");
+        return new se.inera.intyg.webcert.persistence.arende.model.ArendeListItemProjection(
+            meddelandeId,
+            "INTYG_ID",
+            "INTYG_TYP",
+            signeratAv,
+            signeratAvName,
+            status,
+            PATIENT_PERSON_ID,
+            senasteHandelse,
+            vidarebefordrad,
+            skickatAv,
+            amne,
+            "ENHET_NAME",
+            "VARDGIVARE_NAME"
+        );
     }
-
-    private Arende buildArende(String signeratAv, String signeratAvName, String enhet, Status status, String paminnelseMeddelandeId,
-        String svarPaId,
-        String skickatAv, LocalDate sistaDatumForSvar, ArendeAmne amne, Boolean vidarebefordrad, LocalDateTime senasteHandelse,
-        String meddelandeId, String vardaktorName) {
-        Arende res = new Arende();
-        res.setAmne(amne);
-        res.setIntygsId("INTYG_ID");
-        res.setMeddelande("MEDDELANDE");
-        res.setMeddelandeId(meddelandeId);
-        res.setPaminnelseMeddelandeId(paminnelseMeddelandeId);
-        res.setPatientPersonId(PATIENT_PERSON_ID);
-        res.setReferensId("REFERENS_ID");
-        res.setRubrik("RUBRIK");
-        res.setSistaDatumForSvar(sistaDatumForSvar);
-        res.setSkickatAv(skickatAv);
-        res.setSkickatTidpunkt(LocalDateTime.now().minusDays(3));
-        res.setSvarPaId(svarPaId);
-        res.setSvarPaReferens("SVAR_PA_REFERENS");
-        res.setIntygTyp("INTYG_TYP");
-        res.setSigneratAv(signeratAv);
-        res.setSigneratAvName(signeratAvName);
-        res.setEnhetId(enhet);
-        res.setEnhetName("ENHET_NAME");
-        res.setVardgivareName("VARDGIVARE_NAME");
-        res.setStatus(status);
-        res.setTimestamp(LocalDateTime.now());
-        res.setVidarebefordrad(vidarebefordrad);
-        res.setSenasteHandelse(senasteHandelse);
-        res.setVardaktorName(vardaktorName);
-
-        res.getKomplettering().add(buildMedicinsktArende("1", 1, "text 1"));
-        res.getKomplettering().add(buildMedicinsktArende("2", null, "text 2"));
-        res.getKomplettering().add(buildMedicinsktArende("3", 3, "text 3"));
-
-        res.getKontaktInfo().add("Kontakt 1");
-        res.getKontaktInfo().add("Kontakt 2");
-        res.getKontaktInfo().add("Kontakt 3");
-        return res;
-    }
-
-    private MedicinsktArende buildMedicinsktArende(String frageId, Integer instans, String text) {
-        MedicinsktArende res = new MedicinsktArende();
-        res.setFrageId(frageId);
-        res.setInstans(instans);
-        res.setText(text);
-        return res;
-    }
-
-
 }

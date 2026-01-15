@@ -150,4 +150,16 @@ public interface ArendeRepositoryCustom extends ArendeFilteredRepositoryCustom {
      */
     @Query("SELECT ar.meddelandeId FROM Arende ar WHERE ar.meddelandeId IN (:meddelandeIds)")
     List<String> findMeddelandeIdByMeddelandeId(@Param("meddelandeIds") List<String> messageIds);
+
+    /**
+     * Returns all paminnelseMeddelandeId (reminder message IDs) that exist for the given message IDs.
+     * This method checks if any Arende has a paminnelseMeddelandeId matching the provided message IDs,
+     * which indicates that reminders exist for those messages.
+     *
+     * @param messageIds the message IDs to check for existing reminders
+     * @return a list of paminnelseMeddelandeId values that match the search criteria.
+     * If no reminders are found, this method returns an empty list.
+     */
+    @Query("SELECT ar.paminnelseMeddelandeId FROM Arende ar WHERE ar.paminnelseMeddelandeId IN (:meddelandeIds)")
+    List<String> findPaminnelseMeddelandeIdByMeddelandeIdIn(@Param("meddelandeIds") List<String> messageIds);
 }
