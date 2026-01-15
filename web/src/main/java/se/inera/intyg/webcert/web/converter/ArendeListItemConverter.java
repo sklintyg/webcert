@@ -67,11 +67,7 @@ public final class ArendeListItemConverter {
         res.setVardgivarnamn(arende.getVardgivareName());
         return res;
     }
-
-    /**
-     * Convert from optimized projection to ArendeListItem.
-     * This is much faster than converting from full Arende entity as it avoids EAGER fetch of collections.
-     */
+    
     public static ArendeListItem convert(ArendeListItemProjection projection) {
         ArendeListItem res = new ArendeListItem();
         res.setAmne(projection.getAmne().name());
