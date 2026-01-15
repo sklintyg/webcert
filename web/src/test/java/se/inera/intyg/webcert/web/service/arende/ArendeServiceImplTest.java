@@ -124,9 +124,7 @@ class ArendeServiceImplTest {
         response.setProtectedPerson((SekretessStatus.FALSE));
         when(statusMap.get(any(Personnummer.class))).thenReturn(response);
         when(patientDetailsResolver.getPersonStatusesForList(any())).thenReturn(statusMap);
-        final QueryFragaSvarResponse qfsr = new QueryFragaSvarResponse();
-        qfsr.setResults(List.of());
-        when(fragaSvarService.filterFragaSvar(any())).thenReturn(qfsr);
+        
         final QueryFragaSvarParameter filterParameters = new QueryFragaSvarParameter();
 
         final var arendeListItem1 = new ArendeListItem();

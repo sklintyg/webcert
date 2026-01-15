@@ -214,11 +214,10 @@ class UserStatisticsServiceImplTest {
         void shouldReturnNbrOfQuestionsForSelectedUnit() {
             setUpUnit();
             doReturn(map).when(arendeService).getNbrOfUnhandledArendenForCareUnits(any(), any());
-            doReturn(map).when(fragaSvarService).getNbrOfUnhandledFragaSvarForCareUnits(any(), any());
 
             final var result = userStatisticsService.getUserStatistics().getNbrOfUnhandledQuestionsOnSelectedUnit();
 
-            assertEquals(expectedValue * 2, result);
+            assertEquals(expectedValue, result);
         }
 
         @Nested
@@ -365,7 +364,6 @@ class UserStatisticsServiceImplTest {
             @Test
             void shouldReturn0IfOnlySelectedUnitStatisticsInMap() {
                 doReturn(map).when(arendeService).getNbrOfUnhandledArendenForCareUnits(any(), any());
-                doReturn(map).when(fragaSvarService).getNbrOfUnhandledFragaSvarForCareUnits(any(), any());
                 doReturn(map).when(utkastService).getNbrOfUnsignedDraftsByCareUnits(any());
 
                 final var result = userStatisticsService.getUserStatistics().getTotalDraftsAndUnhandledQuestionsOnOtherUnits();
@@ -386,24 +384,22 @@ class UserStatisticsServiceImplTest {
             @Test
             void shouldReturnNbrOfQuestions() {
                 map.put(NOT_SELECTED_UNIT_ID, expectedValue);
-                doReturn(map).when(fragaSvarService).getNbrOfUnhandledFragaSvarForCareUnits(any(), any());
                 doReturn(map).when(arendeService).getNbrOfUnhandledArendenForCareUnits(any(), any());
 
                 final var result = userStatisticsService.getUserStatistics().getTotalDraftsAndUnhandledQuestionsOnOtherUnits();
 
-                assertEquals(expectedValue * 2, result);
+                assertEquals(expectedValue, result);
             }
 
             @Test
             void shouldReturnNbrOfQuestionsPlusDrafts() {
                 map.put(NOT_SELECTED_UNIT_ID, expectedValue);
-                doReturn(map).when(fragaSvarService).getNbrOfUnhandledFragaSvarForCareUnits(any(), any());
                 doReturn(map).when(arendeService).getNbrOfUnhandledArendenForCareUnits(any(), any());
                 doReturn(map).when(utkastService).getNbrOfUnsignedDraftsByCareUnits(any());
 
                 final var result = userStatisticsService.getUserStatistics().getTotalDraftsAndUnhandledQuestionsOnOtherUnits();
 
-                assertEquals(expectedValue * 3, result);
+                assertEquals(expectedValue * 2, result);
             }
         }
 

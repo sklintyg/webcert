@@ -574,8 +574,6 @@ public class ArendeServiceImpl implements ArendeService {
             .peek(item -> item.setPaminnelse(reminderIds.contains(item.getMeddelandeId())))
             .collect(Collectors.toList());
 
-        QueryFragaSvarResponse fsResults = fragaSvarService.filterFragaSvar(filter);
-        results.addAll(fsResults.getResults());
         QueryFragaSvarResponse response = new QueryFragaSvarResponse();
 
         Map<Personnummer, PatientDetailsResolverResponse> statusMap = patientDetailsResolver.getPersonStatusesForList(results.stream()

@@ -38,7 +38,6 @@ import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
-import se.inera.intyg.webcert.web.service.util.StatisticsHelper;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
 
 @Service
@@ -100,7 +99,7 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
 
         final var statistics = new UserStatisticsDTO();
         final var certificateTypes = getCertificateTypesAllowedForUser(user);
-        final var questionsMap = getMergedMapOfQuestions(unitIds, certificateTypes);
+        final var questionsMap = arendeService.getNbrOfUnhandledArendenForCareUnits(unitIds, certificateTypes);
         final var draftsMap = utkastService.getNbrOfUnsignedDraftsByCareUnits(unitIds);
 
         if (user.getValdVardenhet() != null) {
@@ -228,15 +227,6 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
             }
         }
         return allIds;
-    }
-
-    private Map<String, Long> getMergedMapOfQuestions(List<String> unitIds, Set<String> certificateTypes) {
-        final var fragaSvarStatsMap = fragaSvarService.getNbrOfUnhandledFragaSvarForCareUnits(unitIds, certificateTypes);
-        final var arendeStatsMap = arendeService.getNbrOfUnhandledArendenForCareUnits(unitIds, certificateTypes);
-
-        return StatisticsHelper.mergeArendeAndFragaSvarMaps(fragaSvarStatsMap, arendeStatsMap);
-
-
     }
 
     private long getFromMap(String id, Map<String, Long> statsMap) {
