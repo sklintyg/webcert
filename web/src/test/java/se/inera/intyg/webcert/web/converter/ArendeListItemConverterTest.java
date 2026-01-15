@@ -185,143 +185,143 @@ class ArendeListItemConverterTest {
 
         @Test
         void shouldConvertMeddelandeId() {
-            ArendeListItemProjection projection = createProjection();
+            final var projection = createProjection();
 
-            ArendeListItem result = ArendeListItemConverter.convert(projection);
+            final var result = ArendeListItemConverter.convert(projection);
 
             assertEquals(MEDDELANDE_ID, result.getMeddelandeId());
         }
 
         @Test
         void shouldConvertIntygId() {
-            ArendeListItemProjection projection = createProjection();
+            final var projection = createProjection();
 
-            ArendeListItem result = ArendeListItemConverter.convert(projection);
+            final var result = ArendeListItemConverter.convert(projection);
 
             assertEquals(INTYG_ID, result.getIntygId());
         }
 
         @Test
         void shouldConvertIntygTyp() {
-            ArendeListItemProjection projection = createProjection();
+            final var projection = createProjection();
 
-            ArendeListItem result = ArendeListItemConverter.convert(projection);
+            final var result = ArendeListItemConverter.convert(projection);
 
             assertEquals(INTYG_TYP, result.getIntygTyp());
         }
 
         @Test
         void shouldConvertSigneratAv() {
-            ArendeListItemProjection projection = createProjection();
+            final var projection = createProjection();
 
-            ArendeListItem result = ArendeListItemConverter.convert(projection);
+            final var result = ArendeListItemConverter.convert(projection);
 
             assertEquals(SIGNERAT_AV, result.getSigneratAv());
         }
 
         @Test
         void shouldConvertSigneratAvName() {
-            ArendeListItemProjection projection = createProjection();
+            final var projection = createProjection();
 
-            ArendeListItem result = ArendeListItemConverter.convert(projection);
+            final var result = ArendeListItemConverter.convert(projection);
 
             assertEquals(SIGNERAT_AV_NAME, result.getSigneratAvNamn());
         }
 
         @Test
         void shouldConvertStatus() {
-            ArendeListItemProjection projection = createProjection();
+            final var projection = createProjection();
 
-            ArendeListItem result = ArendeListItemConverter.convert(projection);
+            final var result = ArendeListItemConverter.convert(projection);
 
             assertEquals(STATUS, result.getStatus());
         }
 
         @Test
         void shouldConvertPatientPersonId() {
-            ArendeListItemProjection projection = createProjection();
+            final var projection = createProjection();
 
-            ArendeListItem result = ArendeListItemConverter.convert(projection);
+            final var result = ArendeListItemConverter.convert(projection);
 
             assertEquals(PATIENT_PERSON_ID, result.getPatientId());
         }
 
         @Test
         void shouldConvertSenasteHandelse() {
-            ArendeListItemProjection projection = createProjection();
+            final var projection = createProjection();
 
-            ArendeListItem result = ArendeListItemConverter.convert(projection);
+            final var result = ArendeListItemConverter.convert(projection);
 
             assertEquals(SENASTE_HANDELSE, result.getReceivedDate());
         }
 
         @Test
         void shouldConvertVidarebefordrad() {
-            ArendeListItemProjection projection = createProjection();
+            final var projection = createProjection();
 
-            ArendeListItem result = ArendeListItemConverter.convert(projection);
+            final var result = ArendeListItemConverter.convert(projection);
 
             assertTrue(result.isVidarebefordrad());
         }
 
         @Test
         void shouldConvertVidarebefordradWhenFalse() {
-            ArendeListItemProjection projection = new ArendeListItemProjection(
+            final var projection = new ArendeListItemProjection(
                 MEDDELANDE_ID, INTYG_ID, INTYG_TYP, SIGNERAT_AV, SIGNERAT_AV_NAME,
                 STATUS, PATIENT_PERSON_ID, SENASTE_HANDELSE, false,
                 SKICKAT_AV, AMNE, ENHET_NAME, VARDGIVARE_NAME
             );
 
-            ArendeListItem result = ArendeListItemConverter.convert(projection);
+            final var result = ArendeListItemConverter.convert(projection);
 
             assertFalse(result.isVidarebefordrad());
         }
 
         @Test
         void shouldConvertVidarebefordradWhenNull() {
-            ArendeListItemProjection projection = new ArendeListItemProjection(
+            final var projection = new ArendeListItemProjection(
                 MEDDELANDE_ID, INTYG_ID, INTYG_TYP, SIGNERAT_AV, SIGNERAT_AV_NAME,
                 STATUS, PATIENT_PERSON_ID, SENASTE_HANDELSE, null,
                 SKICKAT_AV, AMNE, ENHET_NAME, VARDGIVARE_NAME
             );
 
-            ArendeListItem result = ArendeListItemConverter.convert(projection);
+            final var result = ArendeListItemConverter.convert(projection);
 
             assertFalse(result.isVidarebefordrad());
         }
 
         @Test
         void shouldConvertSkickatAv() {
-            ArendeListItemProjection projection = createProjection();
+            final var projection = createProjection();
 
-            ArendeListItem result = ArendeListItemConverter.convert(projection);
+            final var result = ArendeListItemConverter.convert(projection);
 
             assertEquals(SKICKAT_AV, result.getFragestallare());
         }
 
         @Test
         void shouldConvertAmne() {
-            ArendeListItemProjection projection = createProjection();
+            final var projection = createProjection();
 
-            ArendeListItem result = ArendeListItemConverter.convert(projection);
+            final var result = ArendeListItemConverter.convert(projection);
 
             assertEquals(AMNE.name(), result.getAmne());
         }
 
         @Test
         void shouldConvertEnhetName() {
-            ArendeListItemProjection projection = createProjection();
+            final var projection = createProjection();
 
-            ArendeListItem result = ArendeListItemConverter.convert(projection);
+            final var result = ArendeListItemConverter.convert(projection);
 
             assertEquals(ENHET_NAME, result.getEnhetsnamn());
         }
 
         @Test
         void shouldConvertVardgivareName() {
-            ArendeListItemProjection projection = createProjection();
+            final var projection = createProjection();
 
-            ArendeListItem result = ArendeListItemConverter.convert(projection);
+            final var result = ArendeListItemConverter.convert(projection);
 
             assertEquals(VARDGIVARE_NAME, result.getVardgivarnamn());
         }

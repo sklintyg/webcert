@@ -35,7 +35,6 @@ import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceStatisticService;
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
-import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
@@ -52,18 +51,16 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
     private final WebCertUserService webCertUserService;
     private final UtkastService utkastService;
     private final AuthoritiesHelper authoritiesHelper;
-    private final FragaSvarService fragaSvarService;
     private final ArendeService arendeService;
     private final CertificateServiceStatisticService certificateServiceStatisticService;
 
     @Autowired
     public UserStatisticsServiceImpl(WebCertUserService webCertUserService, UtkastService utkastService,
-        AuthoritiesHelper authoritiesHelper, FragaSvarService fragaSvarService,
-        ArendeService arendeService, CertificateServiceStatisticService certificateServiceStatisticService) {
+        AuthoritiesHelper authoritiesHelper, ArendeService arendeService,
+        CertificateServiceStatisticService certificateServiceStatisticService) {
         this.webCertUserService = webCertUserService;
         this.utkastService = utkastService;
         this.authoritiesHelper = authoritiesHelper;
-        this.fragaSvarService = fragaSvarService;
         this.arendeService = arendeService;
         this.certificateServiceStatisticService = certificateServiceStatisticService;
     }

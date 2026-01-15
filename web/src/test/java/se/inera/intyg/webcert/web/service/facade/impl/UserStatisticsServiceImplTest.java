@@ -50,7 +50,6 @@ import se.inera.intyg.webcert.web.csintegration.user.CertificateServiceStatistic
 import se.inera.intyg.webcert.web.service.arende.ArendeService;
 import se.inera.intyg.webcert.web.service.facade.user.UserStatisticsDTO;
 import se.inera.intyg.webcert.web.service.facade.user.UserStatisticsServiceImpl;
-import se.inera.intyg.webcert.web.service.fragasvar.FragaSvarService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.service.utkast.UtkastService;
@@ -73,9 +72,6 @@ class UserStatisticsServiceImplTest {
 
     @Mock
     private AuthoritiesHelper authoritiesHelper;
-
-    @Mock
-    private FragaSvarService fragaSvarService;
 
     @Mock
     private ArendeService arendeService;
