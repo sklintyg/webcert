@@ -67,9 +67,9 @@ public final class ArendeListItemConverter {
         res.setVardgivarnamn(arende.getVardgivareName());
         return res;
     }
-    
+
     public static ArendeListItem convert(ArendeListItemProjection projection) {
-        ArendeListItem res = new ArendeListItem();
+        final var res = new ArendeListItem();
         res.setAmne(projection.getAmne().name());
         res.setFragestallare(projection.getSkickatAv());
         res.setIntygId(projection.getIntygId());

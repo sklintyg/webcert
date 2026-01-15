@@ -53,10 +53,10 @@ public class ArendeRepositoryImpl implements ArendeFilteredRepositoryCustom {
 
     @Override
     public List<ArendeListItemProjection> filterArendeForList(Filter filter) {
-        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<ArendeListItemProjection> cq = builder.createQuery(ArendeListItemProjection.class);
+        final var builder = entityManager.getCriteriaBuilder();
+        final var cq = builder.createQuery(ArendeListItemProjection.class);
 
-        Root<Arende> root = cq.from(Arende.class);
+        final var root = cq.from(Arende.class);
 
         cq.select(builder.construct(
             ArendeListItemProjection.class,
