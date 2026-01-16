@@ -59,13 +59,13 @@ public record CareUnitContext(List<String> allUnitIds, List<String> careUnitIds,
     }
 
     private static CareUnitData extractCareUnitData(List<Vardgivare> careProviders) {
-        final List<String> careUnitIds = new ArrayList<>();
-        final Map<String, List<String>> careUnitToSubUnits = new HashMap<>();
-        final Map<String, String> careUnitToCareProviderId = new HashMap<>();
+        final var careUnitIds = new ArrayList<String>();
+        final var careUnitToSubUnits = new HashMap<String, List<String>>();
+        final var careUnitToCareProviderId = new HashMap<String, String>();
 
         for (Vardgivare careProvider : careProviders) {
             for (Vardenhet careUnit : careProvider.getVardenheter()) {
-                final String careUnitId = careUnit.getId();
+                final var careUnitId = careUnit.getId();
                 if (careUnitId == null) {
                     continue;
                 }
@@ -95,9 +95,9 @@ public record CareUnitContext(List<String> allUnitIds, List<String> careUnitIds,
     }
 
     private static Set<String> extractSelectedUnitIds(WebCertUser user) {
-        return user.getIdsOfSelectedVardenhet() != null
-            ? new HashSet<>(user.getIdsOfSelectedVardenhet())
-            : Set.of();
+        return user.getIdsOfSelectedVardenhet().isEmpty()
+            ? Set.of()
+            : new HashSet<>(user.getIdsOfSelectedVardenhet());
     }
 
     public List<String> getSubUnitsFor(String careUnitId) {
