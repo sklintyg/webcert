@@ -28,12 +28,7 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
-/**
- * @param allUnitIds List of all unit IDs (care units + sub-units) to be used for statistics queries.
- * @param careUnitIds List of care unit IDs only (excluding sub-units/mottagningar).
- * @param selectedUnitIds Set of selected unit IDs (selected care unit + its sub-units).
- * @param maxCommissionsExceeded True if the number of care units exceeds the maximum allowed for full statistics.
- */
+
 public record CareUnitContext(List<String> allUnitIds, List<String> careUnitIds, Set<String> selectedUnitIds,
                               Map<String, List<String>> careUnitToSubUnits, Map<String, String> careUnitToCareProviderId,
                               boolean maxCommissionsExceeded) {
