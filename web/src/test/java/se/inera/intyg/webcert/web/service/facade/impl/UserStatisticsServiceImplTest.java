@@ -154,7 +154,7 @@ class UserStatisticsServiceImplTest {
         @Test
         void shouldReturnNullIfUserHasOriginIntegrated() {
             setUpUser();
-            user.setOrigin("DJUPINTEGRATION");
+            doReturn("DJUPINTEGRATION").when(user).getOrigin();
 
             final var result = userStatisticsService.getUserStatistics();
 
@@ -164,6 +164,8 @@ class UserStatisticsServiceImplTest {
         @Test
         void shouldReturnNullIfUnitIdsAreNull() {
             setUpUser();
+            ReflectionTestUtils.setField(userStatisticsService, "maxCommissionsForStatistics", 15);
+            doReturn(List.of()).when(user).getVardgivare();
             final var result = userStatisticsService.getUserStatistics();
             assertNull(result);
         }
@@ -306,6 +308,12 @@ class UserStatisticsServiceImplTest {
                     doReturn(List.of(getCareProviderWithUnitsWithoutId()))
                         .when(user)
                         .getVardgivare();
+                    doReturn(List.of(NOT_SELECTED_UNIT_ID, SUB_UNIT_TO_SELECTED))
+                        .when(user)
+                        .getIdsOfAllVardenheter();
+                    doReturn(List.of())
+                        .when(user)
+                        .getIdsOfSelectedVardenhet();
 
                     final var result = userStatisticsService.getUserStatistics();
                     assertTrue(result.getUnitStatistics().keySet().stream().noneMatch(Objects::isNull));
@@ -342,6 +350,12 @@ class UserStatisticsServiceImplTest {
                     doReturn(List.of(getCareProviderWithSubUnitsWithoutId()))
                         .when(user)
                         .getVardgivare();
+                    doReturn(List.of(SELECTED_UNIT_ID, NOT_SELECTED_UNIT_ID))
+                        .when(user)
+                        .getIdsOfAllVardenheter();
+                    doReturn(List.of())
+                        .when(user)
+                        .getIdsOfSelectedVardenhet();
 
                     final var result = userStatisticsService.getUserStatistics();
                     assertTrue(result.getUnitStatistics().keySet().stream().noneMatch(Objects::isNull));
