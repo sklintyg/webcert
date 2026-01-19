@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.AbstractVardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
@@ -24,16 +24,16 @@ public class CalculateQuestionsForUnitService {
     private final ArendeService arendeService;
     private final CertificateServiceStatisticService certificateServiceStatisticService;
 
-    public UserStatisticsDTO calculate(WebCertUser user, List<AbstractVardenhet> units) {
+    public UserStatisticsDTO calculate(WebCertUser user, List<SelectableVardenhet> units) {
         final var unitIds = units.stream()
-            .map(AbstractVardenhet::getId)
+            .map(SelectableVardenhet::getId)
             .toList();
 
         final var statistics = new UserStatisticsDTO();
         final var certificateTypes = getCertificateTypesAllowedForUser(user);
         final var questionsMap = arendeService.getNbrOfUnhandledArendenForCareUnits(unitIds, certificateTypes);
 
-        for (AbstractVardenhet unit : units) {
+        for (SelectableVardenhet unit : units) {
             final var subUnitIds = getSubUnits(unit);
             final var unitId = unit.getId();
 
@@ -46,11 +46,10 @@ public class CalculateQuestionsForUnitService {
         return statistics;
     }
 
-    private List<String> getSubUnits(AbstractVardenhet unit) {
+    private List<String> getSubUnits(SelectableVardenhet unit) {
         if (unit instanceof Vardenhet careUnit) {
             return careUnit.getMottagningar().stream()
-                .map(Mottagning::getHsaIds)
-                .flatMap(List::stream)
+                .map(Mottagning::getId)
                 .toList();
         }
 

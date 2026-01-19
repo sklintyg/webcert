@@ -27,8 +27,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.AbstractVardenhet;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.CertificateListItemValueType;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColumnType;
@@ -192,13 +192,13 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
         final var loggedInUnit = user.getValdVardenhet();
         final var subUnits = hsaOrganizationsService.getVardenhet(loggedInUnit.getId()).getMottagningar();
 
-        final var units = getUnits((AbstractVardenhet) loggedInUnit, subUnits);
+        final var units = getUnits(loggedInUnit, subUnits);
         final var unitStatistics = calculateQuestionsForUnitService.calculate(user, units).getUnitStatistics();
 
-        var unitIdAndNamesMap = units.stream()
+        final var unitIdAndNamesMap = units.stream()
             .collect(Collectors.toMap(
-                AbstractVardenhet::getId,
-                AbstractVardenhet::getNamn
+                SelectableVardenhet::getId,
+                SelectableVardenhet::getNamn
             ));
 
         final var list = unitStatistics.entrySet().stream()
@@ -211,8 +211,8 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
         return list;
     }
 
-    private static ArrayList<AbstractVardenhet> getUnits(AbstractVardenhet loggedInUnit, List<Mottagning> subUnits) {
-        var units = new ArrayList<AbstractVardenhet>();
+    private static ArrayList<SelectableVardenhet> getUnits(SelectableVardenhet loggedInUnit, List<Mottagning> subUnits) {
+        final var units = new ArrayList<SelectableVardenhet>();
         units.add(loggedInUnit);
         units.addAll(subUnits);
         return units;
