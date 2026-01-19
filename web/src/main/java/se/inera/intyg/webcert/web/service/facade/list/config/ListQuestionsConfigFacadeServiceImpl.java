@@ -27,7 +27,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.AbstractVardenhet;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.Mottagning;
+import se.inera.intyg.infra.integration.hsatk.model.legacy.SelectableVardenhet;
 import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.CertificateListItemValueType;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListColumnType;
@@ -38,9 +39,8 @@ import se.inera.intyg.webcert.web.service.facade.list.config.dto.ListFilterSelec
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.TableHeading;
 import se.inera.intyg.webcert.web.service.facade.list.config.factory.ListFilterConfigFactory;
 import se.inera.intyg.webcert.web.service.facade.list.config.factory.TableHeadingFactory;
+import se.inera.intyg.webcert.web.service.facade.user.CalculateQuestionsForUnitService;
 import se.inera.intyg.webcert.web.service.facade.user.UnitStatisticsDTO;
-import se.inera.intyg.webcert.web.service.facade.user.UserStatisticsDTO;
-import se.inera.intyg.webcert.web.service.facade.user.UserStatisticsService;
 import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 @Service
@@ -56,19 +56,17 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
     private static final String RESET_FILTER_TOOLTIP = "Återställ sökfilter för ej hanterade ärenden.";
 
     private final GetStaffInfoFacadeService getStaffInfoFacadeService;
-    private final UserStatisticsService userStatisticsService;
     private final WebCertUserService webCertUserService;
     private final HsaOrganizationsService hsaOrganizationsService;
+    private final CalculateQuestionsForUnitService calculateQuestionsForUnitService;
 
     @Autowired
-    public ListQuestionsConfigFacadeServiceImpl(GetStaffInfoFacadeService getStaffInfoFacadeService,
-        UserStatisticsService userStatisticsService,
-        WebCertUserService webCertUserService,
-        HsaOrganizationsService hsaOrganizationsService) {
+    public ListQuestionsConfigFacadeServiceImpl(GetStaffInfoFacadeService getStaffInfoFacadeService, WebCertUserService webCertUserService,
+        HsaOrganizationsService hsaOrganizationsService, CalculateQuestionsForUnitService calculateQuestionsForUnitService) {
         this.getStaffInfoFacadeService = getStaffInfoFacadeService;
-        this.userStatisticsService = userStatisticsService;
         this.webCertUserService = webCertUserService;
         this.hsaOrganizationsService = hsaOrganizationsService;
+        this.calculateQuestionsForUnitService = calculateQuestionsForUnitService;
     }
 
     @Override
@@ -190,32 +188,38 @@ public class ListQuestionsConfigFacadeServiceImpl implements ListVariableConfigF
     }
 
     private List<ListFilterConfigValue> getUnitList() {
-        final var loggedInUnit = webCertUserService.getUser().getValdVardenhet();
-        final var statistics = userStatisticsService.getUserStatistics();
+        final var user = webCertUserService.getUser();
+        final var loggedInUnit = user.getValdVardenhet();
         final var subUnits = hsaOrganizationsService.getVardenhet(loggedInUnit.getId()).getMottagningar();
 
-        var unitIdAndNamesMap = subUnits.stream()
-            .collect(Collectors.toMap(
-                AbstractVardenhet::getId,
-                AbstractVardenhet::getNamn
-            ));
-        unitIdAndNamesMap.put(loggedInUnit.getId(), loggedInUnit.getNamn());
+        final var units = getUnits(loggedInUnit, subUnits);
+        final var unitStatistics = calculateQuestionsForUnitService.calculate(user, units).getUnitStatistics();
 
-        final var list = statistics.getUnitStatistics()
-            .entrySet()
-            .stream()
-            .filter(unit -> unitIdAndNamesMap.containsKey(unit.getKey()))
+        final var unitIdAndNamesMap = units.stream()
+            .collect(Collectors.toMap(
+                SelectableVardenhet::getId,
+                SelectableVardenhet::getNamn
+            ));
+
+        final var list = unitStatistics.entrySet().stream()
             .sorted(sortUnitFirstAndSubUnitsAlphabetical(loggedInUnit.getId(), unitIdAndNamesMap))
             .map(unit -> getUnitSelectOption(unit.getKey(), unit.getValue(), loggedInUnit.getId(), unitIdAndNamesMap))
             .collect(Collectors.toList());
 
-        list.addFirst(ListFilterConfigValue.create("", getShowAllText(loggedInUnit.getId(), statistics), true));
+        list.addFirst(ListFilterConfigValue.create("", getShowAllText(loggedInUnit.getId(), unitStatistics), true));
 
         return list;
     }
 
-    private String getShowAllText(String unitId, UserStatisticsDTO statistics) {
-        final var unitStatistic = statistics.getUnitStatistics().get(unitId);
+    private static ArrayList<SelectableVardenhet> getUnits(SelectableVardenhet loggedInUnit, List<Mottagning> subUnits) {
+        final var units = new ArrayList<SelectableVardenhet>();
+        units.add(loggedInUnit);
+        units.addAll(subUnits);
+        return units;
+    }
+
+    private String getShowAllText(String unitId, Map<String, UnitStatisticsDTO> statistics) {
+        final var unitStatistic = statistics.get(unitId);
         if (unitStatistic == null) {
             return "Visa alla";
         }

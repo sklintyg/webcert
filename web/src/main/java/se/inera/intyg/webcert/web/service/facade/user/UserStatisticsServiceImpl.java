@@ -18,7 +18,6 @@
  */
 package se.inera.intyg.webcert.web.service.facade.user;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,8 +27,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
-import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
@@ -73,25 +70,23 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
             return null;
         }
 
-        final var careUnitIds = getCareUnitIds(user);
+        final var careUnitContext = CareUnitContext.build(user, maxCommissionsForStatistics);
 
-        if (careUnitIds.isEmpty()) {
+        if (careUnitContext == null) {
             return null;
         }
 
-        final var maxCommissionsExceeded = careUnitIds.size() > maxCommissionsForStatistics;
-
-        if (maxCommissionsExceeded && user.getValdVardenhet() == null) {
+        if (careUnitContext.maxCommissionsExceeded() && user.getValdVardenhet() == null) {
             log.info("Number of commissions ({}) exceeds maxCommissionsForStatistics ({}) without selected unit. No statistics will "
-                + "be collected.", careUnitIds.size(), maxCommissionsForStatistics);
+                + "be collected.", careUnitContext.careUnitIds().size(), maxCommissionsForStatistics);
             return null;
         }
 
-        final var unitIds = maxCommissionsExceeded ? user.getValdVardenhet().getHsaIds() : getUnitIds(user);
+        final var unitIds = careUnitContext.allUnitIds();
 
-        if (maxCommissionsExceeded) {
+        if (careUnitContext.maxCommissionsExceeded()) {
             log.info("Number of commissions ({}) exceeds maxCommissionsForStatistics ({}) with selected unit. Statistics will be collected "
-                + "for selected care unit only.", careUnitIds.size(), maxCommissionsForStatistics);
+                + "for selected care unit only.", careUnitContext.careUnitIds().size(), maxCommissionsForStatistics);
         }
 
         final var statistics = new UserStatisticsDTO();
@@ -104,30 +99,28 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
                 getNumberOfDraftsOnSelectedUnit(user, draftsMap)
             );
             statistics.setNbrOfUnhandledQuestionsOnSelectedUnit(
-                getNumberOfUnhandledQuestionsOnSelectedUnit(user.getIdsOfSelectedVardenhet(), questionsMap)
+                getNumberOfUnhandledQuestionsOnSelectedUnit(careUnitContext.selectedUnitIds(), questionsMap)
             );
             statistics.setTotalDraftsAndUnhandledQuestionsOnOtherUnits(
-                getTotalDraftsAndUnhandledQuestionsOnOtherUnits(unitIds, user, draftsMap, questionsMap)
+                getTotalDraftsAndUnhandledQuestionsOnOtherUnits(careUnitContext, draftsMap, questionsMap)
             );
         }
 
-        if (!maxCommissionsExceeded) {
-            addCareProviderStatistics(statistics, user.getVardgivare(), draftsMap, questionsMap);
+        if (!careUnitContext.maxCommissionsExceeded()) {
+            addCareProviderStatistics(statistics, careUnitContext, draftsMap, questionsMap);
         }
 
-        certificateServiceStatisticService.add(statistics, unitIds, user, maxCommissionsExceeded);
+        certificateServiceStatisticService.add(statistics, unitIds, user, careUnitContext.maxCommissionsExceeded());
         return statistics;
     }
 
-    private void addCareProviderStatistics(UserStatisticsDTO statistics, List<Vardgivare> careProviders, Map<String, Long> draftMap,
+    private void addCareProviderStatistics(UserStatisticsDTO statistics, CareUnitContext context, Map<String, Long> draftMap,
         Map<String, Long> questionMap) {
-        for (Vardgivare careProvider : careProviders) {
-            for (Vardenhet unit : careProvider.getVardenheter()) {
-                final var subUnitIds = unit.getHsaIds();
-                subUnitIds.remove(unit.getId());
-                addUnitStatistics(statistics, unit.getId(), subUnitIds, draftMap, questionMap, careProvider.getId());
-                addSubUnitsStatistics(statistics, subUnitIds, draftMap, questionMap, careProvider.getId(), unit.getId());
-            }
+        for (String careUnitId : context.careUnitIds()) {
+            final var careProviderId = context.getCareProviderIdFor(careUnitId);
+            final var subUnitIds = context.getSubUnitsFor(careUnitId);
+            addUnitStatistics(statistics, careUnitId, subUnitIds, draftMap, questionMap, careProviderId);
+            addSubUnitsStatistics(statistics, subUnitIds, draftMap, questionMap, careProviderId, careUnitId);
         }
     }
 
@@ -163,16 +156,9 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
         return authoritiesHelper.getIntygstyperForPrivilege(user, AuthoritiesConstants.PRIVILEGE_VISA_INTYG);
     }
 
-    private List<String> getNotSelectedUnitIds(WebCertUser user, List<String> unitIds) {
-        final var selectedUnitIds = user.getIdsOfSelectedVardenhet();
-        final var notSelectedUnitIds = new ArrayList<>(unitIds);
-        notSelectedUnitIds.removeAll(selectedUnitIds);
-        return notSelectedUnitIds;
-    }
-
-    private long getTotalDraftsAndUnhandledQuestionsOnOtherUnits(List<String> unitIds, WebCertUser user, Map<String, Long> draftStats,
+    private long getTotalDraftsAndUnhandledQuestionsOnOtherUnits(CareUnitContext context, Map<String, Long> draftStats,
         Map<String, Long> questionsStats) {
-        final var notSelectedUnitIds = getNotSelectedUnitIds(user, unitIds);
+        final var notSelectedUnitIds = context.getNotSelectedUnitIds();
         return sumStatisticsForUnits(notSelectedUnitIds, draftStats) + sumStatisticsForUnits(notSelectedUnitIds, questionsStats);
     }
 
@@ -180,11 +166,11 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
         return getFromMap(user.getValdVardenhet().getId(), draftsMap);
     }
 
-    private long getNumberOfUnhandledQuestionsOnSelectedUnit(List<String> unitIds, Map<String, Long> statisticsMap) {
+    private long getNumberOfUnhandledQuestionsOnSelectedUnit(Set<String> unitIds, Map<String, Long> statisticsMap) {
         return sumStatisticsForUnits(unitIds, statisticsMap);
     }
 
-    private long sumStatisticsForUnits(List<String> unitIds, Map<String, Long> statistics) {
+    private long sumStatisticsForUnits(Iterable<String> unitIds, Map<String, Long> statistics) {
         long sum = 0;
         for (String unitId : unitIds) {
             sum += getFromMap(unitId, statistics);
@@ -206,29 +192,8 @@ public class UserStatisticsServiceImpl implements UserStatisticsService {
         return true;
     }
 
-    private List<String> getUnitIds(WebCertUser user) {
-        final var units = user.getIdsOfAllVardenheter();
-        if (units == null || units.isEmpty()) {
-            LOG.warn("getStatistics was called by user {} that have no id:s of vardenheter present in the user context: {}",
-                user.getHsaId(), user.getAsJson());
-            return null;
-        }
-        return units;
-    }
-
-    private List<String> getCareUnitIds(WebCertUser user) {
-        List<String> allIds = new ArrayList<>();
-        for (Vardgivare v : user.getVardgivare()) {
-            for (Vardenhet ve : v.getVardenheter()) {
-                allIds.add(ve.getId());
-            }
-        }
-        return allIds;
-    }
 
     private long getFromMap(String id, Map<String, Long> statsMap) {
-        final var value = statsMap.get(id);
-        return value != null ? value : 0L;
+        return statsMap.getOrDefault(id, 0L);
     }
-
 }
