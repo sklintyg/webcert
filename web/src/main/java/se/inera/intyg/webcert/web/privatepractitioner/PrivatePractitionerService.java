@@ -79,9 +79,13 @@ public class PrivatePractitionerService {
         return HospInformationResponse.convert(privatePractitionerIntegrationService.getHospInformation(personId));
     }
 
-    public PrivatePractitionerResponse getPrivatePractitioner() {
+    public PrivatePractitionerResponse getLoggedInPrivatePractitioner() {
         final var personId = webCertUserService.getUser().getPersonId();
         return PrivatePractitionerResponse.convert(privatePractitionerIntegrationService.getPrivatePractitioner(personId));
+    }
+
+    public PrivatePractitionerResponse getPrivatePractitioner(String hsaId) {
+        return PrivatePractitionerResponse.convert(privatePractitionerIntegrationService.getPrivatePractitioner(hsaId));
     }
 
     public PrivatePractitionerResponse editPrivatePractitioner(PrivatePractitionerDetails updatePrivatePractitionerRequest) {

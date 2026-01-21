@@ -54,7 +54,7 @@ class PrivatePractitionerApiControllerTest {
 
     @Test
     void shouldGetPrivatePractitioner() {
-        when(service.getPrivatePractitioner()).thenReturn(DR_KRANSTEGE_RESPONSE_DTO);
+        when(service.getLoggedInPrivatePractitioner()).thenReturn(DR_KRANSTEGE_RESPONSE_DTO);
 
         final var actual = controller.getPrivatePractitioner();
         assertEquals(DR_KRANSTEGE_RESPONSE_DTO, actual);

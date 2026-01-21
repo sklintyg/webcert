@@ -41,7 +41,7 @@ public class PrivatePractitionerApiController {
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PerformanceLogging(eventAction = "get-private-practitioner", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public PrivatePractitionerResponse getPrivatePractitioner() {
-        return service.getPrivatePractitioner();
+        return service.getLoggedInPrivatePractitioner();
     }
 
     @GET

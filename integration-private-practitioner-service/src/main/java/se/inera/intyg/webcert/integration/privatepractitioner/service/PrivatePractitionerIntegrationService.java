@@ -67,18 +67,18 @@ public class PrivatePractitionerIntegrationService {
         return ppsIntegrationService.registerPrivatePractitioner(registrationRequest);
     }
 
-    public PrivatePractitioner getPrivatePractitioner(String personId) {
-        validateIdentifier(personId);
-        return ppsIntegrationService.getPrivatePractitioner(personId);
+    public PrivatePractitioner getPrivatePractitioner(String personOrHsaId) {
+        validateIdentifier(personOrHsaId);
+        return ppsIntegrationService.getPrivatePractitioner(personOrHsaId);
     }
 
     public PrivatePractitioner updatePrivatePractitioner(UpdatePrivatePractitionerRequest privatePractitioner) {
         return ppsIntegrationService.updatePrivatePractitioner(privatePractitioner);
     }
 
-    private void validateIdentifier(String personalIdentityNumber) {
-        if (Strings.isNullOrEmpty(personalIdentityNumber)) {
-            throw new IllegalArgumentException("No PersonalIdentityNumber available.");
+    private void validateIdentifier(String personOrHsaId) {
+        if (Strings.isNullOrEmpty(personOrHsaId)) {
+            throw new IllegalArgumentException("No personOrHsaId available.");
         }
     }
 

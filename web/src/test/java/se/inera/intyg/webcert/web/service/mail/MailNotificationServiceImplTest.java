@@ -498,7 +498,7 @@ class MailNotificationServiceImplTest {
 
         mailNotificationService.sendMailForIncomingQuestion(mailNotification);
 
-        verify(privatePractitionerService).getPrivatePractitioner();
+        verify(privatePractitionerService).getPrivatePractitioner(SIGNED_BY_HSA_ID);
     }
 
     @Test

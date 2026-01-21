@@ -98,11 +98,11 @@ public class PPSIntegrationService {
             .body(PrivatePractitionerValidationResponse.class);
     }
 
-    public PrivatePractitioner getPrivatePractitioner(String personId) {
+    public PrivatePractitioner getPrivatePractitioner(String personOrHsaId) {
         return ppsRestClient
             .get()
             .uri(uriBuilder -> uriBuilder
-                .queryParam("personOrHsaId", personId)
+                .queryParam("personOrHsaId", personOrHsaId)
                 .build()
             )
             .accept(MediaType.APPLICATION_JSON)
