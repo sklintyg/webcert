@@ -43,8 +43,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import se.inera.intyg.common.support.model.common.internal.HoSPersonal;
 import se.inera.intyg.common.support.modules.converter.InternalConverterUtil;
-import se.inera.intyg.common.support.modules.converter.mapping.CareProviderMapperUtil;
-import se.inera.intyg.common.support.modules.converter.mapping.CareProviderMappingConfigLoader;
+import se.inera.intyg.common.support.modules.converter.mapping.UnitMapperUtil;
+import se.inera.intyg.common.support.modules.converter.mapping.UnitMappingConfigLoader;
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v2.SendCertificateToRecipientResponderInterface;
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v2.SendCertificateToRecipientResponseType;
 import se.riv.clinicalprocess.healthcond.certificate.sendCertificateToRecipient.v2.SendCertificateToRecipientType;
@@ -55,8 +55,8 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
  * Created by eriklupander on 2015-06-04.
  */
 @ExtendWith({MockitoExtension.class, SpringExtension.class})
-@ContextConfiguration(classes = {CareProviderMappingConfigLoader.class, CareProviderMapperUtil.class, InternalConverterUtil.class})
- class SendCertificateServiceClientTest {
+@ContextConfiguration(classes = {UnitMappingConfigLoader.class, UnitMapperUtil.class, InternalConverterUtil.class})
+class SendCertificateServiceClientTest {
 
     private static final String INTYGS_ID = "intyg-1";
     private static final String PERSON_ID = "20121212-1212";
@@ -87,7 +87,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
     }
 
     @BeforeEach
-     void setup() throws Exception {
+    void setup() throws Exception {
         lenient().when(objectMapper.readValue(anyString(), eq(HoSPersonal.class))).then(new Answer<HoSPersonal>() {
 
             @Override
@@ -98,7 +98,7 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
     }
 
     @Test
-     void testSendCertificateOk() {
+    void testSendCertificateOk() {
 
         when(response.getResult()).thenReturn(buildResultOfCall(ResultCodeType.OK));
 
@@ -111,28 +111,31 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
     }
 
     @Test
-     void testSendCertificateNoIntygsId() {
-        assertThrows(IllegalArgumentException.class,()->testee.sendCertificate(null, PERSON_ID, SKICKAT_AV_JSON, RECIPIENT, LOGICAL_ADDRESS));
+    void testSendCertificateNoIntygsId() {
+        assertThrows(IllegalArgumentException.class,
+            () -> testee.sendCertificate(null, PERSON_ID, SKICKAT_AV_JSON, RECIPIENT, LOGICAL_ADDRESS));
         verifyNoInteractions(sendService);
     }
 
     @Test
-     void testSendCertificateNoPersonId() {
+    void testSendCertificateNoPersonId() {
 
-            assertThrows(IllegalArgumentException.class,()->testee.sendCertificate(INTYGS_ID, null, SKICKAT_AV_JSON, RECIPIENT, LOGICAL_ADDRESS));
-            verifyNoInteractions(sendService);
+        assertThrows(IllegalArgumentException.class,
+            () -> testee.sendCertificate(INTYGS_ID, null, SKICKAT_AV_JSON, RECIPIENT, LOGICAL_ADDRESS));
+        verifyNoInteractions(sendService);
     }
 
     @Test
-     void testSendCertificateNoRecipient() {
-        assertThrows(IllegalArgumentException.class,()->testee.sendCertificate(INTYGS_ID, PERSON_ID, SKICKAT_AV_JSON, null, LOGICAL_ADDRESS));
-            verifyNoInteractions(sendService);
+    void testSendCertificateNoRecipient() {
+        assertThrows(IllegalArgumentException.class,
+            () -> testee.sendCertificate(INTYGS_ID, PERSON_ID, SKICKAT_AV_JSON, null, LOGICAL_ADDRESS));
+        verifyNoInteractions(sendService);
     }
 
     @Test
-     void testSendCertificateNoLogicalAddress() {
-            assertThrows(IllegalArgumentException.class,()->testee.sendCertificate(INTYGS_ID, SKICKAT_AV_JSON, PERSON_ID, RECIPIENT, null));
-            verifyNoInteractions(sendService);
+    void testSendCertificateNoLogicalAddress() {
+        assertThrows(IllegalArgumentException.class, () -> testee.sendCertificate(INTYGS_ID, SKICKAT_AV_JSON, PERSON_ID, RECIPIENT, null));
+        verifyNoInteractions(sendService);
     }
 
     /**
@@ -140,10 +143,11 @@ import se.riv.clinicalprocess.healthcond.certificate.v3.ResultType;
      * caller of the testee to handle exceptions.
      */
     @Test
-     void testExceptionsAreForwardedAsIs() {
+    void testExceptionsAreForwardedAsIs() {
         when(sendService.sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class)))
             .thenThrow(new WebServiceException("FOO BAR"));
-        assertThrows(WebServiceException.class,()->testee.sendCertificate(INTYGS_ID, PERSON_ID, SKICKAT_AV_JSON, RECIPIENT, LOGICAL_ADDRESS));
+        assertThrows(WebServiceException.class,
+            () -> testee.sendCertificate(INTYGS_ID, PERSON_ID, SKICKAT_AV_JSON, RECIPIENT, LOGICAL_ADDRESS));
 
         verify(sendService, times(1)).sendCertificateToRecipient(anyString(), any(SendCertificateToRecipientType.class));
     }
