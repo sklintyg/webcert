@@ -291,9 +291,9 @@ public class MailNotificationServiceImpl implements MailNotificationService {
         if (privatePractitionerService == null) {
             throw new IllegalStateException("PrivatePractitionerIntegrationService is not available");
         }
-        
+
         try {
-            final var privatePractitioner = privatePractitionerService.getPrivatePractitioner();
+            final var privatePractitioner = privatePractitionerService.getPrivatePractitioner(hsaId);
             if (privatePractitioner != null) {
                 return new MailNotificationEnhet(
                     hsaId,

@@ -111,10 +111,17 @@ class PrivatePractitionerServiceTest {
     }
 
     @Test
-    void shouldReturnPrivatePractitioner() {
+    void shouldReturnLoggedInPrivatePractitioner() {
         mockUser();
         when(privatePractitionerIntegrationService.getPrivatePractitioner(DR_KRANSTEGE_PERSON_ID)).thenReturn(DR_KRANSTEGE);
-        final var actual = service.getPrivatePractitioner();
+        final var actual = service.getLoggedInPrivatePractitioner();
+        assertEquals(DR_KRANSTEGE_RESPONSE_DTO, actual);
+    }
+
+    @Test
+    void shouldReturnPrivatePractitioner() {
+        when(privatePractitionerIntegrationService.getPrivatePractitioner(DR_KRANSTEGE_HSA_ID)).thenReturn(DR_KRANSTEGE);
+        final var actual = service.getPrivatePractitioner(DR_KRANSTEGE_HSA_ID);
         assertEquals(DR_KRANSTEGE_RESPONSE_DTO, actual);
     }
 
