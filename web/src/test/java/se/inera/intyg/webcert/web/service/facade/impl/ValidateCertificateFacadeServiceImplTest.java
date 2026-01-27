@@ -97,7 +97,7 @@ class ValidateCertificateFacadeServiceImplTest {
         final var certificateJson = "json";
         doReturn(certificateJson)
             .when(moduleApi)
-            .getJsonFromCertificate(certificate, currentCertificate.getModel());
+            .getJsonFromCertificate(certificate, currentCertificate.getModel(), currentCertificate.getSkapad());
 
         final var messagesProvider = mock(CertificateMessagesProvider.class);
         lenient().doReturn(messagesProvider)

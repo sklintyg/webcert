@@ -131,7 +131,7 @@ class CertificateTextVersionFacadeServiceImplTest {
 
         @Test
         public void shouldNotUpdateIfAlreadyLatestVersion() throws IOException, ModuleException {
-            doReturn(getUtlatande(LATEST_VERSION)).when(moduleApi).getUtlatandeFromJson(anyString());
+            doReturn(getUtlatande(LATEST_VERSION)).when(moduleApi).getUtlatandeFromJson(anyString(), any());
 
             final var input = createUtkast(LATEST_VERSION, LATEST_VERSION, UtkastStatus.DRAFT_INCOMPLETE);
             final var expected = createUtkast(LATEST_VERSION, LATEST_VERSION, UtkastStatus.DRAFT_INCOMPLETE);
@@ -153,7 +153,7 @@ class CertificateTextVersionFacadeServiceImplTest {
 
             @Test
             public void shouldUpdateIfNotLatestObjectTextVersion() throws IOException, ModuleException {
-                doReturn(getUtlatande(LATEST_VERSION)).when(moduleApi).getUtlatandeFromJson(anyString());
+                doReturn(getUtlatande(LATEST_VERSION)).when(moduleApi).getUtlatandeFromJson(anyString(), any());
 
                 final var input = createUtkast(PREVIOUS_VERSION, LATEST_VERSION, UtkastStatus.DRAFT_INCOMPLETE);
                 final var expected = createUtkast(LATEST_VERSION, LATEST_VERSION, UtkastStatus.DRAFT_INCOMPLETE);
@@ -166,7 +166,7 @@ class CertificateTextVersionFacadeServiceImplTest {
 
             @Test
             public void shouldUpdateIfNotLatestJsonModelTextVersion() throws IOException, ModuleException {
-                doReturn(getUtlatande(PREVIOUS_VERSION)).when(moduleApi).getUtlatandeFromJson(anyString());
+                doReturn(getUtlatande(PREVIOUS_VERSION)).when(moduleApi).getUtlatandeFromJson(anyString(), any());
 
                 final var input = createUtkast(LATEST_VERSION, PREVIOUS_VERSION, UtkastStatus.DRAFT_COMPLETE);
                 final var expected = createUtkast(LATEST_VERSION, LATEST_VERSION, UtkastStatus.DRAFT_COMPLETE);
@@ -178,7 +178,7 @@ class CertificateTextVersionFacadeServiceImplTest {
 
             @Test
             public void shouldUpdateIfNotLatestObjectAndJsonModelTextVersion() throws IOException, ModuleException {
-                doReturn(getUtlatande(PREVIOUS_VERSION)).when(moduleApi).getUtlatandeFromJson(anyString());
+                doReturn(getUtlatande(PREVIOUS_VERSION)).when(moduleApi).getUtlatandeFromJson(anyString(), any());
 
                 final var input = createUtkast(PREVIOUS_VERSION, PREVIOUS_VERSION, UtkastStatus.DRAFT_INCOMPLETE);
                 final var expected = createUtkast(LATEST_VERSION, LATEST_VERSION, UtkastStatus.DRAFT_INCOMPLETE);
@@ -194,7 +194,7 @@ class CertificateTextVersionFacadeServiceImplTest {
 
             @Test
             public void shouldThrowWebcertServiceExceptionIfOptimisticLockOnSave() throws IOException, ModuleException {
-                doReturn(getUtlatande(PREVIOUS_VERSION)).when(moduleApi).getUtlatandeFromJson(anyString());
+                doReturn(getUtlatande(PREVIOUS_VERSION)).when(moduleApi).getUtlatandeFromJson(anyString(), any());
                 doThrow(OptimisticLockingFailureException.class).when(utkastRepository).save(any(Utkast.class));
 
                 final var input = createUtkast(PREVIOUS_VERSION, PREVIOUS_VERSION, UtkastStatus.DRAFT_INCOMPLETE);
@@ -207,7 +207,7 @@ class CertificateTextVersionFacadeServiceImplTest {
 
             @Test
             public void shouldNotUpdateIfFailureUpdatingJsonModel() throws IOException, ModuleException {
-                doReturn(getUtlatande(PREVIOUS_VERSION)).when(moduleApi).getUtlatandeFromJson(anyString());
+                doReturn(getUtlatande(PREVIOUS_VERSION)).when(moduleApi).getUtlatandeFromJson(anyString(), any());
                 doThrow(JsonProcessingException.class).when(mockObjectMapper).readTree(anyString());
 
                 final var input = createUtkast(PREVIOUS_VERSION, PREVIOUS_VERSION, UtkastStatus.DRAFT_INCOMPLETE);
@@ -220,7 +220,7 @@ class CertificateTextVersionFacadeServiceImplTest {
 
             @Test
             public void shouldNotUpdateIfModuleApiFailure() throws IOException, ModuleException {
-                doThrow(IOException.class).when(moduleApi).getUtlatandeFromJson(anyString());
+                doThrow(IOException.class).when(moduleApi).getUtlatandeFromJson(anyString(), any());
 
                 final var input = createUtkast(PREVIOUS_VERSION, PREVIOUS_VERSION, UtkastStatus.DRAFT_INCOMPLETE);
                 final var expected = createUtkast(PREVIOUS_VERSION, PREVIOUS_VERSION, UtkastStatus.DRAFT_INCOMPLETE);
