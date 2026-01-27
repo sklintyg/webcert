@@ -78,6 +78,7 @@ import se.inera.intyg.webcert.web.web.controller.integration.dto.IntegrationPara
 @ExtendWith(MockitoExtension.class)
 class UtkastToCertificateConverterTest {
 
+    private static final LocalDateTime CREATED = LocalDateTime.now().minusDays(1);
     @Mock
     private IntygModuleRegistry moduleRegistry;
 
@@ -131,7 +132,7 @@ class UtkastToCertificateConverterTest {
                 .when(moduleRegistry).getModuleApi(anyString(), anyString());
 
             doReturn(createCertificate())
-                .when(moduleApi).getCertificateFromJson(draft.getModel(), typeAheadProvider);
+                .when(moduleApi).getCertificateFromJson(draft.getModel(), typeAheadProvider, CREATED);
 
             doReturn(certificateRelations)
                 .when(certificateRelationsConverter).convert(draft.getIntygsId());
@@ -598,7 +599,7 @@ class UtkastToCertificateConverterTest {
         void setup() throws ModuleNotFoundException, IOException, ModuleException {
             final var moduleApi = mock(ModuleApi.class);
             doReturn(moduleApi).when(moduleRegistry).getModuleApi(anyString(), eq(draft.getIntygTypeVersion()));
-            doReturn(createCertificate()).when(moduleApi).getCertificateFromJson(draft.getModel(), typeAheadProvider);
+            doReturn(createCertificate()).when(moduleApi).getCertificateFromJson(draft.getModel(), typeAheadProvider, CREATED);
         }
 
         @Test
@@ -632,7 +633,7 @@ class UtkastToCertificateConverterTest {
         draft.setEnhetsNamn("unitName");
         draft.setModel("draftJson");
         draft.setStatus(UtkastStatus.DRAFT_INCOMPLETE);
-        draft.setSkapad(LocalDateTime.now().minusDays(1));
+        draft.setSkapad(CREATED);
         draft.setSenastSparadDatum(LocalDateTime.now());
         draft.setPatientPersonnummer(Personnummer.createPersonnummer("191212121212").orElseThrow());
         draft.setSkapadAv(new VardpersonReferens("personId", "personName"));

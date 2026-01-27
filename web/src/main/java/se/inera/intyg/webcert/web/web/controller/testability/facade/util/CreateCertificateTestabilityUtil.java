@@ -177,7 +177,7 @@ public class CreateCertificateTestabilityUtil {
         if (CreateCertificateFillType.WITH_VALUES.equals(createCertificateRequest.getFillType())) {
             final var certificate = utkastToCertificateConverter.convert(utkast);
             updateCertificate(certificate, createCertificateRequest.getValues());
-            return getJsonFromCertificate(certificate, utkast.getModel());
+            return getJsonFromCertificate(certificate, utkast.getModel(), utkast.getSkapad());
         }
 
         try {
@@ -251,14 +251,14 @@ public class CreateCertificateTestabilityUtil {
         }
     }
 
-    private String getJsonFromCertificate(Certificate certificate, String currentModel) {
+    private String getJsonFromCertificate(Certificate certificate, String currentModel, LocalDateTime created) {
         try {
             final var moduleApi = moduleRegistry.getModuleApi(
                 certificate.getMetadata().getType(),
                 certificate.getMetadata().getTypeVersion()
             );
 
-            return moduleApi.getJsonFromCertificate(certificate, currentModel);
+            return moduleApi.getJsonFromCertificate(certificate, currentModel, created);
         } catch (Exception ex) {
             throw new IllegalStateException(ex);
         }

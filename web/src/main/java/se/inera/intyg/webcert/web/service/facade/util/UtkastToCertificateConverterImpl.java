@@ -21,6 +21,7 @@ package se.inera.intyg.webcert.web.service.facade.util;
 import static se.inera.intyg.webcert.web.service.facade.util.CertificateStatusConverter.getStatus;
 import static se.inera.intyg.webcert.web.service.facade.util.CertificateStatusConverter.isRevoked;
 
+import java.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,7 +99,8 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
         final var certificateToReturn = getCertificateToReturn(
             certificate.getIntygsTyp(),
             certificate.getIntygTypeVersion(),
-            certificate.getModel()
+            certificate.getModel(),
+            certificate.getSkapad()
         );
 
         certificateToReturn.getMetadata().setCreated(certificate.getSenastSparadDatum());
@@ -215,12 +217,13 @@ public class UtkastToCertificateConverterImpl implements UtkastToCertificateConv
         }
     }
 
-    private Certificate getCertificateToReturn(String certificateType, String certificateTypeVersion, String jsonModel) {
+    private Certificate getCertificateToReturn(String certificateType, String certificateTypeVersion, String jsonModel,
+        LocalDateTime created) {
         try {
             LOG.debug("Retrieving ModuleAPI for type '{}' version '{}'", certificateType, certificateTypeVersion);
             final var moduleApi = moduleRegistry.getModuleApi(certificateType, certificateTypeVersion);
             LOG.debug("Retrieving Certificate from Json");
-            return moduleApi.getCertificateFromJson(jsonModel, typeAheadProvider);
+            return moduleApi.getCertificateFromJson(jsonModel, typeAheadProvider, created);
         } catch (Exception ex) {
             throw new IllegalStateException(ex);
         }

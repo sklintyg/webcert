@@ -96,7 +96,7 @@ class SaveCertificateFacadeServiceImplTest {
 
         doReturn(UPDATE_JSON)
             .when(moduleApi)
-            .getJsonFromCertificate(certificate, currentCertificate.getModel());
+            .getJsonFromCertificate(certificate, currentCertificate.getModel(), certificate.getMetadata().getCreated());
 
         final var saveDraftResponse = new SaveDraftResponse(NEW_VERSION, UtkastStatus.DRAFT_COMPLETE);
 

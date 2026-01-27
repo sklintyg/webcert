@@ -20,6 +20,7 @@ package se.inera.intyg.webcert.web.service.facade.util;
 
 import static se.inera.intyg.webcert.web.service.facade.util.CertificateStatusConverter.getStatus;
 
+import java.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +40,6 @@ import se.inera.intyg.infra.integration.hsatk.services.HsatkOrganizationService;
 import se.inera.intyg.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
-import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 
 @Component
 public class IntygToCertificateConverterImpl implements IntygToCertificateConverter {
@@ -97,7 +97,8 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
         final var certificateToReturn = getCertificateToReturn(
             certificate.getUtlatande().getTyp(),
             certificate.getUtlatande().getTextVersion(),
-            certificate.getContents()
+            certificate.getContents(),
+            certificate.getCreated()
         );
 
         certificateToReturn.getMetadata().setCreated(
@@ -151,7 +152,8 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
         );
 
         certificateToReturn.getMetadata().setInactiveCertificateType(
-            featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_INACTIVE_CERTIFICATE_TYPE, certificateToReturn.getMetadata().getType())
+            featuresHelper.isFeatureActive(AuthoritiesConstants.FEATURE_INACTIVE_CERTIFICATE_TYPE,
+                certificateToReturn.getMetadata().getType())
         );
 
         certificateToReturn.getMetadata().setAvailableForCitizen(
@@ -189,12 +191,13 @@ public class IntygToCertificateConverterImpl implements IntygToCertificateConver
         }
     }
 
-    private Certificate getCertificateToReturn(String certificateType, String certificateTypeVersion, String jsonModel) {
+    private Certificate getCertificateToReturn(String certificateType, String certificateTypeVersion, String jsonModel,
+        LocalDateTime created) {
         try {
             LOG.debug("Retrieving ModuleAPI for type '{}' version '{}'", certificateType, certificateTypeVersion);
             final var moduleApi = moduleRegistry.getModuleApi(certificateType, certificateTypeVersion);
             LOG.debug("Retrieving Certificate from Json");
-            return moduleApi.getCertificateFromJson(jsonModel, typeAheadProvider);
+            return moduleApi.getCertificateFromJson(jsonModel, typeAheadProvider, created);
         } catch (Exception ex) {
             throw new IllegalStateException(ex);
         }

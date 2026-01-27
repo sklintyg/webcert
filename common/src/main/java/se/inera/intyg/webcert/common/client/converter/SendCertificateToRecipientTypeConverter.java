@@ -60,7 +60,7 @@ public final class SendCertificateToRecipientTypeConverter {
 
     private static SkickatAv buildSkickatAv(HoSPersonal hosPersonal) {
         SkickatAv skickatAv = new SkickatAv();
-        skickatAv.setHosPersonal(InternalConverterUtil.getSkapadAv(hosPersonal));
+        skickatAv.setHosPersonal(InternalConverterUtil.getSkapadAv(hosPersonal, LocalDateTime.now()));
         return skickatAv;
     }
 

@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.service.facade.impl;
 
 import com.google.common.base.Strings;
+import java.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +61,7 @@ public class ValidateCertificateFacadeServiceImpl implements ValidateCertificate
         final var draftValidation = utkastService.validateDraft(
             certificate.getMetadata().getId(),
             certificate.getMetadata().getType(),
-            getJsonFromCertificate(moduleApi, certificate, currentCertificate.getModel())
+            getJsonFromCertificate(moduleApi, certificate, currentCertificate.getModel(), certificate.getMetadata().getCreated())
         );
 
         LOG.debug("Convert validation result for certificate '{}'", certificate.getMetadata().getId());
@@ -75,9 +76,9 @@ public class ValidateCertificateFacadeServiceImpl implements ValidateCertificate
         }
     }
 
-    private String getJsonFromCertificate(ModuleApi moduleApi, Certificate certificate, String currentModel) {
+    private String getJsonFromCertificate(ModuleApi moduleApi, Certificate certificate, String currentModel, LocalDateTime created) {
         try {
-            return moduleApi.getJsonFromCertificate(certificate, currentModel);
+            return moduleApi.getJsonFromCertificate(certificate, currentModel, created);
         } catch (Exception ex) {
             throw new IllegalStateException(ex);
         }

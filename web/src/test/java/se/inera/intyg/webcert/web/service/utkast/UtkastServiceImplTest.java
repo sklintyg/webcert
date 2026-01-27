@@ -454,11 +454,11 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
         when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(moduleApi);
         when(moduleApi.validateDraft(anyString(), any())).thenReturn(validationResponse);
-        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
+        when(moduleApi.getUtlatandeFromJson(anyString(), any())).thenReturn(utlatande);
         when(utkastRepository.save(utkast)).thenReturn(utkast);
         when(moduleApi.shouldNotify(any(String.class), any(String.class))).thenReturn(true);
         when(userService.getUser()).thenReturn(user);
-        when(moduleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
+        when(moduleApi.updateBeforeSave(anyString(), any(HoSPersonal.class), any())).thenReturn("{}");
 
         final var analyticsMessage = CertificateAnalyticsMessage.builder().build();
         when(certificateAnalyticsMessageFactory.draftUpdated(utkast)).thenReturn(analyticsMessage);
@@ -496,11 +496,11 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
         when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(moduleApi);
         when(moduleApi.validateDraft(anyString(), any())).thenReturn(validationResponse);
-        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
+        when(moduleApi.getUtlatandeFromJson(anyString(), any())).thenReturn(utlatande);
         when(utkastRepository.save(utkast)).thenReturn(utkast);
         when(moduleApi.shouldNotify(any(String.class), any(String.class))).thenReturn(true);
         when(userService.getUser()).thenReturn(user);
-        when(moduleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
+        when(moduleApi.updateBeforeSave(anyString(), any(HoSPersonal.class), any())).thenReturn("{}");
 
         SaveDraftResponse res = utkastService.saveDraft(INTYG_ID, UTKAST_VERSION, INTYG_JSON, false);
 
@@ -549,8 +549,8 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(userService.getUser()).thenReturn(user);
         when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
         when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(moduleApi);
-        when(moduleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
-        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
+        when(moduleApi.updateBeforeSave(anyString(), any(HoSPersonal.class), any())).thenReturn("{}");
+        when(moduleApi.getUtlatandeFromJson(anyString(), any())).thenReturn(utlatande);
         when(moduleApi.validateDraft(anyString(), any())).thenThrow(ModuleException.class);
 
         utkastService.saveDraft(INTYG_ID, UTKAST_VERSION, INTYG_JSON, false);
@@ -627,10 +627,10 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
         when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(moduleApi);
         when(moduleApi.validateDraft(anyString(), any())).thenReturn(validationResponse);
-        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
+        when(moduleApi.getUtlatandeFromJson(anyString(), any())).thenReturn(utlatande);
         when(utkastRepository.save(utkast)).thenReturn(utkast);
         when(userService.getUser()).thenReturn(user);
-        when(moduleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
+        when(moduleApi.updateBeforeSave(anyString(), any(HoSPersonal.class), any())).thenReturn("{}");
 
         utkastService.saveDraft(INTYG_ID, UTKAST_VERSION, INTYG_JSON, false);
 
@@ -664,11 +664,11 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
         when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(moduleApi);
-        when(moduleApi.updateBeforeSave(anyString(), any(Patient.class))).thenReturn("{}");
-        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
+        when(moduleApi.updateBeforeSave(anyString(), any(Patient.class), any())).thenReturn("{}");
+        when(moduleApi.getUtlatandeFromJson(anyString(), any())).thenReturn(utlatande);
         when(utkastRepository.save(utkast)).thenReturn(utkast);
         when(userService.getUser()).thenReturn(user);
-        when(moduleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
+        when(moduleApi.updateBeforeSave(anyString(), any(HoSPersonal.class), any())).thenReturn("{}");
 
         utkastService.updatePatientOnDraft(request);
 
@@ -698,7 +698,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
         when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(moduleApi);
-        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
+        when(moduleApi.getUtlatandeFromJson(anyString(), any())).thenReturn(utlatande);
         when(userService.getUser()).thenReturn(user);
 
         utkastService.updatePatientOnDraft(request);
@@ -730,7 +730,7 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
         when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(moduleApi);
-        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
+        when(moduleApi.getUtlatandeFromJson(anyString(), any())).thenReturn(utlatande);
         when(userService.getUser()).thenReturn(user);
 
         utkastService.updatePatientOnDraft(request);
@@ -813,10 +813,10 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
         when(utkastRepository.findById(INTYG_ID)).thenReturn(Optional.ofNullable(utkast));
         when(moduleRegistry.getModuleApi(INTYG_TYPE, INTYG_TYPE_VERSION)).thenReturn(moduleApi);
         when(moduleApi.validateDraft(anyString(), any())).thenReturn(validationResponse);
-        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
+        when(moduleApi.getUtlatandeFromJson(anyString(), any())).thenReturn(utlatande);
         when(utkastRepository.save(utkast)).thenReturn(utkast);
         when(userService.getUser()).thenReturn(user);
-        when(moduleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
+        when(moduleApi.updateBeforeSave(anyString(), any(HoSPersonal.class), any())).thenReturn("{}");
 
         utkastService.saveDraft(INTYG_ID, UTKAST_VERSION, INTYG_JSON, false);
 
@@ -1183,13 +1183,13 @@ public class UtkastServiceImplTest extends AuthoritiesConfigurationTestSetup {
 
         when(utkastRepository.findByIntygsIdAndIntygsTyp(toIntygId, toIntygType)).thenReturn(utkast);
         when(moduleRegistry.getModuleApi(toIntygType, INTYG_TYPE_VERSION)).thenReturn(moduleApi);
-        when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
+        when(moduleApi.getUtlatandeFromJson(anyString(), any())).thenReturn(utlatande);
         when(utkastRepository.save(utkast)).thenReturn(savedUtkast);
         when(moduleApi.shouldNotify(any(String.class), any(String.class))).thenReturn(true);
         when(userService.getUser()).thenReturn(createUser());
         when(utkastServiceHelper.getUtlatandeForCandidateFromIT(fromIntygId, fromIntygType, true)).thenReturn(utlatande);
         when(moduleApi.getMapper()).thenReturn(Optional.of(mapper));
-        when(moduleApi.updateBeforeSave(anyString(), any(HoSPersonal.class))).thenReturn("{}");
+        when(moduleApi.updateBeforeSave(anyString(), any(HoSPersonal.class), any())).thenReturn("{}");
 
         SaveDraftResponse res = utkastService.updateDraftFromCandidate(fromIntygId, fromIntygType, toIntygId, toIntygType);
 

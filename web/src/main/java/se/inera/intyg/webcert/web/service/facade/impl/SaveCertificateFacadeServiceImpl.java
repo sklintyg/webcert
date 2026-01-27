@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.facade.impl;
 
+import java.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +52,7 @@ public class SaveCertificateFacadeServiceImpl implements SaveCertificateFacadeSe
         final var saveDraftResponse = utkastService.saveDraft(
             certificate.getMetadata().getId(),
             certificate.getMetadata().getVersion(),
-            getJsonFromCertificate(certificate, currentCertificate.getModel()),
+            getJsonFromCertificate(certificate, currentCertificate.getModel(), currentCertificate.getSkapad()),
             pdlLog
         );
 
@@ -59,14 +60,14 @@ public class SaveCertificateFacadeServiceImpl implements SaveCertificateFacadeSe
         return saveDraftResponse.getVersion();
     }
 
-    private String getJsonFromCertificate(Certificate certificate, String currentModel) {
+    private String getJsonFromCertificate(Certificate certificate, String currentModel, LocalDateTime created) {
         try {
             final var moduleApi = moduleRegistry.getModuleApi(
                 certificate.getMetadata().getType(),
                 certificate.getMetadata().getTypeVersion()
             );
 
-            return moduleApi.getJsonFromCertificate(certificate, currentModel);
+            return moduleApi.getJsonFromCertificate(certificate, currentModel, created);
         } catch (Exception ex) {
             throw new IllegalStateException(ex);
         }

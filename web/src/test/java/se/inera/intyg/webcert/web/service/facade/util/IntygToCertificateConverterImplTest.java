@@ -77,7 +77,6 @@ import se.inera.intyg.infra.security.authorities.FeaturesHelper;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygContentHolder;
-import se.inera.intyg.webcert.web.service.user.WebCertUserService;
 import se.inera.intyg.webcert.web.web.controller.api.dto.Relations;
 
 @ExtendWith(MockitoExtension.class)
@@ -110,6 +109,7 @@ public class IntygToCertificateConverterImplTest {
         .id(RECIPIENT_ID)
         .sent(SENT)
         .build();
+    private static final LocalDateTime CREATED = LocalDateTime.now();
 
     @Mock
     private IntygModuleRegistry moduleRegistry;
@@ -154,7 +154,7 @@ public class IntygToCertificateConverterImplTest {
                 .getModuleApi(anyString(), anyString());
 
             doReturn(createCertificate())
-                .when(moduleApi).getCertificateFromJson(CONTENT_JSON, typeAheadProvider);
+                .when(moduleApi).getCertificateFromJson(CONTENT_JSON, typeAheadProvider, CREATED);
 
             doReturn(certificateRelations)
                 .when(certificateRelationsConverter).convert(CERTIFICATE_ID);
@@ -488,7 +488,7 @@ public class IntygToCertificateConverterImplTest {
         void setup() throws ModuleNotFoundException, IOException, ModuleException {
             final var moduleApi = mock(ModuleApi.class);
             doReturn(moduleApi).when(moduleRegistry).getModuleApi(anyString(), eq(CERTIFICATE_TYPE_VERSION));
-            doReturn(createCertificate()).when(moduleApi).getCertificateFromJson(CONTENT_JSON, typeAheadProvider);
+            doReturn(createCertificate()).when(moduleApi).getCertificateFromJson(CONTENT_JSON, typeAheadProvider, CREATED);
         }
 
         @Test
@@ -571,6 +571,7 @@ public class IntygToCertificateConverterImplTest {
             .statuses(statusList)
             .relations(new Relations())
             .latestMajorTextVersion(true)
+            .created(CREATED)
             .build();
     }
 
