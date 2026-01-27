@@ -107,7 +107,7 @@ public class CertificateTextVersionFacadeServiceImpl implements CertificateTextV
 
     private String getModelTextVersion(Utkast utkast) throws ModuleNotFoundException, IOException, ModuleException {
         final var moduleAPi = moduleRegistry.getModuleApi(utkast.getIntygsTyp(), utkast.getIntygTypeVersion());
-        final var utlatande = moduleAPi.getUtlatandeFromJson(utkast.getModel());
+        final var utlatande = moduleAPi.getUtlatandeFromJson(utkast.getModel(), utkast.getSkapad());
         return utlatande.getTextVersion();
     }
 
