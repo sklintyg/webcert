@@ -3,14 +3,14 @@
     "region": "Zeta Regionen",
     "description": "Bolagisering av zeta primärvård",
     "datetime": "2026-01-22T11:00",
-    "issuedDateTimeFrom": "2026-01-26T11:00",
-    "issuedDateTimeTo": "2026-01-27T10:00",
+    "issuedDateTimeFrom": "2026-01-01T11:00",
+    "issuedDateTimeTo": "2026-01-27T15:10",
     "issuedUnitMapping": {
-      "TSTNMT2321000156-ALMC": {
+      "TSTNMT2321000156-ALAM": {
         "careProviderName": "Zeta Regionen",
         "careProviderId": "TSTNMT2321000156-ZETA",
-        "issuedUnitId": "TSTNMT2321000156-ZEMC",
-        "issuedUnitName": "Zeta Medicincentrum"
+        "issuedUnitId": "TSTNMT2321000156-ZEAM",
+        "issuedUnitName": "Zeta Allergimottagningen"
       }
     }
   }
