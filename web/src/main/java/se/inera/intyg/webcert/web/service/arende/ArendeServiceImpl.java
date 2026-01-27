@@ -1095,6 +1095,6 @@ public class ArendeServiceImpl implements ArendeService {
     }
 
     private Utlatande getUtlatande(Utkast utkast) {
-        return modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel());
+        return modelFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel(), utkast.getSkapad());
     }
 }

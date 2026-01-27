@@ -703,7 +703,7 @@ public class UtkastServiceImpl implements UtkastService {
         final ModuleApi moduleApi = getModuleApi(utkast.getIntygsTyp(), utkast.getIntygTypeVersion());
 
         // INTYG-4086
-        Patient draftPatient = getPatientFromCDraft(moduleApi, utkast.getModel());
+        Patient draftPatient = getPatientFromCDraft(moduleApi, utkast.getModel(), utkast.getSkapad());
 
         Optional<Personnummer> optionalPnr = Optional.ofNullable(request.getPersonnummer());
         Optional<Personnummer> optionalDraftPnr = Optional.ofNullable(draftPatient.getPersonId());
@@ -728,7 +728,7 @@ public class UtkastServiceImpl implements UtkastService {
             draftPatient.setPersonId(optionalPnr.get());
 
             try {
-                String updatedModel = moduleApi.updateBeforeSave(utkast.getModel(), draftPatient);
+                String updatedModel = moduleApi.updateBeforeSave(utkast.getModel(), draftPatient, utkast.getSkapad());
                 updateUtkastModel(utkast, updatedModel);
                 saveDraft(utkast);
                 monitoringService.logUtkastPatientDetailsUpdated(utkast.getIntygsId(), utkast.getIntygsTyp());
@@ -950,12 +950,12 @@ public class UtkastServiceImpl implements UtkastService {
 
     private Patient getPatientFromDraft(Utkast utkast) {
         final ModuleApi moduleApi = getModuleApi(utkast.getIntygsTyp(), utkast.getIntygTypeVersion());
-        return getPatientFromCDraft(moduleApi, utkast.getModel());
+        return getPatientFromCDraft(moduleApi, utkast.getModel(), utkast.getSkapad());
     }
 
-    private Patient getPatientFromCDraft(ModuleApi moduleApi, String draftModel) {
+    private Patient getPatientFromCDraft(ModuleApi moduleApi, String draftModel, LocalDateTime created) {
         try {
-            return moduleApi.getUtlatandeFromJson(draftModel).getGrundData().getPatient();
+            return moduleApi.getUtlatandeFromJson(draftModel, created).getGrundData().getPatient();
         } catch (ModuleException | IOException e) {
             if (e.getCause() != null && e.getCause().getCause() != null) {
                 // This error message is helpful when debugging save problems.
@@ -1172,7 +1172,7 @@ public class UtkastServiceImpl implements UtkastService {
     private HoSPersonal getHosPersonal(Utkast utkast) throws IOException, ModuleException {
         ModuleApi moduleApi = getModuleApi(utkast.getIntygsTyp(), utkast.getIntygTypeVersion());
 
-        GrundData grundData = moduleApi.getUtlatandeFromJson(utkast.getModel()).getGrundData();
+        GrundData grundData = moduleApi.getUtlatandeFromJson(utkast.getModel(), utkast.getSkapad()).getGrundData();
         Vardenhet vardenhet = grundData.getSkapadAv().getVardenhet();
 
         return IntygConverterUtil.buildHosPersonalFromWebCertUser(webCertUserService.getUser(), vardenhet);
@@ -1184,13 +1184,13 @@ public class UtkastServiceImpl implements UtkastService {
         try {
             ModuleApi moduleApi = getModuleApi(utkast.getIntygsTyp(), utkast.getIntygTypeVersion());
 
-            GrundData grundData = moduleApi.getUtlatandeFromJson(modelJson).getGrundData();
+            GrundData grundData = moduleApi.getUtlatandeFromJson(modelJson, utkast.getSkapad()).getGrundData();
 
             Vardenhet vardenhetFromJson = grundData.getSkapadAv().getVardenhet();
             HoSPersonal hosPerson = IntygConverterUtil.buildHosPersonalFromWebCertUser(user, vardenhetFromJson);
             utkast.setSenastSparadAv(UpdateUserUtil.createVardpersonFromWebCertUser(user));
             utkast.setPatientPersonnummer(grundData.getPatient().getPersonId());
-            String updatedInternal = moduleApi.updateBeforeSave(modelJson, hosPerson);
+            String updatedInternal = moduleApi.updateBeforeSave(modelJson, hosPerson, utkast.getSkapad());
             utkast.setModel(updatedInternal);
 
             updatePatientNameFromModel(utkast, grundData.getPatient());

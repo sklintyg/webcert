@@ -136,7 +136,7 @@ public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationT
 
     @Mock
     protected PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
-    
+
     @Mock
     protected CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
@@ -162,7 +162,7 @@ public abstract class AbstractIntygServiceTest extends AuthoritiesConfigurationT
             .thenReturn(buildPatient(false, false));
         when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(moduleApi);
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
-        when(moduleApi.updateBeforeViewing(anyString(), any(Patient.class))).thenReturn("MODEL");
+        when(moduleApi.updateBeforeViewing(anyString(), any(Patient.class), any())).thenReturn("MODEL");
 
         when(logRequestFactory.createLogRequestFromUtlatande(any(Utlatande.class), anyString())).thenReturn(LogRequest.builder().build());
         when(intygTextsService.isLatestMajorVersion(any(String.class), any(String.class))).thenReturn(true);

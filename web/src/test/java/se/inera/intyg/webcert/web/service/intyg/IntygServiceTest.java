@@ -246,7 +246,7 @@ public class IntygServiceTest {
 
         CertificateResponse certificateResponse = new CertificateResponse(json, utlatande, metaData, false);
         when(moduleFacade.getCertificate(any(String.class), any(String.class), anyString())).thenReturn(certificateResponse);
-        when(moduleFacade.getUtlatandeFromInternalModel(anyString(), anyString())).thenReturn(utlatande);
+        when(moduleFacade.getUtlatandeFromInternalModel(anyString(), anyString(), any())).thenReturn(utlatande);
     }
 
     @Before
@@ -288,7 +288,7 @@ public class IntygServiceTest {
         json = Files.readString(Path.of(ClassLoader.getSystemResource("IntygServiceTest/utlatande.json").toURI()));
         Fk7263Utlatande utlatande = objectMapper.readValue(json, Fk7263Utlatande.class);
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
-        when(moduleApi.updateBeforeViewing(anyString(), any(Patient.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(moduleApi.updateBeforeViewing(anyString(), any(Patient.class), any())).thenAnswer(invocation -> invocation.getArgument(0));
 
         // use reflection to set IntygDraftsConverter in IntygService
         Field field = IntygServiceImpl.class.getDeclaredField("intygConverter");
@@ -734,7 +734,7 @@ public class IntygServiceTest {
         assertEquals(timestamp, intygContentHolder.getCreated());
 
         verify(moduleFacade).getCertificate(CERTIFICATE_ID, CERTIFICATE_TYPE, CERTIFICATE_TYPE_VERSION_1_0);
-        verify(moduleFacade, times(2)).getUtlatandeFromInternalModel(eq(CERTIFICATE_TYPE), anyString());
+        verify(moduleFacade, times(2)).getUtlatandeFromInternalModel(eq(CERTIFICATE_TYPE), anyString(), any());
         verify(utkastRepository).findByIntygsIdAndIntygsTyp(CERTIFICATE_ID, CERTIFICATE_TYPE);
         verify(utkastRepository).findById(CERTIFICATE_ID);
         verifyNoMoreInteractions(moduleFacade, logservice, utkastRepository);
@@ -991,7 +991,7 @@ public class IntygServiceTest {
 
         Fk7263Utlatande utlatande = objectMapper.readValue(draft.getModel(), Fk7263Utlatande.class);
 
-        when(moduleFacade.getUtlatandeFromInternalModel(anyString(), anyString())).thenReturn(utlatande);
+        when(moduleFacade.getUtlatandeFromInternalModel(anyString(), anyString(), any())).thenReturn(utlatande);
         when(moduleFacade.convertFromInternalToPdfDocument(anyString(), anyString(), anyList(), any(UtkastStatus.class), anyBoolean()))
             .thenReturn(buildPdfDocument());
 
@@ -1019,7 +1019,7 @@ public class IntygServiceTest {
 
         Fk7263Utlatande utlatande = objectMapper.readValue(draft.getModel(), Fk7263Utlatande.class);
 
-        when(moduleFacade.getUtlatandeFromInternalModel(anyString(), anyString())).thenReturn(utlatande);
+        when(moduleFacade.getUtlatandeFromInternalModel(anyString(), anyString(), any())).thenReturn(utlatande);
         when(moduleFacade.convertFromInternalToPdfDocument(anyString(), anyString(), anyList(), any(UtkastStatus.class), anyBoolean()))
             .thenReturn(buildPdfDocument());
         intygService.fetchIntygAsPdf(CERTIFICATE_ID, CERTIFICATE_TYPE, false);
@@ -1427,7 +1427,7 @@ public class IntygServiceTest {
 
         // Then
         ArgumentCaptor<Patient> argumentCaptor = ArgumentCaptor.forClass(Patient.class);
-        verify(moduleApi).updateBeforeViewing(anyString(), argumentCaptor.capture());
+        verify(moduleApi).updateBeforeViewing(anyString(), argumentCaptor.capture(), any());
         assertEquals(postadress, argumentCaptor.getValue().getPostadress());
         assertEquals(postort, argumentCaptor.getValue().getPostort());
         assertEquals(postnummer, argumentCaptor.getValue().getPostnummer());
@@ -1451,7 +1451,7 @@ public class IntygServiceTest {
 
         // Then
         ArgumentCaptor<Patient> argumentCaptor = ArgumentCaptor.forClass(Patient.class);
-        verify(moduleApi).updateBeforeViewing(anyString(), argumentCaptor.capture());
+        verify(moduleApi).updateBeforeViewing(anyString(), argumentCaptor.capture(), any());
         assertNotEquals(postadress, argumentCaptor.getValue().getPostadress());
     }
 
@@ -1477,7 +1477,7 @@ public class IntygServiceTest {
 
         // Then
         ArgumentCaptor<Patient> argumentCaptor = ArgumentCaptor.forClass(Patient.class);
-        verify(moduleApi).updateBeforeViewing(anyString(), argumentCaptor.capture());
+        verify(moduleApi).updateBeforeViewing(anyString(), argumentCaptor.capture(), any());
         assertEquals(postadress, argumentCaptor.getValue().getPostadress());
         assertEquals(postort, argumentCaptor.getValue().getPostort());
         assertEquals(postnummer, argumentCaptor.getValue().getPostnummer());
@@ -1505,7 +1505,7 @@ public class IntygServiceTest {
 
         // Then
         ArgumentCaptor<Patient> argumentCaptor = ArgumentCaptor.forClass(Patient.class);
-        verify(moduleApi).updateBeforeViewing(anyString(), argumentCaptor.capture());
+        verify(moduleApi).updateBeforeViewing(anyString(), argumentCaptor.capture(), any());
         assertNotEquals(postadress, argumentCaptor.getValue().getPostadress());
     }
 

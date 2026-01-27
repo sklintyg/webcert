@@ -3,7 +3,8 @@
     "region": "Zeta Regionen",
     "description": "Bolagisering av zeta primärvård",
     "datetime": "2026-01-22T11:00",
-    "issuedDateTime": "2026-01-26T11:00",
+    "issuedDateTimeFrom": "2026-01-26T11:00",
+    "issuedDateTimeTo": "2026-01-27T10:00",
     "issuedUnitMapping": {
       "TSTNMT2321000156-ALMC": {
         "careProviderName": "Zeta Regionen",

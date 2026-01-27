@@ -521,7 +521,7 @@ public class IntygServiceImpl implements IntygService {
         final Optional<Utkast> optionalUtkast = Optional.ofNullable(utkastRepository.findById(intygsId).orElse(null));
 
         final Utlatande utlatande = optionalUtkast
-            .map(utkast -> moduleFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel()))
+            .map(utkast -> moduleFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel(), utkast.getSkapad()))
             .orElseGet(() -> getIntygData(intygsId, typ, false).getUtlatande());
 
         certificateAccessServiceHelper.validateAccessToSend(utlatande);
@@ -927,7 +927,8 @@ public class IntygServiceImpl implements IntygService {
                 Patient oldPatientData = utlatande.getGrundData().getPatient();
                 copyOldAddressToNewPatientData(oldPatientData, newPatientData);
             }
-            internalIntygJsonModel = moduleApi.updateBeforeViewing(internalIntygJsonModel, newPatientData);
+            internalIntygJsonModel = moduleApi.updateBeforeViewing(internalIntygJsonModel, newPatientData,
+                certificate.getMetaData().getSignDate());
 
             utkastIntygDecorator.decorateWithUtkastStatus(certificate);
             Relations certificateRelations = intygRelationHelper.getRelationsForIntyg(intygId);
@@ -995,7 +996,7 @@ public class IntygServiceImpl implements IntygService {
                 newPatientData.setPersonId(utkast.getPatientPersonnummer());
             }
 
-            Utlatande utlatande = moduleFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel());
+            Utlatande utlatande = moduleFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), utkast.getModel(), utkast.getSkapad());
 
             // INTYG-5354, INTYG-5380: Don't use incomplete address from external data sources (PU/js).
             if (!newPatientData.isCompleteAddressProvided()) {
@@ -1005,9 +1006,9 @@ public class IntygServiceImpl implements IntygService {
             }
             // INTYG-7449, INTYG-7529: Update patient data before (will not be done on intyg that store address data)
             String internalIntygJsonModel = moduleRegistry.getModuleApi(utkast.getIntygsTyp(), utkast.getIntygTypeVersion())
-                .updateBeforeViewing(utkast.getModel(), newPatientData);
+                .updateBeforeViewing(utkast.getModel(), newPatientData, utkast.getSkapad());
 
-            utlatande = moduleFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), internalIntygJsonModel);
+            utlatande = moduleFacade.getUtlatandeFromInternalModel(utkast.getIntygsTyp(), internalIntygJsonModel, utkast.getSkapad());
             List<Status> statuses = IntygConverterUtil.buildStatusesFromUtkast(utkast);
             Relations certificateRelations = certificateRelationService.getRelations(utkast.getIntygsId());
 

@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.service.intyg.converter;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import org.slf4j.Logger;
@@ -127,4 +128,17 @@ public class IntygModuleFacadeImpl implements IntygModuleFacade {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e);
         }
     }
+
+    @Override
+    public Utlatande getUtlatandeFromInternalModel(String intygType, String internalModel, LocalDateTime created) {
+        try {
+            ModuleApi moduleApi = moduleRegistry.getModuleApi(intygType,
+                moduleRegistry.resolveVersionFromUtlatandeJson(intygType, internalModel));
+            return moduleApi.getUtlatandeFromJson(internalModel, created);
+        } catch (IOException | ModuleNotFoundException | ModuleException e) {
+            LOG.error("Module problems occured when trying to unmarshall Utlatande.", e);
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e);
+        }
+    }
+
 }

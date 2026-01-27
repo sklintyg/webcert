@@ -108,7 +108,7 @@ public class IntygServiceRevokeTest extends AbstractIntygServiceTest {
             .thenReturn(buildPatient(false, false));
         when(moduleRegistry.getModuleApi(anyString(), anyString())).thenReturn(moduleApi);
         when(moduleApi.getUtlatandeFromJson(anyString())).thenReturn(utlatande);
-        when(moduleApi.updateBeforeViewing(anyString(), any(Patient.class))).thenReturn("MODEL");
+        when(moduleApi.updateBeforeViewing(anyString(), any(Patient.class), any())).thenReturn("MODEL");
     }
 
     @Before

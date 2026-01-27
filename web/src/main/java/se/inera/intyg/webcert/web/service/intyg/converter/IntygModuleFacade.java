@@ -18,6 +18,7 @@
  */
 package se.inera.intyg.webcert.web.service.intyg.converter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import se.inera.intyg.common.support.model.Status;
 import se.inera.intyg.common.support.model.UtkastStatus;
@@ -41,4 +42,6 @@ public interface IntygModuleFacade {
         throws ModuleException, IntygModuleFacadeException;
 
     Utlatande getUtlatandeFromInternalModel(String intygType, String internalModel);
+
+    Utlatande getUtlatandeFromInternalModel(String intygType, String internalModel, LocalDateTime created);
 }
