@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.config;
 
 import jakarta.jms.ConnectionFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -38,6 +39,7 @@ import org.springframework.jms.support.destination.DynamicDestinationResolver;
  */
 @Configuration
 @EnableJms
+@Slf4j
 public class JmsConfig {
 
     @Value("${activemq.broker.url}")
@@ -74,8 +76,10 @@ public class JmsConfig {
         factory.setDestinationResolver(jmsDestinationResolver());
         factory.setSessionTransacted(true);
         factory.setTransactionManager(jmsTransactionManager);
-        factory.setCacheLevelName("CACHE_CONSUMER");
+        factory.setCacheLevelName("CACHE_SESSION");
         factory.setConcurrency("1-10");
+        factory.setReceiveTimeout(1000L);
+        factory.setErrorHandler(error -> log.warn("Error in JMS listener: {}", error.getMessage(), error));
         return factory;
     }
 
@@ -91,9 +95,11 @@ public class JmsConfig {
 
     @Bean
     public ConnectionFactory jmsConnectionFactory() {
-        return new CachingConnectionFactory(
+        var cachingConnectionFactory = new CachingConnectionFactory(
             new ActiveMQConnectionFactory(activeMqBrokerUsername, activeMqBrokerPassword, activeMqBrokerUrl)
         );
+        cachingConnectionFactory.setSessionCacheSize(10);
+        return cachingConnectionFactory;
     }
 
     @Bean
