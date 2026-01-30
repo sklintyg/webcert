@@ -206,7 +206,7 @@ public class NotificationResultMessageCreatorTest {
         final var statusUpdate = createStatusUpdateForCareWithUnsignedCertificate();
 
         var notificationResultMessage = notificationResultMessageCreator.createResultMessage(statusUpdate,
-            CORRELATION_ID);
+            CORRELATION_ID, LOGICAL_ADDRESS);
 
         assertEquals(CORRELATION_ID, notificationResultMessage.getCorrelationId());
         assertNull(notificationResultMessage.getStatusUpdateXml());

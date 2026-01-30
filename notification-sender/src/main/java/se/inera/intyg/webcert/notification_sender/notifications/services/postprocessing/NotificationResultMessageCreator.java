@@ -98,8 +98,9 @@ public class NotificationResultMessageCreator {
         return notificationResultMessage;
     }
 
-    public NotificationResultMessage createResultMessage(CertificateStatusUpdateForCareType statusUpdate, String correlationId) {
-        final var event = createEvent(statusUpdate);
+    public NotificationResultMessage createResultMessage(CertificateStatusUpdateForCareType statusUpdate, String correlationId,
+        String logicalAddress) {
+        final var event = createEvent(statusUpdate, logicalAddress);
 
         final var resultMessage = new NotificationResultMessage();
         resultMessage.setCorrelationId(correlationId);
@@ -164,13 +165,13 @@ public class NotificationResultMessageCreator {
         }
     }
 
-    private Handelse createEvent(CertificateStatusUpdateForCareType statusUpdate) {
+    private Handelse createEvent(CertificateStatusUpdateForCareType statusUpdate, String logicalAddress) {
         final var topicCode = statusUpdate.getHandelse().getAmne();
         final var userId = statusUpdate.getHanteratAv();
 
         final var event = new Handelse();
         event.setCode(HandelsekodEnum.fromValue(statusUpdate.getHandelse().getHandelsekod().getCode()));
-        event.setEnhetsId(statusUpdate.getIntyg().getSkapadAv().getEnhet().getEnhetsId().getExtension());
+        event.setEnhetsId(logicalAddress);
         event.setIntygsId(statusUpdate.getIntyg().getIntygsId().getExtension());
         event.setCertificateType(statusUpdate.getIntyg().getTyp().getCode());
         event.setCertificateVersion(statusUpdate.getIntyg().getVersion());
