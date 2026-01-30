@@ -27,6 +27,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static se.inera.intyg.common.support.Constants.HSA_ID_OID;
 import static se.inera.intyg.common.support.Constants.KV_INTYGSTYP_CODE_SYSTEM;
 import static se.inera.intyg.webcert.notification_sender.notifications.enumerations.NotificationErrorTypeEnum.TECHNICAL_ERROR;
@@ -56,6 +57,8 @@ import se.inera.intyg.common.support.model.common.internal.Patient;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
 import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
+import se.inera.intyg.common.support.modules.converter.mapping.MappedUnit;
+import se.inera.intyg.common.support.modules.converter.mapping.UnitMapperUtil;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.ModuleEntryPoint;
@@ -106,6 +109,9 @@ public class NotificationResultMessageCreatorTest {
 
     @Spy
     private ObjectMapper objectMapper;
+
+    @Mock
+    private UnitMapperUtil unitMapperUtil;
 
     @InjectMocks
     private NotificationResultMessageCreator notificationResultMessageCreator;
@@ -202,11 +208,66 @@ public class NotificationResultMessageCreatorTest {
     }
 
     @Test
-    public void testCreateResultMessage() {
+    public void testCreateResultMessageWhenNotSigned() {
         final var statusUpdate = createStatusUpdateForCareWithUnsignedCertificate();
+        final var enhet = statusUpdate.getIntyg().getSkapadAv().getEnhet();
 
-        var notificationResultMessage = notificationResultMessageCreator.createResultMessage(statusUpdate,
-            CORRELATION_ID, LOGICAL_ADDRESS);
+        when(unitMapperUtil.getMappedUnit(
+                enhet.getVardgivare().getVardgivareId().getExtension(),
+                enhet.getVardgivare().getVardgivarnamn(),
+                enhet.getEnhetsId().getExtension(),
+                enhet.getEnhetsnamn(),
+                statusUpdate.getHandelse().getTidpunkt()
+            )
+        ).thenAnswer(inv -> new MappedUnit(
+                inv.getArgument(0, String.class),
+                inv.getArgument(1, String.class),
+                inv.getArgument(2, String.class),
+                inv.getArgument(3, String.class)
+            )
+        );
+
+        var notificationResultMessage = notificationResultMessageCreator.createResultMessage(statusUpdate, CORRELATION_ID);
+
+        assertEquals(CORRELATION_ID, notificationResultMessage.getCorrelationId());
+        assertNull(notificationResultMessage.getStatusUpdateXml());
+        assertNotNull(notificationResultMessage.getNotificationSentTime());
+
+        assertNull(notificationResultMessage.getEvent().getId());
+        assertEquals(CERTIFICATE_ID, notificationResultMessage.getEvent().getIntygsId());
+        assertEquals(CERTIFICATE_TYPE_EXTERNAL, notificationResultMessage.getEvent().getCertificateType());
+        assertEquals(TEXT_VERSION, notificationResultMessage.getEvent().getCertificateVersion());
+        assertEquals(EVENT_ENUM, notificationResultMessage.getEvent().getCode());
+        assertEquals(CARE_PROVIDER_ID, notificationResultMessage.getEvent().getVardgivarId());
+        assertEquals(LOGICAL_ADDRESS, notificationResultMessage.getEvent().getEnhetsId());
+        assertEquals(PATIENT_ID, notificationResultMessage.getEvent().getPersonnummer());
+        assertEquals(ISSUER_ID, notificationResultMessage.getEvent().getCertificateIssuer());
+        assertEquals(SUBJECT_CODE, notificationResultMessage.getEvent().getAmne().name());
+        assertEquals(USER_ID, notificationResultMessage.getEvent().getHanteratAv());
+    }
+
+    @Test
+    public void testCreateResultMessageWhenSigned() {
+        final var statusUpdate = createStatusUpdateForCareWithUnsignedCertificate();
+        statusUpdate.getIntyg().setSigneringstidpunkt(LocalDateTime.now());
+        final var enhet = statusUpdate.getIntyg().getSkapadAv().getEnhet();
+
+        when(unitMapperUtil.getMappedUnit(
+                enhet.getVardgivare().getVardgivareId().getExtension(),
+                enhet.getVardgivare().getVardgivarnamn(),
+                enhet.getEnhetsId().getExtension(),
+                enhet.getEnhetsnamn(),
+                statusUpdate.getIntyg().getSigneringstidpunkt()
+            )
+        ).thenAnswer(inv -> new MappedUnit(
+                inv.getArgument(0, String.class),
+                inv.getArgument(1, String.class),
+                inv.getArgument(2, String.class),
+                inv.getArgument(3, String.class)
+            )
+        );
+
+        var notificationResultMessage = notificationResultMessageCreator.createResultMessage(statusUpdate, CORRELATION_ID);
 
         assertEquals(CORRELATION_ID, notificationResultMessage.getCorrelationId());
         assertNull(notificationResultMessage.getStatusUpdateXml());

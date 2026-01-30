@@ -129,8 +129,7 @@ public class NotificationWSSenderTest {
 
         doReturn(mock(CertificateStatusUpdateForCareResponseType.class)).when(statusUpdateForCareClient)
             .certificateStatusUpdateForCare(LOGICAL_ADDRESS, statusUpdateMock);
-        doReturn(expectedResultMessage).when(notificationResultMessageCreator).createResultMessage(statusUpdateMock, CORRELATION_ID,
-            LOGICAL_ADDRESS);
+        doReturn(expectedResultMessage).when(notificationResultMessageCreator).createResultMessage(statusUpdateMock, CORRELATION_ID);
 
         notificationWSSender.sendStatusUpdate(statusUpdateMock, CERTIFICATE_ID, LOGICAL_ADDRESS, USER_ID, CORRELATION_ID);
 
@@ -145,8 +144,7 @@ public class NotificationWSSenderTest {
         final var argumentCaptor = ArgumentCaptor.forClass(NotificationResultMessage.class);
 
         doThrow(new RuntimeException()).when(statusUpdateForCareClient).certificateStatusUpdateForCare(LOGICAL_ADDRESS, statusUpdateMock);
-        doReturn(expectedResultMessage).when(notificationResultMessageCreator).createResultMessage(statusUpdateMock, CORRELATION_ID,
-            LOGICAL_ADDRESS);
+        doReturn(expectedResultMessage).when(notificationResultMessageCreator).createResultMessage(statusUpdateMock, CORRELATION_ID);
 
         notificationWSSender.sendStatusUpdate(statusUpdateMock, CERTIFICATE_ID, LOGICAL_ADDRESS, USER_ID, CORRELATION_ID);
 

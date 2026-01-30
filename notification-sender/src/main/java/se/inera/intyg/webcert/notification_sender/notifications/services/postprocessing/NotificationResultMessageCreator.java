@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import se.inera.intyg.common.support.common.enumerations.HandelsekodEnum;
 import se.inera.intyg.common.support.model.common.internal.Utlatande;
+import se.inera.intyg.common.support.modules.converter.mapping.UnitMapperUtil;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.exception.ModuleException;
@@ -63,6 +64,9 @@ public class NotificationResultMessageCreator {
 
     @Autowired
     private CertificateStatusUpdateForCareCreator certificateStatusUpdateForCareCreator;
+
+    @Autowired
+    private UnitMapperUtil unitMapperUtil;
 
     public NotificationResultMessage createFailureMessage(NotificationMessage notificationMessage, String correlationId, String userId,
         String certificateTypeVersion, Exception exception) throws ModuleNotFoundException, IOException, ModuleException {
@@ -98,9 +102,8 @@ public class NotificationResultMessageCreator {
         return notificationResultMessage;
     }
 
-    public NotificationResultMessage createResultMessage(CertificateStatusUpdateForCareType statusUpdate, String correlationId,
-        String logicalAddress) {
-        final var event = createEvent(statusUpdate, logicalAddress);
+    public NotificationResultMessage createResultMessage(CertificateStatusUpdateForCareType statusUpdate, String correlationId) {
+        final var event = createEvent(statusUpdate);
 
         final var resultMessage = new NotificationResultMessage();
         resultMessage.setCorrelationId(correlationId);
@@ -165,20 +168,30 @@ public class NotificationResultMessageCreator {
         }
     }
 
-    private Handelse createEvent(CertificateStatusUpdateForCareType statusUpdate, String logicalAddress) {
+    private Handelse createEvent(CertificateStatusUpdateForCareType statusUpdate) {
         final var topicCode = statusUpdate.getHandelse().getAmne();
         final var userId = statusUpdate.getHanteratAv();
 
+        final var enhet = statusUpdate.getIntyg().getSkapadAv().getEnhet();
+        final var mappedUnit = unitMapperUtil.getMappedUnit(
+            enhet.getVardgivare().getVardgivareId().getExtension(),
+            enhet.getVardgivare().getVardgivarnamn(),
+            enhet.getEnhetsId().getExtension(),
+            enhet.getEnhetsnamn(),
+            statusUpdate.getIntyg().getSigneringstidpunkt() != null ? statusUpdate.getIntyg().getSigneringstidpunkt()
+                : statusUpdate.getHandelse().getTidpunkt()
+        );
+
         final var event = new Handelse();
         event.setCode(HandelsekodEnum.fromValue(statusUpdate.getHandelse().getHandelsekod().getCode()));
-        event.setEnhetsId(logicalAddress);
+        event.setEnhetsId(mappedUnit.issuedUnitId());
         event.setIntygsId(statusUpdate.getIntyg().getIntygsId().getExtension());
         event.setCertificateType(statusUpdate.getIntyg().getTyp().getCode());
         event.setCertificateVersion(statusUpdate.getIntyg().getVersion());
         event.setCertificateIssuer(statusUpdate.getIntyg().getSkapadAv().getPersonalId().getExtension());
         event.setPersonnummer(statusUpdate.getIntyg().getPatient().getPersonId().getExtension());
         event.setTimestamp(statusUpdate.getHandelse().getTidpunkt());
-        event.setVardgivarId(statusUpdate.getIntyg().getSkapadAv().getEnhet().getVardgivare().getVardgivareId().getExtension());
+        event.setVardgivarId(mappedUnit.careProviderId());
         event.setAmne(topicCode != null ? ArendeAmne.valueOf(topicCode.getCode()) : null);
         event.setSistaDatumForSvar(statusUpdate.getHandelse().getSistaDatumForSvar());
         event.setHanteratAv(userId != null ? userId.getExtension() : null);

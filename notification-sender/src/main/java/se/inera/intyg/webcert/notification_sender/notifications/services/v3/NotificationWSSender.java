@@ -60,7 +60,7 @@ public class NotificationWSSender {
             statusUpdate.setHanteratAv(NotificationRedeliveryUtil.getIIType(new HsaId(), userId, HSA_ID_OID));
         }
 
-        final var resultMessage = notificationResultMessageCreator.createResultMessage(statusUpdate, correlationId, logicalAddress);
+        final var resultMessage = notificationResultMessageCreator.createResultMessage(statusUpdate, correlationId);
 
         try {
             MDC.put(MdcLogConstants.TRACE_ID_KEY, mdcHelper.traceId());
