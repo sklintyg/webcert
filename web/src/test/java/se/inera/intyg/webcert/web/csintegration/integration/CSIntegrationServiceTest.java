@@ -108,6 +108,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.GetListCertifica
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetPatientCertificatesRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetSickLeaveCertificateInternalIgnoreModelRulesDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetSickLeaveCertificateInternalResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnansweredCommunicationInternalRequestDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnansweredCommunicationInternalResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesInfoResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnitCertificatesRequestDTO;
@@ -161,6 +163,7 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.ListIntygEntry;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateDTO;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.CertificateTypeInfoDTO;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.AvailableFunctionDTO;
+import se.inera.intyg.webcert.web.web.controller.internalapi.dto.UnansweredQAs;
 
 @ExtendWith(MockitoExtension.class)
 class CSIntegrationServiceTest {
@@ -4118,4 +4121,117 @@ class CSIntegrationServiceTest {
             verify(requestBodyUriSpec).accept(MediaType.APPLICATION_JSON);
         }
     }
+
+    @Nested
+    class GetUnansweredCommunicationMessages {
+
+        private static final List<String> PATIENT_IDS = List.of("patientId1", "patientId2");
+        private static final Integer MAX_DAYS = 90;
+
+        @BeforeEach
+        void setUp() {
+            requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
+            responseSpec = mock(RestClient.ResponseSpec.class);
+
+            final String uri = "baseUrl/internalapi/message/unaswered-communication";
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+
+            when(restClient.post()).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.uri(uri)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.body(any(GetUnansweredCommunicationInternalRequestDTO.class))).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.accept(MediaType.APPLICATION_JSON)).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.header(any(), any())).thenReturn(requestBodyUriSpec);
+            when(requestBodyUriSpec.retrieve()).thenReturn(responseSpec);
+        }
+
+        @Test
+        void shouldReturnEmptyOptionalWhenResponseIsNull() {
+            doReturn(null).when(responseSpec).body(GetUnansweredCommunicationInternalResponseDTO.class);
+
+            final var result = csIntegrationService.getUnansweredCommunicationMessages(PATIENT_IDS, MAX_DAYS);
+
+            assertTrue(result.isEmpty());
+        }
+
+        @Test
+        void shouldReturnEmptyOptionalWhenMessagesAreEmpty() {
+            final var response = GetUnansweredCommunicationInternalResponseDTO.builder()
+                .messages(Map.of())
+                .build();
+
+            doReturn(response).when(responseSpec).body(GetUnansweredCommunicationInternalResponseDTO.class);
+
+            final var result = csIntegrationService.getUnansweredCommunicationMessages(PATIENT_IDS, MAX_DAYS);
+
+            assertTrue(result.isEmpty());
+        }
+
+        @Test
+        void shouldReturnOptionalWithResponseWhenMessagesArePresent() {
+            final var messages = Map.of(
+                "certificate1", new UnansweredQAs(),
+                "certificate2", new UnansweredQAs()
+            );
+
+            final var response = GetUnansweredCommunicationInternalResponseDTO.builder()
+                .messages(messages)
+                .build();
+
+            doReturn(response).when(responseSpec).body(GetUnansweredCommunicationInternalResponseDTO.class);
+
+            final var result = csIntegrationService.getUnansweredCommunicationMessages(PATIENT_IDS, MAX_DAYS);
+
+            assertTrue(result.isPresent());
+            assertEquals(messages, result.get().getMessages());
+        }
+
+        @Test
+        void shouldPerformPostWithCorrectUrl() {
+            final var response = GetUnansweredCommunicationInternalResponseDTO.builder()
+                .messages(Map.of("certificate1", new UnansweredQAs()))
+                .build();
+
+            doReturn(response).when(responseSpec).body(GetUnansweredCommunicationInternalResponseDTO.class);
+
+            ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
+            final var captor = ArgumentCaptor.forClass(String.class);
+
+            csIntegrationService.getUnansweredCommunicationMessages(PATIENT_IDS, MAX_DAYS);
+            verify(requestBodyUriSpec).uri(captor.capture());
+
+            assertEquals("baseUrl/internalapi/message/unaswered-communication", captor.getValue());
+        }
+
+        @Test
+        void shouldSendRequestWithCorrectParameters() {
+            final var response = GetUnansweredCommunicationInternalResponseDTO.builder()
+                .messages(Map.of("certificate1", new UnansweredQAs()))
+                .build();
+
+            doReturn(response).when(responseSpec).body(GetUnansweredCommunicationInternalResponseDTO.class);
+
+            final var captor = ArgumentCaptor.forClass(GetUnansweredCommunicationInternalRequestDTO.class);
+
+            csIntegrationService.getUnansweredCommunicationMessages(PATIENT_IDS, MAX_DAYS);
+            verify(requestBodyUriSpec).body(captor.capture());
+
+            assertEquals(PATIENT_IDS, captor.getValue().getPatientId());
+            assertEquals(MAX_DAYS, captor.getValue().getMaxDaysOfUnansweredCommunication());
+        }
+
+        @Test
+        void shouldSetAcceptHeaderToApplicationJson() {
+            final var response = GetUnansweredCommunicationInternalResponseDTO.builder()
+                .messages(Map.of("certificate1", new UnansweredQAs()))
+                .build();
+
+            doReturn(response).when(responseSpec).body(GetUnansweredCommunicationInternalResponseDTO.class);
+
+            csIntegrationService.getUnansweredCommunicationMessages(PATIENT_IDS, MAX_DAYS);
+
+            verify(requestBodyUriSpec).accept(MediaType.APPLICATION_JSON);
+        }
+    }
+
+
 }
