@@ -57,8 +57,12 @@ allprojects {
 
     group = 'se.inera.intyg.webcert'
     version = System.properties['buildVersion'] ?: '0-SNAPSHOT'
-    sourceCompatibility = 21
-    targetCompatibility = 21
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(21)
+        }
+    }
 
     dependencyManagement {
         imports {
