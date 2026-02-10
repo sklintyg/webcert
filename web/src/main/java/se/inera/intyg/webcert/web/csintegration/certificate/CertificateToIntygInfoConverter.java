@@ -54,8 +54,8 @@ public class CertificateToIntygInfoConverter {
         wcIntygInfo.setNumberOfRecipients(metadata.getRecipient() != null ? 1 : 0);
         wcIntygInfo.setSignedByName(metadata.getIssuedBy().getFullName());
         wcIntygInfo.setSignedByHsaId(metadata.getIssuedBy().getPersonId());
-        wcIntygInfo.setCareUnitName(metadata.getCareUnit().getUnitName());
-        wcIntygInfo.setCareUnitHsaId(metadata.getCareUnit().getUnitId());
+        wcIntygInfo.setCareUnitName(metadata.getUnit().getUnitName());
+        wcIntygInfo.setCareUnitHsaId(metadata.getUnit().getUnitId());
         wcIntygInfo.setCareGiverName(metadata.getCareProvider().getUnitName());
         wcIntygInfo.setCareGiverHsaId(metadata.getCareProvider().getUnitId());
         wcIntygInfo.setTestCertificate(metadata.isTestCertificate());

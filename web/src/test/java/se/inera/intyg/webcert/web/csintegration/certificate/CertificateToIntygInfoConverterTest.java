@@ -68,6 +68,7 @@ class CertificateToIntygInfoConverterTest {
             .typeVersion("1.0")
             .signed(LocalDateTime.now())
             .issuedBy(Staff.builder().fullName("Dr. John Doe").personId("1234567890").build())
+            .unit(Unit.builder().unitName("Issued Unit A").unitId("IU123").build())
             .careUnit(Unit.builder().unitName("Care Unit A").unitId("CU123").build())
             .careProvider(Unit.builder().unitName("Care Provider A").unitId("CP123").build())
             .sent(false)
@@ -108,6 +109,7 @@ class CertificateToIntygInfoConverterTest {
             .typeVersion("1.0")
             .signed(LocalDateTime.now())
             .issuedBy(Staff.builder().fullName("Dr. John Doe").personId("1234567890").build())
+            .unit(Unit.builder().unitName("Issued Unit A").unitId("IU123").build())
             .careUnit(Unit.builder().unitName("Care Unit A").unitId("CU123").build())
             .careProvider(Unit.builder().unitName("Care Provider A").unitId("CP123").build())
             .sent(true)
@@ -139,6 +141,7 @@ class CertificateToIntygInfoConverterTest {
                 .typeVersion("1.0")
                 .signed(LocalDateTime.now())
                 .issuedBy(Staff.builder().fullName("Dr. John Doe").personId("1234567890").build())
+                .unit(Unit.builder().unitName("Issued Unit A").unitId("IU123").build())
                 .careUnit(Unit.builder().unitName("Care Unit A").unitId("CU123").build())
                 .careProvider(Unit.builder().unitName("Care Provider A").unitId("CP123").build())
                 .sent(true)
@@ -299,15 +302,15 @@ class CertificateToIntygInfoConverterTest {
         }
 
         @Test
-        void shouldSetCareUnitName() {
+        void shouldSetIssuedUnitName() {
             final var result = certificateToIntygInfoConverter.convert(certificate, Collections.emptyList());
-            assertEquals("Care Unit A", result.getCareUnitName());
+            assertEquals("Issued Unit A", result.getCareUnitName());
         }
 
         @Test
-        void shouldSetCareUnitHsaId() {
+        void shouldSetIssuedUnitHsaId() {
             final var result = certificateToIntygInfoConverter.convert(certificate, Collections.emptyList());
-            assertEquals("CU123", result.getCareUnitHsaId());
+            assertEquals("IU123", result.getCareUnitHsaId());
         }
 
         @Test
