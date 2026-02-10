@@ -1223,7 +1223,7 @@ public class CSIntegrationService {
 
     @PerformanceLogging(eventAction = "get-unaswered-communication", eventType = EVENT_TYPE_ACCESS)
     public Optional<GetUnansweredCommunicationInternalResponseDTO> getUnansweredCommunicationMessages(List<String> patientId, Integer maxDaysOfUnansweredCommunication) {
-        final var url = baseUrl + INTERNAL_MESSAGE_ENDPOINT_URL + "/unanswered-communication";
+        final var url = baseUrl + INTERNAL_MESSAGE_ENDPOINT_URL + "/sent";
 
         final var response = restClient.post()
                 .uri(url)
