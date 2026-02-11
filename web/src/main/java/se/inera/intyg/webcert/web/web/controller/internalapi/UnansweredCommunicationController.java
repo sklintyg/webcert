@@ -24,6 +24,7 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
@@ -33,16 +34,13 @@ import se.inera.intyg.webcert.web.service.facade.GetUnansweredCommunicationFacad
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.UnansweredCommunicationRequest;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.UnansweredCommunicationResponse;
 
+@RequiredArgsConstructor
 @RestController
 @Path("/unanswered-communication")
 public class UnansweredCommunicationController {
 
     private static final String UTF_8_CHARSET = ";charset=utf-8";
     private final GetUnansweredCommunicationFacadeService getUnansweredCommunicationFacadeService;
-
-    public UnansweredCommunicationController(GetUnansweredCommunicationFacadeService getUnansweredCommunicationFacadeService) {
-        this.getUnansweredCommunicationFacadeService = getUnansweredCommunicationFacadeService;
-    }
 
     @POST
     @Path("/")
@@ -51,6 +49,6 @@ public class UnansweredCommunicationController {
     @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @PerformanceLogging(eventAction = "unanswered-communications-get-unanswered", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public UnansweredCommunicationResponse getUnansweredCommunications(@RequestBody UnansweredCommunicationRequest request) {
-        return getUnansweredCommunicationFacadeService.get(request.getPatientIds());
+        return getUnansweredCommunicationFacadeService.get(request.getPatientIds(), request.getMaxDaysOfUnansweredCommunication());
     }
 }

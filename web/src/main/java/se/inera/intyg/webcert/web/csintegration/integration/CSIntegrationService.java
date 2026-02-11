@@ -1327,8 +1327,8 @@ public class CSIntegrationService {
                 .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
                 .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
                 .body(GetUnansweredCommunicationInternalRequestDTO.builder()
-                        .patientId(patientId)
-                        .maxDaysOfUnansweredCommunication(maxDaysOfUnansweredCommunication)
+                        .patientIdList(patientId)
+                        .maxDays(maxDaysOfUnansweredCommunication)
                         .build())
                 .retrieve()
                 .body(GetUnansweredCommunicationInternalResponseDTO.class);

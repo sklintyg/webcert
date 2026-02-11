@@ -28,30 +28,34 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import se.inera.intyg.webcert.web.service.unansweredcommunication.UnansweredCommunicationService;
+import se.inera.intyg.webcert.web.service.facade.GetUnansweredCommunicationFacadeService;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.UnansweredCommunicationRequest;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.UnansweredCommunicationResponse;
+
+import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
 class UnansweredCommunicationControllerTest {
 
     @Mock
-    private UnansweredCommunicationService unansweredCommunicationService;
+    private GetUnansweredCommunicationFacadeService getUnansweredCommunicationFacadeService;
     @InjectMocks
     private UnansweredCommunicationController unansweredCommunicationController;
 
     @Test
     void shouldCallUnansweredCommunicationService() {
-        final var request = new UnansweredCommunicationRequest();
+        final var patientIds = List.of("patient1", "patient2");
+        final var request = new UnansweredCommunicationRequest(patientIds, 90);
         unansweredCommunicationController.getUnansweredCommunications(request);
-        verify(unansweredCommunicationService).get(request);
+        verify(getUnansweredCommunicationFacadeService).get(request.getPatientIds(), request.getMaxDaysOfUnansweredCommunication());
     }
 
     @Test
     void shouldReturnUnansweredCommunicationResponse() {
+        final var patientIds = List.of("patient1", "patient2");
         final var response = new UnansweredCommunicationResponse();
-        final var request = new UnansweredCommunicationRequest();
-        doReturn(response).when(unansweredCommunicationService).get(request);
+        final var request = new UnansweredCommunicationRequest(patientIds, 90);
+        doReturn(response).when(getUnansweredCommunicationFacadeService).get(request.getPatientIds(), request.getMaxDaysOfUnansweredCommunication());
 
         final var result = unansweredCommunicationController.getUnansweredCommunications(request);
         assertEquals(response, result);

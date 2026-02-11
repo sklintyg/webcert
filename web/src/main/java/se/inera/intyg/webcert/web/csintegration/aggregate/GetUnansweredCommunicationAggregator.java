@@ -13,8 +13,6 @@ import java.util.List;
 @Service
 public class GetUnansweredCommunicationAggregator implements GetUnansweredCommunicationFacadeService {
 
-    private static final int MAX_DAYS_OF_UNANSWERED_COMMUNICATION = 90;
-
     private final UnansweredCommunicationService getUnansweredCommunicationWC;
     private final UnansweredCommunicationService getUnansweredCommunicationFromCS;
 
@@ -25,8 +23,8 @@ public class GetUnansweredCommunicationAggregator implements GetUnansweredCommun
     }
 
     @Override
-    public UnansweredCommunicationResponse get(List<String> patientId) {
-        final var request = new UnansweredCommunicationRequest(patientId, MAX_DAYS_OF_UNANSWERED_COMMUNICATION);
+    public UnansweredCommunicationResponse get(List<String> patientId, Integer maxDaysOfUnansweredCommunication) {
+        final var request = new UnansweredCommunicationRequest(patientId, maxDaysOfUnansweredCommunication);
         final var combinedResponses = new HashMap<>(getUnansweredCommunicationFromCS.get(request).getUnansweredQAsMap());
         combinedResponses.putAll(getUnansweredCommunicationWC.get(request).getUnansweredQAsMap());
         return new UnansweredCommunicationResponse(combinedResponses);

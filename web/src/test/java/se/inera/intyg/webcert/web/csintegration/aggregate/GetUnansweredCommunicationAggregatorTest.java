@@ -41,6 +41,7 @@ import static org.mockito.Mockito.verify;
 class GetUnansweredCommunicationAggregatorTest {
 
     private static final List<String> PATIENT_IDS = List.of("patientId1", "patientId2");
+    public static final int MAX_DAYS_OF_UNANSWERED_COMMUNICATION = 90;
 
     @Mock
     private UnansweredCommunicationService getUnansweredCommunicationFromWC;
@@ -69,7 +70,7 @@ class GetUnansweredCommunicationAggregatorTest {
         doReturn(csResponse).when(getUnansweredCommunicationFromCS).get(any(UnansweredCommunicationRequest.class));
         doReturn(wcResponse).when(getUnansweredCommunicationFromWC).get(any(UnansweredCommunicationRequest.class));
 
-        final var actualResult = getUnansweredCommunicationAggregator.get(PATIENT_IDS);
+        final var actualResult = getUnansweredCommunicationAggregator.get(PATIENT_IDS, MAX_DAYS_OF_UNANSWERED_COMMUNICATION);
 
         assertEquals(2, actualResult.getUnansweredQAsMap().size());
         assertEquals(csResponse.getUnansweredQAsMap().get("certificate1"), actualResult.getUnansweredQAsMap().get("certificate1"));
@@ -91,7 +92,7 @@ class GetUnansweredCommunicationAggregatorTest {
         doReturn(csResponse).when(getUnansweredCommunicationFromCS).get(any(UnansweredCommunicationRequest.class));
         doReturn(wcResponse).when(getUnansweredCommunicationFromWC).get(any(UnansweredCommunicationRequest.class));
 
-        final var actualResult = getUnansweredCommunicationAggregator.get(PATIENT_IDS);
+        final var actualResult = getUnansweredCommunicationAggregator.get(PATIENT_IDS, MAX_DAYS_OF_UNANSWERED_COMMUNICATION);
 
         assertEquals(1, actualResult.getUnansweredQAsMap().size());
         assertEquals(wcQAs, actualResult.getUnansweredQAsMap().get("certificate1"));
@@ -108,7 +109,7 @@ class GetUnansweredCommunicationAggregatorTest {
         doReturn(csResponse).when(getUnansweredCommunicationFromCS).get(any(UnansweredCommunicationRequest.class));
         doReturn(wcResponse).when(getUnansweredCommunicationFromWC).get(any(UnansweredCommunicationRequest.class));
 
-        final var actualResult = getUnansweredCommunicationAggregator.get(PATIENT_IDS);
+        final var actualResult = getUnansweredCommunicationAggregator.get(PATIENT_IDS, MAX_DAYS_OF_UNANSWERED_COMMUNICATION);
 
         assertEquals(1, actualResult.getUnansweredQAsMap().size());
         assertEquals(csResponse.getUnansweredQAsMap().get("certificate1"), actualResult.getUnansweredQAsMap().get("certificate1"));
@@ -125,7 +126,7 @@ class GetUnansweredCommunicationAggregatorTest {
         doReturn(csResponse).when(getUnansweredCommunicationFromCS).get(any(UnansweredCommunicationRequest.class));
         doReturn(wcResponse).when(getUnansweredCommunicationFromWC).get(any(UnansweredCommunicationRequest.class));
 
-        final var actualResult = getUnansweredCommunicationAggregator.get(PATIENT_IDS);
+        final var actualResult = getUnansweredCommunicationAggregator.get(PATIENT_IDS, MAX_DAYS_OF_UNANSWERED_COMMUNICATION);
 
         assertEquals(1, actualResult.getUnansweredQAsMap().size());
         assertEquals(wcResponse.getUnansweredQAsMap().get("certificate2"), actualResult.getUnansweredQAsMap().get("certificate2"));
@@ -139,7 +140,7 @@ class GetUnansweredCommunicationAggregatorTest {
         doReturn(csResponse).when(getUnansweredCommunicationFromCS).get(any(UnansweredCommunicationRequest.class));
         doReturn(wcResponse).when(getUnansweredCommunicationFromWC).get(any(UnansweredCommunicationRequest.class));
 
-        getUnansweredCommunicationAggregator.get(PATIENT_IDS);
+        getUnansweredCommunicationAggregator.get(PATIENT_IDS, MAX_DAYS_OF_UNANSWERED_COMMUNICATION);
 
         verify(getUnansweredCommunicationFromCS).get(any(UnansweredCommunicationRequest.class));
         verify(getUnansweredCommunicationFromWC).get(any(UnansweredCommunicationRequest.class));

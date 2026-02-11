@@ -4133,7 +4133,7 @@ class CSIntegrationServiceTest {
             requestBodyUriSpec = mock(RestClient.RequestBodyUriSpec.class);
             responseSpec = mock(RestClient.ResponseSpec.class);
 
-            final String uri = "baseUrl/internalapi/message/unaswered-communication";
+            final String uri = "baseUrl/internalapi/message/sent";
             ReflectionTestUtils.setField(csIntegrationService, "baseUrl", "baseUrl");
 
             when(restClient.post()).thenReturn(requestBodyUriSpec);
@@ -4199,7 +4199,7 @@ class CSIntegrationServiceTest {
             csIntegrationService.getUnansweredCommunicationMessages(PATIENT_IDS, MAX_DAYS);
             verify(requestBodyUriSpec).uri(captor.capture());
 
-            assertEquals("baseUrl/internalapi/message/unaswered-communication", captor.getValue());
+            assertEquals("baseUrl/internalapi/message/sent", captor.getValue());
         }
 
         @Test
@@ -4215,8 +4215,8 @@ class CSIntegrationServiceTest {
             csIntegrationService.getUnansweredCommunicationMessages(PATIENT_IDS, MAX_DAYS);
             verify(requestBodyUriSpec).body(captor.capture());
 
-            assertEquals(PATIENT_IDS, captor.getValue().getPatientId());
-            assertEquals(MAX_DAYS, captor.getValue().getMaxDaysOfUnansweredCommunication());
+            assertEquals(PATIENT_IDS, captor.getValue().patientIdList());
+            assertEquals(MAX_DAYS, captor.getValue().maxDays());
         }
 
         @Test

@@ -5,5 +5,5 @@ import java.util.List;
 
 public interface GetUnansweredCommunicationFacadeService {
 
-    UnansweredCommunicationResponse get(List<String> patientId);
+    UnansweredCommunicationResponse get(List<String> patientId, Integer maxDaysOfUnansweredCommunication);
 }
