@@ -1317,7 +1317,7 @@ public class CSIntegrationService {
         return Optional.of(response);
     }
 
-    @PerformanceLogging(eventAction = "get-unaswered-communication", eventType = EVENT_TYPE_ACCESS)
+    @PerformanceLogging(eventAction = "get-unanswered-communication", eventType = EVENT_TYPE_ACCESS)
     public Optional<GetUnansweredCommunicationInternalResponseDTO> getUnansweredCommunicationMessages(List<String> patientId, Integer maxDaysOfUnansweredCommunication) {
         final var url = baseUrl + INTERNAL_MESSAGE_ENDPOINT_URL + "/sent";
 
