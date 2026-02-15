@@ -55,7 +55,6 @@ public class CertificateEventTestUtil {
 
     public static CertificateEvent buildCertificateEvent(String certificateId, String user, EventCode eventCode, String message) {
         CertificateEvent certificateEvent = new CertificateEvent();
-        certificateEvent.setId(1L);
         certificateEvent.setCertificateId(certificateId);
         certificateEvent.setUser(user);
         certificateEvent.setEventCode(eventCode);

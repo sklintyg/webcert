@@ -1,13 +1,18 @@
 dependencies {
     implementation "com.fasterxml.jackson.core:jackson-databind"
+    implementation "jakarta.annotation:jakarta.annotation-api"
+    implementation "jakarta.xml.ws:jakarta.xml.ws-api"
     implementation "org.springframework.security:spring-security-config"
     implementation "se.inera.intyg.common:common-support:${commonVersion}"
     implementation "se.inera.intyg.infra:log-messages:${infraVersion}"
     implementation "se.inera.intyg.schemas:schemas-contract:${schemasContractVersion}"
     implementation "se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:${rivtaClinicalprocessSchemasVersion}"
 
-    compileOnly "org.projectlombok:lombok"
     annotationProcessor "org.projectlombok:lombok"
-    
+
+    testImplementation "junit:junit"
+    testImplementation "org.mockito:mockito-junit-jupiter"
     testImplementation "org.springframework.boot:spring-boot-test"
+
+    testRuntimeOnly "org.junit.vintage:junit-vintage-engine"
 }

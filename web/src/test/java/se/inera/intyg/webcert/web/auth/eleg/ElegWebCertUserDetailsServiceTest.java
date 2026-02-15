@@ -41,7 +41,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.infra.security.common.model.RequestOrigin;
-import se.inera.intyg.webcert.integration.pp.services.PPRestService;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationResponse;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationResultCode;
 import se.inera.intyg.webcert.integration.privatepractitioner.service.PrivatePractitionerIntegrationService;
@@ -58,8 +57,6 @@ class ElegWebCertUserDetailsServiceTest extends AuthoritiesConfigurationTestSetu
     private static final String ELEG_AUTH_SCHEME = "http://id.elegnamnden.se/loa/1.0/loa3";
     private static final AuthenticationMethod AUTH_METHOD = AuthenticationMethod.MOBILT_BANK_ID;
 
-    @Mock
-    private PPRestService ppRestService;
     @Mock
     private SubscriptionService subscriptionService;
     @Mock

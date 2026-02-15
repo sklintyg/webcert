@@ -1,14 +1,15 @@
 dependencies {
     implementation "com.fasterxml.jackson.core:jackson-databind"
-    implementation "com.google.guava:guava:${guavaVersion}"
+    implementation "com.google.guava:guava"
     implementation "jakarta.ws.rs:jakarta.ws.rs-api"
     implementation "org.apache.commons:commons-lang3"
-    implementation "org.apache.cxf:cxf-core:${cxfVersion}"
+    implementation "org.apache.cxf:cxf-core"
     implementation "org.springframework.data:spring-data-redis"
     implementation "se.inera.intyg.common:integration-util:${commonVersion}"
     implementation "se.inera.intyg.common:common-support:${commonVersion}"
     implementation "se.inera.intyg.infra:common-redis-cache-core:${infraVersion}"
     implementation "se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:${rivtaClinicalprocessSchemasVersion}"
 
+    testImplementation "junit:junit"
     testImplementation "org.springframework:spring-test"
 }

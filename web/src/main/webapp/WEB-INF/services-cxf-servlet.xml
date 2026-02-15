@@ -35,12 +35,9 @@
     </cxf:features>
   </cxf:bus>
   <import resource="classpath:fmb-stub-context.xml"/>
-  <import resource="classpath:tak-stub-context.xml"/>
   <import resource="classpath:ia-stub-context.xml"/>
   <import resource="classpath:srs-stub-context.xml"/>
-  <import resource="classpath:grp-stub-context.xml"/>
   <import resource="classpath:/mail-stub-testability-api-context.xml"/>
-  <import resource="classpath:/loggtjanst-stub-context.xml"/>
   <import resource="classpath:/notification-stub-context.xml"/>
   <import resource="classpath:/servicenow-stub-context.xml"/>
   <import resource="classpath:/swagger-api-context.xml"/>

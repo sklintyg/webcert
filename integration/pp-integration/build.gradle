@@ -1,8 +1,0 @@
-dependencies {
-    implementation project(':webcert-logging')
-    implementation "com.google.guava:guava:${guavaVersion}"
-    implementation "org.springframework:spring-web"
-    implementation "se.inera.intyg.infra:privatepractitioner:${infraVersion}"
-
-    testImplementation "org.springframework:spring-test"
-}

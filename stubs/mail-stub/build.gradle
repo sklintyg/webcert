@@ -1,7 +1,11 @@
 dependencies {
-  implementation "com.google.guava:guava:${guavaVersion}"
-  implementation "jakarta.mail:jakarta.mail-api"
-  implementation "jakarta.ws.rs:jakarta.ws.rs-api"
-  implementation "org.aspectj:aspectjweaver"
-  implementation "org.springframework:spring-context-support"
+    implementation "ch.qos.logback:logback-classic"
+    implementation "com.google.guava:guava"
+    implementation "jakarta.mail:jakarta.mail-api"
+    implementation "jakarta.ws.rs:jakarta.ws.rs-api"
+    implementation "org.aspectj:aspectjweaver"
+    implementation "org.springframework:spring-context-support"
+
+    testImplementation "junit:junit"
+    testImplementation "org.mockito:mockito-junit-jupiter"
 }

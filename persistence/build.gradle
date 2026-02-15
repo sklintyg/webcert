@@ -4,23 +4,26 @@ sourceSets.main.output.resourcesDir = sourceSets.main.output.getClassesDirs().ge
 jar.duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
 dependencies {
-  implementation project(':webcert-common')
+    implementation project(':webcert-common')
 
-  implementation "com.google.guava:guava:${guavaVersion}"
-  implementation "com.h2database:h2"
-  implementation "commons-io:commons-io:${commonsIoVersion}"
-  implementation "com.zaxxer:HikariCP"
-  implementation "jakarta.persistence:jakarta.persistence-api"
-  implementation "org.hibernate.orm:hibernate-core"
-  implementation "org.hibernate.orm:hibernate-hikaricp"
-  implementation "org.liquibase:liquibase-core"
-  implementation "com.mysql:mysql-connector-j"
-  implementation "org.springframework.data:spring-data-jpa"
-  implementation "se.inera.intyg.schemas:schemas-contract:${schemasContractVersion}"
-  implementation "se.inera.intyg.common:common-support:${commonVersion}"
+    implementation "com.google.guava:guava"
+    implementation "commons-io:commons-io"
+    implementation "com.zaxxer:HikariCP"
+    implementation "jakarta.persistence:jakarta.persistence-api"
+    implementation "org.hibernate.orm:hibernate-core"
+    implementation "org.hibernate.orm:hibernate-hikaricp"
+    implementation "org.liquibase:liquibase-core"
+    implementation "com.mysql:mysql-connector-j"
+    implementation "org.springframework.data:spring-data-jpa"
+    implementation "se.inera.intyg.schemas:schemas-contract:${schemasContractVersion}"
+    implementation "se.inera.intyg.common:common-support:${commonVersion}"
 
-  compileOnly "org.projectlombok:lombok"
-  annotationProcessor "org.projectlombok:lombok"
+    annotationProcessor "org.projectlombok:lombok"
 
-  testImplementation "org.springframework:spring-test"
+    testImplementation "com.h2database:h2"
+    testImplementation "junit:junit"
+    testImplementation "org.mockito:mockito-junit-jupiter"
+    testImplementation "org.springframework:spring-test"
+
+    testRuntimeOnly "org.junit.vintage:junit-vintage-engine"
 }

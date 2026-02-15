@@ -2,15 +2,16 @@ dependencies {
     implementation project(":integration-api")
     implementation project(':webcert-logging')
 
+    implementation "ch.qos.logback:logback-classic"
     implementation "com.fasterxml.jackson.core:jackson-annotations"
     implementation "com.fasterxml.jackson.jakarta.rs:jackson-jakarta-rs-json-provider"
     implementation "jakarta.ws.rs:jakarta.ws.rs-api"
-    implementation "org.apache.cxf:cxf-rt-frontend-jaxrs:${cxfVersion}"
+    implementation "org.apache.cxf:cxf-rt-frontend-jaxrs"
     implementation "org.springframework:spring-context-support"
     implementation "org.springframework:spring-web"
 
-    compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
+    testImplementation "org.mockito:mockito-junit-jupiter"
     testImplementation "org.springframework:spring-test"
 }

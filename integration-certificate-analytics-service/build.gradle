@@ -3,6 +3,7 @@ dependencies {
     implementation project(':webcert-logging')
     implementation project(':webcert-persistence')
 
+    implementation "ch.qos.logback:logback-classic"
     implementation "com.fasterxml.jackson.core:jackson-core"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
     implementation 'jakarta.annotation:jakarta.annotation-api'
@@ -14,6 +15,7 @@ dependencies {
     implementation "se.inera.intyg.common:common-support:${commonVersion}"
     implementation "se.inera.intyg.schemas:schemas-contract:${schemasContractVersion}"
 
-    compileOnly "org.projectlombok:lombok"
     annotationProcessor "org.projectlombok:lombok"
+
+    testImplementation "org.mockito:mockito-junit-jupiter"
 }

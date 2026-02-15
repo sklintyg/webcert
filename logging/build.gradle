@@ -1,11 +1,12 @@
 dependencies {
+    implementation "ch.qos.logback:logback-classic"
+    implementation "com.google.guava:guava"
     implementation "jakarta.servlet:jakarta.servlet-api"
     implementation "org.aspectj:aspectjweaver"
     implementation "org.springframework:spring-webmvc"
-    implementation "com.google.guava:guava:${guavaVersion}"
 
-    compileOnly "org.projectlombok:lombok"
     annotationProcessor "org.projectlombok:lombok"
 
+    testImplementation "org.mockito:mockito-junit-jupiter"
     testImplementation "org.springframework:spring-test"
 }

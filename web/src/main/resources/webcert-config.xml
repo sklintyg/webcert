@@ -30,14 +30,12 @@
 	<import resource="classpath:webcert-common-config.xml"/>
 	<import resource="classpath:repository-context.xml"/>
 	<import resource="classpath:fmb-services-config.xml"/>
-	<import resource="classpath:tak-services-config.xml"/>
 	<import resource="classpath:servicenow-services-config.xml"/>
 	<import resource="classpath:integration-certificate-analytics-service-config.xml"/>
 	<import resource="classpath:integration-private-practitioner-service-config.xml"/>
   <import resource="classpath:basic-cache-config.xml"/>
 	<import resource="classpath:ia-services-config.xml"/>
 	<import resource="classpath:srs-services-config.xml"/>
-	<import resource="classpath:pp-services-config.xml"/>
 	<import resource="classpath:xmldsig-config.xml"/>
 	<import resource="ws-config.xml"/>
 	<import resource="mail-config.xml"/>

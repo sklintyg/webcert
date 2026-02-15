@@ -29,7 +29,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.infra.security.common.model.UserOrigin;
-import se.inera.intyg.webcert.integration.pp.services.PPRestService;
 import se.inera.intyg.webcert.integration.privatepractitioner.service.PrivatePractitionerIntegrationService;
 import se.inera.intyg.webcert.logging.HashUtility;
 import se.inera.intyg.webcert.web.auth.common.AuthConstants;
@@ -43,7 +42,6 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 public class ElegWebCertUserDetailsService {
 
     private final CommonAuthoritiesResolver commonAuthoritiesResolver;
-    private final PPRestService ppRestService;
     private final Optional<UserOrigin> userOrigin;
     private final SubscriptionService subscriptionService;
     private final HashUtility hashUtility;

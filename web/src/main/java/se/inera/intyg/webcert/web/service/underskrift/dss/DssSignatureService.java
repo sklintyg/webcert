@@ -28,15 +28,17 @@ import java.security.cert.CertPath;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.UUID;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import org.apache.xml.security.signature.XMLSignature;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -189,7 +191,7 @@ public class DssSignatureService {
     }
 
     public DssSignRequestDTO createSignatureRequestDTO(SignaturBiljett sb) {
-        var dateTimeNow = DateTime.now();
+        var dateTimeNow = LocalDateTime.now();
 
         var dssSignRequestDTO = new DssSignRequestDTO();
         String transactionID = sb.getTicketId();
@@ -203,7 +205,7 @@ public class DssSignatureService {
         return dssSignRequestDTO;
     }
 
-    private SignRequest createSignRequest(DateTime dateTimeNow, SignaturBiljett sb, String transactionID) {
+    private SignRequest createSignRequest(LocalDateTime dateTimeNow, SignaturBiljett sb, String transactionID) {
         var signRequest = objectFactoryDssCore.createSignRequest();
         signRequest.setRequestID(transactionID);
         signRequest.setProfile("http://id.elegnamnden.se/csig/1.1/dss-ext/profile");
@@ -222,7 +224,7 @@ public class DssSignatureService {
     }
 
     public String createTransactionID() {
-        var timestamp = Long.toHexString(DateTime.now().getMillis());
+        var timestamp = Long.toHexString(System.currentTimeMillis());
         var uuid = generateUUID();
         return String.format("%s-%s-%s-%s", formatIdField(customerId), formatIdField(applicationId), timestamp, uuid);
     }
@@ -251,7 +253,7 @@ public class DssSignatureService {
         return inputDocuments;
     }
 
-    private JAXBElement<SignRequestExtensionType> createSignRequestExtension(String intygsId, DateTime dateTimeNow) {
+    private JAXBElement<SignRequestExtensionType> createSignRequestExtension(String intygsId, LocalDateTime dateTimeNow) {
         var signRequestExtensionType = objectFactoryCsig.createSignRequestExtensionType();
 
         signRequestExtensionType.setRequestTime(convertToXmlGregorianTime(dateTimeNow));
@@ -369,7 +371,7 @@ public class DssSignatureService {
         return attributeStatementType;
     }
 
-    private ConditionsType createConditions(DateTime dateTimeNow) {
+    private ConditionsType createConditions(LocalDateTime dateTimeNow) {
         var conditionsType = objectFactorySaml.createConditionsType();
 
         var beforeTime = dateTimeNow.minusMinutes(2);
@@ -387,11 +389,12 @@ public class DssSignatureService {
         return conditionsType;
     }
 
-    private XMLGregorianCalendar convertToXmlGregorianTime(DateTime beforeCalendar) {
+    private XMLGregorianCalendar convertToXmlGregorianTime(LocalDateTime localDateTime) {
         XMLGregorianCalendar xmlGregorianCalendar = null;
         try {
+            GregorianCalendar gregorianCalendar = GregorianCalendar.from(localDateTime.atZone(ZoneId.systemDefault()));
             xmlGregorianCalendar = DatatypeFactory.newInstance()
-                .newXMLGregorianCalendar(beforeCalendar.toGregorianCalendar());
+                .newXMLGregorianCalendar(gregorianCalendar);
         } catch (DatatypeConfigurationException e) {
             LOG.error("Error converting date for SignRequest!", e);
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, e);
