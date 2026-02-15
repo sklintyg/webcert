@@ -1,13 +1,8 @@
 dependencies {
-  implementation project(':webcert-logging')
-  implementation "com.fasterxml.jackson.core:jackson-databind"
-  implementation "com.google.guava:guava:${guavaVersion}"
-  implementation "jakarta.ws.rs:jakarta.ws.rs-api"
-  implementation "org.springframework:spring-web"
-  implementation "se.inera.intyg.infra:privatepractitioner:${infraVersion}"
-  implementation "se.inera.intyg.infrastructure.directory.privatepractitioner:intyg-infrastructure-directory-privatepractitioner-schemas:${ppSchemasVersion}"
-  implementation "se.inera.intyg.schemas:schemas-contract:${schemasContractVersion}"
+    implementation project(':webcert-logging')
+    implementation "com.google.guava:guava:${guavaVersion}"
+    implementation "org.springframework:spring-web"
+    implementation "se.inera.intyg.infra:privatepractitioner:${infraVersion}"
 
-  testImplementation "org.springframework:spring-test"
-  testImplementation "se.inera.intyg.common:integration-util:${commonVersion}"
+    testImplementation "org.springframework:spring-test"
 }

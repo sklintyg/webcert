@@ -18,9 +18,6 @@
  */
 package se.inera.intyg.webcert.web.auth.eleg;
 
-import static se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerResultCode.NO_ACCOUNT;
-import static se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerResultCode.OK;
-
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -32,14 +29,11 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import se.inera.intyg.infra.security.authorities.CommonAuthoritiesResolver;
 import se.inera.intyg.infra.security.common.model.AuthenticationMethod;
 import se.inera.intyg.infra.security.common.model.UserOrigin;
-import se.inera.intyg.privatepractitioner.dto.ValidatePrivatePractitionerResultCode;
 import se.inera.intyg.webcert.integration.pp.services.PPRestService;
 import se.inera.intyg.webcert.integration.privatepractitioner.service.PrivatePractitionerIntegrationService;
 import se.inera.intyg.webcert.logging.HashUtility;
 import se.inera.intyg.webcert.web.auth.common.AuthConstants;
 import se.inera.intyg.webcert.web.auth.exceptions.MissingSubscriptionException;
-import se.inera.intyg.webcert.web.auth.exceptions.PrivatePractitionerAuthorizationException;
-import se.inera.intyg.webcert.web.privatepractitioner.toggle.PrivatePractitionerServiceProfile;
 import se.inera.intyg.webcert.web.service.subscription.SubscriptionService;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
@@ -53,8 +47,6 @@ public class ElegWebCertUserDetailsService {
     private final Optional<UserOrigin> userOrigin;
     private final SubscriptionService subscriptionService;
     private final HashUtility hashUtility;
-    private final LegacyAuthorizedPrivatePractitionerService legacyAuthorizedPrivatePractitionerService;
-    private final PrivatePractitionerServiceProfile privatePractitionerServiceProfile;
     @Nullable
     private final PrivatePractitionerIntegrationService privatePractitionerIntegrationService;
     @Nullable
@@ -67,11 +59,7 @@ public class ElegWebCertUserDetailsService {
     }
 
     public WebCertUser buildUserPrincipal(String personId, String authenticationScheme, AuthenticationMethod authenticationMethodMethod) {
-        if (privatePractitionerServiceProfile.isEnabled()) {
-            return handleWithPrivatePractitionerService(personId, authenticationScheme, authenticationMethodMethod);
-        }
-
-        return handleWithPrivatlakarportal(personId, authenticationScheme, authenticationMethodMethod);
+        return handleWithPrivatePractitionerService(personId, authenticationScheme, authenticationMethodMethod);
     }
 
     private WebCertUser handleWithPrivatePractitionerService(String personId, String authScheme, AuthenticationMethod authMethod) {
@@ -103,41 +91,6 @@ public class ElegWebCertUserDetailsService {
                 yield unauthorizedPrivatePractitionerService.create(personId, origin, authScheme, authMethod);
             }
         };
-    }
-
-    private WebCertUser handleWithPrivatlakarportal(String personId, String authScheme, AuthenticationMethod authMethod) {
-        final var ppAuthStatus = ppRestService.validatePrivatePractitioner(personId).getResultCode();
-        redirectUnregisteredUsers(personId, ppAuthStatus);
-
-        final var user = legacyAuthorizedPrivatePractitionerService.create(personId, resolveRequestOrigin(), authScheme, authMethod);
-        assertWebCertUserIsAuthorized(user, ppAuthStatus);
-        return user;
-    }
-
-    private void redirectUnregisteredUsers(String personId, ValidatePrivatePractitionerResultCode ppAuthStatus) {
-        if (ppAuthStatus == NO_ACCOUNT) {
-            final var hasSubscription = !subscriptionService.isUnregisteredElegUserMissingSubscription(personId);
-            if (hasSubscription) {
-                throw privatePractitionerAuthorizationException(hashUtility.hash(personId));
-            }
-            throw missingSubscriptionException(hashUtility.hash(personId));
-        }
-    }
-
-    private void assertWebCertUserIsAuthorized(WebCertUser webCertUser, ValidatePrivatePractitionerResultCode ppAuthStatus) {
-        final var hasSubscription = subscriptionService.checkSubscriptions(webCertUser);
-        if (ppAuthStatus == OK) {
-            return;
-        }
-        if (hasSubscription) {
-            throw privatePractitionerAuthorizationException(webCertUser.getHsaId());
-        }
-        throw missingSubscriptionException(webCertUser.getHsaId());
-    }
-
-    private PrivatePractitionerAuthorizationException privatePractitionerAuthorizationException(String hashedPersonIdOrHsaId) {
-        return new PrivatePractitionerAuthorizationException("User '" + hashedPersonIdOrHsaId + "' is not authorized to access webcert "
-            + "according to private practitioner portal");
     }
 
     private static MissingSubscriptionException missingSubscriptionException(String hashedPersonIdOrHsaId) {

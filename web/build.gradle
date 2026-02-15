@@ -27,7 +27,7 @@ gretty {
     serverConfigFile = "tomcat-gretty.xml"
 
     jvmArgs = ["-Dcatalina.base=${buildDirectory}/catalina.base",
-               "-Dspring.profiles.active=dev,private-practitioner-service-active,pu-integration-intyg-proxy-service,caching-enabled,wc-security-test,ia-stub,certificate-analytics-service-active",
+               "-Dspring.profiles.active=dev,pu-integration-intyg-proxy-service,caching-enabled,wc-security-test,ia-stub,certificate-analytics-service-active",
                "-Dlogback.file=${applicationDir}/config/logback-spring.xml",
                "-Djava.awt.headless=true",
                "-Dfile.encoding=UTF-8",
@@ -82,7 +82,6 @@ dependencies {
     implementation project(':fk-stub')
     implementation project(':fmb-integration')
     implementation project(':integration-api')
-    implementation project(':intygstjanst-stub')
     implementation project(':mail-stub')
     implementation project(':notification-sender')
     implementation project(':notification-stub')

@@ -20,7 +20,6 @@
 package se.inera.intyg.webcert.web.auth.eleg;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.infra.pu.integration.api.model.PersonSvar;
 import se.inera.intyg.infra.pu.integration.api.services.PUService;
@@ -35,7 +34,6 @@ import se.inera.intyg.webcert.logging.HashUtility;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @Service
-@Profile("private-practitioner-service-active")
 @RequiredArgsConstructor
 public class UnauthorizedPrivatePractitionerService {
 

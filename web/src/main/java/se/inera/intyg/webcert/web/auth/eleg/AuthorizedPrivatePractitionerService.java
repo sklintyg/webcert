@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
@@ -50,7 +49,6 @@ import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 
 @Service
 @RequiredArgsConstructor
-@Profile("private-practitioner-service-active")
 public class AuthorizedPrivatePractitionerService {
 
     private final CommonAuthoritiesResolver commonAuthoritiesResolver;

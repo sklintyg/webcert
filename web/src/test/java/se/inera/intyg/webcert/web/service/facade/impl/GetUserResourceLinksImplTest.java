@@ -29,7 +29,6 @@ import static se.inera.intyg.webcert.web.privatepractitioner.TestDataConstants.D
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,7 +44,6 @@ import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.infra.security.common.model.UserOriginType;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationResponse;
 import se.inera.intyg.webcert.integration.privatepractitioner.service.PrivatePractitionerIntegrationService;
-import se.inera.intyg.webcert.web.privatepractitioner.toggle.PrivatePractitionerServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.ResourceLinkFacadeTestHelper;
 import se.inera.intyg.webcert.web.service.facade.impl.certificatefunctions.GetUserResourceLinksImpl;
 import se.inera.intyg.webcert.web.service.subscription.dto.SubscriptionAction;
@@ -58,18 +56,11 @@ class GetUserResourceLinksImplTest {
 
     @Mock
     private PrivatePractitionerIntegrationService privatePractitionerIntegrationService;
-    @Mock
-    private PrivatePractitionerServiceProfile privatePractitionerServiceProfile;
     @InjectMocks
     private GetUserResourceLinksImpl getUserResourceLinks;
 
     @Nested
     class ResourceLinks {
-
-        @BeforeEach
-        void setUp() {
-            when(privatePractitionerServiceProfile.isEnabled()).thenReturn(false);
-        }
 
         @Test
         void shallIncludeLogoutIfOriginIsNormal() {
@@ -299,21 +290,6 @@ class GetUserResourceLinksImplTest {
         }
 
         @Test
-        void shallIncludePrivatePractitionerPortalIfUserIsPrivatePractitioner() {
-            final var user = getUserWithOrigin("NORMAL");
-            when(user.isPrivatLakare()).thenReturn(true);
-            final var actualLinks = getUserResourceLinks.get(user);
-            ResourceLinkFacadeTestHelper.assertInclude(actualLinks, ResourceLinkTypeDTO.PRIVATE_PRACTITIONER_PORTAL);
-        }
-
-        @Test
-        void shallNotIncludePrivatePractitionerPortalIfUserIsNotPrivatePractitioner() {
-            final var user = getUserWithOrigin("NORMAL");
-            final var actualLinks = getUserResourceLinks.get(user);
-            ResourceLinkFacadeTestHelper.assertExclude(actualLinks, ResourceLinkTypeDTO.PRIVATE_PRACTITIONER_PORTAL);
-        }
-
-        @Test
         void shallIncludeNavigateBackButtonIfUserHasNormalOrigin() {
             final var user = getUserWithOrigin("NORMAL");
             final var actualLinks = getUserResourceLinks.get(user);
@@ -449,11 +425,6 @@ class GetUserResourceLinksImplTest {
 
     @Nested
     class NotAuthorizedPrivatePractitioner {
-
-        @BeforeEach
-        void setUp() {
-            when(privatePractitionerServiceProfile.isEnabled()).thenReturn(true);
-        }
 
         @Test
         void shallIncludeLogout() {

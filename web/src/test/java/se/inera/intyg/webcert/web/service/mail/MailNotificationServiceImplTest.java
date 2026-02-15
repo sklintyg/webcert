@@ -20,8 +20,6 @@ package se.inera.intyg.webcert.web.service.mail;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -29,7 +27,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import jakarta.mail.Address;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import java.io.IOException;
@@ -48,11 +45,9 @@ import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.common.luse.support.LuseEntryPoint;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
-import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.privatepractitioner.PrivatePractitionerService;
-import se.inera.intyg.webcert.web.privatepractitioner.toggle.PrivatePractitionerServiceProfile;
 import se.inera.intyg.webcert.web.service.employee.EmployeeNameService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
 import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
@@ -78,13 +73,7 @@ class MailNotificationServiceImplTest {
     private MonitoringLogService monitoringService;
 
     @Mock
-    private PPService ppService;
-
-    @Mock
     private PrivatePractitionerService privatePractitionerService;
-
-    @Mock
-    private PrivatePractitionerServiceProfile privatePractitionerServiceProfile;
 
     @Mock
     private UtkastRepository utkastRepository;
@@ -97,7 +86,6 @@ class MailNotificationServiceImplTest {
         ReflectionTestUtils.setField(mailNotificationService, "adminMailAddress", "AdminMail");
         ReflectionTestUtils.setField(mailNotificationService, "fromAddress", "FromAddress");
         ReflectionTestUtils.setField(mailNotificationService, "webCertHostUrl", "WebCertHostUrl");
-        ReflectionTestUtils.setField(mailNotificationService, "ppLogicalAddress", "PpLogicalAddress");
     }
 
     @Captor
@@ -128,57 +116,6 @@ class MailNotificationServiceImplTest {
     }
 
     @Test
-    void testSendMailForIncomingQuestionHsaIsNotCalledIfPrivatePractitioner() throws MessagingException {
-        // Given
-        HoSPersonType hoSPersonType = new HoSPersonType();
-        EnhetType enhet = new EnhetType();
-        enhet.setEpost("test@test.se");
-        enhet.setEnhetsnamn("TestEnhet");
-        hoSPersonType.setEnhet(enhet);
-        doReturn(hoSPersonType).when(ppService).getPrivatePractitioner(anyString(), eq(SIGNED_BY_HSA_ID), isNull());
-
-        MimeMessage mimeMessage = new MimeMessage(mock(MimeMessage.class));
-        doReturn(mimeMessage).when(mailSender).createMimeMessage();
-
-        MailNotification mailNotification = mailNotification("intygsId",
-            MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "1234");
-
-        // When
-        mailNotificationService.sendMailForIncomingQuestion(mailNotification);
-
-        // Then
-        verify(hsaOrganizationUnitService, times(0)).getVardenhet(anyString());
-    }
-
-    @Test
-    void testSendMailForIncomingQuestionMailIsSentToPrivatePractitioner() throws Exception {
-        // Given
-        HoSPersonType hoSPersonType = new HoSPersonType();
-        EnhetType enhet = new EnhetType();
-        String epost = "test@test.se";
-        enhet.setEpost(epost);
-        enhet.setEnhetsnamn("TestEnhet");
-        hoSPersonType.setEnhet(enhet);
-        doReturn(hoSPersonType).when(ppService).getPrivatePractitioner(anyString(), eq(SIGNED_BY_HSA_ID), isNull());
-
-        MailNotification mailNotification = mailNotification("intygsId",
-            MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "1234");
-
-        MimeMessage message = new MimeMessage(mock(MimeMessage.class));
-        doReturn(message).when(mailSender).createMimeMessage();
-
-        // When
-        mailNotificationService.sendMailForIncomingQuestion(mailNotification);
-
-        // Then
-        verify(mailSender, times(1)).send(mimeCaptor.capture());
-        MimeMessage mimeMessage = mimeCaptor.getValue();
-        Address[] allRecipients = mimeMessage.getAllRecipients();
-        assertEquals(1, allRecipients.length);
-        assertEquals(epost, allRecipients[0].toString());
-    }
-
-    @Test
     void testSendMailForIncomingAnswerHsaIsCalledIfNotPrivatePractitioner() throws MessagingException {
         // Given
         MailNotification mailNotification = mailNotification("intygsId",
@@ -200,57 +137,6 @@ class MailNotificationServiceImplTest {
 
         // Then
         verify(hsaOrganizationUnitService, times(1)).getVardenhet(anyString());
-    }
-
-    @Test
-    void testSendMailForIncomingAnswerHsaIsNotCalledIfPrivatePractitioner() throws MessagingException {
-        // Given
-        HoSPersonType hoSPersonType = new HoSPersonType();
-        EnhetType enhet = new EnhetType();
-        enhet.setEpost("test@test.se");
-        enhet.setEnhetsnamn("TestEnhet");
-        hoSPersonType.setEnhet(enhet);
-        doReturn(hoSPersonType).when(ppService).getPrivatePractitioner(anyString(), eq(SIGNED_BY_HSA_ID), isNull());
-
-        MailNotification mailNotification = mailNotification("intygsId",
-            MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "1234");
-
-        MimeMessage message = new MimeMessage(mock(MimeMessage.class));
-        doReturn(message).when(mailSender).createMimeMessage();
-
-        // When
-        mailNotificationService.sendMailForIncomingAnswer(mailNotification);
-
-        // Then
-        verify(hsaOrganizationUnitService, times(0)).getVardenhet(anyString());
-    }
-
-    @Test
-    void testSendMailForIncomingAnswerMailIsSentToPrivatePractitioner() throws Exception {
-        // Given
-        HoSPersonType hoSPersonType = new HoSPersonType();
-        EnhetType enhet = new EnhetType();
-        String epost = "test@test.se";
-        enhet.setEpost(epost);
-        enhet.setEnhetsnamn("TestEnhet");
-        hoSPersonType.setEnhet(enhet);
-        doReturn(hoSPersonType).when(ppService).getPrivatePractitioner(anyString(), eq(SIGNED_BY_HSA_ID), isNull());
-
-        MailNotification mailNotification = mailNotification("intygsId",
-            MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "1234");
-
-        MimeMessage message = new MimeMessage(mock(MimeMessage.class));
-        doReturn(message).when(mailSender).createMimeMessage();
-
-        // When
-        mailNotificationService.sendMailForIncomingAnswer(mailNotification);
-
-        // Then
-        verify(mailSender, times(1)).send(mimeCaptor.capture());
-        MimeMessage mimeMessage = mimeCaptor.getValue();
-        Address[] allRecipients = mimeMessage.getAllRecipients();
-        assertEquals(1, allRecipients.length);
-        assertEquals(epost, allRecipients[0].toString());
     }
 
     @Test
@@ -359,38 +245,6 @@ class MailNotificationServiceImplTest {
         return new MailNotification(null, intygsId, intygsTyp, enhetsId, null, SIGNED_BY_HSA_ID);
     }
 
-
-    @Test
-    void bodyShallContainEmployeeNameAndUnitNameForIncomingQuestionsForPrivatePractitioner()
-        throws MessagingException, IOException {
-        final var expectedContent = "<p>Försäkringskassan har ställt en fråga på ett intyg utfärdat av "
-            + "<b>ExpectedName</b> på <b>ExpectedUnit</b>."
-            + "<br><a href=\"WebCertHostUrl/webcert/web/user/pp-certificate/intygsId/questions?enhet=SE165565594230-WEBCERT1234\">"
-            + "Läs och besvara frågan i Webcert</a></p><p>OBS! Sätt i ditt SITHS-kort innan du klickar på länken.</p>";
-
-        final var mailNotification = mailNotification(
-            "intygsId",
-            MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "1234"
-        );
-        final var hoSPersonType = new HoSPersonType();
-        final var unit = new EnhetType();
-        final var epost = "test@test.se";
-        unit.setEpost(epost);
-        unit.setEnhetsnamn(EXPECTED_UNIT);
-        hoSPersonType.setEnhet(unit);
-
-        MimeMessage message = new MimeMessage(mock(MimeMessage.class));
-        doReturn(message).when(mailSender).createMimeMessage();
-
-        doReturn(hoSPersonType).when(ppService).getPrivatePractitioner(anyString(), eq(SIGNED_BY_HSA_ID), isNull());
-        doReturn(EXPECTED_NAME).when(employeeNameService).getEmployeeHsaName(SIGNED_BY_HSA_ID);
-
-        mailNotificationService.sendMailForIncomingQuestion(mailNotification);
-
-        verify(mailSender, times(1)).send(mimeCaptor.capture());
-        assertEquals(expectedContent, mimeCaptor.getValue().getContent());
-    }
-
     @Test
     void bodyShallContainEmployeeNameAndUnitNameForIncomingQuestions()
         throws MessagingException, IOException {
@@ -419,37 +273,6 @@ class MailNotificationServiceImplTest {
         doReturn(EXPECTED_NAME).when(employeeNameService).getEmployeeHsaName(SIGNED_BY_HSA_ID);
 
         mailNotificationService.sendMailForIncomingQuestion(mailNotification);
-
-        verify(mailSender, times(1)).send(mimeCaptor.capture());
-        assertEquals(expectedContent, mimeCaptor.getValue().getContent());
-    }
-
-    @Test
-    void bodyShallContainEmployeeNameAndUnitNameForIncomingAnswerForPrivatePractitioner()
-        throws MessagingException, IOException {
-        final var expectedContent = "<p>Det har kommit ett svar från Försäkringskassan på en fråga som <b>ExpectedName</b> "
-            + "på <b>ExpectedUnit</b> har ställt. har ställt."
-            + "<br><a href=\"WebCertHostUrl/webcert/web/user/pp-certificate/intygsId/questions?enhet=SE165565594230-WEBCERT1234\">"
-            + "Läs svaret i Webcert</a></p><p>OBS! Sätt i ditt SITHS-kort innan du klickar på länken.</p>";
-
-        final var mailNotification = mailNotification(
-            "intygsId",
-            MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "1234"
-        );
-        final var hoSPersonType = new HoSPersonType();
-        final var unit = new EnhetType();
-        final var epost = "test@test.se";
-        unit.setEpost(epost);
-        unit.setEnhetsnamn(EXPECTED_UNIT);
-        hoSPersonType.setEnhet(unit);
-
-        MimeMessage message = new MimeMessage(mock(MimeMessage.class));
-        doReturn(message).when(mailSender).createMimeMessage();
-
-        doReturn(hoSPersonType).when(ppService).getPrivatePractitioner(anyString(), eq(SIGNED_BY_HSA_ID), isNull());
-        doReturn(EXPECTED_NAME).when(employeeNameService).getEmployeeHsaName(SIGNED_BY_HSA_ID);
-
-        mailNotificationService.sendMailForIncomingAnswer(mailNotification);
 
         verify(mailSender, times(1)).send(mimeCaptor.capture());
         assertEquals(expectedContent, mimeCaptor.getValue().getContent());
@@ -490,26 +313,12 @@ class MailNotificationServiceImplTest {
     }
 
     @Test
-    void shouldUsePrivatePractitionerServiceToGetRecipientWhenProfileIsActive() {
+    void shouldUsePrivatePractitionerServiceToGetRecipient() {
         final var mailNotification = mailNotification("intygsId",
             MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "1234");
-
-        when(privatePractitionerServiceProfile.isEnabled()).thenReturn(true);
 
         mailNotificationService.sendMailForIncomingQuestion(mailNotification);
 
         verify(privatePractitionerService).getPrivatePractitioner(SIGNED_BY_HSA_ID);
-    }
-
-    @Test
-    void shouldUsePPServiceToGetRecipientWhenProfileIsNotActive() {
-        final var mailNotification = mailNotification("intygsId",
-            MailNotificationServiceImpl.PRIVATE_PRACTITIONER_HSAID_PREFIX + "1234");
-
-        when(privatePractitionerServiceProfile.isEnabled()).thenReturn(false);
-
-        mailNotificationService.sendMailForIncomingQuestion(mailNotification);
-
-        verify(ppService).getPrivatePractitioner(anyString(), eq(SIGNED_BY_HSA_ID), isNull());
     }
 }

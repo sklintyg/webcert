@@ -27,7 +27,6 @@ import static se.inera.intyg.webcert.logging.MdcLogConstants.TRACE_ID_KEY;
 
 import lombok.RequiredArgsConstructor;
 import org.slf4j.MDC;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
@@ -43,7 +42,6 @@ import se.inera.intyg.webcert.logging.MdcHelper;
 
 @Service
 @RequiredArgsConstructor
-@Profile("private-practitioner-service-active")
 public class PPSIntegrationService {
 
     private final RestClient ppsRestClient;

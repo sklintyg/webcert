@@ -20,7 +20,6 @@
 package se.inera.intyg.webcert.web.privatepractitioner;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
@@ -35,7 +34,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.Pri
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerResponse;
 
 @Service
-@Profile("private-practitioner-service-active")
 @RequiredArgsConstructor
 public class PrivatePractitionerService {
 
