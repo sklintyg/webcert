@@ -34,7 +34,6 @@
       <cxf:logging/>
     </cxf:features>
   </cxf:bus>
-  <import resource="classpath:fk-stub-context.xml"/>
   <import resource="classpath:fmb-stub-context.xml"/>
   <import resource="classpath:tak-stub-context.xml"/>
   <import resource="classpath:ia-stub-context.xml"/>
@@ -83,15 +82,6 @@
       <bean
           class="se.inera.intyg.common.util.integration.interceptor.SoapFaultToSoapResponseTransformerInterceptor">
         <constructor-arg value="transform/receive-answer.xslt"/>
-      </bean>
-    </jaxws:outFaultInterceptors>
-  </jaxws:endpoint>
-
-  <jaxws:endpoint address="/get-private-practitioner-terms/v1.0" implementor="se.inera.intyg.webcert.web.integration.interactions.getprivatepractitionerterms.GetPrivatePractitionerTermsResponderImpl">
-    <jaxws:outFaultInterceptors>
-      <bean
-          class="se.inera.intyg.common.util.integration.interceptor.SoapFaultToSoapResponseTransformerInterceptor">
-        <constructor-arg value="transform/get-privatepractitioner-terms.xslt"/>
       </bean>
     </jaxws:outFaultInterceptors>
   </jaxws:endpoint>

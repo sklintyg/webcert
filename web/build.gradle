@@ -79,7 +79,6 @@ compileJava.dependsOn(xsd2Java)
 sourceSets.main.java { srcDir generatedJavaDir }
 
 dependencies {
-    implementation project(':fk-stub')
     implementation project(':fmb-integration')
     implementation project(':integration-api')
     implementation project(':mail-stub')
@@ -150,12 +149,9 @@ dependencies {
     implementation "se.inera.intyg.clinicalprocess.healthcond.certificate:intyg-clinicalprocess-healthcond-certificate-schemas:${intygClinicalprocessSchemasVersion}"
     implementation "se.inera.intyg.clinicalprocess.healthcond.rehabilitation:intyg-clinicalprocess-healthcond-rehabilitation-schemas:${intygHealthcondRehabilitationSchemasVersion}"
     implementation "se.inera.intyg.clinicalprocess.healthcond.srs:intyg-clinicalprocess-healthcond-srs-schemas:${srsSchemasVersion}"
-    implementation "se.inera.intyg.infrastructure.directory.privatepractitioner:intyg-infrastructure-directory-privatepractitioner-schemas:${ppSchemasVersion}"
-    implementation "se.inera.intyg.infrastructure.directory.privatepractitioner.terms:intyg-infrastructure-directory-privatepractitioner-terms-schemas:${ppTermsSchemasVersion}"
     implementation "se.inera.intyg.schemas:schemas-contract:${schemasContractVersion}"
     implementation "se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:${rivtaClinicalprocessSchemasVersion}"
     implementation "se.riv.insuranceprocess.healthreporting:insuranceprocess-healthreporting-schemas:${rivtaInsuranceprocessSchemasVersion}"
-    implementation "se.riv.itintegration.monitoring:itintegration-monitoring-schemas:${rivtaItintegrationMonitoringSchemasVersion}"
 
     implementation "co.elastic.logging:logback-ecs-encoder:${logbackEcsEncoderVersion}"
     implementation "codes.rafael.jaxb2_commons:jaxb2-basics:${jaxb2Version}"

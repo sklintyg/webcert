@@ -13,14 +13,10 @@ ext {
     infraVersion = System.properties['infraVersion'] ?: '4.0.0-SNAPSHOT'
     refDataVersion = '2.0.22'
 
-    funktionstjansterGrpSchemasVersion = "2.0.0.2"
     intygClinicalprocessSchemasVersion = "1.0.24.2"
     intygHealthcondRehabilitationSchemasVersion = "1.1.3.2"
-    ppSchemasVersion = "1.0.5.2"
-    ppTermsSchemasVersion = "1.0.5.2"
     rivtaClinicalprocessSchemasVersion = "4.0.5.3"
     rivtaInsuranceprocessSchemasVersion = "3.1.0.5.2"
-    rivtaItintegrationMonitoringSchemasVersion = "1.0.0.5.2"
     schemasContractVersion = "2.1.8.2"
     srsSchemasVersion = "0.0.16.2"
 

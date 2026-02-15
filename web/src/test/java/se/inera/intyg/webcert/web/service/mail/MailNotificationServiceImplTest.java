@@ -50,15 +50,12 @@ import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.privatepractitioner.PrivatePractitionerService;
 import se.inera.intyg.webcert.web.service.employee.EmployeeNameService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
-import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
-import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 
 @ExtendWith(MockitoExtension.class)
 class MailNotificationServiceImplTest {
 
     private static final String SIGNED_BY_HSA_ID = "SIGNED_BY_HSA_ID";
     private static final String EXPECTED_NAME = "ExpectedName";
-    private static final String EXPECTED_UNIT = "ExpectedUnit";
     private static final String UNIT_ID = "unitId";
     @InjectMocks
     private MailNotificationServiceImpl mailNotificationService;
@@ -256,12 +253,6 @@ class MailNotificationServiceImplTest {
             "intygsId",
             UNIT_ID
         );
-        final var hoSPersonType = new HoSPersonType();
-        final var unit = new EnhetType();
-        final var epost = "test@test.se";
-        unit.setEpost(epost);
-        unit.setEnhetsnamn(EXPECTED_UNIT);
-        hoSPersonType.setEnhet(unit);
 
         Vardenhet vardenhet = new Vardenhet("aflkjdsalkjjlk", "ExpectedUnit", null, null, "adsflkjasdflkjadfsjlk");
         vardenhet.setEpost("epost@mockadress.net");
@@ -290,12 +281,6 @@ class MailNotificationServiceImplTest {
             "intygsId",
             UNIT_ID
         );
-        final var hoSPersonType = new HoSPersonType();
-        final var unit = new EnhetType();
-        final var epost = "test@test.se";
-        unit.setEpost(epost);
-        unit.setEnhetsnamn(EXPECTED_UNIT);
-        hoSPersonType.setEnhet(unit);
 
         MimeMessage message = new MimeMessage(mock(MimeMessage.class));
         doReturn(message).when(mailSender).createMimeMessage();
