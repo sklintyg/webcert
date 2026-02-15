@@ -16,7 +16,6 @@ ext {
     funktionstjansterGrpSchemasVersion = "2.0.0.2"
     intygClinicalprocessSchemasVersion = "1.0.24.2"
     intygHealthcondRehabilitationSchemasVersion = "1.1.3.2"
-    intygTransportstyrelsenSchemasVersion = "1.0.5.3"
     ppSchemasVersion = "1.0.5.2"
     ppTermsSchemasVersion = "1.0.5.2"
     rivtaClinicalprocessSchemasVersion = "4.0.5.3"
