@@ -38,7 +38,7 @@ import se.inera.intyg.webcert.web.web.controller.internalapi.dto.UnansweredCommu
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.UnansweredCommunicationResponse;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.UnansweredQAs;
 
-@Service
+@Service("getUnansweredCommunicationFromWC")
 public class UnansweredCommunicationServiceImpl implements UnansweredCommunicationService {
 
     private final ArendeService arendeService;

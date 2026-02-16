@@ -24,33 +24,31 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import se.inera.intyg.infra.monitoring.annotation.PrometheusTimeMethod;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
-import se.inera.intyg.webcert.web.service.unansweredcommunication.UnansweredCommunicationService;
+import se.inera.intyg.webcert.web.service.facade.GetUnansweredCommunicationFacadeService;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.UnansweredCommunicationRequest;
 import se.inera.intyg.webcert.web.web.controller.internalapi.dto.UnansweredCommunicationResponse;
 
+@RequiredArgsConstructor
 @RestController
 @Path("/unanswered-communication")
 public class UnansweredCommunicationController {
 
     private static final String UTF_8_CHARSET = ";charset=utf-8";
-    private final UnansweredCommunicationService unansweredCommunicationService;
-
-    public UnansweredCommunicationController(UnansweredCommunicationService unansweredCommunicationService) {
-        this.unansweredCommunicationService = unansweredCommunicationService;
-    }
+    private final GetUnansweredCommunicationFacadeService getUnansweredCommunicationFacadeService;
 
     @POST
     @Path("/")
     @PrometheusTimeMethod
     @Produces(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
     @Consumes(MediaType.APPLICATION_JSON + UTF_8_CHARSET)
-    @PerformanceLogging(eventAction = "unanswwered-communications-get-unanswered", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
+    @PerformanceLogging(eventAction = "unanswered-communications-get-unanswered", eventType = MdcLogConstants.EVENT_TYPE_ACCESS)
     public UnansweredCommunicationResponse getUnansweredCommunications(@RequestBody UnansweredCommunicationRequest request) {
-        return unansweredCommunicationService.get(request);
+        return getUnansweredCommunicationFacadeService.get(request.getPatientIds(), request.getMaxDaysOfUnansweredCommunication());
     }
 }

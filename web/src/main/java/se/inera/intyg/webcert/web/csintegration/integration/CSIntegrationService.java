@@ -140,6 +140,8 @@ import se.inera.intyg.webcert.web.csintegration.integration.dto.UpdateWithCandid
 import se.inera.intyg.webcert.web.csintegration.integration.dto.UpdateWithCandidateCertificateResponseDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateRequestDTO;
 import se.inera.intyg.webcert.web.csintegration.integration.dto.ValidateCertificateResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnansweredCommunicationInternalResponseDTO;
+import se.inera.intyg.webcert.web.csintegration.integration.dto.GetUnansweredCommunicationInternalRequestDTO;
 import se.inera.intyg.webcert.web.service.facade.list.config.dto.StaffListInfo;
 import se.inera.intyg.webcert.web.service.intyg.dto.IntygPdf;
 import se.inera.intyg.webcert.web.web.controller.api.dto.ArendeListItem;
@@ -1309,6 +1311,29 @@ public class CSIntegrationService {
             .body(GetSickLeaveCertificateInternalResponseDTO.class);
 
         if (response == null || !response.isAvailable() || response.getSickLeaveCertificate() == null) {
+            return Optional.empty();
+        }
+
+        return Optional.of(response);
+    }
+
+    @PerformanceLogging(eventAction = "get-unanswered-communication", eventType = EVENT_TYPE_ACCESS)
+    public Optional<GetUnansweredCommunicationInternalResponseDTO> getUnansweredCommunicationMessages(List<String> patientId, Integer maxDaysOfUnansweredCommunication) {
+        final var url = baseUrl + INTERNAL_MESSAGE_ENDPOINT_URL + "/sent";
+
+        final var response = restClient.post()
+                .uri(url)
+                .accept(MediaType.APPLICATION_JSON)
+                .header(MdcHelper.LOG_SESSION_ID_HEADER, MDC.get(SESSION_ID_KEY))
+                .header(MdcHelper.LOG_TRACE_ID_HEADER, MDC.get(TRACE_ID_KEY))
+                .body(GetUnansweredCommunicationInternalRequestDTO.builder()
+                        .patientIdList(patientId)
+                        .maxDays(maxDaysOfUnansweredCommunication)
+                        .build())
+                .retrieve()
+                .body(GetUnansweredCommunicationInternalResponseDTO.class);
+
+        if (response == null || response.getMessages().isEmpty()) {
             return Optional.empty();
         }
 
