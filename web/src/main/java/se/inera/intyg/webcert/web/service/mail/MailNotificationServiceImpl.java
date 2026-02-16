@@ -38,14 +38,10 @@ import se.inera.intyg.common.fk7263.support.Fk7263EntryPoint;
 import se.inera.intyg.infra.integration.hsatk.exception.HsaServiceCallException;
 import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardenhet;
 import se.inera.intyg.infra.integration.hsatk.services.legacy.HsaOrganizationsService;
-import se.inera.intyg.webcert.integration.pp.services.PPService;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
 import se.inera.intyg.webcert.web.privatepractitioner.PrivatePractitionerService;
-import se.inera.intyg.webcert.web.privatepractitioner.toggle.PrivatePractitionerServiceProfile;
 import se.inera.intyg.webcert.web.service.employee.EmployeeNameService;
 import se.inera.intyg.webcert.web.service.monitoring.MonitoringLogService;
-import se.riv.infrastructure.directory.privatepractitioner.v1.EnhetType;
-import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 
 /**
  * @author andreaskaltenbach
@@ -54,7 +50,6 @@ import se.riv.infrastructure.directory.privatepractitioner.v1.HoSPersonType;
 @RequiredArgsConstructor
 @Slf4j
 public class MailNotificationServiceImpl implements MailNotificationService {
-
 
     private static final String QA_NOTIFICATION_UTHOPP_PATH_SEGMENT = "certificate";
     private static final String QA_NOTIFICATION_DEFAULT_PATH_SEGMENT = "basic-certificate";
@@ -76,27 +71,14 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
     private final JavaMailSender mailSender;
 
-
     private final MonitoringLogService monitoringService;
-
-
-    private final PPService ppService;
 
     @Nullable
     private final PrivatePractitionerService privatePractitionerService;
 
-
-    private final PrivatePractitionerServiceProfile privatePractitionerServiceProfile;
-
-    @Value("${privatepractitioner.logicaladdress}")
-    private String ppLogicalAddress;
-
-
     private final UtkastRepository utkastRepository;
 
-
     private final HsaOrganizationsService hsaOrganizationsService;
-
 
     private final EmployeeNameService employeeNameService;
 
@@ -282,9 +264,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     }
 
     private MailNotificationEnhet getPrivatePractitionerEnhet(String hsaId) {
-        return privatePractitionerServiceProfile.isEnabled()
-            ? getMailNotificationEnhetFromPPS(hsaId)
-            : getMailNotificationEnhetFromPP(hsaId);
+        return getMailNotificationEnhetFromPPS(hsaId);
     }
 
     private MailNotificationEnhet getMailNotificationEnhetFromPPS(String hsaId) {
@@ -303,20 +283,6 @@ public class MailNotificationServiceImpl implements MailNotificationService {
             }
         } catch (Exception e) {
             log.error("Failed to contact PrivatePractitionerService to get HSA Id '{}'", hsaId, e);
-        }
-        return null;
-    }
-
-    private MailNotificationEnhet getMailNotificationEnhetFromPP(String hsaId) {
-        try {
-            HoSPersonType privatePractitioner = ppService.getPrivatePractitioner(ppLogicalAddress, hsaId,
-                null);
-            if (privatePractitioner != null && privatePractitioner.getEnhet() != null) {
-                EnhetType enhet = privatePractitioner.getEnhet();
-                return new MailNotificationEnhet(hsaId, enhet.getEnhetsnamn(), enhet.getEpost());
-            }
-        } catch (Exception e) {
-            log.error("Failed to contact ppService to get HSA Id '{}'", hsaId, e);
         }
         return null;
     }

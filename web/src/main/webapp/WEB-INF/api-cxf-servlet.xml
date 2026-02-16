@@ -95,7 +95,7 @@
 		</jaxrs:server>
 	</beans>
 
-	<beans profile="private-practitioner-service-active">
+	<beans>
 		<jaxrs:server address="/private-practitioner">
 			<jaxrs:properties>
 				<!-- Configure ServerProviderFactory to make default exceptionhandler less specific so

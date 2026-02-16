@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.integration.privatepractitioner.service;
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.GetHospInformationRequest;
@@ -36,7 +35,6 @@ import se.inera.intyg.webcert.integration.privatepractitioner.dto.UpdatePrivateP
 
 @Slf4j
 @Service
-@Profile("private-practitioner-service-active")
 @RequiredArgsConstructor
 public class PrivatePractitionerIntegrationService {
 

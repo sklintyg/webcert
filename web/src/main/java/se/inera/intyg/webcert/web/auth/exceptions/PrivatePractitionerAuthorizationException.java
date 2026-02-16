@@ -21,7 +21,7 @@ package se.inera.intyg.webcert.web.auth.exceptions;
 import org.springframework.security.core.AuthenticationException;
 
 /**
- * Throw when an authenticated user does not pass the authorization check in privatlakarportalen. (E.g. not registered or
+ * Throw when an authenticated user does not pass the authorization check in private-practioner-service. (E.g. not registered or
  * does not have the necessary roles in HSA etc.)
  */
 public class PrivatePractitionerAuthorizationException extends AuthenticationException {

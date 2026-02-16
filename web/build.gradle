@@ -1,5 +1,5 @@
+apply plugin: 'org.cyclonedx.bom'
 apply plugin: 'org.gretty'
-apply plugin: 'idea'
 apply plugin: 'war'
 
 def buildDirectory = project.layout.buildDirectory.get().asFile
@@ -27,7 +27,7 @@ gretty {
     serverConfigFile = "tomcat-gretty.xml"
 
     jvmArgs = ["-Dcatalina.base=${buildDirectory}/catalina.base",
-               "-Dspring.profiles.active=dev,private-practitioner-service-active,pu-integration-intyg-proxy-service,caching-enabled,wc-security-test,ia-stub,certificate-analytics-service-active",
+               "-Dspring.profiles.active=dev,caching-enabled,wc-security-test,ia-stub,certificate-analytics-service-active",
                "-Dlogback.file=${applicationDir}/config/logback-spring.xml",
                "-Djava.awt.headless=true",
                "-Dfile.encoding=UTF-8",
@@ -39,12 +39,6 @@ gretty {
     ]
 }
 
-idea {
-    module {
-        generatedSourceDirs.add(generatedJavaDir)
-    }
-}
-
 configurations {
     // This is required to make the Schematron implementation pick up Saxon instead of Xalan.
     runtime { exclude group: 'xalan', module: 'xalan' }
@@ -54,7 +48,7 @@ configurations {
     testImplemetationClasspath.extendsFrom implementation
 }
 
-test { exclude '**/*IT*' }
+war.duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
 tasks.register('xsd2Java') {
     doLast {
@@ -79,16 +73,12 @@ compileJava.dependsOn(xsd2Java)
 sourceSets.main.java { srcDir generatedJavaDir }
 
 dependencies {
-    implementation project(':fk-stub')
     implementation project(':fmb-integration')
     implementation project(':integration-api')
-    implementation project(':intygstjanst-stub')
     implementation project(':mail-stub')
     implementation project(':notification-sender')
     implementation project(':notification-stub')
-    implementation project(':pp-integration')
     implementation project(':servicenow-integration')
-    implementation project(':tak-integration')
     implementation project(':webcert-common')
     implementation project(':webcert-persistence')
     implementation project(':webcert-logging')
@@ -99,24 +89,22 @@ dependencies {
     implementation "com.fasterxml.jackson.core:jackson-annotations"
     implementation "com.fasterxml.jackson.core:jackson-databind"
     implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
+
     implementation "se.inera.intyg.infra:certificate:${infraVersion}"
     implementation "se.inera.intyg.infra:common-redis-cache-core:${infraVersion}"
     implementation "se.inera.intyg.infra:driftbanner-dto:${infraVersion}"
     implementation "se.inera.intyg.infra:dynamiclink:${infraVersion}"
-    implementation "se.inera.intyg.infra:grp-stub:${infraVersion}"
     implementation "se.inera.intyg.infra:hsa-integration-api:${infraVersion}"
     implementation "se.inera.intyg.infra:hsa-integration-intyg-proxy-service:${infraVersion}"
     implementation "se.inera.intyg.infra:ia-integration:${infraVersion}"
     implementation "se.inera.intyg.infra:integreradeenheter:${infraVersion}"
     implementation "se.inera.intyg.infra:intyginfo:${infraVersion}"
     implementation "se.inera.intyg.infra:log-messages:${infraVersion}"
-    implementation "se.inera.intyg.infra:loggtjanst-stub:${infraVersion}"
     implementation "se.inera.intyg.infra:message:${infraVersion}"
     implementation "se.inera.intyg.infra:monitoring:${infraVersion}"
     implementation "se.inera.intyg.infra:postnummerservice-integration:${infraVersion}"
     implementation "se.inera.intyg.infra:privatepractitioner:${infraVersion}"
     implementation "se.inera.intyg.infra:pu-integration-api:${infraVersion}"
-    implementation "se.inera.intyg.infra:pu-integration:${infraVersion}"
     implementation "se.inera.intyg.infra:security-authorities:${infraVersion}"
     implementation "se.inera.intyg.infra:security-common:${infraVersion}"
     implementation "se.inera.intyg.infra:security-filter:${infraVersion}"
@@ -151,32 +139,30 @@ dependencies {
     implementation "se.inera.intyg.clinicalprocess.healthcond.certificate:intyg-clinicalprocess-healthcond-certificate-schemas:${intygClinicalprocessSchemasVersion}"
     implementation "se.inera.intyg.clinicalprocess.healthcond.rehabilitation:intyg-clinicalprocess-healthcond-rehabilitation-schemas:${intygHealthcondRehabilitationSchemasVersion}"
     implementation "se.inera.intyg.clinicalprocess.healthcond.srs:intyg-clinicalprocess-healthcond-srs-schemas:${srsSchemasVersion}"
-    implementation "se.inera.intyg.infrastructure.directory.privatepractitioner:intyg-infrastructure-directory-privatepractitioner-schemas:${ppSchemasVersion}"
-    implementation "se.inera.intyg.infrastructure.directory.privatepractitioner.terms:intyg-infrastructure-directory-privatepractitioner-terms-schemas:${ppTermsSchemasVersion}"
     implementation "se.inera.intyg.schemas:schemas-contract:${schemasContractVersion}"
     implementation "se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:${rivtaClinicalprocessSchemasVersion}"
     implementation "se.riv.insuranceprocess.healthreporting:insuranceprocess-healthreporting-schemas:${rivtaInsuranceprocessSchemasVersion}"
-    implementation "se.riv.itintegration.monitoring:itintegration-monitoring-schemas:${rivtaItintegrationMonitoringSchemasVersion}"
 
-    implementation "co.elastic.logging:logback-ecs-encoder:${logbackEcsEncoderVersion}"
-    implementation "codes.rafael.jaxb2_commons:jaxb2-basics:${jaxb2Version}"
-    implementation "com.google.guava:guava:${guavaVersion}"
-    implementation "commons-io:commons-io:${commonsIoVersion}"
+    implementation "ch.qos.logback:logback-classic"
+    implementation "co.elastic.logging:logback-ecs-encoder"
+    implementation "codes.rafael.jaxb2_commons:jaxb2-basics"
+    implementation "com.google.guava:guava"
+    implementation "commons-io:commons-io"
     implementation "io.prometheus:simpleclient_hotspot"
     implementation "io.prometheus:simpleclient_servlet_jakarta"
-    implementation("io.swagger:swagger-jaxrs:${swaggerJaxrsVersion}") { exclude(module: "jsr311-api") }
-    implementation "io.vavr:vavr:${vavrVersion}"
+    implementation("io.swagger:swagger-jaxrs") { exclude(module: "jsr311-api") }
+    implementation "io.vavr:vavr"
     implementation "jakarta.mail:jakarta.mail-api"
     implementation "jakarta.persistence:jakarta.persistence-api"
-    implementation "joda-time:joda-time:${jodaTimeVersion}"
-    implementation "net.javacrumbs.shedlock:shedlock-spring:${shedlockSpringVersion}"
-    implementation "net.javacrumbs.shedlock:shedlock-provider-redis-spring:${shedlockSpringVersion}"
+    implementation "jakarta.xml.ws:jakarta.xml.ws-api"
+    implementation "net.javacrumbs.shedlock:shedlock-spring"
+    implementation "net.javacrumbs.shedlock:shedlock-provider-redis-spring"
     implementation "org.apache.activemq:activemq-spring"
-    implementation "org.apache.cxf:cxf-rt-frontend-jaxrs:${cxfVersion}"
+    implementation "org.apache.cxf:cxf-rt-frontend-jaxrs"
     implementation "org.apache.httpcomponents.client5:httpclient5"
-    implementation "org.apache.lucene:lucene-analysis-common:${luceneAnalyzersCommonVersion}"
+    implementation "org.apache.lucene:lucene-analysis-common"
     implementation "org.hibernate.orm:hibernate-core"
-    implementation "org.jxls:jxls-poi:${jexcelVersion}"
+    implementation "org.jxls:jxls-poi"
     implementation "org.springframework.data:spring-data-jpa"
     implementation 'org.springframework.security:spring-security-config'
     implementation 'org.springframework.security:spring-security-saml2-service-provider'
@@ -187,17 +173,18 @@ dependencies {
 
     implementation "se.inera.intyg.refdata:refdata:${refDataVersion}"
 
-    compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
     runtimeOnly "se.inera.intyg.infra:pu-integration-intyg-proxy-service:${infraVersion}"
     runtimeOnly "org.springframework:spring-webmvc"
-    runtimeOnly "xerces:xercesImpl:${xercesVersion}"
 
     testAnnotationProcessor 'org.projectlombok:lombok'
     testCompileOnly 'org.projectlombok:lombok'
+    testRuntimeOnly "org.junit.vintage:junit-vintage-engine"
 
-    testImplementation "com.helger.schematron:ph-schematron-xslt:${phSchematronVersion}"
+    testImplementation "com.helger.schematron:ph-schematron-xslt"
+    testImplementation "org.glassfish.jaxb:jaxb-runtime"
+    testImplementation "org.mockito:mockito-junit-jupiter"
     testImplementation "org.assertj:assertj-core"
     testImplementation "org.springframework.boot:spring-boot-test"
     testImplementation "org.springframework:spring-test"
@@ -206,6 +193,6 @@ dependencies {
     testImplementation "se.inera.intyg.common:ts-parent:${commonVersion}"
     testImplementation "se.inera.intyg.common:ag-parent:${commonVersion}"
 
-    xsdgen "org.glassfish.jaxb:jaxb-xjc"
-    xsdgen "com.sun.xml.bind:jaxb-impl"
+    xsdgen "org.glassfish.jaxb:jaxb-xjc:${xsdgenVersion}"
+    xsdgen "com.sun.xml.bind:jaxb-impl:${xsdgenVersion}"
 }

@@ -29,8 +29,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.google.common.collect.ImmutableMap;
-import java.util.Collections;
-import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -45,14 +43,11 @@ import se.inera.intyg.common.support.model.common.internal.Vardenhet;
 import se.inera.intyg.common.support.model.common.internal.Vardgivare;
 import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
-import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.webcert.common.service.user.LoggedInWebcertUser;
 import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage;
 import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
 import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
-import se.inera.intyg.webcert.integration.tak.model.TakResult;
-import se.inera.intyg.webcert.integration.tak.service.TakService;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.model.VardpersonReferens;
 import se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.BaseCreateDraftCertificateTest;
@@ -98,8 +93,6 @@ class CreateDraftCertificateFromWCTest extends BaseCreateDraftCertificateTest {
     @Mock
     private IntegreradeEnheterRegistry mockIntegreradeEnheterService;
     @Mock
-    private TakService takService;
-    @Mock
     private IntygModuleRegistry moduleRegistry;
     @Mock
     private IntygTextsService intygTextsService;
@@ -134,35 +127,16 @@ class CreateDraftCertificateFromWCTest extends BaseCreateDraftCertificateTest {
         when(mockRequestBuilder.buildCreateNewDraftRequest(any(Intyg.class), any(String.class), any(IntygUser.class)))
             .thenReturn(createCreateNewDraftRequest(createVardenhet(createVardgivare())));
         when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
-        when(takService.verifyTakningForCareUnit(any(String.class), any(String.class), any(SchemaVersion.class), any(IntygUser.class)))
-            .thenReturn(new TakResult(true, Collections.emptyList()));
 
         final var response = createDraftCertificateFromWC.create(buildIntyg(), getIntygUser(USER_HSAID));
 
         verify(mockUtkastService).createNewDraft(any(CreateNewDraftRequest.class));
         verify(mockIntegreradeEnheterService).putIntegreradEnhet(any(IntegreradEnhetEntry.class), eq(false), eq(true));
-        verify(takService).verifyTakningForCareUnit(any(String.class), eq(UTKAST_TYPE), eq(SchemaVersion.VERSION_3), any(IntygUser.class));
 
         assertNotNull(response);
         assertEquals(ResultCodeType.OK, response.getResult().getResultCode());
         assertEquals(UNIT_HSAID, response.getIntygsId().getRoot());
         assertEquals(UTKAST_ID, response.getIntygsId().getExtension());
-    }
-
-    @Test
-    void testCreateDraftCertificateTakningNotOK() throws ModuleNotFoundException {
-        when(moduleRegistry.getModuleApi(any(), any())).thenReturn(new Fk7263ModuleApi());
-        when(mockValidator.validateCertificateErrors(any(Intyg.class), any(IntygUser.class))).thenReturn(new ResultValidator());
-        when(takService.verifyTakningForCareUnit(any(String.class), any(String.class), any(SchemaVersion.class), any(IntygUser.class)))
-            .thenReturn(new TakResult(false, Lists.newArrayList("Den angivna enheten går ej att adressera för ärendekommunikation.")));
-        final var response = createDraftCertificateFromWC.create(buildIntyg(), getIntygUser(USER_HSAID));
-
-        verify(takService).verifyTakningForCareUnit(any(String.class), eq(UTKAST_TYPE), eq(SchemaVersion.VERSION_3), any(IntygUser.class));
-
-        assertNotNull(response);
-        assertEquals(ResultCodeType.ERROR, response.getResult().getResultCode());
-        assertEquals(ErrorIdType.APPLICATION_ERROR, response.getResult().getErrorId());
-        assertEquals("Den angivna enheten går ej att adressera för ärendekommunikation.", response.getResult().getResultText());
     }
 
     @Test
@@ -191,8 +165,6 @@ class CreateDraftCertificateFromWCTest extends BaseCreateDraftCertificateTest {
         when(mockRequestBuilder.buildCreateNewDraftRequest(any(Intyg.class), any(String.class), any(IntygUser.class)))
             .thenReturn(createCreateNewDraftRequest(createVardenhet(createVardgivare())));
         when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
-        when(takService.verifyTakningForCareUnit(any(String.class), any(String.class), any(SchemaVersion.class), any(IntygUser.class)))
-            .thenReturn(new TakResult(true, Collections.emptyList()));
 
         final var response = createDraftCertificateFromWC.create(buildIntyg(), getIntygUser(USER_HSAID));
 
@@ -217,8 +189,6 @@ class CreateDraftCertificateFromWCTest extends BaseCreateDraftCertificateTest {
         when(mockRequestBuilder.buildCreateNewDraftRequest(any(Intyg.class), any(String.class), any(IntygUser.class)))
             .thenReturn(createCreateNewDraftRequest(createVardenhet(createVardgivare())));
         when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
-        when(takService.verifyTakningForCareUnit(any(String.class), any(String.class), any(SchemaVersion.class), any(IntygUser.class)))
-            .thenReturn(new TakResult(true, Collections.emptyList()));
 
         final var response = createDraftCertificateFromWC.create(buildIntyg(), getIntygUser(USER_HSAID));
 
@@ -255,8 +225,6 @@ class CreateDraftCertificateFromWCTest extends BaseCreateDraftCertificateTest {
         when(mockRequestBuilder.buildCreateNewDraftRequest(any(Intyg.class), any(String.class), any(IntygUser.class)))
             .thenReturn(createCreateNewDraftRequest(createVardenhet(createVardgivare())));
         when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
-        when(takService.verifyTakningForCareUnit(any(String.class), any(String.class), any(SchemaVersion.class), any(IntygUser.class)))
-            .thenReturn(new TakResult(true, Collections.emptyList()));
 
         final var loggedInWebcertUser = LoggedInWebcertUser.builder().build();
         when(loggedInWebcertUserFactory.create(user)).thenReturn(loggedInWebcertUser);
@@ -284,8 +252,6 @@ class CreateDraftCertificateFromWCTest extends BaseCreateDraftCertificateTest {
         when(mockRequestBuilder.buildCreateNewDraftRequest(any(Intyg.class), any(String.class), any(IntygUser.class)))
             .thenReturn(createCreateNewDraftRequest(createVardenhet(createVardgivare())));
         when(mockUtkastService.createNewDraft(any(CreateNewDraftRequest.class))).thenReturn(utkast);
-        when(takService.verifyTakningForCareUnit(any(String.class), any(String.class), any(SchemaVersion.class), any(IntygUser.class)))
-            .thenReturn(new TakResult(true, Collections.emptyList()));
 
         final var loggedInWebcertUser = LoggedInWebcertUser.builder().build();
         when(loggedInWebcertUserFactory.create(user)).thenReturn(loggedInWebcertUser);

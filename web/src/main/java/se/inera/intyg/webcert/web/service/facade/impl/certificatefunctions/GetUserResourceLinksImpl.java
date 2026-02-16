@@ -30,7 +30,6 @@ import se.inera.intyg.infra.integration.hsatk.model.legacy.Vardgivare;
 import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.webcert.integration.privatepractitioner.dto.PrivatePractitionerValidationResultCode;
 import se.inera.intyg.webcert.integration.privatepractitioner.service.PrivatePractitionerIntegrationService;
-import se.inera.intyg.webcert.web.privatepractitioner.toggle.PrivatePractitionerServiceProfile;
 import se.inera.intyg.webcert.web.service.facade.GetUserResourceLinks;
 import se.inera.intyg.webcert.web.service.user.dto.WebCertUser;
 import se.inera.intyg.webcert.web.web.controller.facade.dto.ResourceLinkDTO;
@@ -42,7 +41,6 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
 
     @Nullable
     private final PrivatePractitionerIntegrationService privatePractitionerIntegrationService;
-    private final PrivatePractitionerServiceProfile privatePractitionerServiceProfile;
 
     @Override
     public ResourceLinkDTO[] get(WebCertUser user) {
@@ -170,20 +168,6 @@ public class GetUserResourceLinksImpl implements GetUserResourceLinks {
     }
 
     private void addAvailableFunctionsForPrivatePractitioner(WebCertUser user, ArrayList<ResourceLinkDTO> resourceLinks) {
-        if (!privatePractitionerServiceProfile.isEnabled()) {
-            if (user.isPrivatLakare()) {
-                resourceLinks.add(
-                    ResourceLinkDTO.create(
-                        ResourceLinkTypeDTO.PRIVATE_PRACTITIONER_PORTAL,
-                        "Min sida",
-                        "",
-                        true
-                    )
-                );
-            }
-            return;
-        }
-
         final var resultCode = privatePractitionerValidationResultCode(user);
         if (hasAccessToRegisterPrivatePractitioner(user, resultCode)) {
             resourceLinks.add(

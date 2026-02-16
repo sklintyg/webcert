@@ -23,15 +23,17 @@ dependencies {
     implementation project(':webcert-logging')
     implementation project(':webcert-persistence')
 
+    implementation "ch.qos.logback:logback-classic"
     implementation "com.fasterxml.jackson.core:jackson-databind"
-    implementation "com.google.guava:guava:${guavaVersion}"
-    implementation "com.helger.schematron:ph-schematron-xslt:${phSchematronVersion}"
+    implementation "com.google.guava:guava"
+    implementation "com.helger.schematron:ph-schematron-xslt"
     implementation "jakarta.persistence:jakarta.persistence-api"
     implementation "jakarta.transaction:jakarta.transaction-api"
-    implementation "org.apache.camel:camel-activemq:${camelVersion}"
-    implementation "org.apache.camel:camel-core:${camelVersion}"
-    implementation "org.apache.camel:camel-jaxb:${camelVersion}"
-    implementation "org.apache.camel:camel-jms:${camelVersion}"
+    implementation "jakarta.xml.ws:jakarta.xml.ws-api"
+    implementation "org.apache.camel:camel-activemq"
+    implementation "org.apache.camel:camel-core"
+    implementation "org.apache.camel:camel-jaxb"
+    implementation "org.apache.camel:camel-jms"
     implementation "org.apache.commons:commons-lang3"
     implementation "org.springframework:spring-context-support"
     implementation "org.springframework:spring-jms"
@@ -48,21 +50,19 @@ dependencies {
     implementation "se.inera.intyg.infra:security-authorities:${infraVersion}"
     implementation "se.riv.clinicalprocess.healthcond.certificate:clinicalprocess-healthcond-certificate-schemas:${rivtaClinicalprocessSchemasVersion}"
 
-    runtimeOnly "org.apache.camel:camel-cxf-spring-soap:${camelVersion}"
-    runtimeOnly "org.apache.camel:camel-cxf-spring-transport:${camelVersion}"
-    runtimeOnly "org.apache.camel:camel-jackson:${camelVersion}"
-    runtimeOnly "org.apache.camel:camel-spring:${camelVersion}"
+    runtimeOnly "org.apache.camel:camel-cxf-spring-soap"
+    runtimeOnly "org.apache.camel:camel-cxf-spring-transport"
+    runtimeOnly "org.apache.camel:camel-jackson"
+    runtimeOnly "org.apache.camel:camel-spring"
     runtimeOnly "se.inera.intyg.infra:pu-integration-intyg-proxy-service:${infraVersion}"
 
-    compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
-    compileOnly "org.apache.geronimo.specs:geronimo-jms_1.1_spec:${geronimoJmsVersion}"
-    testCompileOnly "org.apache.geronimo.specs:geronimo-jms_1.1_spec:${geronimoJmsVersion}"
-
     testImplementation project(':notification-stub')
+    testImplementation "junit:junit"
+    testImplementation "org.mockito:mockito-junit-jupiter"
     testImplementation "org.apache.activemq:activemq-spring"
-    testImplementation "org.apache.camel:camel-test-spring-junit5:${camelVersion}"
+    testImplementation "org.apache.camel:camel-test-spring-junit5"
     testImplementation "org.awaitility:awaitility"
     testImplementation "se.inera.intyg.common:lisjp:${commonVersion}"
 

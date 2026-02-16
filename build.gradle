@@ -1,117 +1,84 @@
 plugins {
-    id "org.gretty" version "4.1.5" apply false
-    id "io.spring.dependency-management" version "1.1.6" apply false
-    id 'org.sonarqube' version '6.3.1.5724'
-    id "org.owasp.dependencycheck" version "12.1.6"
-    id 'test-report-aggregation'
-    id 'jacoco'
-    id 'org.cyclonedx.bom' version '3.0.2'
+    alias(libs.plugins.com.github.ben.manes.versions)
+    alias(libs.plugins.org.cyclonedx.bom)
+    alias(libs.plugins.org.sonarqube)
+    id "org.gretty" version "4.1.10" apply false
 }
 
 ext {
-    commonVersion = System.properties['commonVersion'] ?: '4.0.0-SNAPSHOT'
-    infraVersion = System.properties['infraVersion'] ?: '4.0.0-SNAPSHOT'
+    commonVersion = System.properties['commonVersion'] ?: '4.1.0-SNAPSHOT'
+    infraVersion = System.properties['infraVersion'] ?: '4.1.0-SNAPSHOT'
     refDataVersion = '2.0.22'
 
-    funktionstjansterGrpSchemasVersion = "2.0.0.2"
     intygClinicalprocessSchemasVersion = "1.0.24.2"
     intygHealthcondRehabilitationSchemasVersion = "1.1.3.2"
-    intygTransportstyrelsenSchemasVersion = "1.0.5.3"
-    ppSchemasVersion = "1.0.5.2"
-    ppTermsSchemasVersion = "1.0.5.2"
     rivtaClinicalprocessSchemasVersion = "4.0.5.3"
     rivtaInsuranceprocessSchemasVersion = "3.1.0.5.2"
-    rivtaItintegrationMonitoringSchemasVersion = "1.0.0.5.2"
     schemasContractVersion = "2.1.8.2"
     srsSchemasVersion = "0.0.16.2"
 
-    camelVersion = "4.8.0"
-    commonsIoVersion = "2.17.0"
-    cxfVersion = "4.0.5"
-    geronimoJmsVersion = "1.1.1"
-    guavaVersion = "33.3.1-jre"
-    jakartaJwsApiVersion = "3.0.0"
-    jaxb2Version = "3.0.0"
-    jexcelVersion = "3.0.0"
-    jodaTimeVersion = "2.13.0"
-    logbackEcsEncoderVersion = "1.6.0"
-    luceneAnalyzersCommonVersion = "9.12.0"
-    phSchematronVersion = "7.1.3"
-    picocliVersion = "4.7.6"
-    shedlockSpringVersion = "5.16.0"
-    swaggerJaxrsVersion = "1.6.14"
-    vavrVersion = "0.10.5"
-    xercesVersion = "2.12.2"
-
-    springbootMavenBomVersion = "3.3.4"
-
-    nvdMirror = 'https://vulnz-nvd-mirror-devtest.intyg.nordicmedtest.se'
+    xsdgenVersion = "4.0.6"; // Look at replacing this to simplify
 }
 
+apply from: 'gradle/configureIntygBom.gradle'
+
 allprojects {
-    apply plugin: "io.spring.dependency-management"
-    apply plugin: 'java-library'
-    apply plugin: 'idea'
-    apply plugin: 'jacoco'
-    apply plugin: 'war'
+    apply plugin: 'java'
+    apply plugin: 'test-report-aggregation'
 
     group = 'se.inera.intyg.webcert'
     version = System.properties['buildVersion'] ?: '0-SNAPSHOT'
-
-    java {
-        toolchain {
-            languageVersion = JavaLanguageVersion.of(21)
-        }
-    }
-
-    dependencyManagement {
-        imports {
-            mavenBom "org.springframework.boot:spring-boot-dependencies:${springbootMavenBomVersion}"
-        }
-    }
-
-    compileJava {
-        options.compilerArgs.add("-parameters")
-    }
-
-    dependencies {
-        implementation "ch.qos.logback:logback-classic"
-        implementation "jakarta.annotation:jakarta.annotation-api"
-        implementation "jakarta.jws:jakarta.jws-api:${jakartaJwsApiVersion}"
-        implementation "jakarta.xml.ws:jakarta.xml.ws-api"
-
-        runtimeOnly "com.sun.xml.messaging.saaj:saaj-impl"
-
-        testImplementation "junit:junit"
-        testImplementation "org.glassfish.jaxb:jaxb-runtime"
-        testImplementation "org.junit.jupiter:junit-jupiter-api"
-        testImplementation "org.junit.jupiter:junit-jupiter-params"
-        testImplementation "org.mockito:mockito-junit-jupiter"
-        testImplementation "org.mockito:mockito-core"
-
-        testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
-        testRuntimeOnly "org.junit.vintage:junit-vintage-engine"
-    }
-
-    compileJava.options.encoding = 'UTF-8'
-    compileJava.dependsOn processResources
-    war.duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    test { useJUnitPlatform() }
 
     repositories {
         mavenLocal()
         maven { url "https://nexus.drift.inera.se/repository/it-public/" }
         maven { url 'https://build.shibboleth.net/nexus/content/repositories/releases/' }
-        mavenCentral {
-            content {
-                excludeGroupByRegex "se\\.inera.*"
-            }
+        mavenCentral()
+    }
+}
+
+subprojects {
+    apply plugin: 'jacoco'
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(javaVersion)
         }
     }
 
-    idea {
-        module {
-            downloadJavadoc = true
+    configurations {
+        mockitoAgent
+        compileOnly {
+            extendsFrom annotationProcessor
+        }
+    }
+
+    compileJava {
+        options.encoding = "UTF-8"
+        options.compilerArgs.add("-parameters")
+    }
+
+    dependencies {
+        implementation platform("se.inera.intyg.bom:platform:${intygBomVersion}")
+        annotationProcessor platform("se.inera.intyg.bom:platform:${intygBomVersion}")
+        testImplementation platform("se.inera.intyg.bom:platform:${intygBomVersion}")
+        testAnnotationProcessor platform("se.inera.intyg.bom:platform:${intygBomVersion}")
+        mockitoAgent platform("se.inera.intyg.bom:platform:${intygBomVersion}")
+        mockitoAgent("org.mockito:mockito-core") { transitive = false }
+    }
+
+    test {
+        jvmArgs += [
+                "-javaagent:${configurations.mockitoAgent.asPath}",
+                "-Xshare:off"
+        ]
+    }
+
+    testing {
+        suites {
+            test {
+                useJUnitJupiter()
+            }
         }
     }
 
@@ -133,8 +100,14 @@ allprojects {
         }
     }
 
-    tasks.withType(Test).configureEach {
-        jvmArgs '-Xshare:off'
+    tasks.matching { it.name == "cyclonedxDirectBom" }.configureEach { t ->
+        t.includeConfigs = ['^runtimeClasspath$']
+    }
+}
+
+reporting {
+    subprojects.collect { subproject -> subproject.name }.each { subprojectName ->
+        dependencies { testReportAggregation project(":${subprojectName}") }
     }
 }
 
@@ -142,22 +115,5 @@ sonar {
     properties {
         property "sonar.projectKey", "intyg-webcert"
         property "sonar.projectName", "intyg-webcert"
-        property "sonar.dependencyCheck.jsonReportPath", "${layout.buildDirectory.get()}/reports/dependency-check-report.json" as String
-        property "sonar.dependencyCheck.htmlReportPath", "${layout.buildDirectory.get()}/reports/dependency-check-report.html" as String
-    }
-}
-
-dependencyCheck {
-    formats = ['HTML', 'JSON']
-    nvd.setDatafeedUrl(nvdMirror)
-    analyzers.setAssemblyEnabled(false)
-    analyzers.setCentralEnabled(false)
-    analyzers.ossIndex.setUsername(project.properties.get('ossIndexUsername') as String)
-    analyzers.ossIndex.setPassword(project.properties.get('ossIndexPassword') as String)
-}
-
-reporting {
-    subprojects.collect { subproject -> subproject.name }.each { subprojectName ->
-        dependencies { testReportAggregation project(":${subprojectName}") }
     }
 }

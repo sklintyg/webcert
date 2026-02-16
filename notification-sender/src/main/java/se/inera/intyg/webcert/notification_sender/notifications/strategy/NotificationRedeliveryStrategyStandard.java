@@ -20,10 +20,10 @@ package se.inera.intyg.webcert.notification_sender.notifications.strategy;
 
 import static se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategyEnum.STANDARD;
 
+import jakarta.annotation.Nonnull;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nonnull;
 import org.springframework.data.util.Pair;
 import se.inera.intyg.webcert.common.enumerations.NotificationRedeliveryStrategyEnum;
 

@@ -8,7 +8,6 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import org.springframework.context.annotation.Profile;
 import se.inera.intyg.webcert.logging.MdcLogConstants;
 import se.inera.intyg.webcert.logging.PerformanceLogging;
 import se.inera.intyg.webcert.web.privatepractitioner.PrivatePractitionerService;
@@ -18,7 +17,6 @@ import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.Pri
 import se.inera.intyg.webcert.web.web.controller.api.dto.privatepractitioner.PrivatePractitionerResponse;
 
 @Api(value = "private-practitioner", produces = MediaType.APPLICATION_JSON)
-@Profile("private-practitioner-service-active")
 public class PrivatePractitionerApiController {
 
     private static final String UTF_8_CHARSET = ";charset=utf-8";

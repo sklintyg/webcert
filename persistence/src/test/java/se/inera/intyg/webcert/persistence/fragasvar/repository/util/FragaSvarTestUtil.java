@@ -55,7 +55,6 @@ public final class FragaSvarTestUtil {
         LocalDateTime fragaSkickad, boolean vidarebefordrad) {
 
         FragaSvar f = new FragaSvar();
-        f.setInternReferens(fragaSvarId);
 
         f.setExternaKontakter(new HashSet<>(Arrays.asList("KONTAKT1", "KONTAKT2", "KONTAKT3")));
 

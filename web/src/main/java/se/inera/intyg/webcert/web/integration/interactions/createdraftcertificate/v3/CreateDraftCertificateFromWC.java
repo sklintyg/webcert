@@ -21,7 +21,6 @@ package se.inera.intyg.webcert.web.integration.interactions.createdraftcertifica
 
 import static se.inera.intyg.webcert.web.integration.interactions.createdraftcertificate.v3.CreateDraftCertificateResponseFactory.createErrorResponse;
 
-import com.google.common.base.Joiner;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +32,7 @@ import se.inera.intyg.common.support.modules.registry.IntygModuleRegistry;
 import se.inera.intyg.common.support.modules.registry.ModuleNotFoundException;
 import se.inera.intyg.common.support.modules.support.api.ModuleApi;
 import se.inera.intyg.common.support.modules.support.api.dto.ValidateDraftCreationResponse;
-import se.inera.intyg.common.support.modules.support.api.notification.SchemaVersion;
 import se.inera.intyg.infra.security.authorities.validation.AuthoritiesValidator;
-import se.inera.intyg.infra.security.common.model.AuthoritiesConstants;
 import se.inera.intyg.infra.security.common.model.IntygUser;
 import se.inera.intyg.infra.security.common.model.Role;
 import se.inera.intyg.schemas.contract.Personnummer;
@@ -43,7 +40,6 @@ import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEn
 import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
 import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
-import se.inera.intyg.webcert.integration.tak.service.TakService;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.web.integration.registry.IntegreradeEnheterRegistry;
 import se.inera.intyg.webcert.web.integration.registry.dto.IntegreradEnhetEntry;
@@ -73,8 +69,6 @@ public class CreateDraftCertificateFromWC implements CreateDraftCertificate {
     @Autowired
     private CreateNewDraftRequestBuilder draftRequestBuilder;
     @Lazy
-    @Autowired
-    private TakService takService;
     @Autowired
     private IntegreradeEnheterRegistry integreradeEnheterRegistry;
     @Autowired
@@ -121,16 +115,6 @@ public class CreateDraftCertificateFromWC implements CreateDraftCertificate {
         }
 
         final var invokingUnitHsaId = certificate.getSkapadAv().getEnhet().getEnhetsId().getExtension();
-
-        if (authoritiesValidator.given(user, intygsTyp).features(AuthoritiesConstants.FEATURE_TAK_KONTROLL).isVerified()) {
-            // Check if invoking health care unit has required TAK
-            final var takResult = takService.verifyTakningForCareUnit(invokingUnitHsaId, intygsTyp, SchemaVersion.VERSION_3, user);
-            if (!takResult.isValid()) {
-                final var error = Joiner.on("; ").join(takResult.getErrorMessages());
-                log.warn("Invalid TAK result for unit '{}'. Returning APPLICATION_ERROR: {}", invokingUnitHsaId, error);
-                return createErrorResponse(error, ErrorIdType.APPLICATION_ERROR);
-            }
-        }
         final var utkast = createNewDraft(certificate, latestIntygTypeVersion, user);
 
         final var loggedInWebcertUser = loggedInWebcertUserFactory.create(user);
