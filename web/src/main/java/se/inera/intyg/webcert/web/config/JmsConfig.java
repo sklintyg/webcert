@@ -67,6 +67,9 @@ public class JmsConfig {
     @Value("${certificateevent.loader.queueName}")
     private String certificateEventLoaderQueueName;
 
+    @Value("${jms.connection.factory.cache.level.name}")
+    private String jmsConnectionFactoryCacheLevelName;
+
     @Bean
     public JmsListenerContainerFactory jmsListenerContainerFactory(JmsTransactionManager jmsTransactionManager) {
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
@@ -74,7 +77,7 @@ public class JmsConfig {
         factory.setDestinationResolver(jmsDestinationResolver());
         factory.setSessionTransacted(true);
         factory.setTransactionManager(jmsTransactionManager);
-        factory.setCacheLevelName("CACHE_CONSUMER");
+        factory.setCacheLevelName(jmsConnectionFactoryCacheLevelName);
         factory.setConcurrency("1-10");
         return factory;
     }
