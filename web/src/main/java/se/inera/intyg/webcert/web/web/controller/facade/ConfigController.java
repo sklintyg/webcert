@@ -79,13 +79,22 @@ public class ConfigController {
         if (log.isDebugEnabled()) {
             log.debug("Getting configuration");
         }
+        
         final var banners = iaBannerService.getCurrentBanners()
             .stream()
             .filter((banner -> banner.getApplication() == Application.WEBCERT))
             .toList();
 
-        return Response.ok(new ConfigurationDTO(version, banners, ppHost, sakerhetstjanstIdpUrl, cgiFunktionstjansterIdpUrl,
-            forwardDraftOrQuestionUrl)).build();
+        return Response.ok(
+            ConfigurationDTO.builder()
+                .version(version)
+                .banners(banners)
+                .ppHost(ppHost)
+                .sakerhetstjanstIdpUrl(sakerhetstjanstIdpUrl)
+                .cgiFunktionstjansterIdpUrl(cgiFunktionstjansterIdpUrl)
+                .forwardDraftOrQuestionUrl(forwardDraftOrQuestionUrl)
+                .build()
+        ).build();
     }
 
     @GET
