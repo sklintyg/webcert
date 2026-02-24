@@ -108,6 +108,7 @@ import se.riv.clinicalprocess.healthcond.certificate.sendMessageToRecipient.v2.S
 @Transactional
 public class ArendeServiceImpl implements ArendeService {
 
+    private static final int MAX_NUMBER_OF_ALLOWED_CHARACTERS = 4999;
     private static final String MAKULERING = "MAKULERING";
     private static final String PAMINNELSE = "PAMINNELSE";
     private static final String PAMINN = "PAMINN";
@@ -309,6 +310,10 @@ public class ArendeServiceImpl implements ArendeService {
         if (Strings.isNullOrEmpty(meddelande)) {
             throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
                 "SvarsText cannot be empty!");
+        }
+        if (meddelande.length() > MAX_NUMBER_OF_ALLOWED_CHARACTERS) {
+            throw new WebCertServiceException(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM,
+                "SvarsText cannot be longer than " + MAX_NUMBER_OF_ALLOWED_CHARACTERS + " characters!");
         }
         Arende svarPaMeddelande = lookupArende(svarPaMeddelandeId);
 

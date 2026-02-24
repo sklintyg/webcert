@@ -19,6 +19,7 @@
 package se.inera.intyg.webcert.web.service.arende;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -41,6 +42,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import se.inera.intyg.infra.security.authorities.AuthoritiesHelper;
 import se.inera.intyg.schemas.contract.Personnummer;
 import se.inera.intyg.webcert.common.model.SekretessStatus;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceErrorCodeEnum;
+import se.inera.intyg.webcert.common.service.exception.WebCertServiceException;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeAmne;
 import se.inera.intyg.webcert.persistence.arende.model.ArendeListItemProjection;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
@@ -159,6 +162,48 @@ class ArendeServiceImplTest {
             arendeServiceReal.getArendenInternal(CERTIFICATE_ID);
 
             verify(messageImportService).importMessages(CERTIFICATE_ID);
+        }
+    }
+
+    @Nested
+    class ArandeConversationViewTests {
+
+        private static final String SVAR_PA_MEDDELANDE_ID = "svarPaMeddelandeId";
+
+        @Test
+        void shouldThrowExceptionIfMeddelandeIdIsNull() {
+            final var exception = assertThrows(WebCertServiceException.class,
+                () -> arendeServiceReal.answer(SVAR_PA_MEDDELANDE_ID, null));
+
+            assertEquals(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, exception.getErrorCode());
+        }
+
+        @Test
+        void shouldThrowExceptionIfMeddelandeIdIsEmpty() {
+            final var exception = assertThrows(WebCertServiceException.class,
+                () -> arendeServiceReal.answer(SVAR_PA_MEDDELANDE_ID, ""));
+
+            assertEquals(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, exception.getErrorCode());
+        }
+
+        @Test
+        void shouldThrowExceptionIfMeddelandeIsExceededMaxLength() {
+            final var tooLongMeddelande = "a".repeat(5000);
+
+            final var exception = assertThrows(WebCertServiceException.class,
+                () -> arendeServiceReal.answer(SVAR_PA_MEDDELANDE_ID, tooLongMeddelande));
+
+            assertEquals(WebCertServiceErrorCodeEnum.INTERNAL_PROBLEM, exception.getErrorCode());
+        }
+
+        @Test
+        void shouldNotThrowExceptionIfMeddelandeMinLength() {
+            when(arendeRepository.findOneByMeddelandeId(SVAR_PA_MEDDELANDE_ID)).thenReturn(null);
+
+            final var exception = assertThrows(WebCertServiceException.class,
+                () -> arendeServiceReal.answer(SVAR_PA_MEDDELANDE_ID, "a"));
+
+            assertEquals(WebCertServiceErrorCodeEnum.DATA_NOT_FOUND, exception.getErrorCode());
         }
     }
 
