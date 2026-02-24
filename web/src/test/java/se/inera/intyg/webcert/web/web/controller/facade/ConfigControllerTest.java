@@ -24,7 +24,6 @@ import static org.mockito.Mockito.doReturn;
 
 import java.util.List;
 import java.util.Map;
-
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -59,7 +58,7 @@ public class ConfigControllerTest {
             final String version = "1.0";
             ReflectionTestUtils.setField(configController, "version", version);
             final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
-            assertEquals(response.getVersion(), version);
+            assertEquals(version, response.getVersion());
         }
 
         @Test
@@ -70,7 +69,7 @@ public class ConfigControllerTest {
                 .when(dynamicLinkService)
                 .getAllAsMap();
 
-            final var response = (Map<String, DynamicLink>) configController.getDynamicLinks();
+            final var response = configController.getDynamicLinks();
             assertTrue(response.containsKey("Test"));
         }
 
@@ -85,7 +84,7 @@ public class ConfigControllerTest {
                 .getCurrentBanners();
 
             final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
-            assertEquals(response.getBanners().size(), 1);
+            assertEquals(1, response.getBanners().size());
         }
 
         @Test
@@ -99,7 +98,7 @@ public class ConfigControllerTest {
                 .getCurrentBanners();
 
             final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
-            assertEquals(response.getBanners().size(), 0);
+            assertEquals(0, response.getBanners().size());
         }
 
         @Test
@@ -107,7 +106,7 @@ public class ConfigControllerTest {
             final String ppHost = "min_sida";
             ReflectionTestUtils.setField(configController, "ppHost", ppHost);
             final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
-            assertEquals(response.getPpHost(), ppHost);
+            assertEquals(ppHost, response.getPpHost());
         }
     }
 }
