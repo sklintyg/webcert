@@ -33,5 +33,6 @@ public class ConfigurationDTO {
     String sakerhetstjanstIdpUrl;
     String cgiFunktionstjansterIdpUrl;
     String forwardDraftOrQuestionUrl;
-    
+    List<String> idpConnectUrls;
+
 }

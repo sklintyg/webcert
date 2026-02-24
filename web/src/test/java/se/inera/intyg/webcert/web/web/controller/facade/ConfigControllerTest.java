@@ -108,5 +108,27 @@ public class ConfigControllerTest {
             final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
             assertEquals(ppHost, response.getPpHost());
         }
+
+        @Test
+        void shouldReturnIdpConnectUrlsAsEmptyListWhenConfigIsNull() {
+            final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
+            assertEquals(List.of(), response.getIdpConnectUrls());
+        }
+
+        @Test
+        void shouldReturnIdpConnectUrlsAsEmptyListWhenConfigIsEmpty() {
+            ReflectionTestUtils.setField(configController, "idpConnectUrls", "");
+            final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
+            assertEquals(List.of(), response.getIdpConnectUrls());
+        }
+
+        @Test
+        void shouldReturnIdpConnectUrlsWhenConfigExists() {
+            final var expected = List.of("https://idp1.example.com", "https://idp2.example.com");
+
+            ReflectionTestUtils.setField(configController, "idpConnectUrls", "https://idp1.example.com,https://idp2.example.com");
+            final var response = (ConfigurationDTO) configController.getConfiguration().getEntity();
+            assertEquals(expected, response.getIdpConnectUrls());
+        }
     }
 }

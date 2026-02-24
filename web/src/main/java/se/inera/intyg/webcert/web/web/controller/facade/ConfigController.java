@@ -24,6 +24,8 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +61,9 @@ public class ConfigController {
     @Value("${forward.draft.or.question.url}")
     private String forwardDraftOrQuestionUrl;
 
+    @Value("${idp.connect.urls:}")
+    private String idpConnectUrls;
+
     @Autowired
     private DynamicLinkService dynamicLinkService;
 
@@ -79,9 +84,8 @@ public class ConfigController {
         if (log.isDebugEnabled()) {
             log.debug("Getting configuration");
         }
-        
-        final var banners = iaBannerService.getCurrentBanners()
-            .stream()
+
+        final var banners = iaBannerService.getCurrentBanners().stream()
             .filter((banner -> banner.getApplication() == Application.WEBCERT))
             .toList();
 
@@ -93,6 +97,12 @@ public class ConfigController {
                 .sakerhetstjanstIdpUrl(sakerhetstjanstIdpUrl)
                 .cgiFunktionstjansterIdpUrl(cgiFunktionstjansterIdpUrl)
                 .forwardDraftOrQuestionUrl(forwardDraftOrQuestionUrl)
+                .idpConnectUrls(
+                    idpConnectUrls == null ? List.of() :
+                        Arrays.stream(idpConnectUrls.split(","))
+                            .filter(url -> !url.isBlank())
+                            .toList()
+                )
                 .build()
         ).build();
     }
