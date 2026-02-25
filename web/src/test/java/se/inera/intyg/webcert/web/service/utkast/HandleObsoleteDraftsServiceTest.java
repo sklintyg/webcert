@@ -18,8 +18,6 @@ import se.inera.intyg.common.support.model.UtkastStatus;
 import se.inera.intyg.webcert.integration.analytics.model.CertificateAnalyticsMessage;
 import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
 import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
-import se.inera.intyg.webcert.persistence.event.repository.CertificateEventFailedLoadRepository;
-import se.inera.intyg.webcert.persistence.event.repository.CertificateEventProcessedRepository;
 import se.inera.intyg.webcert.persistence.event.repository.CertificateEventRepository;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
@@ -45,10 +43,6 @@ class HandleObsoleteDraftsServiceTest {
     private UtkastRepository utkastRepository;
     @Mock
     private CertificateEventRepository certificateEventRepository;
-    @Mock
-    private CertificateEventFailedLoadRepository certificateEventFailedLoadRepository;
-    @Mock
-    private CertificateEventProcessedRepository certificateEventProcessedRepository;
     @InjectMocks
     private HandleObsoleteDraftsService handleObsoleteDraftsService;
 
@@ -75,26 +69,6 @@ class HandleObsoleteDraftsServiceTest {
     }
 
     @Test
-    void shouldDeleteCertificateProcessedEvents() {
-        final var certificateId1 = "cert-id-1";
-        final var draft1 = createUtkast(certificateId1, UtkastStatus.DRAFT_COMPLETE);
-
-        handleObsoleteDraftsService.disposeAndNotify(draft1, STALE_DRAFTS_PERIOD);
-
-        verify(certificateEventProcessedRepository).eraseEventsProcessedByCertificateIds(Collections.singletonList(certificateId1));
-    }
-
-    @Test
-    void shouldDeleteCertificateFailedLoadEvents() {
-        final var certificateId1 = "cert-id-1";
-        final var draft1 = createUtkast(certificateId1, UtkastStatus.DRAFT_COMPLETE);
-
-        handleObsoleteDraftsService.disposeAndNotify(draft1, STALE_DRAFTS_PERIOD);
-
-        verify(certificateEventFailedLoadRepository).eraseEventsFailedByCertificateIds(Collections.singletonList(certificateId1));
-    }
-
-    @Test
     void shouldDeleteCertificateEvents() {
         final var certificateId1 = "cert-id-1";
         final var draft1 = createUtkast(certificateId1, UtkastStatus.DRAFT_COMPLETE);
@@ -113,8 +87,6 @@ class HandleObsoleteDraftsServiceTest {
 
         verifyNoInteractions(utkastRepository);
         verifyNoInteractions(utkastRepository);
-        verifyNoInteractions(certificateEventProcessedRepository);
-        verifyNoInteractions(certificateEventFailedLoadRepository);
         verifyNoInteractions(certificateEventRepository);
     }
 

@@ -50,8 +50,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeDraftRepository;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
-import se.inera.intyg.webcert.persistence.event.repository.CertificateEventFailedLoadRepository;
-import se.inera.intyg.webcert.persistence.event.repository.CertificateEventProcessedRepository;
 import se.inera.intyg.webcert.persistence.event.repository.CertificateEventRepository;
 import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
@@ -73,10 +71,6 @@ class EraseServiceImplTest {
     private GodkantAvtalRepository godkantAvtalRepository;
     @Mock
     private ArendeDraftRepository arendeDraftRepository;
-    @Mock
-    private CertificateEventFailedLoadRepository certificateEventFailedLoadRepository;
-    @Mock
-    private CertificateEventProcessedRepository certificateEventProcessedRepository;
     @Mock
     private PagaendeSigneringRepository pagaendeSigneringRepository;
     @Mock
@@ -115,13 +109,13 @@ class EraseServiceImplTest {
     private static final Pageable ERASE_PAGEABLE = PageRequest.of(PAGE, ERASE_SIZE, Sort.by(Direction.ASC, "skapad", "intygsId"));
 
     @AfterEach
-    public void cleanup() {
+    void cleanup() {
         certIds.clear();
         eventIds.clear();
     }
 
     @Test
-    public void shouldCallForNewCertificateIdsForEachBatch() {
+    void shouldCallForNewCertificateIdsForEachBatch() {
         setupPageMock(true);
         setupEraseByCareProviderIdMocks();
         setupEraseByCertificateIdMocks(false);
@@ -132,7 +126,7 @@ class EraseServiceImplTest {
     }
 
     @Test
-    public void shouldEraseIntegratedUnitsOnceBasedOnCareProviderId() {
+    void shouldEraseIntegratedUnitsOnceBasedOnCareProviderId() {
         setupPageMock(true);
         setupEraseByCareProviderIdMocks();
         setupEraseByCertificateIdMocks(false);
@@ -143,7 +137,7 @@ class EraseServiceImplTest {
     }
 
     @Test
-    public void shouldEraseGodkantAvtalOnceBasedOnCareProviderId() {
+    void shouldEraseGodkantAvtalOnceBasedOnCareProviderId() {
         setupPageMock(true);
         setupEraseByCareProviderIdMocks();
         setupEraseByCertificateIdMocks(false);
@@ -154,7 +148,7 @@ class EraseServiceImplTest {
     }
 
     @Test
-    public void shouldEraseArendeDraftsInBatches() {
+    void shouldEraseArendeDraftsInBatches() {
         setupPageMock(true);
         setupEraseByCareProviderIdMocks();
         setupEraseByCertificateIdMocks(false);
@@ -169,8 +163,7 @@ class EraseServiceImplTest {
         );
     }
 
-    @Test
-    public void shouldEraseCertificateEventFailedLoadInBatches() {
+    void shouldEraseCertificateEventFailedLoadInBatches() {
         setupPageMock(true);
         setupEraseByCareProviderIdMocks();
         setupEraseByCertificateIdMocks(false);
@@ -178,7 +171,6 @@ class EraseServiceImplTest {
         eraseService.eraseCertificates(CARE_PROVIDER_ID, ERASE_PAGEABLE.getPageSize());
 
         assertAll(
-            () -> verify(certificateEventFailedLoadRepository, times(3)).eraseEventsFailedByCertificateIds(certIdCaptor.capture()),
             () -> assertIterableEquals(certIds.get(0), certIdCaptor.getAllValues().get(0)),
             () -> assertIterableEquals(certIds.get(1), certIdCaptor.getAllValues().get(1)),
             () -> assertIterableEquals(certIds.get(2), certIdCaptor.getAllValues().get(2))
@@ -186,23 +178,7 @@ class EraseServiceImplTest {
     }
 
     @Test
-    public void shouldEraseCertificateEventProcessedInBatches() {
-        setupPageMock(true);
-        setupEraseByCareProviderIdMocks();
-        setupEraseByCertificateIdMocks(false);
-
-        eraseService.eraseCertificates(CARE_PROVIDER_ID, ERASE_PAGEABLE.getPageSize());
-
-        assertAll(
-            () -> verify(certificateEventProcessedRepository, times(3)).eraseEventsProcessedByCertificateIds(certIdCaptor.capture()),
-            () -> assertIterableEquals(certIds.get(0), certIdCaptor.getAllValues().get(0)),
-            () -> assertIterableEquals(certIds.get(1), certIdCaptor.getAllValues().get(1)),
-            () -> assertIterableEquals(certIds.get(2), certIdCaptor.getAllValues().get(2))
-        );
-    }
-
-    @Test
-    public void shouldErasePagaendeSigneringInBatches() {
+    void shouldErasePagaendeSigneringInBatches() {
         setupPageMock(true);
         setupEraseByCareProviderIdMocks();
         setupEraseByCertificateIdMocks(false);
@@ -218,7 +194,7 @@ class EraseServiceImplTest {
     }
 
     @Test
-    public void shouldEraseNotificationRedeliveryInBatches() {
+    void shouldEraseNotificationRedeliveryInBatches() {
         setupPageMock(true);
         setupEraseByCareProviderIdMocks();
         setupEraseByCertificateIdMocks(false);
@@ -238,7 +214,7 @@ class EraseServiceImplTest {
     }
 
     @Test
-    public void shouldEraseReferensInBatches() {
+    void shouldEraseReferensInBatches() {
         setupPageMock(true);
         setupEraseByCareProviderIdMocks();
         setupEraseByCertificateIdMocks(false);
@@ -254,7 +230,7 @@ class EraseServiceImplTest {
     }
 
     @Test
-    public void shouldEraseMigreratMedcertIntygInBatches() {
+    void shouldEraseMigreratMedcertIntygInBatches() {
         setupPageMock(true);
         setupEraseByCareProviderIdMocks();
         setupEraseByCertificateIdMocks(false);
@@ -270,7 +246,7 @@ class EraseServiceImplTest {
     }
 
     @Test
-    public void shouldEraseFragaSvarIntygInBatches() {
+    void shouldEraseFragaSvarIntygInBatches() {
         setupPageMock(true);
         setupEraseByCareProviderIdMocks();
         setupEraseByCertificateIdMocks(false);
@@ -286,7 +262,7 @@ class EraseServiceImplTest {
     }
 
     @Test
-    public void shouldEraseArendenInBatches() {
+    void shouldEraseArendenInBatches() {
         setupPageMock(true);
         setupEraseByCareProviderIdMocks();
         setupEraseByCertificateIdMocks(false);
@@ -302,7 +278,7 @@ class EraseServiceImplTest {
     }
 
     @Test
-    public void shouldEraseHandelserInBatches() {
+    void shouldEraseHandelserInBatches() {
         setupPageMock(true);
         setupEraseByCareProviderIdMocks();
         setupEraseByCertificateIdMocks(false);
@@ -318,7 +294,7 @@ class EraseServiceImplTest {
     }
 
     @Test
-    public void shouldEraseCertificateEventsInBatches() {
+    void shouldEraseCertificateEventsInBatches() {
         setupPageMock(true);
         setupEraseByCareProviderIdMocks();
         setupEraseByCertificateIdMocks(false);
@@ -334,7 +310,7 @@ class EraseServiceImplTest {
     }
 
     @Test
-    public void shouldEraseUtkastInBatches() {
+    void shouldEraseUtkastInBatches() {
         setupPageMock(true);
         setupEraseByCareProviderIdMocks();
         setupEraseByCertificateIdMocks(false);
@@ -350,7 +326,7 @@ class EraseServiceImplTest {
     }
 
     @Test
-    public void shouldRethrowAnyCaughtException() {
+    void shouldRethrowAnyCaughtException() {
         setupPageMock(true);
         setupEraseByCareProviderIdMocks();
         setupEraseByCertificateIdMocks(true);
@@ -362,7 +338,7 @@ class EraseServiceImplTest {
     }
 
     @Test
-    public void shouldNotMakeCertificateEraseCallsIfCareProviderWithoutCertificates() {
+    void shouldNotMakeCertificateEraseCallsIfCareProviderWithoutCertificates() {
         setupEraseByCareProviderIdMocks();
         setupPageMock(false);
 
@@ -373,8 +349,6 @@ class EraseServiceImplTest {
             () -> verify(godkantAvtalRepository, times(1)).eraseGodkantAvtalByCareProviderId(CARE_PROVIDER_ID),
             () -> verify(utkastRepository, times(1)).findCertificateIdsForCareProvider(any(String.class), any(Pageable.class)),
             () -> verifyNoInteractions(arendeDraftRepository),
-            () -> verifyNoInteractions(certificateEventFailedLoadRepository),
-            () -> verifyNoInteractions(certificateEventProcessedRepository),
             () -> verifyNoInteractions(pagaendeSigneringRepository),
             () -> verifyNoInteractions(referensRepository),
             () -> verifyNoInteractions(migreratMedcertIntygRepository),
@@ -410,8 +384,6 @@ class EraseServiceImplTest {
 
     private void setupEraseByCertificateIdMocks(boolean withException) {
         doReturn(2).when(arendeDraftRepository).eraseArendeDraftsByCertificateIds(any());
-        doReturn(2).when(certificateEventFailedLoadRepository).eraseEventsFailedByCertificateIds(any());
-        doReturn(2).when(certificateEventProcessedRepository).eraseEventsProcessedByCertificateIds(any());
         doReturn(2).when(pagaendeSigneringRepository).erasePagaendeSigneringByCertificateIds(any());
         doReturn(2).when(notificationRedeliveryRepository).eraseRedeliveriesForEventIds(any());
         doReturn(2).when(referensRepository).eraseReferenserByCertificateIds(any());
