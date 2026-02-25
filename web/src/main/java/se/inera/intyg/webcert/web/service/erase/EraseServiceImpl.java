@@ -29,8 +29,6 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeDraftRepository;
 import se.inera.intyg.webcert.persistence.arende.repository.ArendeRepository;
-import se.inera.intyg.webcert.persistence.event.repository.CertificateEventFailedLoadRepository;
-import se.inera.intyg.webcert.persistence.event.repository.CertificateEventProcessedRepository;
 import se.inera.intyg.webcert.persistence.event.repository.CertificateEventRepository;
 import se.inera.intyg.webcert.persistence.fragasvar.repository.FragaSvarRepository;
 import se.inera.intyg.webcert.persistence.handelse.model.Handelse;
@@ -55,8 +53,6 @@ public class EraseServiceImpl implements EraseService {
     private final HandelseRepository handelseRepository;
     private final NotificationRedeliveryRepository notificationRedeliveryRepository;
     private final PagaendeSigneringRepository pagaendeSigneringRepository;
-    private final CertificateEventFailedLoadRepository certificateEventFailedLoadRepository;
-    private final CertificateEventProcessedRepository certificateEventProcessedRepository;
     private final CertificateEventRepository certificateEventRepository;
     private final ReferensRepository referensRepository;
     private final IntegreradEnhetRepository integreradEnhetRepository;
@@ -68,9 +64,9 @@ public class EraseServiceImpl implements EraseService {
     public EraseServiceImpl(UtkastRepository utkastRepository, FragaSvarRepository fragaSvarRepository, ArendeRepository arendeRepository,
         IntegreradEnhetRepository integreradEnhetRepository, ArendeDraftRepository arendeDraftRepository,
         HandelseRepository handelseRepository, NotificationRedeliveryRepository notificationRedeliveryRepository,
-        PagaendeSigneringRepository pagaendeSigneringRepository, CertificateEventFailedLoadRepository certificateEventFailedLoadRepository,
+        PagaendeSigneringRepository pagaendeSigneringRepository,
         MigreratMedcertIntygRepository migreratMedcertIntygRepository,
-        CertificateEventProcessedRepository certificateEventProcessedRepository, CertificateEventRepository certificateEventRepository,
+        CertificateEventRepository certificateEventRepository,
         ReferensRepository referensRepository, GodkantAvtalRepository godkantAvtalRepository) {
         this.utkastRepository = utkastRepository;
         this.fragaSvarRepository = fragaSvarRepository;
@@ -80,9 +76,7 @@ public class EraseServiceImpl implements EraseService {
         this.handelseRepository = handelseRepository;
         this.notificationRedeliveryRepository = notificationRedeliveryRepository;
         this.pagaendeSigneringRepository = pagaendeSigneringRepository;
-        this.certificateEventFailedLoadRepository = certificateEventFailedLoadRepository;
         this.migreratMedcertIntygRepository = migreratMedcertIntygRepository;
-        this.certificateEventProcessedRepository = certificateEventProcessedRepository;
         this.certificateEventRepository = certificateEventRepository;
         this.referensRepository = referensRepository;
         this.godkantAvtalRepository = godkantAvtalRepository;
@@ -207,12 +201,6 @@ public class EraseServiceImpl implements EraseService {
     }
 
     private int eraseCertificateEvents(List<String> certificateIds, String careProviderId) {
-        final var eventsFailedCount = certificateEventProcessedRepository.eraseEventsProcessedByCertificateIds(certificateIds);
-        LOG.debug("Erased {} CertificateEventsFailedLoad for care provider {}.", eventsFailedCount, careProviderId);
-
-        final var eventsProcessedCount = certificateEventFailedLoadRepository.eraseEventsFailedByCertificateIds(certificateIds);
-        LOG.debug("Erased {} CertificateEventsProcessed for care provider {}.", eventsProcessedCount, careProviderId);
-
         final var erasedCertificateEventCount = certificateEventRepository.eraseCertificateEventsByCertificateIds(certificateIds);
         LOG.debug("Erased {} CertificateEvents for care provider {}.", erasedCertificateEventCount, careProviderId);
         return erasedCertificateEventCount;

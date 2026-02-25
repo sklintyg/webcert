@@ -9,8 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import se.inera.intyg.webcert.integration.analytics.service.CertificateAnalyticsMessageFactory;
 import se.inera.intyg.webcert.integration.analytics.service.PublishCertificateAnalyticsMessage;
-import se.inera.intyg.webcert.persistence.event.repository.CertificateEventFailedLoadRepository;
-import se.inera.intyg.webcert.persistence.event.repository.CertificateEventProcessedRepository;
 import se.inera.intyg.webcert.persistence.event.repository.CertificateEventRepository;
 import se.inera.intyg.webcert.persistence.utkast.model.Utkast;
 import se.inera.intyg.webcert.persistence.utkast.repository.UtkastRepository;
@@ -25,8 +23,6 @@ public class HandleObsoleteDraftsService {
     private final UtkastRepository utkastRepository;
     private final MonitoringLogService monitoringLogService;
     private final CertificateEventRepository certificateEventRepository;
-    private final CertificateEventFailedLoadRepository certificateEventFailedLoadRepository;
-    private final CertificateEventProcessedRepository certificateEventProcessedRepository;
     private final PublishCertificateAnalyticsMessage publishCertificateAnalyticsMessage;
     private final CertificateAnalyticsMessageFactory certificateAnalyticsMessageFactory;
 
@@ -36,8 +32,6 @@ public class HandleObsoleteDraftsService {
             return;
         }
 
-        certificateEventProcessedRepository.eraseEventsProcessedByCertificateIds(Collections.singletonList(draft.getIntygsId()));
-        certificateEventFailedLoadRepository.eraseEventsFailedByCertificateIds(Collections.singletonList(draft.getIntygsId()));
         certificateEventRepository.eraseCertificateEventsByCertificateIds(Collections.singletonList(draft.getIntygsId()));
 
         utkastRepository.deleteById(draft.getIntygsId());
