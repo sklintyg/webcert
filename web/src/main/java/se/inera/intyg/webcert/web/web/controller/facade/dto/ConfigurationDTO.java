@@ -19,63 +19,20 @@
 package se.inera.intyg.webcert.web.web.controller.facade.dto;
 
 import java.util.List;
+import lombok.Builder;
+import lombok.Value;
 import se.inera.intyg.infra.driftbannerdto.Banner;
 
+@Value
+@Builder
 public class ConfigurationDTO {
 
-    private String ppHost;
-    private String version;
-    private List<Banner> banners;
-    private String sakerhetstjanstIdpUrl;
-    private String cgiFunktionstjansterIdpUrl;
-    private String forwardDraftOrQuestionUrl;
+    String ppHost;
+    String version;
+    List<Banner> banners;
+    String sakerhetstjanstIdpUrl;
+    String cgiFunktionstjansterIdpUrl;
+    String forwardDraftOrQuestionUrl;
+    List<String> idpConnectUrls;
 
-    public ConfigurationDTO(
-        String version,
-        List<Banner> banners,
-        String ppHost,
-        String sakerhetstjanstIdpUrl,
-        String cgiFunktionstjansterIdpUrl, String forwardDraftOrQuestionUrl) {
-        this.version = version;
-        this.banners = banners;
-        this.ppHost = ppHost;
-        this.sakerhetstjanstIdpUrl = sakerhetstjanstIdpUrl;
-        this.cgiFunktionstjansterIdpUrl = cgiFunktionstjansterIdpUrl;
-        this.forwardDraftOrQuestionUrl = forwardDraftOrQuestionUrl;
-    }
-
-    public ConfigurationDTO() {
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-    public List<Banner> getBanners() {
-        return banners;
-    }
-
-    public String getSakerhetstjanstIdpUrl() {
-        return sakerhetstjanstIdpUrl;
-    }
-
-    public String getCgiFunktionstjansterIdpUrl() {
-        return cgiFunktionstjansterIdpUrl;
-    }
-
-    public String getForwardDraftOrQuestionUrl() {
-        return forwardDraftOrQuestionUrl;
-    }
-
-    public String getPpHost() {
-        return ppHost;
-    }
-
-    public void setPpHost(String ppHost) {
-        this.ppHost = ppHost;
-    }
 }

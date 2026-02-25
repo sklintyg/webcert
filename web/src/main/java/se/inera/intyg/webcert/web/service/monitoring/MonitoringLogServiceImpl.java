@@ -23,7 +23,9 @@ import static se.inera.intyg.webcert.persistence.fragasvar.model.Amne.KOMPLETTER
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Joiner;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -754,18 +756,17 @@ public class MonitoringLogServiceImpl implements MonitoringLogService {
 
     @Override
     public void logIdpConnectivityCheck(String ip, String connectivity) {
-
-        StringBuilder connectivityResult = new StringBuilder();
-        ObjectMapper objectMapper = new ObjectMapper();
+        final var connectivityResult = new StringBuilder();
+        final var objectMapper = new ObjectMapper();
 
         try {
-            IdpConnectivity[] conn = objectMapper.readValue(connectivity, IdpConnectivity[].class);
-            for (IdpConnectivity connection : conn) {
-                connectivityResult.append(connection.url).append(connection.connected ? " OK" : " Not OK")
-                    .append("! ");
-            }
+            Arrays.stream(objectMapper.readValue(connectivity, IdpConnectivity[].class))
+                .sorted(Comparator.comparing(c -> c.url))
+                .forEach(connection ->
+                    connectivityResult.append(connection.url).append(connection.connected ? " OK" : " Not OK").append("! ")
+                );
         } catch (Exception e) {
-            //Exceptions to be ignored
+            log.error("Failed to parse connectivity check result", e);
         }
 
         final var user = webCertUserService.getUser();
