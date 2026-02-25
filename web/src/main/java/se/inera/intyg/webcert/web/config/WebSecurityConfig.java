@@ -217,6 +217,16 @@ public class WebSecurityConfig {
             .headers(headersConfigurer -> headersConfigurer
                 .frameOptions(FrameOptionsConfig::disable)
                 .addHeaderWriter(customXFrameOptionsHeaderWriter)
+                .httpStrictTransportSecurity(hsts -> hsts
+                    .includeSubDomains(true)
+                    .maxAgeInSeconds(31536000)
+                )
+                .referrerPolicy(referrer -> referrer
+                    .policy(org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter.ReferrerPolicy.ORIGIN_WHEN_CROSS_ORIGIN)
+                )
+                .contentSecurityPolicy(csp -> csp
+                    .policyDirectives("frame-ancestors 'none'")
+                )
             )
             .csrf(csrfConfigurer -> csrfConfigurer
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
