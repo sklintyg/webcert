@@ -104,18 +104,10 @@ public class FakeLoginService {
     }
 
     private void updateUserWithFakeloginProperties(WebCertUser user, FakeLoginDTO fakeProps) {
-        setName(user, fakeProps.getForNamn(), fakeProps.getEfterNamn());
         setUnit(user, fakeProps.getEnhetId());
         setProtectedPerson(user, fakeProps.getSekretessMarkerad());
         setOrigin(user, fakeProps.getOrigin());
         setFeatures(user);
-    }
-
-    private void setName(WebCertUser user, String forNamn, String efternamn) {
-        if (!Strings.isNullOrEmpty(user.getName())) {
-            return;
-        }
-        user.setNamn(forNamn + " " + efternamn);
     }
 
     private void setUnit(WebCertUser user, String enhetId) {
