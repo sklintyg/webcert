@@ -50,13 +50,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.opensaml.core.xml.schema.impl.XSStringImpl;
-import org.opensaml.saml.common.xml.SAMLConstants;
-import org.opensaml.saml.saml2.core.AuthnContextClassRef;
-import org.opensaml.saml.saml2.core.AuthnContextComparisonTypeEnumeration;
-import org.opensaml.saml.saml2.core.RequestedAuthnContext;
 import org.opensaml.saml.saml2.core.SessionIndex;
-import org.opensaml.saml.saml2.core.impl.AuthnContextClassRefBuilder;
-import org.opensaml.saml.saml2.core.impl.RequestedAuthnContextBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -250,10 +244,8 @@ public class WebSecurityConfig {
     Saml2AuthenticationRequestResolver authenticationRequestResolver(RelyingPartyRegistrationRepository registrations) {
         final var registrationResolver = new DefaultRelyingPartyRegistrationResolver(registrations);
         final var authenticationRequestResolver = new OpenSaml4AuthenticationRequestResolver(registrationResolver);
-        authenticationRequestResolver.setAuthnRequestCustomizer(context -> {
-                context.getAuthnRequest().setAttributeConsumingServiceIndex(1);
-                context.getAuthnRequest().setRequestedAuthnContext(buildRequestedAuthnContext(context.getRelyingPartyRegistration()));
-            }
+        authenticationRequestResolver.setAuthnRequestCustomizer(context ->
+            context.getAuthnRequest().setAttributeConsumingServiceIndex(1)
         );
         return authenticationRequestResolver;
     }
@@ -370,35 +362,9 @@ public class WebSecurityConfig {
     }
 
     public static class MySessionIndex extends XSStringImpl implements SessionIndex {
+
         public MySessionIndex(String namespaceURI, String elementLocalName, String namespacePrefix) {
             super(namespaceURI, elementLocalName, namespacePrefix);
         }
     }
-
-    private RequestedAuthnContext buildRequestedAuthnContext(RelyingPartyRegistration registration) {
-        final var requestedAuthnContext = new RequestedAuthnContextBuilder().buildObject();
-        requestedAuthnContext.setComparison(AuthnContextComparisonTypeEnumeration.EXACT);
-
-        if (registration.getRegistrationId().equals(REGISTRATION_ID_ELEG)) {
-            final var authnContextClassRefEleg = getAuthnContextClassRef();
-            authnContextClassRefEleg.setURI("http://id.elegnamnden.se/loa/1.0/loa3");
-            requestedAuthnContext.getAuthnContextClassRefs().add(authnContextClassRefEleg);
-            return requestedAuthnContext;
-        }
-
-        final var authnContextClassRefLoa2 = getAuthnContextClassRef();
-        final var authnContextClassRefLoa3 = getAuthnContextClassRef();
-        authnContextClassRefLoa2.setURI("http://id.sambi.se/loa/loa2");
-        authnContextClassRefLoa3.setURI("http://id.sambi.se/loa/loa3");
-        requestedAuthnContext.getAuthnContextClassRefs().add(authnContextClassRefLoa2);
-        requestedAuthnContext.getAuthnContextClassRefs().add(authnContextClassRefLoa3);
-        return requestedAuthnContext;
-    }
-
-    private AuthnContextClassRef getAuthnContextClassRef() {
-        final var authnContextClassRefBuilder = new AuthnContextClassRefBuilder();
-        return authnContextClassRefBuilder.buildObject(SAMLConstants.SAML20_NS, AuthnContextClassRef.DEFAULT_ELEMENT_LOCAL_NAME,
-            SAMLConstants.SAML20_PREFIX);
-    }
-
 }
